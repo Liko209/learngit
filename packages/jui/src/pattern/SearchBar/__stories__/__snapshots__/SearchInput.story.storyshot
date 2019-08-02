@@ -446,6 +446,7 @@ exports[`Storyshots Pattern/SearchBar SearchInput: Pattern/SearchBar SearchInput
       </div>
     </div>
     <button
+      aria-label=""
       className="MuiButtonBase-root MuiIconButton-root c6 c7"
       disabled={false}
       onBlur={[Function]}

@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
-
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -111,7 +109,7 @@ class AllCallsViewComponent extends Component<Props> {
           <DataList
             initialDataCount={INITIAL_COUNT}
             listHandler={listHandler}
-            reverse={true}
+            reverse
             InfiniteListProps={Object.assign(this._infiniteListProps, {
               height: this._height,
               noRowsRenderer: this._noRowsRenderer,

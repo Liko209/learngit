@@ -77,9 +77,6 @@ describe('SearchPersonController', () => {
           case ServiceConfig.GROUP_SERVICE:
             result = groupService;
             break;
-          case ServiceConfig.ITEM_SERVICE:
-            result = itemService;
-            break;
           case ServiceConfig.ACCOUNT_SERVICE:
             result = { userConfig: AccountUserConfig.prototype };
             break;
@@ -703,7 +700,8 @@ describe('SearchPersonController', () => {
         await entityCacheController.put(person as Person);
       }
     }
-    it('should return all phone numbers when is name matched', async () => {
+
+    it('should return all extension phone numbers when is name matched and is co-worker when name matched [JPT-2568]', async () => {
       await initTestData();
 
       const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -720,7 +718,7 @@ describe('SearchPersonController', () => {
       expect(result!.terms.length).toBe(2);
       expect(result!.terms[0]).toBe('cat');
       expect(result!.terms[1]).toBe('bruce');
-      expect(result!.phoneContacts.length).toBe(20);
+      expect(result!.phoneContacts.length).toBe(10);
     });
 
     it('should only return direct number when all are guests', async () => {
@@ -798,6 +796,22 @@ describe('SearchPersonController', () => {
         expect(item.phoneNumber.id.startsWith('65022700')).toBeTruthy();
       });
     });
+
+    it('should not match email when search phone contact', async () => {
+      await initTestData();
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(1);
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(Infinity);
+      const result = await searchPersonController.doFuzzySearchPhoneContacts({
+        searchKey: 'ringcentral',
+        excludeSelf: false,
+      });
+
+      expect(result).toEqual({ phoneContacts: [], terms: ['ringcentral'] });
+    });
   });
 
   describe('duFuzzySearchPersonAndGroup', () => {
@@ -822,7 +836,7 @@ describe('SearchPersonController', () => {
         terms: '1',
         sortableModels: [...persons, ...groups],
       });
-      expect(groupService.doFuzzySearchALlGroups).toBeCalled();
+      expect(groupService.doFuzzySearchALlGroups).toHaveBeenCalled();
     });
     it('should return person value when not search key', async () => {
       const persons = [];
@@ -841,7 +855,7 @@ describe('SearchPersonController', () => {
         terms: '',
         sortableModels: persons,
       });
-      expect(groupService.doFuzzySearchALlGroups).not.toBeCalled();
+      expect(groupService.doFuzzySearchALlGroups).not.toHaveBeenCalled();
     });
   });
 });

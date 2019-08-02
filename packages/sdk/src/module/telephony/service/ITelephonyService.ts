@@ -1,7 +1,10 @@
-import { EmergencyServiceAddress } from '../types';
+import { TelephonyDataCollectionInfoConfigType } from '../types';
 
 export interface ITelephonyService {
   getVoipCallPermission: () => Promise<boolean>;
   getRingerDevicesList: () => MediaDeviceInfo[];
-  getEmergencyAddress: () => EmergencyServiceAddress | undefined;
+  isEmergencyAddrConfirmed: () => boolean;
+  setDataCollectionInfoConfig: (
+    info: TelephonyDataCollectionInfoConfigType,
+  ) => void;
 }

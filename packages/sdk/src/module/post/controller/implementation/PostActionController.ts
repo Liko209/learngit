@@ -53,12 +53,13 @@ class PostActionController implements IPostActionController {
         likes,
       };
     };
-    return this.partialModifyController.updatePartially(
-      postId,
-      preHandlePartial,
-      async (newPost: Post) => this.requestController.put(newPost),
-      this._doPartialNotify.bind(this),
-    );
+    return this.partialModifyController.updatePartially({
+      entityId: postId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newPost: Post) =>
+        this.requestController.put(newPost),
+      doPartialNotify: this._doPartialNotify.bind(this),
+    });
   }
 
   private _doPartialNotify(
@@ -80,6 +81,7 @@ class PostActionController implements IPostActionController {
   private _editPost(
     params: EditPostType,
     doUpdateEntity: (newPost: Post) => Promise<any>,
+    forceDoUpdateEntity?: boolean,
   ) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
@@ -89,12 +91,13 @@ class PostActionController implements IPostActionController {
       ...partialPost,
     });
 
-    return this.partialModifyController.updatePartially(
-      params.postId,
-      preHandlePartial,
+    return this.partialModifyController.updatePartially({
+      forceDoUpdateEntity,
       doUpdateEntity,
-      this._doPartialNotify.bind(this),
-    );
+      entityId: params.postId,
+      preHandlePartialEntity: preHandlePartial,
+      doPartialNotify: this._doPartialNotify.bind(this),
+    });
   }
 
   async editSuccessPost(params: EditPostType) {
@@ -105,11 +108,15 @@ class PostActionController implements IPostActionController {
     );
   }
 
-  async editFailedPost(
+  editFailedPost(
     params: EditPostType,
     reSendFunc: (post: Post, isResend: boolean) => Promise<Post>,
   ) {
-    this._editPost(params, async (newPost: Post) => reSendFunc(newPost, true));
+    return this._editPost(
+      params,
+      (newPost: Post) => reSendFunc(newPost, true),
+      true,
+    );
   }
 
   /**
@@ -142,10 +149,10 @@ class PostActionController implements IPostActionController {
         deactivated: !isValid,
         ...partialPost,
       });
-      await this.partialModifyController.updatePartially(
-        postId,
-        preHandlePartial,
-        async (newPost: Post) => {
+      await this.partialModifyController.updatePartially({
+        entityId: postId,
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: async (newPost: Post) => {
           if (newPost.id > 0) {
             return await this.requestController.put(newPost);
           }
@@ -156,8 +163,8 @@ class PostActionController implements IPostActionController {
 
           return newPost;
         },
-        this._doPartialNotify.bind(this),
-      );
+        doPartialNotify: this._doPartialNotify.bind(this),
+      });
     }
 
     const itemService = ServiceLoader.getInstance<ItemService>(
@@ -187,12 +194,13 @@ class PostActionController implements IPostActionController {
       ...partialPost,
     });
 
-    return this.partialModifyController.updatePartially(
-      id,
-      preHandlePartial,
-      async (newPost: Post) => this.requestController.put(newPost),
-      this._doPartialNotify.bind(this),
-    );
+    return this.partialModifyController.updatePartially({
+      entityId: id,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newPost: Post) =>
+        this.requestController.put(newPost),
+      doPartialNotify: this._doPartialNotify.bind(this),
+    });
   }
 }
 

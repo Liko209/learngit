@@ -160,7 +160,6 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
   await h(t).withLog('Given I have an DirectMessage conversation and clear all Umi', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
@@ -222,7 +221,6 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     type: "DirectMessage",
@@ -309,7 +307,6 @@ test(formalName('Function on post card of mentions/bookmarks page should the sam
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     type: "DirectMessage",

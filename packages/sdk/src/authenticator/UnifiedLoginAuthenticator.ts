@@ -12,8 +12,9 @@ import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../module/account/config';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
-import { PerformanceTracer } from 'foundation';
+import { PerformanceTracer, JError } from 'foundation';
 import { AUTHENTICATOR_PERFORMANCE_KEYS } from './config/performanceKeys';
+import { dataCollectionHelper } from 'sdk/framework';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
@@ -66,7 +67,10 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
   private async _authenticateRC(code: string): Promise<IAuthResponse> {
     // login rc
     const rcToken = await this._fetchRCToken(code);
-    await this._requestRCAccountRelativeInfo();
+    await this._requestRCAccountRelativeInfo().catch((reason: JError) => {
+      dataCollectionHelper.traceLoginFailed('rc', 'get info failed');
+      throw reason;
+    });
     await setRCToken(rcToken);
     await setRCAccountType();
     // TODO FIJI-4395
@@ -89,6 +93,12 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     const rcToken = await RCAuthApi.oauthTokenViaAuthCode({
       code,
       redirect_uri: window.location.origin,
+    }).catch((reason: JError) => {
+      dataCollectionHelper.traceLoginFailed(
+        'rc',
+        'get token failed',
+      );
+      throw reason;
     });
     if (!rcToken.timestamp) {
       rcToken.timestamp = Date.now();

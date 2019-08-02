@@ -1,7 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/PhoneTab/*.ts"],
-    "include_tags": [],
-    "browsers": ["selenium:chrome"]
-  }
-}

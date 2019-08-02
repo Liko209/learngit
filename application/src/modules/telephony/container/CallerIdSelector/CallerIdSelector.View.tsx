@@ -3,8 +3,6 @@
  * @Date: 2019-06-13 13:25:27
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React, { PureComponent, createRef, ChangeEvent } from 'react';
 import { JuiBoxSelect } from 'jui/components/Selects/BoxSelect';
 import { JuiVirtualizedList } from 'jui/components/VirtualizedList';
@@ -43,13 +41,10 @@ class RawCallerIdSelector extends PureComponent<
   private _height = 416 - MENU_PADDING * 4;
 
   state = {
-    height: 0,
     focusIndex:
       this.props.menu.findIndex(
         item => item.phoneNumber === this.props.value,
       ) || 0,
-    displayStartIdx: 0,
-    displayEndIdx: 0,
   };
 
   private _getIdx = (idx: number, direction: Direction = Direction.DOWN) => {

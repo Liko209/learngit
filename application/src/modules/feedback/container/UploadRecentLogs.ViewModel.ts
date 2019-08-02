@@ -3,7 +3,6 @@
  * @Date: 2019-03-27 19:47:26
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import { container } from 'framework';
 import { AbstractViewModel } from '@/base';
 import { observable, computed } from 'mobx';
@@ -101,7 +100,7 @@ export class UploadRecentLogsViewModel
       await feedbackService
         .sendFeedback(this.issueTitle, this.issueDescription)
         .catch();
-      throw 'upload step failed, can not send feedback.';
+      throw new Error('upload step failed, can not send feedback.');
     }
   };
 
@@ -113,7 +112,7 @@ export class UploadRecentLogsViewModel
     });
     if (!this._uploadLogResult) {
       logger.debug('Upload recent logs failed.');
-      throw 'Upload recent logs failed.';
+      throw new Error('Upload recent logs failed.');
     }
   };
 

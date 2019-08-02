@@ -328,6 +328,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <div>
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -436,6 +437,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <div>
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -544,6 +546,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <div>
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -652,6 +655,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <div>
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -760,6 +764,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <div>
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}

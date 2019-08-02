@@ -37,6 +37,24 @@ class PhoneStore {
       });
     }
   }
+
+  @action
+  addMediaUpdateListener(id: number) {
+    const audio = this.audioCache.get(id);
+    if (audio) {
+      const media = audio.media;
+      const updateFn = () => {
+        this.audioCache.set(id, {
+          ...audio,
+          startTime: 0,
+        });
+      };
+      media.on('ended', () => {
+        updateFn();
+        media.off('ended', updateFn);
+      });
+    }
+  }
 }
 
 export { PhoneStore };

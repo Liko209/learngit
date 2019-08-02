@@ -11,14 +11,14 @@ import { AccountUserConfig } from '../../../module/account/config/AccountUserCon
 import { AuthUserConfig } from '../../../module/account/config/AuthUserConfig';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
-import { getSpartaRandomTime } from 'foundation/src/utils/algorithm/SpartaRandomTime';
+import { getSpartaRandomTime } from 'foundation/utils/algorithm/SpartaRandomTime';
 
 jest.mock('../../../api/glip/user');
 jest.mock('../../../module/presence/service/PresenceService');
 jest.mock('../../../module/account/config/AccountUserConfig');
 jest.mock('../../../module/account/config/AuthUserConfig');
 jest.mock('../../../module/sync/config/SyncUserConfig');
-jest.mock('foundation/src/utils/algorithm/SpartaRandomTime');
+jest.mock('foundation/utils/algorithm/SpartaRandomTime');
 
 let presenceService: PresenceService;
 

@@ -11,7 +11,7 @@ import { FilesView } from '../Files.View';
 import {
   JuiPreviewImage,
   JuiFileWithPreview,
-  FileCardMedia,
+  FileCard,
 } from 'jui/pattern/ConversationCard/Files';
 import { ImageCard } from 'jui/pattern/ConversationCard/Files/style';
 import { config } from '@/modules/viewer/module.config';
@@ -140,7 +140,7 @@ describe('FilesView', () => {
       wrapper
         .find(JuiFileWithPreview)
         .shallow()
-        .find(FileCardMedia)
+        .find(FileCard)
         .simulate('click', mockEvent);
       setTimeout(() => {
         expect(viewerService.open).toHaveBeenCalled();
@@ -159,7 +159,7 @@ describe('FilesView', () => {
       wrapper
         .find(JuiFileWithPreview)
         .shallow()
-        .find(FileCardMedia)
+        .find(FileCard)
         .simulate('click', mockEvent);
 
       setTimeout(() => {

@@ -163,7 +163,7 @@ class JuiConversationCardHeader extends React.PureComponent<
           {from}
         </StyledLeftSection>
         {(time || children) && (
-          <RightSection>
+          <RightSection data-test-automation-id="cardHeaderRightSection">
             {time && <StyledTime data-name="time">{time}</StyledTime>}
             {children}
           </RightSection>

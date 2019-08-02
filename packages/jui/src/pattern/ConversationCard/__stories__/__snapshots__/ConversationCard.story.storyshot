@@ -418,6 +418,7 @@ Array [
         </div>
         <div
           className="c9"
+          data-test-automation-id="cardHeaderRightSection"
         >
           <div
             className="c10"
@@ -447,6 +448,7 @@ Array [
           title={null}
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
@@ -908,6 +910,7 @@ Array [
         </div>
         <div
           className="c9"
+          data-test-automation-id="cardHeaderRightSection"
         >
           <div
             className="c10"
@@ -937,6 +940,7 @@ Array [
           title={null}
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"

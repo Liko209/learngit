@@ -2,18 +2,21 @@ import { Jupiter, container } from 'framework';
 import { NotificationModule } from '../notificationModule';
 import { config } from '../module.config';
 import { config as settingConfig } from '@/modules/setting/module.config';
+import { config as mediaConfig } from '@/modules/media/module.config';
 import { INotificationService } from '../interface';
 import { notificationCenter } from 'sdk/service';
 import { SERVICE } from 'sdk/service/eventKey';
 
-global.Notification = {
-  requestPermission: jest.fn(),
-  permission: 'default',
+global.Notification = function() {
+  return {};
 };
+global.Notification.requestPermission = jest.fn();
+global.Notification.permission = 'default';
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(settingConfig);
 jupiter.registerModule(config);
+jupiter.registerModule(mediaConfig);
 
 jest.mock('../agent/SWNotification', () => ({
   SWNotification: () => ({
@@ -42,7 +45,10 @@ describe('NotificationModule', () => {
   });
 
   it('should add logout listener when bootstrapped', async () => {
-    expect(notificationCenter.on).toHaveBeenCalledWith(SERVICE.LOGOUT, module.onLogoutHook);
+    expect(notificationCenter.on).toHaveBeenCalledWith(
+      SERVICE.LOGOUT,
+      module.onLogoutHook,
+    );
   });
 
   describe('dispose()', () => {
@@ -52,7 +58,10 @@ describe('NotificationModule', () => {
     });
     it('should remove listener for logout when disposed', () => {
       module.dispose();
-      expect(notificationCenter.off).toHaveBeenCalledWith(SERVICE.LOGOUT, module.onLogoutHook);
+      expect(notificationCenter.off).toHaveBeenCalledWith(
+        SERVICE.LOGOUT,
+        module.onLogoutHook,
+      );
     });
   });
 });

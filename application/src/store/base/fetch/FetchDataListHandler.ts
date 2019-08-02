@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ENTITY_NAME } from '@/store/constants';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { TDelta, ISortableModel } from './types';

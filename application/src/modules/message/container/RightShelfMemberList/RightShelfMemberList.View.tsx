@@ -140,7 +140,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       CONVERSATION_TYPES.ME,
       CONVERSATION_TYPES.SMS,
     ].includes(group.type);
-    return (
+    return group.type === CONVERSATION_TYPES.ME ? null : (
       <>
         <MemberListHeader ref={this._header}>
           <div>

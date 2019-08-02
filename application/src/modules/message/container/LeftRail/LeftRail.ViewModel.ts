@@ -15,7 +15,7 @@ import {
 import StoreViewModel from '@/store/ViewModel';
 import { AccountService } from 'sdk/module/account';
 import { GLOBAL_KEYS } from '@/store/constants';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import GlobalStore from '@/store/base/GlobalStore';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { getGlobalValue } from '@/store/utils';
@@ -52,12 +52,14 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
         icon: 'mention',
         type: POST_LIST_TYPE.mentions,
         testId: 'entry-mentions',
+        iconColor: ['secondary', '600'],
       },
       {
         title: 'message.bookmarkPosts',
         icon: 'bookmark',
         type: POST_LIST_TYPE.bookmarks,
         testId: 'entry-bookmarks',
+        iconColor: ['primary', '600'],
       },
     ];
   }

@@ -1,11 +1,20 @@
-import Factory from 'factory.ts';
+import * as Factory from 'factory.ts';
 import faker from 'faker';
 import {
-  MyState, Post, Item, Company, Group, Person,
-  Profile, BaseModel, StoredFile, Raw,
+  MyState,
+  Post,
+  Item,
+  Company,
+  Group,
+  Person,
+  Profile,
+  BaseModel,
+  StoredFile,
+  Raw,
 } from '../models';
 
-const uniqueNumber = () => Factory.each(i => faker.random.number(Date.now() + i));
+const uniqueNumber = () =>
+  Factory.Sync.each(i => faker.random.number(Date.now() + i));
 
 const base = {
   id: uniqueNumber(),
@@ -29,8 +38,10 @@ const rawBase = {
   modified_at: uniqueNumber(),
   deactivated: false,
 };
-export const baseModelFactory = Factory.makeFactory<BaseModel>(base);
-export const rawBaseModelFactory = Factory.makeFactory<Raw<BaseModel>>(rawBase);
+export const baseModelFactory = Factory.Sync.makeFactory<BaseModel>(base);
+export const rawBaseModelFactory = Factory.Sync.makeFactory<Raw<BaseModel>>(
+  rawBase,
+);
 
 // MyState
 const myState = {
@@ -38,11 +49,11 @@ const myState = {
   current_group_id: 4325408770,
   current_plugin: 'events',
 };
-export const myStateFactory = Factory.makeFactory<MyState>({
+export const myStateFactory = Factory.Sync.makeFactory<MyState>({
   ...base,
   ...myState,
 });
-export const rawMyStateFactory = Factory.makeFactory<Raw<MyState>>({
+export const rawMyStateFactory = Factory.Sync.makeFactory<Raw<MyState>>({
   ...rawBase,
   ...myState,
 });
@@ -57,11 +68,11 @@ const post = {
   at_mention_item_ids: [],
   at_mention_non_item_ids: [],
 };
-export const postFactory = Factory.makeFactory<Post>({
+export const postFactory = Factory.Sync.makeFactory<Post>({
   ...base,
   ...post,
 });
-export const rawPostFactory = Factory.makeFactory<Raw<Post>>({
+export const rawPostFactory = Factory.Sync.makeFactory<Raw<Post>>({
   ...rawBase,
   ...post,
 });
@@ -73,11 +84,11 @@ const item = {
   company_id: faker.random.number(100000000),
   type_id: faker.random.number(100),
 };
-export const itemFactory = Factory.makeFactory<Item>({
+export const itemFactory = Factory.Sync.makeFactory<Item>({
   ...base,
   ...item,
 });
-export const rawItemFactory = Factory.makeFactory<Raw<Item>>({
+export const rawItemFactory = Factory.Sync.makeFactory<Raw<Item>>({
   ...rawBase,
   ...item,
 });
@@ -88,11 +99,11 @@ const company = {
   domain: faker.internet.domainName(),
   admins: [faker.random.number(10000)],
 };
-export const companyFactory = Factory.makeFactory<Company>({
+export const companyFactory = Factory.Sync.makeFactory<Company>({
   ...base,
   ...company,
 });
-export const rawCompanyFactory = Factory.makeFactory<Raw<Company>>({
+export const rawCompanyFactory = Factory.Sync.makeFactory<Raw<Company>>({
   ...rawBase,
   ...company,
 });
@@ -111,11 +122,11 @@ const group = {
   post_cursor: faker.random.number(1000),
   deactivated_post_cursor: faker.random.number(1000),
 };
-export const groupFactory = Factory.makeFactory<Group>({
+export const groupFactory = Factory.Sync.makeFactory<Group>({
   ...base,
   ...group,
 });
-export const rawGroupFactory = Factory.makeFactory<Raw<Group>>({
+export const rawGroupFactory = Factory.Sync.makeFactory<Raw<Group>>({
   ...rawBase,
   ...group,
 });
@@ -131,15 +142,19 @@ const person = {
   sanitized_rc_extension: { extensionNumber: '2013', type: 'User' },
   rc_phone_numbers: [
     { id: 536322020, phoneNumber: '16504463168', usageType: 'DirectNumber' },
-    { id: 36525942, phoneNumber: '18885287464', usageType: 'MainCompanyNumber' },
+    {
+      id: 36525942,
+      phoneNumber: '18885287464',
+      usageType: 'MainCompanyNumber',
+    },
   ],
   first_user: faker.random.boolean(),
 };
-export const personFactory = Factory.makeFactory<Person>({
+export const personFactory = Factory.Sync.makeFactory<Person>({
   ...base,
   ...person,
 });
-export const rawPersonFactory = Factory.makeFactory<Raw<Person>>({
+export const rawPersonFactory = Factory.Sync.makeFactory<Raw<Person>>({
   ...rawBase,
   ...person,
 });
@@ -150,16 +165,16 @@ const profile = {
   favorite_group_ids: [2586017798, 6037741574, 66441650178],
   favorite_post_ids: [2586017798, 6037741574, 66441650178],
 };
-export const profileFactory = Factory.makeFactory<Profile>({
+export const profileFactory = Factory.Sync.makeFactory<Profile>({
   ...base,
   ...profile,
 });
-export const rawProfileFactory = Factory.makeFactory<Raw<Profile>>({
+export const rawProfileFactory = Factory.Sync.makeFactory<Raw<Profile>>({
   ...rawBase,
   ...profile,
 });
 
-export const storedFileFactory = Factory.makeFactory<StoredFile>({
+export const storedFileFactory = Factory.Sync.makeFactory<StoredFile>({
   ...rawBase,
   storage_url: faker.internet.url(),
   download_url: faker.internet.url(),

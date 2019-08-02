@@ -430,6 +430,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
     </div>
     <button
       aria-describedby={null}
+      aria-label="add member"
       className="MuiButtonBase-root MuiIconButton-root c4"
       disabled={false}
       onBlur={[Function]}

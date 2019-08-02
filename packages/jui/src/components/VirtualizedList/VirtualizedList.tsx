@@ -41,13 +41,17 @@ import {
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
+import { RowManager } from './RowManager';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
 type JuiVirtualizedListHandles = {
+  focus: () => void;
+  scrollToTop: () => void;
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
   scrollToIndex: (index: number) => void;
+  scrollIntoViewIfNeeded: (index: number) => void;
   getVisibleRange: () => IndexRange;
   getPrevVisibleRange: () => IndexRange;
   scrollToPosition: (scrollPosition: PartialScrollPosition) => void;
@@ -59,13 +63,17 @@ const JuiVirtualizedList: RefForwardingComponent<
   JuiVirtualizedListProps
 > = (
   {
+    role,
+    tabIndex,
     height,
     minRowHeight,
+    fixedRowHeight,
     overscan = 5,
     children,
     initialScrollToIndex = 0,
     onScroll = noop,
-    onWheel = noop,
+    onWheel,
+    onKeyDown,
     onVisibleRangeChange = noop,
     onRenderedRangeChange = noop,
     before = null,
@@ -181,7 +189,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     rememberScrollPosition(position);
     setVisibleRange(
       createRange({
-        startIndex: position.index,
+        startIndex: position.options
+          ? position.index
+          : position.index - visibleRangeSize,
         size: visibleRangeSize,
         min: minIndex,
         max: maxIndex,
@@ -189,6 +199,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     );
     prevAtBottomRef.current = false;
     scrollToPosition(position);
+  };
+
+  const scrollToTop = () => {
+    if (ref.current) {
+      ref.current.scrollTop = 0;
+    }
   };
 
   const computeAtBottom = () => {
@@ -208,6 +224,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
+
   const shouldUpdateRange = () =>
     !isRangeIn(renderedRange, computeVisibleRange());
 
@@ -245,8 +262,18 @@ const JuiVirtualizedList: RefForwardingComponent<
   useImperativeHandle(
     forwardRef,
     () => ({
+      scrollToTop,
       scrollToBottom,
       scrollToPosition: jumpToPosition,
+      scrollIntoViewIfNeeded: (index: number) => {
+        if (ref.current) {
+          if (index < visibleRange.startIndex) {
+            jumpToPosition({ index, options: true });
+          } else if (index > visibleRange.stopIndex) {
+            jumpToPosition({ index, options: false });
+          }
+        }
+      },
       getScrollPosition: () => scrollPosition,
       isAtBottom: () => prevAtBottomRef.current,
       scrollToIndex: (index: number, options?: boolean) => {
@@ -254,6 +281,11 @@ const JuiVirtualizedList: RefForwardingComponent<
       },
       getVisibleRange: computeVisibleRange,
       getPrevVisibleRange: () => prevVisibleRange,
+      focus: () => {
+        if (ref.current) {
+          ref.current.focus();
+        }
+      },
     }),
     [computeVisibleRange, jumpToPosition],
   );
@@ -272,7 +304,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // State
   //
-  const rowManager = useRowManager({ minRowHeight, keyMapper });
+  const rowManager = useRowManager({ minRowHeight, fixedRowHeight, keyMapper });
 
   const { scrollPosition, rememberScrollPosition } = useScroll({
     index: initialScrollToIndex,
@@ -314,12 +346,15 @@ const JuiVirtualizedList: RefForwardingComponent<
   const { forceUpdate } = useForceUpdate();
   const useDebounceForceUpdate = useCallback(
     debounce(() => {
-      rowManager.flushCache();
-      scrollEffectTriggerRef.current++;
-      forceUpdate();
+      if (rowManager instanceof RowManager) {
+        rowManager.flushCache();
+        scrollEffectTriggerRef.current++;
+        forceUpdate();
+      }
     }, 300),
     [],
   );
+
   //
   // Update before content height when before content changed
   //
@@ -332,73 +367,80 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Update height cache and observe dynamic rows
   //
   useLayoutEffect(() => {
-    const handleRowSizeChange = (el: HTMLElement, i: number) => {
-      const result = { diff: 0 };
-      if (el.offsetParent) {
-        const startIndex = indexMapper(startKey);
-        const diff = rowManager.computeDiff(startIndex + i, el.offsetHeight);
-        if (shouldUseNativeImplementation) {
-          rowManager.setRowHeight(startIndex + i, el.offsetHeight);
-          if (diff !== 0) {
-            if (shouldScrollToBottom()) {
-              scrollToBottom();
-            } else {
-              const beforeFirstVisibleRow =
-                i + startIndex < scrollPosition.index;
-              if (beforeFirstVisibleRow && stickToLastPosition) {
-                scrollToPosition(scrollPosition);
+    if (rowManager instanceof RowManager) {
+      const handleRowSizeChange = (el: HTMLElement, i: number) => {
+        const result = { diff: 0 };
+        if (el.offsetParent) {
+          const startIndex = indexMapper(startKey);
+          const diff = rowManager.computeDiff(startIndex + i, el.offsetHeight);
+          if (shouldUseNativeImplementation) {
+            rowManager.setRowHeight(startIndex + i, el.offsetHeight);
+            if (diff !== 0) {
+              if (shouldScrollToBottom()) {
+                scrollToBottom();
+              } else {
+                const beforeFirstVisibleRow =
+                  i + startIndex < scrollPosition.index;
+                if (beforeFirstVisibleRow && stickToLastPosition) {
+                  scrollToPosition(scrollPosition);
+                }
               }
             }
+          } else {
+            rowManager.cacheRowHeight(startIndex + i, el.offsetHeight);
+            if (diff !== 0) {
+              useDebounceForceUpdate();
+            }
           }
-        } else {
-          rowManager.cacheRowHeight(startIndex + i, el.offsetHeight);
-          if (diff !== 0) {
-            useDebounceForceUpdate();
-          }
+          result.diff = diff;
         }
-        result.diff = diff;
-      }
-      return result;
-    };
-
-    const observeDynamicRow = (el: HTMLElement, i: number) => {
-      const cb = (entries: ResizeObserverEntry[]) => {
-        for (const entry of entries) {
-          const { diff } = handleRowSizeChange(entry.target as HTMLElement, i);
-          // Fix blank area:
-          // When row shrinks, the list didn't recompute rendered range
-          // automatically, which may leave a blank area in the list.
-          if (diff < 0) {
-            ensureNoBlankArea();
-          }
-        }
+        return result;
       };
-      const observer = new ResizeObserver(cb);
-      observer.observe(el);
-      return { observer, cb };
-    };
 
-    let rowElements: Element[] = getChildren(contentRef.current);
+      const observeDynamicRow = (el: HTMLElement, i: number) => {
+        const cb = (entries: ResizeObserverEntry[]) => {
+          for (const entry of entries) {
+            const { diff } = handleRowSizeChange(
+              entry.target as HTMLElement,
+              i,
+            );
+            // Fix blank area:
+            // When row shrinks, the list didn't recompute rendered range
+            // automatically, which may leave a blank area in the list.
+            if (diff < 0) {
+              ensureNoBlankArea();
+            }
+          }
+        };
+        const observer = new ResizeObserver(cb);
+        observer.observe(el);
+        return { observer, cb };
+      };
 
-    if (!shouldUseNativeImplementation) {
-      rowElements = compact(rowElements.map(i => i.firstElementChild));
+      let rowElements: Element[] = getChildren(contentRef.current);
+
+      if (!shouldUseNativeImplementation) {
+        rowElements = compact(rowElements.map(i => i.firstElementChild));
+      }
+
+      rowElements.forEach(handleRowSizeChange);
+
+      type Observers = {
+        observer: ResizeObserver;
+        cb: (entries: ResizeObserverEntry[]) => void;
+      }[];
+
+      let observers: Observers | undefined = rowElements.map(observeDynamicRow);
+      return () => {
+        (observers as Observers).forEach(observer => {
+          observer.observer.disconnect();
+          delete observer.cb;
+        });
+        observers = undefined;
+      };
     }
 
-    rowElements.forEach(handleRowSizeChange);
-
-    type Observers = {
-      observer: ResizeObserver;
-      cb: (entries: ResizeObserverEntry[]) => void;
-    }[];
-
-    let observers: Observers | undefined = rowElements.map(observeDynamicRow);
-    return () => {
-      (observers as Observers).forEach(observer => {
-        observer.observer.disconnect();
-        delete observer.cb;
-      });
-      observers = undefined;
-    };
+    return () => {};
   }, [startKey, stopKey, indexMapper]);
 
   //
@@ -468,6 +510,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     const current = prevAtBottomRef.current;
     if (original !== current) onBottomStatusChange(current);
   });
+
   //
   // Ensure no blank area
   //
@@ -542,12 +585,16 @@ const JuiVirtualizedList: RefForwardingComponent<
   );
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
+      role={role}
       ref={ref}
       style={wrapperStyle}
       onWheel={onWheel}
+      onKeyDown={onKeyDown}
       data-test-automation-id="virtualized-list"
       onScroll={handleScroll}
+      tabIndex={tabIndex}
     >
       {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />

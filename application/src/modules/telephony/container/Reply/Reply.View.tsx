@@ -61,7 +61,8 @@ class ReplyViewComponent extends React.Component<Props> {
       if (this._handleClickMap[`${pattern}${time}`]) {
         return this._handleClickMap[`${pattern}${time}`];
       }
-      this._handleClickMap[`${pattern}${time}`] = () => replyWithPattern(pattern, time, timeUnit);
+      this._handleClickMap[`${pattern}${time}`] = () =>
+        replyWithPattern(pattern, time, timeUnit);
       return this._handleClickMap[`${pattern}${time}`];
     }
 
@@ -213,7 +214,7 @@ class ReplyViewComponent extends React.Component<Props> {
       />
     );
   };
-  /* eslint-disable react/sort-comp */
+
   private _PreDefineMessages = [
     this._InMeeting,
     this._OnMyWay,
@@ -251,9 +252,7 @@ class ReplyViewComponent extends React.Component<Props> {
   };
 
   render() {
-    const {
-      t, replyCountdownTime, isExt, phone, name,
-    } = this.props;
+    const { t, replyCountdownTime, isExt, phone, name } = this.props;
 
     return (
       <>

@@ -43,6 +43,7 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
+    await rightRail.openMore();
     await rightRail.tasksEntry.enter();
   });
 
@@ -103,6 +104,7 @@ test(formalName('Task info will sync immediately when update', ['Nello', 'P2', '
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
+    await rightRail.openMore();
     await rightRail.tasksEntry.enter();
   });
 
@@ -166,6 +168,7 @@ test(formalName('Deleted task will NOT show under Tasks tab', ['Nello', 'P1', 'J
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
+    await rightRail.openMore();
     await rightRail.tasksEntry.enter();
   });
 
@@ -228,6 +231,7 @@ test(formalName('Completed task will NOT show under Tasks tab', ['Nello', 'P1', 
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
+    await rightRail.openMore();
     await rightRail.tasksEntry.enter();
   });
 

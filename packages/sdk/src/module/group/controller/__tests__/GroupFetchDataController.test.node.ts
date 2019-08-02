@@ -39,6 +39,7 @@ import { PresenceService } from 'sdk/module/presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
 
 const soundex = require('soundex-code');
+
 jest.mock('../../../../dao');
 jest.mock('../../../groupConfig/dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
@@ -406,7 +407,7 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
       expect(result3).toEqual(mock.slice(0, 78));
     });
 
@@ -438,7 +439,7 @@ describe('GroupFetchDataController', () => {
     it('should call groupDao with personIds append self id', async () => {
       daoManager.getDao.mockReturnValue(groupDao);
       await groupFetchDataController.getLocalGroup([11, 12]);
-      expect(groupDao.queryGroupByMemberList).toBeCalledWith([
+      expect(groupDao.queryGroupByMemberList).toHaveBeenCalledWith([
         11,
         12,
         mockUserId,
@@ -491,6 +492,16 @@ describe('GroupFetchDataController', () => {
     it('do fuzzy search of groups, two name match', async () => {
       const result = await groupFetchDataController.doFuzzySearchGroups(
         'ben, tu',
+      );
+      expect(result.sortableModels.length).toBe(500);
+      expect(result.terms.length).toBe(2);
+      expect(result.terms[0]).toBe('ben');
+      expect(result.terms[1]).toBe('tu');
+    });
+
+    it('do fuzzy search of groups, should ignore case [JPT-2493]', async () => {
+      const result = await groupFetchDataController.doFuzzySearchGroups(
+        'BeN, tU',
       );
       expect(result.sortableModels.length).toBe(500);
       expect(result.terms.length).toBe(2);
@@ -650,6 +661,15 @@ describe('GroupFetchDataController', () => {
     it('fetch all matched groups and includes not my members ', async () => {
       const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
         'name',
+        false,
+        false,
+      );
+      expect(result.sortableModels.length).toEqual(505);
+    });
+
+    it('fetch all matched groups and includes not my members should ignore case [JPT-2493]', async () => {
+      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+        'naME',
         false,
         false,
       );
@@ -835,8 +855,8 @@ describe('GroupFetchDataController', () => {
         memberIDs,
       );
 
-      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalled();
-      expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
+      expect(AccountUserConfig.prototype.getGlipUserId).toHaveBeenCalled();
+      expect(groupDao.queryGroupByMemberList).toHaveBeenCalledWith([1, 2, 3]);
       expect(result1).toEqual(mockNormal);
     });
 
@@ -850,9 +870,9 @@ describe('GroupFetchDataController', () => {
       const result2 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(testEntitySourceController.put).toBeCalledWith(result2);
-      expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalled();
+      expect(testEntitySourceController.put).toHaveBeenCalledWith(result2);
+      expect(groupDao.queryGroupByMemberList).toHaveBeenCalledWith([1, 2, 3]);
+      expect(AccountUserConfig.prototype.getGlipUserId).toHaveBeenCalled();
       expect(result2).toEqual(mockNormal);
     });
 
@@ -884,7 +904,7 @@ describe('GroupFetchDataController', () => {
         [1, 2],
       );
       expect(result).toEqual({ id: 1 });
-      expect(GroupAPI.requestNewGroup).toBeCalledWith(
+      expect(GroupAPI.requestNewGroup).toHaveBeenCalledWith(
         expect.objectContaining({
           members: [1, 2, 3],
           creator_id: mockUserId,
@@ -1013,7 +1033,7 @@ describe('GroupFetchDataController', () => {
       const res = await groupFetchDataController.getGroupEmail(group.id);
       expect(res).toBe(
         `${
-        group.email_friendly_abbreviation
+          group.email_friendly_abbreviation
         }@${companyReplyDomain}.${envDomain}`,
       );
     });
@@ -1304,7 +1324,7 @@ describe('GroupFetchDataController', () => {
         3,
         4,
       ]);
-      expect(groupFetchDataController.getGroupsByIds).toBeCalled();
+      expect(groupFetchDataController.getGroupsByIds).toHaveBeenCalled();
       expect(result).toEqual([1, 2, 3, 4]);
     });
     it('should return empty array when ids have id is string ', async () => {
@@ -1315,7 +1335,7 @@ describe('GroupFetchDataController', () => {
       const result = await groupFetchDataController.getPersonIdsBySelectedItem(
         personIds,
       );
-      expect(groupFetchDataController.getGroupsByIds).not.toBeCalled();
+      expect(groupFetchDataController.getGroupsByIds).not.toHaveBeenCalled();
       expect(result).toEqual(personIds);
     });
     it('should return empty array when ids are all person id ', async () => {
@@ -1326,14 +1346,15 @@ describe('GroupFetchDataController', () => {
       const result = await groupFetchDataController.getPersonIdsBySelectedItem(
         personIds,
       );
-      expect(groupFetchDataController.getGroupsByIds).not.toBeCalled();
+      expect(groupFetchDataController.getGroupsByIds).not.toHaveBeenCalled();
       expect(result).toEqual(personIds);
     });
     it('should return empty array when has permission', async () => {
-      permissionService.hasPermission = jest.fn().mockReturnValue(false)
-      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
-        [1, 2],
-      );
+      permissionService.hasPermission = jest.fn().mockReturnValue(false);
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem([
+        1,
+        2,
+      ]);
       expect(result).toEqual([1, 2]);
     });
     it('should return empty array when ids.length is 0', async () => {
@@ -1351,41 +1372,42 @@ describe('GroupFetchDataController', () => {
         .mockResolvedValue({
           members: [123, 234, 345, 456, 567],
           guest_user_company_ids: [333, 444],
+        });
+      personService.getPersonsByIds = jest.fn().mockResolvedValue([
+        {
+          id: 123,
+          company_id: 666,
+          name: 'B',
         },
-      );
-      personService.getPersonsByIds = jest.fn().mockResolvedValue(
-        [
-          {
-            id: 123,
-            company_id: 666,
-            name: 'B',
-          },
-          {
-            id: 234,
-            company_id: 666,
-            name: 'A',
-          },
-          {
-            id: 345,
-            company_id: 444,
-            name: 'D',
-          },
-          {
-            id: 456,
-            company_id: 333,
-            name: 'C',
-          },
-        ],
-      );
-      presenceService.getSynchronously = jest.fn().mockImplementation((id: number) => {
-        if (id === 123) {
-          return { presence: PRESENCE.AVAILABLE };
-        }
-        return { presence: PRESENCE.NOTREADY };
-      });
-      personService.getFullName = jest.fn().mockImplementation((person: any) => {
-        return person.name;
-      });
+        {
+          id: 234,
+          company_id: 666,
+          name: 'A',
+        },
+        {
+          id: 345,
+          company_id: 444,
+          name: 'D',
+        },
+        {
+          id: 456,
+          company_id: 333,
+          name: 'C',
+        },
+      ]);
+      presenceService.getSynchronously = jest
+        .fn()
+        .mockImplementation((id: number) => {
+          if (id === 123) {
+            return { presence: PRESENCE.AVAILABLE };
+          }
+          return { presence: PRESENCE.NOTREADY };
+        });
+      personService.getFullName = jest
+        .fn()
+        .mockImplementation((person: any) => {
+          return person.name;
+        });
 
       const result = await groupFetchDataController.getMembersAndGuestIds(1235, true);
       expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234, 567] });
