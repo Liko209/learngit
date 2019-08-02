@@ -39,8 +39,8 @@ const initZoomOptions: Partial<JuiDragZoomOptions> = {
   minScale: MIN_SCALE,
   step: 0.01,
   wheel: true,
-  padding:[0,0,0,0]
-}
+  padding: [0, 0, 0, 0],
+};
 @withUploadFile
 class UploadArea extends Component<any> {
   render() {
@@ -54,12 +54,12 @@ class PhotoEditComponent extends Component<PhotoEdit> {
   private _uploadRef: RefObject<any> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
 
-  componentDidUpdate(prevProps: PhotoEdit){
-    if(prevProps.sliderValue !== this.props.sliderValue){
+  componentDidUpdate(prevProps: PhotoEdit) {
+    if (prevProps.sliderValue !== this.props.sliderValue) {
       if (!this._zoomRef.current) return;
-        const zoomComponentRef = this._zoomRef.current.getZoomRef();
-        if (!zoomComponentRef || !zoomComponentRef.current) return;
-        zoomComponentRef.current.zoomTo(this.props.sliderValue);
+      const zoomComponentRef = this._zoomRef.current.getZoomRef();
+      if (!zoomComponentRef || !zoomComponentRef.current) return;
+      zoomComponentRef.current.zoomTo(this.props.sliderValue);
     }
   }
 
@@ -85,7 +85,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
   };
 
   handleFileChanged = (files: FileList) => {
-    if(!files) return;
+    if (!files) return;
     const { updateImageUrl } = this.props;
     updateImageUrl(files[0]);
   };
@@ -117,15 +117,21 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             }px, ${transform.translateY}px)`,
             cursor: canDrag ? 'move' : undefined,
           };
-          const handleSizeLoad = (contentWidth: number, contentHeight: number) => {
+          const handleSizeLoad = (
+            contentWidth: number,
+            contentHeight: number,
+          ) => {
             getInitSize(contentWidth, contentHeight);
             notifyContentSizeChange(contentWidth, contentHeight);
           };
           return (
             <JuiEditPhotoImageContent>
-              <JuiEditPhotoZoomCover canDrag={canDrag} />
+              <JuiEditPhotoZoomCover
+                canDrag={canDrag}
+                data-test-automation-id={'photoEditOperationArea'}
+              />
               <JuiImageView
-                data-test-automation-id={'previewerCanvas'}
+                data-test-automation-id={'photoEditImage'}
                 imageRef={this._imageRef}
                 src={accelerateURL(currentImageUrl)}
                 width={fitWidth || 0}
@@ -171,7 +177,11 @@ class PhotoEditComponent extends Component<PhotoEdit> {
         }}
       >
         <JuiEditPhotoUploadContent>
-          <JuiButton variant="outlined" onClick={this._hideMenuAndShowDialog}>
+          <JuiButton
+            variant="outlined"
+            onClick={this._hideMenuAndShowDialog}
+            data-test-automation-id={'photoEditUploadButton'}
+          >
             {t('people.profile.edit.editProfilePhotoUploadPhoto')}
           </JuiButton>
           <UploadArea
@@ -181,7 +191,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             accept="image/*"
           />
         </JuiEditPhotoUploadContent>
-        <JuiEditPhotoEditContent>
+        <JuiEditPhotoEditContent data-test-automation-id={'PhotoEditContent'}>
           <JuiEditPhotoContentMask />
           <JuiEditPhotoImageEditContent>
             {shouldShowShortName ? (
@@ -202,7 +212,9 @@ class PhotoEditComponent extends Component<PhotoEdit> {
         </JuiEditPhotoEditContent>
         {!shouldShowShortName && !isGifImage && currentFile && (
           <JuiEditPhotoSliderContent>
-            <JuiEditPhotoSliderLeftText>
+            <JuiEditPhotoSliderLeftText
+              data-test-automation-id={'PhotoEditZoomText'}
+            >
               {t('people.profile.edit.editProfilePhotoZoomText')}
             </JuiEditPhotoSliderLeftText>
             <RuiSlider
@@ -223,4 +235,4 @@ class PhotoEditComponent extends Component<PhotoEdit> {
 
 const PhotoEditView = withTranslation('translations')(PhotoEditComponent);
 
-export { PhotoEditView, MAX_SCALE, MIN_SCALE};
+export { PhotoEditView, MAX_SCALE, MIN_SCALE };
