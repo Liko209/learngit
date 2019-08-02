@@ -7,7 +7,7 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed, action } from 'mobx';
 import { GLOBAL_KEYS } from '@/store/constants';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import { getGlobalValue } from '@/store/utils';
 import { LeftRailProps } from './types';
 import { getValidPath } from './helper';
@@ -18,6 +18,7 @@ class LeftRailViewModel extends StoreViewModel {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_TELEPHONY_TAB);
   }
 
+  @action
   onReceiveProps(props: LeftRailProps) {
     const { current } = props;
     if (!this.currentTab && this.currentTab !== current) {
@@ -30,7 +31,7 @@ class LeftRailViewModel extends StoreViewModel {
   updateCurrentTab = (path: string) => {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.CURRENT_TELEPHONY_TAB, path);
-  }
+  };
 }
 
 export { LeftRailViewModel };

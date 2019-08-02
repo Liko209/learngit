@@ -18,13 +18,11 @@ class PersonAPI extends Api {
   }
   static getHeadShotUrl(headShotParam: {
     uid: number;
-    headShotVersion: string;
+    headShotVersion: number;
     size: number;
     glipToken: string;
   }) {
-    const {
-      uid, headShotVersion, size, glipToken,
-    } = headShotParam;
+    const { uid, headShotVersion, size, glipToken } = headShotParam;
     return `${
       this.httpConfig.glip.cacheServer
     }/headshot/${uid}/${size}/${headShotVersion}?t=${glipToken}`;

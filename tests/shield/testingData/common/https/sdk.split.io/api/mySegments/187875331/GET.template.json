@@ -1,0 +1,29 @@
+{
+  "host": "https://sdk.split.io",
+  "path": "/api/mySegments/187875331",
+  "method": "GET",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://sdk.split.io",
+    "path": "/api/mySegments/187875331",
+    "method": "GET",
+    "headers": {
+      "Accept": "application/json",
+      "Authorization": "Bearer 2rvs5gfmofo7giss2t6u1ebvi0dirt5ooqmt",
+      "SplitSDKVersion": "javascript-10.6.1"
+    }
+  },
+  "response": {
+    "status": 200,
+    "statusText": "",
+    "data": {
+      "mySegments": []
+    },
+    "headers": {
+      "content-type": "application/json",
+      "access-control-allow-origin": "*",
+      "cache-control": "no-transform, max-age=60, s-maxage=60"
+    }
+  }
+}

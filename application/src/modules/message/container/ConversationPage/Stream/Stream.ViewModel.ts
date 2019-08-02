@@ -12,14 +12,13 @@ import { Post } from 'sdk/module/post/entity';
 import { StateService } from 'sdk/module/state';
 import { GroupState } from 'sdk/module/state/entity';
 import { Group } from 'sdk/module/group/entity';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import {
-  StreamProps, StreamItemType, StreamItem, STATUS,
-} from './types';
+import { StreamProps, StreamItemType, StreamItem, STATUS } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -32,18 +31,19 @@ import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, getErrorType, ERROR_TYPES } from '@/common/catchError';
+import { DIRECTION } from 'jui/components/Lists';
 
 const BLACKLISTED_PROPS = ['viewRef'];
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
-    ServiceConfig.STATE_SERVICE,
+    ServiceConfig.STATE_SERVICE
   );
   private _postService = ServiceLoader.getInstance<PostService>(
-    ServiceConfig.POST_SERVICE,
+    ServiceConfig.POST_SERVICE
   );
   private _itemService = ServiceLoader.getInstance<ItemService>(
-    ServiceConfig.ITEM_SERVICE,
+    ServiceConfig.ITEM_SERVICE
   );
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
@@ -73,15 +73,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   clearHistoryUnread = () => {
     this._historyHandler.clear();
-  }
+  };
 
   @computed
   get items() {
     return this._streamController.items;
   }
 
-  hasMore = (direction: 'up' | 'down') => {
-    if (direction === 'up') {
+  hasMore = (direction: DIRECTION) => {
+    if (direction === DIRECTION.UP) {
       return this._streamController.hasMore(QUERY_DIRECTION.OLDER);
     }
     return this._streamController.hasMore(QUERY_DIRECTION.NEWER);
@@ -108,7 +108,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get notEmpty() {
-    return this.postIds.length !== 0 || this.hasMore('up');
+    return this.postIds.length !== 0 || this._streamController.hasMore(QUERY_DIRECTION.OLDER);
   }
 
   @computed
@@ -121,7 +121,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   get firstHistoryUnreadPostId() {
     return this._historyHandler.getFirstUnreadPostId(
       this.postIds,
-      this.hasMore('up'),
+      this._streamController.hasMore(QUERY_DIRECTION.OLDER)
     );
   }
 
@@ -135,7 +135,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._streamController = new StreamController(
       props.groupId,
       this._historyHandler,
-      props.jumpToPostId,
+      props.jumpToPostId
     );
     this.reaction(
       () => this.loadingStatus,
@@ -143,8 +143,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         props.updateConversationStatus(status);
       },
       {
-        fireImmediately: true,
-      },
+        fireImmediately: true
+      }
     );
   }
 
@@ -152,7 +152,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private get _groupState() {
     return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
-      this.props.groupId,
+      this.props.groupId
     );
   }
 
@@ -169,19 +169,22 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._lastPostId);
   }
 
-  hasNewMessageSeparator = () => this.findNewMessageSeparatorIndex() > -1
+  hasNewMessageSeparator = () => this.findNewMessageSeparatorIndex() > -1;
 
-  findNewMessageSeparatorIndex = () => this.items.findIndex(
-    (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
-  )
+  findNewMessageSeparatorIndex = () =>
+    this.items.findIndex(
+      (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR
+    );
 
-  findPostIndex = (postId?: number) => (postId
-    ? this.items.findIndex(
-      (item: StreamItem) => item.type === StreamItemType.POST &&
+  findPostIndex = (postId?: number) =>
+    postId
+      ? this.items.findIndex(
+          (item: StreamItem) =>
+            item.type === StreamItemType.POST &&
             !!item.value &&
-            item.value === postId,
-    )
-    : -1)
+            item.value === postId
+        )
+      : -1;
 
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
@@ -206,7 +209,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @catchError.flash({
     isDebounce: true,
     network: 'message.prompt.notAbleToLoadOlderMessagesForNetworkIssue',
-    server: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue',
+    server: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue'
   })
   @action
   loadPrevPosts(count: number) {
@@ -216,7 +219,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @catchError.flash({
     isDebounce: true,
     network: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
-    server: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
+    server: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages'
   })
   @action
   async loadNextPosts(count: number) {
@@ -236,25 +239,25 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       default:
         mainLogger.warn('please nominate the direction');
     }
-  }
+  };
 
   @action
   private _syncGroupItems = () => {
     this._itemService.requestSyncGroupItems(this.props.groupId);
-  }
+  };
 
   @action
   markAsRead() {
-    this._stateService.updateReadStatus(this.props.groupId, false, true);
+      this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
 
   enableNewMessageSeparatorHandler = () => {
     this._streamController.enableNewMessageSep();
-  }
+  };
 
   disableNewMessageSeparatorHandler = () => {
     this._streamController.disableNewMessageSep();
-  }
+  };
 
   dispose() {
     super.dispose();
@@ -266,7 +269,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private async _loadPosts(
     direction: QUERY_DIRECTION,
-    limit?: number,
+    limit?: number
   ): Promise<Post[]> {
     if (
       direction !== QUERY_DIRECTION.BOTH &&
@@ -298,7 +301,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @catchError.flash({
     isDebounce: true,
     network: 'message.prompt.notAbleToLoadOlderMessagesForNetworkIssue',
-    server: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue',
+    server: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue'
   })
   @action
   getFirstUnreadPostByLoadAllUnread = async () => {
@@ -314,7 +317,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       firstUnreadPostId = this.firstHistoryUnreadPostId;
     }
     return firstUnreadPostId;
-  }
+  };
 
   @action
   initialize = () => {
@@ -323,7 +326,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
     globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-  }
+  };
 
   private _canHandleError() {
     return (

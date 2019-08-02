@@ -35,6 +35,7 @@ import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountService } from 'sdk/module/account';
+import { PersonActionController } from '../PersonActionController';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config');
@@ -339,7 +340,7 @@ describe('PersonService', () => {
         thumbs: thumbsString,
         url: originalURL,
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(thumbsSize150);
     });
 
@@ -358,7 +359,7 @@ describe('PersonService', () => {
         url: originalURL,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(thumbsSize150);
     });
 
@@ -366,7 +367,7 @@ describe('PersonService', () => {
       const headshot = {
         url: originalURL,
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(serverUrl);
     });
 
@@ -379,7 +380,7 @@ describe('PersonService', () => {
         url: originalURL,
         thumbs: thumbsString,
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(serverUrl);
     });
 
@@ -397,7 +398,7 @@ describe('PersonService', () => {
         url: originalURL,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(serverUrl);
     });
 
@@ -415,7 +416,7 @@ describe('PersonService', () => {
         url: originalURL,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(originalURL);
     });
 
@@ -438,19 +439,19 @@ describe('PersonService', () => {
 
       jest.spyOn(PersonAPI, 'getHeadShotUrl').mockReturnValueOnce(null);
 
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(originalURL);
     });
 
     it('should return url when headshot is an url string', () => {
       const headshot = originalURL;
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(originalURL);
     });
 
     it('should return url when headshot is an url string and headshot_version exist', () => {
       const headshot = originalURL;
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(originalURL);
     });
 
@@ -459,13 +460,13 @@ describe('PersonService', () => {
         url: gifUrl,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(gifUrl);
     });
 
     it('should return original url when the headshot is string and the original url is gif', () => {
       const headshot = gifUrl;
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(gifUrl);
     });
   });
@@ -819,7 +820,8 @@ describe('PersonService', () => {
 
       return person;
     }
-    it('should return all phone numbers when is company contact', () => {
+    
+    it('should return all phone numbers when is company contact, and extension is at first', () => {
       const person = getPerson();
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
@@ -855,4 +857,10 @@ describe('PersonService', () => {
       ]);
     });
   });
+
+  describe('personActionController', ()=>{
+    it('should return instance of PersonActionController', ()=>{
+      expect(personController.personActionController).toBeInstanceOf(PersonActionController);
+    })
+  })
 });

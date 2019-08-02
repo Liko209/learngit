@@ -253,7 +253,6 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
 
   await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);

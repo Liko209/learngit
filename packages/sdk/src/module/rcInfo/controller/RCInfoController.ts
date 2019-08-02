@@ -14,6 +14,7 @@ import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { RCWebSettingInfoController } from './RCWebSettingInfoController';
 import { RCInfoUserConfig } from '../config';
 import { BlockNumberController } from './BlockNumberController';
+import { RCPresenceController } from './RCPresenceController';
 import { RCDeviceController } from './RCDeviceController';
 
 class RCInfoController {
@@ -26,6 +27,7 @@ class RCInfoController {
   private _accountServiceInfoController: AccountServiceInfoController;
   private _webSettingInfoController: RCWebSettingInfoController;
   private _blockNumberController: BlockNumberController;
+  private _rcPresenceController: RCPresenceController;
   private _rcDeviceController: RCDeviceController;
 
   constructor(private _DBConfig: RCInfoUserConfig) {}
@@ -118,10 +120,21 @@ class RCInfoController {
     return this._blockNumberController;
   }
 
+  get rcPresenceController() {
+    if (!this._rcPresenceController) {
+      this._rcPresenceController = new RCPresenceController();
+    }
+    return this._rcPresenceController;
+  }
+
   dispose() {
     if (this._regionInfoController) {
       this._regionInfoController.dispose();
       delete this._regionInfoController;
+    }
+    if (this._rcPresenceController) {
+      this._rcPresenceController.dispose();
+      delete this._rcPresenceController;
     }
   }
 }

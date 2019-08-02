@@ -7,17 +7,14 @@ import {
   KVStorageManager,
   DexieDB,
   DatabaseType,
-  mainLogger
+  mainLogger,
 } from 'foundation';
 import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { jobScheduler } from '../framework/utils/jobSchedule';
-import { AccountGlobalConfig } from '../module/account/config/AccountGlobalConfig';
 import { DaoGlobalConfig } from './config';
 import { IdModel, ModelIdType } from '../framework/model';
-import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 import { IDBObserver } from './IDBObserver';
 
 const LOG_TAG = 'DaoManager';
@@ -38,7 +35,7 @@ class DaoManager extends Manager<
     this._observers = [];
   }
 
-  async initDatabase(): Promise<void> {
+  async initDatabase(clearDataFunc: () => Promise<void>): Promise<void> {
     const dbType =
       window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
         ? DatabaseType.DexieDB
@@ -47,7 +44,7 @@ class DaoManager extends Manager<
 
     if (!this._isSchemaCompatible()) {
       mainLogger.tags(LOG_TAG).info('schema changed, should clear all data');
-      await this.clearAllData();
+      await clearDataFunc();
     }
 
     const db = this.dbManager.getDatabase();
@@ -93,7 +90,7 @@ class DaoManager extends Manager<
   }
 
   getDao<T extends BaseDao<IdModel<ModelIdType>, ModelIdType>>(
-    DaoClass: INewable<T>
+    DaoClass: INewable<T>,
   ): T {
     const database = this.dbManager.getDatabase();
     return this.get(DaoClass, database);
@@ -114,26 +111,6 @@ class DaoManager extends Manager<
       observer.onDBInitialized();
     } else {
       this._observers.push(observer);
-    }
-  }
-
-  async clearAllData() {
-    try {
-      await this.dbManager.deleteDatabase();
-    } catch (error) {
-      this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
-      await this.dbManager.deleteDatabase();
-    }
-
-    // remove relevant config
-    if (AccountGlobalConfig.getUserDictionary()) {
-      // TODO FIJI-4396
-      // 'any' because of circular reference
-      const synConfig = ServiceLoader.getInstance<any>(
-        ServiceConfig.SYNC_SERVICE
-      ).userConfig;
-      synConfig.clearSyncConfigsForDBUpgrade();
-      jobScheduler.userConfig.clearFetchDataConfigs();
     }
   }
 

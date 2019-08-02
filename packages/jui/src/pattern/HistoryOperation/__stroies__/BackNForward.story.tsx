@@ -7,27 +7,27 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiHistoryOperation, OPERATION } from '../index';
 
-const items = [
+const items = () => [
   { title: 'back and forwards', pathname: '' },
   { title: '12345', pathname: '' },
 ];
 storiesOf('Pattern', module).add('BackNForward', () => (
-    <div style={{ display: 'flex' }}>
-      <JuiHistoryOperation
-        tooltipTitle="Back"
-        menu={items}
-        disabled={false}
-        type={OPERATION.BACK}
-        onClick={() => {}}
-        onClickMenu={() => {}}
-      />
-      <JuiHistoryOperation
-        tooltipTitle="Forward"
-        type={OPERATION.FORWARD}
-        menu={items}
-        disabled={false}
-        onClick={() => {}}
-        onClickMenu={() => {}}
-      />
-    </div>
+  <div style={{ display: 'flex' }}>
+    <JuiHistoryOperation
+      tooltipTitle="Back"
+      menu={items}
+      disabled={false}
+      type={OPERATION.BACK}
+      onClick={() => {}}
+      onClickMenu={() => {}}
+    />
+    <JuiHistoryOperation
+      tooltipTitle="Forward"
+      type={OPERATION.FORWARD}
+      menu={items}
+      disabled={false}
+      onClick={() => {}}
+      onClickMenu={() => {}}
+    />
+  </div>
 ));

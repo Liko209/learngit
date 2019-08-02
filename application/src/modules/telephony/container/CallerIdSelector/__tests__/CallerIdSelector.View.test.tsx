@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme';
 import { RawCallerIdSelector } from '../CallerIdSelector.View';
-import { JuiBoxSelect } from 'jui/components/Selects/BoxSelect';
+import { JuiVirtualizedBoxSelect } from 'jui/components/VirtualizedSelects/VirtualizedBoxSelect';
 import React from 'react';
 
 describe('RawCallerIdSelector', () => {
-  it('should have `JuiBoxSelect`', () => {
+  it('should have `JuiVirtualizedBoxSelect`', () => {
     const props = {
       value: '+18002076138',
       menu: [
@@ -27,6 +27,6 @@ describe('RawCallerIdSelector', () => {
     };
     const wrapper = shallow(<RawCallerIdSelector {...props} />);
 
-    expect(wrapper.find(JuiBoxSelect).length).toEqual(1);
+    expect(wrapper.find(JuiVirtualizedBoxSelect).length).toEqual(1);
   });
 });

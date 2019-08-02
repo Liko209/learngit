@@ -9,6 +9,7 @@ import { Page } from './page';
 import { SearchPage } from './searchPage';
 import { DialerPage } from './dialerPage';
 import { PhonePage } from './phonePage';
+import { SettingPage } from './settingPage';
 
 export {
   ConversationPage,
@@ -17,5 +18,6 @@ export {
   Page,
   SearchPage,
   DialerPage,
-  PhonePage
+  PhonePage,
+  SettingPage
 }

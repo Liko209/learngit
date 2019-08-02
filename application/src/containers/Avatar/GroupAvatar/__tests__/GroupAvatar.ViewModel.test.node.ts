@@ -5,10 +5,7 @@
  */
 
 import { test, testable } from 'shield';
-import { mockEntity } from 'shield/application';
-import { mockService } from 'shield/sdk';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { ServiceConfig } from 'sdk/module/serviceLoader';
+import { mockEntity } from 'shield/application/mockEntity';
 import { GroupAvatarViewModel } from '../GroupAvatar.ViewModel';
 import defaultGroupAvatar from '../defaultGroupAvatar.png';
 import defaultTeamAvatar from '../defaultTeamAvatar.png';
@@ -39,4 +36,4 @@ describe('GroupAvatarViewModel', () => {
       expect(vm.src).toBe(defaultGroupAvatar);
     }
   }
-})
+});

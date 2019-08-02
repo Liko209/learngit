@@ -26,9 +26,9 @@ const CALLER_ID_ORDER = {
   [PhoneNumberType.MainCompanyNumber]: 1,
   [PhoneNumberType.Blocked]: 2,
   [PhoneNumberType.NickName]: 3,
-  [PhoneNumberType.CompanyNumber]: 4,
-  [PhoneNumberType.AdditionalCompanyNumber]: 5,
-  [PhoneNumberType.CompanyFaxNumber]: 6,
+  [PhoneNumberType.CompanyFaxNumber]: 4,
+  [PhoneNumberType.CompanyNumber]: 5,
+  [PhoneNumberType.AdditionalCompanyNumber]: 6,
 };
 const CALLER_ID_LABEL = {
   [PhoneNumberType.DirectNumber]: 'Direct Number',
@@ -49,16 +49,16 @@ const BLOCKED_NUMBER_CALLER_ID = 0;
 
 class RCCallerIdController {
   private _partialModifyController: IPartialModifyController<
-  IExtensionCallerId,
-  string
+    IExtensionCallerId,
+    string
   >;
   constructor(private _rcInfoFetchController: RCInfoFetchController) {
     this._initPartialController();
   }
   private _initPartialController() {
     const entitySourceController: IPartialEntitySourceController<
-    IExtensionCallerId,
-    string
+      IExtensionCallerId,
+      string
     > = {
       getEntityNotificationKey: () => RC_INFO.EXTENSION_CALLER_ID,
       get: async () => await this._rcInfoFetchController.getExtensionCallerId(),
@@ -86,12 +86,11 @@ class RCCallerIdController {
     let result = [];
     result = this._addBlockedNumber(callerIdList);
     result = result.filter(
-      (item: PhoneNumberModel) => !CALLER_ID_FILTER_TYPE.includes(item.usageType as PhoneNumberType),
+      (item: PhoneNumberModel) =>
+        !CALLER_ID_FILTER_TYPE.includes(item.usageType as PhoneNumberType),
     );
     result = result.map((item: PhoneNumberModel) => {
-      const {
-        id, phoneNumber, usageType, label,
-      } = item;
+      const { id, phoneNumber, usageType, label } = item;
       return {
         id,
         phoneNumber,
@@ -187,13 +186,14 @@ class RCCallerIdController {
       partialModel.byFeature = newData;
       return partialModel;
     };
-    await this._partialModifyController.updatePartially(
-      RC_INFO.EXTENSION_CALLER_ID,
-      preHandlePartial,
-      async () => await RCInfoApi.setExtensionCallerId({
-        byFeature: [params],
-      }),
-    );
+    await this._partialModifyController.updatePartially({
+      entityId: RC_INFO.EXTENSION_CALLER_ID,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async () =>
+        await RCInfoApi.setExtensionCallerId({
+          byFeature: [params],
+        }),
+    });
   }
 
   async getExtensionCallerId() {

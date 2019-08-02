@@ -23,7 +23,6 @@ test(formalName('The \'Favorites\' section should displays all conversations be 
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let directMessage;
   let team;

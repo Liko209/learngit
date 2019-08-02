@@ -3,8 +3,6 @@
  * @Date: 2019-02-12 09:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -17,14 +15,8 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 import { catchError } from '@/common/catchError';
 
 type Props = MenuViewProps & RouteComponentProps & WithTranslation;
-type State = {
-  open: boolean;
-};
 @observer
-class MenuViewComponent extends Component<Props, State> {
-  state = {
-    open: false,
-  };
+class MenuViewComponent extends Component<Props> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
@@ -68,7 +60,7 @@ class MenuViewComponent extends Component<Props, State> {
 
   private _Anchor = () => {
     return (
-      <JuiIconography data-test-automation-id='moreIcon' iconSize='small'>
+      <JuiIconography data-test-automation-id="moreIcon" iconSize="small">
         more_horiz
       </JuiIconography>
     );
@@ -102,7 +94,7 @@ class MenuViewComponent extends Component<Props, State> {
         <JuiMenuList>
           {!isCurrentUserSelf && (
             <JuiMenuItem
-              data-test-automation-id='removeFromTeam'
+              data-test-automation-id="removeFromTeam"
               onClick={this._handleRemoveFromTeam}
             >
               {t('people.team.removeFromTeam')}
@@ -110,7 +102,7 @@ class MenuViewComponent extends Component<Props, State> {
           )}
           {!isThePersonGuest && isThePersonAdmin && (
             <JuiMenuItem
-              data-test-automation-id='revokeTeamAdmin'
+              data-test-automation-id="revokeTeamAdmin"
               onClick={this._toggleTeamAdmin}
             >
               {t('people.team.revokeTeamAdmin')}
@@ -118,7 +110,7 @@ class MenuViewComponent extends Component<Props, State> {
           )}
           {!isThePersonGuest && !isThePersonAdmin && (
             <JuiMenuItem
-              data-test-automation-id='makeTeamAdmin'
+              data-test-automation-id="makeTeamAdmin"
               onClick={this._toggleTeamAdmin}
             >
               {t('people.team.makeTeamAdmin')}

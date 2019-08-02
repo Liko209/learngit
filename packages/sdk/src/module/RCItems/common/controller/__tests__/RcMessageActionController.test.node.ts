@@ -12,6 +12,7 @@ import { notificationCenter } from 'sdk/service';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
+import { PartialUpdateParams } from 'sdk/framework/controller/interface/IPartialModifyController';
 
 jest.mock('sdk/module/account');
 jest.mock('sdk/framework/controller/impl/EntitySourceController');
@@ -109,19 +110,15 @@ describe('RcMessageActionController', () => {
         .fn()
         .mockImplementation(
           async (
-            entityId: number,
-            preHandlePartialEntity: (
-              partialEntity: Partial<any>,
-              originalEntity: any,
-            ) => Partial<any>,
-            doUpdateEntity: (updatedEntity: any) => Promise<any>,
+           params: PartialUpdateParams<any>
           ) => {
+            const {entityId, preHandlePartialEntity, doUpdateEntity} = params;
             expect(entityId).toEqual(entityId);
-            expect(preHandlePartialEntity(testEntity as any, null)).toEqual({
+            expect(preHandlePartialEntity!(testEntity as any, null)).toEqual({
               id: entityId,
               readStatus: 'Unread',
             });
-            await doUpdateEntity({
+            await doUpdateEntity!({
               id: entityId,
               readStatus: READ_STATUS.UNREAD,
             });

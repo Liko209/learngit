@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ITelephonyNetworkDelegate } from 'foundation/src/telephony/ITelephonyNetworkDelegate';
-import { IResponse } from 'foundation/src/network/network';
+import { ITelephonyNetworkDelegate } from 'foundation/telephony/ITelephonyNetworkDelegate';
+import { IResponse } from 'foundation/network/network';
 
 class RTCRestApiManager {
   private static _singleton: RTCRestApiManager | null = null;

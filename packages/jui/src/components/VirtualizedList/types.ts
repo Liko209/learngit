@@ -4,13 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type Direction = 'up' | 'down';
+enum Direction {
+  'UP' = 'up',
+  'DOWN' = 'down',
+}
 
 type UndefinedAble<T> = T | undefined;
 
 type IndexRange = {
   startIndex: number;
   stopIndex: number;
+};
+type ScrollInfo = {
+  scrollTop: number;
+  clientHeight: number;
+  scrollHeight: number;
 };
 
 type IndexConstraint = {
@@ -26,14 +34,15 @@ type JuiVirtualizedListProps = {
   role?: string;
   tabIndex?: number;
   height: number;
-  minRowHeight: number;
+  minRowHeight?: number;
+  fixedRowHeight?: number;
   overscan?: number;
   initialScrollToIndex?: number;
   stickToBottom?: boolean;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void;
-  onVisibleRangeChange?: (range: IndexRange) => void;
+  onVisibleRangeChange?: (range: IndexRange, scrollInfo: ScrollInfo) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   before?: (() => JSX.Element) | null;
   after?: (() => JSX.Element) | null;
@@ -52,4 +61,5 @@ export {
   Direction,
   Delta,
   UndefinedAble,
+  ScrollInfo,
 };

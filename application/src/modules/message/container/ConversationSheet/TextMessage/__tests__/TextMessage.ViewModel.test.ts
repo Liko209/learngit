@@ -46,7 +46,7 @@ const mockPersonData = {
 };
 
 const mockCallData = {
-  callId: '1',
+  uuid: '1',
 };
 
 const mockMap = {

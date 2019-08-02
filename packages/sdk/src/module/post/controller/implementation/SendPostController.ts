@@ -3,36 +3,41 @@
  * @Date: 2019-01-14 08:54:37
  * Copyright © RingCentral. All rights reserved.
  */
+import {
+  DEFAULT_RETRY_COUNT,
+  mainLogger,
+  REQUEST_PRIORITY,
+  Performance,
+} from 'foundation';
 import _ from 'lodash';
-import { mainLogger, DEFAULT_RETRY_COUNT, REQUEST_PRIORITY } from 'foundation';
 import { daoManager } from '../../../../dao';
+import { Raw } from '../../../../framework/model';
+import { ENTITY } from '../../../../service/eventKey';
+import notificationCenter from '../../../../service/notificationCenter';
+import { AccountService } from '../../../account/service';
+import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
+import { GroupConfigService } from '../../../groupConfig';
+import { ItemService } from '../../../item/service';
+import { PROGRESS_STATUS } from '../../../progress';
+import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
 import {
-  SendPostType,
-  PostItemsReadyCallbackType,
   EditPostType,
+  PostItemsReadyCallbackType,
+  SendPostType,
 } from '../../types';
-import SendPostControllerHelper from './SendPostControllerHelper';
-import { ItemService } from '../../../item/service';
-
-import notificationCenter from '../../../../service/notificationCenter';
-import { GroupConfigService } from '../../../groupConfig';
-import { ENTITY } from '../../../../service/eventKey';
-import { ErrorParserHolder } from '../../../../error';
-import { PostActionController } from './PostActionController';
-import { PostItemController } from './PostItemController';
 import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
-import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
-import { Raw } from '../../../../framework/model';
-import { AccountService } from '../../../account/service';
-import { PostControllerUtils } from './PostControllerUtils';
-import { PROGRESS_STATUS } from '../../../progress';
-import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { PostDataController } from '../PostDataController';
+import { ErrorParserHolder } from '../../../../error';
+import { PostActionController } from './PostActionController';
+import { PostControllerUtils } from './PostControllerUtils';
+import { PostItemController } from './PostItemController';
+import SendPostControllerHelper from './SendPostControllerHelper';
 import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
 import { AT_TEAM_MENTION_REGEXP } from '../../constant';
+import { POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
@@ -50,6 +55,10 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
+    const sendPostTracer = Performance.instance.getTracer(
+      POST_PERFORMANCE_KEYS.SEND_POST,
+    );
+    sendPostTracer.start();
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
@@ -65,10 +74,12 @@ class SendPostController implements ISendPostController {
       this.preInsertController.getAll(),
     );
     await this.innerSendPost(rawInfo, false);
+    sendPostTracer.stop();
   }
 
   async reSendPost(id: number) {
     if (id < 0) {
+      this.preInsertController.updateStatus(id, PROGRESS_STATUS.INPROGRESS);
       const dao = daoManager.getDao(PostDao);
       const post = await dao.get(id);
       if (post) {
@@ -81,8 +92,8 @@ class SendPostController implements ISendPostController {
     return null;
   }
 
-  async editFailedPost(params: EditPostType) {
-    this.postActionController.editFailedPost(params, this.innerSendPost);
+  editFailedPost(params: EditPostType) {
+    return this.postActionController.editFailedPost(params, this.innerSendPost);
   }
 
   /**
@@ -144,11 +155,11 @@ class SendPostController implements ISendPostController {
       ...backup,
     });
     if (backup.id) {
-      return this.postActionController.partialModifyController.updatePartially(
-        backup.id,
-        preHandlePartial,
-        async (newPost: Post) => newPost,
-        (
+      return this.postActionController.partialModifyController.updatePartially({
+        entityId: backup.id,
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: async (newPost: Post) => newPost,
+        doPartialNotify: (
           originalEntities: Post[],
           updatedEntities: Post[],
           partialEntities: Partial<Raw<Post>>[],
@@ -159,7 +170,7 @@ class SendPostController implements ISendPostController {
             partialEntities,
           );
         },
-      );
+      });
     }
     throw new Error('updateLocalPost error invalid id');
   }
@@ -215,7 +226,10 @@ class SendPostController implements ISendPostController {
   }
 
   async handleSendPostFail(originalPost: Post, groupId: number) {
-    this.preInsertController.updateStatus(originalPost, PROGRESS_STATUS.FAIL);
+    this.preInsertController.updateStatus(
+      originalPost.id,
+      PROGRESS_STATUS.FAIL,
+    );
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );

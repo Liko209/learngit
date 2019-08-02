@@ -1,8 +1,0 @@
-{
-    "on_merge": {
-      "fixtures": ["./telephony/RecentCallLogs.ts"],
-      "browsers": [
-        "selenium:chrome"
-      ]
-    }
-  }

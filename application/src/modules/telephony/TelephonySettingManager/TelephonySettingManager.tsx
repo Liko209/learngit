@@ -35,6 +35,7 @@ import {
   SoundSourcePlayerRenderer,
 } from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
+import { ringOptionTransformer } from './dataTransformer';
 
 const DefaultPhoneAppDataTrackingOption: {
   [key in CALLING_OPTIONS]: string
@@ -93,7 +94,7 @@ class TelephonySettingManager {
               automationId: 'callerID',
               title: 'setting.phone.general.callerID.label',
               description: 'setting.phone.general.callerID.description',
-              type: SETTING_ITEM_TYPE.SELECT,
+              type: SETTING_ITEM_TYPE.VIRTUALIZED_SELECT,
               weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
               valueRenderer: CallerIdSelectValue,
@@ -104,7 +105,7 @@ class TelephonySettingManager {
                   CallerIDDataTrackingOption[value.usageType] ||
                   CallerIDDataTrackingOption.CompanyOther,
               },
-            } as SelectSettingItem<IPhoneNumberRecord>,
+            } as SelectSettingItem<Partial<IPhoneNumberRecord>>,
             {
               id: PHONE_SETTING_ITEM.PHONE_REGION,
               automationId: 'regionSetting',
@@ -181,6 +182,11 @@ class TelephonySettingManager {
       sourceRenderer: SoundSourceItem,
       secondaryActionRenderer: SoundSourcePlayerRenderer,
       ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'incomingCall'),
+      dataTracking: {
+        name: 'incomingVoiceCall',
+        type: 'desktopNotificationSettings',
+        optionTransform: ({ id }) => ringOptionTransformer[id],
+      },
     } as SelectSettingItem<AUDIO_SOUNDS_INFO>);
   }
 

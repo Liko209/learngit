@@ -9,6 +9,8 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { PhoneTabConfig } from './PhoneTabConfig';
 import { PhoneTabProps } from './types';
+import storeManager from '@/store';
+import { kDefaultPhoneTabPath } from '../LeftRail';
 
 class PhoneTabRouterViewModel extends StoreViewModel<PhoneTabProps> {
   @computed
@@ -19,12 +21,20 @@ class PhoneTabRouterViewModel extends StoreViewModel<PhoneTabProps> {
   @action
   setShowDialPad = () => {
     PhoneTabConfig.setShowDialPad();
-  }
+  };
 
   @computed
   get currentTab() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_TELEPHONY_TAB);
+    return (
+      getGlobalValue(GLOBAL_KEYS.CURRENT_TELEPHONY_TAB) || kDefaultPhoneTabPath
+    );
   }
+
+  @action
+  updateCurrentTab = (path: string) => {
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.CURRENT_TELEPHONY_TAB, path);
+  };
 }
 
 export { PhoneTabRouterViewModel };

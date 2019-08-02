@@ -6,7 +6,7 @@
 
 import { SanitizedNoteItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
-import { IDatabase } from 'foundation/src/db';
+import { IDatabase } from 'foundation/db';
 
 class NoteItemDao extends SubItemDao<SanitizedNoteItem> {
   static COLLECTION_NAME = 'noteItem';
