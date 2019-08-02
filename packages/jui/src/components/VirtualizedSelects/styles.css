@@ -5,12 +5,12 @@ div[role='presentation'] > .virtualized_select-list-container {
   padding: 8px 0;
 }
 
-div[role='presentation'] > .virtualized_select-list-container > ul {
+div[role='presentation'] > .virtualized_select-list-container > div {
   box-sizing: border-box;
   padding: 0;
 }
 
-div[role='presentation'] > .virtualized_select-list-container > ul > div {
+div[role='presentation'] > .virtualized_select-list-container > div > div {
   outline: none;
   overflow-x: hidden !important;
 }
