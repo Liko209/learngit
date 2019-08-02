@@ -192,7 +192,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
           />
         </JuiEditPhotoUploadContent>
         <JuiEditPhotoEditContent data-test-automation-id={'PhotoEditContent'}>
-          <JuiEditPhotoContentMask />
+          <JuiEditPhotoContentMask data-test-automation-id={'PhotoEditMask'} />
           <JuiEditPhotoImageEditContent>
             {shouldShowShortName ? (
               <Avatar
