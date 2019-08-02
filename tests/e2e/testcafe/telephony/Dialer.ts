@@ -275,7 +275,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
-    await app.homePage.confirmE911Form();
     await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
@@ -332,7 +331,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
-    await app.homePage.confirmE911Form();
     await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
