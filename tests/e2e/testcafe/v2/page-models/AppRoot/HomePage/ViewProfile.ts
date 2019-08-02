@@ -631,10 +631,3 @@ class MemberMoreMenu extends BaseWebComponent {
     await this.t.pressKey('esc');
   }
 }
-
-export class EditProfileDialog extends BaseWebComponent {
-  get self() {
-    this.warnFlakySelector();
-    return this.getSelectorByAutomationId('EditProfile');
-  }
-}
