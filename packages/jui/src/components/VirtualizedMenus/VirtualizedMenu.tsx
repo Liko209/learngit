@@ -35,7 +35,7 @@ const JuiVirtualizedMenu = ({
   initialFocusedIndex,
   children,
   loop = false,
-  focusOnHover = true,
+  focusOnHover = false,
   ...rest
 }: JuiVirtualizedMenuProps) => {
   return (

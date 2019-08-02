@@ -231,14 +231,8 @@ const CallerIdContainer = (elm: React.FunctionComponent<any>) => styled(elm)<{}>
       font-size: ${({ theme }) => theme.typography.caption2.fontSize};
       margin-right: ${spacing(-3)};
 
-      & > div > div[role='button'] {
-        padding: ${spacing(1.5, 4.5, 1.5, 1.5)};
-        overflow: hidden;
-        display: block;
-        text-overflow: ellipsis;
-        word-break: keep-all;
-        white-space: nowrap;
-        max-width: ${spacing(36)};
+      .select-input:focus {
+        background-color: transparent;
       }
     }
   }

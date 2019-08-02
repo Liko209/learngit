@@ -1,7 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Components/VirtualizedSelects VirtualizedBoxSelect 1`] = `
-.c4 {
+.c1 {
+  width: 100%;
+  text-align: left;
+  padding-bottom: 12px;
+  max-width: 232px;
+}
+
+.c5 {
   position: absolute;
   top: calc(50% - 0.5em);
   right: 0;
@@ -12,7 +19,7 @@ exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Componen
   pointer-events: none;
 }
 
-.c1 {
+.c2 {
   position: relative;
   display: -webkit-box;
   display: -webkit-flex;
@@ -35,37 +42,37 @@ exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Componen
   height: 40px;
 }
 
-.c1.c1:hover {
+.c2.c2:hover {
   background-color: #f5f6fb;
   border: 1px solid #f5f6fb;
 }
 
-.c1.c1:focus,
-.c1.c1.focused {
+.c2.c2:focus,
+.c2.c2.focused {
   background-color: #eeeeee;
   border: 1px solid #0684bd;
   outline: none;
 }
 
-.c1.c1.disabled {
+.c2.c2.disabled {
   background-color: rgba(0,0,0,0.12);
   color: rgba(0,0,0,0.26);
 }
 
-.c1 .c3 {
+.c2 .c4 {
   color: #9e9e9e;
   position: absolute;
   right: 0;
   pointer-events: none;
 }
 
-.c1 .select-input {
+.c2 .select-input {
   height: 100%;
   padding: 0;
   box-sizing: border-box;
 }
 
-.c2.c2 {
+.c3.c3 {
   font: inherit;
   color: currentColor;
   padding: 6px 24px 6px 8px;
@@ -83,7 +90,7 @@ exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Componen
   cursor: pointer;
 }
 
-.c2:focus {
+.c3:focus {
   background-color: rgba(0,0,0,0.05);
   outline: none;
 }
@@ -96,30 +103,36 @@ exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Componen
   className="c0"
 >
   <div
-    className="MuiInputBase-root c1"
-    onClick={[Function]}
+    className="c1"
   >
     <div
-      className="MuiInputBase-input select-input MuiInputBase-inputSelect c2"
-      onBlur={[Function]}
+      className="MuiInputBase-root c2"
+      data-test-automation-id="virtualized-boxSelect"
       onClick={[Function]}
-      onFocus={[Function]}
-      onKeyDownCapture={[Function]}
-      tabIndex={0}
+      style={Object {}}
     >
-      0-Item
+      <div
+        className="MuiInputBase-input select-input MuiInputBase-inputSelect c3"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onKeyDownCapture={[Function]}
+        tabIndex={0}
+      >
+        0-Item
+      </div>
+      <svg
+        aria-hidden="true"
+        className="c4 c5"
+        focusable="false"
+        role="presentation"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M7 10l5 5 5-5z"
+        />
+      </svg>
     </div>
-    <svg
-      aria-hidden="true"
-      className="c3 c4"
-      focusable="false"
-      role="presentation"
-      viewBox="0 0 24 24"
-    >
-      <path
-        d="M7 10l5 5 5-5z"
-      />
-    </svg>
   </div>
 </div>
 `;

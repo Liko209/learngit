@@ -718,12 +718,11 @@
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {
-      "directNumber": "Direct Number",
-      "mainCompanyNumber": "Main Company Number",
+      "directNumber": "Direct number",
+      "mainCompanyNumber": "Main company number",
       "blocked": "Blocked",
-      "nickName": "Nick Name",
-      "companyNumber": "Company Number",
-      "companyFaxNumber": "Company Fax Number"
+      "companyNumber": "Company number",
+      "companyFaxNumber": "Company fax number"
     },
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
