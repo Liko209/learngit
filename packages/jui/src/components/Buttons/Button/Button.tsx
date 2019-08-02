@@ -24,7 +24,7 @@ import { Omit } from '../../../foundation/utils/typeHelper';
 
 type Variant = 'text' | 'contained' | 'outlined';
 
-type JuiButtonColor = 'primary' | 'secondary' | 'negative';
+type JuiButtonColor = 'primary' | 'secondary' | 'negative' | 'action';
 
 type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
   size?: 'small' | 'large';
@@ -41,6 +41,7 @@ const ColorMap: {
   primary: ['primary', 'main'],
   secondary: ['secondary', 'main'],
   negative: ['semantic', 'negative'],
+  action: ['common', 'white'],
 };
 
 const touchRippleClasses = {
@@ -101,12 +102,15 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     }
 
     &.textButtonStyle {
+      color: ${({ color = 'primary' }) =>
+        palette(ColorMap[color][0], ColorMap[color][1])};
       &.disabled {
         color: ${({ theme, loading }) =>
           loading ? '' : palette('accent', 'ash')({ theme })};
       }
       &:hover {
-        background-color: ${palette('primary', 'main', 1)};
+        background-color: ${({ color = 'primary' }) =>
+          palette(ColorMap[color][0], ColorMap[color][1], 1)};
       }
     }
 

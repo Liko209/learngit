@@ -21,6 +21,7 @@ import { catchError } from '@/common/catchError';
 import { Dialog } from '@/containers/Dialog';
 import { mainLogger } from 'sdk';
 import i18nT from '@/utils/i18nT';
+import { isMentionIdsContainTeam} from '../utils';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -106,6 +107,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     return function(this: any) {
       const quill: Quill = this.quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
+      const mentionIdsContainTeam = isMentionIdsContainTeam(mentionIds);
       if (content.length > CONTENT_LENGTH) {
         self.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -116,7 +118,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       }
       self.error = '';
       if (content.trim() || self._post.itemIds.length) {
-        self._editPost(content, mentionIds);
+        self._editPost(content, mentionIds, mentionIdsContainTeam);
       } else {
         self._handleDelete();
       }
@@ -141,18 +143,19 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     server: 'message.prompt.editPostFailedForServerIssue',
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
-  private async _handleEditPost(content: string, ids: number[]) {
+  private async _handleEditPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
     await this._postService.editPost({
       text: content,
       groupId: this.gid,
       postId: this.id,
       mentionNonItemIds: ids,
+      isTeamMention: mentionIdsContainTeam
     });
   }
 
-  private _editPost(content: string, ids: number[]) {
+  private _editPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
     this._exitEditMode();
-    this._handleEditPost(content, ids);
+    this._handleEditPost(content, ids, mentionIdsContainTeam);
   }
 
   private _deletePost = async () => {

@@ -30,8 +30,34 @@ const JuiEditProfileSection = styled.div`
   }
 `;
 
+const JuiEditProfileAvatarContent = styled.div<{
+  imgStyle: {
+    width: number;
+    height: number;
+    left: number;
+    top: number;
+    disabled: boolean;
+  };
+}>`
+  width: ${spacing(20)};
+  height: ${spacing(20)};
+  img {
+    position: relative;
+    width: ${({ imgStyle }) => `${imgStyle.width}px`};
+    height: ${({ imgStyle }) => `${imgStyle.height}px`};
+    top: ${({ imgStyle }) => `${imgStyle.top}px`};
+    left: ${({ imgStyle }) => `${imgStyle.left}px`};
+  }
+  pointer-events: ${({ imgStyle }) => (imgStyle.disabled ? 'none' : 'auto')};
+  > div {
+    width: ${spacing(20)};
+    height: ${spacing(20)};
+  }
+`;
+
 export {
   JuiEditProfileContent,
   JuiEditProfileSection,
   JuiEditProfileSectionContent,
+  JuiEditProfileAvatarContent,
 };

@@ -1,7 +1,8 @@
 import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 
 export const TELEPHONY_SERVICE = 'TELEPHONY_SERVICE';
-export const ANONYMOUS = 'anonymous';
+export const ANONYMOUS_NUM = 'anonymous';
+export const ANONYMOUS_NAME = 'Anonymous';
 export const DIALING = 'dialing';
 export const INITIAL_REPLY_COUNTDOWN_TIME = 55;
 

@@ -67,7 +67,7 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   private get _hasCall() {
-    return !!this._telephonyStore.callId;
+    return !!this._telephonyStore.uuid;
   }
 
   @computed

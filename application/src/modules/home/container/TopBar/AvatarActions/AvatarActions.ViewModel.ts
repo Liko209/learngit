@@ -6,7 +6,7 @@
 import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
-import storeManager, { ENTITY_NAME }  from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
 import { getGlobalValue, getPresence, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
@@ -20,12 +20,13 @@ import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
-
+import { IMessageService } from '@/modules/message/interface';
 
 const globalStore = storeManager.getGlobalStore();
 
 class AvatarActionsViewModel extends StoreViewModel<Props>
   implements ViewProps {
+  @IMessageService private _messageService: IMessageService;
   @observable
   private _isShowDialog: boolean = false;
 
@@ -116,6 +117,10 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
       this.currentUserId,
     );
   }
+
+  handleOpen = () => {
+    this._messageService.open(this.currentUserId);
+  };
 }
 
 export { AvatarActionsViewModel };

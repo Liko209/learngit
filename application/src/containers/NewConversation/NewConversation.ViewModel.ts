@@ -45,7 +45,7 @@ class NewConversationViewModel extends StoreViewModel {
     server: 'people.prompt.newConversationBackendError',
   })
   createNewConversation = async () => {
-    newConversationAction('Create new group');
+    newConversationAction('createNewGroup');
     const ids = this.members.filter(id => _.isNumber(id)) as number[];
     try {
       this.loading = true;

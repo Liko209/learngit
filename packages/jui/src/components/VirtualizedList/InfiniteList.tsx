@@ -11,8 +11,9 @@ import {
   JuiVirtualizedListHandles,
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
-import { IndexRange } from './types';
+import { IndexRange, ScrollInfo } from './types';
 import { useMountState } from './hooks';
+import { DIRECTION } from '../Lists';
 
 type JuiInfiniteListProps = {
   height?: number;
@@ -20,13 +21,13 @@ type JuiInfiniteListProps = {
   minRowHeight?: number;
   overscan?: number;
   loadMoreStrategy?: ILoadMoreStrategy;
-  hasMore: (direction: 'up' | 'down') => boolean;
+  hasMore: (direction: DIRECTION) => boolean;
   loadInitialData: () => Promise<void>;
-  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
+  loadMore: (direction: DIRECTION, count: number) => Promise<void>;
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
-  onVisibleRangeChange?: (range: IndexRange) => void;
+  onVisibleRangeChange?: (range: IndexRange, info: ScrollInfo) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
   loadingRenderer?: (() => JSX.Element) | null;
@@ -77,8 +78,8 @@ const JuiInfiniteList = (
   const isMountedRef = useMountState();
 
   const _loadMore = useCallback(
-    async (direction: 'up' | 'down', count: number) => {
-      if (direction === 'down') {
+    async (direction: DIRECTION, count: number) => {
+      if (direction === DIRECTION.DOWN) {
         setStickToBottom(false);
       }
       await loadMore(direction, count);
@@ -130,7 +131,7 @@ const JuiInfiniteList = (
         }
 
         if (children.length === 0) {
-          const isEmpty = !hasMore('up') && !hasMore('down');
+          const isEmpty = !hasMore(DIRECTION.UP) && !hasMore(DIRECTION.DOWN);
           if (isEmpty) {
             return noRowsRenderer;
           }

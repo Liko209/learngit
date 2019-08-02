@@ -7,10 +7,11 @@ import { ISortableModelWithData } from '@/store/base/fetch/types';
 import { ERROR_TYPES } from '@/common/catchError';
 import PostModel from '@/store/models/Post';
 import { STATUS } from '../types';
+import { DIRECTION } from 'jui/components/Lists';
 
 enum SeparatorType {
   DATE = 'DATE',
-  NEW_MSG = 'NEW_MSG',
+  NEW_MSG = 'NEW_MSG'
 }
 
 type Separator = {
@@ -30,7 +31,7 @@ enum StreamItemType {
   POST = 'POST',
   DATE_SEPARATOR = 'DATE_SEPARATOR',
   NEW_MSG_SEPARATOR = 'NEW_MSG_SEPARATOR',
-  INITIAL_POST = 'INITIAL_POST',
+  INITIAL_POST = 'INITIAL_POST'
 }
 
 type BaseElement = {
@@ -63,7 +64,7 @@ type StreamViewProps = {
   postIds: number[];
   jumpToPostId: number;
   items: StreamItem[];
-  hasMore: (direction: 'up' | 'down') => boolean;
+  hasMore: (direction: DIRECTION) => boolean;
   notEmpty: boolean;
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
@@ -110,5 +111,5 @@ export {
   DateSeparator,
   NewSeparator,
   IStreamItemSortableModelData,
-  IStreamItemSortableModel,
+  IStreamItemSortableModel
 };

@@ -10,16 +10,19 @@ import { AbstractViewModel } from '@/base';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
+import { HeadShotInfo } from 'sdk/module/person/types';
 import { ENTITY_NAME } from '@/store';
 import { trimStringBothSides } from '@/utils/string';
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Markdown } from 'glipdown';
 import portalManager from '@/common/PortalManager';
+import { dataAnalysis } from 'sdk';
 import {
   EditProfileProps,
   EditProfileViewModelProps,
   EditItemSourceType,
+  LocalInfo,
 } from './types';
 
 class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
@@ -32,6 +35,8 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   @observable homepageError: boolean;
   @observable currentPersonInfo: PersonModel;
   @observable isLoading: boolean;
+  @observable headShotInfo: HeadShotInfo;
+  @observable localInfo: LocalInfo;
 
   constructor(props: EditProfileProps) {
     super(props);
@@ -85,6 +90,9 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   })
   @action
   handleProfileEdit = async () => {
+    dataAnalysis.track('Jup_Web/DT_profile_saveEditAvatar', {
+      source: 'Edit Profile',
+    });
     if (this.homepage) {
       this.homepageError = !new RegExp(Markdown.global_url_regex).test(
         this.homepage,
@@ -92,7 +100,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     }
     if (this.homepageError) return;
     const info = this.getUpdateInfo();
-    if (!info) {
+    if (!info && !this.headShotInfo) {
       portalManager.dismissAll();
       return;
     }
@@ -100,7 +108,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
-    await personService.editPersonalInfo(info).catch(e => {
+    await personService.editPersonalInfo(info, this.headShotInfo).catch(e => {
       this.isLoading = false;
       throw e;
     });
@@ -117,6 +125,11 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
       value = value.replace(/\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g, '');
     }
     this[key] = value;
+  };
+
+  onPhotoEdited = (headShotInfo: HeadShotInfo, localInfo: LocalInfo) => {
+    this.headShotInfo = headShotInfo;
+    this.localInfo = localInfo;
   };
 }
 

@@ -157,6 +157,7 @@ test.meta(<ITestMeta>{
   const otherUser = h(t).rcData.mainCompany.users[0];
 
   await h(t).glip(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
 
   const teamAllHandsId = (await h(t).glip(loginUser).getCompanyTeamId())[0];
   const teamA = <IGroup>{

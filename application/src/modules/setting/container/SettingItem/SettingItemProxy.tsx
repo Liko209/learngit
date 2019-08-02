@@ -17,6 +17,7 @@ import { SliderSettingItem } from './Slider';
 const ITEM_TYPE_MAP = {
   [SETTING_ITEM_TYPE.TOGGLE]: ToggleSettingItem,
   [SETTING_ITEM_TYPE.SELECT]: SelectSettingItem,
+  [SETTING_ITEM_TYPE.VIRTUALIZED_SELECT]: SelectSettingItem,
   [SETTING_ITEM_TYPE.LINK]: LinkSettingItem,
   [SETTING_ITEM_TYPE.SLIDER]: SliderSettingItem,
 };
@@ -41,7 +42,6 @@ class SettingItemProxy extends React.Component<SettingItemProxyProps> {
 
     const { itemId } = this.props;
     const { type } = this._settingItem;
-
     const Comp =
       typeof type === 'number' || typeof type === 'string'
         ? ITEM_TYPE_MAP[type]

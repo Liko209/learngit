@@ -16,7 +16,7 @@ import {
 
 export default class CallModel extends Base<Call> {
   @observable
-  callId: string;
+  uuid: string;
 
   @observable
   toNum: string;
@@ -63,7 +63,7 @@ export default class CallModel extends Base<Call> {
   constructor(data: Call) {
     super(data);
     const {
-      call_id,
+      uuid,
       to_num,
       from_num,
       call_state,
@@ -80,7 +80,7 @@ export default class CallModel extends Base<Call> {
       to_name,
     } = data;
 
-    this.callId = call_id;
+    this.uuid = uuid;
     this.toNum = to_num;
     this.fromNum = from_num;
     this.callState = call_state;

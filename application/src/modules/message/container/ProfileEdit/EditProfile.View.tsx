@@ -13,10 +13,12 @@ import {
   JuiEditProfileContent,
   JuiEditProfileSection,
   JuiEditProfileSectionContent,
+  JuiEditProfileAvatarContent,
 } from 'jui/pattern/EditProfile';
 import portalManager from '@/common/PortalManager';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { PhotoEdit } from './PhotoEdit';
 import {
   EditProfileViewModelProps,
   EditItemSourceType,
@@ -78,6 +80,16 @@ class EditProfileViewComponent extends Component<
     );
   };
 
+  handleMaskClick = () => {
+    const { currentPersonInfo, onPhotoEdited, localInfo } = this.props;
+
+    PhotoEdit.show({
+      onPhotoEdited,
+      file: localInfo && localInfo.file,
+      person: currentPersonInfo,
+    });
+  };
+
   _renderItem = (section: EditItemSourceType[]) => {
     const { t, isLoading } = this.props;
     return section.map(({ key, automationId, isLastItem, maxLength }) => {
@@ -112,7 +124,14 @@ class EditProfileViewComponent extends Component<
     });
   };
   render() {
-    const { t, id, handleProfileEdit, homepageError, isLoading } = this.props;
+    const {
+      t,
+      id,
+      handleProfileEdit,
+      homepageError,
+      isLoading,
+      localInfo,
+    } = this.props;
     return (
       <JuiModal
         open
@@ -131,12 +150,24 @@ class EditProfileViewComponent extends Component<
         }}
       >
         <JuiEditProfileContent>
-          <Avatar
-            uid={id}
-            mask
-            size="xlarge"
-            automationId="profileEditAvatar"
-          />
+          <JuiEditProfileAvatarContent
+            imgStyle={{
+              width: localInfo && localInfo.width,
+              height: localInfo && localInfo.height,
+              top: localInfo && localInfo.top,
+              left: localInfo && localInfo.left,
+              disabled: isLoading,
+            }}
+          >
+            <Avatar
+              uid={id}
+              icon={localInfo && localInfo.url}
+              mask
+              size="xlarge"
+              onClick={this.handleMaskClick}
+              automationId="profileEditAvatar"
+            />
+          </JuiEditProfileAvatarContent>
           <JuiEditProfileSectionContent>
             {this._renderSection()}
           </JuiEditProfileSectionContent>

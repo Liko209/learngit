@@ -5,3 +5,4 @@
  */
 
 export * from './EditProfile';
+export * from './EditPhoto';

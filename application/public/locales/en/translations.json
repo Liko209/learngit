@@ -25,7 +25,9 @@
       "tryAgain": "Try again.",
       "tryAgainLater": "Try again later.",
       "thenTryAgain": "then try again.",
-      "loadError": "Oops! Something went wrong, please try again."
+      "loadError": "Oops! Something went wrong, please try again.",
+      "switchCall": "You're currently on an active call on another device.",
+      "switchCallAction": " Switch call to this device"
     },
     "preposition": {
       "in": "in"
@@ -246,7 +248,8 @@
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
       "newMessages": "new messages",
-      "newMessagesDivider": "New messages"
+      "newMessagesDivider": "New messages",
+      "jumpToLatest": "Jump to latest"
     },
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",
@@ -309,6 +312,7 @@
     "message": "Message",
     "atMentionAllTeam": "Team",
     "atMentionAllAdmin": "admin",
+    "atMentionTeamSuffix": "(notify everyone)",
     "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
     "typingIndicator": {
       "oneTyping": "<0>{{personA}}</0> is typing...",
@@ -475,7 +479,10 @@
         "phone": "Phone",
         "homepageError": "Invalid webpage address",
         "editProfileNetworkError": "We weren't able to save the edit. Check your network connection, then try again.",
-        "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later."
+        "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later.",
+        "editProfilePhotoTitle": "Edit profile photo",
+        "editProfilePhotoUploadPhoto": "Upload photo",
+        "editProfilePhotoZoomText": "Zoom"
       }
     },
     "group": {
@@ -691,7 +698,12 @@
       "CountryBlock": "VoIP is not available in your country.",
       "VoipUnavailable": "VoIP is currently not available.",
       "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
-      "AutoRecording": "Cannot start call recording."
+      "AutoRecording": "Cannot start call recording.",
+      "switchCall": {
+        "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
+        "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
+        "callEnded": "Your call with {{displayName}} is ended."
+      }
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -711,12 +723,11 @@
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {
-      "directNumber": "Direct Number",
-      "mainCompanyNumber": "Main Company Number",
+      "directNumber": "Direct number",
+      "mainCompanyNumber": "Main company number",
       "blocked": "Blocked",
-      "nickName": "Nick Name",
-      "companyNumber": "Company Number",
-      "companyFaxNumber": "Company Fax Number"
+      "companyNumber": "Company number",
+      "companyFaxNumber": "Company fax number"
     },
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
@@ -732,7 +743,14 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "switchCall": {
+      "cancel": "Cancel",
+      "switch": "Switch",
+      "title": "Call Switch",
+      "content": "You're currently on an active call with {{displayName}}. Would you like to continue the call on this device?",
+      "unknownCaller": "an unknown caller"
+    }
   },
   "phone": {
     "tab": {

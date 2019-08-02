@@ -26,14 +26,14 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
   }
 
   private _openConvertToTeam = () => {
-    newConversationAction('Convert to team');
+    newConversationAction('convertToTeam');
     const { group, handleClose } = this.props;
     handleClose();
     ConvertToTeam.show({ id: group.id });
   };
 
   handleCancel = () => {
-    newConversationAction('Cancel');
+    newConversationAction('cancel');
     const { handleClose } = this.props;
     handleClose();
   };

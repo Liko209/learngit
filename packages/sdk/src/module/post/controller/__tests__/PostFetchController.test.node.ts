@@ -454,7 +454,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: getMockHasMore({ both: false }),
+        hasMore: getMockHasMore({ both: false, newer: false }),
         items: [],
         posts: [],
         limit: 20,

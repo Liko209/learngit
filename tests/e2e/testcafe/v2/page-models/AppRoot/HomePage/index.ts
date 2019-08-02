@@ -10,7 +10,7 @@ import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
 import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header, TopBarAvatar } from './header';
-import { MiniProfile, ProfileDialog } from './ViewProfile';
+import { MiniProfile, ProfileDialog, EditProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
@@ -116,6 +116,10 @@ export class HomePage extends BaseWebComponent {
 
   get profileDialog() {
     return this.getComponent(ProfileDialog);
+  }
+
+  get editProfileDialog() {
+    return this.getComponent(EditProfileDialog);
   }
 
   get topBarAvatar() {

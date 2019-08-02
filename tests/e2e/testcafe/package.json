@@ -39,7 +39,7 @@
     "inquirer-fuzzy-path": "^2.0.3",
     "jsonfile": "^5.0.0",
     "jszip": "^3.1.5",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.15",
     "log4js": "^3.0.5",
     "mock-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/mock-client-1.0.0.tgz",
     "moment": "^2.22.2",

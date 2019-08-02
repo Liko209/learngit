@@ -41,6 +41,42 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
   font-size: 16px;
 }
 
+.c27.c27 {
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #F95B5C;
+}
+
+.c27.c27:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c27.c27:active {
+  opacity: 0.76;
+}
+
+.c27 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
 .c23.c23 {
   min-height: 0;
 }
