@@ -12,6 +12,7 @@ import { GlipAccount } from '../account';
 import notificationCenter from '../service/notificationCenter';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
+import { dataCollectionHelper } from 'sdk/framework';
 
 const LOG_TAG = 'GlipAuthenticator';
 
@@ -29,6 +30,7 @@ class GlipAuthenticator implements IAuthenticator {
       const glipLoginResponse = await loginGlip(rcToken);
 
       if (glipLoginResponse.status < 200 || glipLoginResponse.status >= 300) {
+        dataCollectionHelper.traceLoginFailed('glip', 'get token failed');
         throw Error(`login glip failed, ${glipLoginResponse.statusText}`);
       }
 

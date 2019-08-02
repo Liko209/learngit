@@ -5,7 +5,7 @@
  */
 import { WithTranslation } from 'react-i18next';
 import { MediaOptions, IMedia } from '@/interface/media';
-import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer/types';
+import { JuiAudioMode, JuiAudioStatus } from 'jui/components/AudioPlayer/types';
 
 type AudioEvent = {
   onBeforePlay?: () => Promise<boolean> | boolean;

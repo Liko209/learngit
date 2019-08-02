@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import {
-  ESettingValueType,
   UserSettingEntity,
   AbstractSettingEntityHandler,
   SettingEntityIds,
@@ -49,7 +48,8 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
 
   private _subscribe() {
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),);
+      this.onProfileEntityUpdate(payload),
+    );
     this.on(SERVICE.TELEPHONY_SERVICE.VOIP_CALLING, async () => {
       await this.getUserSettingEntity();
     });
@@ -67,9 +67,6 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
   async fetchUserSettingEntity() {
     const hasCallPermission = await this.telephonyService.getVoipCallPermission();
     const settingItem: UserSettingEntity<CALLING_OPTIONS> = {
-      weight: 0,
-      valueType: ESettingValueType.OBJECT,
-      parentModelId: 0,
       id: SettingEntityIds.Phone_DefaultApp,
       source: [CALLING_OPTIONS.GLIP, CALLING_OPTIONS.RINGCENTRAL],
       value: await this._getCallOption(),

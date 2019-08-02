@@ -25,6 +25,9 @@ import {
   RTCUserInfo,
   RECORD_STATE,
   RTC_CALL_ACTION_ERROR_CODE,
+  RTC_NO_AUDIO_TYPE,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
 } from './types';
 import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
@@ -60,6 +63,8 @@ class RTCCall {
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
+  private _connectedTimestamp: Date | undefined = undefined;
+  private _userAgent: string = '';
 
   constructor(
     isIncoming: boolean,
@@ -100,6 +105,10 @@ class RTCCall {
       this._callInfo.toNum = toNumber;
       direction = 'outgoing';
       establishmentKey = 'startTime';
+    }
+
+    if (userInfo && userInfo.userAgent) {
+      this._userAgent = userInfo.userAgent;
     }
 
     CallReport.instance().updateByPipe([
@@ -157,22 +166,27 @@ class RTCCall {
   }
 
   answer(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'answer');
     this._fsm.answer();
   }
 
   reject(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'reject');
     this._fsm.reject();
   }
 
   ignore(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'ignore');
     this._fsm.ignore();
   }
 
   sendToVoicemail(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'sendToVoicemail');
     this._fsm.sendToVoicemail();
   }
 
   startReply(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'startReply');
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.START_REPLY,
@@ -184,6 +198,7 @@ class RTCCall {
   }
 
   replyWithMessage(message: string): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'replyWithMessage');
     if (!message || message.length === 0) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.REPLY_WITH_MSG,
@@ -206,6 +221,7 @@ class RTCCall {
     time: number = 0,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT = RTC_REPLY_MSG_TIME_UNIT.MINUTE,
   ): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'replyWithPattern');
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.REPLY_WITH_PATTERN,
@@ -217,31 +233,38 @@ class RTCCall {
   }
 
   hangup(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'hangup');
     this._fsm.hangup();
     this._account.removeCallFromCallManager(this._callInfo.uuid);
   }
 
   flip(target: number): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'flip');
     this._fsm.flip(target);
   }
 
   startRecord(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'startRecord');
     this._fsm.startRecord();
   }
 
   stopRecord(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'stopRecord');
     this._fsm.stopRecord();
   }
 
   hold(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'hold');
     this._fsm.hold();
   }
 
   unhold(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'unhold');
     this._fsm.unhold();
   }
 
   mute(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'mute');
     if (!this._isMute) {
       this._isMute = true;
       this._fsm.mute();
@@ -250,6 +273,7 @@ class RTCCall {
   }
 
   unmute(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'unmute');
     if (this._isMute) {
       this._isMute = false;
       this._fsm.unmute();
@@ -258,10 +282,12 @@ class RTCCall {
   }
 
   park(): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'park');
     this._fsm.park();
   }
 
   transfer(target: string): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'transfer');
     if (target.length === 0) {
       this._delegate.onCallActionFailed(
         RTC_CALL_ACTION.TRANSFER,
@@ -289,6 +315,7 @@ class RTCCall {
   }
 
   forward(target: string): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'forward');
     if (target.length === 0 || !this._isIncomingCall) {
       this._delegate.onCallActionFailed(
         RTC_CALL_ACTION.FORWARD,
@@ -300,6 +327,7 @@ class RTCCall {
   }
 
   dtmf(digits: string): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'dtmf');
     if (digits.length === 0) {
       return;
     }
@@ -409,6 +437,9 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
+      if (!this._connectedTimestamp) {
+        this._connectedTimestamp = new Date();
+      }
       this._setSipInfoIntoCallInfo();
       this._clearHangupTimer();
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
@@ -517,10 +548,98 @@ class RTCCall {
   }
 
   private _destroy() {
+    this._maybeNotifyNoAudioEvent();
     this._callSession.removeAllListeners();
     this._callSession.destroy();
     CallReport.instance().destroy();
   }
+
+  private _maybeNotifyNoAudioEvent() {
+    if (!this._connectedTimestamp) {
+      return;
+    }
+    const sessionTime =
+      (new Date().valueOf() - this._connectedTimestamp.valueOf()) / 1000;
+    if (sessionTime < 5) {
+      return;
+    }
+    const hasSent = this._callSession.hasSentPackages();
+    const hasReceived = this._callSession.hasReceivedPackages();
+    if (hasSent && hasReceived) {
+      this._notifyNoAudioStateEvent();
+    } else if (hasSent && !hasReceived) {
+      this._notifyNoAudioDataEvent(
+        sessionTime,
+        RTC_NO_AUDIO_TYPE.NO_RTP_INCOMING,
+      );
+    } else if (!hasSent && hasReceived) {
+      this._notifyNoAudioDataEvent(
+        sessionTime,
+        RTC_NO_AUDIO_TYPE.NO_RTP_OUTGOING,
+      );
+    } else {
+      this._notifyNoAudioDataEvent(sessionTime, RTC_NO_AUDIO_TYPE.NO_RTP);
+    }
+  }
+
+  private _notifyNoAudioStateEvent() {
+    const noAudioStateEvent: RTCNoAudioStateEvent = {
+      event: {
+        type: 'success',
+        details: {
+          feature: 'no_audio_data',
+        },
+      },
+    };
+    rtcLogger.debug(
+      LOG_TAG,
+      `Notify no audio state event: ${JSON.stringify(noAudioStateEvent)}`,
+    );
+    this._account &&
+      this._account.notifyNoAudioStateEvent(
+        this._callInfo.uuid,
+        noAudioStateEvent,
+      );
+  }
+
+  private _notifyNoAudioDataEvent(
+    sessionTime: number,
+    noAudioType: RTC_NO_AUDIO_TYPE,
+  ) {
+    const noAudioDataEvent: RTCNoAudioDataEvent = {
+      event: {
+        type: 'no-rtp',
+        details: {
+          feature: 'no_audio_data',
+          data: {
+            call_type: this._isIncomingCall ? 'Incoming' : 'Outgoing',
+            user_agent: this._userAgent,
+            session_time: sessionTime,
+            type: noAudioType,
+            call_info: {
+              to_tag: this._callInfo.toTag ? this._callInfo.toTag : '',
+              to_number: this._callInfo.toNum,
+              to_name: this._callInfo.toName,
+              call_id: this._callInfo.callId ? this._callInfo.callId : '',
+              from_tag: this._callInfo.fromTag ? this._callInfo.fromTag : '',
+              from_number: this._callInfo.fromNum,
+              from_name: this._callInfo.fromName,
+            },
+          },
+        },
+      },
+    };
+    rtcLogger.debug(
+      LOG_TAG,
+      `Notify no audio data event: ${JSON.stringify(noAudioDataEvent)}`,
+    );
+    this._account &&
+      this._account.notifyNoAudioDataEvent(
+        this._callInfo.uuid,
+        noAudioDataEvent,
+      );
+  }
+
   // call action listener
   private _onCallActionSuccess(
     callAction: RTC_CALL_ACTION,

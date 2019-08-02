@@ -13,7 +13,7 @@ import { MediaTrack } from './MediaTrack';
 
 class TrackManager {
   private _tracks: MediaTrack[] = [];
-  private _volume: number = 1;
+  private _globalVolume: number = 1;
   private _outputDevices: MediaDeviceType[] = [];
 
   useMediaTrack(trackId?: string) {
@@ -24,8 +24,8 @@ class TrackManager {
       mediaTrack = trackIds.includes(trackId)
         ? (this._getTrackById(trackId) as MediaTrack)
         : this._createTrack({
-          id: trackId,
-        });
+            id: trackId,
+          });
     } else {
       mediaTrack =
         this._getTrackById(DEFAULT_TRACK_ID) ||
@@ -38,6 +38,7 @@ class TrackManager {
   }
 
   setAllTrackVolume(vol: number) {
+    this._globalVolume = vol;
     this._tracks.forEach(track => {
       track.setMasterVolume(vol);
     });
@@ -68,7 +69,7 @@ class TrackManager {
     });
 
     this._tracks = [];
-    this._volume = 1;
+    this._globalVolume = 1;
     this._outputDevices = [];
   }
 
@@ -82,11 +83,10 @@ class TrackManager {
   }
 
   private _createTrack(options: MediaTrackOptions) {
-    const newTrack = new MediaTrack(
-      Object.assign(options, {
-        masterVolume: this._volume,
-      }),
-    );
+    const newTrack = new MediaTrack({
+      masterVolume: this._globalVolume,
+      ...options,
+    });
     this._tracks.push(newTrack);
     return newTrack;
   }
@@ -96,7 +96,7 @@ class TrackManager {
   }
 
   get volume() {
-    return this._volume;
+    return this._globalVolume;
   }
 
   get outputDevices() {

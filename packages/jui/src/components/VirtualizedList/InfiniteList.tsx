@@ -17,7 +17,8 @@ import { DIRECTION } from '../Lists';
 
 type JuiInfiniteListProps = {
   height?: number;
-  minRowHeight: number;
+  fixedRowHeight?: number;
+  minRowHeight?: number;
   overscan?: number;
   loadMoreStrategy?: ILoadMoreStrategy;
   hasMore: (direction: DIRECTION) => boolean;
@@ -43,6 +44,7 @@ const JuiInfiniteList = (
   {
     height,
     minRowHeight,
+    fixedRowHeight,
     overscan,
     loadMoreStrategy = new ThresholdStrategy({
       threshold: 15,
@@ -141,6 +143,7 @@ const JuiInfiniteList = (
             ref={ref}
             height={height}
             minRowHeight={minRowHeight}
+            fixedRowHeight={fixedRowHeight}
             initialScrollToIndex={initialScrollToIndex}
             overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}

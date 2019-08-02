@@ -21,6 +21,8 @@ import {
   RTCSipFlags,
   RTCUserInfo,
   RTCSipProvisionInfo,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -89,6 +91,7 @@ class RTCAccount implements IRTCAccount {
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
   ): RTCCall | null {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'makeCall');
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
       return null;
@@ -195,6 +198,21 @@ class RTCAccount implements IRTCAccount {
         this._reRegister();
       }
     }
+  }
+
+  public notifyNoAudioStateEvent(
+    uuid: string,
+    noAudioStateEvent: RTCNoAudioStateEvent,
+  ) {
+    this._delegate &&
+      this._delegate.onNoAudioStateEvent(uuid, noAudioStateEvent);
+  }
+
+  public notifyNoAudioDataEvent(
+    uuid: string,
+    noAudioDataEvent: RTCNoAudioDataEvent,
+  ) {
+    this._delegate && this._delegate.onNoAudioDataEvent(uuid, noAudioDataEvent);
   }
 
   private _initListener() {

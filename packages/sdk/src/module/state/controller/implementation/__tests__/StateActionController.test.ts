@@ -7,7 +7,10 @@
 import { StateActionController } from '../StateActionController';
 import { GroupService } from '../../../../group';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
-import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import {
+  IPartialModifyController,
+  PartialUpdateParams,
+} from '../../../../../framework/controller/interface/IPartialModifyController';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { DeactivatedDao } from '../../../../../dao';
 import { StateFetchDataController } from '../StateFetchDataController';
@@ -28,23 +31,15 @@ class MockRequestController implements IRequestController<GroupState> {
 class MockPartialModifyController
   implements IPartialModifyController<GroupState> {
   constructor(public groupState: GroupState) {}
-  updatePartially = jest.fn(
-    async (
-      entityId: number,
-      preHandlePartialEntity: (
-        partialEntity: Partial<GroupState>,
-        originalEntity: GroupState,
-      ) => Partial<GroupState>,
-      doUpdateEntity: (updatedEntity: GroupState) => Promise<GroupState>,
-    ) => {
-      const partialEntity: Partial<GroupState> = {};
-      const updatedEntity = await preHandlePartialEntity(
-        partialEntity,
-        this.groupState,
-      );
-      return await doUpdateEntity(updatedEntity as GroupState);
-    },
-  );
+  updatePartially = jest.fn(async (params: PartialUpdateParams<any>) => {
+    const { preHandlePartialEntity, doUpdateEntity } = params;
+    const partialEntity: Partial<GroupState> = {};
+    const updatedEntity = await preHandlePartialEntity!(
+      partialEntity,
+      this.groupState,
+    );
+    return await doUpdateEntity!(updatedEntity as GroupState);
+  });
   getRollbackPartialEntity = jest.fn();
   getMergedEntity = jest.fn();
 }
@@ -93,6 +88,7 @@ describe('StateActionController', () => {
         post_cursor: 1,
         group_post_cursor: 1,
         group_post_drp_cursor: 0,
+        group_team_mention_cursor: 123
       };
 
       jest
@@ -113,12 +109,12 @@ describe('StateActionController', () => {
       stateActionController['_buildUpdateUnreadStatusParams'] = jest.fn();
 
       await stateActionController.updateReadStatus(groupId, isUnread, true);
-      expect(mockGroupService.getById).toBeCalledWith(groupId);
-      expect(mockStateFetchDataController.getMyStateId).toBeCalled();
-      expect(mockPartialModifyController.updatePartially).toBeCalled();
+      expect(mockGroupService.getById).toHaveBeenCalledWith(groupId);
+      expect(mockStateFetchDataController.getMyStateId).toHaveBeenCalled();
+      expect(mockPartialModifyController.updatePartially).toHaveBeenCalled();
       expect(
         stateActionController['_buildUpdateUnreadStatusParams'],
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
 
     it('should mark as read when (lastPostId && myStateId > 0)', async () => {
@@ -142,6 +138,7 @@ describe('StateActionController', () => {
         group_post_cursor: 2,
         group_post_drp_cursor: 0,
         unread_deactivated_count: 0,
+        group_team_mention_cursor: 123
       };
       jest
         .spyOn(mockEntitySourceController, 'get')
@@ -169,13 +166,13 @@ describe('StateActionController', () => {
       } catch (err) {
         expect(err).toEqual('err');
       }
-      expect(mockGroupService.getById).toBeCalledWith(groupId);
-      expect(mockStateFetchDataController.getMyStateId).toBeCalled();
-      expect(mockPartialModifyController.updatePartially).toBeCalled();
+      expect(mockGroupService.getById).toHaveBeenCalledWith(groupId);
+      expect(mockStateFetchDataController.getMyStateId).toHaveBeenCalled();
+      expect(mockPartialModifyController.updatePartially).toHaveBeenCalled();
 
       expect(
         stateActionController['_buildUpdateReadStatusParams'],
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -187,7 +184,7 @@ describe('StateActionController', () => {
         .fn()
         .mockReturnValue(myStateId);
       await stateActionController.updateLastGroup(groupId);
-      expect(mockRequestController.put).toBeCalledWith({
+      expect(mockRequestController.put).toHaveBeenCalledWith({
         id: myStateId,
         last_group_id: groupId,
       });
@@ -200,7 +197,7 @@ describe('StateActionController', () => {
         .fn()
         .mockReturnValue(myStateId);
       await stateActionController.updateLastGroup(groupId);
-      expect(mockRequestController.put).toBeCalledTimes(0);
+      expect(mockRequestController.put).toHaveBeenCalledTimes(0);
     });
   });
 

@@ -28,6 +28,8 @@ test.meta(<ITestMeta>{
   const otherUser = users[5];
   await h(t).platform(loginUser).init();
   await h(t).platform(otherUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  await h(t).scenarioHelper.resetProfileAndState(otherUser);
   let noteTitle = uuid();
   const otherUserName = await h(t).glip(otherUser).getPersonPartialData('display_name');
 

@@ -8,17 +8,6 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   display: inline-flex;
 }
 
-.c6 {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  pointer-events: none;
-  font-size: 12px;
-}
-
 .c15 {
   display: inline-block;
   width: 1em;
@@ -30,45 +19,15 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   font-size: 32px;
 }
 
-.c7.c7 {
-  width: 280px;
-  height: 280px;
-  border-radius: unset;
-  position: static;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  font-size: 48px;
-  color: #6E6EC0;
-  background-color: #6E6EC0;
-}
-
-.c7 span {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  height: 132px;
-  width: 132px;
-  border-radius: 50%;
-  background-color: #fff;
+.c6 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 12px;
 }
 
 .c4.c4 {
@@ -209,6 +168,47 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   color: rgba(0,0,0,0.87);
   box-shadow: none;
   opacity: 0.12;
+}
+
+.c7.c7 {
+  width: 280px;
+  height: 280px;
+  border-radius: unset;
+  position: static;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #6E6EC0;
+  background-color: #6E6EC0;
+}
+
+.c7 span {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 132px;
+  width: 132px;
+  border-radius: 50%;
+  background-color: #fff;
 }
 
 .c0.c0 {

@@ -192,6 +192,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then no "Admin actions" in the operation list', async () => {
     await t.expect(headerMoreMenu.adminActions.exists).notOk();
+    await headerMoreMenu.quitByPressEsc();
   });
 
   await h(t).withLog('When I enter teamB and click more icon on conversation header', async () => {
@@ -201,6 +202,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then no "Admin actions" in the operation list', async () => {
     await t.expect(headerMoreMenu.adminActions.exists).notOk();
+    await headerMoreMenu.quitByPressEsc();
   });
 
   await h(t).withLog('When I enter teamA and click more icon on conversation header', async () => {

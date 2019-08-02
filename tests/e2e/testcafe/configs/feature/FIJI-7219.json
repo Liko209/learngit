@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ConversationList/*.ts", "./fixtures/LeftNav/*.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}

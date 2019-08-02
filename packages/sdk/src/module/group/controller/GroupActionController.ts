@@ -58,24 +58,25 @@ export class GroupActionController {
   }
 
   async joinTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity) => ({
+    return await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: (partialEntity, originalEntity) => ({
         ...partialEntity,
         members: originalEntity.members.concat([userId]),
       }),
-      async () => await this._requestUpdateTeamMembers(
-        teamId,
-        [userId],
-        '/add_team_members',
-      ),
-    );
+      doUpdateEntity: async () =>
+        await this._requestUpdateTeamMembers(
+          teamId,
+          [userId],
+          '/add_team_members',
+        ),
+    });
   }
 
   async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity) => {
+    return await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
           (member: number) => member !== userId,
         );
@@ -84,18 +85,19 @@ export class GroupActionController {
           members,
         };
       },
-      async () => await this._requestUpdateTeamMembers(
-        teamId,
-        [userId],
-        '/remove_team_members',
-      ),
-    );
+      doUpdateEntity: async () =>
+        await this._requestUpdateTeamMembers(
+          teamId,
+          [userId],
+          '/remove_team_members',
+        ),
+    });
   }
 
   async removeTeamMembers(members: number[], teamId: number) {
-    return await this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity) => {
+    return await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: (partialEntity, originalEntity) => {
         const memberSet: Set<number> = new Set(originalEntity.members);
         members.forEach((member: number) => {
           memberSet.delete(member);
@@ -105,78 +107,85 @@ export class GroupActionController {
           members: Array.from(memberSet),
         };
       },
-      async () => await this._requestUpdateTeamMembers(
-        teamId,
-        members,
-        '/remove_team_members',
-      ),
-    );
+      doUpdateEntity: async () =>
+        await this._requestUpdateTeamMembers(
+          teamId,
+          members,
+          '/remove_team_members',
+        ),
+    });
   }
 
   async addTeamMembers(members: number[], teamId: number) {
-    return await this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity) => ({
+    return await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: (partialEntity, originalEntity) => ({
         ...partialEntity,
         members: originalEntity.members.concat(members),
       }),
-      async () => await this._requestUpdateTeamMembers(
-        teamId,
-        members,
-        '/add_team_members',
-      ),
-    );
+      doUpdateEntity: async () =>
+        await this._requestUpdateTeamMembers(
+          teamId,
+          members,
+          '/add_team_members',
+        ),
+    });
   }
 
   async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
-    await this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity) => this._teamSetting2partialTeam(
-        teamSetting,
-        originalEntity,
-        partialEntity,
-      ),
-      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
-    );
+    await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: (partialEntity, originalEntity) =>
+        this._teamSetting2partialTeam(
+          teamSetting,
+          originalEntity,
+          partialEntity,
+        ),
+      doUpdateEntity: async (updateEntity: Group) =>
+        await this._getTeamRequestController().put(updateEntity),
+    });
   }
 
   async archiveTeam(teamId: number) {
-    await this.partialModifyController.updatePartially(
-      teamId,
-      partialEntity => ({
+    await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: partialEntity => ({
         ...partialEntity,
         is_archived: true,
       }),
-      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
-    );
+      doUpdateEntity: async (updateEntity: Group) =>
+        await this._getTeamRequestController().put(updateEntity),
+    });
   }
 
   async deleteTeam(teamId: number): Promise<void> {
-    await this.partialModifyController.updatePartially(
-      teamId,
-      partialEntity => ({
+    await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: partialEntity => ({
         ...partialEntity,
         deactivated: true,
       }),
-      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
-    );
+      doUpdateEntity: async (updateEntity: Group) =>
+        await this._getTeamRequestController().put(updateEntity),
+    });
   }
 
   async deleteGroup(groupId: number): Promise<void> {
-    await this.partialModifyController.updatePartially(
-      groupId,
-      partialEntity => ({
+    await this.partialModifyController.updatePartially({
+      entityId: groupId,
+      preHandlePartialEntity: partialEntity => ({
         ...partialEntity,
         deactivated: true,
       }),
-      async (updateEntity: Group) => await this._getGroupRequestController().put(updateEntity),
-    );
+      doUpdateEntity: async (updateEntity: Group) =>
+        await this._getGroupRequestController().put(updateEntity),
+    });
   }
 
   async makeOrRevokeAdmin(teamId: number, member: number, isMake: boolean) {
-    await this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity: Group) => {
+    await this.partialModifyController.updatePartially({
+      entityId: teamId,
+      preHandlePartialEntity: (partialEntity, originalEntity: Group) => {
         const permissions = originalEntity.permissions
           ? _.cloneDeep(originalEntity.permissions)
           : {};
@@ -196,14 +205,15 @@ export class GroupActionController {
           permissions,
         };
       },
-      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
-    );
+      doUpdateEntity: async (updateEntity: Group) =>
+        await this._getTeamRequestController().put(updateEntity),
+    });
   }
 
   async pinPost(postId: number, groupId: number, toPin: boolean) {
-    await this.partialModifyController.updatePartially(
-      groupId,
-      (partialEntity, originalEntity) => {
+    await this.partialModifyController.updatePartially({
+      entityId: groupId,
+      preHandlePartialEntity: (partialEntity, originalEntity) => {
         const modifiedAt = Date.now();
         const { pinned_post_ids = [] } = originalEntity;
         if (toPin) {
@@ -219,7 +229,7 @@ export class GroupActionController {
           modified_at: modifiedAt,
         };
       },
-      async (updateEntity: Group) => {
+      doUpdateEntity: async (updateEntity: Group) => {
         const partialModel = {
           _id: updateEntity.id || updateEntity._id,
           pinned_post_ids: updateEntity.pinned_post_ids,
@@ -230,7 +240,7 @@ export class GroupActionController {
         }
         return await this._getGroupRequestController().put(partialModel);
       },
-    );
+    });
   }
 
   async createTeam(
@@ -282,14 +292,14 @@ export class GroupActionController {
   // update partial group data
   async updateGroupPartialData(params: Partial<Group>): Promise<boolean> {
     try {
-      await this.partialModifyController.updatePartially(
-        params.id || 0,
-        partialEntity => ({
+      await this.partialModifyController.updatePartially({
+        entityId: params.id || 0,
+        preHandlePartialEntity: partialEntity => ({
           ...partialEntity,
           ...params,
         }),
-        async (updatedModel: Group) => updatedModel,
-      );
+        doUpdateEntity: async (updatedModel: Group) => updatedModel,
+      });
       return true;
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
@@ -300,11 +310,15 @@ export class GroupActionController {
     id: number;
     privacy: string;
   }): Promise<void> {
-    await this.partialModifyController.updatePartially(
-      params.id,
-      (partialEntity: Partial<Group>) => ({ ...partialEntity, privacy: params.privacy }),
-      async (updateEntity: Group) => await this._getGroupRequestController().put(updateEntity),
-    );
+    await this.partialModifyController.updatePartially({
+      entityId: params.id,
+      preHandlePartialEntity: (partialEntity: Partial<Group>) => ({
+        ...partialEntity,
+        privacy: params.privacy,
+      }),
+      doUpdateEntity: async (updateEntity: Group) =>
+        await this._getGroupRequestController().put(updateEntity),
+    });
   }
 
   // update partial group data, for last accessed time
@@ -515,7 +529,8 @@ export class GroupActionController {
     const transformMap: { [key in keyof TeamSetting]: Function } = {
       name: (value: string) => (partialEntity.set_abbreviation = value),
       description: (value: string) => (partialEntity.description = value),
-      isPublic: (value: boolean) => (partialEntity.privacy = value ? 'protected' : 'private'),
+      isPublic: (value: boolean) =>
+        (partialEntity.privacy = value ? 'protected' : 'private'),
       permissionFlags: (permissionFlags: PermissionFlags) => {
         const permissions = originalEntity.permissions || { user: {} };
         const level = this.teamPermissionController.getTeamUserLevel(
