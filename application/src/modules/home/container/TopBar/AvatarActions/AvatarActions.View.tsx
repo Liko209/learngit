@@ -71,8 +71,9 @@ class AvatarActionsComponent extends React.Component<Props> {
     return <Avatar uid={currentUserId} size="large" />;
   }
 
-  // TODO: when edit profile completed then Replenish
-  handleOpenEditProfile = () => { };
+  handleOpenEditProfile = () => {
+    this.props.handleOpen();
+  };
 
   handleDropdown = () => {
     dataAnalysis.page('Jup_Web/DT__appOptions');
