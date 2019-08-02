@@ -37,12 +37,12 @@ class IncomingViewComponent extends Component<Props> {
     return <Avatar cover showDefaultAvatar imgProps={{ draggable: false }} />;
   };
 
-  private _Avatar = () => {
+  private _Avatar = observer(() => {
     const { uid, name } = this.props;
     return (
       <Avatar uid={uid} displayName={name} cover imgProps={this._imgProps} />
     );
-  };
+  });
 
   render() {
     const { name, phone, t, isExt, incomingState, uid } = this.props;

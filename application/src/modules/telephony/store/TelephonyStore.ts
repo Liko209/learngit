@@ -607,7 +607,7 @@ class TelephonyStore {
 
   @computed
   get callerName() {
-    return this.call.fromName;
+    return this.isInbound ? this.call.fromName : this.call.toName;
   }
 
   @computed
