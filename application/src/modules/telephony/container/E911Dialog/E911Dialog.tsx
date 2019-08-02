@@ -11,7 +11,7 @@ import { i18nP } from '@/utils/i18nT';
 import { Dialog } from '@/containers/Dialog';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 
-const Z_INDEX_GREATER_THAN_TOOLTIP = 1500;
+const Z_INDEX_GREATER_THAN_TOOLTIP = 1600;
 
 type E911DialogProps = {
   id: string;
