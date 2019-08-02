@@ -15,9 +15,11 @@ class Dialog {
     component: JSX.Element | React.ComponentType<any>,
     config?: JuiDialogFuncProps,
   ) {
+    const { componentProps = {}, ...rest } = config || {};
     const newConfig = {
       open: true,
-      ...config,
+      ...rest,
+      ...componentProps,
     };
     return modal(component, newConfig);
   }
