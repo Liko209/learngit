@@ -114,6 +114,7 @@ describe('TelephonyService', () => {
       isRCFeaturePermissionEnabled: jest.fn(),
       isVoipCallingAvailable: jest.fn().mockReturnValue(true),
       hasSetCallerId: jest.fn(),
+      getDigitalLines: jest.fn(),
     };
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
@@ -195,6 +196,7 @@ describe('TelephonyService', () => {
       flip: jest.fn(),
       userConfig: { getLastCalledNumber: jest.fn() },
       isShortNumber: jest.fn().mockReturnValue(true),
+      isEmergencyAddrConfirmed: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
@@ -1055,6 +1057,15 @@ describe('TelephonyService', () => {
         expect(clientService.open).not.toHaveReturnedWith(url);
         expect(Notification.flashToast).toHaveBeenCalled();
       }, 0);
+    });
+  });
+
+  describe('needConfirmE911()', () => {
+    it('should be true if digitalLines length > 0 && not confirm emergency', async () => {
+      mockedRCInfoService.getDigitalLines = jest.fn().mockReturnValue([1]);
+      mockedServerTelephonyService.isEmergencyAddrConfirmed = jest.fn().mockReturnValue(false)
+      const ret = await telephonyService.needConfirmE911();
+      expect(ret).toBeTruthy();
     });
   });
 });

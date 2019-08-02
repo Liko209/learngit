@@ -458,11 +458,12 @@ class TelephonyService {
           this.openE911();
         } else {
           // toast error
-          Notification.flagToast({
+          Notification.flashToast({
             message: 'telephony.prompt.e911ExtensionNotAllowedToMakeCall',
             type: ToastType.ERROR,
             messageAlign: ToastMessageAlign.CENTER,
             fullWidth: false,
+            autoHideDuration: 5000,
             dismissible: true,
           });
         }
