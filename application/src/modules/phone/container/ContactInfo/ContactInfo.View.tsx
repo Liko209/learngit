@@ -43,13 +43,19 @@ class ContactInfoViewComponent extends Component<ContactInfoProps, State> {
   };
 
   private _avatar() {
-    const { isUnknownCaller, personId } = this.props;
+    const { isUnknownCaller, personId, displayName } = this.props;
 
-    if (isUnknownCaller || !personId) {
+    if (isUnknownCaller || (!personId && !displayName)) {
       return <Avatar showDefaultAvatar />;
     }
 
-    return <Avatar onClick={this.openMiniProfile} uid={personId} />;
+    return (
+      <Avatar
+        onClick={this.openMiniProfile}
+        displayName={displayName}
+        uid={personId}
+      />
+    );
   }
 
   render() {

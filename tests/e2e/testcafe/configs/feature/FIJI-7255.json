@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/Profile/*.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}

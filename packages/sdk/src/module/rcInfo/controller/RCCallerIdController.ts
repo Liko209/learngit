@@ -26,9 +26,9 @@ const CALLER_ID_ORDER = {
   [PhoneNumberType.MainCompanyNumber]: 1,
   [PhoneNumberType.Blocked]: 2,
   [PhoneNumberType.NickName]: 3,
-  [PhoneNumberType.CompanyNumber]: 4,
-  [PhoneNumberType.AdditionalCompanyNumber]: 5,
-  [PhoneNumberType.CompanyFaxNumber]: 6,
+  [PhoneNumberType.CompanyFaxNumber]: 4,
+  [PhoneNumberType.CompanyNumber]: 5,
+  [PhoneNumberType.AdditionalCompanyNumber]: 6,
 };
 const CALLER_ID_LABEL = {
   [PhoneNumberType.DirectNumber]: 'Direct Number',

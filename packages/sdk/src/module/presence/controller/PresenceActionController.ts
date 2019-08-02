@@ -63,7 +63,7 @@ class PresenceActionController {
         ? PRESENCE_REQUEST_STATUS.AWAY
         : PRESENCE_REQUEST_STATUS.ONLINE;
     // response of this api doesn't have status_code
-    await PresenceAPI.setAutoPresence(status).catch();
+    await PresenceAPI.setAutoPresence(status).catch(() => {});
   }
 }
 export { PresenceActionController };

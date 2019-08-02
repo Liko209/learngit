@@ -466,6 +466,7 @@ export class GlipSdk {
       "_csrf": null,
       "first_time_users_ensured": true,
       "desktop_banner_dismissed": true,
+      "last_group_id": 0,
     }
     await this.clearAllUmi();
     return await this.partialUpdateState(initData, rcId);

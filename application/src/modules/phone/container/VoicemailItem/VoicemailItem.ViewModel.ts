@@ -3,7 +3,8 @@
  * @Date: 2019-06-01 14:39:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+
+import { container, jupiter } from 'framework';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
@@ -21,12 +22,7 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import {
-  VoicemailViewProps,
-  VoicemailProps,
-  JuiAudioStatus,
-  Handler,
-} from './types';
+import { VoicemailViewProps, VoicemailProps, Handler } from './types';
 import {
   voiceMailDefaultResponsiveInfo,
   responsiveByBreakPoint,
@@ -34,6 +30,7 @@ import {
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
+import { IMediaService } from '@/interface/media';
 
 const FLASH_TOAST_DURATION = 3000;
 
@@ -43,6 +40,9 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
+
+  @observable
+  private _mediaPlaying: boolean = false;
 
   @observable canEditBlockNumbers: boolean = false;
 
@@ -54,19 +54,32 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     this.reaction(
       () => this.attachment,
       async (audio?: Audio) => {
+        const { id, onVoicemailPlay } = this.props;
         const phoneStore = this._phoneStore;
-        if (audio && !phoneStore.audioCache.get(this.props.id)) {
-          phoneStore.addAudio(this.props.id, {
+        const audioCache = phoneStore.audioCache.get(id);
+        if (audio && !audioCache) {
+          phoneStore.addAudio(id, {
             ...audio,
             downloadUrl: '',
             startTime: 0,
           });
+        } else if (audioCache && audioCache.media) {
+          audioCache.media.playing &&
+            !this.selected &&
+            onVoicemailPlay &&
+            onVoicemailPlay(id);
+
+          audioCache.media.playing && (this._mediaPlaying = true);
         }
       },
       {
         fireImmediately: true,
       },
     );
+  }
+
+  private get _mediaService() {
+    return jupiter.get<IMediaService>(IMediaService);
   }
 
   private _getResponsiveMap(handler: Handler[]) {
@@ -145,8 +158,8 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @computed
-  get isAudioActive() {
-    return this.selected && this.audio && this.audio.startTime > 0;
+  get showFullAudioPlayer() {
+    return this.selected && this._mediaPlaying;
   }
 
   @action
@@ -156,38 +169,45 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @action
   onBeforePlay = async () => {
+    const { id } = this.props;
     if (!this.selected) {
-      this.props.onVoicemailPlay(this.props.id);
+      this.props.onVoicemailPlay(id);
+    }
+    await this.voicemailService.updateReadStatus(id, READ_STATUS.READ);
+
+    if (this.audio) {
+      const ret = await this.voicemailService.buildDownloadUrl(this.audio.uri);
+      if (!ret) return false;
+
+      const oldCache = this._phoneStore.audioCache.get(id);
+
+      if (oldCache && oldCache.downloadUrl === ret) {
+        return true;
+      }
+      const media = this._mediaService.createMedia({
+        id: id.toString(),
+        trackId: 'voicemail-track',
+        src: ret,
+      });
+      this._phoneStore.updateAudio(id, {
+        media,
+        downloadUrl: ret,
+      });
     }
 
-    this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
+    return true;
   };
 
   @action
-  onBeforeAction = async (status: JuiAudioStatus) => {
-    if (status === JuiAudioStatus.PAUSE) {
-      analyticsCollector.playPauseVoicemail(
-        ANALYTICS_KEY.VOICEMAIL_ACTION_PAUSE,
-      );
+  onPaused = () => {
+    analyticsCollector.playPauseVoicemail(ANALYTICS_KEY.VOICEMAIL_ACTION_PAUSE);
+    this._mediaPlaying = false;
+  };
 
-      this.props.onVoicemailPlay(null);
-
-      return;
-    }
-    if (status === JuiAudioStatus.PLAY) {
-      analyticsCollector.playPauseVoicemail(
-        ANALYTICS_KEY.VOICEMAIL_ACTION_PLAY,
-      );
-      if (this.audio) {
-        const ret = await this.voicemailService.buildDownloadUrl(
-          this.audio.uri,
-        );
-        this._phoneStore.updateAudio(this.props.id, {
-          downloadUrl: ret,
-        });
-      }
-      return;
-    }
+  @action
+  onPlay = () => {
+    analyticsCollector.playPauseVoicemail(ANALYTICS_KEY.VOICEMAIL_ACTION_PLAY);
+    this._mediaPlaying = true;
   };
 
   @action
@@ -203,10 +223,19 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   };
 
   @action
-  updateStartTime = (timestamp: number) => {
+  onEnded = () => {
     this._phoneStore.updateAudio(this.props.id, {
-      startTime: timestamp,
+      startTime: 0,
     });
+  };
+
+  @action
+  updateStartTime = (timestamp: number) => {
+    if (this.selected || (this.props.isHover && !this._mediaPlaying)) {
+      this._phoneStore.updateAudio(this.props.id, {
+        startTime: timestamp,
+      });
+    }
   };
 
   @computed
@@ -223,6 +252,13 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   shouldShowCall = async () => {
     return this._rcInfoService.isVoipCallingAvailable();
   };
+
+  dispose() {
+    super.dispose();
+    if (this._mediaPlaying) {
+      this._phoneStore.addMediaUpdateListener(this.props.id);
+    }
+  }
 }
 
 export { VoicemailItemViewModel };

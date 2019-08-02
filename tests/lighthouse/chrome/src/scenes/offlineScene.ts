@@ -9,7 +9,7 @@ import { HomePageGatherer, OfflineGatherer, LoginGatherer } from '../gatherers';
 class OfflineScene extends Scene {
 
   tags(): Array<string> {
-    return ["Lighthouse"];
+    return ["OfflineScene", "Lighthouse"];
   }
 
   async preHandle() {

@@ -70,6 +70,16 @@ enum CALL_ACTION_ERROR_CODE {
   OTHERS,
 }
 
+type TelephonyDataCollectionInfoUserInfoType = {
+  userId: number;
+  companyId: number;
+};
+
+type TelephonyDataCollectionInfoConfigType = {
+  isProduction: boolean;
+  userInfo: TelephonyDataCollectionInfoUserInfoType;
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
@@ -80,6 +90,7 @@ export {
   LogoutCallback,
   CALL_ACTION_ERROR_CODE,
   EmergencyServiceAddress,
+  TelephonyDataCollectionInfoConfigType,
   SipProvisionInfo,
   notificationCallback,
 };

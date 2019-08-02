@@ -13,7 +13,11 @@ import {
 
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
-import { MAKE_CALL_ERROR_CODE, notificationCallback } from '../types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  notificationCallback,
+  TelephonyDataCollectionInfoConfigType,
+} from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -198,6 +202,14 @@ class TelephonyService extends EntityBaseService<Call>
     }
     return this._phoneSetting;
   }
+
+  setDataCollectionInfoConfig = (
+    info: TelephonyDataCollectionInfoConfigType,
+  ) => {
+    this.telephonyController
+      .getAccountController()
+      .setDataCollectionInfoConfig(info);
+  };
 
   isEmergencyAddrConfirmed = () => {
     return this.telephonyController.isEmergencyAddrConfirmed();

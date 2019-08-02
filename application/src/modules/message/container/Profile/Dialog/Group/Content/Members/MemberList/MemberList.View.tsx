@@ -71,7 +71,7 @@ class MemberList extends React.Component<
             loadInitialData={loadInitialData}
             loadMore={loadMore}
             hasMore={hasMore}
-            minRowHeight={ITEM_HEIGHT}
+            fixedRowHeight={ITEM_HEIGHT}
             onScroll={this.onScroll}
             data-test-automation-id="profileDialogMemberList"
           >

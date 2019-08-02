@@ -113,7 +113,7 @@
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
     "openDialer": "Open the dialer",
-    "editProfile": "Edit Profile"
+    "editProfile": "Edit profile"
   },
   "globalSearch": {
     "search": "Search",
@@ -466,8 +466,8 @@
       "ariaGoToMe": "Go to the workstation of yourself",
       "ariaGoToOther": "Go to the conversation with {{name}}",
       "edit": {
-        "firstName": "First Name",
-        "lastName": "Last Name",
+        "firstName": "First name",
+        "lastName": "Last name",
         "jobTitle": "Title",
         "location": "Location",
         "department": "Department",

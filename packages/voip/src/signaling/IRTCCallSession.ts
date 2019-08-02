@@ -38,6 +38,8 @@ interface IRTCCallSession extends EventEmitter2 {
   reconnectMedia(options: any): void;
   getMediaStats(callback: any, interval: number): void;
   stopMediaStats(): void;
+  hasSentPackages(): boolean;
+  hasReceivedPackages(): boolean;
 }
 
 export { IRTCCallSession };
