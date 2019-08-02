@@ -46,7 +46,7 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
         return;
       }
     }
-    valueSetter && valueSetter(rawValue);
+    valueSetter && await valueSetter(rawValue);
     dataTracking && dataTrackingForSetting(dataTracking, rawValue);
   };
 
