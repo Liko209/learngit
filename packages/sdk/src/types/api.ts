@@ -45,6 +45,7 @@ type ApiConfig = {
   splitio: SplitIOConfig;
   launchdarkly: LaunchDarklyConfig;
   sumologic: SumologicConfig;
+  data_collection: string;
 };
 
 type HttpConfigType = 'glip' | 'rc' | 'upload' | 'glip_desktop';

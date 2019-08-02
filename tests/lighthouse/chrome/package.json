@@ -5,7 +5,7 @@
   "private": true,
   "main": "src/start.ts",
   "scripts": {
-    "perf": " node --max-old-space-size=8192 -r ts-node/register/transpile-only src/start.ts",
+    "perf": "node --max-old-space-size=8192 -r ts-node/register/transpile-only src/start.ts",
     "webphone": "ts-node src/script/webphone.ts",
     "dashboard": " node --max-old-space-size=8192 -r ts-node/register/transpile-only src/script/dashboard.ts",
     "memory": "ts-node src/script/memory.ts",

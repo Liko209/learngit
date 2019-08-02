@@ -149,7 +149,7 @@ class TotalUnreadController {
         if (groupUnread) {
           this._updateToTotalUnread(groupUnread, groupState);
           groupUnread.unreadCount = groupState.unread_count || 0;
-          groupUnread.mentionCount = groupState.unread_mentions_count || 0;
+          groupUnread.mentionCount = this._getMentionUnread(groupState);
         }
       });
     }
@@ -321,7 +321,7 @@ class TotalUnreadController {
     let mentionCount: number = 0;
     if (groupState) {
       unreadCount = groupState.unread_count || 0;
-      mentionCount = groupState.unread_mentions_count || 0;
+      mentionCount = this._getMentionUnread(groupState);
     }
 
     if (this._favoriteGroupIds && this._favoriteGroupIds.includes(group.id)) {
@@ -366,14 +366,14 @@ class TotalUnreadController {
       if (groupState.unread_count) {
         unreadUpdate = groupState.unread_count - groupUnread.unreadCount;
         mentionUpdate =
-          (groupState.unread_mentions_count || 0) - groupUnread.mentionCount;
+          this._getMentionUnread(groupState) - groupUnread.mentionCount;
       } else {
         unreadUpdate = -groupUnread.unreadCount;
         mentionUpdate = -groupUnread.mentionCount;
       }
     } else if (groupState.unread_count) {
       unreadUpdate = groupState.unread_count;
-      mentionUpdate = groupState.unread_mentions_count || 0;
+      mentionUpdate = this._getMentionUnread(groupState);
     } else {
       unreadUpdate = 0;
       mentionUpdate = 0;
@@ -439,6 +439,14 @@ class TotalUnreadController {
     badgeService.registerBadge(GROUP_BADGE_TYPE.FAVORITE_TEAM, () => {
       return this._getBadge(GROUP_BADGE_TYPE.FAVORITE_TEAM);
     });
+  }
+
+  private _getMentionUnread(groupState: GroupState) {
+    const {
+      unread_mentions_count = 0,
+      unread_team_mentions_count = 0,
+    } = groupState;
+    return unread_mentions_count + unread_team_mentions_count;
   }
 }
 

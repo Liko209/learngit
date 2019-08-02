@@ -53,18 +53,6 @@ class AvatarActionsComponent extends React.Component<Props> {
     return t(i18nMap[presence] || 'presence.offline');
   }
 
-  private get title() {
-    const { t, presence } = this.props;
-    const i18nMap = {
-      [PRESENCE.AVAILABLE]: 'presence.available',
-      [PRESENCE.DND]: 'presence.doNotDisturb',
-      [PRESENCE.INMEETING]: 'presence.inMeeting',
-      [PRESENCE.ONCALL]: 'presence.onCall',
-      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
-    };
-    return t(i18nMap[presence] || 'presence.offline');
-  }
-
   private _Anchor() {
     const { currentUserId } = this.props;
     return (
@@ -83,8 +71,9 @@ class AvatarActionsComponent extends React.Component<Props> {
     return <Avatar uid={currentUserId} size="large" />;
   }
 
-  // TODO: when edit profile completed then Replenish
-  handleOpenEditProfile = () => {};
+  handleOpenEditProfile = () => {
+    this.props.handleOpen();
+  };
 
   handleDropdown = () => {
     dataAnalysis.page('Jup_Web/DT__appOptions');
@@ -119,7 +108,7 @@ class AvatarActionsComponent extends React.Component<Props> {
           />
           <JuiDivider key="divider-avatar-menu" />
           <JuiMenuList data-test-automation-id="avatarMenu">
-            <PresenceMenu presence={presence} title={this.title} />
+            <PresenceMenu presence={presence} title={this._tooltip} />
             <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}
               aria-label={t('home.aboutRingCentral')}

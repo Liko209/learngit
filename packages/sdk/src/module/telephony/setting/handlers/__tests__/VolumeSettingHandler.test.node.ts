@@ -27,7 +27,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('DefaultAppSettingHandler', () => {
+describe('VolumeSettingHandler', () => {
   let mockDefaultSettingItem: UserSettingEntity;
   let settingHandler: VolumeSettingHandler;
   let mockTelephonyService: TelephonyService;
@@ -36,9 +36,6 @@ describe('DefaultAppSettingHandler', () => {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
     mockDefaultSettingItem = {
-      weight: 0,
-      valueType: 0,
-      parentModelId: 0,
       id: SettingEntityIds.Phone_Volume,
       value: 50,
       state: ESettingItemState.ENABLE,
@@ -186,9 +183,6 @@ describe('DefaultAppSettingHandler', () => {
       TelephonyGlobalConfig.getCurrentVolume.mockReturnValue(22);
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
-        valueType: 0,
-        weight: 0,
-        parentModelId: 0,
         id: SettingEntityIds.Phone_Volume,
         state: expect.any(Number),
         value: 22,

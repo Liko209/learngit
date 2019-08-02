@@ -156,6 +156,55 @@ enum RECORD_STATE {
   STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
 }
 
+enum RTC_NO_AUDIO_TYPE {
+  NO_RTP = 'no-rtp',
+  NO_RTP_INCOMING = 'no-rtp-incoming',
+  NO_RTP_OUTGOING = 'no-rtp-outgoing',
+}
+
+type RTCNoAudioStateEvent = {
+  event: {
+    type: 'success';
+    timestamp?: number;
+    details: {
+      feature: 'no_audio_data';
+      build_type?: string;
+      user_id?: string;
+      company_id?: string;
+    };
+  };
+};
+
+type RTCNoAudioDataEvent = {
+  event: {
+    type: 'no-rtp';
+    timestamp?: number;
+    details: {
+      feature: 'no_audio_data';
+      build_type?: string;
+      user_id?: string;
+      company_id?: string;
+      data: {
+        call_type: string;
+        user_agent: string;
+        mailbox_id?: string;
+        account_id?: string;
+        session_time: number;
+        type: RTC_NO_AUDIO_TYPE;
+        call_info: {
+          to_tag: string;
+          to_number: string;
+          to_name: string;
+          call_id: string;
+          from_tag: string;
+          from_number: string;
+          from_name: string;
+        };
+      };
+    };
+  };
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
@@ -170,6 +219,9 @@ export {
   RTCSipFlags,
   RTC_MEDIA_ACTION,
   RECORD_STATE,
+  RTC_NO_AUDIO_TYPE,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
   RTCSipProvisionInfo,
   RTCSipEmergencyServiceAddr,
 };

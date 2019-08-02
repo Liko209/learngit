@@ -7,17 +7,15 @@ import { RCExtensionInfo } from 'sdk/api';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
-  ESettingValueType,
   SettingEntityIds,
   UserSettingEntity,
 } from 'sdk/module/setting';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { RC_INFO } from 'sdk/service';
 import { IRCInfoService } from '../service/IRCInfoService';
 import { ERCWebUris } from '../types';
 
 export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
-string
+  string
 > {
   id = SettingEntityIds.Phone_Region;
 
@@ -41,12 +39,8 @@ string
   private _getExtensionSetting(): UserSettingEntity<string> {
     return {
       id: SettingEntityIds.Phone_Extension,
-      weight: SettingModuleIds.ExtensionSetting.weight,
-      valueType: ESettingValueType.LINK,
-      valueGetter: () => this._rcInfoService.generateWebSettingUri(
-        ERCWebUris.EXTENSION_URI,
-      ),
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
+      valueGetter: () =>
+        this._rcInfoService.generateWebSettingUri(ERCWebUris.EXTENSION_URI),
       state: ESettingItemState.ENABLE,
     };
   }

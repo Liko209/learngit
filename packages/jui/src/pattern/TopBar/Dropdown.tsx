@@ -70,7 +70,10 @@ const JuiDropdownContactInfo = React.memo(
         {Avatar}
         <StyledContactInfoWrapper>
           {name && <StyledContactInfoName>{name}</StyledContactInfoName>}
-          <StyledContactInfoEdit onClick={openEditProfile}>
+          <StyledContactInfoEdit
+            data-test-automation-id="avatarEditProfile"
+            onClick={openEditProfile}
+          >
             {content}
           </StyledContactInfoEdit>
         </StyledContactInfoWrapper>

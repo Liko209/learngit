@@ -33,7 +33,8 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
 
   private _subscribe() {
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),);
+      this.onProfileEntityUpdate(payload),
+    );
   }
 
   async updateValue(value: NEW_MESSAGE_BADGES_OPTIONS) {
@@ -44,9 +45,6 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
 
   async fetchUserSettingEntity() {
     const settingItem: UserSettingEntity<NEW_MESSAGE_BADGES_OPTIONS> = {
-      weight: 1,
-      parentModelId: 1,
-      valueType: 1,
       id: SettingEntityIds.Notification_NewMessageBadgeCount,
       source: [
         NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,

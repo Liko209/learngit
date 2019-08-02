@@ -12,6 +12,7 @@ import { FetchGroupScene } from "./fetchGroupScene";
 import { IndexDataScene } from "./indexDataScene";
 import { SearchPhoneScene } from "./searchPhoneScene";
 import { CallLogScene } from './callLogScene';
+import { SettingScene } from './settingScene';
 
 export {
   Scene,
@@ -23,5 +24,6 @@ export {
   IndexDataScene,
   FetchGroupScene,
   SearchPhoneScene,
-  CallLogScene
+  CallLogScene,
+  SettingScene
 };

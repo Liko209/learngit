@@ -1,0 +1,8 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ContentPanel/DeleteFile.ts"],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

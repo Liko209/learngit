@@ -18,6 +18,7 @@ interface IMedia {
   setOutputDevices: (devices: MediaDeviceType[]) => IMedia;
   setCurrentTime: (time: number, continuePlay?: boolean) => IMedia;
   dispose: () => void;
+  onReset: (handler: () => void) => void;
 
   /**
    * States
