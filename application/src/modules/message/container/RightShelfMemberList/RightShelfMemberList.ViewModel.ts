@@ -1,8 +1,8 @@
 /*
- * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2019-07-26 13:51:55
- * Copyright © RingCentral. All rights reserved.
- */
+* @Author: Chris Zhan (chris.zhan@ringcentral.com)
+* @Date: 2019-07-26 13:51:55
+* Copyright © RingCentral. All rights reserved.
+*/
 import { observable, action, computed } from 'mobx';
 import {
   RightShelfMemberListViewProps,
@@ -17,6 +17,7 @@ import GroupModel from '@/store/models/Group';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
+import { notificationCenter, SERVICE } from 'sdk/service';
 
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
@@ -51,6 +52,10 @@ class RightShelfMemberListViewModel
   }
 
   init = () => {
+    notificationCenter.on(SERVICE.FETCH_REMAINING_DONE, () => {
+      console.log('hihihi', )
+      this._getMemberAndGuestIds();
+    });
     this.reaction(
       () => this.props.groupId,
       (id: number) => {
