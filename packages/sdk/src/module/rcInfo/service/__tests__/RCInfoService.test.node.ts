@@ -227,6 +227,15 @@ describe('RCInfoService', () => {
     });
   });
 
+  describe('getAllCountryList', () => {
+    it('should call controller with correct parameter', async () => {
+      await rcInfoService.getAllCountryList();
+      expect(
+        rcInfoController.getRegionInfoController().getAllCountryList,
+      ).toHaveBeenCalled();
+    });
+  });
+
   describe('getStateList', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getStateList('1');
