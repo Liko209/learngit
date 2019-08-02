@@ -125,7 +125,7 @@ class Upgrade {
 
     if (data.type === 'siblingCanReload') {
       mainLogger.info(
-        `${logTag}siblingCanReload:[${data.siblingCount}] ${data.status} ${
+        `${logTag}[SiblingCanReload]:[${data.siblingCount}] ${data.status} ${
           data.reason ? data.reason : ''
         }`,
       );
