@@ -176,10 +176,6 @@ class ConversationPageViewComponent extends Component<
     );
   }
 
-  componentDidMount() {
-    dataAnalysis.page('Jup_Web/DT_Messaging_conversationHistory');
-  }
-
   componentWillUnmount() {
     delete this._clearFolderDetection;
   }

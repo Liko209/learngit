@@ -12,7 +12,7 @@ import {
   observable, runInAction, reaction, action,
 } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger, PerformanceTracer } from 'sdk';
+import { mainLogger, PerformanceTracer, dataAnalysis } from 'sdk';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -94,6 +94,7 @@ class StreamViewComponent extends Component<Props> {
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    dataAnalysis.page('Jup_Web/DT_Messaging_conversationHistory');
   }
 
   componentDidUpdate(prevProps: Props) {

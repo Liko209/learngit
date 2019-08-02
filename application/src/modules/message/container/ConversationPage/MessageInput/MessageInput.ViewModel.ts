@@ -28,7 +28,7 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import {isMentionIdsContainTeam} from '../../ConversationCard/utils'
-import { mainLogger, dataAnalysis } from 'sdk';
+import { mainLogger } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
@@ -312,9 +312,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
       const mentionIdsContainTeam = isMentionIdsContainTeam(mentionIds);
-      if(mentionIdsContainTeam) {
-        dataAnalysis.track('Jup_Web/DT_Messaging_conversationHistory');
-      }
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -341,7 +338,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.cleanDraft();
     const items = this.items;
     try {
-      this._trackSendPost();
+      this._trackSendPost(containsTeamMention);
       const realContent: string = content.trim();
       await this._postService.sendPost({
         text: realContent,
@@ -370,12 +367,13 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._onPostCallbacks.push(callback);
   }
 
-  private _trackSendPost() {
+  private _trackSendPost(containsTeamMention:boolean) {
     const type = this.items.length ? 'file' : 'text';
     analyticsCollector.sendPost(
       'conversation thread',
       type,
       this._group.analysisType,
+      containsTeamMention,
     );
   }
 
