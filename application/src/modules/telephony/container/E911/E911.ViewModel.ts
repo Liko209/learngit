@@ -143,7 +143,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @action
   async getCountryInfo() {
     let currentCountry;
-    const countryList = await this.rcInfoService.getCountryList();
+    const countryList = await this.rcInfoService.getAllCountryList();
     const { countryName } = this.value;
 
     this.countryList = countryList;

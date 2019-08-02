@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ChangeEvent } from 'react';
-import { DialingCountryInfo, StateRecord } from 'sdk/api/ringcentral/types';
+import {
+  CountryRecord,
+  StateRecord,
+  DialingCountryInfo,
+} from 'sdk/api/ringcentral/types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 
 type E911Props = {};
@@ -32,7 +36,7 @@ type CheckBox = {
   params?: Country;
 };
 
-type Country = DialingCountryInfo;
+type Country = CountryRecord | DialingCountryInfo;
 
 type State = StateRecord;
 

@@ -95,6 +95,7 @@ class E911ViewComponent extends Component<Props> {
         automationId="e911-state-select"
         value={stateName}
       >
+        {/* TODO: need use VL */}
         {stateList.map((item: State) => (
           <JuiMenuItem
             automationId={`state-${item.name}`}
@@ -210,6 +211,7 @@ class E911ViewComponent extends Component<Props> {
             automationId="e911-country-select"
             value={countryName}
           >
+            {/* TODO: need use VL */}
             {countryList.map((item: Country) => (
               <JuiMenuItem
                 automationId={`country-${item.name}`}

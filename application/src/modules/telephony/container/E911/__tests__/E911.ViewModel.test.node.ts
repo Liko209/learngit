@@ -57,7 +57,7 @@ describe('E911ViewModel', () => {
         data: stateList,
       },
       {
-        method: 'getCountryList',
+        method: 'getAllCountryList',
         data: countryList,
       },
       {
@@ -267,7 +267,7 @@ describe('E911ViewModel', () => {
     @mockEntity(createUserInfo())
     @mockService(RCInfoService, [
       {
-        method: 'getCountryList',
+        method: 'getAllCountryList',
         data: [
           {
             id: 1,

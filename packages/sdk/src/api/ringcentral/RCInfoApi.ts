@@ -40,6 +40,8 @@ import {
   IUpdateLineRequest,
   IStateRequest,
   CountryState,
+  CountryList,
+  ICountryRequest,
 } from './types';
 
 class RCInfoApi extends Api {
@@ -152,6 +154,14 @@ class RCInfoApi extends Api {
       path: RINGCENTRAL_API.API_SERVICE_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
+  }
+
+  static getCountryInfo(request: ICountryRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_COUNTRY_INFO,
+      params: request,
+    });
+    return RCInfoApi.rcNetworkClient.http<CountryList>(query);
   }
 
   static getDeviceInfo(request: IDeviceRequest) {
