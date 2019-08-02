@@ -8,4 +8,18 @@ enum ContactType {
   CLOUD_CONTACT,
 }
 
-export { ContactType };
+type EditablePersonInfo = {
+  first_name?: string;
+  last_name?: string;
+  homepage?: string;
+  job_title?: string;
+  location?: string;
+};
+
+type HeadShotInfo = {
+  file: File;
+  offset: string;
+  crop: string;
+};
+
+export { ContactType, EditablePersonInfo, HeadShotInfo };

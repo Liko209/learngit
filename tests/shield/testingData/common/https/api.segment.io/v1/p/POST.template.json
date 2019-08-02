@@ -1,0 +1,25 @@
+{
+  "host": "https://api.segment.io",
+  "path": "/v1/p",
+  "method": "POST",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api.segment.io",
+    "path": "/v1/p",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "text/plain"
+    }
+  },
+  "response": {
+    "status": 200,
+    "statusText": "",
+    "data": {
+      "success": true
+    },
+    "headers": {
+      "content-type": "application/json"
+    }
+  }
+}

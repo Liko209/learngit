@@ -41,13 +41,14 @@ class ItemActionController {
       do_not_render: true,
     });
 
-    const doUpdateModel = async (updateItem: Item) => await this._buildItemRequestController(type).put(updateItem);
+    const doUpdateModel = async (updateItem: Item) =>
+      await this._buildItemRequestController(type).put(updateItem);
 
-    await this._partialModifyController.updatePartially(
-      id,
-      preHandlePartial,
-      doUpdateModel,
-    );
+    await this._partialModifyController.updatePartially({
+      entityId: id,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: doUpdateModel,
+    });
   }
 
   private _buildItemRequestController(path: string) {
@@ -73,11 +74,11 @@ class ItemActionController {
         return await requestController.put(updateItem);
       };
 
-      await this._partialModifyController.updatePartially(
-        itemId,
-        preHandlePartial,
-        doUpdateModel,
-      );
+      await this._partialModifyController.updatePartially({
+        entityId: itemId,
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: doUpdateModel,
+      });
     } else {
       const item = await this._entitySourceController.get(itemId);
       this._entitySourceController.delete(itemId);

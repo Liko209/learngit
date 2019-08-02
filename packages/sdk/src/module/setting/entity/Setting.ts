@@ -24,7 +24,6 @@ enum ESettingValueType {
 }
 
 type UserSettingEntity<T = any> = BaseSettingEntity & {
-  valueType: ESettingValueType;
   source?: T[];
   value?: T;
   valueGetter?: () => Promise<T> | T;

@@ -13,9 +13,7 @@ enum ESettingItemState {
 }
 
 type BaseSettingEntity = IdModel & {
-  weight: number;
   state: ESettingItemState;
-  parentModelId?: number;
 };
 
 export { BaseSettingEntity, ESettingItemState };

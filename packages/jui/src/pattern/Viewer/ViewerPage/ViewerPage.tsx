@@ -9,7 +9,6 @@ import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils/styles';
 import { applyTransform, applyInverseTransform } from '../ui_utils';
 
-/* eslint-disable */
 const DEFAULT_SCALE = 1;
 const ViewerPageWrap = styled.div`
   && {
@@ -70,6 +69,137 @@ type States = {
   originViewPort: ViewportType | null;
   currentViewPort: ViewportType | null;
 };
+
+type PageViewportParam = {
+  viewBox: ViewBoxType;
+  scale: number;
+  rotation: number;
+  offsetX?: number;
+  offsetY?: number;
+  dontFlip?: boolean;
+};
+
+class PageViewport {
+  viewBox: ViewBoxType;
+  scale: number;
+  rotation: number;
+  offsetX: number;
+  offsetY: number;
+  transform: number[];
+  width: number;
+  height: number;
+
+  constructor({
+    viewBox,
+    scale,
+    rotation,
+    offsetX = 0,
+    offsetY = 0,
+    dontFlip = false,
+  }: PageViewportParam) {
+    this.viewBox = viewBox;
+    this.scale = scale;
+    this.rotation = rotation;
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+
+    const centerX = (viewBox[2] + viewBox[0]) / 2;
+    const centerY = (viewBox[3] + viewBox[1]) / 2;
+    let rotateA;
+    let rotateB;
+    let rotateC;
+    let rotateD;
+
+    rotation = rotation % 360;
+
+    rotation = rotation < 0 ? rotation + 360 : rotation;
+    switch (rotation) {
+      case 180:
+        rotateA = -1;
+        rotateB = 0;
+        rotateC = 0;
+        rotateD = 1;
+        break;
+      case 90:
+        rotateA = 0;
+        rotateB = 1;
+        rotateC = 1;
+        rotateD = 0;
+        break;
+      case 270:
+        rotateA = 0;
+        rotateB = -1;
+        rotateC = -1;
+        rotateD = 0;
+        break;
+      // case 0:
+      default:
+        rotateA = 1;
+        rotateB = 0;
+        rotateC = 0;
+        rotateD = -1;
+        break;
+    }
+
+    if (dontFlip) {
+      rotateC = -rotateC;
+      rotateD = -rotateD;
+    }
+
+    // tslint:disable-next-line: one-variable-per-declaration
+    let offsetCanvasX;
+    let offsetCanvasY;
+    // tslint:disable-next-line: one-variable-per-declaration
+    let width;
+    let height;
+    if (rotateA === 0) {
+      offsetCanvasX = Math.abs(centerY - viewBox[1]) * scale + offsetX;
+      offsetCanvasY = Math.abs(centerX - viewBox[0]) * scale + offsetY;
+      width = Math.abs(viewBox[3] - viewBox[1]) * scale;
+      height = Math.abs(viewBox[2] - viewBox[0]) * scale;
+    } else {
+      offsetCanvasX = Math.abs(centerX - viewBox[0]) * scale + offsetX;
+      offsetCanvasY = Math.abs(centerY - viewBox[1]) * scale + offsetY;
+      width = Math.abs(viewBox[2] - viewBox[0]) * scale;
+      height = Math.abs(viewBox[3] - viewBox[1]) * scale;
+    }
+
+    this.transform = [
+      rotateA * scale,
+      rotateB * scale,
+      rotateC * scale,
+      rotateD * scale,
+      offsetCanvasX - rotateA * scale * centerX - rotateC * scale * centerY,
+      offsetCanvasY - rotateB * scale * centerX - rotateD * scale * centerY,
+    ];
+
+    this.width = width;
+    this.height = height;
+  }
+
+  clone({
+    scale = this.scale,
+    rotation = this.rotation,
+    dontFlip = false,
+  } = {}) {
+    return new PageViewport({
+      scale,
+      rotation,
+      dontFlip,
+      viewBox: this.viewBox.slice() as ViewBoxType,
+      offsetX: this.offsetX,
+      offsetY: this.offsetY,
+    });
+  }
+
+  convertToViewportPoint(x: number, y: number) {
+    return applyTransform([x, y], this.transform);
+  }
+
+  convertToPagePoint(x: number, y: number) {
+    return applyInverseTransform([x, y], this.transform);
+  }
+}
 
 class JuiViewerPage extends React.Component<Props, States> {
   container = createRef<HTMLDivElement>();
@@ -278,13 +408,13 @@ class JuiViewerPage extends React.Component<Props, States> {
     }
     return (
       <ViewerPageWrap
-        className='ViewerPage'
+        className="ViewerPage"
         data-page-index={pageNumber}
         ref={this.container as any}
         {...rest}
       >
         <ViewerPageContentWrap
-          className='ViewerPageContentWrap'
+          className="ViewerPageContentWrap"
           ref={this.contentWrap as any}
         >
           {content}
@@ -297,130 +427,3 @@ class JuiViewerPage extends React.Component<Props, States> {
 const PageContext = createContext<Props>({});
 
 export { JuiViewerPage, Props as JuiViewerPageProps, PageContext };
-
-type PageViewportParam = {
-  viewBox: ViewBoxType;
-  scale: number;
-  rotation: number;
-  offsetX?: number;
-  offsetY?: number;
-  dontFlip?: boolean;
-};
-
-class PageViewport {
-  viewBox: ViewBoxType;
-  scale: number;
-  rotation: number;
-  offsetX: number;
-  offsetY: number;
-  transform: number[];
-  width: number;
-  height: number;
-
-  constructor({
-    viewBox,
-    scale,
-    rotation,
-    offsetX = 0,
-    offsetY = 0,
-    dontFlip = false,
-  }: PageViewportParam) {
-    this.viewBox = viewBox;
-    this.scale = scale;
-    this.rotation = rotation;
-    this.offsetX = offsetX;
-    this.offsetY = offsetY;
-
-    const centerX = (viewBox[2] + viewBox[0]) / 2;
-    const centerY = (viewBox[3] + viewBox[1]) / 2;
-    // tslint:disable-next-line: one-variable-per-declaration
-    let rotateA, rotateB, rotateC, rotateD;
-    // tslint:disable-next-line: no-parameter-reassignment
-    rotation = rotation % 360;
-    // tslint:disable-next-line: no-parameter-reassignment
-    rotation = rotation < 0 ? rotation + 360 : rotation;
-    switch (rotation) {
-      case 180:
-        rotateA = -1;
-        rotateB = 0;
-        rotateC = 0;
-        rotateD = 1;
-        break;
-      case 90:
-        rotateA = 0;
-        rotateB = 1;
-        rotateC = 1;
-        rotateD = 0;
-        break;
-      case 270:
-        rotateA = 0;
-        rotateB = -1;
-        rotateC = -1;
-        rotateD = 0;
-        break;
-      // case 0:
-      default:
-        rotateA = 1;
-        rotateB = 0;
-        rotateC = 0;
-        rotateD = -1;
-        break;
-    }
-
-    if (dontFlip) {
-      rotateC = -rotateC;
-      rotateD = -rotateD;
-    }
-
-    // tslint:disable-next-line: one-variable-per-declaration
-    let offsetCanvasX, offsetCanvasY;
-    // tslint:disable-next-line: one-variable-per-declaration
-    let width, height;
-    if (rotateA === 0) {
-      offsetCanvasX = Math.abs(centerY - viewBox[1]) * scale + offsetX;
-      offsetCanvasY = Math.abs(centerX - viewBox[0]) * scale + offsetY;
-      width = Math.abs(viewBox[3] - viewBox[1]) * scale;
-      height = Math.abs(viewBox[2] - viewBox[0]) * scale;
-    } else {
-      offsetCanvasX = Math.abs(centerX - viewBox[0]) * scale + offsetX;
-      offsetCanvasY = Math.abs(centerY - viewBox[1]) * scale + offsetY;
-      width = Math.abs(viewBox[2] - viewBox[0]) * scale;
-      height = Math.abs(viewBox[3] - viewBox[1]) * scale;
-    }
-
-    this.transform = [
-      rotateA * scale,
-      rotateB * scale,
-      rotateC * scale,
-      rotateD * scale,
-      offsetCanvasX - rotateA * scale * centerX - rotateC * scale * centerY,
-      offsetCanvasY - rotateB * scale * centerX - rotateD * scale * centerY,
-    ];
-
-    this.width = width;
-    this.height = height;
-  }
-
-  clone({
-    scale = this.scale,
-    rotation = this.rotation,
-    dontFlip = false,
-  } = {}) {
-    return new PageViewport({
-      scale,
-      rotation,
-      dontFlip,
-      viewBox: this.viewBox.slice() as ViewBoxType,
-      offsetX: this.offsetX,
-      offsetY: this.offsetY,
-    });
-  }
-
-  convertToViewportPoint(x: number, y: number) {
-    return applyTransform([x, y], this.transform);
-  }
-
-  convertToPagePoint(x: number, y: number) {
-    return applyInverseTransform([x, y], this.transform);
-  }
-}

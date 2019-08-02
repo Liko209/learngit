@@ -15,11 +15,19 @@ import { CALL_DIRECTION } from 'sdk/module/RCItems';
 type DialpadProps = ViewProps & WithTranslation;
 
 const Actions = [() => <Mute type="fab" />, () => <End size="medium" />];
-
-/* eslint-disable */
-class DialpadViewComponent extends React.Component<DialpadProps> {
+class DialpadViewComponent extends React.PureComponent<DialpadProps> {
   render() {
-    const { showMinimized, maximize, name, timing, t, id, startMinimizeAnimation, canUseTelephony, direction } = this.props;
+    const {
+      showMinimized,
+      maximize,
+      name,
+      timing,
+      t,
+      id,
+      startMinimizeAnimation,
+      canUseTelephony,
+      direction,
+    } = this.props;
 
     if (!canUseTelephony) {
       return null;
@@ -30,10 +38,16 @@ class DialpadViewComponent extends React.Component<DialpadProps> {
         Actions={Actions}
         name={getDisplayName(t, direction as CALL_DIRECTION, name)}
         label={typeof timing === 'string' ? timing : t(timing.key)}
-        data-test-automation-id='telephony-minimized-view'
+        data-test-automation-id="telephony-minimized-view"
       />
     ) : (
-      <JuiDialpadBtn onClick={maximize} ariaLabel={t('home.openDialer')} id={id} startMinimizeAnimation={startMinimizeAnimation} tooltipTitle={t('home.dialer')} />
+      <JuiDialpadBtn
+        onClick={maximize}
+        ariaLabel={t('home.openDialer')}
+        id={id}
+        startMinimizeAnimation={startMinimizeAnimation}
+        tooltipTitle={t('home.dialer')}
+      />
     );
   }
 }

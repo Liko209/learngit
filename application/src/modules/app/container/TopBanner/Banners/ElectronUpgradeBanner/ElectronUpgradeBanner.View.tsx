@@ -3,8 +3,6 @@
  * @Date: 2019-04-30 15:37:43
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
-
 import React from 'react';
 import {
   JuiSnackbarContent,
@@ -29,8 +27,8 @@ class ElectronUpgradeBannerViewComponent extends React.Component<
       <JuiSnackbarContent
         type={ToastType.WARN}
         message={t('electron.upgrade.topBannerWarning')}
-        messageAlign='center'
-        fullWidth={true}
+        messageAlign="center"
+        fullWidth
         action={
           <JuiSnackbarAction
             aria-label={t('electron.upgrade.upgrade')}

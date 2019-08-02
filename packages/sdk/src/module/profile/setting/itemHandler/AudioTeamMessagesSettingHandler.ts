@@ -42,9 +42,6 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
   }
   async fetchUserSettingEntity() {
     const settingItem: UserSettingEntity<AUDIO_SOUNDS_INFO> = {
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
       source: SoundsList,
       id: this.id,
       value: await this._getValue(),
@@ -54,7 +51,7 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
     return settingItem;
   }
   private async _getValue() {
-    const profile = this._profileService.getProfile();
+    const profile = await this._profileService.getProfile();
     let value = profile ? profile[this.settingId] : undefined;
     if (value === undefined) {
       value = SOUNDS_TYPE.Log_Drum;

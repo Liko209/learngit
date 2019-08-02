@@ -3,7 +3,6 @@
  * @Date: 2019-05-27 17:47:36
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { FileDeleteActionViewProps } from './types';
@@ -24,9 +23,9 @@ class FileDeleteActionViewComponent extends Component<
       content: (
         <JuiDialogContentText>
           <Trans
-            i18nKey='message.prompt.deleteFileContent'
+            i18nKey="message.prompt.deleteFileContent"
             values={{ fileName }}
-            components={[<strong key='0' />]}
+            components={[<strong key="0" />]}
           />
         </JuiDialogContentText>
       ),
@@ -45,7 +44,7 @@ class FileDeleteActionViewComponent extends Component<
   };
 
   iconCom = (
-    <JuiIconography iconColor={['grey', '500']} iconSize='small'>
+    <JuiIconography iconColor={['grey', '500']} iconSize="small">
       delete
     </JuiIconography>
   );

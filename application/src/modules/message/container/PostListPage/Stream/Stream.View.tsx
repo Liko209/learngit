@@ -24,11 +24,12 @@ import noMentionImage from '../images/empty-@mention.svg';
 import noBookmarkImage from '../images/empty-bookmark.svg';
 import moize from 'moize';
 import { ErrorPage } from '@/modules/common/container/ErrorPage';
+import { DIRECTION } from 'jui/components/Lists';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
 const POST_PRELOAD_COUNT = 20;
-const POST_PRELOAD_DIRECTION = 'up';
+const POST_PRELOAD_DIRECTION = DIRECTION.UP;
 const emptyPageData = {
   [POST_LIST_TYPE.mentions]: {
     translationKey: 'message.noMentionPosts',
@@ -51,19 +52,21 @@ class StreamViewComponent extends Component<Props> {
     { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
   );
   private _jumpToPostRef: React.RefObject<
-  JuiConversationCard
+    JuiConversationCard
   > = React.createRef();
   private _contentStyleGen = _.memoize(
-    (height?: number) => ({
-      minHeight: height,
-      display: 'flex',
-      flexDirection: 'column',
-    } as React.CSSProperties),
+    (height?: number) =>
+      ({
+        minHeight: height,
+        display: 'flex',
+        flexDirection: 'column',
+      } as React.CSSProperties),
   );
   private _wrapperStyleGen = _.memoize(
-    (height?: number) => ({
-      height,
-    } as React.CSSProperties),
+    (height?: number) =>
+      ({
+        height,
+      } as React.CSSProperties),
   );
   private _hasMore = (direction: string) => {
     if (direction === 'up') {
@@ -96,12 +99,12 @@ class StreamViewComponent extends Component<Props> {
     );
   });
 
-  private _getErrorPage = moize(height => <ErrorPage onReload={this.props.tryAgain} height={height} />);
+  private _getErrorPage = moize(height => (
+    <ErrorPage onReload={this.props.tryAgain} height={height} />
+  ));
 
   render() {
-    const {
-      ids, isShow = true, shouldShowErrorPage, type,
-    } = this.props;
+    const { ids, isShow = true, shouldShowErrorPage, type } = this.props;
     // if conversation post include video and play video
     // when switch tab in global search will cache tabs
     // so we need to unmount conversation post

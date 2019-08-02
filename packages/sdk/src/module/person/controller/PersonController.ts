@@ -29,6 +29,8 @@ import { PersonEntityCacheController } from './PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { PersonActionController } from './PersonActionController';
+import { buildPartialModifyController } from 'sdk/framework/controller';
 
 const PersonFlags = {
   is_webmail: 1,
@@ -58,6 +60,16 @@ class PersonController {
   private _entityCacheController: IEntityCacheController<Person>;
 
   constructor() {}
+
+  get personActionController() {
+    return new PersonActionController(this.partialModifyController, this._entitySourceController);
+  }
+
+  get partialModifyController() {
+    return buildPartialModifyController<Person>(
+      this._entitySourceController
+    );
+  }
 
   setDependentController(
     entitySourceController: IEntitySourceController<Person>,
@@ -96,7 +108,7 @@ class PersonController {
 
   private _getHeadShotByVersion(
     uid: number,
-    headShotVersion: string,
+    headShotVersion: number,
     size: number,
   ) {
     const auth = ServiceLoader.getInstance<AccountService>(
@@ -152,9 +164,9 @@ class PersonController {
 
   getHeadShotWithSize(
     uid: number,
-    headshot_version: string,
     headshot: HeadShotModel,
     size: number,
+    headshot_version?: number,
   ) {
     if (typeof headshot !== 'string') {
       let url: string | null = null;
@@ -165,7 +177,7 @@ class PersonController {
         url = this._getHighestResolutionHeadshotUrlFromThumbs(
           headshot.thumbs,
           size,
-          headshot.stored_file_id,
+          headshot.stored_file_id ? headshot.stored_file_id.toString() : undefined,
         );
       }
       if (!url) {
@@ -380,6 +392,7 @@ class PersonController {
     person: Person,
     eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
   ): void {
+    // extension should at fist
     if (person.sanitized_rc_extension) {
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,

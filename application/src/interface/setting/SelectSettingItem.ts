@@ -6,7 +6,7 @@
 import { SettingItem, SETTING_ITEM_TYPE } from './SettingItem';
 
 type SelectSettingItem<T> = SettingItem & {
-  type: SETTING_ITEM_TYPE.SELECT;
+  type: SETTING_ITEM_TYPE.SELECT | SETTING_ITEM_TYPE.VIRTUALIZED_SELECT;
 
   /**
    * Decide how the select renders value

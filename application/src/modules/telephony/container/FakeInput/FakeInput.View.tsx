@@ -3,7 +3,6 @@
  * @Date: 2019-04-09 12:36:01
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
@@ -15,9 +14,10 @@ import { FakeInputViewProps } from './types';
 @observer
 class FakeInputView extends Component<FakeInputViewProps> {
   private _containerRef: RefObject<any> = createRef();
-
+  /* eslint-disable react/no-find-dom-node */
   componentDidMount() {
     if (!this._containerRef.current) {
+      return;
     }
 
     const el = ReactDOM.findDOMNode(this._containerRef.current);

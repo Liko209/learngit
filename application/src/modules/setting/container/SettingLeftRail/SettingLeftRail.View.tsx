@@ -12,12 +12,9 @@ import {
   JuiList,
   JuiListNavItem,
   JuiListNavItemIconographyLeft,
-  JuiListNavItemText
+  JuiListNavItemText,
 } from 'jui/components';
-import {
-  JuiLeftRail,
-  JuiLeftRailStickyTop
-} from 'jui/pattern/LeftRail/LeftRail';
+import { JuiLeftRail } from 'jui/pattern/LeftRail/LeftRail';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { SettingLeftRailViewProps } from './types';
@@ -79,18 +76,16 @@ class SettingLeftRailViewComponent extends Component<Props> {
   render() {
     return (
       <JuiLeftRail>
-        <JuiLeftRailStickyTop>
-          <StyledList component="nav" data-test-automation-id="settingLeftRail">
-            {this._renderNavItems()}
-          </StyledList>
-        </JuiLeftRailStickyTop>
+        <StyledList component="nav" data-test-automation-id="settingLeftRail">
+          {this._renderNavItems()}
+        </StyledList>
       </JuiLeftRail>
     );
   }
 }
 
 const SettingLeftRailView = withTranslation('translations')(
-  withRouter(SettingLeftRailViewComponent)
+  withRouter(SettingLeftRailViewComponent),
 );
 
 export { SettingLeftRailView };

@@ -167,7 +167,6 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
 
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -222,7 +221,6 @@ test.meta(<ITestMeta>{
   const callee = h(t).rcData.guestCompany.users[0];
 
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(callee).init();
 
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
@@ -282,7 +280,6 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const callee = h(t).rcData.guestCompany.users[0];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(callee).init();
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
   const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)

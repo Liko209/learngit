@@ -5,8 +5,7 @@
  */
 import { E911SettingHandler } from '../E911SettingHandler';
 import { TelephonyService } from '../../../telephony';
-import { ESettingValueType, SettingEntityIds } from '../../../setting';
-import { SettingModuleIds } from '../../../setting/constants';
+import { SettingEntityIds } from '../../../setting';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { RCInfoService } from '../../service';
@@ -137,9 +136,6 @@ describe('E911SettingHandler', () => {
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_E911,
-        weight: SettingModuleIds.ExtensionSetting.weight,
-        valueType: ESettingValueType.LINK,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
         state: ESettingItemState.ENABLE,
         value: emergencyAddr,
         valueSetter: expect.any(Function),
@@ -157,9 +153,6 @@ describe('E911SettingHandler', () => {
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_E911,
-        weight: SettingModuleIds.ExtensionSetting.weight,
-        valueType: ESettingValueType.LINK,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
         state: ESettingItemState.INVISIBLE,
         value: emergencyAddr,
         valueSetter: expect.any(Function),
@@ -177,9 +170,6 @@ describe('E911SettingHandler', () => {
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_E911,
-        weight: SettingModuleIds.ExtensionSetting.weight,
-        valueType: ESettingValueType.LINK,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
         state: ESettingItemState.INVISIBLE,
         value: emergencyAddr,
         valueSetter: expect.any(Function),

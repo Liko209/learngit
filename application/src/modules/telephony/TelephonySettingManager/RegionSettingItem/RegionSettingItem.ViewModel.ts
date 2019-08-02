@@ -3,7 +3,6 @@
  * @Date: 2019-05-09 14:00:02
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import _ from 'lodash';
 import { container } from 'framework';
 import { computed, observable, action } from 'mobx';
@@ -79,7 +78,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
 
   private _getCountryFlag: (
     isoCode: DialingCountryInfo['isoCode'],
-  ) => JuiIconographyProps['symbol'] = isoCode => undefined;
+  ) => JuiIconographyProps['symbol'] = () => undefined;
 
   private _currentCountryAreaCode: string = '';
 
@@ -150,14 +149,13 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
       };
     });
   };
-  /* eslint-disable */
   private _getCallingCodeByDialPlanISOCode(
     isoCode: DialingCountryInfo['isoCode'],
   ): DialingCountryInfo['callingCode'] {
     const country = this._countriesList.find(
       country => country.value === isoCode,
     );
-    return !!country ? country.regionCode || '' : '';
+    return country ? country.regionCode || '' : '';
   }
 
   @action

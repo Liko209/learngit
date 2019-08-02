@@ -25,7 +25,7 @@ import { telephonyLogger } from 'foundation';
 const TAG = '[DeviceSetting][Ringer]';
 
 export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
-MediaDeviceInfo
+  MediaDeviceInfo
 > {
   id = SettingEntityIds.Phone_RingerSource;
 
@@ -103,9 +103,6 @@ MediaDeviceInfo
     const devices = this._telephonyService.getRingerDevicesList();
     telephonyLogger.tags(TAG).info('fetchUserSettingEntity', devices);
     const settingItem: UserSettingEntity<MediaDeviceInfo> = {
-      weight: 0,
-      valueType: 0,
-      parentModelId: 0,
       id: SettingEntityIds.Phone_RingerSource,
       source: devices,
       value: devices.find(

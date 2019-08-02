@@ -13,6 +13,12 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { VoicemailViewModel } from '../Voicemail.ViewModel';
+import { config } from '../../../module.config';
+import { registerModule } from 'shield/utils';
+import { container } from 'framework';
+import { PhoneStore } from '../../../store';
+
+registerModule(config);
 
 describe('VoicemailViewModel', () => {
   const voicemailService = {
@@ -84,11 +90,20 @@ describe('VoicemailViewModel', () => {
       const vm = new VoicemailViewModel({});
       vm.onVoicemailPlay = jest.fn();
 
+      const media = {
+        pause: jest.fn(),
+      };
+      const phoneStore = container.get(PhoneStore);
+
+      phoneStore.addAudio(1, {
+        media,
+      });
+
       globalStore.set(GLOBAL_KEYS.INCOMING_CALL, true);
 
       await when(
         () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
-        () => expect(vm.onVoicemailPlay).toHaveBeenCalledWith(null),
+        () => expect(media.pause).toHaveBeenCalled(),
       );
     }
   }

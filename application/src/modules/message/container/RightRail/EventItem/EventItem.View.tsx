@@ -3,7 +3,6 @@
  * @Date: 2019-01-16 15:01:30
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import {
@@ -21,7 +20,7 @@ class EventItemView extends React.Component<ViewProps> {
   render() {
     const { text, localTime, startTime, color, isRepeat } = this.props;
     return (
-      <JuiListItem data-test-automation-id='rightRail-event-item'>
+      <JuiListItem data-test-automation-id="rightRail-event-item">
         <JuiListItemIcon>
           <JuiEventIcon iconColor={color} />
         </JuiListItemIcon>

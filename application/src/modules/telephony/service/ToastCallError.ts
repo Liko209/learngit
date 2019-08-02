@@ -126,6 +126,16 @@ class ToastCallError {
       'Call error: Automatic call recording enabled in Service Web.',
     );
   }
+
+  static toastSwitchCallNoNetwork(): void {
+    ToastCallError.toast('telephony.prompt.switchCall.noNetwork', 3000);
+    mainLogger.info("Call error: Network disconnection, can't switch call");
+  }
+
+  static toastSwitchCallBackendError(): void {
+    ToastCallError.toast('telephony.prompt.switchCall.backendError', 3000);
+    mainLogger.info("Call error: Unexpected backend error, can't switch call");
+  }
 }
 
 export { ToastCallError };

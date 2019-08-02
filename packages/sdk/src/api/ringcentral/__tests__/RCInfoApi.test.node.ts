@@ -312,4 +312,17 @@ describe('RCInfoApi', () => {
       });
     });
   });
+
+  describe('getRCPresence', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.getRCPresence();
+      expect(RCInfoApi.rcNetworkClient.http).toHaveBeenCalledWith({
+        authFree: false,
+        method: 'get',
+        path:
+          '/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
+        via: NETWORK_VIA.HTTP,
+      });
+    });
+  });
 });

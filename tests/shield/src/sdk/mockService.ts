@@ -1,10 +1,16 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:17:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { registerConfigs } from 'sdk/registerConfigs';
+
 import { descriptorAOP } from '../core/utils';
 import { mockMethods } from '../shared';
 
 const mockServiceCache = new Map();
-type MockMethod = { method: string; data: any; type?: 'resolve' | 'reject' };
+type MockMethod = { method: string; data?: any; type?: 'resolve' | 'reject' };
 type MockMethodType = string | MockMethod[];
 
 const _getMockService = function(

@@ -22,7 +22,9 @@ class PptrUtils {
     const memory = [];
     if (Config.takeHeapSnapshot) {
       const listener = (data) => {
-        memory.push(data.chunk);
+        if (data.chunk) {
+          memory.push(data.chunk);
+        }
       }
 
       driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
@@ -41,7 +43,8 @@ class PptrUtils {
 
       logger.info('tracking heap object.');
     }
-    return memory.join('');
+    
+    return memory.length > 0 ? memory.join('') : '';
   }
 
   static async collectGarbage(driver) {

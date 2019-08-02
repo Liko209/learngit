@@ -16,7 +16,8 @@ class SearchGatherer extends DebugGatherer {
     'search_people',
     'search_team',
     'search_post',
-    // 'ui_globalsearch_tab_render'
+    'ui_globalsearch_tab_render',
+    'scroll_search_post'
   ];
 
   constructor(keywords: Array<string>) {
@@ -45,7 +46,7 @@ class SearchGatherer extends DebugGatherer {
     globals.pushMemoryFilePath(filePath);
     // switch conversation
     await this.search(searchPage, Config.sceneRepeatCount);
-    
+
     filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(passContext.driver));
     globals.pushMemoryFilePath(filePath);
 
@@ -83,6 +84,8 @@ class SearchGatherer extends DebugGatherer {
       await page.enterSearchResult();
 
       await page.switchAllSeachTab();
+
+      await page.scrollMessageTab();
 
       await page.closeSearch();
 

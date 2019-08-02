@@ -6,18 +6,16 @@
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
-  ESettingValueType,
   SettingEntityIds,
   UserSettingEntity,
 } from 'sdk/module/setting';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { RC_INFO } from 'sdk/service';
 
 import { IRCInfoService } from '../service/IRCInfoService';
 import { RegionSettingInfo } from './types';
 
 export class RegionSettingHandler extends AbstractSettingEntityHandler<
-RegionSettingInfo
+  RegionSettingInfo
 > {
   id = SettingEntityIds.Phone_Region;
 
@@ -39,7 +37,7 @@ RegionSettingInfo
   }
 
   private async _getRegionSetting(): Promise<
-  UserSettingEntity<RegionSettingInfo>
+    UserSettingEntity<RegionSettingInfo>
   > {
     const countryInfo = await this._rcInfoService.getCurrentCountry();
     const areaCode = await this._rcInfoService.getAreaCode();
@@ -48,10 +46,7 @@ RegionSettingInfo
     );
     return {
       id: SettingEntityIds.Phone_Region,
-      weight: SettingModuleIds.RegionSetting.weight,
-      valueType: ESettingValueType.OBJECT,
       value: { countryInfo, areaCode },
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
       state: visibleState,
     };
   }
