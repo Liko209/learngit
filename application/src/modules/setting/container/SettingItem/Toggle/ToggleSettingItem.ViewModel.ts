@@ -12,7 +12,7 @@ import {
 import { ToggleSettingItemProps } from './types';
 
 class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
-ToggleSettingItemProps
+  ToggleSettingItemProps
 > {
   @action
   saveSetting = async (value: boolean) => {
@@ -24,13 +24,13 @@ ToggleSettingItemProps
         return;
       }
     }
-    valueSetter && valueSetter(value);
+    valueSetter && (await valueSetter(value));
     dataTracking &&
       dataTrackingForSetting(
         { ...dataTracking, optionTransform: () => booleanTransform(value) },
         value,
       );
-  }
+  };
 }
 
 export { ToggleSettingItemViewModel };
