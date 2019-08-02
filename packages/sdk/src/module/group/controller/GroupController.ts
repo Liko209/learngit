@@ -33,6 +33,7 @@ class GroupController {
         this.entitySourceController,
         this.partialModifyController,
         this.getTeamPermissionController(),
+        this.getHandleDataController(),
       );
     }
     return this._groupActionController;

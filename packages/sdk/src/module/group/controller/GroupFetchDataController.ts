@@ -187,7 +187,7 @@ export class GroupFetchDataController {
     onlineFirst: boolean = true,
     sortFunc?: (A: Person, B: Person) => number,
   ) {
-    const memberIds: number[] = [];
+    let memberIds: number[] = [];
     const guestIds: number[] = [];
     const group = await this.entitySourceController.getEntityLocally(groupId);
     if (group) {
@@ -226,14 +226,17 @@ export class GroupFetchDataController {
         }
         return result;
       });
+      const memberSet = new Set(group.members);
       const guestCompanyIds = new Set(group.guest_user_company_ids);
       members.forEach((person: Person) => {
+        memberSet.delete(person.id);
         if (guestCompanyIds.has(person.company_id)) {
           guestIds.push(person.id);
         } else {
           memberIds.push(person.id);
         }
       })
+      memberIds = memberIds.concat(Array.from(memberSet));
     }
     return { memberIds, guestIds };
   }

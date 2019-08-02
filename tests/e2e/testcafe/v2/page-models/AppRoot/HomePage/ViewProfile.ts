@@ -9,6 +9,10 @@ export class MiniProfile extends BaseWebComponent {
     await this.t.expect(this.self.exists).ok();
   }
 
+  async shouldBeDismissed() {
+    await this.t.expect(this.self.exists).notOk();
+  }
+
   get self() {
     return this.getSelectorByAutomationId('profileMiniCard');
   }

@@ -33,6 +33,7 @@ import { TeamPermissionController } from './TeamPermissionController';
 import { GROUP_CAN_NOT_SHOWN_REASON } from '../constants';
 import { AccountService } from '../../account/service';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
+import { GroupHandleDataController } from './GroupHandleDataController';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
@@ -43,6 +44,7 @@ export class GroupActionController {
     public entitySourceController: IEntitySourceController<Group>,
     public partialModifyController: IPartialModifyController<Group>,
     public teamPermissionController: TeamPermissionController,
+    public handleDataController: GroupHandleDataController,
   ) {}
 
   isInTeam(userId: number, team: Group): boolean {
@@ -58,7 +60,7 @@ export class GroupActionController {
   }
 
   async joinTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.partialModifyController.updatePartially({
+    return this.partialModifyController.updatePartially({
       entityId: teamId,
       preHandlePartialEntity: (partialEntity, originalEntity) => ({
         ...partialEntity,
@@ -74,7 +76,7 @@ export class GroupActionController {
   }
 
   async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.partialModifyController.updatePartially({
+    return this.partialModifyController.updatePartially({
       entityId: teamId,
       preHandlePartialEntity: (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
@@ -95,7 +97,7 @@ export class GroupActionController {
   }
 
   async removeTeamMembers(members: number[], teamId: number) {
-    return await this.partialModifyController.updatePartially({
+    return this.partialModifyController.updatePartially({
       entityId: teamId,
       preHandlePartialEntity: (partialEntity, originalEntity) => {
         const memberSet: Set<number> = new Set(originalEntity.members);
@@ -117,7 +119,7 @@ export class GroupActionController {
   }
 
   async addTeamMembers(members: number[], teamId: number) {
-    return await this.partialModifyController.updatePartially({
+    return this.partialModifyController.updatePartially({
       entityId: teamId,
       preHandlePartialEntity: (partialEntity, originalEntity) => ({
         ...partialEntity,
@@ -250,7 +252,8 @@ export class GroupActionController {
   ): Promise<Group> {
     const team = this._generateTeamParameters(creator, memberIds, teamSetting);
     const result = await GroupAPI.createTeam(team);
-    return await this.handleRawGroup(result);
+    await this.handleDataController.handleData([result]);
+    return this.handleRawGroup(result);
   }
 
   async convertToTeam(
@@ -269,6 +272,7 @@ export class GroupActionController {
     );
     team['group_id'] = groupId;
     const result = await GroupAPI.convertToTeam(team);
+    await this.handleDataController.handleData([result]);
     const group = await this.handleRawGroup(result);
 
     try {

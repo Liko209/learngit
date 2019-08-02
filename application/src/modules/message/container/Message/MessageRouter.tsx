@@ -16,6 +16,7 @@ import {
   JuiResponsiveLayout,
   VISUAL_MODE,
   withResponsive,
+  RIGHT_SHELL_DEFAULT_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
@@ -50,7 +51,7 @@ const RightRailResponsive = withResponsive(RightRail, {
   TriggerButton,
   maxWidth: 360,
   minWidth: 200,
-  defaultWidth: 268,
+  defaultWidth: RIGHT_SHELL_DEFAULT_WIDTH,
   visualMode: VISUAL_MODE.BOTH,
   enable: {
     left: true,
@@ -80,9 +81,9 @@ class MessageRouterComponent extends Component<Props, State> {
     const targetConversationId = this.props.match.params.subPath;
     targetConversationId
       ? MessageRouterChangeHelper.goToConversation(
-        targetConversationId,
-        'REPLACE',
-      )
+          targetConversationId,
+          'REPLACE',
+        )
       : MessageRouterChangeHelper.goToLastOpenedGroup();
   }
 
@@ -144,7 +145,7 @@ class MessageRouterComponent extends Component<Props, State> {
     const { retryParams } = this.state;
     if (!retryParams) return;
     return goToConversationWithLoading(retryParams);
-  }
+  };
 
   render() {
     const { match } = this.props;
