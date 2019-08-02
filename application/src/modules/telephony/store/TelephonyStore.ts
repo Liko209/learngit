@@ -358,6 +358,7 @@ class TelephonyStore {
     this._openCallWindow();
   };
 
+  @action
   onDialerInputFocus = () => {
     this.dialerInputFocused = true;
   };
