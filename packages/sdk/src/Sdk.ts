@@ -12,6 +12,7 @@ import {
   dataAnalysis,
   sleepModeDetector,
   mainLogger,
+  Performance,
 } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
@@ -197,6 +198,13 @@ class Sdk {
       if (isInLoading) {
         mainLogger.tags(LOG_TAG).info('stop loading');
         notificationCenter.emitKVChange(SERVICE.STOP_LOADING);
+      }
+
+      if (AccountGlobalConfig.getUserDictionary()) {
+        Performance.instance.putAttribute(
+          'userId',
+          AccountGlobalConfig.getUserDictionary(),
+        );
       }
     }
     mainLogger.tags(LOG_TAG).info('end onAuthSuccess');

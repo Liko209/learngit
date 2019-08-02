@@ -12,6 +12,10 @@ import { KVStorageManager } from '../../../db';
 
 class FirebasePerformance implements IPerformance {
   private _performance: firebase.performance.Performance | null;
+  private _attrs: Map<string, { attr: string; value: string }> = new Map<
+    string,
+    { attr: string; value: string }
+  >();
 
   async initialize() {
     const storageManager = new KVStorageManager();
@@ -20,8 +24,29 @@ class FirebasePerformance implements IPerformance {
     }
   }
 
+  getAttribute(attr: string): { attr: string; value: string } | undefined {
+    return this._attrs.get(attr);
+  }
+
+  putAttribute(attr: string, value: string): void {
+    this._attrs.set(attr, { attr, value });
+  }
+
+  removeAttribute(attr: string): void {
+    this._attrs.delete(attr);
+  }
+
   getTracer(traceName: string) {
-    return new Tracer(this._performance && this._performance.trace(traceName));
+    const tracer = new Tracer(
+      this._performance && this._performance.trace(traceName),
+    );
+
+    const allAttrs = Array.from(this._attrs.values());
+    allAttrs.forEach(attr => {
+      tracer.putAttribute(attr.attr, attr.value);
+    });
+
+    return tracer;
   }
 
   protected async initializeFirebase() {

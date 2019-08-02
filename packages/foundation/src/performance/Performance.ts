@@ -17,6 +17,24 @@ class Performance implements IPerformance {
     }
     return Performance._instance;
   }
+  getAttribute(attr: string): { attr: string; value: string } | undefined {
+    if (this._performance) {
+      return this._performance.getAttribute(attr);
+    }
+    return undefined;
+  }
+
+  putAttribute(attr: string, value: string) {
+    if (this._performance) {
+      this._performance.putAttribute(attr, value);
+    }
+  }
+
+  removeAttribute(attr: string) {
+    if (this._performance) {
+      this._performance.removeAttribute(attr);
+    }
+  }
 
   setPerformance(performance: IPerformance) {
     this._performance = performance;
