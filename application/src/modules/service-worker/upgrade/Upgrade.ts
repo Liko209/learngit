@@ -19,6 +19,12 @@ const BACKGROUND_TIMER_INTERVAL = IDLE_THRESHOLD / 2;
 const USER_ACTION_EVENT_DEBOUNCE = 500;
 const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
+type SWMessageData = {
+  type?: string;
+  status?: boolean;
+  siblingCount?: number;
+  reason?: string;
+};
 class Upgrade {
   private _hasNewVersion: boolean = false;
   private _hasSkippedWaiting: boolean = false;
@@ -102,7 +108,35 @@ class Upgrade {
     this._hasControllerChanged = true;
 
     if (!this._appInFocus()) {
-      this.reloadIfAvailable('Background upgrade');
+      this.reloadIfAllSiblingAvailable('Background upgrade');
+    }
+  }
+
+  public onMessageHandler(msgData: string) {
+    let data: SWMessageData = {};
+    try {
+      data = JSON.parse(msgData);
+    } catch (err) {
+      mainLogger.info(
+        `${logTag}onMessageHandler ${data}, parse failed: ${err}`,
+      );
+    }
+
+    if (data.type === 'siblingCanReload') {
+      mainLogger.info(
+        `${logTag}[SiblingCanReload]:[${data.siblingCount}] ${data.status} ${
+          data.reason ? data.reason : ''
+        }`,
+      );
+
+      const triggerSource = 'Message';
+      if (data.status) {
+        this.reloadIfAvailable(triggerSource);
+      } else {
+        mainLogger.info(
+          `${logTag}[${triggerSource}] Forbidden to reload due to sibling in focus`,
+        );
+      }
     }
   }
 
@@ -118,8 +152,8 @@ class Upgrade {
     }
   }
 
-  public reloadIfAvailable(triggerSource: string) {
-    if (this._hasControllerChanged && this._canDoReload(triggerSource)) {
+  public reloadIfAllSiblingAvailable(triggerSource: string) {
+    if (this._hasControllerChanged) {
       // In some unknown cases, it get the onControllerChange event, even if there's no version get published.
       if (!this._hasSkippedWaiting) {
         mainLogger.info(
@@ -129,6 +163,17 @@ class Upgrade {
         return;
       }
 
+      if (this._hasServiceWorkerController()) {
+        this._checkSiblingCanReload();
+        return;
+      }
+
+      this.reloadIfAvailable(triggerSource);
+    }
+  }
+
+  public reloadIfAvailable(triggerSource: string) {
+    if (this._hasControllerChanged && this._canDoReload(triggerSource)) {
       this._hasControllerChanged = false;
       mainLogger.info(
         `${logTag}[${triggerSource}] Will auto reload due to service worker controller is changed`,
@@ -182,7 +227,18 @@ class Upgrade {
   }
 
   private _hasServiceWorkerController() {
-    return !!navigator.serviceWorker.controller;
+    return !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+  }
+
+  private _sendMessageToSW(data: Object) {
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage(data);
+    }
+  }
+
+  private _checkSiblingCanReload() {
+    this.logInfo(`Will check if sibling can reload`);
+    this._sendMessageToSW({ type: 'checkSiblingCanReload' });
   }
 
   private async _getRegistration(triggerSource: string) {
@@ -278,7 +334,7 @@ class Upgrade {
   };
 
   private _tryUpgradeIfAvailable(triggerSource: string) {
-    this.reloadIfAvailable(triggerSource);
+    this.reloadIfAllSiblingAvailable(triggerSource);
 
     this.skipWaitingIfAvailable(triggerSource);
   }
