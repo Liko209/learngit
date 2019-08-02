@@ -42,9 +42,7 @@ describe('FileItemService', () => {
         get: jest.fn(() => fileUploadController),
       },
       fileActionController: {
-        get: jest.fn(() => {
-          return fileActionController;
-        }),
+        get: jest.fn(() => fileActionController),
       },
     });
 
@@ -105,7 +103,7 @@ describe('FileItemService', () => {
       const { groupId, file } = setUpData();
       fileUploadController.sendItemFile = jest.fn();
       await fileItemService.sendItemFile(groupId, file, true);
-      expect(fileUploadController.sendItemFile).toBeCalledWith(
+      expect(fileUploadController.sendItemFile).toHaveBeenCalledWith(
         groupId,
         file,
         true,
@@ -123,7 +121,7 @@ describe('FileItemService', () => {
       const { fileId } = setUpData();
       fileUploadController.deleteFileCache = jest.fn();
       fileItemService.deleteFileCache(fileId);
-      expect(fileUploadController.deleteFileCache).toBeCalledWith(fileId);
+      expect(fileUploadController.deleteFileCache).toHaveBeenCalledWith(fileId);
     });
   });
 
@@ -137,7 +135,7 @@ describe('FileItemService', () => {
       const { fileItemIds, groupId } = setUpData();
       fileUploadController.sendItemData = jest.fn();
       await fileItemService.sendItemData(groupId, fileItemIds);
-      expect(fileUploadController.sendItemData).toBeCalledWith(
+      expect(fileUploadController.sendItemData).toHaveBeenCalledWith(
         groupId,
         fileItemIds,
       );
@@ -154,7 +152,9 @@ describe('FileItemService', () => {
       const { fileItem } = setUpData();
       fileUploadController.getFileVersion = jest.fn();
       await fileItemService.getFileItemVersion(fileItem);
-      expect(fileUploadController.getFileVersion).toBeCalledWith(fileItem);
+      expect(fileUploadController.getFileVersion).toHaveBeenCalledWith(
+        fileItem,
+      );
     });
   });
 
@@ -168,7 +168,7 @@ describe('FileItemService', () => {
       const { fileId } = setUpData();
       fileUploadController.cancelUpload = jest.fn();
       await fileItemService.cancelUpload(fileId);
-      expect(fileUploadController.cancelUpload).toBeCalledWith(fileId);
+      expect(fileUploadController.cancelUpload).toHaveBeenCalledWith(fileId);
     });
   });
 
@@ -184,7 +184,7 @@ describe('FileItemService', () => {
         .fn()
         .mockResolvedValue([fileItem]);
       const res = await fileItemService.getUploadItems(groupId);
-      expect(fileUploadController.getUploadItems).toBeCalledWith(groupId);
+      expect(fileUploadController.getUploadItems).toHaveBeenCalledWith(groupId);
       expect(res).toEqual([fileItem]);
     });
   });
@@ -201,7 +201,9 @@ describe('FileItemService', () => {
         .fn()
         .mockResolvedValue(false);
       expect(await fileItemService.hasValidItemFile(fileId)).toBeFalsy();
-      expect(fileUploadController.hasValidItemFile).toBeCalledWith(fileId);
+      expect(fileUploadController.hasValidItemFile).toHaveBeenCalledWith(
+        fileId,
+      );
     });
   });
 
@@ -215,7 +217,9 @@ describe('FileItemService', () => {
       const { fileId } = setUpData();
       fileUploadController.resendFailedFile = jest.fn();
       await fileItemService.resendFailedFile(fileId);
-      expect(fileUploadController.resendFailedFile).toBeCalledWith(fileId);
+      expect(fileUploadController.resendFailedFile).toHaveBeenCalledWith(
+        fileId,
+      );
     });
   });
 
@@ -231,7 +235,7 @@ describe('FileItemService', () => {
       expect(
         fileItemService.canUploadFiles(groupId, [file], true),
       ).toBeTruthy();
-      expect(fileUploadController.canUploadFiles).toBeCalledWith(
+      expect(fileUploadController.canUploadFiles).toHaveBeenCalledWith(
         groupId,
         [file],
         true,
@@ -251,7 +255,9 @@ describe('FileItemService', () => {
         .fn()
         .mockReturnValue([progress]);
       expect(fileItemService.getUploadProgress(fileId)).toEqual([progress]);
-      expect(fileUploadController.getUploadProgress).toBeCalledWith(fileId);
+      expect(fileUploadController.getUploadProgress).toHaveBeenCalledWith(
+        fileId,
+      );
     });
   });
 
@@ -269,7 +275,9 @@ describe('FileItemService', () => {
       expect(fileItemService.getItemsSendingStatus([fileId])).toEqual(
         sendStatuses,
       );
-      expect(fileUploadController.getItemsSendStatus).toBeCalledWith([fileId]);
+      expect(fileUploadController.getItemsSendStatus).toHaveBeenCalledWith([
+        fileId,
+      ]);
     });
   });
 
@@ -283,9 +291,10 @@ describe('FileItemService', () => {
       const { groupId, fileId } = setUpData();
       fileUploadController.cleanUploadingFiles = jest.fn();
       fileItemService.cleanUploadingFiles(groupId, [fileId]);
-      expect(fileUploadController.cleanUploadingFiles).toBeCalledWith(groupId, [
-        fileId,
-      ]);
+      expect(fileUploadController.cleanUploadingFiles).toHaveBeenCalledWith(
+        groupId,
+        [fileId],
+      );
     });
   });
 
@@ -301,7 +310,7 @@ describe('FileItemService', () => {
       expect(
         await fileItemService.isFileExists(groupId, file.name),
       ).toBeFalsy();
-      expect(fileItemController.isFileExists).toBeCalledWith(
+      expect(fileItemController.isFileExists).toHaveBeenCalledWith(
         groupId,
         file.name,
       );
@@ -320,7 +329,11 @@ describe('FileItemService', () => {
         .mockResolvedValue('a');
       const res = await fileItemService.getThumbsUrlWithSize(1, 2, 3);
       expect(res).toBe('a');
-      expect(fileActionController.getThumbsUrlWithSize).toBeCalledWith(1, 2, 3);
+      expect(fileActionController.getThumbsUrlWithSize).toHaveBeenCalledWith(
+        1,
+        2,
+        3,
+      );
     });
   });
 
@@ -333,7 +346,7 @@ describe('FileItemService', () => {
     it('should call fileUploadController to get result', () => {
       fileUploadController.hasUploadingFiles = jest.fn().mockReturnValue(true);
       expect(fileItemService.hasUploadingFiles()).toBeTruthy();
-      expect(fileUploadController.hasUploadingFiles).toBeCalled();
+      expect(fileUploadController.hasUploadingFiles).toHaveBeenCalled();
     });
   });
 
@@ -347,7 +360,19 @@ describe('FileItemService', () => {
       const groupId = 10;
       fileUploadController.initialUploadItemsFromDraft = jest.fn();
       fileItemService.initialUploadItemsFromDraft(groupId);
-      expect(fileUploadController.initialUploadItemsFromDraft).toBeCalled();
+      expect(
+        fileUploadController.initialUploadItemsFromDraft,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe('uploadFileToServer', () => {
+    it('should call with right api', () => {
+      const data = {};
+      fileItemService.uploadFileToServer(data as any);
+      expect(
+        fileUploadController.uploadFileToAmazonServer,
+      ).toHaveBeenCalledWith(data, undefined, undefined);
     });
   });
 
@@ -359,7 +384,10 @@ describe('FileItemService', () => {
 
     it('should call fileActionController', () => {
       fileItemService.editFileName(1, 'newName');
-      expect(fileActionController.editFileName).toBeCalledWith(1, 'newName');
+      expect(fileActionController.editFileName).toHaveBeenCalledWith(
+        1,
+        'newName',
+      );
     });
   });
   describe('deleteFile()', () => {
@@ -370,7 +398,7 @@ describe('FileItemService', () => {
 
     it('should call fileActionController', () => {
       fileItemService.deleteFile(1, 1);
-      expect(fileActionController.deleteFile).toBeCalledWith(1, 1);
+      expect(fileActionController.deleteFile).toHaveBeenCalledWith(1, 1);
     });
   });
 });

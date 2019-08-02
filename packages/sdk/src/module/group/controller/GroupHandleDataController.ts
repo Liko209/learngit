@@ -230,6 +230,9 @@ class GroupHandleDataController {
         'post_cursor',
         'post_drp_cursor',
         'last_author_id',
+        'team_mention_cursor',
+        'team_mention_cursor_offset',
+        'removed_cursors_team_mention',
       ]);
     });
   }

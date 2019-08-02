@@ -17,11 +17,13 @@ export class SoundNotification implements ISoundNotification {
         this._library.set(item.id, item.url);
     });
   }
+
   create(name: Sounds, opts: Exclude<MediaOptions, 'src'>) {
     const src = this._library.get(name);
     if (src) {
       return this._mediaService.createMedia({ src, ...opts });
     }
+
     mainLogger.warn('Failed to find the sound source', name);
     return;
   }

@@ -9,7 +9,7 @@ import { IMediaService, MediaEventName } from '@/interface/media';
 import { MediaService } from '@/modules/media/service';
 import { AudioPlayerButtonViewModel } from '../AudioPlayerButton.ViewModel';
 import { Media } from '@/modules/media/Media';
-import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { JuiAudioStatus } from 'jui/components/AudioPlayer';
 
 jupiter.registerService(IMediaService, MediaService);
 

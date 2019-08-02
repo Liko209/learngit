@@ -36,9 +36,6 @@ describe.skip('ProfileSubscribeEntityHandler', () => {
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
-      weight: 1,
-      parentModelId: 1,
-      valueType: 1,
       id: SettingEntityIds.Notification_Teams,
       source: [
         EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,

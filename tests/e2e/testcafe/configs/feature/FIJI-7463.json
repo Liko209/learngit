@@ -1,9 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": [
-      "./fixtures/TeamSetting/*.ts",
-      "./fixtures/CreateTeam/*.ts"
-    ],
-    "browsers": ["selenium:chrome"]
-  }
-}

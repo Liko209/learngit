@@ -15,7 +15,7 @@ fixture('Phone/GeneralSettings')
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-934'],
+  caseIds: ['JPT-1934'],
   maintainers: ['Mia.Cai'],
   keywords: ['GeneralSettings', 'Telephony']
 })(`Should show the extension number when caller enables the "Display my extension number for internal calls"`, async t => {

@@ -59,9 +59,10 @@ class RcMessageActionController<T extends RCMessage> {
       .tags(this.controllerName)
       .info('updateMessageReadStatus', { messageId, toStatus });
 
-    const preHandlePartialEntity = (
-      partialEntity: Partial<Raw<T>>,
-    ) => ({ ...partialEntity, readStatus: toStatus });
+    const preHandlePartialEntity = (partialEntity: Partial<Raw<T>>) => ({
+      ...partialEntity,
+      readStatus: toStatus,
+    });
 
     const doUpdateEntity = async (updatedEntity: T) => {
       const newVm = await RCItemApi.updateMessageReadStatus<T>(
@@ -76,11 +77,11 @@ class RcMessageActionController<T extends RCMessage> {
       return newVm;
     };
 
-    await this.partialModifyController.updatePartially(
-      messageId,
+    await this.partialModifyController.updatePartially({
       preHandlePartialEntity,
       doUpdateEntity,
-    );
+      entityId: messageId,
+    });
   }
 
   async buildDownloadUrl(url: string) {
