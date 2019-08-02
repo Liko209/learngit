@@ -28,7 +28,7 @@ type Props = WithTranslation & CallCtrlPanelViewProps;
 
 @observer
 class CallCtrlViewComponent extends React.Component<Props> {
-  private _Avatar = () => {
+  private _Avatar = observer(() => {
     const { uid } = this.props;
     return (
       <Avatar
@@ -38,7 +38,7 @@ class CallCtrlViewComponent extends React.Component<Props> {
         size="large"
       />
     );
-  };
+  });
 
   private callActions = [Mute, Keypad, Hold, Add, Record, CallActions];
 
