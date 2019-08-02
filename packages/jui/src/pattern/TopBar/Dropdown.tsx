@@ -9,8 +9,6 @@ import styled from '../../foundation/styled-components';
 import { JuiTypography } from '../../foundation/Typography';
 import { JuiMenuItem } from '../../components/Menus';
 import { spacing, width, typography, ellipsis } from '../../foundation/utils';
-import { JuiDivider } from '../../components/Divider';
-import { withRCMode } from '@/containers/withRCMode';
 
 type JuiDropdownContactInfoProps = {
   Avatar: React.ReactElement;
@@ -63,28 +61,25 @@ const StyledContactInfoEdit = styled('span')`
   }
 `;
 
-const JuiDropdownContactInfo = withRCMode()(
-  React.memo((props: JuiDropdownContactInfoProps) => {
+const JuiDropdownContactInfo = React.memo(
+  (props: JuiDropdownContactInfoProps) => {
     const { Avatar, name, content, openEditProfile } = props;
 
     return (
-      <>
-        <StyledContactWrapper>
-          {Avatar}
-          <StyledContactInfoWrapper>
-            {name && <StyledContactInfoName>{name}</StyledContactInfoName>}
-            <StyledContactInfoEdit
-              data-test-automation-id="avatarEditProfile"
-              onClick={openEditProfile}
-            >
-              {content}
-            </StyledContactInfoEdit>
-          </StyledContactInfoWrapper>
-        </StyledContactWrapper>
-        <JuiDivider key="divider-avatar-menu" />
-      </>
+      <StyledContactWrapper>
+        {Avatar}
+        <StyledContactInfoWrapper>
+          {name && <StyledContactInfoName>{name}</StyledContactInfoName>}
+          <StyledContactInfoEdit
+            data-test-automation-id="avatarEditProfile"
+            onClick={openEditProfile}
+          >
+            {content}
+          </StyledContactInfoEdit>
+        </StyledContactInfoWrapper>
+      </StyledContactWrapper>
     );
-  }),
+  },
 );
 
 JuiStyledDropdown.displayName = 'JuiStyledDropdown';

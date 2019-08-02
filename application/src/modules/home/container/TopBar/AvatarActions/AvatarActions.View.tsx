@@ -11,7 +11,6 @@ import { ViewProps } from './types';
 import { JuiMenuList } from 'jui/components';
 import {
   JuiAvatarActions,
-  JuiDropdownContactInfo,
   JuiStyledDropdown,
   JuiStyledDropdownMenuItem,
 } from 'jui/pattern/TopBar';
@@ -20,6 +19,7 @@ import { Presence } from '@/containers/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { dataAnalysis } from 'sdk';
 import { PresenceMenu } from '../PresenceMenu';
+import { DropdownContactInfo } from '../DropdownContactInfo';
 
 type Props = ViewProps & WithTranslation;
 
@@ -99,7 +99,7 @@ class AvatarActionsComponent extends React.Component<Props> {
         }}
       >
         <JuiStyledDropdown>
-          <JuiDropdownContactInfo
+          <DropdownContactInfo
             Avatar={this._DropdownAvatar()}
             openEditProfile={this.handleOpenEditProfile}
             name={person.displayName}
