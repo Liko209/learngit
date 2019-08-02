@@ -108,6 +108,7 @@ describe('mentionViewModel', () => {
       mentionViewModel.members[mentionViewModel.currentIndex].id,
       mentionViewModel.members[mentionViewModel.currentIndex].displayName,
       mentionViewModel._denotationChar,
+      mentionViewModel.isTeam,
     );
     expect(mentionViewModel.open).toBe(false);
   });

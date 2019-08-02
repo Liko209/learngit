@@ -15,8 +15,9 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 import { CONVERSATION_TYPES } from '@/constants';
-import {TEAM_TEXT} from './constants';
+import {TEAM_TEXT,TEAM_MENTION_ID} from './constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { isTeamId } from '../helper';
 
 type searchMember = {
   displayName: string;
@@ -162,7 +163,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       runInAction(() => {
         this.currentIndex = 0;
         this.members = res.sortableModels;
-        if (this.isTeam && this.searchTermMatchTeam && !this.isEditMode) {
+        if (this.isTeam && this._group.canMentionTeam && this.searchTermMatchTeam && !this.isEditMode) {
           this.members.unshift({ displayName: TEAM_TEXT, id: this._group.id });
         }
       });
@@ -175,13 +176,15 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       if (!vm.open || !vm.members.length) {
         return true;
       }
+      const isTeam = isTeamId(vm.members[vm.currentIndex].id);
       // @ts-ignore
       const quill: Quill = this.quill;
       const mentionModules = quill.getModule('mention');
       mentionModules.select(
-        vm.members[vm.currentIndex].id,
+        isTeam ? TEAM_MENTION_ID : vm.members[vm.currentIndex].id,
         vm.members[vm.currentIndex].displayName,
         vm._denotationChar,
+        isTeam
       );
       vm.currentIndex = 0;
       vm.open = false;
@@ -254,6 +257,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   get ids() {
     return this.members.map((member: searchMember) => member.id);
   }
+  
 
   mentionOptions = {
     onMention: this._onMention,

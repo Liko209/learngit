@@ -6,7 +6,8 @@
 const ITEM_HEIGHT = 40; // jui/pattern/MessageInput/Mention/MentionPanelSectionItem
 const MAX_ITEM_NUMBER = 6;
 const TEAM_TEXT = 'Team';
+const TEAM_MENTION_ID = -1;
 
 const ITEM_DIFF = ITEM_HEIGHT;
 
-export { ITEM_HEIGHT, MAX_ITEM_NUMBER, ITEM_DIFF, TEAM_TEXT };
+export { ITEM_HEIGHT, MAX_ITEM_NUMBER, ITEM_DIFF, TEAM_TEXT, TEAM_MENTION_ID };
