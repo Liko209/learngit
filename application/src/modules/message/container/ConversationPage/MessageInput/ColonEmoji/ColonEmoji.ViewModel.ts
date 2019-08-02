@@ -99,7 +99,9 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
         if (
           emojiId &&
           !(ExcludeList.indexOf(id as string) > -1) &&
-          emojiId.indexOf(this.searchTerm as string) > -1
+          emojiId
+            .toLowerCase()
+            .indexOf((this.searchTerm as string).toLowerCase()) > -1
         ) {
           if (id && ConvertList.indexOf(id.split(':').join('')) > -1) {
             emojiId = this._doUnderscoreTransfer(id);
