@@ -5,6 +5,8 @@
  */
 import { container } from 'framework';
 import { HomeStore } from '@/modules/home/store';
+import { notificationCenter, SERVICE } from 'sdk/service';
+
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { ToastWrapper } from '@/containers/ToastWrapper';
@@ -23,13 +25,22 @@ import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AboutView } from '@/containers/About';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { RuiLink } from 'rcui/components/Link';
+
+type Props = WithTranslation & HomeViewProps;
 
 @observer
-class HomeView extends Component<HomeViewProps> {
+class HomeViewComponent extends Component<Props> {
   private _homeStore: HomeStore = container.get(HomeStore);
-
-  constructor(props: HomeViewProps) {
-    super(props);
+  constructor(props: Props) {
+    super(props)
+    notificationCenter.on(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
   }
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
@@ -44,6 +55,37 @@ class HomeView extends Component<HomeViewProps> {
 
   componentWillUnmount() {
     window.removeEventListener('storage', this._storageEventHandler);
+    notificationCenter.off(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
+  }
+ 
+  showE911Confirm = async () => {
+    const { openE911,t ,needConfirmE911 } = this.props;
+    const need = await needConfirmE911();
+    if (!need) {
+      return;
+    }
+
+    const flagToast = Notification.flagToast({
+      message: (
+        <>
+          {`${t('home.confirmEmergencyAddress')} `}
+          <RuiLink
+            underline
+            color="white"
+            handleOnClick={() => {
+              openE911();
+              flagToast.dismiss && flagToast.dismiss();
+            }}
+          >
+            {t('home.confirmAddressNow')}
+          </RuiLink>
+        </>
+      ),
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: true,
+    });
   }
 
   private _storageEventHandler = (event: StorageEvent) => {
@@ -90,5 +132,7 @@ class HomeView extends Component<HomeViewProps> {
     );
   }
 }
+
+const HomeView = withTranslation('translations')(HomeViewComponent);
 
 export { HomeView };

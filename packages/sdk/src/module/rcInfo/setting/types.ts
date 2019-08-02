@@ -12,8 +12,9 @@ type RegionSettingInfo = {
 };
 
 type E911SettingInfo = {
-  countryId: string;
   country: string;
+  countryId: string;
+  countryName: string;
   countryIsoCode: string;
   street: string;
   street2: string;

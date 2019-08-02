@@ -5,17 +5,27 @@
  */
 
 import { test, testable } from 'shield';
-import { mockEntity } from 'shield/application';
+import { mockEntity, mockContainer } from 'shield/application';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 import { E911SettingItemViewModel } from '../E911SettingItem.ViewModel';
+
+jest.mock('@/AnalyticsCollector');
 
 jest.mock('@/utils/i18nT', () => ({
   i18nP: (key: string) => key,
 }));
 
 describe('E911SettingItemViewModel', () => {
+  const telephonyService = {
+    name: TELEPHONY_SERVICE,
+    openE911() {},
+  };
   @testable
   class showUserE911 {
+    @mockContainer(telephonyService)
+    beforeAll() {}
     @test('should be empty string if not value')
     t1() {
       const vm = new E911SettingItemViewModel();
@@ -37,6 +47,18 @@ describe('E911SettingItemViewModel', () => {
       expect(vm.showUserE911).toBe(
         'setting.phone.general.e911Setting.yourSavedAddressIsstreet2, city, state, 1001, country',
       );
+    }
+  }
+
+  @testable
+  class openE911 {
+    @test('should be call openE911 if openE911 [JPT-2667]')
+    @mockContainer(telephonyService, 'openE911')
+    t1() {
+      const vm = new E911SettingItemViewModel();
+      vm.openE911();
+      expect(telephonyService.openE911).toHaveBeenCalled();
+      expect(analyticsCollector.e911Setting).toHaveBeenCalled();
     }
   }
 });

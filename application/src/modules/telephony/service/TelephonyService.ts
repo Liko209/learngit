@@ -47,6 +47,7 @@ import SettingModel from '@/store/models/UserSetting';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { OpenDialogE911 } from '../container/E911';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 import config from '@/config';
@@ -1015,6 +1016,16 @@ class TelephonyService {
       this._currentSoundTrackForBeep = cursor;
     }
   };
+
+  openE911 = () => {
+    OpenDialogE911();
+  }
+
+  needConfirmE911 = async () => {
+    const lines = await this._rcInfoService.getDigitalLines();
+    const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed()
+    return lines.length > 0 && !isEmergency;
+  }
 }
 
 export { TelephonyService };

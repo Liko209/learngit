@@ -3,6 +3,7 @@
  * @Date: 2019-07-23 10:25:41
  * Copyright © RingCentral. All rights reserved.
  */
+import { container } from 'framework';
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { UserSettingEntity } from 'sdk/module/setting';
@@ -12,8 +13,15 @@ import SettingModel from '@/store/models/UserSetting';
 import { i18nP } from '@/utils/i18nT';
 import { E911SettingItemProps } from './types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
+import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class E911SettingItemViewModel extends StoreViewModel<E911SettingItemProps> {
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
+
   @computed
   get settingItemEntity() {
     return getEntity<UserSettingEntity, SettingModel<E911SettingInfo>>(
@@ -46,6 +54,11 @@ class E911SettingItemViewModel extends StoreViewModel<E911SettingItemProps> {
       'setting.phone.general.e911Setting.yourSavedAddressIs',
     )}${e911Address}`;
   }
+
+  openE911 = () => {
+    this._telephonyService.openE911();
+    analyticsCollector.e911Setting();
+  };
 }
 
 export { E911SettingItemViewModel };

@@ -38,12 +38,17 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
     await this.getUserSettingEntity();
   };
 
-  private _e911Updated = () => {
+  private _e911Updated = async () => {
     const telephonyService = ServiceLoader.getInstance<TelephonyService>(
       ServiceConfig.TELEPHONY_SERVICE,
     );
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const lines = await rcInfoService.getDigitalLines();
     if (
       !telephonyService.isEmergencyAddrConfirmed() &&
+      lines.length &&
       !this._e911UpdateEmitted
     ) {
       notificationCenter.emit(SERVICE.RC_INFO_SERVICE.E911_UPDATED);
