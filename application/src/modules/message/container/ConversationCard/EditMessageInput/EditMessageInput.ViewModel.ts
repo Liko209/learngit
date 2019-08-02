@@ -150,8 +150,8 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     });
   }
 
-  private async _editPost(content: string, ids: number[]) {
-    await this._handleEditPost(content, ids);
+  private _editPost(content: string, ids: number[]) {
+    this._handleEditPost(content, ids);
     this._exitEditMode();
   }
 
