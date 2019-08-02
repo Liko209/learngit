@@ -114,7 +114,15 @@ class Upgrade {
   }
 
   public onMessageHandler(msgData: string) {
-    const data = JSON.parse(msgData);
+    let data = {};
+    try {
+      data = JSON.parse(msgData);
+    } catch (err) {
+      mainLogger.info(
+        `${logTag}onMessageHandler ${data}, parse failed: ${err}`,
+      );
+    }
+
     if (data.type === 'siblingCanReload') {
       mainLogger.info(
         `${logTag}siblingCanReload:[${data.siblingCount}] ${data.status} ${
