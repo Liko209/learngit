@@ -398,26 +398,17 @@ describe('PreInsertController', () => {
     });
 
     it('should call progressService.addProgress when preinsert', async () => {
-      await preInsertController.updateStatus(
-        { id: -2, version: -2 },
-        PROGRESS_STATUS.INPROGRESS,
-      );
+      await preInsertController.updateStatus(-2, PROGRESS_STATUS.INPROGRESS);
       expect(progressService.addProgress).toHaveBeenCalledTimes(1);
     });
 
     it('should call progressService.deleteProgress when success', async () => {
-      await preInsertController.updateStatus(
-        { id: -2, version: -2 },
-        PROGRESS_STATUS.SUCCESS,
-      );
+      await preInsertController.updateStatus(-2, PROGRESS_STATUS.SUCCESS);
       expect(progressService.deleteProgress).toHaveBeenCalledTimes(1);
     });
 
     it('should call updateProgress when failed', async () => {
-      await preInsertController.updateStatus(
-        { id: -2, version: -2 },
-        PROGRESS_STATUS.FAIL,
-      );
+      await preInsertController.updateStatus(-2, PROGRESS_STATUS.FAIL);
       expect(progressService.updateProgress).toHaveBeenCalledTimes(1);
     });
   });

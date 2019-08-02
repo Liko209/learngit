@@ -7,8 +7,10 @@ import {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
   RTCSipEmergencyServiceAddr as EmergencyServiceAddress,
+  RTCCallOptions,
   RTCSipProvisionInfo as SipProvisionInfo,
 } from 'voip';
+import { CALL_DIRECTION } from './entity';
 
 enum FEATURE_PERMISSIONS {
   VOIP_CALLING = 'VoipCalling',
@@ -80,6 +82,12 @@ type TelephonyDataCollectionInfoConfigType = {
   userInfo: TelephonyDataCollectionInfoUserInfoType;
 };
 
+type CallOptions = RTCCallOptions & {
+  replaceName?: string;
+  replaceNumber?: string;
+  callDirection?: CALL_DIRECTION;
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
@@ -89,6 +97,7 @@ export {
   TelephonyCallInfo,
   LogoutCallback,
   CALL_ACTION_ERROR_CODE,
+  CallOptions,
   EmergencyServiceAddress,
   TelephonyDataCollectionInfoConfigType,
   SipProvisionInfo,

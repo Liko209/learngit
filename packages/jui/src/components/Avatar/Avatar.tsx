@@ -21,6 +21,9 @@ import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 
+import { JuiIconography } from '../../foundation/Iconography';
+import { StyledMaskWrapper, StyledMask } from './Mask';
+
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
 
 type JuiAvatarProps = {
@@ -29,6 +32,7 @@ type JuiAvatarProps = {
   tooltip?: string;
   presence?: JSX.Element;
   cover?: boolean;
+  mask?: boolean;
   displayName?: string;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
@@ -110,15 +114,28 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, cover, tooltip, displayName, ...rest } = props;
+  const { presence, cover, tooltip, mask, displayName, ...rest } = props;
+  const maskWithIcon = (
+    <StyledMask>
+      <JuiIconography iconSize="small" color="common.white">
+        edit
+      </JuiIconography>
+    </StyledMask>
+  );
 
   if (cover) {
-    return tooltip ? (
-      <RuiTooltip title={tooltip}>
+    const coverWithMask = mask ? (
+      <StyledMaskWrapper>
         <StyledCoverAvatar {...rest} />
-      </RuiTooltip>
+        {maskWithIcon}
+      </StyledMaskWrapper>
     ) : (
       <StyledCoverAvatar {...rest} />
+    );
+    return tooltip ? (
+      <RuiTooltip title={tooltip}>{coverWithMask}</RuiTooltip>
+    ) : (
+      coverWithMask
     );
   }
 
@@ -131,7 +148,20 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     <StyledAvatar {...rest} />
   );
 
-  return tooltip ? <RuiTooltip title={tooltip}>{avatar}</RuiTooltip> : avatar;
+  const avatarWithMask = mask ? (
+    <StyledMaskWrapper>
+      {avatar}
+      {maskWithIcon}
+    </StyledMaskWrapper>
+  ) : (
+    avatar
+  );
+
+  return tooltip ? (
+    <RuiTooltip title={tooltip}>{avatarWithMask}</RuiTooltip>
+  ) : (
+    avatarWithMask
+  );
 });
 
 JuiAvatar.defaultProps = {

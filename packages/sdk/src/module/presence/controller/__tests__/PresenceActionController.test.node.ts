@@ -44,13 +44,14 @@ describe('PresenceActionController', () => {
         id: normalId,
         presence: state,
       };
-      const partialModifyController = presenceActionController['_partialModifyController'];
+      const partialModifyController =
+        presenceActionController['_partialModifyController'];
       partialModifyController.updatePartially = jest
         .fn()
-        .mockImplementation((itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
-          expect(itemId).toBe(normalId);
-          expect(prehandleFunc({ id: normalId })).toEqual(presence);
-          doUpdateFunc(presence);
+        .mockImplementation((p: any) => {
+          expect(p.entityId).toBe(normalId);
+          expect(p.preHandlePartialEntity({ id: normalId })).toEqual(presence);
+          p.doUpdateEntity(presence);
         });
       await presenceActionController.setPresence(state);
       expect(partialModifyController.updatePartially).toHaveBeenCalledTimes(1);
@@ -61,17 +62,25 @@ describe('PresenceActionController', () => {
   describe('setAutoPresence()', () => {
     it('should call api with away when auto set unavailable', async () => {
       PresenceAPI.setAutoPresence.mockRejectedValueOnce('');
-      await expect(presenceActionController.setAutoPresence(PRESENCE.UNAVAILABLE)).resolves;
-      expect(PresenceAPI.setAutoPresence).toHaveBeenCalledWith(PRESENCE_REQUEST_STATUS.AWAY);
+      await expect(
+        presenceActionController.setAutoPresence(PRESENCE.UNAVAILABLE),
+      ).resolves;
+      expect(PresenceAPI.setAutoPresence).toHaveBeenCalledWith(
+        PRESENCE_REQUEST_STATUS.AWAY,
+      );
     });
     it('should call api with away when auto set available', async () => {
       PresenceAPI.setAutoPresence.mockRejectedValueOnce('');
-      await expect(presenceActionController.setAutoPresence(PRESENCE.AVAILABLE)).resolves;
-      expect(PresenceAPI.setAutoPresence).toHaveBeenCalledWith(PRESENCE_REQUEST_STATUS.ONLINE);
+      await expect(presenceActionController.setAutoPresence(PRESENCE.AVAILABLE))
+        .resolves;
+      expect(PresenceAPI.setAutoPresence).toHaveBeenCalledWith(
+        PRESENCE_REQUEST_STATUS.ONLINE,
+      );
     });
     it('should catch an error', async () => {
       PresenceAPI.setAutoPresence.mockRejectedValueOnce(new Error());
-      await expect(presenceActionController.setAutoPresence(PRESENCE.AVAILABLE)).rejects;
+      await expect(presenceActionController.setAutoPresence(PRESENCE.AVAILABLE))
+        .rejects;
     });
   });
 });

@@ -13,7 +13,7 @@ import {
 } from './types';
 
 export type Call = IdModel & {
-  call_id: string;
+  uuid: string;
   to_num: string;
   from_num: string;
   call_state: CALL_STATE;
@@ -28,4 +28,7 @@ export type Call = IdModel & {
   mute_state: MUTE_STATE;
   from_name: string;
   to_name: string;
+  call_id?: string;
+  from_tag?: string;
+  to_tag?: string;
 };

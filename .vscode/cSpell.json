@@ -117,6 +117,7 @@
         "uids",
         "unmount",
         "unmute",
+        "Untrusted",
         "upgrader",
         "upsert",
         "upserted",

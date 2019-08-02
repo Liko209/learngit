@@ -24,7 +24,7 @@ import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { ANONYMOUS } from '../interface/constant';
+import { ANONYMOUS_NUM } from '../interface/constant';
 import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
@@ -47,6 +47,7 @@ import SettingModel from '@/store/models/UserSetting';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 import config from '@/config';
 
@@ -87,9 +88,9 @@ class TelephonyService {
     // TODO: This should be a list in order to support multiple call
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4274
     this._telephonyStore.id = id;
-    const { callId } = this._telephonyStore.call;
+    const { uuid } = this._telephonyStore.call;
     mainLogger.info(
-      `${TelephonyService.TAG} Call object created, call id=${callId}`,
+      `${TelephonyService.TAG} Call object created, call id=${uuid}`,
     );
     // need factor in new module design
     // if has incoming call voicemail should be pause
@@ -105,7 +106,7 @@ class TelephonyService {
       return;
     }
     this._telephonyStore.id = id;
-    const { fromNum, callId } = this._telephonyStore.call;
+    const { fromNum, uuid } = this._telephonyStore.call;
     this._callEntityId = id;
 
     this._telephonyStore.incomingCall();
@@ -115,7 +116,7 @@ class TelephonyService {
     mainLogger.info(
       `${
         TelephonyService.TAG
-      }Call object created, call id=${callId}, from name=${'fromName'}, from num=${fromNum}`,
+      }Call object created, call id=${uuid}, from name=${'fromName'}, from num=${fromNum}`,
     );
   };
 
@@ -373,7 +374,7 @@ class TelephonyService {
     return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
-  makeCall = async (toNumber: string, callback?: Function) => {
+  private _getFromNumber() {
     // FIXME: move this logic to SDK and always using callerID
     const idx =
       this._telephonyStore.callerPhoneNumberList &&
@@ -381,7 +382,17 @@ class TelephonyService {
         phone =>
           phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
       );
+    let fromNumber;
+    if (idx === -1 || typeof idx !== 'number') {
+      fromNumber = undefined;
+    } else {
+      const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
+      fromNumber = fromEl.id ? fromEl.phoneNumber : ANONYMOUS_NUM;
+    }
+    return fromNumber;
+  }
 
+  makeCall = async (toNumber: string, callback?: Function) => {
     const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
@@ -400,13 +411,7 @@ class TelephonyService {
     }
     callback && callback();
 
-    let fromNumber;
-    if (idx === -1 || typeof idx !== 'number') {
-      fromNumber = undefined;
-    } else {
-      const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
-      fromNumber = fromEl.id ? fromEl.phoneNumber : ANONYMOUS;
-    }
+    const fromNumber = this._getFromNumber();
 
     mainLogger.info(
       `${
@@ -415,7 +420,7 @@ class TelephonyService {
     );
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
-      fromNumber,
+      { fromNumber },
     );
 
     switch (true) {
@@ -460,6 +465,29 @@ class TelephonyService {
 
     return true;
   };
+
+  switchCall = async (otherDeviceCall: ActiveCall) => {
+    const myNumber = (await this._rcInfoService.getAccountMainNumber()) || '';
+    const rv = await this._serverTelephonyService.switchCall(myNumber, otherDeviceCall);
+  
+    switch (true) {
+      case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
+        ToastCallError.toastSwitchCallNoNetwork();
+        mainLogger.error(
+          `${TelephonyService.TAG}Switch call error: ${rv.toString()}`,
+        );
+        return false;
+      }
+      default:
+        break;
+    }
+
+    return true;
+  }
+
+  getSwitchCall = () => {
+    return this._serverTelephonyService.getSwitchCall();
+  }
 
   directCall = (toNumber: string) => {
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.

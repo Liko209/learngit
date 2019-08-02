@@ -89,15 +89,15 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     if (!(this._person && this._person.hasHeadShot) || !this.props.uid) {
       return '';
     }
-    const { headshotVersion = '', headshot = '' } = this._person;
+    const { headshotVersion, headshot = '' } = this._person;
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
     const url = personService.getHeadShotWithSize(
       this.props.uid,
-      headshotVersion,
       headshot,
       150,
+      headshotVersion,
     );
     return url || '';
   }

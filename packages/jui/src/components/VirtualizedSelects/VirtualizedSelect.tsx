@@ -5,6 +5,7 @@
  */
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import { Input } from '@material-ui/core';
+import { MenuProps } from '@material-ui/core/Menu';
 import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
 import { filterReactElement } from '../../foundation/utils/filterReactElement';
 import { JuiMenuItemProps } from '../Menus/MenuItem';
@@ -18,9 +19,13 @@ type JuiVirtualizedSelectInputProps<
 > = {
   name?: string;
   value: V;
+  automationId: string;
   children: JSX.Element[];
   renderValue?: (value: V) => React.ReactNode;
+  label?: string;
   heightSize?: HeightSize;
+  disabled?: boolean;
+  MenuProps?: Partial<MenuProps>;
   onChange?: (
     event: React.ChangeEvent<{ name?: string; value: V }>,
     child: React.ReactNode,
@@ -34,13 +39,13 @@ type JuiVirtualizedSelectProps = JuiVirtualizedSelectInputProps & {
 const defaultInput = <Input />;
 
 const useSingleSelectHelper = <T extends any>(value?: T) => {
-  const [selected, setSelected] = useState<T | undefined>(value);
+  const [selected = value, setSelected] = useState<T | undefined>();
   return { selected, setSelected };
 };
 
 const JuiVirtualizedSelectInput = React.memo(
   (props: JuiVirtualizedSelectInputProps) => {
-    const { name, value, onChange, renderValue, ...rest } = props;
+    const { name, value, onChange, renderValue, automationId, ...rest } = props;
     const elementChildren = filterReactElement<JuiMenuItemProps>(
       props.children,
     );
@@ -96,6 +101,7 @@ const JuiVirtualizedSelectInput = React.memo(
         </StyledInput>
         <JuiVirtualizedMenu
           {...popupHelper.SelectMenuProps}
+          {...rest.MenuProps}
           initialFocusedIndex={Math.max(selectedIndex, 0)}
         >
           {children}
@@ -107,10 +113,12 @@ const JuiVirtualizedSelectInput = React.memo(
 );
 
 const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
-  const { input = defaultInput, ...rest } = props;
+  const { input = defaultInput, heightSize, automationId, ...rest } = props;
 
   return React.cloneElement(input, {
+    heightSize,
     inputComponent: JuiVirtualizedSelectInput,
+    'data-test-automation-id': automationId,
     select: true,
     inputProps: {
       type: undefined, // We render a select. We can ignore the type provided by the `Input`.

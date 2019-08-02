@@ -255,11 +255,11 @@ class RecentSearch extends BaseSearchResultPage {
   }
 
   get conversationItems() {
-    return this.getSelector('.search-items:not([data-test-automation-id="search-message-item"])'); // todo
+    return this.getSelector('.search-items:not([data-test-automation-id="search-message-item"])');
   }
 
   conversationByName(name: string) {
-    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items:not([data-test-automation-id="search-message-item"]'));
+    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items:not([data-test-automation-id="search-message-item"])'));
   }
 }
 
