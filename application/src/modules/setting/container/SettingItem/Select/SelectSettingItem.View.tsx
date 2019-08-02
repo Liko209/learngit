@@ -89,6 +89,7 @@ class SelectSettingItemViewComponent<
         onChange={this._handleChange}
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         renderValue={this._renderValue}
+        name="settings"
         isFullWidth
         {...rest}
       >
