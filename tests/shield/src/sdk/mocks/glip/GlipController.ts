@@ -19,6 +19,7 @@ import { String2Number } from 'shield/sdk/server/utils';
 import { IGlipServerContext } from './IGlipServerContext';
 import { GlipGroup, GlipPost, GlipProfile, GlipState } from './types';
 import { doPartialUpdate, genPostId, parseState } from './utils';
+import { delay } from 'shield/utils/asyncTest';
 
 const debug = createDebug('GlipController');
 
@@ -85,15 +86,17 @@ export class GlipController {
     groupState.post_cursor += 1;
     groupState.read_through = serverPost._id;
     context.groupStateDao.put(groupState);
-    context.socketServer.emitEntityCreate(serverPost);
-    context.socketServer.emitMessage(serverGroup);
-    context.socketServer.emitPartial(groupState, {
-      hint: {
-        post_creator_ids: {
-          [String(serverGroup._id)]: serverPost.creator_id,
+    delay(() => context.socketServer.emitEntityCreate(serverPost));
+    delay(() => context.socketServer.emitMessage(serverGroup));
+    delay(() =>
+      context.socketServer.emitPartial(groupState, {
+        hint: {
+          post_creator_ids: {
+            [String(serverGroup._id)]: serverPost.creator_id,
+          },
         },
-      },
-    });
+      }),
+    );
 
     return createResponse({
       request,

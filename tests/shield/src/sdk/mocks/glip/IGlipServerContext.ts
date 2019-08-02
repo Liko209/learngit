@@ -1,4 +1,4 @@
-import { MockSocketServer } from '../MockSocketServer';
+import { MockSocketServer } from '../../server/MockSocketServer';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';
 import { GlipGroupDao } from './dao/group';

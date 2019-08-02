@@ -3,7 +3,7 @@
  * @Date: 2019-07-25 16:21:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { readJson, ScenarioFactory } from 'shield/sdk';
+import { readApiJson, ScenarioFactory } from 'shield/sdk';
 import { IGlipPostPost } from 'shield/sdk/mocks/glip/api/post/post.post.contract';
 
 function createScenarioFactory<T extends ScenarioFactory>(factory: T): T {
@@ -38,7 +38,7 @@ const success = createScenarioFactory(
     // glipIndexDataHelper.profile.insertOrUpdate(i)
 
     const post = helper.mockResponse(
-      readJson<IGlipPostPost>(require('../data/SEND_POST.SUCCESS.json')),
+      readApiJson<IGlipPostPost>(require('../data/SEND_POST.SUCCESS.json')),
       data => {
         // modify the response
         data.request.data!.group_id = team._id;

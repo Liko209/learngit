@@ -3,7 +3,7 @@
  * @Date: 2019-07-25 16:21:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { readJson, ScenarioFactory, ItContext, Scenario } from 'shield/sdk';
+import { readApiJson, ScenarioFactory, ItContext, Scenario } from 'shield/sdk';
 import { IGlipPostPost } from 'shield/sdk/mocks/glip/api/post/post.post.contract';
 import { GlipInitialDataHelper } from 'shield/sdk/mocks/glip/data/data';
 import { GlipGroup } from 'shield/sdk/mocks/glip/types';
@@ -40,7 +40,7 @@ export class Success extends GlipScenario {
     // glipIndexDataHelper.profile.insertOrUpdate(i)
 
     this.post = helper.mockResponse(
-      readJson<IGlipPostPost>(require('../data/SEND_POST.SUCCESS.json')),
+      readApiJson<IGlipPostPost>(require('../data/SEND_POST.SUCCESS.json')),
       data => {
         // modify the response
         data.request.data!.group_id = team._id;

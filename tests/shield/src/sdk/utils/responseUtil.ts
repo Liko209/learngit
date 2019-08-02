@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { IApiContract, IRequestResponse, IApiPath } from '../types';
+import { IApiContract, IRequestResponse, IApiPath, ISocketInfo } from '../types';
 import { IResponse } from 'foundation/network/network';
 
 import assert = require('assert');
@@ -24,7 +24,7 @@ export function createResponse<T>(
   );
 }
 
-export function readJson<
+export function readApiJson<
   A extends IApiContract<any, any> = IApiContract<any, any>,
   ReqData = A extends IApiContract<infer B, any> ? B : any,
   ResData = A extends IApiContract<any, infer B> ? B : any

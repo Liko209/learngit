@@ -7,7 +7,7 @@ import { GroupService, Group } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { jit } from 'shield/sdk';
 import { IApiContract, IRequestResponse } from 'shield/sdk/types';
-import { readJson } from 'shield/sdk/utils';
+import { readApiJson } from 'shield/sdk/utils';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
 
 jit('Group Integration test', ({ helper, sdk, template }) => {
@@ -25,7 +25,7 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
   describe('GroupService', () => {
     it('create team', async () => {
       const mockInfo = helper.mockResponse(
-        readJson<IGlipTeamPost>(require('./data/CREATE_TEAM.SUCCESS.json')),
+        readApiJson<IGlipTeamPost>(require('./data/CREATE_TEAM.SUCCESS.json')),
         api => {
           const {
             response: { data },
@@ -49,7 +49,7 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
     });
     it('modify team name', async () => {
       const mockInfo = helper.mockResponse(
-        readJson<IApiContract<any, Group>>(
+        readApiJson<IApiContract<any, Group>>(
           require('./data/MODIFY_TEAM_NAME.SUCCESS.json'),
         ),
         reqRes => {
@@ -71,7 +71,7 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
     });
     it('disable all team permission', async () => {
       const mockTeamInfo = helper.mockResponse(
-        readJson<IApiContract<any, Group>>(
+        readApiJson<IApiContract<any, Group>>(
           require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
         ),
         reqRes => {
@@ -103,7 +103,7 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
     });
     it('enable all team permission', async () => {
       const mockInfo = helper.mockResponse(
-        readJson<IApiContract<any, Group>>(
+        readApiJson<IApiContract<any, Group>>(
           require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
         ),
         reqRes => {
@@ -135,7 +135,7 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
     });
     it('add team member', async () => {
       const mockInfo = helper.mockResponse(
-        readJson<IApiContract<any, Group>>(
+        readApiJson<IApiContract<any, Group>>(
           require('./data/ADD_TEAM_MEMBER.SUCCESS.json'),
         ),
         (

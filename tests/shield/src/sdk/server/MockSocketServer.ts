@@ -52,21 +52,18 @@ export class MockSocketServer {
   async emit(channel: string, message: any) {
     await this.ensure('connected');
     this.socket.emit(channel, message);
-    await wait(10);
   }
 
   async emitPacket<T>(packet: ISocketInfo<T>) {
     await this.ensure('connected');
     assert(packet.channel, 'socket packet should contain channel info.');
     assert(packet.data, 'socket packet should contain data.');
-    await wait();
     debug('-> emitPacket: ', packet.channel);
     this.socket.emit(packet.channel, JSON.stringify(packet.data));
   }
 
   async emitEntityCreate(entity: object) {
     await this.ensure('connected');
-    await wait();
     debug('-> emitEntityCreate');
     this.socket.emit(
       'message',
@@ -81,7 +78,6 @@ export class MockSocketServer {
 
   async emitMessage(entity: object) {
     await this.ensure('connected');
-    await wait();
     debug('-> emitMessage');
     this.socket.emit(
       'message',
@@ -92,12 +88,10 @@ export class MockSocketServer {
         },
       }),
     );
-    // await wait();
   }
 
   async emitPartial(partial: object, partialBody?: object) {
     await this.ensure('connected');
-    await wait();
     debug('-> emitPartial', partial);
     this.socket.emit(
       'partial',
@@ -110,6 +104,5 @@ export class MockSocketServer {
         },
       }),
     );
-    // await wait();
   }
 }
