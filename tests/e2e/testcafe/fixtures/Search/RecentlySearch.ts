@@ -386,7 +386,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[6];
   const groupUser = users[2];
   await h(t).glip(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const nameUserA = await h(t).glip(loginUser).getPersonPartialData('display_name', userA.rcId);
   const groupName = await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
 
@@ -465,7 +464,6 @@ test.meta(<ITestMeta>{
 
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   const searchedUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', antherUser.rcId);
 
@@ -599,7 +597,6 @@ test.meta(<ITestMeta>{
   const admin = users[2];
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
 
   const team = <IGroup>{
@@ -718,7 +715,6 @@ test.meta(<ITestMeta>{
   const anotherUser = users[2];
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
   const contentName = 'Ring';
   const contentNameInThisConversation = `${contentName} in this conversation`;

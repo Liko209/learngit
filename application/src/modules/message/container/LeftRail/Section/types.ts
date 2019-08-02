@@ -8,7 +8,7 @@ import { SortEndHandler } from 'react-sortable-hoc';
 enum SECTION_TYPE {
   FAVORITE = 'favorites',
   DIRECT_MESSAGE = 'direct_messages',
-  TEAM = 'teams',
+  TEAM = 'teams'
 }
 
 type SectionProps = {
@@ -31,7 +31,6 @@ type SectionViewProps = {
 type SectionConfig = {
   dataNameForTest: string;
   title: string;
-  iconName: string;
   sortable?: boolean;
 };
 
@@ -42,5 +41,5 @@ export {
   SectionViewProps,
   SectionConfig,
   SectionConfigs,
-  SECTION_TYPE,
+  SECTION_TYPE
 };

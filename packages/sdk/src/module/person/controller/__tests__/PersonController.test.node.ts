@@ -35,6 +35,7 @@ import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountService } from 'sdk/module/account';
+import { PersonActionController } from '../PersonActionController';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config');
@@ -143,7 +144,7 @@ describe('PersonService', () => {
         return [person1, person2];
       });
       const result = await personController.getPersonsByIds([1, 2]);
-      expect(entitySourceController.batchGet).toBeCalledWith([1, 2]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([1, 2]);
       expect(result).toEqual([person1, person2]);
     });
 
@@ -172,7 +173,7 @@ describe('PersonService', () => {
       spy.mockResolvedValueOnce(person);
       const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.CONFERENCE)).toBeFalsy;
-      expect(spy).toBeCalled;
+      expect(spy).toHaveBeenCalled;
     });
 
     it('should have message for person', async () => {
@@ -180,7 +181,7 @@ describe('PersonService', () => {
       spy.mockResolvedValueOnce(person);
       const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
-      expect(spy).toBeCalledWith(person.id);
+      expect(spy).toHaveBeenCalledWith(person.id);
     });
 
     it('should not have message for pseudo person', async () => {
@@ -189,7 +190,7 @@ describe('PersonService', () => {
       spy.mockResolvedValueOnce(pseudoPerson);
       const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
-      expect(spy).toBeCalledWith(pseudoPerson.id);
+      expect(spy).toHaveBeenCalledWith(pseudoPerson.id);
     });
   });
 
@@ -270,7 +271,7 @@ describe('PersonService', () => {
     });
   });
   describe('getFullName()', () => {
-    it('should return displayName first', () => {
+    it('should not return displayName', () => {
       const displayName = 'Bruce Chen';
       const firstName = 'Niki';
       const lastName = 'Rao';
@@ -284,7 +285,7 @@ describe('PersonService', () => {
             last_name: lastName,
           }),
         ),
-      ).toEqual(displayName);
+      ).toEqual('Niki Rao');
     });
     it('should return LastName FirstName after displayName', () => {
       const firstName = 'Bruce';
@@ -301,6 +302,7 @@ describe('PersonService', () => {
         ),
       ).toEqual(`${firstName} ${lastName}`);
     });
+
     it('should return name of email after displayName and FirstName LastName', () => {
       const email = 'Bruce.Chen@ringcentral.com';
       expect(
@@ -338,7 +340,7 @@ describe('PersonService', () => {
         thumbs: thumbsString,
         url: originalURL,
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(thumbsSize150);
     });
 
@@ -357,7 +359,7 @@ describe('PersonService', () => {
         url: originalURL,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(thumbsSize150);
     });
 
@@ -365,7 +367,7 @@ describe('PersonService', () => {
       const headshot = {
         url: originalURL,
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(serverUrl);
     });
 
@@ -378,7 +380,7 @@ describe('PersonService', () => {
         url: originalURL,
         thumbs: thumbsString,
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(serverUrl);
     });
 
@@ -396,7 +398,7 @@ describe('PersonService', () => {
         url: originalURL,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(serverUrl);
     });
 
@@ -414,7 +416,7 @@ describe('PersonService', () => {
         url: originalURL,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(originalURL);
     });
 
@@ -437,19 +439,19 @@ describe('PersonService', () => {
 
       jest.spyOn(PersonAPI, 'getHeadShotUrl').mockReturnValueOnce(null);
 
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(originalURL);
     });
 
     it('should return url when headshot is an url string', () => {
       const headshot = originalURL;
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(originalURL);
     });
 
     it('should return url when headshot is an url string and headshot_version exist', () => {
       const headshot = originalURL;
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(originalURL);
     });
 
@@ -458,13 +460,13 @@ describe('PersonService', () => {
         url: gifUrl,
         stored_file_id: '123',
       };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150);
       expect(url).toBe(gifUrl);
     });
 
     it('should return original url when the headshot is string and the original url is gif', () => {
       const headshot = gifUrl;
-      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, headshot, 150, 123);
       expect(url).toBe(gifUrl);
     });
   });
@@ -759,9 +761,36 @@ describe('PersonService', () => {
       jest
         .spyOn(entitySourceController, 'getRequestController')
         .mockReturnValue(requestController);
-      personController.refreshPersonData(1);
+
+      entitySourceController.update = jest.fn();
+      await personController.refreshPersonData(1);
+      expect(entitySourceController.update).toHaveBeenCalled();
       expect(requestController.get).toHaveBeenCalledTimes(1);
     });
+  });
+
+  describe('getName', () => {
+    it.each`
+      displayName | firstName   | lastName    | email      | res
+      ${'d_name'} | ${'f_name'} | ${'l_name'} | ${'email'} | ${'f_name l_name'}
+      ${''}       | ${'f_name'} | ${'l_name'} | ${'email'} | ${'f_name l_name'}
+      ${''}       | ${'f_name'} | ${''}       | ${'email'} | ${'f_name'}
+      ${''}       | ${''}       | ${'l_name'} | ${'email'} | ${'l_name'}
+      ${''}       | ${''}       | ${''}       | ${'email'} | ${''}
+      ${''}       | ${''}       | ${''}       | ${''}      | ${''}
+    `(
+      'should return full name of the person $res ',
+      ({ displayName, firstName, lastName, email, res }) => {
+        const person: any = {
+          email,
+          display_name: displayName,
+          first_name: firstName,
+          last_name: lastName,
+        };
+
+        expect(personController.getName(person)).toEqual(res);
+      },
+    );
   });
 
   describe('getPhoneNumbers', () => {
@@ -791,7 +820,8 @@ describe('PersonService', () => {
 
       return person;
     }
-    it('should return all phone numbers when is company contact', () => {
+    
+    it('should return all phone numbers when is company contact, and extension is at first', () => {
       const person = getPerson();
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
@@ -827,4 +857,10 @@ describe('PersonService', () => {
       ]);
     });
   });
+
+  describe('personActionController', ()=>{
+    it('should return instance of PersonActionController', ()=>{
+      expect(personController.personActionController).toBeInstanceOf(PersonActionController);
+    })
+  })
 });

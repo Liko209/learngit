@@ -22,6 +22,7 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { withRouter, Switch, Route } from 'react-router';
 import history from '@/history';
+import { UnregisterCallback } from 'history';
 
 const LeftRailResponsive = withResponsive(LeftRail, {
   maxWidth: 360,
@@ -42,21 +43,46 @@ const SwitchResponsive = withResponsive(Switch, {
 @observer
 class PhoneTabRouterViewComponent extends Component<PhoneTabViewProps> {
   componentDidMount() {
-    if (!this.props.hasSawDialPad) {
-      this.props.setShowDialPad();
+    const {
+      match,
+      updateCurrentTab,
+      hasSawDialPad,
+      setShowDialPad,
+      currentTab,
+    } = this.props;
+    const initPath = isValidTab(match.url)
+      ? match.url
+      : isValidTab(currentTab)
+      ? currentTab
+      : kDefaultPhoneTabPath;
+    history.replace(initPath);
+    updateCurrentTab(initPath);
+
+    if (!hasSawDialPad) {
+      setShowDialPad();
       const ts = container.get<TelephonyService>(TELEPHONY_SERVICE);
       ts.maximize();
     }
-    const { match, currentTab } = this.props;
-    if (!isValidTab(match.url)) {
-      history.replace(currentTab || kDefaultPhoneTabPath);
-    }
+
+    this._unListen = this.props.history.listen(location => {
+      const newSelectedPath = location.pathname;
+      if (isValidTab(newSelectedPath)) {
+        updateCurrentTab(newSelectedPath);
+      }
+    });
   }
+
+  private _unListen: UnregisterCallback;
+
+  componentWillUnmount() {
+    this._unListen();
+  }
+
   render() {
-    const { match } = this.props;
+    const { currentTab } = this.props;
     return (
       <JuiResponsiveLayout data-test-automation-id="phone-tab">
-        <LeftRailResponsive current={match.url} />
+        <LeftRailResponsive current={currentTab} />
         <SwitchResponsive>
           {TelephonyTabs.map(({ path, component: Comp }) => (
             <Route path={path} key={path} render={() => <Comp />} />

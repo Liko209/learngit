@@ -25,7 +25,8 @@ class CallLogGatherer extends DebugGatherer {
     // "delete_rc_message_from_server",
     "filter_and_sort_call_log",
     "filter_and_sort_voicemail",
-    "fetch_recent_call_logs"
+    "fetch_recent_call_logs",
+    "init_rc_call_log_badge"
   ];
 
   constructor() {
@@ -100,7 +101,7 @@ class CallLogGatherer extends DebugGatherer {
         ui: []
       };
     }
-    console.log(JSON.stringify(result));
+    
     return result;
   }
 }

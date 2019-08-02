@@ -40,7 +40,7 @@ import moize from 'moize';
 import { mainLogger } from 'sdk';
 import { AtMentionTransformer } from './parsers/AtMentionTransformer';
 
-/* eslint-disable */
+/* eslint-disable no-use-before-define */
 // Do not change the order of the array unless you know what you're doing.
 const parsersConfig = [
   {
@@ -62,7 +62,7 @@ const parsersConfig = [
   },
   {
     Parser: EmojiParser,
-    shouldParse: (fullText: string, { emoji, html }: PostParserOptions) =>
+    shouldParse: (fullText: string, { emoji }: PostParserOptions) =>
       emoji &&
       fullText.length >= MIN_EMOJI_PATTERN_LEN &&
       fullText.includes("<emoji data='"),
@@ -94,8 +94,7 @@ const parsersConfig = [
   },
   {
     Parser: KeywordHighlightParser,
-    shouldParse: (fullText: string, { keyword, html }: PostParserOptions) =>
-      keyword,
+    shouldParse: (fullText: string, { keyword }: PostParserOptions) => keyword,
     getParserOption: ({
       keyword,
       phoneNumber,
@@ -109,10 +108,7 @@ const parsersConfig = [
   },
   {
     Parser: PhoneNumberParser,
-    shouldParse: (
-      fullText: string,
-      { phoneNumber, html }: PostParserOptions,
-    ) => {
+    shouldParse: (fullText: string, { phoneNumber }: PostParserOptions) => {
       if (!phoneNumber || !/\d/.test(fullText)) {
         return false;
       }

@@ -7,7 +7,7 @@ import React, { PureComponent } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import { noop } from '../../foundation/utils';
 import JuiSectionHeader, {
-  JuiSectionHeaderProps,
+  JuiSectionHeaderProps
 } from './ConversationListSectionHeader';
 
 type SectionProps = {
@@ -15,7 +15,6 @@ type SectionProps = {
   onExpand?: Function;
   onCollapse?: Function;
   umi?: JSX.Element;
-  icon?: string;
   title: string;
 } & JuiSectionHeaderProps;
 
@@ -24,27 +23,25 @@ type SectionStates = {
 };
 
 class JuiConversationListSection extends PureComponent<
-SectionProps,
-SectionStates
+  SectionProps,
+  SectionStates
 > {
   static defaultProps = {
     onExpand: noop,
-    onCollapse: noop,
+    onCollapse: noop
   };
 
   constructor(props: SectionProps) {
     super(props);
 
     this.state = {
-      expanded: this.props.expanded || false,
+      expanded: this.props.expanded || false
     };
     this._handleClick = this._handleClick.bind(this);
   }
 
   render() {
-    const {
-      umi, onExpand, onCollapse, ...restProps
-    } = this.props;
+    const { umi, onExpand, onCollapse, ...restProps } = this.props;
     const { expanded } = this.state;
 
     return (

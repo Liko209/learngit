@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiListItemIcon, JuiListItemIconProps } from '../../components/Lists';
-import { palette } from '../../foundation/utils';
+import { palette, spacing } from '../../foundation/utils';
 
 const JuiLeftRail = styled.div`
   position: relative;
@@ -20,11 +20,23 @@ const JuiLeftRail = styled.div`
   background: ${palette('grey', '100')};
 `;
 
-const JuiLeftRailStickyTop = styled.div``;
+const JuiLeftRailStickyTop = styled.div`
+  && {
+    padding: ${spacing(3, 3, 0)};
+
+    hr {
+      margin-top: ${spacing(3)};
+    }
+  }
+`;
 
 const JuiLeftRailMainSection = styled.div`
   flex: 1;
   overflow: auto;
+
+  && > div + div {
+    margin-top: ${spacing(2)};
+  }
 `;
 
 type JuiLeftRailListItemIconProps = JuiListItemIconProps & {
@@ -37,13 +49,14 @@ const JuiLeftRailListItemIconWrapper = ({
 }: JuiLeftRailListItemIconProps) => <JuiListItemIcon {...rest} />;
 
 const JuiLeftRailListItemIcon = styled(JuiLeftRailListItemIconWrapper)`
-  opacity: ${({ disabled, theme }) => (disabled ? theme.palette.action.hoverOpacity * 3 : 1)};
+  opacity: ${({ disabled, theme }) =>
+    disabled ? theme.palette.action.hoverOpacity * 3 : 1};
 `;
 
 export {
   JuiLeftRail,
   JuiLeftRailStickyTop,
   JuiLeftRailMainSection,
-  JuiLeftRailListItemIcon,
+  JuiLeftRailListItemIcon
 };
 export default JuiLeftRail;

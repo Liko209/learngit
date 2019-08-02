@@ -8,6 +8,7 @@
     "noUnusedLocals": true,
     "paths": {
       "@/*": ["src/*"],
+      "foundation/*": ["../packages/foundation/src/*"],
       "sdk/*": ["../packages/sdk/src/*"],
       "jui/*": ["../packages/jui/src/*"],
       "framework/*": ["../packages/framework/src/*"],
@@ -16,9 +17,5 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "src/**/__tests__/*",
-    "src/**/*(.spec|.test).ts(x)?"
-  ]
+  "exclude": ["node_modules"]
 }

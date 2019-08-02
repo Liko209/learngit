@@ -478,6 +478,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
     >
       <button
         aria-describedby={null}
+        aria-label="favorite"
         className="MuiButtonBase-root MuiIconButton-root c2"
         disabled={false}
         onBlur={[Function]}
@@ -817,7 +818,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
       className="c5"
     >
       <button
-        aria-describedby={null}
+        aria-label=""
         className="MuiButtonBase-root MuiIconButton-root c6"
         disabled={false}
         onBlur={[Function]}
@@ -827,13 +828,11 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         onKeyUp={[Function]}
         onMouseDown={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="plain"
       >
@@ -858,9 +857,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         </span>
       </button>
     </div>
-    <span
-      className="MuiTouchRipple-root"
-    />
   </div>
 </ul>
 `;

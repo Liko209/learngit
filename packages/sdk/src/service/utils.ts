@@ -9,14 +9,16 @@ import { mainLogger } from 'foundation';
 import { IdModel } from '../framework/model';
 import { shouldEmitNotification } from '../utils/notificationUtils';
 
-const isObject = (value: any) => Object.prototype.toString.call(value) === '[object Object]';
+const isObject = (value: any) =>
+  Object.prototype.toString.call(value) === '[object Object]';
 // const isArray = value => Object.prototype.toString.call(value) === '[object Array]';
 // const isBoolean = value => Object.prototype.toString.call(value) === '[object Boolean]';
 // const isNumber = value => Object.prototype.toString.call(value) === '[object Number]';
 // const isString = value => Object.prototype.toString.call(value) === '[object String]';
 // const isNull = value => Object.prototype.toString.call(value) === '[object Null]';
 // const isUndefined = value => Object.prototype.toString.call(value) === '[object Undefined]';
-const isFunction = (value: any) => Object.prototype.toString.call(value) === '[object Function]';
+const isFunction = (value: any) =>
+  Object.prototype.toString.call(value) === '[object Function]';
 // const isRegExp = value => Object.prototype.toString.call(value) === '[object RegExp]';
 const isIEOrEdge =
   typeof navigator !== 'undefined' &&
@@ -31,10 +33,8 @@ const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 
 const transform = <T extends { id: any }>(item: any): T => {
   if (isObject(item)) {
-    /* eslint-disable no-underscore-dangle, no-param-reassign */
     item.id = item.id || item._id || 0;
     delete item._id;
-    /* eslint-enable no-underscore-dangle, no-param-reassign */
   }
   return item as T;
 };
@@ -45,9 +45,7 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  {
-    data, dao, eventKey, noSavingToDB, source, changeMap,
-  }: any,
+  { data, dao, eventKey, noSavingToDB, source, changeMap }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **

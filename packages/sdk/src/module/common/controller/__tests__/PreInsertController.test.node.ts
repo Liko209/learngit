@@ -146,54 +146,6 @@ describe('PreInsertController', () => {
       expect(daoSpy).toHaveBeenCalledTimes(1);
       expect(insertSpy).not.toHaveBeenCalled();
     });
-
-    it('should call bulkPut and insert for version', async () => {
-      const post: Post = { id: -2, version: -2 };
-      const daoSpy = jest.spyOn(dao, 'bulkPut');
-      const insertSpy = jest.spyOn(
-        preInsertController['_preInsertIdController'],
-        'insert',
-      );
-      await preInsertController.insert(post);
-      expect(preInsertController.isInPreInsert('-2')).toBe(true);
-      expect(progressService.addProgress).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
-      expect(daoSpy).toHaveBeenCalledTimes(1);
-      expect(insertSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not call bulkPut and insert if entity already in pre-insert for unique_id', async () => {
-      const post: Post = { id: -2, version: -2, unique_id: '-2' };
-      const daoSpy = jest.spyOn(dao, 'bulkPut');
-      const insertSpy = jest.spyOn(
-        preInsertController['_preInsertIdController'],
-        'insert',
-      );
-      await preInsertController.insert(post);
-      await preInsertController.insert(post);
-      expect(preInsertController.isInPreInsert('-2')).toBe(true);
-      expect(progressService.addProgress).toHaveBeenCalledTimes(2);
-      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(2);
-      expect(daoSpy).toHaveBeenCalledTimes(1);
-      expect(insertSpy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not call bulkPut and insert if entity already in pre-insert for version', async () => {
-      const post: Post = { id: -2, version: -2 };
-      const daoSpy = jest.spyOn(dao, 'bulkPut');
-      const insertSpy = jest.spyOn(
-        preInsertController['_preInsertIdController'],
-        'insert',
-      );
-      await preInsertController.insert(post);
-      await preInsertController.insert(post);
-      expect(preInsertController.isInPreInsert('2')).toBe(false);
-      expect(preInsertController.isInPreInsert('-2')).toBe(true);
-      expect(progressService.addProgress).toHaveBeenCalledTimes(2);
-      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(2);
-      expect(daoSpy).toHaveBeenCalledTimes(1);
-      expect(insertSpy).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe('delete()', () => {
@@ -446,26 +398,17 @@ describe('PreInsertController', () => {
     });
 
     it('should call progressService.addProgress when preinsert', async () => {
-      await preInsertController.updateStatus(
-        { id: -2, version: -2 },
-        PROGRESS_STATUS.INPROGRESS,
-      );
+      await preInsertController.updateStatus(-2, PROGRESS_STATUS.INPROGRESS);
       expect(progressService.addProgress).toHaveBeenCalledTimes(1);
     });
 
     it('should call progressService.deleteProgress when success', async () => {
-      await preInsertController.updateStatus(
-        { id: -2, version: -2 },
-        PROGRESS_STATUS.SUCCESS,
-      );
+      await preInsertController.updateStatus(-2, PROGRESS_STATUS.SUCCESS);
       expect(progressService.deleteProgress).toHaveBeenCalledTimes(1);
     });
 
     it('should call updateProgress when failed', async () => {
-      await preInsertController.updateStatus(
-        { id: -2, version: -2 },
-        PROGRESS_STATUS.FAIL,
-      );
+      await preInsertController.updateStatus(-2, PROGRESS_STATUS.FAIL);
       expect(progressService.updateProgress).toHaveBeenCalledTimes(1);
     });
   });

@@ -32,22 +32,10 @@ export default class SettingModel<T = any> extends Base<UserSettingEntity<T>> {
 
   constructor(data: UserSettingEntity) {
     super(data);
-    const {
-      valueType,
-      source,
-      value,
-      weight,
-      state,
-      parentModelId,
-      valueGetter,
-      valueSetter,
-    } = data;
-    this.valueType = valueType;
+    const { source, value, state, valueGetter, valueSetter } = data;
     this.source = source;
     this.value = value;
-    this.weight = weight;
     this.state = state;
-    this.parentModelId = parentModelId;
     this.valueGetter = valueGetter;
     this.valueSetter = valueSetter;
   }

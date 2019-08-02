@@ -16,7 +16,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   CALL_ACTION_ERROR_CODE,
 } from 'sdk/module/telephony/types';
-import { RC_INFO, notificationCenter } from 'sdk/service';
+import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
@@ -25,9 +25,7 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import {
- reaction, IReactionDisposer, runInAction, action
-} from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -50,6 +48,7 @@ import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
+import config from '@/config';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -166,7 +165,7 @@ class TelephonyService {
       }
     }
   };
-  /* eslint-disable */
+
   private _pauseRingtone = async () => {
     if (!this._ringtone) {
       return;
@@ -239,6 +238,17 @@ class TelephonyService {
       RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
       this._getCallerPhoneNumberList,
     );
+
+    notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+      const globalStore = storeManager.getGlobalStore();
+      this._serverTelephonyService.setDataCollectionInfoConfig({
+        isProduction: config.isProductionAccount(),
+        userInfo:{
+          userId: globalStore.get(GLOBAL_KEYS.CURRENT_USER_ID),
+          companyId: globalStore.get(GLOBAL_KEYS.CURRENT_COMPANY_ID),
+        }
+      })
+    });
 
     this._serverTelephonyService.setTelephonyDelegate({
       onMadeOutgoingCall: this._onMadeOutgoingCall,
@@ -444,6 +454,8 @@ class TelephonyService {
         );
         return false; // For other errors, need not show call UI
       }
+      default:
+        break;
     }
 
     return true;

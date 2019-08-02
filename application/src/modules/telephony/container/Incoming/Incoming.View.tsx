@@ -32,22 +32,20 @@ type Props = IncomingViewProps & WithTranslation;
 
 @observer
 class IncomingViewComponent extends Component<Props> {
+  private _imgProps = { draggable: false };
+  private _DefaultAvatar = () => {
+    return <Avatar cover showDefaultAvatar imgProps={{ draggable: false }} />;
+  };
+
   private _Avatar = () => {
-    const { uid } = this.props;
+    const { uid, name } = this.props;
     return (
-      <Avatar
-        uid={uid}
-        showDefaultAvatar={!uid}
-        cover
-        imgProps={{ draggable: false }}
-      />
+      <Avatar uid={uid} displayName={name} cover imgProps={this._imgProps} />
     );
   };
 
   render() {
-    const {
-      name, phone, t, isExt, incomingState,
-    } = this.props;
+    const { name, phone, t, isExt, incomingState, uid } = this.props;
 
     switch (incomingState) {
       case INCOMING_STATE.REPLY:
@@ -63,7 +61,7 @@ class IncomingViewComponent extends Component<Props> {
             phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             Actions={Actions}
             Ignore={Ignore}
-            Avatar={this._Avatar}
+            Avatar={uid || name ? this._Avatar : this._DefaultAvatar}
           />
         );
     }

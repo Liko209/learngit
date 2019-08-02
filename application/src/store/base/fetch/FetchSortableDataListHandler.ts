@@ -3,7 +3,7 @@
  * @Date: 2018-10-07 00:50:11
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import _ from 'lodash';
 import { transaction, action } from 'mobx';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
@@ -415,6 +415,8 @@ export class FetchSortableDataListHandler<
         break;
       case EVENT_TYPES.RELOAD:
         this.handleDataReload(payload);
+        break;
+      default:
         break;
     }
   }

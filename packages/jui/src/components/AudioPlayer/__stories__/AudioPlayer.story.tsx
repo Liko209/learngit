@@ -19,7 +19,9 @@ const mediaUrl =
   'https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3';
 
 const AudioPlayer = (props: any) => {
-  const audio = props.audio;
+  const audioSrc = props.src;
+
+  const audio = new Audio();
 
   const [mediaStatus, setMediaStatus] = useState(JuiAudioStatus.PLAY);
   const [mediaTimestamp, setMediaTimestamp] = useState(props.timestamp);
@@ -93,6 +95,9 @@ const AudioPlayer = (props: any) => {
   };
   audio.addEventListener('loadeddata', onLoadeddata, false);
 
+  audio.src = audioSrc;
+  audio.load();
+
   return (
     <JuiAudioPlayer
       status={mediaStatus}
@@ -115,12 +120,12 @@ storiesOf('Components/AudioPlayer', module).add('AudioPlayer', () => (
   <dl>
     <dt>mode tiny</dt>
     <dd>
-      <AudioPlayer audio={new Audio(mediaUrl)} mode={JuiAudioMode.TINY} />
+      <AudioPlayer src={mediaUrl} mode={JuiAudioMode.TINY} />
     </dd>
     <dt>mode mini</dt>
     <dd>
       <AudioPlayer
-        audio={new Audio(mediaUrl)}
+        src={mediaUrl}
         mode={JuiAudioMode.MINI}
         duration={188}
         timestamp={0}
@@ -128,29 +133,20 @@ storiesOf('Components/AudioPlayer', module).add('AudioPlayer', () => (
     </dd>
     <dt>mode full</dt>
     <dd>
-      <AudioPlayer audio={new Audio(mediaUrl)} duration={188} timestamp={30} />
+      <AudioPlayer src={mediaUrl} duration={188} timestamp={30} />
     </dd>
     <dt>highlight display</dt>
     <dd>
-      <AudioPlayer
-        audio={new Audio(mediaUrl)}
-        isHighlight
-        duration={188}
-        timestamp={60}
-      />
+      <AudioPlayer src={mediaUrl} isHighlight duration={188} timestamp={60} />
     </dd>
     <dt>reload display</dt>
     <dd>
-      <AudioPlayer
-        audio={new Audio('example.mp3')}
-        duration={188}
-        timestamp={90}
-      />
+      <AudioPlayer src={'./example.mp3'} duration={188} timestamp={90} />
     </dd>
-    <dt>custom icon</dt>
+    <dt>custom icon display</dt>
     <dd>
       <AudioPlayer
-        audio={new Audio(mediaUrl)}
+        src={mediaUrl}
         duration={188}
         timestamp={90}
         actionIcon={{

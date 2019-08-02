@@ -182,9 +182,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   });
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
-    const text = team.self.find('p');
     await team.umi.shouldBeNumber(0);
-    await team.shouldBeNormalStyle();
   });
 
 });
@@ -195,7 +193,6 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -305,7 +302,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Given I have an extension and reset its profile and state', async () => {
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).platform(otherUser).init();
     meChatId = await h(t).glip(loginUser).getMeChatId();
   });
@@ -593,7 +589,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
-  
+
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(group.glipId).enter();
@@ -604,7 +600,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('Then show UMI', async () => {
-      await directMessagesSection.conversationEntryById(group.glipId).umi.shouldBeNumber(1);
+      await directMessagesSection.conversationEntryById(group.glipId).umi.shouldBeNumber(0);
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
@@ -657,7 +653,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
-  
+
     await h(t).withLog('When Open a conversation and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
       await h(t).platform(otherUser).sendTextPost(postContent, pvtChatId);
@@ -686,7 +682,6 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
 
     let pvtChatId;
     await h(t).withLog('Given I have an extension with at least one conversation', async () => {
-      await h(t).glip(loginUser).resetProfileAndState();
       pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
         members: [loginUser.rcId, users[5].rcId]
@@ -710,6 +705,10 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
     await h(t).withLog('And Open the conversation', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
+    });
+
+    await h(t).withLog('And Enter the mentions', async () => {
+      await app.homePage.messageTab.mentionsEntry.enter();
     });
 
     await h(t).withLog('WHen leave browser window', async () => {
@@ -762,7 +761,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
-  
+
     await h(t).withLog('Then the conversation should be opened and not has any UMI', async () => {
       await app.homePage.messageTab.conversationPage.groupIdShouldBe(teamId);
       await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).umi.shouldBeNumber(0);
@@ -788,7 +787,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given closed one DirectMessage conversation', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
     await h(t).glip(loginUser).hideGroups(chat.glipId);
   });

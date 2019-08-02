@@ -7,6 +7,7 @@ import {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
   RTCSipEmergencyServiceAddr as EmergencyServiceAddress,
+  RTCSipProvisionInfo as SipProvisionInfo,
 } from 'voip';
 
 enum FEATURE_PERMISSIONS {
@@ -19,6 +20,8 @@ enum E911_STATUS {
   ACCEPTED,
   DISCLINED,
 }
+
+type notificationCallback = (...values: any[]) => void;
 
 type TelephonyCallInfo = {
   fromName?: string;
@@ -67,6 +70,16 @@ enum CALL_ACTION_ERROR_CODE {
   OTHERS,
 }
 
+type TelephonyDataCollectionInfoUserInfoType = {
+  userId: number;
+  companyId: number;
+};
+
+type TelephonyDataCollectionInfoConfigType = {
+  isProduction: boolean;
+  userInfo: TelephonyDataCollectionInfoUserInfoType;
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
@@ -77,4 +90,7 @@ export {
   LogoutCallback,
   CALL_ACTION_ERROR_CODE,
   EmergencyServiceAddress,
+  TelephonyDataCollectionInfoConfigType,
+  SipProvisionInfo,
+  notificationCallback,
 };

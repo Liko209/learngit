@@ -4,6 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import MeetingItemModel, {
+  MEETING_STATUS,
+  MEETING_DIAL_IN_NUMBER,
+} from '../MeetingItem';
+import _ from 'lodash';
+
 const meetingData = {
   _id: 12664578068,
   created_at: 1558589662601,
@@ -49,12 +55,6 @@ const meetingData = {
   new_version: 4052744579725674,
   end_time: 1558589938141,
 };
-
-import MeetingItemModel, {
-  MEETING_STATUS,
-  MEETING_DIAL_IN_NUMBER,
-} from '../MeetingItem';
-import _ from 'lodash';
 
 describe('MeetingItemModel', () => {
   describe('constructor', () => {

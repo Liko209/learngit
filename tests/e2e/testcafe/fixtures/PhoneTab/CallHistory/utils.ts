@@ -64,7 +64,11 @@ export async function addOneMissCallLog(t: TestController, callerSession: Webpho
   });
 
   await h(t).withLog('And refresh page', async () => {
-    await h(t).reload();
+    const href = await h(t).href;
+    const originUrl = new URL(href).origin;
+    const voicemailUrl = originUrl + '/phone/callhistory';
+    await t.wait(5e3);
+    await t.navigateTo(voicemailUrl);
     await app.homePage.ensureLoaded();
   });
 

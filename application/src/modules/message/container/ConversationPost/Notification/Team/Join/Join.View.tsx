@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 16:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+/* eslint-disable react/no-danger */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { JoinViewProps } from './types';
@@ -19,7 +19,7 @@ class JoinViewComponent extends Component<JoinViewProps & WithTranslation> {
     return (
       <React.Fragment>
         <div dangerouslySetInnerHTML={{ __html: html }} />
-        <div className='datetime'>{createdAt}</div>
+        <div className="datetime">{createdAt}</div>
       </React.Fragment>
     );
   }

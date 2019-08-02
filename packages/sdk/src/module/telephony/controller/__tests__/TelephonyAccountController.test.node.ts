@@ -233,6 +233,44 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('getEmergencyAddress', () => {
+    it('should return undefined when no emergency addr', () => {
+      rtcAccount.getSipProv = jest.fn().mockReturnValue(null);
+      const res = accountController.getEmergencyAddress();
+      expect(res).toBe(undefined);
+    });
+    it('should return address from sip prov', () => {
+      rtcAccount.getSipProv = jest.fn().mockReturnValue({
+        device: {
+          emergencyServiceAddress: 'test',
+        },
+      });
+      const res = accountController.getEmergencyAddress();
+      expect(res).toBe('test');
+    });
+  });
+
+  describe('getSipProv', () => {
+    it('should return sip prov from rtc account', () => {
+      rtcAccount.getSipProv = jest.fn();
+      accountController.getSipProv();
+      expect(rtcAccount.getSipProv).toHaveBeenCalled();
+    });
+  });
+
+  describe('getWebPhoneId', () => {
+    it('should not get web phone id when there is no sip prov', () => {
+      rtcAccount.getSipProv = jest.fn().mockReturnValue(null);
+      const res = accountController.getWebPhoneId();
+      expect(res).toBe(undefined);
+    });
+    it('should return web phone id when sip prov is ready', () => {
+      rtcAccount.getSipProv = jest.fn().mockReturnValue({ device: { id: 12 } });
+      const res = accountController.getWebPhoneId();
+      expect(res).toBe(12);
+    });
+  });
+
   describe('hangUp', () => {
     it('should call controller to hang up', () => {
       const callController = {

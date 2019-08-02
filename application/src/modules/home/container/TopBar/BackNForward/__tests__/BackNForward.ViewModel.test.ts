@@ -77,7 +77,7 @@ describe('backNForward ViewModel', () => {
       times(22, (value: number) => {
         historyStack.push(`/messages/${value}`);
       });
-      const backRecord = backNForwardViewModel.backRecord;
+      const backRecord = backNForwardViewModel.backRecord.reverse();
       expect(backRecord).toEqual([
         {
           pathname: '/messages/11',
@@ -131,7 +131,7 @@ describe('backNForward ViewModel', () => {
       times(8, (value: number) => {
         historyStack.push(`/messages/${value + 13}`);
       });
-      const backRecord = backNForwardViewModel.backRecord;
+      const backRecord = backNForwardViewModel.backRecord.reverse();
       expect(backRecord).toEqual([
         {
           pathname: '/messages/11',

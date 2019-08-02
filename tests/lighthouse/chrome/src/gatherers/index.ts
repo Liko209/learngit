@@ -16,6 +16,7 @@ import { FpsGatherer } from './fpsGatherer';
 import { IndexDataGatherer } from './indexDataGatherer';
 import { SearchPhoneGatherer } from './searchPhoneGatherer';
 import { CallLogGatherer } from './callLogGatherer';
+import { SettingGatherer } from './settingGatherer';
 
 export {
   BaseGatherer,
@@ -32,5 +33,6 @@ export {
   FpsGatherer,
   IndexDataGatherer,
   SearchPhoneGatherer,
-  CallLogGatherer
+  CallLogGatherer,
+  SettingGatherer
 }

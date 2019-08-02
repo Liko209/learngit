@@ -22,10 +22,12 @@ class Sound {
   private _outputDevice: SoundOptions['outputDevice'];
   private _isDeviceSound: SoundOptions['isDeviceSound'];
   private _events: MediaEvents[] = [];
+  private _canplayListener: () => void;
 
   private _duration: number;
   private _paused: boolean;
   private _ended: boolean;
+  private _loadError: boolean;
   private _seek: number;
   private _hasSinkId: boolean;
 
@@ -70,16 +72,18 @@ class Sound {
     }
     const isPlaying = !this._paused;
 
-    this._soundPause();
+    if (!opts || (opts && !opts.continuePlay)) {
+      this._soundPause();
+    }
     this._seek = time;
 
     if (isPlaying) {
       if (opts && !opts.continuePlay) {
         return;
       }
-      this._soundPlay();
+      this._soundPlay(time);
     } else {
-      opts && opts.continuePlay && this._soundPlay();
+      opts && opts.continuePlay && this._soundPlay(time);
     }
   }
 
@@ -87,6 +91,19 @@ class Sound {
     if (this._node) {
       this._node.pause();
       this._node.currentTime = 0;
+
+      this._events
+        .filter(evt => evt.type === MediaEventType.ON && evt.name === 'error')
+        .forEach(event => {
+          this.unbindEvent(event.name, event.handler);
+        });
+      this._node.src = '';
+
+      if (process.env.NODE_ENV !== 'test') {
+        const audio = document.getElementById(this._id);
+        audio && audio.parentNode && audio.parentNode.removeChild(audio);
+      }
+
       this._node = null;
     }
     setTimeout(() => {
@@ -122,6 +139,10 @@ class Sound {
     }
   }
 
+  reloadSound() {
+    this._node && this._node.load();
+  }
+
   private _setup(options: SoundOptions) {
     this._id = options.id;
     this._url = options.url;
@@ -142,23 +163,7 @@ class Sound {
   private _createAudio() {
     this._node = this._createHtml5Audio();
 
-    const soundError = () => {
-      if (this._node) {
-        this._paused = true;
-        this._ended = true;
-        this._node.removeEventListener('error', soundError, false);
-      }
-    };
-
-    const soundCanplay = () => {
-      if (this._node) {
-        this._duration = Math.ceil(this._node.duration * 10) / 10;
-        this._node.removeEventListener('canplay', soundCanplay, false);
-      }
-    };
-
-    this._node.addEventListener('error', soundError, false);
-    this._node.addEventListener('canplay', soundCanplay, false);
+    this._soundEventBind();
 
     this._node.src = this._url;
     this._node.preload = 'auto';
@@ -178,15 +183,19 @@ class Sound {
         });
     }
 
-    this._soundEventBind();
-
     this._node.load();
   }
 
-  private _soundPlay() {
+  private _soundPlay(startTime?: number) {
+    if (startTime !== undefined && this._node) {
+      this._node.currentTime = startTime;
+    }
+
     if (!this._node || !this._paused) {
       return;
     }
+
+    this._loadError && this.reloadSound();
 
     this._node.currentTime = Math.max(0, this._seek);
     this._node.muted = this._muted;
@@ -205,13 +214,18 @@ class Sound {
         if (play) {
           play
             .then(() => {
+              this._loadError = false;
               if (this._isDeviceSound && !this._hasSinkId) {
                 this._soundStop();
                 return;
               }
             })
             .catch(e => {
-              mainLogger.warn('[MediaModule] audio play catch error', e);
+              mainLogger.warn(
+                '[MediaModule] audio play catch error',
+                e.code,
+                e.message,
+              );
               if (this._autoplay && e.code === 0) {
                 Utils.audioPolicyHandler(() => {
                   this.play();
@@ -230,7 +244,11 @@ class Sound {
         };
         this._node.addEventListener('ended', endedListener, false);
       } catch (e) {
-        mainLogger.warn('[MediaModule] audio play catch error', e);
+        mainLogger.warn(
+          '[MediaModule] html5AudioPlay catch error',
+          e.code,
+          e.message,
+        );
       }
     };
 
@@ -245,6 +263,8 @@ class Sound {
         this._node.removeEventListener('canplaythrough', listener, false);
       };
 
+      this._canplayListener = listener;
+
       this._node.addEventListener('canplaythrough', listener, false);
     }
   }
@@ -253,7 +273,6 @@ class Sound {
     if (!this._node || this._paused) {
       return;
     }
-
     const currentTime = this._node.currentTime;
     if (currentTime !== 0) {
       this._seek = currentTime;
@@ -267,6 +286,12 @@ class Sound {
     if (!this._node) {
       return;
     }
+    this._canplayListener &&
+      this._node.removeEventListener(
+        'canplaythrough',
+        this._canplayListener,
+        false,
+      );
     this._node.pause();
     this._node.currentTime = 0;
     this._resetSound();
@@ -310,14 +335,24 @@ class Sound {
     }
 
     if (this._node) {
-      const loadeddataListener = () => {
-        if (!this._node) {
-          return;
+      const soundError = () => {
+        if (this._node) {
+          this._paused = true;
+          this._ended = true;
+          this._loadError = true;
+          this._node.removeEventListener('error', soundError, false);
         }
-        this._node.currentTime = Math.max(0, this._seek);
-        this._node.removeEventListener('loadeddata', loadeddataListener, false);
       };
-      this._node.addEventListener('loadeddata', loadeddataListener, false);
+      const soundCanplay = () => {
+        if (this._node) {
+          this._duration = Math.ceil(this._node.duration * 10) / 10;
+          this._loadError = false;
+          this._node.removeEventListener('canplay', soundCanplay, false);
+        }
+      };
+
+      this._node.addEventListener('error', soundError, false);
+      this._node.addEventListener('canplay', soundCanplay, false);
     }
   }
 
@@ -347,7 +382,6 @@ class Sound {
     this._paused = true;
     this._ended = true;
     this._seek = 0;
-    this._events = [];
   }
 
   private _createHtml5Audio() {
@@ -362,7 +396,12 @@ class Sound {
       });
     }
 
-    return new Audio();
+    const audio = new Audio();
+    if (process.env.NODE_ENV !== 'test') {
+      audio.id = this._id;
+      document.body.appendChild(audio);
+    }
+    return audio;
   }
 
   get id() {

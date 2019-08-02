@@ -6,3 +6,6 @@
 export { TelephonyEngineController } from './TelephonyEngineController';
 export { TelephonyAccountController } from './TelephonyAccountController';
 export { TelephonyCallController } from './TelephonyCallController';
+export {
+  TelephonyDataCollectionController,
+} from './TelephonyDataCollectionController';
