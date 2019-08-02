@@ -2,14 +2,15 @@ const inquirer = require('inquirer');
 const jsonfile = require('jsonfile');
 const fs = require('fs');
 const execa = require('execa');
+const path = require("path");
 
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'))
 let onMerge = {} as any;
-let fixtures = [];
+const fixtures = [];
 let fileName;
 
 async function getCurrentBranch() {
-  return await execa('git', ['name-rev', '--name-only', 'HEAD']);
+  return (await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD'])).stdout;
 }
 
 function inputFixture() {
@@ -26,7 +27,7 @@ function inputFixture() {
       suggestOnly: false,
     }
   ]).then(answers => {
-    fixtures = fixtures.concat(answers.path);
+    fixtures.push(answers.path);
     if (answers.path != './') {
       inputFixture();
     } else {
@@ -54,6 +55,7 @@ function chooseTags() {
 }
 
 function saveToFile(onMerge) {
+  makeDirectoryIfNotExists(fileName);
   processFixtures(onMerge);
   const jsonContent = { "on_merge": onMerge };
   jsonfile.writeFileSync(fileName, jsonContent);
@@ -62,29 +64,35 @@ function saveToFile(onMerge) {
 }
 
 function processFixtures(onMerge) {
-  let newFixtures = [];
+  const newFixtures = [];
   for (const fixture of onMerge.fixtures) {
     if (fixture == './') continue;
     const info = fs.statSync(fixture);
     if (info.isDirectory()) {
-      newFixtures = newFixtures.concat("./" + fixture + "/**/*.ts")
+      newFixtures.push(path.join("./", fixture, "/**/*.ts"))
     } else {
-      newFixtures = newFixtures.concat("./" + fixture)
+      newFixtures.push(path.join("./", fixture))
     }
   }
   onMerge.fixtures = newFixtures;
 }
 
+function makeDirectoryIfNotExists(fileName) {
+  const directory = path.dirname(fileName);
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, {recursive: true})
+  }
+}
+
 async function inputFileName() {
-  const currentBranch: string = (await getCurrentBranch()).stdout;
-  const [directory, defaultName] = currentBranch.split('/');
+  const currentBranch: string = await getCurrentBranch();
   await inquirer.prompt([{
     type: 'input',
     message: 'please input file name:',
     name: 'fileName',
-    default: directory + "/" + defaultName + ".json"
+    default: currentBranch + ".json"
   }]).then(answer => {
-    fileName = "configs/" + answer.fileName;
+    fileName = path.join("configs/", answer.fileName);
     inputFixture();
   });
 }

@@ -11,6 +11,7 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { ToastWrapper } from '@/containers/ToastWrapper';
 
+import { ActivityTimer } from '../ActivityTimer';
 import { HomeRouter } from '../HomeRouter';
 import { LeftNav } from '../LeftNav';
 import { TopBar } from '../TopBar';
@@ -113,6 +114,7 @@ class HomeViewComponent extends Component<Props> {
       <>
         <ToastWrapper />
         <Wrapper>
+          <ActivityTimer />
           <TopBar />
           <Bottom id="app-main-section">
             <LeftNav />

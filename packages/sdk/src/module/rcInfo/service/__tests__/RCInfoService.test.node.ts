@@ -31,6 +31,7 @@ jest.mock('../../controller/RCDeviceController');
 jest.mock('sdk/module/account');
 jest.mock('../../controller/BlockNumberController');
 jest.mock('sdk/module/company');
+jest.mock('../../controller/RCPresenceController');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -125,6 +126,15 @@ describe('RCInfoService', () => {
       await rcInfoService.getRCBrandId();
       expect(
         rcInfoController.getRCAccountInfoController().getAccountBrandId,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe('getAccountMainNumber()', () => {
+    it('should call controller with correct parameter', async () => {
+      await rcInfoService.getAccountMainNumber();
+      expect(
+        rcInfoController.getRCAccountInfoController().getAccountMainNumber,
       ).toHaveBeenCalled();
     });
   });
@@ -224,6 +234,15 @@ describe('RCInfoService', () => {
       expect(
         rcInfoController.getRCCallerIdController().setDefaultCallerId,
       ).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('getAllCountryList', () => {
+    it('should call controller with correct parameter', async () => {
+      await rcInfoService.getAllCountryList();
+      expect(
+        rcInfoController.getRegionInfoController().getAllCountryList,
+      ).toHaveBeenCalled();
     });
   });
 
@@ -442,6 +461,16 @@ describe('RCInfoService', () => {
         rcInfoService['getRCInfoController']().blockNumberController
           .addBlockedNumber,
       ).toHaveBeenCalledWith('1123');
+    });
+  });
+
+  describe('addBlockedNumber()', () => {
+    it('should call controller with correct parameter', () => {
+      const controller = rcInfoService['getRCInfoController']()
+        .rcPresenceController;
+      controller.syncRCPresence = jest.fn();
+      rcInfoService.syncUserRCPresence();
+      expect(controller.syncRCPresence).toHaveBeenCalled();
     });
   });
 });

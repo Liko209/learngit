@@ -3,7 +3,6 @@
  * @Date: 2018-11-08 09:21:02
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
@@ -20,7 +19,7 @@ import {
   withDragDropContext
 } from 'jui/pattern/MessageInput/DropZone';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
-
+import {DIRECTION} from 'jui/components/Lists';
 import { Header } from './Header';
 import { MessageInput } from './MessageInput';
 import { MessageInputViewComponent } from './MessageInput/MessageInput.View';
@@ -68,7 +67,7 @@ class ConversationPageViewComponent extends Component<
     if (!stream) {
       return;
     }
-    if (stream.props.hasMore('down')) {
+    if (stream.props.hasMore(DIRECTION.DOWN)) {
       goToConversation({ conversationId: this.props.groupId });
       this.remountStream();
     }

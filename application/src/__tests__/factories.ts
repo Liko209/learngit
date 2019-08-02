@@ -1,4 +1,4 @@
-import Factory from 'factory.ts';
+import { Sync as Factory } from 'factory.ts';
 import faker from 'faker';
 import { CONVERSATION_TYPES } from '@/constants';
 import PersonModel from '../store/models/Person';

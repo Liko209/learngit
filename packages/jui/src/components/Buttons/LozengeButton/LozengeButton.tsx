@@ -5,35 +5,25 @@
  */
 import React, { ButtonHTMLAttributes, memo } from 'react';
 import styled from '../../../foundation/styled-components';
-import {
-  height,
-  spacing,
-  grey,
-  typography,
-  width,
-} from '../../../foundation/utils';
+import { height, spacing, grey, typography } from '../../../foundation/utils';
 import { RuiCircularProgress } from 'rcui/components/Progress';
+import arrowUp from '../../../assets/jupiter-icon/icon-jump-to-unread.svg';
+import arrowDown from '../../../assets/jupiter-icon/icon-jump-to-latest.svg';
+import { JuiIconography } from '../../../foundation/Iconography';
+import { DIRECTION } from '../../Lists/interface';
 
-type Direction = 'up' | 'down';
 type JuiLozengeButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
-  arrowDirection?: Direction;
+  arrowDirection?: DIRECTION;
 };
 
-const Arrow = styled<{ direction: Direction }, 'span'>('span')`
-  border: ${width(1)} solid transparent;
-  ${({ direction }) =>
-    direction === 'down'
-      ? 'border-top-color: white; top: 2px;'
-      : 'border-bottom-color: white; top: -2px;'};
-  position: relative;
-  margin: ${spacing(1, 1, 1, 2)};
-  display: inline-block;
-  vertical-align: middle;
-`;
+const Arrow = styled(({ direction, ...rest }: { direction: DIRECTION }) => {
+  const symbol = direction === DIRECTION.UP ? arrowUp : arrowDown;
+  return <JuiIconography iconSize="extraSmall" symbol={symbol} {...rest} />;
+})``;
 
 const StyledLozengeButton = styled.button`
-  ${typography('body1')};
+  ${typography('caption2')};
   padding: ${spacing(2, 5)};
   height: ${height(8)};
   line-height: 0;
@@ -44,11 +34,9 @@ const StyledLozengeButton = styled.button`
   box-shadow: ${props => props.theme.shadows[7]};
   cursor: pointer;
   outline: none;
-
   &:hover {
     background-color: ${grey('900')};
   }
-
   &.lozengeButtonLoading {
     pointer-events: none;
 
@@ -56,7 +44,9 @@ const StyledLozengeButton = styled.button`
       margin-left: ${spacing(1)};
     }
   }
-
+  ${Arrow} {
+    margin-left: ${spacing(2)};
+  }
   &.lozengeButtonLoading,
   &.lozengeButtonWithArrow {
     ${Arrow}, ${RuiCircularProgress}, span {

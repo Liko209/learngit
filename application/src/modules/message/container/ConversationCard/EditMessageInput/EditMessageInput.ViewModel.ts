@@ -103,7 +103,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   @action
   private _buildEnterHandler = () => {
     const self = this;
-    return function (this: any) {
+    return function(this: any) {
       const quill: Quill = this.quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
@@ -122,7 +122,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       }
       self.removeDraft();
     };
-  }
+  };
 
   private _buildEscHandler = () => this._exitEditMode;
 
@@ -141,8 +141,8 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     server: 'message.prompt.editPostFailedForServerIssue',
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
-  private _handleEditPost(content: string, ids: number[]) {
-    return this._postService.editPost({
+  private async _handleEditPost(content: string, ids: number[]) {
+    await this._postService.editPost({
       text: content,
       groupId: this.gid,
       postId: this.id,

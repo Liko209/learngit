@@ -4,9 +4,11 @@
     "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "baseUrl": ".",
     "outDir": "build",
-    "rootDir": "src",
     "paths": {
-      "sdk/*": ["src/*"]
+      "sdk/*": ["src/*"],
+      "voip/*": ["../voip/src/*"],
+      "foundation/*": ["../foundation/src/*"],
+      "shield/*": ["../../tests/shield/src/*"]
     }
   },
   "include": ["src"],

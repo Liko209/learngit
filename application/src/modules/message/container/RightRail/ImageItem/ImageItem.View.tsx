@@ -3,7 +3,6 @@
  * @Date: 2019-01-15 11:07:53
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
@@ -49,7 +48,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
-              <FileActionMenu fileId={id} disablePortal={true} />
+              <FileActionMenu fileId={id} disablePortal />
             </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}

@@ -3,7 +3,6 @@
  * @Date: 2018-11-27 14:33:02
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import { observer } from 'mobx-react';
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -34,13 +33,13 @@ class MemberListItem extends React.Component<
   state = {
     isHover: false,
   };
-  private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+  private _handleMouseEnter = () => {
     this.setState({
       isHover: true,
     });
   };
 
-  private _handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+  private _handleMouseLeave = () => {
     this.setState({
       isHover: false,
     });
@@ -84,7 +83,7 @@ class MemberListItem extends React.Component<
       isTeam,
     } = this.props;
     const { isHover } = this.state;
-    const presence = <Presence uid={pid} borderSize='medium' />;
+    const presence = <Presence uid={pid} borderSize="medium" />;
     const ListItem = JuiProfileDialogContentMemberListItem;
     const ListItemName = JuiProfileDialogContentMemberListItemName;
     const ListItemAdmin = JuiProfileDialogContentMemberListItemAdmin;
@@ -101,16 +100,16 @@ class MemberListItem extends React.Component<
         onMouseLeave={this._handleMouseLeave}
       >
         <Avatar uid={pid} presence={presence} onClick={this.onClickAvatar} />
-        <ListItemName data-test-automation-id='profileDialogMemberListItemPersonName'>
+        <ListItemName data-test-automation-id="profileDialogMemberListItemPersonName">
           {person.userDisplayName}
         </ListItemName>
         {isThePersonAdmin && (
-          <ListItemAdmin data-test-automation-id='profileDialogMemberListItemPersonAdmin'>
+          <ListItemAdmin data-test-automation-id="profileDialogMemberListItemPersonAdmin">
             {t('people.profile.admin')}
           </ListItemAdmin>
         )}
         {isThePersonGuest && (
-          <ListItemGuest data-test-automation-id='profileDialogMemberListItemPersonGuest'>
+          <ListItemGuest data-test-automation-id="profileDialogMemberListItemPersonGuest">
             {t('people.profile.guest')}
           </ListItemGuest>
         )}

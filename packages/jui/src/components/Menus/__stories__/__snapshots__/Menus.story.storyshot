@@ -1,6 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Menus 2 Lines MenuItem With Avatar 1`] = `
+.c4 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c4.c4 {
+  padding: 0;
+}
+
+.c4.c4 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c4.c4 .list-item-secondary {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c4.c4.multiline {
+  margin: 0;
+}
+
 .c3.c3 {
   width: 32px;
   height: 32px;
@@ -79,44 +117,6 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
 
 .c0.c0:active .c1 {
   color: #fff;
-}
-
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c4.c4 {
-  padding: 0;
-}
-
-.c4.c4 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c4.c4 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c4.c4.multiline {
-  margin: 0;
 }
 
 <li

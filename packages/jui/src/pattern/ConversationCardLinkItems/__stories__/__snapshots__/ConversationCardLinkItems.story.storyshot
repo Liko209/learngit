@@ -231,7 +231,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
-  margin: 0px 0px 8px 0px;
+  margin: 0px 16px 8px 0px;
   word-break: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -296,6 +296,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   data-test-automation-id="linkItemsWrapper"
 >
   <button
+    aria-label=""
     className="MuiButtonBase-root MuiIconButton-root c1"
     data-id="closeBtn"
     data-test-automation-id="linkPreviewCloseBtn"

@@ -18,10 +18,10 @@ export const kRTCProvisioningOptions = {
   appName: 'RingCentral Jupiter',
   builtinEnabled: false,
   audioHelper: {
-    enabled: true,
+    enabled: true
   },
   logLevel: 10,
-  enableQos: true,
+  enableQos: true
 };
 
 export const defaultAudioID = 'default';
@@ -39,5 +39,5 @@ export const kRetryIntervalList = [
   { min: 240, max: 480 },
   { min: 480, max: 960 },
   { min: 960, max: 1920 },
-  { min: 1920, max: 3840 },
+  { min: 1920, max: 3840 }
 ];

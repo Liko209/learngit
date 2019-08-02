@@ -6,10 +6,13 @@
 import StoreViewModel from '@/store/ViewModel';
 import { AudioPlayerProps } from './types';
 import { jupiter } from 'framework';
+import { mainLogger } from 'sdk';
 import { MediaOptions, IMediaService, IMedia } from '@/interface/media';
 import { observable, action, computed } from 'mobx';
-import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { JuiAudioStatus } from 'jui/components/AudioPlayer';
 import { Media } from '../../Media';
+
+const LOADING_TIME = 250;
 
 class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
   @observable
@@ -28,6 +31,8 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
   private _isPlayingBefore: boolean = false;
 
   private _currentSrc: MediaOptions['src'] = '';
+
+  private _loadingTimer: NodeJS.Timeout;
 
   private _disposeGetMediaReaction: () => void;
   private _disposeCreateMediaReaction: () => void;
@@ -75,7 +80,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
         throw new Error('[AudioPlayer] please check media props');
       }
       if (this.props.trackId) {
-        console.warn(
+        mainLogger.warn(
           '[AudioPlayer] media is created outside, trackId is not working.',
         );
       }
@@ -161,7 +166,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     const propDuration = duration as number;
 
     const isOutDuration = (timestamp: number, duration: number) => {
-      return timestamp < 0 || Math.round(timestamp * 100) / 100 >= duration;
+      return timestamp < 0 || Math.round(timestamp) >= Math.round(duration);
     };
 
     const _duration = mediaDuration || propDuration;
@@ -228,15 +233,14 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
       this._media = null;
       this._currentTime = 0;
       this._currentDuration = 0;
-      this._isPlayingBefore = false;
       this._currentSrc = '';
     }
   }
 
   private _playMedia = async () => {
-    const { onBeforePlay, onPlay, startTime } = this.props;
+    const { onBeforePlay, startTime } = this.props;
 
-    this._mediaStatus = JuiAudioStatus.LOADING;
+    this._loadingStatusTimer();
 
     if (onBeforePlay) {
       const isCtn = await onBeforePlay();
@@ -260,7 +264,6 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     this._media.play({
       startTime: startTimestamp,
     });
-    onPlay && onPlay();
   };
 
   private _pauseMedia = async () => {
@@ -268,7 +271,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
       return;
     }
 
-    const { onBeforePause, onPaused } = this.props;
+    const { onBeforePause } = this.props;
 
     if (onBeforePause) {
       const isCtn = await onBeforePause();
@@ -278,7 +281,6 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     }
 
     this._media.pause();
-    onPaused && onPaused();
   };
 
   private _reloadMedia = async () => {
@@ -290,6 +292,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     if (onBeforeReload) {
       const isCtn = await onBeforeReload();
       if (!isCtn) {
+        this._mediaStatus = JuiAudioStatus.RELOAD;
         return;
       }
     }
@@ -307,6 +310,10 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     this._media.on('timeupdate', this._onTimeUpdate);
     this._media.on('ended', this._onEnded);
     this._media.on('error', this._onError);
+    this._media.onReset(() => {
+      this._mediaStatus = JuiAudioStatus.PLAY;
+      this.props.onPaused && this.props.onPaused();
+    });
   };
 
   private _unbindMediaEvent = () => {
@@ -328,15 +335,17 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
 
   @action
   private _onPlay = () => {
-    this._mediaStatus = JuiAudioStatus.PAUSE;
     const { onPlay } = this.props;
+    this._clearLoadingStatusTimer();
+    this._mediaStatus = JuiAudioStatus.PAUSE;
     onPlay && onPlay();
   };
 
   @action
   private _onPause = () => {
-    this._mediaStatus = JuiAudioStatus.PLAY;
     const { onPaused } = this.props;
+    this._clearLoadingStatusTimer();
+    this._mediaStatus = JuiAudioStatus.PLAY;
     onPaused && onPaused();
   };
 
@@ -359,9 +368,24 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
   @action
   private _onError = () => {
     const { onError } = this.props;
+    this._clearLoadingStatusTimer();
     this._mediaStatus = JuiAudioStatus.RELOAD;
     this._currentTime = 0;
     onError && onError();
+  };
+
+  @action
+  private _loadingStatusTimer = () => {
+    this._loadingTimer = setTimeout(() => {
+      if (this._media && this._media.playing) {
+        return;
+      }
+      this._mediaStatus = JuiAudioStatus.LOADING;
+    }, LOADING_TIME);
+  };
+
+  private _clearLoadingStatusTimer = () => {
+    clearTimeout(this._loadingTimer);
   };
 
   @computed

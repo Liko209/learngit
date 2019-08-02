@@ -19,7 +19,6 @@ type PreloadImgState = {
   isError: boolean;
 };
 
-/* eslint-disable */
 class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
   constructor(props: PreloadImgProps) {
     super(props);
@@ -50,6 +49,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
         {url && !loaded && (
           <img
             src={url}
+            alt=""
             onLoad={this.handleLoad}
             onError={this.handleError}
             style={{ display: 'none' }}

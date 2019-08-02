@@ -21,6 +21,7 @@ import {
 } from '../../../../setting';
 import { AccountService } from 'sdk/module/account';
 import { Profile } from 'sdk/module/profile/entity';
+
 jest.mock('sdk/module/profile');
 
 function clearMocks() {
@@ -41,9 +42,6 @@ describe('NewVoicemailsSettingHandler', () => {
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
-      parentModelId: 1,
-      valueType: 1,
-      weight: 1,
       id: SettingEntityIds.Notification_MissCallAndNewVoiceMails,
       state: 1,
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
@@ -138,7 +136,7 @@ describe('NewVoicemailsSettingHandler', () => {
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {
       await settingHandler.updateValue(1);
-      expect(profileService.updateSettingOptions).toBeCalledWith([
+      expect(profileService.updateSettingOptions).toHaveBeenCalledWith([
         { value: 1, key: SETTING_KEYS.DESKTOP_VOICEMAIL },
       ]);
     });
@@ -155,7 +153,7 @@ describe('NewVoicemailsSettingHandler', () => {
         } as Profile,
       ]);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
         done();
       });
     });
@@ -170,7 +168,7 @@ describe('NewVoicemailsSettingHandler', () => {
         } as Profile,
       ]);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });
@@ -190,7 +188,7 @@ describe('NewVoicemailsSettingHandler', () => {
         ],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
         done();
       });
     });
@@ -207,7 +205,7 @@ describe('NewVoicemailsSettingHandler', () => {
         ],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
         done();
       });
     });
@@ -220,7 +218,7 @@ describe('NewVoicemailsSettingHandler', () => {
         [],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });

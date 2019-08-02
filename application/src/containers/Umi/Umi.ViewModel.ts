@@ -3,8 +3,6 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import { computed, untracked } from 'mobx';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -72,15 +70,16 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       this.props.id,
     );
     const group: GroupModel = getEntity(ENTITY_NAME.GROUP, this.props.id);
-
+    const totalUnreadMentionCount =
+      (groupState.unreadMentionsCount || 0) +
+      (groupState.unreadTeamMentionsCount || 0);
     const unreadCount =
       (group.isTeam && this._onlyIncludeTeamMention
-        ? groupState.unreadMentionsCount
+        ? totalUnreadMentionCount
         : groupState.unreadCount) || 0;
-
     return {
       unreadCount,
-      important: unreadCount ? !!groupState.unreadMentionsCount : false,
+      important: unreadCount ? !!totalUnreadMentionCount : false,
     };
   }
 
@@ -115,6 +114,8 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
         counts = this._getMergedUnreadCounts([GROUP_BADGE_TYPE.TEAM]);
         break;
       }
+      default:
+        break;
     }
 
     return this._removeCurrentUmiFromSection(counts);
@@ -191,6 +192,8 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       case GROUP_BADGE_TYPE.FAVORITE_DM: {
         return this.props.type === UMI_SECTION_TYPE.FAVORITE;
       }
+      default:
+        break;
     }
     return false;
   }

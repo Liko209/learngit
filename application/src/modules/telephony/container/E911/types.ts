@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ChangeEvent } from 'react';
-import { DialingCountryInfo, StateRecord } from 'sdk/api/ringcentral/types';
+import {
+  CountryRecord,
+  StateRecord,
+  DialingCountryInfo,
+} from 'sdk/api/ringcentral/types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 
 type E911Props = {};
@@ -18,12 +22,45 @@ type E911ViewProps = E911Props & {
   countryOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSubmit: () => Promise<void>;
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  setCheckBox: (index: number) => () => void;
   value: E911SettingInfo;
   disabled: boolean;
+  checkboxList: CheckBox[];
+  fields: FieldsConfig;
+  shouldShowSelectState: boolean;
 };
 
-type Country = DialingCountryInfo;
+type CheckBox = {
+  i18text: string;
+  checked: boolean;
+  params?: Country;
+};
+
+type Country = CountryRecord | DialingCountryInfo;
 
 type State = StateRecord;
 
-export { E911Props, E911ViewProps, Country, State };
+type FieldsConfig = {
+  customerName: string;
+  street?: FieldItem;
+  additionalAddress?: FieldItem;
+  city?: FieldItem;
+  state?: FieldItem;
+  zipCode?: FieldItem;
+};
+
+type FieldItem = {
+  label: string;
+  ghostText: string;
+  optional?: boolean;
+};
+
+export {
+  E911Props,
+  E911ViewProps,
+  Country,
+  State,
+  FieldsConfig,
+  FieldItem,
+  CheckBox,
+};

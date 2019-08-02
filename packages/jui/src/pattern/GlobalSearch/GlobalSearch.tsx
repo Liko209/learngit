@@ -5,9 +5,7 @@
  */
 import React from 'react';
 import { JuiDialog } from '../../components/Dialog/Dialog';
-import {
- spacing, radius, width, height
-} from '../../foundation/utils/styles';
+import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const StyledGlobalSearch = styled(JuiDialog)`
@@ -49,6 +47,7 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
       open={open}
       onClose={onClose}
       disablePortal
+      fixedAtTop
     >
       {children}
     </StyledGlobalSearch>

@@ -25,7 +25,7 @@ import { getErrorType } from '@/common/catchError';
 import _ from 'lodash';
 
 const logger = mainLogger.tags('messageRouter Helper');
-/* eslint-disable */
+
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
@@ -181,6 +181,8 @@ export class MessageRouterChangeHelper {
           message: await i18nT('people.prompt.conversationDeleted'),
           ...toastOpts,
         });
+        break;
+      default:
         break;
     }
     return '';

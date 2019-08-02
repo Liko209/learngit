@@ -6,7 +6,10 @@
 import React from 'react';
 import { Voicemail } from '../Voicemail';
 import { test, testable } from 'shield';
-import { mountWithTheme } from 'shield/utils';
+import { mountWithTheme, registerModule } from 'shield/utils';
+import { config } from '../../../module.config';
+
+registerModule(config);
 
 jest.mock('jui/components/AutoSizer/AutoSizer');
 jest.mock('jui/components/VirtualizedList/InfiniteList');

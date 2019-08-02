@@ -8,6 +8,8 @@ export default class GroupStateModel extends Base<GroupState> {
   @observable
   unreadMentionsCount?: number;
   @observable
+  unreadTeamMentionsCount?: number;
+  @observable
   readThrough?: number;
   @observable
   lastReadThrough?: number;
@@ -17,12 +19,14 @@ export default class GroupStateModel extends Base<GroupState> {
     const {
       unread_count,
       unread_mentions_count,
+      unread_team_mentions_count,
       read_through,
       last_read_through,
     } = data;
 
     this.unreadCount = unread_count;
-    this.unreadMentionsCount = unread_mentions_count;
+    this.unreadMentionsCount = unread_mentions_count || 0;
+    this.unreadTeamMentionsCount = unread_team_mentions_count || 0;
     this.readThrough = read_through;
     this.lastReadThrough = last_read_through;
   }

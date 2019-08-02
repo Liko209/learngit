@@ -3,8 +3,8 @@
  * @Date: 2019-05-09 14:00:02
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import _ from 'lodash';
+import { container } from 'framework';
 import { computed, observable, action } from 'mobx';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { RCInfoService } from 'sdk/module/rcInfo';
@@ -28,10 +28,12 @@ import {
 } from './types';
 import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { TelephonyService } from '@/modules/telephony/service';
 
 const AVOID_AREA_CODE_BEGIN_NUM = '0';
 const AREA_CODE_ALLOW_LEN = 3;
-
+const OPEN_E911_TIME = 3000;
 class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
   implements RegionSettingItemViewProps {
   @observable
@@ -58,6 +60,10 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     callingCode: '',
   };
 
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
+
   @computed
   get settingItemEntity() {
     return getEntity<UserSettingEntity, SettingModel<RegionSettingInfo>>(
@@ -72,7 +78,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
 
   private _getCountryFlag: (
     isoCode: DialingCountryInfo['isoCode'],
-  ) => JuiIconographyProps['symbol'] = isoCode => undefined;
+  ) => JuiIconographyProps['symbol'] = () => undefined;
 
   private _currentCountryAreaCode: string = '';
 
@@ -143,14 +149,13 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
       };
     });
   };
-  /* eslint-disable */
   private _getCallingCodeByDialPlanISOCode(
     isoCode: DialingCountryInfo['isoCode'],
   ): DialingCountryInfo['callingCode'] {
     const country = this._countriesList.find(
       country => country.value === isoCode,
     );
-    return !!country ? country.regionCode || '' : '';
+    return country ? country.regionCode || '' : '';
   }
 
   @action
@@ -235,6 +240,10 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
         fullWidth: false,
         dismissible: false,
       });
+
+      setTimeout(() => {
+        this._telephonyService.openE911();
+      }, OPEN_E911_TIME)
 
       return true;
     } catch {

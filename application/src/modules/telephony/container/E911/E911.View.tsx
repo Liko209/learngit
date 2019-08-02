@@ -17,15 +17,65 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
 import dialogContext from '@/containers/Dialog/DialogContext';
-import { StyledTip, E911Description } from 'jui/pattern/E911';
+import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
+import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';
+import { RuiCheckbox } from 'rcui/components/Checkbox';
 
-import { E911ViewProps, Country, State } from './types';
+import { E911ViewProps, Country, State, FieldItem, CheckBox } from './types';
 
 type Props = E911ViewProps & WithTranslation;
+
+type Field = {
+  fieldItem: FieldItem;
+  automationId: string;
+  value: string;
+  type: string;
+  maxLength?: number;
+};
 
 @observer
 class E911ViewComponent extends Component<Props> {
   static contextType = dialogContext;
+
+  createField(config: Field) {
+    const { handleFieldChange, t } = this.props;
+    const { fieldItem, automationId, maxLength = 100, value, type } = config;
+
+    const { label, ghostText, optional } = fieldItem;
+    const optionText = optional ? '' : ' *';
+    const i18n = t(`telephony.e911.fields.${label}`);
+    const placeholder = ghostText ? `${t('common.eg')}${ghostText}` : '';
+
+    return (
+      <JuiTextField
+        id={`${i18n}${optionText}`}
+        label={`${i18n}${optionText}`}
+        placeholder={placeholder}
+        fullWidth
+        inputProps={{
+          maxLength,
+          'data-test-automation-id': automationId,
+        }}
+        value={value}
+        onChange={handleFieldChange(type)}
+      />
+    );
+  }
+
+  renderFieldWithType(type: string, automationId: string) {
+    const { value, fields } = this.props;
+    const fieldItem = fields[type];
+    if (!fieldItem) {
+      return null;
+    }
+
+    return this.createField({
+      fieldItem,
+      type,
+      automationId: `e911-${automationId}`,
+      value: value[type],
+    });
+  }
 
   get renderState() {
     const {
@@ -33,17 +83,19 @@ class E911ViewComponent extends Component<Props> {
       stateOnChange,
       t,
       value,
-      handleFieldChange,
+      shouldShowSelectState,
     } = this.props;
-    const { stateName, state } = value;
-    return stateList.length > 0 ? (
+    const { stateName } = value;
+
+    return shouldShowSelectState ? (
       <JuiLineSelect
         // menuProps={this.lineSelectProps}
         onChange={stateOnChange}
-        label={`${t('telephony.e911.stateProvince')} *`}
+        label={`${t(`telephony.e911.fields.State/Province`)} *`}
         automationId="e911-state-select"
         value={stateName}
       >
+        {/* TODO: need use VL */}
         {stateList.map((item: State) => (
           <JuiMenuItem
             automationId={`state-${item.name}`}
@@ -55,17 +107,44 @@ class E911ViewComponent extends Component<Props> {
         ))}
       </JuiLineSelect>
     ) : (
-      <JuiTextField
-        id={`${t('telephony.e911.stateProvince')}`}
-        label={`${t('telephony.e911.stateProvince')}`}
-        fullWidth
-        inputProps={{
-          maxLength: 100,
-          'data-test-automation-id': 'e911-stateProvince',
-        }}
-        value={state}
-        onChange={handleFieldChange('state')}
-      />
+      this.renderFieldWithType('state', 'stateProvince')
+    );
+  }
+
+  get renderOutOfCountry() {
+    const { checkboxList, t, setCheckBox } = this.props;
+    if (!checkboxList || !checkboxList.length) {
+      return null;
+    }
+
+    return (
+      <>
+        <E911Disclaimers>
+          {t('telephony.e911.outOfCountryTitle')}
+        </E911Disclaimers>
+        <RuiFormControl>
+          {checkboxList.map((item: CheckBox, index: number) => {
+            const { i18text, checked, params } = item;
+            const label = params
+              ? t(i18text, { region: params.name })
+              : t(i18text);
+            return (
+              <RuiFormControlLabel
+                key={i18text}
+                control={
+                  <RuiCheckbox
+                    color="primary"
+                    value={checked}
+                    onChange={setCheckBox(index)}
+                  />
+                }
+                label={t(label)}
+                checked={checked}
+              />
+            );
+          })}
+        </RuiFormControl>
+      </>
     );
   }
 
@@ -83,13 +162,15 @@ class E911ViewComponent extends Component<Props> {
       countryOnChange,
       value,
       disabled,
+      fields,
     } = this.props;
 
-    const { countryName, customerName, city, zip, street, street2 } = value;
+    const { countryName, customerName } = value;
+
     return (
       <>
         <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
-          Confirm address for emergency calls
+          {t('telephony.e911.title')}
         </JuiDialogTitle>
         <JuiDialogContent>
           <E911Description>
@@ -98,7 +179,7 @@ class E911ViewComponent extends Component<Props> {
           <JuiTextField
             id={`${t('telephony.e911.customerName')} *`}
             label={`${t('telephony.e911.customerName')} *`}
-            placeholder={t('telephony.e911.customerNamePlaceholder')}
+            placeholder={`${t('common.eg')}${fields.customerName}`}
             fullWidth
             inputProps={{
               maxLength: 100,
@@ -115,6 +196,7 @@ class E911ViewComponent extends Component<Props> {
             automationId="e911-country-select"
             value={countryName}
           >
+            {/* TODO: need use VL */}
             {countryList.map((item: Country) => (
               <JuiMenuItem
                 automationId={`country-${item.name}`}
@@ -125,56 +207,13 @@ class E911ViewComponent extends Component<Props> {
               </JuiMenuItem>
             ))}
           </JuiLineSelect>
-          <JuiTextField
-            id={`${t('telephony.e911.streetAddress')} *`}
-            label={`${t('telephony.e911.streetAddress')} *`}
-            placeholder={t('telephony.e911.streetAddressPlaceholder')}
-            fullWidth
-            inputProps={{
-              maxLength: 100,
-              'data-test-automation-id': 'e911-streetAddress',
-            }}
-            value={street}
-            onChange={handleFieldChange('street')}
-          />
-          <JuiTextField
-            id={t('telephony.e911.additionalAddress')}
-            label={t('telephony.e911.additionalAddress')}
-            placeholder={t('telephony.e911.additionalAddressPlaceholder')}
-            fullWidth
-            inputProps={{
-              maxLength: 100,
-              'data-test-automation-id': 'e911-additionalAddress',
-            }}
-            value={street2}
-            onChange={handleFieldChange('street2')}
-          />
-          <JuiTextField
-            id={`${t('common.city')} *`}
-            label={`${t('common.city')} *`}
-            placeholder={t('common.cityPlaceholder')}
-            fullWidth
-            inputProps={{
-              maxLength: 100,
-              'data-test-automation-id': 'e911-city',
-            }}
-            value={city}
-            onChange={handleFieldChange('city')}
-          />
+          {this.renderFieldWithType('street', 'streetAddress')}
+          {this.renderFieldWithType('street2', 'additionalAddress')}
+          {this.renderFieldWithType('city', 'city')}
           {this.renderState}
-          <JuiTextField
-            id={`${t('common.zipCode')} *`}
-            label={`${t('common.zipCode')} *`}
-            placeholder={t('common.zipCodePlaceholder')}
-            fullWidth
-            inputProps={{
-              maxLength: 100,
-              'data-test-automation-id': 'e911-zipCode',
-            }}
-            value={zip}
-            onChange={handleFieldChange('zip')}
-          />
+          {this.renderFieldWithType('zip', 'zipCode')}
           <StyledTip>{t('telephony.e911.outOfCountryDisclaimers')}</StyledTip>
+          {this.renderOutOfCountry}
         </JuiDialogContent>
         <JuiDialogActions data-test-automation-id="DialogActions">
           <JuiButton

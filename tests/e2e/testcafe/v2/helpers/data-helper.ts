@@ -22,11 +22,18 @@ class DataHelper {
     }
     let companies = {}
     let phoneNumbers = []
+    // unify main company number from account pool data.
+    const formatNumberWithPlusSymbol = (phoneNumber: string) => {
+      if (phoneNumber.indexOf('+') < 0) {
+        return `+${phoneNumber}`;
+      }
+      return phoneNumber;
+    }
     const getMainCompanyNumberFromUserData = (user) => {
       const items = user.rc_phone_numbers
         .filter(item => item.usageType == "MainCompanyNumber")
         .map((rc_phone_number) => { return rc_phone_number.phoneNumber })
-      return items[0]
+      return formatNumberWithPlusSymbol(items[0]);
     }
     const glipUsers = _.partition(data.glipUsers, (user) => { return user.first_user == true });
     for (const admin of glipUsers[0]) {
@@ -41,7 +48,7 @@ class DataHelper {
         }
         companies[companyNumber]["admin"] = buildUsers(admin, companies[companyNumber])
         if (phoneNumbers.indexOf(companyNumber) < 0) {
-          phoneNumbers.push(companyNumber)
+          phoneNumbers.push(companyNumber);
         }
       }
     };
@@ -53,21 +60,23 @@ class DataHelper {
             const companyNumber = getMainCompanyNumberFromUserData(user)
             return user['rc_extension_id'] && companyNumber == phoneNumber;
           }
-          return false
+          return false;
         })
         .map(user => buildUsers(user, companies[phoneNumber]));
-      companies[phoneNumber].users = users
+      companies[phoneNumber].users = users;
     }
 
-    const mainCompany = companies[data.mainNumber] || companies[`+${data.mainNumber}`];
-    data.teams = data.teams || [];
-    const groups = data.teams.map((team) => {
+    const mainCompanyNumber = formatNumberWithPlusSymbol(data.mainNumber);
+    const mainCompany = companies[mainCompanyNumber];
+    const glipTeams: any[] = data.teams || data.glipTeams;
+    const groups = glipTeams.map((team) => {
       return <IGroup>{
         glipId: team._id,
       }
     })
+
     if (mainCompany) {
-      mainCompany.groups = groups;
+      mainCompany.groups = groups || [];
     }
     let guestCompany: ICompany, anotherGuestCompany: ICompany;
     if (phoneNumbers.length > 1) {

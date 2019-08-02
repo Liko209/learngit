@@ -115,6 +115,7 @@ describe('TelephonyService', () => {
       isVoipCallingAvailable: jest.fn().mockReturnValue(true),
       hasSetCallerId: jest.fn(),
       getDigitalLines: jest.fn(),
+      getAccountMainNumber: jest.fn().mockResolvedValue('1'),
     };
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
@@ -157,6 +158,12 @@ describe('TelephonyService', () => {
             ? Promise.reject(RTC_CALL_ACTION.STOP_RECORD)
             : Promise.resolve(RTC_CALL_ACTION.STOP_RECORD)),),),
       makeCall: jest.fn().mockImplementation(() => {
+        // callEntityId = v4();
+        cachedOnMadeOutgoingCall(1);
+        setTimeout(() => {}, mockedDelay);
+        return MAKE_CALL_ERROR_CODE.NO_ERROR;
+      }),
+      switchCall: jest.fn().mockImplementation(() => {
         // callEntityId = v4();
         cachedOnMadeOutgoingCall(1);
         setTimeout(() => {}, mockedDelay);
@@ -1068,4 +1075,40 @@ describe('TelephonyService', () => {
       expect(ret).toBeTruthy();
     });
   });
+
+  describe('switchCall()', () => {
+    it('should call makeCall with from number if direction is inbound call', async () => {
+      const caller = {
+        direction: "Inbound",
+        from: "21010",
+        fromName: "Florence Connelly",
+        id: "8ec28384e8d54846beafae947febdaa9",
+        sipData: {
+          fromTag: "10.74.2.219-5070-285e39746afa4a2",
+          toTag: "k6rqhp560h"
+        },
+        to: "21007",
+        toName: "Yilia Hong",
+      }
+      await telephonyService.switchCall( caller as any);
+      expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
+    })
+
+    it('should call makeCall with from number if direction is outbound call',async  () => {
+      const caller = {
+        direction: "Outbound",
+        from: "21010",
+        fromName: "Florence Connelly",
+        id: "8ec28384e8d54846beafae947febdaa9",
+        sipData: {
+          fromTag: "10.74.2.219-5070-285e39746afa4a2",
+          toTag: "k6rqhp560h"
+        },
+        to: "21007",
+        toName: "Yilia Hong",
+      }
+      await telephonyService.switchCall(caller as any);
+      expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
+    })
+  })
 });
