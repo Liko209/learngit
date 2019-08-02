@@ -27,6 +27,7 @@ import { IdModel } from '../../../framework/model';
 import { RCInfoUserConfig } from '../config';
 import { RC_INFO_HISTORY } from '../config/constants';
 import { SettingService } from 'sdk/module/setting';
+import { CountryRecord } from 'sdk/api';
 
 class RCInfoService extends EntityBaseService<IdModel>
   implements IRCInfoService {
@@ -286,6 +287,10 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async getStateList(countryId: string): Promise<StateRecord[]> {
     return this.regionInfoController.getStateList(countryId);
+  }
+
+  async getAllCountryList(): Promise<CountryRecord[]> {
+    return this.regionInfoController.getAllCountryList();
   }
 
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {

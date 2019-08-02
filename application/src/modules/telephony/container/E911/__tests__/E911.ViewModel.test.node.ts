@@ -141,7 +141,7 @@ describe('E911ViewModel', () => {
         countryName: 'countryName',
       }),
     )
-    @mockService(RCInfoService, 'getCountryList', [
+    @mockService(RCInfoService, 'getAllCountryList', [
       {
         id: 1,
         name: 'countryName',
@@ -174,7 +174,7 @@ describe('E911ViewModel', () => {
     @mockEntity(createUserInfo())
     @mockService(RCInfoService, [
       {
-        method: 'getCountryList',
+        method: 'getAllCountryList',
         data: [
           {
             id: 1,
@@ -212,7 +212,7 @@ describe('E911ViewModel', () => {
     @mockEntity(createUserInfo())
     @mockService(RCInfoService, [
       {
-        method: 'getCountryList',
+        method: 'getAllCountryList',
         data: [
           {
             id: 1,
@@ -357,7 +357,7 @@ describe('E911ViewModel', () => {
     })
     t1() {
       const vm = new E911ViewModel({});
-      console.log(vm.value.stateName)
+
       vm.onSubmit();
       expect(valueSetter).toHaveBeenCalledWith(vm.value);
     }
