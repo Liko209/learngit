@@ -508,10 +508,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const currentConversationId = getGlobalValue(
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
       );
+      const isCurrentConversation = currentConversationId === model.id;
       const createdByMeOrHasPostTime: boolean =
-        model.id !== currentConversationId &&
-        (model.most_recent_post_created_at !== undefined ||
-          model.creator_id === currentUserId);
+        model.most_recent_post_created_at !== undefined ||
+        model.creator_id === currentUserId;
 
       const groupService = ServiceLoader.getInstance<GroupService>(
         ServiceConfig.GROUP_SERVICE,
@@ -520,7 +520,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         !model.is_team &&
-        createdByMeOrHasPostTime &&
+        (isCurrentConversation || createdByMeOrHasPostTime) &&
         groupService.isValid(model)
       );
     };
