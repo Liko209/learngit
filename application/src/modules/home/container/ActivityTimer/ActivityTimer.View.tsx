@@ -34,9 +34,11 @@ class ActivityTimerView extends Component<ActivityTimerViewProps> {
     const isOffline = nextProps.isOffline && nextProps.presence === PRESENCE.UNAVAILABLE;
 
     if (nextProps.presence === PRESENCE.AVAILABLE || isOffline) {
-      window.jupiterElectron.resetActivityTimer();
+      window.jupiterElectron.resetActivityTimer &&
+        window.jupiterElectron.resetActivityTimer();
     } else {
-      window.jupiterElectron.clearActivityTimer();
+      window.jupiterElectron.clearActivityTimer &&
+        window.jupiterElectron.clearActivityTimer();
     }
   }
 
