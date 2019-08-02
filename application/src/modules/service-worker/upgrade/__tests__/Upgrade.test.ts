@@ -53,7 +53,7 @@ describe('Upgrade trigger', () => {
     jest
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
-    jest.spyOn(upgradeHandler, '_getRegistration').mockImplementation(mockFn);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
     upgradeHandler.onNewContentAvailable(true, false);
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toHaveBeenCalled();
@@ -68,7 +68,7 @@ describe('Upgrade trigger', () => {
     jest
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
-    jest.spyOn(upgradeHandler, '_getRegistration').mockImplementation(mockFn);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
     upgradeHandler.onNewContentAvailable(true, true);
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe('Upgrade trigger', () => {
     jest
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
-    jest.spyOn(upgradeHandler, '_getRegistration').mockImplementation(mockFn);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
 
     upgradeHandler.onNewContentAvailable(true, true);
     upgradeHandler.reloadIfAvailable('Test');
