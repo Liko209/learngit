@@ -169,6 +169,7 @@ class SyncController {
         }
         this._isFetchingRemaining = true;
         await this._fetchRemaining(time);
+        notificationCenter.emitKVChange(SERVICE.FETCH_REMAINING_DONE);
         mainLogger.info(LOG_TAG, 'fetch remaining data success');
       } catch (e) {
         this._isFetchingRemaining = false;

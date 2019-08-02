@@ -1370,7 +1370,7 @@ describe('GroupFetchDataController', () => {
       groupFetchDataController.entitySourceController.getEntityLocally = jest
         .fn()
         .mockResolvedValue({
-          members: [123, 234, 345, 456],
+          members: [123, 234, 345, 456, 567],
           guest_user_company_ids: [333, 444],
         });
       personService.getPersonsByIds = jest.fn().mockResolvedValue([
@@ -1409,11 +1409,8 @@ describe('GroupFetchDataController', () => {
           return person.name;
         });
 
-      const result = await groupFetchDataController.getMembersAndGuestIds(
-        1235,
-        true,
-      );
-      expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234] });
+      const result = await groupFetchDataController.getMembersAndGuestIds(1235, true);
+      expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234, 567] });
     });
   });
 });
