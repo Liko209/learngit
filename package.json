@@ -1,6 +1,6 @@
 {
   "name": "fiji",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "engines": {
     "node": "10.9.0",
@@ -11,7 +11,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
-    "postinstall": "npm run bt",
+    "postinstall": "npm run bt && npm run reactTypeWorkAround",
     "start:ui": "cd packages/jui && npm run storybook",
     "start:app": "cd application && npm run start",
     "clean:build": "rm -rf ./packages/**/*/build ./packages/**/*/build-es ./application/build",
@@ -20,7 +20,7 @@
     "build:app": "cd application && npm run build",
     "build:ui": "cd packages/jui && npm run build-storybook",
     "build:release": "cd application && JUPITER_ENV=production npm run build",
-    "test": "node ./scripts/test.js",
+    "test": "node --expose-gc ./scripts/test.js --logHeapUsage",
     "rcuiTest": "node ./scripts/dirNotChanged.js rcui || (cd packages/rcui && npm run test)",
     "build:public": "cd application && JUPITER_ENV=public npm run build",
     "test:changed": "npm run test -- --changedSince=`node ./scripts/getSinceBranch.js` && npm run rcuiTest",
@@ -28,7 +28,8 @@
     "test:cover": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch",
     "test:dev": "npm run test -- --coverage --watch --bail",
-    "update-snapshot": "npm run test snapshot -- --updateSnapshot",
+    "update-snapshot": "JUI_TEST=true npm run test snapshot -- --updateSnapshot",
+    "snapshot": "JUI_TEST=true npm run test snapshot",
     "lint": "eslint",
     "lint-fix": "eslint --fix",
     "lint-all": "concurrently --kill-others-on-fail -r \"eslint --cache application/src/ --ext=.ts,.tsx\" \"eslint --cache packages/{foundation,framework,sdk,voip}/src/ --ext=.ts\" \"eslint --cache packages/jui/src/ --ext=.ts,.tsx\"",
@@ -46,7 +47,9 @@
     "update-icon": "node application/scripts/update-icon.js",
     "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts",
     "make-pseudo": "node ./scripts/make-pseudo.js",
-    "networkDataToFileTree": "node ./scripts/networkDataToFileTree.js"
+    "networkDataToFileTree": "node ./scripts/networkDataToFileTree.js",
+    "reactTypeWorkAround": "cp ./scripts/react-type/index.d.ts ./node_modules/@types/react",
+    "releaseToSentry": "node ./scripts/releaseToSentry.js"
   },
   "devDependencies": {
     "@jest-runner/electron": "2.0.1",
@@ -105,7 +108,9 @@
     "babel-plugin-macros": "2.5.1",
     "babel-plugin-require-context-hook": "1.0.0",
     "jest-styled-components": "6.3.1",
-    "cache-loader": "1.2.0"
+    "cache-loader": "1.2.0",
+    "btoa": "1.2.1",
+    "form-data": "2.5.0"
   },
   "husky": {
     "hooks": {

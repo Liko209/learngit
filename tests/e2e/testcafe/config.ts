@@ -33,7 +33,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://xia01-i01-stg01.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
@@ -44,7 +44,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://xia01-i01-stg01.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
@@ -86,6 +86,7 @@ const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
 const TESTS_LOG = process.env.TESTS_LOG || `tests-${new Date().toISOString().replace(/[:]/gm, '-')}.log`;
+const DEBUG_ON_FAIL = process.env.DEBUG_ON_FAIL === 'true';
 
 const GIT_SOURCE_BRANCH = process.env.BRANCH;
 const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
@@ -115,6 +116,7 @@ const RUNNER_OPTS = {
   LANGUAGE_CODE,
   DISABLE_SCREENSHOT,
   TESTS_LOG,
+  DEBUG_ON_FAIL,
 }
 
 // beat dashboard configuration
@@ -137,6 +139,7 @@ enum BrandTire {
   "CALL_LOG_READ_ONLY" = "kamino(Call-Log-Read-Only,Jupiter,1210,4488)",
   "CALL_LOG_USER0_WITH_OTHERS" = "kamino(Call_Log_User0_With_Others,Jupiter,1210,4488)",
   "RC_EMPTY_ONE_TIME" = "kamino(One-Time-Empty-Account,Jupiter,1210,4488)",
+  "DID_WITH_MULTI_REGIONS" = "kamino(DID_Phone_With_Multi_Regions,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

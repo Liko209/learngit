@@ -45,10 +45,10 @@ exports[`Storyshots Buttons/IconButtons Floating: Buttons/IconButtons Floating 1
 >
    
   <button
-    className="MuiButtonBase-root MuiFab-root MuiFab-sizeMedium c0"
+    className="MuiButtonBase-root MuiFab-root c0 MuiFab-sizeMedium"
     disabled={false}
     onBlur={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -58,7 +58,7 @@ exports[`Storyshots Buttons/IconButtons Floating: Buttons/IconButtons Floating 1
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
     onTouchStart={[Function]}
-    tabIndex="0"
+    tabIndex={0}
     type="button"
   >
     <span
@@ -77,9 +77,6 @@ exports[`Storyshots Buttons/IconButtons Floating: Buttons/IconButtons Floating 1
         </svg>
       </span>
     </span>
-    <span
-      className="MuiTouchRipple-root"
-    />
   </button>
 </div>
 `;
@@ -213,7 +210,7 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -224,8 +221,7 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -246,16 +242,13 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
         aria-describedby={null}
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -266,8 +259,7 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -288,16 +280,13 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
         aria-describedby={null}
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -308,8 +297,7 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -330,16 +318,13 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
         aria-describedby={null}
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -350,8 +335,7 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -372,9 +356,6 @@ exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`]
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
     </div>
   </div>
@@ -491,7 +472,7 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -502,8 +483,7 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -524,16 +504,13 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
         aria-describedby={null}
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -544,8 +521,7 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -566,16 +542,13 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
         aria-describedby={null}
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -586,8 +559,7 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -608,16 +580,13 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
         aria-describedby={null}
         className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -628,8 +597,7 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -650,9 +618,6 @@ exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
     </div>
   </div>
@@ -731,7 +696,7 @@ exports[`Storyshots Buttons/IconButtons plain: Buttons/IconButtons plain 1`] = `
     className="MuiButtonBase-root MuiIconButton-root c0"
     disabled={false}
     onBlur={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -742,8 +707,7 @@ exports[`Storyshots Buttons/IconButtons plain: Buttons/IconButtons plain 1`] = `
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
     onTouchStart={[Function]}
-    size="medium"
-    tabIndex="0"
+    tabIndex={0}
     title={null}
     type="button"
     variant="plain"
@@ -857,7 +821,7 @@ exports[`Storyshots Buttons/IconButtons round: Buttons/IconButtons round 1`] = `
     className="MuiButtonBase-root MuiIconButton-root c0"
     disabled={false}
     onBlur={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -868,8 +832,7 @@ exports[`Storyshots Buttons/IconButtons round: Buttons/IconButtons round 1`] = `
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
     onTouchStart={[Function]}
-    size="medium"
-    tabIndex="0"
+    tabIndex={0}
     title={null}
     type="button"
     variant="round"
@@ -890,9 +853,6 @@ exports[`Storyshots Buttons/IconButtons round: Buttons/IconButtons round 1`] = `
         </svg>
       </span>
     </span>
-    <span
-      className="MuiTouchRipple-root"
-    />
   </button>
 </div>
 `;
@@ -986,7 +946,7 @@ exports[`Storyshots Buttons/IconButtons toggle: Buttons/IconButtons toggle 1`] =
     className="MuiButtonBase-root MuiIconButton-root c0"
     disabled={false}
     onBlur={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -997,8 +957,7 @@ exports[`Storyshots Buttons/IconButtons toggle: Buttons/IconButtons toggle 1`] =
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
     onTouchStart={[Function]}
-    size="medium"
-    tabIndex="0"
+    tabIndex={0}
     title={null}
     type="button"
     variant="toggle"
@@ -1019,9 +978,6 @@ exports[`Storyshots Buttons/IconButtons toggle: Buttons/IconButtons toggle 1`] =
         </svg>
       </span>
     </span>
-    <span
-      className="MuiTouchRipple-root"
-    />
   </button>
 </div>
 `;

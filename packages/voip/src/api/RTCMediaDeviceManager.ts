@@ -140,7 +140,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         }
       }
     });
-
+    
     if (hasDefaultAudioInput) {
       rtcLogger.debug(
         LOG_TAG,
@@ -170,7 +170,6 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         "Audio output devices has 'default' as deviceId NOT FOUND",
       );
     }
-
     return {
       audioInputs,
       audioOutputs,

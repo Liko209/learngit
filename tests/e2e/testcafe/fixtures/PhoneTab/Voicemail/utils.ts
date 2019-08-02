@@ -69,10 +69,14 @@ export async function addVoicemail(t: TestController, callerSession: WebphoneSes
       await callerSession.waitForStatus('terminated');
     });
   }
+  
   // due to voicemail delay from backend sync to frontend.
   await h(t).withLog('And refresh page', async () => {
+    const href = await h(t).href;
+    const originUrl = new URL(href).origin;
+    const voicemailUrl = originUrl + '/phone/voicemail';
     await t.wait(5e3);
-    await h(t).reload();
+    await t.navigateTo(voicemailUrl);
     await app.homePage.ensureLoaded();
   });
 

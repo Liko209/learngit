@@ -148,11 +148,16 @@ export class GlipSdk {
     };
   }
 
-  async init() {
+  async init(isReset: Boolean = true) {
     const res = await this.authByRcToken(true);
     this.accessToken = res.headers['x-authorization'];
     this.initData = res.data;
     this.glipDb.updateWithInitData(this.initData);
+    if (isReset) {
+      try {
+        await this.resetProfileAndState();
+      } catch (e) { }
+    }
   }
 
   /* person */

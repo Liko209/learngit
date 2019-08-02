@@ -67,7 +67,9 @@ describe('StateDataHandleController', () => {
       const states: Partial<State>[] = [{ id: 123 }];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith(
+      expect(
+        stateDataHandleController['_startDataHandleTask'],
+      ).toHaveBeenCalledWith(
         {
           type: TASK_DATA_TYPE.STATE,
           data: states,
@@ -85,9 +87,9 @@ describe('StateDataHandleController', () => {
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
-        0,
-      );
+      expect(
+        stateDataHandleController['_startDataHandleTask'],
+      ).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -96,7 +98,9 @@ describe('StateDataHandleController', () => {
       const groups: Partial<Group>[] = [{ id: 123 }];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleGroupCursor(groups, true);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
+      expect(
+        stateDataHandleController['_startDataHandleTask'],
+      ).toHaveBeenCalledWith({
         type: TASK_DATA_TYPE.GROUP_CURSOR,
         data: groups,
         ignoreCursorValidate: true,
@@ -110,9 +114,9 @@ describe('StateDataHandleController', () => {
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleGroupCursor(groups);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
-        0,
-      );
+      expect(
+        stateDataHandleController['_startDataHandleTask'],
+      ).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -130,18 +134,18 @@ describe('StateDataHandleController', () => {
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
-      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
-        task.data,
-      );
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledTimes(
-        0,
-      );
+      expect(
+        stateDataHandleController['_transformStateData'],
+      ).toHaveBeenCalledWith(task.data);
+      expect(
+        stateDataHandleController['_transformGroupData'],
+      ).toHaveBeenCalledTimes(0);
       expect(
         stateDataHandleController['_generateUpdatedState'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('should handle group task and stop the queue', async () => {
@@ -160,18 +164,18 @@ describe('StateDataHandleController', () => {
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
-      expect(stateDataHandleController['_transformStateData']).toBeCalledTimes(
-        0,
-      );
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
-        task.data,
-      );
+      expect(
+        stateDataHandleController['_transformStateData'],
+      ).toHaveBeenCalledTimes(0);
+      expect(
+        stateDataHandleController['_transformGroupData'],
+      ).toHaveBeenCalledWith(task.data);
       expect(
         stateDataHandleController['_generateUpdatedState'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('should handle next task when crashing', async () => {
@@ -194,16 +198,18 @@ describe('StateDataHandleController', () => {
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
-      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
-        task2.data,
-      );
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
-        task.data,
-      );
-      expect(stateDataHandleController['_generateUpdatedState']).toBeCalled();
+      expect(
+        stateDataHandleController['_transformStateData'],
+      ).toHaveBeenCalledWith(task2.data);
+      expect(
+        stateDataHandleController['_transformGroupData'],
+      ).toHaveBeenCalledWith(task.data);
+      expect(
+        stateDataHandleController['_generateUpdatedState'],
+      ).toHaveBeenCalled();
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -379,6 +385,7 @@ describe('StateDataHandleController', () => {
             group_post_drp_cursor: 9,
             unread_count: 5,
             last_author_id: 56,
+            unread_team_mentions_count: 0,
           },
           {
             group_post_cursor: 15,
@@ -390,6 +397,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 10,
             unread_mentions_count: 0,
             unread_count: 1,
+            unread_team_mentions_count: 0,
           },
           {
             id: 3,
@@ -399,6 +407,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 10,
             unread_mentions_count: 5,
             unread_count: 0,
+            unread_team_mentions_count: 0,
           },
         ],
         myState: undefined,
@@ -429,6 +438,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 0,
             unread_mentions_count: 0,
             unread_count: 1,
+            unread_team_mentions_count: 0,
           },
         ]);
 
@@ -449,6 +459,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 0,
             unread_mentions_count: 0,
             unread_count: 0,
+            unread_team_mentions_count: 0,
           },
         ],
         myState: undefined,
@@ -479,6 +490,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 0,
             unread_mentions_count: 0,
             unread_count: 1,
+            unread_team_mentions_count: 0,
           },
         ]);
 
@@ -500,6 +512,7 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 0,
             unread_count: 0,
             last_author_id: 5683,
+            unread_team_mentions_count: 0,
           },
         ],
         myState: undefined,
@@ -696,6 +709,51 @@ describe('StateDataHandleController', () => {
         stateDataHandleController['_isStateChanged'](updateState, localState),
       ).toBeFalsy();
     });
+
+    it('should return true when team_mention_cursor changed', () => {
+      const updateState = {
+        team_mention_cursor: 8444,
+      } as any;
+      const localState = {
+        team_mention_cursor: 51111,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+    it('should return true when team_mention_cursor_offset changed', () => {
+      const updateState = {
+        team_mention_cursor_offset: 8444,
+      } as any;
+      const localState = {
+        team_mention_cursor_offset: 51111,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+    it('should return true when group_team_mention_cursor changed', () => {
+      const updateState = {
+        group_team_mention_cursor: 8444,
+      } as any;
+      const localState = {
+        group_team_mention_cursor: 51111,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+    it('should return true when removed_cursors_team_mention changed', () => {
+      const updateState = {
+        removed_cursors_team_mention: [1],
+      } as any;
+      const localState = {
+        removed_cursors_team_mention: [1, 3],
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
   });
 
   describe('_calculateUnread', () => {
@@ -750,10 +808,94 @@ describe('StateDataHandleController', () => {
       await stateDataHandleController['_updateEntitiesAndDoNotification'](
         transformedState,
       );
-      expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockStateService.myStateConfig.setMyStateId).toBeCalledTimes(1);
-      expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
-      expect(mockEntitySourceController.bulkUpdate).toBeCalledTimes(1);
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
+      expect(mockStateService.myStateConfig.setMyStateId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(2);
+      expect(mockEntitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('_calculateTeamMentionUnread()', () => {
+    it('should not calculate self groupState change', () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ]({} as GroupState, true, 1233);
+      expect(unreadTeamMentionCount).toEqual(0);
+    });
+
+    it('should unread count equal (total count - read count)', () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(78);
+    });
+
+    it('should minus removed mention posts [JPT-2642]', () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          removed_cursors_team_mention: [1, 26],
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(77);
+    });
+
+    it('should minus removed mention posts(only in unread list)', async () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          removed_cursors_team_mention: [1, 22],
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(78);
+    });
+
+    it('should consider team_mention_cursor_offset', async () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          team_mention_cursor_offset: 33,
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(67);
+    });
+    it('should consider team_mention_cursor_offset', async () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          team_mention_cursor_offset: 11,
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(78);
     });
   });
 });

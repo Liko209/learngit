@@ -1,14 +1,13 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { H } from '../../../helpers';
-import { DeleteTeamDialog } from "./DeleteTeamDialog";
 
-export class MoreActionOnFile extends BaseWebComponent{
+export class MoreActionOnFile extends BaseWebComponent {
 
-  get self(){
+  get self() {
     return this.getSelectorByAutomationId('fileActionMore');
   }
 
-  get renameFileMenu(){
+  get renameFileMenu() {
     return this.getSelectorByAutomationId('fileNameEditItem', this.fileActionMenuList);
   }
 
@@ -20,114 +19,112 @@ export class MoreActionOnFile extends BaseWebComponent{
     return this.getSelectorByAutomationId('viewInPost', this.fileActionMenuList);
   }
 
-  get fileActionMenuList(){
+  get fileActionMenuList() {
     return this.getSelectorByAutomationId('fileActionMenuList');
   }
 
-  get renameFileDialog(){
+  get renameFileDialog() {
     return this.getComponent(RenameFileDialog);
   }
 
-  get confirmDeleteDialog(){
+  get confirmDeleteDialog() {
     return this.getComponent(ConfirmDeleteDialog);
   }
 
-
-  async renameFileMenuDisabledOrNot(status:boolean){
-    await this.t.expect(this.renameFileMenu.attributes).contains({'data-disabled':`${status}`});
+  async renameFileMenuDisabledOrNot(status: boolean) {
+    await this.t.expect(this.renameFileMenu.getAttribute('data-disabled')).eql(String(status));
   }
 
-  async clickMore(){
+  async clickMore() {
     await this.t.click(this.self);
   }
 
-  async clickRenameFileMenu(){
+  async clickRenameFileMenu() {
     await this.t.click(this.renameFileMenu);
   }
 
-  async clickDeleteFile(){
+  async clickDeleteFile() {
     await this.t.click(this.deleteFileMenu);
   }
 
-  async clickViewInPost(){
+  async clickViewInPost() {
     await this.t.click(this.viewInPostMenu);
   }
 
-  async renameFileMenuAtTop(menu:string){
+  async renameFileMenuAtTop(menu: string) {
     await this.t.expect(this.fileActionMenuList.nth(0).withText(menu).exists).ok();
   }
-
 }
 
-export class MoreActionOnViewer extends MoreActionOnFile{
-  get self(){
-    return this.getSelectorByAutomationId('fileActionMore',this.getSelectorByAutomationId('ViewerHeader'));
+export class MoreActionOnViewer extends MoreActionOnFile {
+  get self() {
+    return this.getSelectorByAutomationId('fileActionMore', this.getSelectorByAutomationId('ViewerHeader'));
   }
 }
-export class RenameFileDialog extends BaseWebComponent{
+export class RenameFileDialog extends BaseWebComponent {
 
-    get self(){
-      return this.getSelectorByAutomationId('fileNameEditDialog');
-    }
-
-    get cancelButton(){
-      return this.getSelectorByAutomationId('DialogCancelButton');
-    }
-
-    get saveButton(){
-      return this.getSelectorByAutomationId('DialogOKButton');
-    }
-
-    get fileNameInput(){
-      return this.getSelectorByAutomationId('fileNameEditInput');
-    }
-
-    get fileNameInputValue(){
-      return this.getSelectorByAutomationId('followSuffixTextFieldInputValue');
-    }
-
-    get fileNameSuffix(){
-      return this.getSelectorByAutomationId('followSuffixTextFieldSuffixEl');
-    }
-
-    async clickCancelButton(){
-      await this.t.click(this.cancelButton);
-    }
-
-    async clickSaveButton(){
-      await this.t.click(this.saveButton);
-      await this.waitForAllSpinnersToDisappear();
-    }
-
-    async updateFileName(text:string){
-      await this.clickAndTypeText(this.fileNameInput,text, { replace: true, paste: true });
-    }
-
-    async existFileNameWithSuffix(name:string, suffix:string){
-      await this.t.expect(this.fileNameInputValue.withExactText(name).exists).ok();
-      await this.t.expect(this.fileNameSuffix.withExactText(H.escapePostText(suffix)).exists).ok();
-    }
-
-    async saveButtonShouldDisabled(){
-      await this.t.expect(this.saveButton.hasAttribute('disabled')).ok();
-    }
-
-    async clearFileNameInput(){
-      await this.t.selectTextAreaContent(this.fileNameInput).pressKey('delete');
-    }
-
+  get self() {
+    return this.getSelectorByAutomationId('fileNameEditDialog');
   }
 
-export class ConfirmDeleteDialog extends BaseWebComponent{
-  get self(){
-    return this.getSelectorByAutomationId('confirmDeleteDialog');
-  }
-
-  get cancelButton(){
+  get cancelButton() {
     return this.getSelectorByAutomationId('DialogCancelButton');
   }
 
-  get deleteButton(){
+  get saveButton() {
+    return this.getSelectorByAutomationId('DialogOKButton');
+  }
+
+  get fileNameInput() {
+    return this.getSelectorByAutomationId('fileNameEditInput');
+  }
+
+  get fileNameInputValue() {
+    return this.getSelectorByAutomationId('followSuffixTextFieldInputValue');
+  }
+
+  get fileNameSuffix() {
+    return this.getSelectorByAutomationId('followSuffixTextFieldSuffixEl');
+  }
+
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickSaveButton() {
+    await this.t.click(this.saveButton);
+    await this.waitForAllSpinnersToDisappear();
+  }
+
+  async updateFileName(text: string) {
+    await this.clickAndTypeText(this.fileNameInput, text, { replace: true, paste: true });
+  }
+
+  async existFileNameWithSuffix(name: string, suffix: string) {
+    await this.t.expect(this.fileNameInputValue.withExactText(name).exists).ok();
+    await this.t.expect(this.fileNameSuffix.withExactText(H.escapePostText(suffix)).exists).ok();
+  }
+
+  async saveButtonShouldDisabled() {
+    await this.t.expect(this.saveButton.hasAttribute('disabled')).ok();
+  }
+
+  async clearFileNameInput() {
+    await this.t.selectTextAreaContent(this.fileNameInput).pressKey('delete');
+  }
+
+}
+
+export class ConfirmDeleteDialog extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('confirmDeleteDialog');
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId('DialogCancelButton');
+  }
+
+  get deleteButton() {
     return this.getSelectorByAutomationId('DialogOKButton');
   }
 
@@ -135,12 +132,11 @@ export class ConfirmDeleteDialog extends BaseWebComponent{
     return this.getSelectorByAutomationId('DialogTitle');
   }
 
-  async clickCancelButton(){
+  async clickCancelButton() {
     await this.t.click(this.cancelButton);
   }
 
-
-  async clickDeleteButton(){
+  async clickDeleteButton() {
     await this.t.click(this.deleteButton);
     await this.waitForAllSpinnersToDisappear();
   }

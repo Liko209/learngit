@@ -35,11 +35,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       owner: loginUser,
       members: [loginUser],
     }
-
     let currentGroupId;
-    await h(t).withLog(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}, (reset profile and state)`, async () => {
-      await h(t).glip(loginUser).resetProfileAndState();
-    });
 
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat (in favorite) and I team chat', async () => {
       await h(t).scenarioHelper.createTeamsOrChats([privateChat, favoriteChat, team]);
@@ -119,7 +115,6 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
 
     let privateChat = <IGroup>{
       type: 'DirectMessage',
@@ -383,7 +378,6 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
 
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   await h(t).platform(otherUser).init();
   const meChatId = await h(t).glip(loginUser).getPersonPartialData('me_group_id');

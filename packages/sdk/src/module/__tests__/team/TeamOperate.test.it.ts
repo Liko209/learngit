@@ -36,7 +36,8 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
             members: data.members,
             name: data.set_abbreviation,
           };
-      });
+        },
+      );
       await groupService.createTeam(mockInfo.creatorId, mockInfo.members, {
         name: mockInfo.name,
       });
@@ -140,10 +141,10 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
         (
           reqRes: IRequestResponse<{ _id: number; members: number[] }, Group>,
         ) => ({
-            id: reqRes.request.data!._id,
-            addMembers: reqRes.request.data!.members,
-            newMembers: reqRes.response.data!.members,
-          }),
+          id: reqRes.request.data!._id,
+          addMembers: reqRes.request.data!.members,
+          newMembers: reqRes.response.data!.members,
+        }),
       );
       await groupService.addTeamMembers(mockInfo.addMembers, mockInfo.id);
       const result = await groupService.getById(mockInfo.id!);
@@ -154,8 +155,8 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
       const mockInfo = helper.mockResponse(
         require('./data/ARCHIVED_TEAM.SUCCESS.json'),
         (reqRes: IRequestResponse<Group, Group>) => ({
-            id: reqRes.request.data!._id!,
-          }),
+          id: reqRes.request.data!._id!,
+        }),
       );
       await groupService.archiveTeam(mockInfo.id);
       const result = await groupService.getById(mockInfo.id!);

@@ -1,8 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ContentPanel/RenameFileName.ts"],
-    "browsers": [
-      "selenium:chrome"
-    ]
-  }
-}

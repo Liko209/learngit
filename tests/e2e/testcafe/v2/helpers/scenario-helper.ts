@@ -58,6 +58,11 @@ class ScenarioHelper {
     _.pull(team.members, me);
   }
 
+  public async deleteTeam(team: IGroup, operator: IUser) {
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.deleteTeam(team.glipId)
+  }
+
   public async archiveTeam(team: IGroup, operator: IUser) {
     assert(team.glipId && operator, "require glipId and operator");
     const platform = await this.sdkHelper.sdkManager.getPlatform(operator);

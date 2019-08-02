@@ -12,28 +12,30 @@ import { MessageNotificationManager } from './MessageNotificationManager';
 import { IMessageSettingManager } from './interface';
 
 import {
-  MESSAGE_NOTIFICATION_MANAGER,
-  MESSAGE_SERVICE,
-} from '@/modules/message/interface/constant';
+  IMessageNotificationManager,
+  IMessageService,
+} from '@/modules/message/interface';
 
 const itemService = ServiceLoader.getInstance<ItemService>(
   ServiceConfig.ITEM_SERVICE,
 );
 
 class MessageModule extends AbstractModule {
-  @ILeaveBlockerService private _leaveBlockerService: ILeaveBlockerService;
   @inject(Jupiter) private _jupiter: Jupiter;
-  @inject(MESSAGE_NOTIFICATION_MANAGER)
+  @ILeaveBlockerService
+  private _leaveBlockerService: ILeaveBlockerService;
+  @IMessageNotificationManager
   private _messageNotificationManager: MessageNotificationManager;
   @IMessageSettingManager
   private _messageSettingManager: IMessageSettingManager;
-  handleLeave = () => itemService.hasUploadingFiles()
+
+  handleLeave = () => itemService.hasUploadingFiles();
 
   async bootstrap() {
     this._messageNotificationManager.init();
     this._leaveBlockerService.onLeave(this.handleLeave);
 
-    this._jupiter.emitModuleInitial(MESSAGE_SERVICE);
+    this._jupiter.emitModuleInitial(IMessageService);
     this._messageSettingManager.init();
   }
 

@@ -5,7 +5,6 @@
  */
 import React, { memo } from 'react';
 import { SwitchProps } from '@material-ui/core/Switch';
-// import MuiTooltip from '@material-ui/core/Tooltip';
 import { ToggleButton } from './styled';
 
 type JuiToggleButtonProps = {
@@ -20,9 +19,7 @@ type JuiToggleButtonProps = {
 const JuiToggleButtonComponent: React.SFC<SwitchProps> = (
   props: JuiToggleButtonProps,
 ) => {
-  const {
-    disabled, onChange, checked, ...rest
-  } = props;
+  const { disabled, onChange, checked, ...rest } = props;
 
   return (
     // <MuiTooltip title={tooltipTitle}>
@@ -30,8 +27,8 @@ const JuiToggleButtonComponent: React.SFC<SwitchProps> = (
       classes={{
         root: 'custom-root',
         switchBase: 'custom-switchBase',
-        icon: 'custom-icon',
-        bar: 'custom-bar',
+        thumb: 'custom-icon',
+        track: 'custom-bar',
         checked: 'custom-checked',
         disabled: 'custom-disabled',
       }}

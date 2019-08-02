@@ -42,7 +42,9 @@ class PostService extends EntityBaseService<Post> {
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST));
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST),
+    );
   }
 
   protected canSaveRemoteEntity(): boolean {
@@ -79,10 +81,26 @@ class PostService extends EntityBaseService<Post> {
       .deletePost(id);
   }
 
-  async editPost(params: EditPostType) {
+  editPost(params: EditPostType) {
+    return this._isFailedPost(params)
+      ? this._editFailedPost(params)
+      : this._editSuccessPost(params);
+  }
+
+  private _isFailedPost(params: EditPostType) {
+    return params.postId < 0;
+  }
+
+  private _editSuccessPost(params: EditPostType) {
     return this.getPostController()
       .getPostActionController()
-      .editPost(params);
+      .editSuccessPost(params);
+  }
+
+  private _editFailedPost(params: EditPostType) {
+    return this.getPostController()
+      .getSendPostController()
+      .editFailedPost(params);
   }
 
   async sendPost(params: SendPostType) {
@@ -106,7 +124,10 @@ class PostService extends EntityBaseService<Post> {
     return this.getPostController()
       .getPostFetchController()
       .getPostsByGroupId({
-        groupId, postId, limit, direction,
+        groupId,
+        postId,
+        limit,
+        direction,
       });
   }
 

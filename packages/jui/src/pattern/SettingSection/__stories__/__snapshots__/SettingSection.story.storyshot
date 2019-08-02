@@ -40,7 +40,7 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
     data-test-automation-id="settingSection-undefined"
   >
     <div
-      className="MuiListSubheader-root MuiListSubheader-gutters c1"
+      className="MuiListSubheader-root c1 MuiListSubheader-gutters"
     >
       <span
         className="setting-section-title c2"
@@ -50,7 +50,7 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
       </span>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root "
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root MuiPaper-rounded"
     >
       <div
         className="MuiCardContent-root setting-section-content c3"
@@ -65,7 +65,7 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
     data-test-automation-id="settingSection-undefined"
   >
     <div
-      className="MuiListSubheader-root MuiListSubheader-gutters c1"
+      className="MuiListSubheader-root c1 MuiListSubheader-gutters"
     >
       <span
         className="setting-section-title c2"
@@ -75,7 +75,7 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
       </span>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root "
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root MuiPaper-rounded"
     >
       <div
         className="MuiCardContent-root setting-section-content c3"

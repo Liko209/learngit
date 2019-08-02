@@ -12,7 +12,9 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
+import { PRESENCE } from 'sdk/module/presence/constant';
 import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
+import { ConversationType, NewConversationSource } from './types';
 
 class AnalyticsCollector {
   constructor() {
@@ -34,9 +36,7 @@ class AnalyticsCollector {
     if (!user.email || !company.name) {
       return;
     }
-    const {
-      email, companyId, inviterId, displayName,
-    } = user;
+    const { email, companyId, inviterId, displayName } = user;
     const { name, rcAccountId } = company;
     const version = await fetchVersionInfo();
     const properties = {
@@ -113,6 +113,13 @@ class AnalyticsCollector {
     });
   }
 
+  // [FIJI-963] set presence
+  setPresence(source: PRESENCE) {
+    dataAnalysis.track('Jup_Web/DT_appOptions_setPresence', {
+      source,
+    });
+  }
+
   unblockNumber(source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_unblockNumber', {
       source,
@@ -171,6 +178,17 @@ class AnalyticsCollector {
 
   phoneCallBack(source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_outboundCall', {
+      source,
+    });
+  }
+
+  // [FIJI-7269]
+  conversationAddPerson(
+    conversationType: ConversationType,
+    source: NewConversationSource,
+  ) {
+    dataAnalysis.track('Jup_Web/DT_conversation_addPerson', {
+      conversationType,
       source,
     });
   }

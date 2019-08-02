@@ -3,7 +3,7 @@
  * @Date: 2019-05-30 10:34:43
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component, createRef } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
@@ -110,7 +110,7 @@ class ContactSearchListViewComponent extends Component<
     return (
       <ContactSearchListContainer
         ref={this._containerRef}
-        className='contact-search-list-container'
+        className="contact-search-list-container"
       >
         {hasResult ? (
           <HotKeys
@@ -120,7 +120,7 @@ class ContactSearchListViewComponent extends Component<
               enter: onEnter,
             }}
           >
-            <StyledList data-test-automation-id='telephony-contact-search-list'>
+            <StyledList data-test-automation-id="telephony-contact-search-list">
               <JuiInfiniteList
                 height={this.state.height}
                 minRowHeight={ROW_HEIGHT}

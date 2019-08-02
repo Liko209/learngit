@@ -23,7 +23,6 @@ test(formalName('Check attach file button in the content panel', ['P2','Message'
 
 	await h(t).withLog('Given one DirectMessage conversation', async () => {
 		await h(t).glip(loginUser).init();
-		await h(t).glip(loginUser).resetProfileAndState();
 		await h(t).scenarioHelper.createOrOpenChat(chat);
 		await h(t).scenarioHelper.sendTextPost(uuid(), chat, otherUser);
 	});

@@ -8,19 +8,21 @@ import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
-import { kRTCAnonymous, kRTCProvisioningOptions } from '../account/constants';
-
-import { IRTCCallDelegate } from './IRTCCallDelegate';
 import {
-  REGISTRATION_EVENT,
-  RTCSipProvisionInfo,
-  RTC_PROV_EVENT,
-} from '../account/types';
+  kRTCAnonymous,
+  kRTCProvisioningOptions,
+  kRetryIntervalList,
+} from '../account/constants';
+import { IRTCCallDelegate } from './IRTCCallDelegate';
+import { REGISTRATION_EVENT, RTC_PROV_EVENT } from '../account/types';
 import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
   RTCSipFlags,
   RTCUserInfo,
+  RTCSipProvisionInfo,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -31,6 +33,7 @@ import {
   RTC_NETWORK_STATE,
   RTC_SLEEP_MODE_EVENT,
 } from '../utils/types';
+import { randomBetween } from '../utils/utils';
 
 const LOG_TAG = 'RTCAccount';
 
@@ -39,12 +42,14 @@ class RTCAccount implements IRTCAccount {
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
   private _postponeProvisioning: RTCSipProvisionInfo | null;
-  private _postponeSwitchBackProxy: boolean = false;
+  private _postponeReregister: boolean = false;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
   private _userInfo: RTCUserInfo;
   private _sleepModeListener: Listener;
+  private _retryTimer: NodeJS.Timeout | null = null;
+  private _failedTimes: number = 0;
 
   constructor(listener: IRTCAccountDelegate, userInfo: RTCUserInfo) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
@@ -183,15 +188,30 @@ class RTCAccount implements IRTCAccount {
           kRTCProvisioningOptions,
         );
         this._postponeProvisioning = null;
-      } else if (this._postponeSwitchBackProxy) {
+      } else if (this._postponeReregister) {
         rtcLogger.debug(
           LOG_TAG,
-          "There's no active call. Process postpone switch back to main proxy",
+          "There's no active call. Process postpone re-register",
         );
-        this._regManager.reRegister(true);
-        this._postponeSwitchBackProxy = false;
+        this._postponeReregister = false;
+        this._reRegister();
       }
     }
+  }
+
+  public notifyNoAudioStateEvent(
+    uuid: string,
+    noAudioStateEvent: RTCNoAudioStateEvent,
+  ) {
+    this._delegate &&
+      this._delegate.onNoAudioStateEvent(uuid, noAudioStateEvent);
+  }
+
+  public notifyNoAudioDataEvent(
+    uuid: string,
+    noAudioDataEvent: RTCNoAudioDataEvent,
+  ) {
+    this._delegate && this._delegate.onNoAudioDataEvent(uuid, noAudioDataEvent);
   }
 
   private _initListener() {
@@ -236,11 +256,59 @@ class RTCAccount implements IRTCAccount {
     }
     this._state = state;
     if (this._state === RTC_ACCOUNT_STATE.REGISTERED) {
+      this._failedTimes = 0;
+      this._clearRegisterRetryTimer();
       this._callManager.notifyAccountReady();
       this._provManager.initRefreshState();
+    } else if (this._state === RTC_ACCOUNT_STATE.FAILED) {
+      this._scheduleRegisterRetryTimer();
     }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
+    }
+  }
+
+  private _scheduleRegisterRetryTimer() {
+    const interval = this._calculateNextRetryInterval();
+    this._failedTimes++;
+    rtcLogger.debug(
+      LOG_TAG,
+      `Schedule retry registration in ${interval} seconds`,
+    );
+    if (this._retryTimer) {
+      clearTimeout(this._retryTimer);
+    }
+    this._retryTimer = setTimeout(() => {
+      this._reRegister();
+    }, interval * 1000);
+  }
+
+  private _clearRegisterRetryTimer() {
+    rtcLogger.debug(LOG_TAG, 'Clear retry registration timer');
+    if (this._retryTimer) {
+      clearTimeout(this._retryTimer);
+    }
+    this._retryTimer = null;
+  }
+
+  private _calculateNextRetryInterval(): number {
+    const index =
+      this._failedTimes < kRetryIntervalList.length
+        ? this._failedTimes
+        : kRetryIntervalList.length - 1;
+    return randomBetween(
+      kRetryIntervalList[index].min,
+      kRetryIntervalList[index].max,
+    );
+  }
+
+  private _reRegister() {
+    if (this.callCount()) {
+      rtcLogger.debug(LOG_TAG, "There're active calls. Postpone Re-register");
+      this._postponeReregister = true;
+    } else {
+      rtcLogger.debug(LOG_TAG, 'Reregister');
+      this._regManager.reRegister();
     }
   }
 
@@ -298,21 +366,28 @@ class RTCAccount implements IRTCAccount {
 
   private _onNetworkChange(params: any) {
     if (RTC_NETWORK_STATE.ONLINE === params.state) {
-      this._regManager.networkChangeToOnline();
+      this._reRegister();
     }
   }
 
   private _onWakeUpFromSleepMode() {
     rtcLogger.debug(LOG_TAG, 'wake up from sleep mode');
-    if (this._callManager.callCount() === 0) {
-      this._regManager.reRegister();
-    }
+    this._reRegister();
   }
 
   getSipProvFlags(): RTCSipFlags | null {
-    const SipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
-    if (SipProvisionInfo) {
-      return SipProvisionInfo.sipFlags;
+    const sipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
+    if (sipProvisionInfo) {
+      return sipProvisionInfo.sipFlags;
+    }
+
+    return null;
+  }
+
+  getSipProv(): RTCSipProvisionInfo | null {
+    const sipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
+    if (sipProvisionInfo) {
+      return sipProvisionInfo;
     }
 
     return null;
@@ -323,16 +398,7 @@ class RTCAccount implements IRTCAccount {
   }
 
   private _switchBackProxy() {
-    if (this.callCount()) {
-      rtcLogger.debug(
-        LOG_TAG,
-        "There're active calls. Postpone switch back to main proxy",
-      );
-      this._postponeSwitchBackProxy = true;
-    } else {
-      rtcLogger.debug(LOG_TAG, 'Switch back to main proxy');
-      this._regManager.reRegister(true);
-    }
+    this._reRegister();
   }
 }
 

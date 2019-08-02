@@ -3,10 +3,8 @@
  * @Date: 2018-09-19 13:53:48
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { MouseEvent } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { Indicator } from '../Indicator';
 import { Presence } from '@/containers/Presence';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -27,12 +25,12 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   menuAnchorEl: HTMLElement | null = null;
 
   private _requiredShownPresenceConversationTypes = [
-    CONVERSATION_TYPES.NORMAL_ONE_TO_ONE
+    CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
     // CONVERSATION_TYPES.ME
   ];
 
   state = {
-    isHover: false
+    isHover: false,
   };
 
   constructor(props: Props) {
@@ -42,13 +40,9 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this._closeMenu = this._closeMenu.bind(this);
   }
 
-  private _umi = () => {
-    return this.props.umiHint ? (
-      <Umi type={UMI_SECTION_TYPE.SINGLE} id={this.props.groupId} />
-    ) : (
-      undefined
-    );
-  };
+  private get _showUmi() {
+    return !!(this.props.umiHint && !this.state.isHover);
+  }
 
   private _presence = () => {
     const { groupType } = this.props;
@@ -60,14 +54,14 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     if (this.props.selected) {
       return null;
     }
-    return <Indicator id={this.props.groupId} />;
+    return <Indicator id={this.props.groupId} showUmi={this._showUmi} />;
   }
 
   private _handleMouseOver = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
     this.setState({
-      isHover: true
+      isHover: true,
     });
   };
 
@@ -76,7 +70,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     e.preventDefault();
     this.menuAnchorEl = null;
     this.setState({
-      isHover: false
+      isHover: false,
     });
   };
 
@@ -91,7 +85,6 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           isItemHover={!!this.menuAnchorEl}
           data-group-id={this.props.groupId}
           presence={this._presence}
-          umi={this._umi}
           umiHint={this.props.umiHint}
           indicator={this._indicator}
           onMoreClick={this._handleMoreClick}
@@ -127,11 +120,14 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   private _closeMenu(event: MouseEvent<HTMLElement> | UIEvent) {
     event.stopPropagation();
     this.menuAnchorEl = null;
+    this.setState({
+      isHover: false,
+    });
   }
 }
 
 const ConversationListItemView = withTranslation('translations')(
-  ConversationListItemViewComponent
+  ConversationListItemViewComponent,
 );
 
 export { ConversationListItemView };

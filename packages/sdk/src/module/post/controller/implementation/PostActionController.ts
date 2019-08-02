@@ -77,7 +77,11 @@ class PostActionController implements IPostActionController {
   /**
    * edit post does not need to do pre-insert
    */
-  async editPost(params: EditPostType) {
+  private _editPost(
+    params: EditPostType,
+    doUpdateEntity: (newPost: Post) => Promise<any>,
+    forceDoUpdateEntity?: boolean,
+  ) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
     ): Partial<Raw<Post>> => ({
@@ -89,17 +93,34 @@ class PostActionController implements IPostActionController {
     return this.partialModifyController.updatePartially(
       params.postId,
       preHandlePartial,
-      async (newPost: Post) => this.requestController.put(newPost, {
+      doUpdateEntity,
+      this._doPartialNotify.bind(this),
+      forceDoUpdateEntity,
+    );
+  }
+
+  async editSuccessPost(params: EditPostType) {
+    return this._editPost(params, async (newPost: Post) =>
+      this.requestController.put(newPost, {
         retryCount: DEFAULT_RETRY_COUNT,
       }),
-      this._doPartialNotify.bind(this),
+    );
+  }
+
+  editFailedPost(
+    params: EditPostType,
+    reSendFunc: (post: Post, isResend: boolean) => Promise<Post>,
+  ) {
+    return this._editPost(
+      params,
+      (newPost: Post) => reSendFunc(newPost, true),
+      true,
     );
   }
 
   /**
    * deletePost begin
    */
-
   private async _deletePreInsertedPost(id: number): Promise<boolean> {
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;

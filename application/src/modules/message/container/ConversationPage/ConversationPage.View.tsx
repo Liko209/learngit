@@ -3,7 +3,6 @@
  * @Date: 2018-11-08 09:21:02
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
@@ -41,9 +40,7 @@ import { StreamItem } from './Stream/types';
 import storeManager from '@/store/base/StoreManager';
 import { jumpToPost } from '@/common/jumpToPost';
 import { StreamItemType } from '@/modules/message/container/ConversationPage/Stream/types';
-import { container } from 'framework';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
-import { MessageService } from '@/modules/message/service';
+import { IMessageService } from '@/modules/message/interface';
 import { isEditable } from '../ConversationCard/utils/index';
 import { isMultipleLine } from './MessageInput/helper';
 
@@ -54,6 +51,8 @@ const INPUT = 'input';
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
+  @IMessageService private _messageService: IMessageService;
+
   private _streamRef: RefObject<StreamViewComponent> = createRef();
   private _messageInputRef: RefObject<MessageInputViewComponent> = createRef();
   private _attachmentManagerRef: RefObject<
@@ -133,8 +132,7 @@ class ConversationPageViewComponent extends Component<
       storeManager
         .getGlobalStore()
         .set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...editPostIds, postId]);
-      const service: MessageService = container.get(MESSAGE_SERVICE);
-      service.setEditInputFocus(postId);
+      this._messageService.setEditInputFocus(postId);
     }
   };
 

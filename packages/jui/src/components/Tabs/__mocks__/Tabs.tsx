@@ -5,8 +5,15 @@
  */
 /* eslint-disable */
 import { difference } from 'lodash';
-import React, { PureComponent, ReactElement, createRef, RefObject, CSSProperties, MouseEvent, Children } from 'react';
-import MoreHoriz from '@material-ui/icons/MoreHoriz';
+import React, {
+  PureComponent,
+  ReactElement,
+  createRef,
+  RefObject,
+  CSSProperties,
+  MouseEvent,
+  Children,
+} from 'react';
 import { StyledTabs } from '../StyledTabs';
 import { StyledTab, StyledTabProps } from '../StyledTab';
 import { StyledContainer } from '../StyledContainer';
@@ -15,6 +22,7 @@ import { JuiTabProps } from '../Tab';
 import { JuiPopperMenu, AnchorProps } from '../../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../../Menus';
 import { RuiTooltip } from 'rcui/components/Tooltip';
+import { JuiIconography } from '../../../foundation/Iconography';
 
 type States = {
   openMenu: boolean;
@@ -54,6 +62,17 @@ const STYLE: CSSProperties = {
   right: 0,
 };
 
+const MoreIcon = ({
+  title,
+  tooltipForceHide,
+}: {
+  title?: string;
+  tooltipForceHide?: boolean;
+}) => (
+  <RuiTooltip title={title} tooltipForceHide={tooltipForceHide}>
+    <JuiIconography>more_horiz</JuiIconography>
+  </RuiTooltip>
+);
 class JuiTabs extends PureComponent<Props, States> {
   // not include more tab
   private _tabTitles: (string | JSX.Element)[] = [];
@@ -62,7 +81,7 @@ class JuiTabs extends PureComponent<Props, States> {
   private _tabWidthsTotal: number = 0;
   private _automationIds: string[] = []; // automation ids, not include more tab
   // more tab
-  private _moreRef: RefObject<HTMLElement>;
+  private _moreRef: RefObject<HTMLDivElement>;
   private _moreWidth: number = 0;
   // right rail container
   private _containerRef: RefObject<any>;
@@ -70,15 +89,19 @@ class JuiTabs extends PureComponent<Props, States> {
 
   constructor(props: Props) {
     super(props);
-    this._tabRefs = Children.map(props.children, (child: ReactElement<JuiTabProps>) => {
-      this._tabTitles.push(child.props.title); // add tab title
-      this._automationIds.push(child.props.automationId || ''); // add automation id
-      return createRef(); // add tab ref
-    });
+    this._tabRefs = Children.map(
+      props.children,
+      (child: ReactElement<JuiTabProps>) => {
+        this._tabTitles.push(child.props.title); // add tab title
+        this._automationIds.push(child.props.automationId || ''); // add automation id
+        return createRef(); // add tab ref
+      },
+    );
     this._moreRef = createRef();
     this._containerRef = createRef();
 
-    let indexSelected = this._getLocalSelectedIndex() || props.defaultActiveIndex || 0;
+    let indexSelected =
+      this._getLocalSelectedIndex() || props.defaultActiveIndex || 0;
     if (indexSelected > Children.count(props.children) - 1) {
       indexSelected = 0;
     }
@@ -167,11 +190,23 @@ class JuiTabs extends PureComponent<Props, States> {
       return null; // no more tab
     }
     return (
-      <JuiPopperMenu Anchor={this._renderMore} placement='bottom-start' open={openMenu} value={MORE} key={MORE} onClose={this._hideMenuList} anchorEl={anchorEl}>
+      <JuiPopperMenu
+        Anchor={this._renderMore}
+        placement="bottom-start"
+        open={openMenu}
+        value={MORE}
+        key={MORE}
+        onClose={this._hideMenuList}
+        anchorEl={anchorEl}
+      >
         <JuiMenuList onClick={this._hideMenuList}>
           {indexMenus.map((item: number) => {
             return (
-              <JuiMenuItem data-test-automation-id={this._automationIds[item]} key={item} onClick={this._handleMenuItemClick.bind(this, item)}>
+              <JuiMenuItem
+                data-test-automation-id={this._automationIds[item]}
+                key={item}
+                onClick={this._handleMenuItemClick.bind(this, item)}
+              >
                 {this._tabTitles[item]}
               </JuiMenuItem>
             );
@@ -185,11 +220,7 @@ class JuiTabs extends PureComponent<Props, States> {
     const { tag, moreText } = this.props;
     return this._renderStyledTab({
       value: MORE,
-      icon: (
-        <RuiTooltip title={moreText} tooltipForceHide={tooltipForceHide}>
-          <MoreHoriz />
-        </RuiTooltip>
-      ),
+      icon: <MoreIcon title={moreText} tooltipForceHide={tooltipForceHide} />,
       onClick: this._showMenuList,
       style: STYLE,
       ref: this._moreRef,
@@ -213,24 +244,51 @@ class JuiTabs extends PureComponent<Props, States> {
     return tabs;
   };
 
-  private _renderStyledTab = ({ value, label, icon, onClick, style, ref, automationId }: StyledTabProps) => {
-    return <StyledTab data-test-automation-id={automationId} value={value} key={value} label={label} icon={icon} onClick={onClick} classes={CLASSES.tab} style={style} ref={ref} />;
+  private _renderStyledTab = ({
+    value,
+    label,
+    icon,
+    onClick,
+    style,
+    ref,
+    automationId,
+  }: StyledTabProps) => {
+    return (
+      <StyledTab
+        data-test-automation-id={automationId}
+        value={value}
+        key={value}
+        label={label}
+        icon={icon}
+        onClick={onClick}
+        classes={CLASSES.tab}
+        style={style}
+        ref={ref}
+      />
+    );
   };
 
   renderContainers = () => {
     const { children } = this.props;
     const { indexSelected, indexLazyLoadComponents } = this.state;
-    return Children.map(children, (child: ReactElement<JuiTabProps>, index: number) => {
-      let className = '';
-      if (index === indexSelected) {
-        className = 'show';
-      }
-      return (
-        <StyledContainer key={index} className={className} offset={this._containerWidth}>
-          {indexLazyLoadComponents.includes(index) && child.props.children}
-        </StyledContainer>
-      );
-    });
+    return Children.map(
+      children,
+      (child: ReactElement<JuiTabProps>, index: number) => {
+        let className = '';
+        if (index === indexSelected) {
+          className = 'show';
+        }
+        return (
+          <StyledContainer
+            key={index}
+            className={className}
+            offset={this._containerWidth}
+          >
+            {indexLazyLoadComponents.includes(index) && child.props.children}
+          </StyledContainer>
+        );
+      },
+    );
   };
 
   renderTabs = () => {
@@ -249,7 +307,16 @@ class JuiTabs extends PureComponent<Props, States> {
       measure = true; // The width needs to be remeasured
     }
     return (
-      <StyledTabs forceFlex={forceFlex} position={position} value={index} onChange={this._handleChangeTab} indicatorColor='primary' textColor='primary' classes={CLASSES.tabs} ref={this._containerRef}>
+      <StyledTabs
+        forceFlex={forceFlex}
+        position={position}
+        value={index}
+        onChange={this._handleChangeTab}
+        indicatorColor="primary"
+        textColor="primary"
+        classes={CLASSES.tabs}
+        ref={this._containerRef}
+      >
         {this._renderForShow()}
       </StyledTabs>
     );

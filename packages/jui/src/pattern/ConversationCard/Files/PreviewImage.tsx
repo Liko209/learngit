@@ -189,10 +189,6 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
       this.props.handleImageClick(ev, this.state.loaded);
   };
 
-  private _handleInfoClick(event: React.MouseEvent<HTMLElement>) {
-    event.stopPropagation();
-  }
-
   componentDidMount() {
     this._mounted = true;
   }
@@ -200,9 +196,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     this._mounted = false;
   }
   render() {
-    const {
-      Actions, fileName, forceSize, placeholder
-    } = this.props;
+    const { Actions, fileName, forceSize, placeholder } = this.props;
     const { loaded, url, postloadURL } = this.state;
     const { width, height } =
       loaded && !forceSize ? this._imageInfo : this.props;
@@ -225,20 +219,22 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
         {loaded && (
           <Jui.ImageCard
             width={width}
+            data-test-automation-id="imageCard"
             height={height}
             onClick={this._handleImageClick}
           >
-            <StyledImg data-test-automation-class="image" style={imageStyle} src={url} />
-            <Jui.ImageFileInfo
-              width={width}
-              height={height}
-              component="div"
-              onClick={this._handleInfoClick}
-            >
+            <StyledImg
+              data-test-automation-class="image"
+              style={imageStyle}
+              src={url}
+            />
+            <Jui.ImageFileInfo width={width} height={height} component="div">
               <FileName>{fileName}</FileName>
               {Actions && (
                 <Jui.FileActionsWrapper>
-                  <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>
+                  <JuiButtonBar isStopPropagation overlapSize={-2}>
+                    {Actions}
+                  </JuiButtonBar>
                 </Jui.FileActionsWrapper>
               )}
             </Jui.ImageFileInfo>

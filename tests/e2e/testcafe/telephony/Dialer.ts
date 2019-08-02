@@ -167,7 +167,6 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
 
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -222,7 +221,6 @@ test.meta(<ITestMeta>{
   const callee = h(t).rcData.guestCompany.users[0];
 
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(callee).init();
 
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
@@ -282,7 +280,6 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const callee = h(t).rcData.guestCompany.users[0];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(callee).init();
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
   const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)
@@ -383,15 +380,6 @@ test.meta(<ITestMeta>{
   let callerIdNumber = await phoneTab.callerIDDropDownItems.nth(0).innerText
   await h(t).withLog(`And I set the caller id is ${callerIdNumber} from the setting`, async () => {
     await phoneTab.selectCallerIdByText(callerIdNumber);
-  });
-
-  await h(t).withLog('When I refresh page', async () => {
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('And I click the to diapad button', async () => {
-    await app.homePage.openDialer();
   });
 
   await h(t).withLog(`Then should display ${callerIdNumber} in caller ID seclection of the dialer page`, async () => {

@@ -62,7 +62,7 @@ exports[`Storyshots Components/Forms TextField: Components/Forms TextField 1`] =
       default
     </p>
     <div
-      className="MuiFormControl-root MuiFormControl-fullWidth c0"
+      className="MuiFormControl-root MuiTextField-root c0 MuiFormControl-fullWidth"
       onKeyDown={[Function]}
     >
       <label
@@ -103,7 +103,7 @@ exports[`Storyshots Components/Forms TextField: Components/Forms TextField 1`] =
       type="number" use aria-label for control
     </p>
     <div
-      className="MuiFormControl-root c0"
+      className="MuiFormControl-root MuiTextField-root c0"
       onKeyDown={[Function]}
     >
       
@@ -114,7 +114,7 @@ exports[`Storyshots Components/Forms TextField: Components/Forms TextField 1`] =
         <input
           aria-invalid={false}
           aria-label="numberInput"
-          className="MuiInputBase-input MuiInput-input MuiInputBase-inputType MuiInput-inputType"
+          className="MuiInputBase-input MuiInput-input"
           disabled={false}
           id="outlined-number"
           onBlur={[Function]}
