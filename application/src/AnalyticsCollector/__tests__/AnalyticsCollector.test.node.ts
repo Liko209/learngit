@@ -42,6 +42,7 @@ describe('analyticsCollector', () => {
           source: 'input box',
           postType: 'text',
           destination: 'team',
+          isAtTeam: false,
         },
       );
     });
@@ -77,7 +78,7 @@ describe('analyticsCollector', () => {
         deployedVersion: '1.0',
       });
       await analyticsCollector.identify();
-      expect(dataAnalysis.identify).toBeCalledWith(100, {
+      expect(dataAnalysis.identify).toHaveBeenCalledWith(100, {
         accountType: 'rc',
         companyId: 1,
         companyName: 1,
