@@ -15,7 +15,7 @@ import { ConvertToTeam } from '@/containers/ConvertToTeam';
 import { CONVERSATION_TYPES } from '@/constants';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { teamActionHandler } from '@/common/handleTeamAction';
-import { ProfileDialogGroup } from '@/modules/message/container/Profile/Dialog/Group';
+import { getProfileDialogComponent } from '@/common/OpenProfile';
 
 @observer
 class MenuComponent extends React.Component<
@@ -23,7 +23,7 @@ class MenuComponent extends React.Component<
 > {
   renderProfile = (title: string) => (
     <OpenProfileDialog
-      profileDialog={ProfileDialogGroup}
+      profileDialog={getProfileDialogComponent(this.props.profileId)}
       id={this.props.profileId}
     >
       <JuiMenuItem data-test-automation-id="profileEntry">{title}</JuiMenuItem>
