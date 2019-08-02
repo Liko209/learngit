@@ -505,9 +505,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           ? groupState.unreadCount > 0
           : false;
       const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+      const currentConversationId = getGlobalValue(
+        GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+      );
       const createdByMeOrHasPostTime: boolean =
-        model.most_recent_post_created_at !== undefined ||
-        model.creator_id === currentUserId;
+        model.id !== currentConversationId &&
+        (model.most_recent_post_created_at !== undefined ||
+          model.creator_id === currentUserId);
 
       const groupService = ServiceLoader.getInstance<GroupService>(
         ServiceConfig.GROUP_SERVICE,
