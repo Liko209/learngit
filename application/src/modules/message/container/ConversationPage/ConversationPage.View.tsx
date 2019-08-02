@@ -43,7 +43,6 @@ import { StreamItemType } from '@/modules/message/container/ConversationPage/Str
 import { IMessageService } from '@/modules/message/interface';
 import { isEditable } from '../ConversationCard/utils/index';
 import { isMultipleLine } from './MessageInput/helper';
-import { dataAnalysis} from 'sdk'
 
 const STREAM = 'stream';
 const INPUT = 'input';
