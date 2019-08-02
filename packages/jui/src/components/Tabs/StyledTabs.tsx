@@ -29,13 +29,8 @@ const FilterMuiTabs = ({ forceFlex, ...rest }: StyledTabsProps) => (
 const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
   .flexContainer {
     ${({ position }) => {
-      if (position === 'center') {
-        return `
-      justify-content:${PositionMap[position]};
-      `;
-      }
-      return null;
-    }}
+      return position && `justify-content:${PositionMap[position]};`;
+    }}}
   }
   &.root {
     display: ${({ forceFlex }) => (forceFlex ? 'flex' : null)};
