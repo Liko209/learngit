@@ -285,7 +285,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have an DirectMessage conversation and clear all Umi', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
@@ -359,7 +358,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     type: "DirectMessage",

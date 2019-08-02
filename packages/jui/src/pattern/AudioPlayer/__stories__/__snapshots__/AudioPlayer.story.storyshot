@@ -19,23 +19,6 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
   font-size: 24px;
 }
 
-.c9.c9 .c3,
-.c9.c9 .c3 svg {
-  font-size: 20px;
-}
-
-.c9.c9:hover .c3 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c9.c9:active .c3 {
-  color: #9e9e9e;
-}
-
-.c9.c9.c9.c9.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c2.c2 {
   padding: 0;
   width: 40px;
@@ -75,6 +58,64 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
+}
+
+.c8.c8 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #0684bd;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c8.c8 .c3,
+.c8.c8 .c3 svg {
+  font-size: 20px;
+}
+
+.c8.c8:hover {
+  background-color: rgba(6,132,189,0.12);
+}
+
+.c8.c8:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c8.c8:active .c3 {
+  color: #0684bd;
+}
+
+.c8.c8.c8.c8.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 .rippleVisible {
+  color: #0684bd;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c9.c9 .c3,
+.c9.c9 .c3 svg {
+  font-size: 20px;
+}
+
+.c9.c9:hover .c3 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c9.c9:active .c3 {
+  color: #9e9e9e;
+}
+
+.c9.c9.c9.c9.disabled .c3 {
+  color: rgba(0,0,0,0.12);
 }
 
 .c10.c10 .c3,
@@ -143,47 +184,6 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
 
 .c13.c13.c13.c13.disabled .c3 {
   color: rgba(0,0,0,0.12);
-}
-
-.c8.c8 {
-  padding: 0;
-  width: 40px;
-  height: 40px;
-  color: #0684bd;
-  opacity: 1;
-  padding: 0;
-  background-color: inherit;
-}
-
-.c8.c8 .c3,
-.c8.c8 .c3 svg {
-  font-size: 20px;
-}
-
-.c8.c8:hover {
-  background-color: rgba(6,132,189,0.12);
-}
-
-.c8.c8:hover .c3 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c8.c8:active .c3 {
-  color: #0684bd;
-}
-
-.c8.c8.c8.c8.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c8.c8 .rippleVisible {
-  color: #0684bd;
-  opacity: 0.24;
-  -webkit-transform: scale(1);
-  -ms-transform: scale(1);
-  transform: scale(1);
-  -webkit-animation-name: cBKRfH;
-  animation-name: cBKRfH;
 }
 
 .c1.c1 {

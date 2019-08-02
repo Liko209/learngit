@@ -83,7 +83,6 @@ export class RcPlatformSdk {
     });
   }
 
-
   async createGroup(data: any) {
     const url = 'restapi/v1.0/glip/groups';
     return await this.retryRequestOnException(async () => {
@@ -309,4 +308,28 @@ export class RcPlatformSdk {
       await this.deleteVoicemail(id);
     }
   }
+
+  async getDevices() {
+    const url = `/restapi/v1.0/account/~/extension/~/device`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.get(url);
+    });
+  }
+
+  async updateDevice(deviceId: number | string, data: any) {
+    const url = `/restapi/v1.0/account/~/device/${deviceId}`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.put(url, data);
+    });
+  }
+
+  async updateDevices(cb: (device: any, index: number) => any) {
+    // TODO: handel paging
+    const devices = await this.getDevices().then(res => res.data.records);
+    for (const i in devices) {
+      const device = devices[i];
+      await this.updateDevice(device.id, cb(device, Number(i)));
+    }
+  }
+
 }

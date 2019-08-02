@@ -58,9 +58,7 @@ export abstract class AbstractSettingEntityHandler<T>
     if (!this.userSettingEntityCache) {
       this.userSettingEntityCache = {
         id: this.id,
-        weight: 0,
         state: 0,
-        valueType: 1,
       };
     }
     const result = await this.fetchUserSettingEntity();

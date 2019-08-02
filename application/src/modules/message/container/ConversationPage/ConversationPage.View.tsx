@@ -3,7 +3,6 @@
  * @Date: 2018-11-08 09:21:02
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';

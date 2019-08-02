@@ -86,7 +86,7 @@ class MediaTrack {
 
     const _continuePlay = continuePlay !== undefined ? continuePlay : true;
     this._action('setSeek', time, {
-      continuePlay: _continuePlay,
+      continuePlay: _continuePlay
     });
 
     this._currentTime = time;
@@ -104,14 +104,14 @@ class MediaTrack {
       this._sounds = [];
 
       this._initDeviceSounds(devices, {
-        currentTime,
+        currentTime
       });
     } else {
       const currentTime =
         (this._originSound && this._originSound.currentTime) || 0;
 
       this._changeDeviceSounds(devices, {
-        currentTime,
+        currentTime
       });
     }
 
@@ -222,7 +222,6 @@ class MediaTrack {
       if (ext) {
         ext = ext[1].toLowerCase();
       }
-      /* eslint-disable no-console */
       if (!ext) {
         mainLogger.warn('[MediaModule] No file extension was found!');
       }

@@ -10,11 +10,12 @@ import {
   ProfileDialogPersonProps,
   ProfileDialogPersonViewProps,
 } from './types';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
 import { PersonService } from 'sdk/module/person';
+import { GLOBAL_KEYS } from '@/store/constants';
 import { generalErrorHandler } from '@/utils/error';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
@@ -54,6 +55,16 @@ class ProfileDialogPersonViewModel
     } catch (err) {
       generalErrorHandler(err);
     }
+  };
+
+  @computed
+  get currentUserId() {
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  }
+
+  @computed
+  get isTheCurrentUserProfile() {
+    return this.currentUserId === this.id;
   }
 }
 

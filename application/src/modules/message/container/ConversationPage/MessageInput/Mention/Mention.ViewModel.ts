@@ -65,6 +65,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       handler: this._upHandler(this),
     },
     {
+      key: Keys.TAB,
+      handler: this._selectHandler(this),
+    },
+    {
       key: Keys.DOWN,
       handler: this._downHandler(this),
     },

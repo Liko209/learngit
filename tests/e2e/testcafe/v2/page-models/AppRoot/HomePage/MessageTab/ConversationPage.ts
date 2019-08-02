@@ -461,7 +461,7 @@ export class ConversationPage extends BaseConversationPage {
       const containerTop = await this.self.getBoundingClientRectProperty('top');
       const headerHeight = await this.header.getBoundingClientRectProperty('height');
       const targetTop = await sel.getBoundingClientRectProperty('top');
-      assert.strictEqual(containerTop + headerHeight, targetTop, 'this post card is not on the top of conversation page')
+      assert.ok(Math.abs( containerTop + headerHeight - targetTop) < 5, 'element is not on the top of conversation page');
     });
   }
 

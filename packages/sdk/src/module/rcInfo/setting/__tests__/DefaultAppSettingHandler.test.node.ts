@@ -7,11 +7,9 @@ import _ from 'lodash';
 import { RC_INFO, ENTITY, SERVICE } from 'sdk/service';
 import notificationCenter from 'sdk/service/notificationCenter';
 import {
-  ESettingValueType,
   SettingEntityIds,
   UserSettingEntity,
 } from 'sdk/module/setting';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { DefaultAppSettingHandler } from '../DefaultAppSettingHandler';
 import { ProfileService } from 'sdk/module/profile/service/ProfileService';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
@@ -56,11 +54,8 @@ describe('DefaultAppSettingHandler', () => {
     accountService.userConfig.getCurrentUserProfileId = jest.fn().mockReturnValue(mockUserId);
     accountService.getGlipLoginStatus = jest.fn().mockReturnValue(GLIP_LOGIN_STATUS.SUCCESS);
     mockDefaultSettingItem = {
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
-      valueType: 3,
-      weight: SettingModuleIds.ExtensionSetting.weight,
       id: SettingEntityIds.Phone_DefaultApp,
-      valueGetter: expect.anything(),
+      valueSetter: expect.anything(),
       value: CALLING_OPTIONS.GLIP,
       state: 0,
     };
@@ -256,9 +251,6 @@ describe('DefaultAppSettingHandler', () => {
       const res = await settingHandler.fetchUserSettingEntity();
       // expect(settingHandler.updateUserSettingEntityCache).toBeCalledWith(res);
       expect(res).toEqual({
-        weight: 0,
-        valueType: ESettingValueType.OBJECT,
-        parentModelId: 0,
         id: SettingEntityIds.Phone_DefaultApp,
         state: ESettingItemState.ENABLE,
         source: [CALLING_OPTIONS.GLIP, CALLING_OPTIONS.RINGCENTRAL],

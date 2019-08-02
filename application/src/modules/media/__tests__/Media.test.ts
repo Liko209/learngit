@@ -336,6 +336,7 @@ describe('Media', () => {
       media.stop();
       expect(media.pause).toBeTruthy();
       expect(media.playing).toBeFalsy();
+      expect(media.currentTime).toEqual(0);
     });
     it('should stop when current media is not playing', () => {
       const media = new Media(baseMediaOpts);
@@ -343,12 +344,14 @@ describe('Media', () => {
       media.stop();
       expect(media.pause).toBeTruthy();
       expect(media.playing).toBeFalsy();
+      expect(media.currentTime).toEqual(0);
     });
     it('should not stop when current media is not in track', () => {
       const noUseTrack = new MediaTrack(noUseTrackOpts);
       jest.spyOn(trackManager, 'getTrack').mockReturnValue(noUseTrack);
       const media = new Media(baseMediaOpts);
       expect(media.playing).toBeFalsy();
+      expect(media.currentTime).toEqual(0);
     });
   });
   describe('media set mute', () => {
@@ -502,6 +505,50 @@ describe('Media', () => {
       media.on('play', playEvent.handler);
 
       expect(media.events).toEqual([loadedEvent, playEvent]);
+    });
+    it('should store event when media on called and media in track', () => {
+      const loadedEvent = {
+        name: 'loadeddata',
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+      const playEvent = {
+        name: 'play',
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+
+      const useTrack = new MediaTrack(useTrackOpts);
+      const bindFn = jest.spyOn(useTrack, 'bindEvent');
+      jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
+      const media = new Media(baseMediaOpts);
+      media.on('loadeddata', loadedEvent.handler);
+      media.on('play', playEvent.handler);
+
+      expect(media.events).toEqual([loadedEvent, playEvent]);
+      expect(bindFn).toHaveBeenCalledTimes(2);
+    });
+    it('should store event when media on called and media in track', () => {
+      const loadedEvent = {
+        name: 'loadeddata',
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+      const playEvent = {
+        name: 'play',
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+
+      const useTrack = new MediaTrack(useTrackOpts);
+      const bindFn = jest.spyOn(useTrack, 'bindEvent');
+      jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
+      const media = new Media(baseMediaOpts);
+      media.on('loadeddata', loadedEvent.handler);
+      media.on('play', playEvent.handler);
+
+      expect(media.events).toEqual([loadedEvent, playEvent]);
+      expect(bindFn).toHaveBeenCalledTimes(2);
     });
     it('should store event when media on called and media in track', () => {
       const loadedEvent = {
