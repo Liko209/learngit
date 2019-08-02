@@ -27,9 +27,9 @@ class SplitIOController extends AbstractPermissionController
     this.splitIOUpdateCallback = callback;
   }
 
-  shutdownClient() {
+  shutdownClient(shouldClearCache: boolean) {
     this.isClientReady = false;
-    this.splitIOClient && this.splitIOClient.shutdown();
+    this.splitIOClient && this.splitIOClient.shutdown(shouldClearCache);
   }
   initClient() {
     if (this.isIniting) {

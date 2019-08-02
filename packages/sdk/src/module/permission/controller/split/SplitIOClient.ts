@@ -80,7 +80,7 @@ class SplitIOClient {
     return result[type];
   }
 
-  shutdown() {
+  shutdown(shouldClearCache: boolean) {
     this.client.destroy();
   }
 }

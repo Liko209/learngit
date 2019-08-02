@@ -92,9 +92,20 @@ describe('LaunchDarklyClient', () => {
         'ld:xxdaf:0asdfx==': 'a',
       });
       const ld = getClient({ JUPITER_CREATE_TEAM: 80 });
-      ld.shutdown();
+      ld.shutdown(true);
       expect(ld.hasFlags()).toBeFalsy();
       expect(localStorage.removeItem).toHaveBeenCalled();
+    });
+
+    it('should not clear local cache data', () => {
+      localStorage.removeItem = jest.fn();
+      Object.assign(localStorage, {
+        'ld:xxdaf:0asdfx==': 'a',
+      });
+      const ld = getClient({ JUPITER_CREATE_TEAM: 80 });
+      ld.shutdown(false);
+      expect(ld.hasFlags()).toBeFalsy();
+      expect(localStorage.removeItem).not.toHaveBeenCalled();
     });
   });
 });

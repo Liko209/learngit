@@ -38,13 +38,13 @@ class LaunchDarklyClient {
     return this._flags && Object.keys(this._flags).length > 0;
   }
 
-  shutdown() {
+  shutdown(shouldClearCache: boolean) {
     if (this._ldclient) {
       this._flags = {};
       this._ldclient.off('change', () => {});
       this._ldclient.off('ready', () => {});
       this._ldclient.setStreaming(false);
-      this._deleteLocalCache();
+      shouldClearCache && this._deleteLocalCache();
     }
   }
   private _deleteLocalCache() {

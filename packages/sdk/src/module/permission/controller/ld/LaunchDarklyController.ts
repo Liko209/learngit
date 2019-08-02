@@ -71,8 +71,9 @@ class LaunchDarklyController extends AbstractPermissionController
       this.launchDarklyClient = new LaunchDarklyClient(params);
     }
   }
-  shutdownClient() {
-    this.launchDarklyClient && this.launchDarklyClient.shutdown();
+  shutdownClient(shouldClearCache: boolean) {
+    this.launchDarklyClient &&
+      this.launchDarklyClient.shutdown(shouldClearCache);
     this.isIniting = false;
   }
 

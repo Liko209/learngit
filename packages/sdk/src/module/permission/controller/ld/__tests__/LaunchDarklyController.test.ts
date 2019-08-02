@@ -41,5 +41,4 @@ describe('LaunchDarklyController', () => {
       expect(controller.isFlagSupported('TEST_ONE')).toBeFalsy();
     });
   });
-  describe('', () => {});
 });
