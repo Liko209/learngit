@@ -216,7 +216,7 @@ describe('RegionSettingItemViewModel', () => {
       expect(saveState).toEqual(true);
       done();
     });
-    it('should return false when save failed', async (done: jest.DoneCallback) => {
+    it('should return false when save failed [JPT-2691]', async (done: jest.DoneCallback) => {
       const VM = new RegionSettingItemViewModel();
       await VM.loadRegionSetting();
 
