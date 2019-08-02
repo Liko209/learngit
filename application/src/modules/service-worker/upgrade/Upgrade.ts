@@ -9,7 +9,6 @@ import { ItemService } from 'sdk/module/item/service';
 import { SyncService } from 'sdk/module/sync/service';
 import { TelephonyService } from 'sdk/module/telephony';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { isElectron } from '@/common/isUserAgent';
 import _ from 'lodash';
 
 const logTag = '[Upgrade]';
@@ -164,7 +163,7 @@ class Upgrade {
         return;
       }
 
-      if (!isElectron && this._hasServiceWorkerController()) {
+      if (this._hasServiceWorkerController()) {
         this._checkSiblingCanReload();
         return;
       }
