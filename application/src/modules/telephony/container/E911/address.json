@@ -5,7 +5,7 @@
       "label": "Address",
       "ghostText": "App.911 24 Sir Thomas Street"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Road/Street",
       "ghostText": "Road/Street",
       "optional": true
@@ -19,7 +19,7 @@
       "ghostText": "West Yorkshire",
       "optional": true
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "L1 6JB"
     }
@@ -30,7 +30,7 @@
       "label": "Street address",
       "ghostText": "120 1st St SW"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Additional address",
       "ghostText": "Suite 500 or Building A, Floor 3",
       "optional": true
@@ -39,7 +39,7 @@
       "label": "City",
       "ghostText": "Alabaster"
     },
-    "zipCode": {
+    "zip": {
       "label": "Zip code",
       "ghostText": "35007"
     }
@@ -50,7 +50,7 @@
       "label": "Street address",
       "ghostText": "120 1st St SW"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Additional address",
       "ghostText": "Suite 500 or Building A, Floor 3",
       "optional": true
@@ -59,7 +59,7 @@
       "label": "City",
       "ghostText": "Alabaster"
     },
-    "zipCode": {
+    "zip": {
       "label": "Zip code",
       "ghostText": "35007"
     }
@@ -70,7 +70,7 @@
       "label": "Street address",
       "ghostText": "120 1st St SW"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Additional address",
       "ghostText": "Suite 500 or Building A, Floor 3",
       "optional": true
@@ -79,7 +79,7 @@
       "label": "City",
       "ghostText": "Alabaster"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "AB T2P 4K8"
     }
@@ -90,7 +90,7 @@
       "label": "Street address",
       "ghostText": "Alterweg 110a"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "40210"
     },
@@ -105,7 +105,7 @@
       "label": "Street address",
       "ghostText": "710 Rue Poncelet"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "65311"
     },
@@ -120,7 +120,7 @@
       "label": "Street address",
       "ghostText": "Surinamestraat 27"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "6531"
     },
@@ -135,7 +135,7 @@
       "label": "Street address",
       "ghostText": "Kappelergasse 1"
     },
-    "zipCode": {
+    "zip": {
       "label": "Post code",
       "ghostText": "8022"
     },
@@ -150,7 +150,7 @@
       "label": "Street address",
       "ghostText": "Calle Aduana, 29"
     },
-    "zipCode": {
+    "zip": {
       "label": "Post code",
       "ghostText": "28070"
     },
@@ -165,7 +165,7 @@
       "label": "Street address",
       "ghostText": "Sub-building, Building Name, House Number"
     },
-    "zipCode": {
+    "zip": {
       "label": "Post code / EIR code",
       "ghostText": "D02 AF30"
     },
@@ -184,7 +184,7 @@
       "label": "Name of town",
       "ghostText": "Singapore"
     },
-    "zipCode": {
+    "zip": {
       "label": "Post code",
       "ghostText": "308215"
     }
@@ -199,7 +199,7 @@
       "label": "City/District",
       "ghostText": "Pasig City"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "7019"
     },
@@ -215,11 +215,11 @@
       "label": "Street name, number, Apt",
       "ghostText": "Garth Rd 3 – 403"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Village/Name of quarter",
       "ghostText": "Colonia Baytown"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "77520"
     },
@@ -235,7 +235,7 @@
       "label": "Street name + number",
       "ghostText": "Varvsgatan 1"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "112 01"
     },
@@ -250,7 +250,7 @@
       "label": "Street name + number",
       "ghostText": "Brammingevej 11"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "5000"
     },
@@ -265,7 +265,7 @@
       "label": "Street name + number",
       "ghostText": "Fredrikinkatu 6"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "00100"
     },
@@ -280,12 +280,12 @@
       "label": "Unit/lot number, building/area name",
       "ghostText": "Lot 7, Bintang Centre"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Lot number (for building), street name",
       "ghostText": "11 Medan Angsana",
       "optional": true
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode Post office/Mail centre",
       "ghostText": "42700 BANTING"
     },
@@ -301,7 +301,7 @@
       "label": "Flat number, Floor number, Name/number of house/building",
       "ghostText": "12/F, Acacia Building"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Street number and street name",
       "ghostText": "70 Mody Rd",
       "optional": true
@@ -318,7 +318,7 @@
       "label": "Street name + number",
       "ghostText": "Storgata 2"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "2670"
     },
@@ -333,7 +333,7 @@
       "label": "Number, Alley, Lane, Road/Street Name",
       "ghostText": "2F., No.7, Gongyuan St."
     },
-    "zipCode": {
+    "zip": {
       "label": "ZIP codes",
       "ghostText": "600"
     },
@@ -348,7 +348,7 @@
       "label": "Street name + number",
       "ghostText": "Postgasse 15"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "8750"
     },
@@ -363,7 +363,7 @@
       "label": "Street name + Street number + door",
       "ghostText": "R. Comercio 148, 2 Esc"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "1100-150"
     },
@@ -378,7 +378,7 @@
       "label": "Street name + Street number + door",
       "ghostText": "Avenue de Jette 28"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "1090"
     },
@@ -393,7 +393,7 @@
       "label": "Street name and number",
       "ghostText": "Via Labicana, 14"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "00184"
     },
@@ -412,7 +412,7 @@
       "label": "Locality State",
       "ghostText": "Kalgoorlie WA"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postcode",
       "ghostText": "6430"
     }
@@ -427,7 +427,7 @@
       "label": "Town",
       "ghostText": "Eilat"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "8851318"
     }
@@ -438,7 +438,7 @@
       "label": "Street address",
       "ghostText": "180 Route de Longwy"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "4732"
     },
@@ -457,7 +457,7 @@
       "label": "City/Village, County/Sector",
       "ghostText": "Resita, Caras-Severin"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "320084"
     }
@@ -468,7 +468,7 @@
       "label": "Street address",
       "ghostText": "Na Rovni 17"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "162 00"
     },
@@ -483,7 +483,7 @@
       "label": "Street address (street name + house/building number)",
       "ghostText": "Piedras No 623 Piso2 Dto.4"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "C1070AAM"
     },
@@ -498,7 +498,7 @@
       "label": "Street address",
       "ghostText": "Avenida Joao Jorge, 102, ap. 4"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Neighbourhood",
       "ghostText": "Vila Industrial",
       "optional": true
@@ -507,7 +507,7 @@
       "label": "Municipality - State",
       "ghostText": "Campinas - SP"
     },
-    "zipCode": {
+    "zip": {
       "label": "CEP (Postal Code)",
       "ghostText": "30840-470"
     }
@@ -518,7 +518,7 @@
       "label": "Street and number, apartment number",
       "ghostText": "Nelson N 10, Dep. 415"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "2340000",
       "optional": true
@@ -534,7 +534,7 @@
       "label": "Flat number/house number, street address or PO box number",
       "ghostText": "21 Vogel Street"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Suburb or RD number or PO box lobby name",
       "ghostText": "Roslyn",
       "optional": true
@@ -543,7 +543,7 @@
       "label": "Town/City",
       "ghostText": "Palmerston North"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "4414"
     }
@@ -554,7 +554,7 @@
       "label": "Street address",
       "ghostText": "ul. Wiejska 3/7"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "00-902"
     },
@@ -569,7 +569,7 @@
       "label": "Street name, number",
       "ghostText": "Stefanikova trieda 61"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "949 01"
     },
@@ -593,7 +593,7 @@
       "ghostText": "Tokyo",
       "optional": true
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "112-0001"
     }
@@ -613,7 +613,7 @@
       "ghostText": "Seoul",
       "optional": true
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "06546"
     }
@@ -628,7 +628,7 @@
       "label": "Sub-locality",
       "ghostText": "Magdalena del Mar"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "15074"
     },
@@ -644,7 +644,7 @@
       "label": "Street address",
       "ghostText": "Bem rakpart 947"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "1055"
     },
@@ -659,7 +659,7 @@
       "label": "Street address",
       "ghostText": "Ulica marsala Tita 258"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "10 000"
     },
@@ -678,7 +678,7 @@
       "label": "City/Suburb",
       "ghostText": "Port Elizabeth"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "6000"
     }
@@ -689,7 +689,7 @@
       "label": "District and street address",
       "ghostText": "East District, Mingdu Road #7"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Building name and room number",
       "ghostText": "BHungShi Garden, Building F, Room 2807",
       "optional": true
@@ -698,7 +698,7 @@
       "label": "City",
       "ghostText": "Beijing City"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "528400"
     },
@@ -714,7 +714,7 @@
       "label": "Street address, apartment number",
       "ghostText": "Carrera 11 # 35 – 66 Apto 912"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Building name",
       "ghostText": "Edificio Lambare",
       "optional": true
@@ -723,7 +723,7 @@
       "label": "City",
       "ghostText": "Bogota"
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "111511"
     }
@@ -743,7 +743,7 @@
       "ghostText": "San Jose",
       "optional": true
     },
-    "zipCode": {
+    "zip": {
       "label": "Postal code",
       "ghostText": "40502"
     }
@@ -754,7 +754,7 @@
       "label": "Street address",
       "ghostText": "120 1st St SW"
     },
-    "additionalAddress": {
+    "street2": {
       "label": "Additional address",
       "ghostText": "Suite 500 or Building A, Floor 3",
       "optional": true
@@ -768,7 +768,7 @@
       "ghostText": "",
       "optional": true
     },
-    "zipCode": {
+    "zip": {
       "label": "Zip code",
       "ghostText": "35007"
     }

@@ -31,14 +31,6 @@ import {
 
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
-const CHECK_KEY_MAP = {
-  street: 'street',
-  additionalAddress: 'street2',
-  city: 'city',
-  state: 'state',
-  zipCode: 'zip',
-};
-
 class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @observable countryList: Country[] = [];
   @observable stateList: State[] = [];
@@ -111,7 +103,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
         return;
       }
       if (!(fields[key] as FieldItem).optional) {
-        checkKeys.push(CHECK_KEY_MAP[key]);
+        checkKeys.push(key);
       }
     });
 
@@ -121,6 +113,10 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     );
   }
 
+  @catchError.flash({
+    network: 'telephony.e911.prompt.backendError',
+    server: 'telephony.e911.prompt.networkError',
+  })
   @action
   async getState(country: Country) {
     const value = this.settingItemEntity.value!;
@@ -140,6 +136,10 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     }
   }
 
+  @catchError.flash({
+    network: 'telephony.e911.prompt.backendError',
+    server: 'telephony.e911.prompt.networkError',
+  })
   @action
   async getCountryInfo() {
     let currentCountry;

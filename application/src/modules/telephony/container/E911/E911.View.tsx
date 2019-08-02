@@ -130,6 +130,7 @@ class E911ViewComponent extends Component<Props> {
               : t(i18text);
             return (
               <RuiFormControlLabel
+                key={i18text}
                 control={
                   <RuiCheckbox
                     color="primary"
@@ -145,22 +146,6 @@ class E911ViewComponent extends Component<Props> {
         </RuiFormControl>
       </>
     );
-  }
-
-  get renderZipCode() {
-    const { value, fields } = this.props;
-    const { zip } = value;
-    const fieldItem = fields.zipCode;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-zipCode',
-      value: zip,
-      type: 'zip',
-    });
   }
 
   onSubmit = async () => {
@@ -226,7 +211,7 @@ class E911ViewComponent extends Component<Props> {
           {this.renderFieldWithType('street2', 'additionalAddress')}
           {this.renderFieldWithType('city', 'city')}
           {this.renderState}
-          {this.renderZipCode}
+          {this.renderFieldWithType('zip', 'zipCode')}
           <StyledTip>{t('telephony.e911.outOfCountryDisclaimers')}</StyledTip>
           {this.renderOutOfCountry}
         </JuiDialogContent>

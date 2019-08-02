@@ -19,7 +19,7 @@ const defaultFields = {
     label: 'Street address',
     ghostText: '120 1st St SW',
   },
-  additionalAddress: {
+  street2: {
     label: 'Additional address',
     ghostText: 'Suite 500 or Building A, Floor 3',
     optional: true,
@@ -33,7 +33,7 @@ const defaultFields = {
     ghostText: '',
     optional: true,
   },
-  zipCode: {
+  zip: {
     label: 'Zip code',
     ghostText: '35007',
   },
@@ -336,7 +336,9 @@ describe('E911ViewModel', () => {
 
   @testable
   class getFields {
-    @test('should be return default fields if not match isoCode and name')
+    @test(
+      'should be return default fields if not match isoCode and name [JPT-2678]',
+    )
     @mockEntity(createUserInfo())
     @mockService(RCInfoService, mockRCInfoServiceMethods())
     t1() {
@@ -509,7 +511,7 @@ describe('E911ViewModel', () => {
     @mockService(RCInfoService, mockRCInfoServiceMethods())
     beforeEach() {}
     @test(
-      'should be get disclaimers and create checkbox list with original setting if get disclaimers not with country',
+      'should be get disclaimers and create checkbox list with original setting if get disclaimers not with country [JPT-2689][JPT-2690]',
     )
     @mockEntity(createUserInfo())
     t1() {
@@ -523,6 +525,22 @@ describe('E911ViewModel', () => {
       vm.getDisclaimers();
       expect(vm.createCheckbox).toHaveBeenCalledWith(
         OutOfCountryDisclaimer['United States'],
+      );
+
+      vm.region = {
+        name: 'United Kingdom',
+      };
+      vm.getDisclaimers();
+      expect(vm.createCheckbox).toHaveBeenCalledWith(
+        OutOfCountryDisclaimer['United Kingdom'],
+      );
+
+      vm.region = {
+        name: 'Canada',
+      };
+      vm.getDisclaimers();
+      expect(vm.createCheckbox).toHaveBeenCalledWith(
+        OutOfCountryDisclaimer['Canada'],
       );
     }
 
@@ -539,7 +557,7 @@ describe('E911ViewModel', () => {
     }
 
     @test(
-      'should be get disclaimers and create checkbox list with default if not match isoCode',
+      'should be get disclaimers and create checkbox list with default if not match region name [JPT-2707]',
     )
     @mockEntity(createUserInfo())
     t3() {
