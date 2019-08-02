@@ -53,7 +53,6 @@ class RightShelfMemberListViewModel
 
   init = () => {
     notificationCenter.on(SERVICE.FETCH_REMAINING_DONE, () => {
-      console.log('hihihi', )
       this._getMemberAndGuestIds();
     });
     this.reaction(
