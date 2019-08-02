@@ -30,7 +30,12 @@ import {
   MockResponse,
   ItContext,
 } from './types';
-import { blockExternalRequest, createApiResponse } from './utils';
+import { IGlipIndex } from './mocks/glip/api/index/index.get.contract';
+import {
+  blockExternalRequest,
+  createApiResponse,
+  createResponse,
+} from './utils';
 
 import assert = require('assert');
 // import { IGlipIndex } from './mocks/server/glip/api/index/index.get.contract';
@@ -91,6 +96,8 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
   const useAccount = (_companyId: number, _userId: number) => {
     userId = _userId;
     companyId = _companyId;
+    globalConfig.set('userId', String(userId));
+
     return new GlipDataHelper(_companyId, _userId);
   };
   let glipData: GlipData;
@@ -164,6 +171,8 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
       props,
     );
     return new Promise(resolve => {
+      debug('useScenario: sync scenario data');
+      mockApi(IGlipIndex, createResponse({ data: emptyIndexData }));
       sdk.syncService.syncData({
         onIndexHandled: async () => {
           resolve(result as any);

@@ -7,22 +7,41 @@ import { Server } from 'mock-socket';
 import { createDebug } from 'sdk/__tests__/utils';
 import { ISocketInfo } from 'shield/sdk/types';
 import { wait } from 'shield/utils';
+import { EventEmitter2 } from 'eventemitter2';
 
 import assert = require('assert');
 
 const debug = createDebug('MockSocketServer');
 
+type State = 'connected' | 'disconnected' | 'idle';
 export class MockSocketServer {
   socket: any;
-
+  state: State = 'idle';
+  private _emitter = new EventEmitter2();
   constructor(url: string) {
     this.socket = new Server(url);
-    this.on('connection', () => {
-      debug('connection', url);
+    this.on('connect', () => {
+      debug('connect: ', url);
+      this.state = 'connected';
+      this._emitter.emit('connected');
+    });
+    this.on('disconnect', () => {
+      debug('disconnect: ', url);
+      this.state = 'disconnected';
+      this._emitter.emit('connected');
     });
     this.on('ping', () => {
       debug('ping', url);
       this.socket.send('pong');
+    });
+  }
+
+  async ensure(state: State) {
+    if (this.state === state) {
+      return;
+    }
+    return new Promise(resolve => {
+      this._emitter.once(state, resolve);
     });
   }
 
@@ -31,18 +50,22 @@ export class MockSocketServer {
   }
 
   async emit(channel: string, message: any) {
+    await this.ensure('connected');
     this.socket.emit(channel, message);
     await wait(10);
   }
 
   async emitPacket<T>(packet: ISocketInfo<T>) {
+    await this.ensure('connected');
     assert(packet.channel, 'socket packet should contain channel info.');
     assert(packet.data, 'socket packet should contain data.');
     await wait();
+    debug('-> emitPacket: ', packet.channel);
     this.socket.emit(packet.channel, JSON.stringify(packet.data));
   }
 
   async emitEntityCreate(entity: object) {
+    await this.ensure('connected');
     await wait();
     debug('-> emitEntityCreate');
     this.socket.emit(
@@ -57,6 +80,7 @@ export class MockSocketServer {
   }
 
   async emitMessage(entity: object) {
+    await this.ensure('connected');
     await wait();
     debug('-> emitMessage');
     this.socket.emit(
@@ -72,6 +96,7 @@ export class MockSocketServer {
   }
 
   async emitPartial(partial: object, partialBody?: object) {
+    await this.ensure('connected');
     await wait();
     debug('-> emitPartial', partial);
     this.socket.emit(

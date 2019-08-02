@@ -7,7 +7,6 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
 import { sendPost } from './scenario/sendPost.scenario';
-import { wait } from 'shield/utils';
 import { Post } from 'sdk/module/post/entity';
 
 jit('Send post test', context => {
@@ -51,18 +50,6 @@ jit('Send post test', context => {
 
       expect(result.posts.length).toEqual(1);
       expect(sendFailedPost.id < 0).toBeTruthy();
-    });
-    it('received a post', async () => {
-      await helper.socketServer.emitPacket(
-        require('./data/RECEIVE_POST.SOCKET.json'),
-      );
-      await wait();
-      const result = await postService.getPostsByGroupId({
-        groupId: 16386,
-      });
-      expect(
-        result.posts.find(item => item.text === 'hello'),
-      ).not.toBeUndefined();
     });
     it('resend post successfully', async () => {
       await helper.useScenario(sendPost.success, {

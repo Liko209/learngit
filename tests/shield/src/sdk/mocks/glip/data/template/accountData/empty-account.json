@@ -3066,7 +3066,7 @@
   "ec_zoom_web_backend": "rcdev.dev.meetzoom.us",
   "rcv_base_join_uri": "https://glpdevxmn-shr-1-v.lab.nordigy.ru",
   "marketing_host": "glpdevxmn.asialab.glip.net:443",
-  "scoreboard": "glpdevxmn.asialab.glip.net:443",
+  "scoreboard": "glip",
   "deployment_state": {
     "level": 3,
     "number": 14
