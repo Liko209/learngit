@@ -19,6 +19,44 @@ exports[`Storyshots Components/Selects LineSelect: Components/Selects LineSelect
   font-size: 24px;
 }
 
+.c6 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c6.c6 {
+  padding: 0;
+}
+
+.c6.c6 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c6.c6 .list-item-secondary {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c6.c6.multiline {
+  margin: 0;
+}
+
 .c1.c1 {
   margin: 0 0 16px 0;
 }
@@ -72,44 +110,6 @@ exports[`Storyshots Components/Selects LineSelect: Components/Selects LineSelect
 
 .c1 .underline:after {
   border-bottom-color: #0684bd;
-}
-
-.c6 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c6.c6 {
-  padding: 0;
-}
-
-.c6.c6 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c6.c6 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c6.c6.multiline {
-  margin: 0;
 }
 
 .c0.c0 {

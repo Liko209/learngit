@@ -248,7 +248,8 @@
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
       "newMessages": "new messages",
-      "newMessagesDivider": "New messages"
+      "newMessagesDivider": "New messages",
+      "jumpToLatest": "Jump to latest"
     },
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",

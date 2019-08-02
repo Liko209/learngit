@@ -650,10 +650,6 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   font-size: 24px;
 }
 
-.c5.c5 {
-  background-color: #e0e0e0;
-}
-
 .c0.c0 {
   padding: 8px;
   width: 100%;
@@ -722,6 +718,10 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 
 .c4.c4.multiline {
   margin: 0;
+}
+
+.c5.c5 {
+  background-color: #e0e0e0;
 }
 
 <div>

@@ -19,7 +19,7 @@ import {
   withDragDropContext
 } from 'jui/pattern/MessageInput/DropZone';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
-
+import {DIRECTION} from 'jui/components/Lists';
 import { Header } from './Header';
 import { MessageInput } from './MessageInput';
 import { MessageInputViewComponent } from './MessageInput/MessageInput.View';
@@ -67,7 +67,7 @@ class ConversationPageViewComponent extends Component<
     if (!stream) {
       return;
     }
-    if (stream.props.hasMore('down')) {
+    if (stream.props.hasMore(DIRECTION.DOWN)) {
       goToConversation({ conversationId: this.props.groupId });
       this.remountStream();
     }
