@@ -25,7 +25,9 @@
       "tryAgain": "Try again.",
       "tryAgainLater": "Try again later.",
       "thenTryAgain": "then try again.",
-      "loadError": "Oops! Something went wrong, please try again."
+      "loadError": "Oops! Something went wrong, please try again.",
+      "switchCall": "You're currently on an active call on another device.",
+      "switchCallAction": " Switch call to this device"
     },
     "preposition": {
       "in": "in"
@@ -691,7 +693,12 @@
       "CountryBlock": "VoIP is not available in your country.",
       "VoipUnavailable": "VoIP is currently not available.",
       "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
-      "AutoRecording": "Cannot start call recording."
+      "AutoRecording": "Cannot start call recording.",
+      "switchCall": {
+        "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
+        "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
+        "callEnded": "Your call with {{displayName}} is ended."
+      }
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -732,7 +739,14 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "switchCall": {
+      "cancel": "Cancel",
+      "switch": "Switch",
+      "title": "Call Switch",
+      "content": "You're currently on an active call with {{displayName}}. Would you like to continue the call on this device?",
+      "unknownCaller": "an unknown caller"
+    }
   },
   "phone": {
     "tab": {

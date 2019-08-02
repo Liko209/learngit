@@ -83,8 +83,8 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private async _showNotification() {
-    const { phoneNumber, callId, displayName } = this._telephonyStore;
-    if (!callId) {
+    const { phoneNumber, uuid, displayName } = this._telephonyStore;
+    if (!uuid) {
       return;
     }
     let { callerName } = this._telephonyStore;
@@ -108,9 +108,9 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         },
       ],
       requireInteraction: true,
-      tag: callId,
+      tag: uuid,
       data: {
-        id: callId,
+        id: uuid,
         scope: this._scope,
         priority: NOTIFICATION_PRIORITY.INCOMING_CALL,
       },
@@ -120,7 +120,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private _closeNotification() {
-    this._telephonyStore.callId && this.close(this._telephonyStore.callId);
+    this._telephonyStore.uuid && this.close(this._telephonyStore.uuid);
   }
 
   public dispose() {

@@ -52,7 +52,7 @@ describe('RCSubscriptionController', () => {
     eventFilters: [
       '/restapi/v1.0/account/37439510/extension/1428352020/message-store',
       '/restapi/v1.0/account/37439510/extension/1428352020/missed-calls',
-      '/restapi/v1.0/account/37439510/extension/1428352020/presence?detailedTelephonyState=true',
+      '/restapi/v1.0/account/37439510/extension/1428352020/presence?detailedTelephonyState=true&sipData=true',
     ],
     expirationTime: '2999-06-30T01:03:22.973Z',
     expiresIn: 2591999,
@@ -115,7 +115,7 @@ describe('RCSubscriptionController', () => {
       setTimeout(() => {
         expect(
           rcSubscriptionController['_hasValidSubscriptionInfo'],
-        ).not.toBeCalled();
+        ).not.toHaveBeenCalled();
         done();
       });
       expect.assertions(1);
@@ -124,18 +124,22 @@ describe('RCSubscriptionController', () => {
     it('should just subscribe when subscribe is alive and do not need update', async (done: any) => {
       await rcSubscriptionController.startSubscription();
       setTimeout(() => {
-        expect(userConfig.setRcEventSubscription).toBeCalled();
-        expect(rcSubscriptionController['_pubNub'].addListener).toBeCalledWith({
+        expect(userConfig.setRcEventSubscription).toHaveBeenCalled();
+        expect(
+          rcSubscriptionController['_pubNub'].addListener,
+        ).toHaveBeenCalledWith({
           message: expect.any(Function),
           status: expect.any(Function),
         });
-        expect(rcSubscriptionController['_pubNub'].subscribe).toBeCalledWith({
+        expect(
+          rcSubscriptionController['_pubNub'].subscribe,
+        ).toHaveBeenCalledWith({
           channels: ['address'],
         });
-        expect(RcSubscriptionApi.createSubscription).not.toBeCalled();
-        expect(RcSubscriptionApi.updateSubscription).not.toBeCalled();
-        expect(jobScheduler.scheduleAndIgnoreFirstTime).not.toBeCalled();
-        expect(jobScheduler.scheduleJob).toBeCalled();
+        expect(RcSubscriptionApi.createSubscription).not.toHaveBeenCalled();
+        expect(RcSubscriptionApi.updateSubscription).not.toHaveBeenCalled();
+        expect(jobScheduler.scheduleAndIgnoreFirstTime).not.toHaveBeenCalled();
+        expect(jobScheduler.scheduleJob).toHaveBeenCalled();
         done();
       });
       expect.assertions(7);
@@ -149,8 +153,8 @@ describe('RCSubscriptionController', () => {
         });
       await rcSubscriptionController.startSubscription();
       setTimeout(() => {
-        expect(jobScheduler.cancelJob).toBeCalled();
-        expect(notificationCenter.once).toBeCalled();
+        expect(jobScheduler.cancelJob).toHaveBeenCalled();
+        expect(notificationCenter.once).toHaveBeenCalled();
         done();
       });
       expect.assertions(2);
@@ -167,23 +171,27 @@ describe('RCSubscriptionController', () => {
         .mockResolvedValue(newSub);
       await rcSubscriptionController.startSubscription();
       setTimeout(() => {
-        expect(userConfig.setRcEventSubscription).toBeCalled();
-        expect(rcSubscriptionController['_pubNub'].addListener).toBeCalledWith({
+        expect(userConfig.setRcEventSubscription).toHaveBeenCalled();
+        expect(
+          rcSubscriptionController['_pubNub'].addListener,
+        ).toHaveBeenCalledWith({
           message: expect.any(Function),
           status: expect.any(Function),
         });
-        expect(rcSubscriptionController['_pubNub'].subscribe).toBeCalledWith({
+        expect(
+          rcSubscriptionController['_pubNub'].subscribe,
+        ).toHaveBeenCalledWith({
           channels: ['address'],
         });
-        expect(RcSubscriptionApi.createSubscription).not.toBeCalled();
-        expect(RcSubscriptionApi.updateSubscription).toBeCalledWith(
+        expect(RcSubscriptionApi.createSubscription).not.toHaveBeenCalled();
+        expect(RcSubscriptionApi.updateSubscription).toHaveBeenCalledWith(
           '776482e1-abaf-4afd-8067-26ece5996c3e',
           {
             deliveryMode: { encryption: true, transportType: 'PubNub' },
             eventFilters: [
               '/restapi/v1.0/account/~/extension/~/message-store',
               '/restapi/v1.0/account/~/extension/~/missed-calls',
-              '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true',
+              '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
             ],
           },
         );
@@ -198,7 +206,9 @@ describe('RCSubscriptionController', () => {
       rcSubscriptionController['cleanUpSubscription'] = jest.fn();
       await rcSubscriptionController.startSubscription();
       setTimeout(() => {
-        expect(rcSubscriptionController['cleanUpSubscription']).toBeCalled();
+        expect(
+          rcSubscriptionController['cleanUpSubscription'],
+        ).toHaveBeenCalled();
         done();
       });
     });
@@ -211,23 +221,27 @@ describe('RCSubscriptionController', () => {
 
       await rcSubscriptionController.startSubscription();
       setTimeout(() => {
-        expect(userConfig.setRcEventSubscription).toBeCalled();
-        expect(rcSubscriptionController['_pubNub'].addListener).toBeCalledWith({
+        expect(userConfig.setRcEventSubscription).toHaveBeenCalled();
+        expect(
+          rcSubscriptionController['_pubNub'].addListener,
+        ).toHaveBeenCalledWith({
           message: expect.any(Function),
           status: expect.any(Function),
         });
-        expect(rcSubscriptionController['_pubNub'].subscribe).toBeCalledWith({
+        expect(
+          rcSubscriptionController['_pubNub'].subscribe,
+        ).toHaveBeenCalledWith({
           channels: ['address'],
         });
-        expect(RcSubscriptionApi.createSubscription).toBeCalledWith({
+        expect(RcSubscriptionApi.createSubscription).toHaveBeenCalledWith({
           deliveryMode: { encryption: true, transportType: 'PubNub' },
           eventFilters: [
-            '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true',
+            '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
             '/restapi/v1.0/account/~/extension/~/message-store',
             '/restapi/v1.0/account/~/extension/~/missed-calls',
           ],
         });
-        expect(RcSubscriptionApi.updateSubscription).not.toBeCalled();
+        expect(RcSubscriptionApi.updateSubscription).not.toHaveBeenCalled();
         done();
       });
       expect.assertions(5);
@@ -245,8 +259,10 @@ describe('RCSubscriptionController', () => {
       rcSubscriptionController['_lastSubscription'] = undefined as any;
       rcSubscriptionController['_startPubNub'] = jest.fn();
       await rcSubscriptionController['_renewSubscription']();
-      expect(jobScheduler.cancelJob).toBeCalledWith('RC_RENEW_SUBSCRIPTION');
-      expect(rcSubscriptionController['_startPubNub']).not.toBeCalled();
+      expect(jobScheduler.cancelJob).toHaveBeenCalledWith(
+        'RC_RENEW_SUBSCRIPTION',
+      );
+      expect(rcSubscriptionController['_startPubNub']).not.toHaveBeenCalled();
     });
 
     it('should renew when subscription is going to expired', async () => {
@@ -254,13 +270,13 @@ describe('RCSubscriptionController', () => {
       rcSubscriptionController['_lastSubscription'] = subscriptionInfo as any;
       RcSubscriptionApi.renewSubscription.mockResolvedValue(subscriptionInfo);
       await rcSubscriptionController['_renewSubscription']();
-      expect(RcSubscriptionApi.renewSubscription).toBeCalledWith(
+      expect(RcSubscriptionApi.renewSubscription).toHaveBeenCalledWith(
         subscriptionInfo.id,
       );
-      expect(userConfig.setRcEventSubscription).toBeCalledWith(
+      expect(userConfig.setRcEventSubscription).toHaveBeenCalledWith(
         subscriptionInfo,
       );
-      expect(rcSubscriptionController['_startPubNub']).toBeCalled();
+      expect(rcSubscriptionController['_startPubNub']).toHaveBeenCalled();
     });
 
     it('should start new pubnub when subscription expired', async () => {
@@ -271,7 +287,7 @@ describe('RCSubscriptionController', () => {
       ] = jest.fn().mockReturnValue(false);
 
       await rcSubscriptionController['_renewSubscription']();
-      expect(rcSubscriptionController['_startSubscription']).toBeCalled();
+      expect(rcSubscriptionController['_startSubscription']).toHaveBeenCalled();
     });
 
     it('should pause subscription when renew subscription has error ', async () => {
@@ -281,8 +297,8 @@ describe('RCSubscriptionController', () => {
         .fn()
         .mockRejectedValue(new Error());
       await rcSubscriptionController['_renewSubscription']();
-      expect(jobScheduler.cancelJob).toBeCalled();
-      expect(notificationCenter.once).toBeCalled();
+      expect(jobScheduler.cancelJob).toHaveBeenCalled();
+      expect(notificationCenter.once).toHaveBeenCalled();
     });
   });
 
@@ -294,7 +310,7 @@ describe('RCSubscriptionController', () => {
 
     it('should print log when call _notifyStatus', () => {
       rcSubscriptionController['_notifyStatus']({});
-      expect(mainLogger.tags).toBeCalled();
+      expect(mainLogger.tags).toHaveBeenCalled();
     });
   });
 
@@ -311,7 +327,9 @@ describe('RCSubscriptionController', () => {
       };
       rcSubscriptionController['_dispatchMessages'] = jest.fn();
       rcSubscriptionController['_notifyMessages'](payLoad);
-      expect(rcSubscriptionController['_dispatchMessages']).not.toBeCalled();
+      expect(
+        rcSubscriptionController['_dispatchMessages'],
+      ).not.toHaveBeenCalled();
     });
 
     it('should return when can not get event message', () => {
@@ -329,11 +347,11 @@ describe('RCSubscriptionController', () => {
             activeCalls: [],
           },
           event:
-            '/restapi/v1.0/account/131451006/extension/131453006/presence?detailedTelephonyState=true',
+            '/restapi/v1.0/account/131451006/extension/131453006/presence?detailedTelephonyState=true&sipData=true',
         },
       };
       rcSubscriptionController['_notifyMessages'](payLoad);
-      expect(notificationCenter.emitKVChange).not.toBeCalled();
+      expect(notificationCenter.emitKVChange).not.toHaveBeenCalled();
     });
 
     it('should dispatch messages when receive messages', () => {
@@ -351,11 +369,11 @@ describe('RCSubscriptionController', () => {
             activeCalls: [],
           },
           event:
-            '/restapi/v1.0/account/131451006/extension/131453006/presence?detailedTelephonyState=true',
+            '/restapi/v1.0/account/131451006/extension/131453006/presence?detailedTelephonyState=true&sipData=true',
         },
       };
       rcSubscriptionController['_notifyMessages'](payLoad);
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         'SUBSCRIPTION.PRESENCE_WITH_TELEPHONY_DETAIL',
         payLoad.message.body,
       );
@@ -363,7 +381,7 @@ describe('RCSubscriptionController', () => {
   });
 
   describe('cleanUpSubscription', () => {
-    let pubNub = new Pubnub({} as any);
+    const pubNub = new Pubnub({} as any);
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -374,11 +392,13 @@ describe('RCSubscriptionController', () => {
     it('should clean job, pubnub, user config when clean up all subscription', async () => {
       await rcSubscriptionController.cleanUpSubscription();
       expect(rcSubscriptionController['_pubNub']).toBeUndefined();
-      expect(pubNub.unsubscribeAll).toBeCalled();
-      expect(pubNub.stop).toBeCalled();
-      expect(userConfig.deleteRcEventSubscription).toBeCalled();
+      expect(pubNub.unsubscribeAll).toHaveBeenCalled();
+      expect(pubNub.stop).toHaveBeenCalled();
+      expect(userConfig.deleteRcEventSubscription).toHaveBeenCalled();
       expect(rcSubscriptionController['_lastSubscription']).toBeUndefined();
-      expect(jobScheduler.cancelJob).toBeCalledWith('RC_RENEW_SUBSCRIPTION');
+      expect(jobScheduler.cancelJob).toHaveBeenCalledWith(
+        'RC_RENEW_SUBSCRIPTION',
+      );
     });
   });
 
@@ -393,33 +413,37 @@ describe('RCSubscriptionController', () => {
 
     it('should call startSubscription handleWakeUp', () => {
       rcSubscriptionController['_handleWakeUp']();
-      expect(rcSubscriptionController['startSubscription']).toBeCalled();
+      expect(rcSubscriptionController['startSubscription']).toHaveBeenCalled();
     });
 
     it('should call _handleOnLine when handleOnline is online', () => {
       rcSubscriptionController['_handleOnLine']({ onLine: true });
-      expect(rcSubscriptionController['startSubscription']).toBeCalled();
+      expect(rcSubscriptionController['startSubscription']).toHaveBeenCalled();
     });
 
     it('should not call _handleOnLine when handleOnline is offline', () => {
       rcSubscriptionController['_handleOnLine']({ onLine: false });
-      expect(rcSubscriptionController['startSubscription']).not.toBeCalled();
-      expect(rcSubscriptionController['_pauseSubscription']).toBeCalled();
+      expect(
+        rcSubscriptionController['startSubscription'],
+      ).not.toHaveBeenCalled();
+      expect(rcSubscriptionController['_pauseSubscription']).toHaveBeenCalled();
     });
 
     it('should not call when startSubscription when _handleFocus ', () => {
       rcSubscriptionController['_handleFocus']();
-      expect(rcSubscriptionController['startSubscription']).toBeCalled();
+      expect(rcSubscriptionController['startSubscription']).toHaveBeenCalled();
     });
 
     it('should cleanup subscription when permission is off', () => {
       rcSubscriptionController['_handlePermissionChange'](false);
-      expect(rcSubscriptionController['cleanUpSubscription']).toBeCalled();
+      expect(
+        rcSubscriptionController['cleanUpSubscription'],
+      ).toHaveBeenCalled();
     });
 
     it('should start subscription when permission is on', () => {
       rcSubscriptionController['_handlePermissionChange'](true);
-      expect(rcSubscriptionController['startSubscription']).toBeCalled();
+      expect(rcSubscriptionController['startSubscription']).toHaveBeenCalled();
     });
   });
 });
