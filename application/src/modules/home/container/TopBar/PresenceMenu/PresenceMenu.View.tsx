@@ -14,10 +14,12 @@ import {
 import JuiPresence from 'jui/components/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { PresenceMenuProps, PresenceMenuViewProps } from './types';
+import { withRCMode } from '@/containers/withRCMode';
 
 type Props = PresenceMenuViewProps & PresenceMenuProps & WithTranslation;
 
 @observer
+@withRCMode()
 class PresenceMenuViewComponent extends Component<Props> {
   render() {
     const { t, presence, title, setPresence, isFreyja } = this.props;
