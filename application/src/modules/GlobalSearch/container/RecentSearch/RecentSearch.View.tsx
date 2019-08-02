@@ -3,7 +3,6 @@
  * @Date: 2019-04-01 17:16:07
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -91,7 +90,7 @@ class RecentSearchViewComponent extends Component<Props> {
       <>
         <JuiSearchTitle
           onButtonClick={clearRecent}
-          showButton={true}
+          showButton
           buttonText={t('globalSearch.ClearHistory')}
           title={t('globalSearch.RecentSearches')}
           automationId={'clear'}
@@ -120,7 +119,7 @@ class RecentSearchViewComponent extends Component<Props> {
           enter: onEnter,
         }}
       >
-        <JuiRecentSearch data-test-automation-id='search-records'>
+        <JuiRecentSearch data-test-automation-id="search-records">
           {this.searchRecordList}
         </JuiRecentSearch>
       </HotKeys>

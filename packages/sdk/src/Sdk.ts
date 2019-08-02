@@ -39,6 +39,7 @@ import {
   SplitIOController,
 } from 'sdk/module/permission';
 import { jobScheduler } from './framework/utils/jobSchedule';
+import { UserConfigService } from './module/config';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -205,6 +206,9 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     this.daoManager.deleteDatabase();
+    ServiceLoader.getInstance<UserConfigService>(
+      ServiceConfig.USER_CONFIG_SERVICE,
+    ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
   }

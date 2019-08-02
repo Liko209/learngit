@@ -102,7 +102,7 @@ const BackNForward = () => {
     <>
       <JuiHistoryOperation
         type={OPERATION.BACK}
-        menu={[]}
+        menu={() => []}
         disabled={false}
         tooltipTitle={'Back'}
         onClick={fakeHandler}
@@ -110,7 +110,7 @@ const BackNForward = () => {
       />
       <JuiHistoryOperation
         type={OPERATION.FORWARD}
-        menu={[]}
+        menu={() => []}
         tooltipTitle={'Forward'}
         disabled={false}
         onClick={fakeHandler}

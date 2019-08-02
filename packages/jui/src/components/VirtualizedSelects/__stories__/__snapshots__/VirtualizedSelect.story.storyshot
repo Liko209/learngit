@@ -1,0 +1,125 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Components/VirtualizedSelects VirtualizedBoxSelect 1`] = `
+.c4 {
+  position: absolute;
+  top: calc(50% - 0.5em);
+  right: 0;
+  width: 1em;
+  height: 1em;
+  font-size: 1.5rem;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+.c1 {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: #eeeeee;
+  border: 1px solid #eeeeee;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+  width: 200px;
+  height: 40px;
+}
+
+.c1.c1:hover {
+  background-color: #f5f6fb;
+  border: 1px solid #f5f6fb;
+}
+
+.c1.c1:focus,
+.c1.c1.focused {
+  background-color: #eeeeee;
+  border: 1px solid #0684bd;
+  outline: none;
+}
+
+.c1.c1.disabled {
+  background-color: rgba(0,0,0,0.12);
+  color: rgba(0,0,0,0.26);
+}
+
+.c1 .c3 {
+  color: #9e9e9e;
+  position: absolute;
+  right: 0;
+  pointer-events: none;
+}
+
+.c1 .select-input {
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.c2.c2 {
+  font: inherit;
+  color: currentColor;
+  padding: 6px 24px 6px 8px;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.c2:focus {
+  background-color: rgba(0,0,0,0.05);
+  outline: none;
+}
+
+.c0 {
+  padding: 100px;
+}
+
+<div
+  className="c0"
+>
+  <div
+    className="MuiInputBase-root c1"
+    onClick={[Function]}
+  >
+    <div
+      className="MuiInputBase-input select-input MuiInputBase-inputSelect c2"
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onKeyDownCapture={[Function]}
+      tabIndex={0}
+    >
+      0-Item
+    </div>
+    <svg
+      aria-hidden="true"
+      className="c3 c4"
+      focusable="false"
+      role="presentation"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M7 10l5 5 5-5z"
+      />
+    </svg>
+  </div>
+</div>
+`;

@@ -12,6 +12,7 @@ import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
+import { getShortName } from '@/store/helper';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -54,7 +55,16 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   get shortName() {
-    return (this._person && this._person.shortName) || '';
+    return (this._person && this._person.shortName) || this._shortDisplayName;
+  }
+
+  @computed
+  private get _shortDisplayName() {
+    const { displayName } = this.props;
+    const firstName = (displayName && displayName.split(' ')[0]) || '';
+    const lastName = (displayName && displayName.split(' ')[1]) || '';
+
+    return getShortName(firstName, lastName, displayName);
   }
 
   @computed
@@ -64,6 +74,9 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     }
     if (this._person) {
       return !this._person.hasHeadShot && !!this._person.shortName;
+    }
+    if (this._shortDisplayName && !this._person) {
+      return !!this._shortDisplayName;
     }
     return false;
   }
@@ -76,15 +89,15 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     if (!(this._person && this._person.hasHeadShot) || !this.props.uid) {
       return '';
     }
-    const { headshotVersion = '', headshot = '' } = this._person;
+    const { headshotVersion, headshot = '' } = this._person;
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
     const url = personService.getHeadShotWithSize(
       this.props.uid,
-      headshotVersion,
       headshot,
       150,
+      headshotVersion,
     );
     return url || '';
   }

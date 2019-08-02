@@ -62,9 +62,6 @@ class ProfileSubscribeEntityHandler<
       value = this.defaultValue;
     }
     const settingItem: UserSettingEntity<T> = {
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
       source: this.source,
       value,
       id: this.id,

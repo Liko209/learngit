@@ -3,7 +3,6 @@
  * @Date: 2019-01-21 17:04:53
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React from 'react';
 import {
   JuiListItemSecondaryText,
@@ -18,7 +17,7 @@ type Props = {
 const SecondaryText = React.memo(({ name, time }: Props) => {
   return (
     <JuiListItemSecondaryText>
-      <JuiListItemSecondarySpan text={name} isEllipsis={true} />
+      <JuiListItemSecondarySpan text={name} isEllipsis />
       &nbsp;·&nbsp;
       <JuiListItemSecondarySpan text={time} />
     </JuiListItemSecondaryText>

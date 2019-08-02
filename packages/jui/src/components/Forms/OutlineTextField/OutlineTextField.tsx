@@ -3,7 +3,7 @@
  * @Date: 2019-04-01 10:19:35
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, {
   useState,
   useRef,
@@ -142,7 +142,7 @@ type JuiOutlineTextFieldRef = {
 const JuiOutlineTextField: React.RefForwardingComponent<
   JuiOutlineTextFieldRef,
   JuiOutlineTextFieldProps
-> = forwardRef((props, ref) => {
+> = forwardRef((props: JuiOutlineTextFieldProps, ref) => {
   const {
     iconPosition,
     iconName = '',
@@ -196,7 +196,7 @@ const JuiOutlineTextField: React.RefForwardingComponent<
       {(iconPosition === 'left' || iconPosition === 'both') && (
         <StyledIconLeft
           {...IconLeftProps}
-          iconSize='medium'
+          iconSize="medium"
           onClick={onClickIconLeft}
         >
           {Array.isArray(iconName) ? iconName[0] : iconName}
@@ -216,7 +216,7 @@ const JuiOutlineTextField: React.RefForwardingComponent<
       {(iconPosition === 'right' || iconPosition === 'both') && (
         <StyledIconRight
           {...IconRightProps}
-          iconSize='medium'
+          iconSize="medium"
           onClick={onClickIconRight}
         >
           {Array.isArray(iconName) ? iconName[1] : iconName}

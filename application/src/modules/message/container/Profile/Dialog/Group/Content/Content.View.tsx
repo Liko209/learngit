@@ -3,7 +3,6 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -74,22 +73,22 @@ class ProfileDialogGroupContentViewComponent extends Component<
     const { id, group, showMessage, showJoinTeam } = this.props;
     return (
       <>
-        <Summary ref={this._ref} data-test-automation-id='profileDialogSummary'>
+        <Summary ref={this._ref} data-test-automation-id="profileDialogSummary">
           <Left>
             <GroupAvatar
               cid={id}
-              size='xlarge'
-              data-test-automation-id='profileAvatar'
+              size="xlarge"
+              data-test-automation-id="profileAvatar"
             />
           </Left>
           <Right>
             <Name
               needEllipsis={!group.isTeam}
-              data-test-automation-id='profileDialogSummaryName'
+              data-test-automation-id="profileDialogSummaryName"
             >
               {group.displayName}
             </Name>
-            <Description data-test-automation-id='profileDialogSummaryDescription'>
+            <Description data-test-automation-id="profileDialogSummaryDescription">
               {group.description}
             </Description>
             <Buttons>

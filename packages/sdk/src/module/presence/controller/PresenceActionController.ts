@@ -48,11 +48,13 @@ class PresenceActionController {
       partialModel.presence = status;
       return partialModel;
     };
-    await this._partialModifyController.updatePartially(
-      currentId,
-      preHandlePartial,
-      async (newData: Presence) => PresenceAPI.setPresence(newData),
-    );
+    this._partialModifyController.updatePartially({
+      entityId: currentId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newData: Presence) => {
+        return PresenceAPI.setPresence(newData);
+      },
+    });
   }
 
   async setAutoPresence(presence: PRESENCE) {
@@ -61,7 +63,7 @@ class PresenceActionController {
         ? PRESENCE_REQUEST_STATUS.AWAY
         : PRESENCE_REQUEST_STATUS.ONLINE;
     // response of this api doesn't have status_code
-    await PresenceAPI.setAutoPresence(status).catch();
+    await PresenceAPI.setAutoPresence(status).catch(() => {});
   }
 }
 export { PresenceActionController };

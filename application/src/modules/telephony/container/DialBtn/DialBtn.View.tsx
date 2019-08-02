@@ -14,7 +14,6 @@ type Props = DialBtnViewProps & WithTranslation;
 
 @observer
 class DialBtnViewComponent extends Component<Props> {
-  /* eslint-disable */
   private _handleMakeCall = async () => {
     const { makeCall } = this.props;
     makeCall();
@@ -23,14 +22,14 @@ class DialBtnViewComponent extends Component<Props> {
   render() {
     return (
       <JuiFabButton
-        color='semantic.positive'
+        color="semantic.positive"
         disableToolTip
         onClick={this._handleMakeCall}
-        size='moreLarge'
+        size="moreLarge"
         showShadow={false}
-        tooltipPlacement='top'
-        iconName='answer'
-        data-test-automation-id='telephony-dial-btn'
+        tooltipPlacement="top"
+        iconName="answer"
+        data-test-automation-id="telephony-dial-btn"
       />
     );
   }
