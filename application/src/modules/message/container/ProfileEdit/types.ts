@@ -5,6 +5,7 @@
  */
 
 import PersonModel from '@/store/models/Person';
+import { HeadShotInfo } from 'sdk/module/person/types';
 
 type EditProfileProps = {
   id: number; // personId || conversationId
@@ -18,13 +19,30 @@ type EditItemSourceType = {
   isLastItem?: boolean;
 };
 
+type LocalInfo = {
+  url: string;
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+  file: File;
+};
+
 type EditProfileViewModelProps = {
   person: PersonModel;
+  currentPersonInfo: PersonModel;
   isLoading: boolean;
+  localInfo: LocalInfo;
   homepageError: boolean;
   updateInfo: (key: EditItemSourceType['key'], value: string) => void;
   handleProfileEdit: () => void;
   getUpdateInfo: () => Object | undefined;
+  onPhotoEdited: (headShotInfo: HeadShotInfo, localInfo: LocalInfo) => void;
 };
 
-export { EditItemSourceType, EditProfileProps, EditProfileViewModelProps };
+export {
+  EditItemSourceType,
+  EditProfileProps,
+  EditProfileViewModelProps,
+  LocalInfo,
+};

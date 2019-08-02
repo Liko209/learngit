@@ -30,14 +30,16 @@ class PersonActionController {
     incomingInfo?: EditablePersonInfo,
     headshotInfo?: HeadShotInfo,
   ) {
-    if (!incomingInfo || (headshotInfo && !headshotInfo.file)) {
+    const isDataValid = incomingInfo || (headshotInfo && headshotInfo.file);
+    if (!isDataValid) {
       mainLogger
         .tags(MODULE_NAME)
         .error('invalid profile data', { incomingInfo, headshotInfo });
       return;
     }
 
-    const basicInfo = this._purifyProperties(incomingInfo);
+    const basicInfo =
+      (incomingInfo && this._purifyProperties(incomingInfo)) || {};
 
     const currentPerson = await this._entitySourceController.get(
       this.currentUserGlipId(),
