@@ -404,6 +404,33 @@ describe('Sound', () => {
       sound.setSeek(-1);
       expect(sound.seek).toEqual(seek);
     });
+    it('should not pause when continue play is true', () => {
+      jest
+        .spyOn<HTMLMediaElement, any>(
+          HTMLMediaElement.prototype,
+          'readyState',
+          'get',
+        )
+        .mockReturnValue('5');
+      jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+      const pauseMockFn = jest.spyOn<HTMLMediaElement, any>(
+        HTMLMediaElement.prototype,
+        'pause',
+      );
+      const seek = 100;
+      const sound = new Sound(soundBaseOpts);
+      expect(sound.seek).toEqual(0);
+
+      sound.play();
+      expect(sound.paused).toBeFalsy();
+
+      sound.setSeek(seek, {
+        continuePlay: true,
+      });
+      expect(sound.seek).toEqual(seek);
+      expect(pauseMockFn).not.toHaveBeenCalled();
+      expect(sound.paused).toBeFalsy();
+    });
   });
 
   describe('sound dispose', () => {

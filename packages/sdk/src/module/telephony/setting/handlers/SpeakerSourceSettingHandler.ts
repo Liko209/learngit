@@ -104,9 +104,6 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
     const devices = this._rtcEngine.getAudioOutputs();
     telephonyLogger.tags(TAG).info('fetchUserSettingEntity', devices);
     const settingItem: UserSettingEntity<MediaDeviceInfo> = {
-      weight: 0,
-      valueType: 0,
-      parentModelId: 0,
       id: SettingEntityIds.Phone_SpeakerSource,
       source: devices,
       value: devices.find(

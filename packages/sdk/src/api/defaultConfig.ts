@@ -30,6 +30,7 @@ const defaultConfig: ApiConfig = {
     server: 'sumologic',
     uniqueHttpCollectorCode: '',
   },
+  data_collection: '',
 };
 
 export { defaultConfig };

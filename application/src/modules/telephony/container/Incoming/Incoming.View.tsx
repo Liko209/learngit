@@ -32,13 +32,16 @@ type Props = IncomingViewProps & WithTranslation;
 
 @observer
 class IncomingViewComponent extends Component<Props> {
+  private _imgProps = { draggable: false };
   private _DefaultAvatar = () => {
     return <Avatar cover showDefaultAvatar imgProps={{ draggable: false }} />;
   };
 
   private _Avatar = () => {
-    const { uid } = this.props;
-    return <Avatar uid={uid} cover imgProps={{ draggable: false }} />;
+    const { uid, name } = this.props;
+    return (
+      <Avatar uid={uid} displayName={name} cover imgProps={this._imgProps} />
+    );
   };
 
   render() {
@@ -58,7 +61,7 @@ class IncomingViewComponent extends Component<Props> {
             phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             Actions={Actions}
             Ignore={Ignore}
-            Avatar={uid ? this._Avatar : this._DefaultAvatar}
+            Avatar={uid || name ? this._Avatar : this._DefaultAvatar}
           />
         );
     }

@@ -136,6 +136,16 @@ describe('ProgressActionsViewModel', () => {
       expect(postService.reSendPost).toHaveBeenCalledTimes(0);
       expect(Notification.flashToast).toHaveBeenCalled();
     });
+
+    it('should debounce the call', async () => {
+      await Promise.all([
+        nvm.resend(),
+        nvm.resend(),
+        nvm.resend(),
+        nvm.resend(),
+      ]);
+      expect(postService.reSendPost).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('edit()', () => {
@@ -153,6 +163,16 @@ describe('ProgressActionsViewModel', () => {
     it('should be called on post service method when invoke it', async () => {
       await nvm.deletePost();
       expect(postService.deletePost).toHaveBeenCalled();
+    });
+
+    it('should debounce the call', async () => {
+      await Promise.all([
+        nvm.deletePost(),
+        nvm.deletePost(),
+        nvm.deletePost(),
+        nvm.deletePost(),
+      ]);
+      expect(postService.deletePost).toHaveBeenCalledTimes(1);
     });
   });
 });

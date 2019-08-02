@@ -13,7 +13,7 @@ abstract class DebugGatherer extends BaseGatherer {
       const result = await this._afterPass(passContext)
       if (Config.debugMode) {
         this.logger.info("start debug...");
-        await bluebird.delay(Number.MAX_VALUE);
+        await bluebird.delay(1 << 30);
       }
       return result;
     } catch (err) {

@@ -3,9 +3,7 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, {
- useState, memo, forwardRef, useRef, useCallback
-} from 'react';
+import React, { useState, memo, forwardRef, useRef, useCallback } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {
@@ -18,7 +16,8 @@ import { useMountState } from './hooks';
 
 type JuiInfiniteListProps = {
   height?: number;
-  minRowHeight: number;
+  fixedRowHeight?: number;
+  minRowHeight?: number;
   overscan?: number;
   loadMoreStrategy?: ILoadMoreStrategy;
   hasMore: (direction: 'up' | 'down') => boolean;
@@ -44,6 +43,7 @@ const JuiInfiniteList = (
   {
     height,
     minRowHeight,
+    fixedRowHeight,
     overscan,
     loadMoreStrategy = new ThresholdStrategy({
       threshold: 15,
@@ -142,6 +142,7 @@ const JuiInfiniteList = (
             ref={ref}
             height={height}
             minRowHeight={minRowHeight}
+            fixedRowHeight={fixedRowHeight}
             initialScrollToIndex={initialScrollToIndex}
             overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}

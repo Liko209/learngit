@@ -16,11 +16,12 @@ import { SyncService } from '../module/sync';
 import { AccountGlobalConfig } from '../module/account/config';
 import { AuthUserConfig } from '../module/account/config/AuthUserConfig';
 import { AccountUserConfig } from '../module/account/config/AccountUserConfig';
-import { ServiceLoader } from '../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { PermissionService } from 'sdk/module/permission';
 import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
+import { UserConfigService } from 'sdk/module/config/service/UserConfigService';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
@@ -193,6 +194,12 @@ describe('Sdk', () => {
       await sdk.onLogout();
     });
 
+    it('should clear UserConfig', () => {
+      const userConfigService = ServiceLoader.getInstance<UserConfigService>(
+        ServiceConfig.USER_CONFIG_SERVICE,
+      );
+      expect(userConfigService.clear).toHaveBeenCalled();
+    });
     it('should clear networkManager token', () => {
       expect(networkManager.clearToken).toHaveBeenCalled();
     });
@@ -242,7 +249,9 @@ describe('Sdk', () => {
       expect(
         sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade,
       ).not.toHaveBeenCalled();
-      expect(jobScheduler.userConfig.clearFetchDataConfigs).not.toHaveBeenCalled();
+      expect(
+        jobScheduler.userConfig.clearFetchDataConfigs,
+      ).not.toHaveBeenCalled();
     });
   });
 });

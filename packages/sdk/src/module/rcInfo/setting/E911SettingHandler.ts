@@ -6,11 +6,9 @@
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
-  ESettingValueType,
   SettingEntityIds,
   UserSettingEntity,
 } from 'sdk/module/setting';
-import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { EmergencyServiceAddress } from 'sdk/module/telephony/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TelephonyService } from 'sdk/module/telephony';
@@ -157,9 +155,6 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
     return {
       id: SettingEntityIds.Phone_E911,
       value: emergencyAddr,
-      weight: SettingModuleIds.ExtensionSetting.weight,
-      valueType: ESettingValueType.LINK,
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
       state: hasCallPermission
         ? ESettingItemState.ENABLE
         : ESettingItemState.INVISIBLE,
