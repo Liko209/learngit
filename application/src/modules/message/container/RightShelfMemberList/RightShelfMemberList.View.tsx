@@ -109,6 +109,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     const { personNameMap } = this.props;
     return (
       <Avatar
+        data-test-automation-id="rightShellMemberListAvatar"
         key={id}
         size="medium"
         tooltip={personNameMap[id]}
@@ -142,11 +143,18 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     ].includes(group.type);
     return group.type === CONVERSATION_TYPES.ME ? null : (
       <>
-        <MemberListHeader ref={this._header}>
+        <MemberListHeader
+          ref={this._header}
+          data-test-automation-id="rightShellMemberListHeader"
+        >
           <div>
             <MemberListTitle>{t('people.team.Members')}</MemberListTitle>
             {showLink ? (
-              <JuiLink size="small" handleOnClick={this.openProfile}>
+              <JuiLink
+                size="small"
+                handleOnClick={this.openProfile}
+                data-test-automation-id="rightShellMemberListHeaderShowAllLink"
+              >
                 {t('people.team.showAllCount', { count: allMemberLength })}
               </JuiLink>
             ) : null}
@@ -158,27 +166,33 @@ class RightShelfMemberListViewComponent extends Component<Props> {
             tooltipTitle={addButtonTip}
             aria-label={addButtonTip}
             onClick={this.onAddMemberButtonClick}
+            data-test-automation-id="rightShellMemberListHeaderAddButton"
           >
             addmember_border
           </JuiIconButton>
         </MemberListHeader>
-        <MemberListBody loading={isLoading}>
-          <MemberListAvatarWrapper>
+        <MemberListBody
+          loading={isLoading}
+          data-test-automation-id="rightShellMemberListBody"
+        >
+          <MemberListAvatarWrapper data-test-automation-id="rightShellMemberListMembers">
             {shownMemberIds.map(id => this.renderAvatar(id))}
             {fullMemberIds.length > shownMemberIds.length ? (
               <MemberListMoreCount
                 count={fullMemberIds.length - shownMemberIds.length}
+                data-test-automation-id="rightShellMemberListMore"
               />
             ) : null}
           </MemberListAvatarWrapper>
           {fullGuestIds.length > 0 ? (
             <>
               <MemberListSubTitle>{t('message.guests')}</MemberListSubTitle>
-              <MemberListAvatarWrapper>
+              <MemberListAvatarWrapper data-test-automation-id="rightShellMemberListGuests">
                 {shownGuestIds.map(id => this.renderAvatar(id))}
                 {fullGuestIds.length > shownGuestIds.length ? (
                   <MemberListMoreCount
                     count={fullGuestIds.length - shownGuestIds.length}
+                    data-test-automation-id="rightShellMemberListMore"
                   />
                 ) : null}
               </MemberListAvatarWrapper>

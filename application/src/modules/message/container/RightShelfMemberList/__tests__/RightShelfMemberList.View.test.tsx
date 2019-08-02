@@ -71,6 +71,16 @@ describe('RightShelfMemberList.View', () => {
     wrapper = shallow(<RightShelfMemberListView {...props} />);
     expect(wrapper.find(JuiLink).exists()).toBe(false);
   });
+
+  it('should render link for non-1:1 conversations [JPT-2658]', () => {
+    props.group.type = CONVERSATION_TYPES.NORMAL_GROUP;
+    wrapper = shallow(<RightShelfMemberListView {...props} />);
+    expect(wrapper.find(JuiLink).exists()).toBe(true);
+
+    props.group.type = CONVERSATION_TYPES.TEAM;
+    wrapper = shallow(<RightShelfMemberListView {...props} />);
+    expect(wrapper.find(JuiLink).exists()).toBe(true);
+  });
   it('should open profile dialog when click the link button', () => {
     props.group.type = CONVERSATION_TYPES.TEAM;
 

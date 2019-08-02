@@ -233,6 +233,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             show: !this.isManualMode || this.localShowState,
             position: enable.right ? 'left' : 'right',
           }}
+          handleClasses={{left: 'resize-handle'}}
         >
           {this._renderChildren()}
           {visual && (

@@ -98,10 +98,12 @@ class RightShelfMemberListViewModel
 
   @action
   private async _getMemberAndGuestIds() {
+    const originalGroupId = this.props.groupId;
     const {
       memberIds,
       guestIds,
     } = await this._groupService.getMembersAndGuestIds(this.props.groupId);
+    if (originalGroupId !== this.props.groupId) return;
     this._membersCache = { [this.props.groupId]: this.group.members };
     this.isLoading = false;
     this.fullMemberIds = memberIds;
