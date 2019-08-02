@@ -61,10 +61,10 @@ const JuiListNavItemText = styled(MuiTypography)`
 
 const StyledNavListItem = styled<MuiListItemPropsFixed>(MuiListItem)`
   && {
-    padding: ${spacing(2, 4, 2, 3)};
+    padding: ${spacing(2, 3, 2, 3)};
     color: ${grey('900')};
-    height: ${height(11)};
-    line-height: ${height(11)};
+    height: ${height(9)};
+    line-height: ${height(9)};
     ${typography('body2')};
   }
 

@@ -192,6 +192,19 @@ class AnalyticsCollector {
       source,
     });
   }
+
+  // [FIJI-7325]
+  openCallSwitch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_clickCallSwitch', {
+      source,
+    });
+  }
+
+  confirmCallSwitch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_confirmCallSwitch', {
+      source,
+    });
+  }
 }
 
 export { AnalyticsCollector };

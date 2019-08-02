@@ -7,7 +7,7 @@ import { getEntity } from '@/store/utils';
 import { createMockEntity, descriptorAOP, createMultiFn } from '../core/utils';
 
 function mockEntity(data: any) {
-  return function (
+  return function(
     target: any,
     property: string,
     descriptor: PropertyDescriptor,
@@ -25,8 +25,8 @@ function mockEntity(data: any) {
   };
 }
 
-mockEntity.multi = function (data: any[]) {
-  return function (
+mockEntity.multi = function(data: any[]) {
+  return function(
     target: any,
     property: string,
     descriptor: PropertyDescriptor,

@@ -46,6 +46,7 @@ class LaunchDarklyController extends AbstractPermissionController
       ServiceConfig.PERSON_SERVICE,
     );
     const person = await personService.getById(userId);
+    const host: string = window.location.host;
     const params = {
       clientId: Api.httpConfig.launchdarkly.clientId,
       user: {
@@ -53,6 +54,7 @@ class LaunchDarklyController extends AbstractPermissionController
         name: (person && person['display_name']) || '',
         email: (person && person['email']) || '',
         custom: {
+          host,
           companyId: (person && person['company_id']) || '',
         },
       },

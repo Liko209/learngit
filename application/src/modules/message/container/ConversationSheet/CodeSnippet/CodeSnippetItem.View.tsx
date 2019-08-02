@@ -3,7 +3,7 @@
  * @Date: 2019-01-16 17:32:18
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React from 'react';
 import { JuiCodeSnippetBody } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
@@ -43,6 +43,7 @@ class CodeSnippet extends React.Component<
   }
 
   componentDidUpdate(prevProps: CodeSnippetViewProps) {
+    /* eslint-disable react/no-did-update-set-state */
     if (this.props.isCollapse !== prevProps.isCollapse) {
       this.setState({
         isCollapse: this.props.isCollapse,
@@ -141,7 +142,7 @@ class CodeSnippet extends React.Component<
 
     return (
       <JuiConversationItemCard
-        Icon='code'
+        Icon="code"
         title={postParser(title, { keyword: this.context.keyword })}
         contentHasPadding={false}
         headerActions={this._getHeaderActions()}
@@ -163,7 +164,7 @@ class CodeSnippet extends React.Component<
         >
           <CodeEditor
             value={body}
-            mode='view'
+            mode="view"
             maxLine={MAX_EDITOR_LINES}
             collapseTo={COLLAPSE_TO}
             defaultLineLimit={DEFAULT_LINE_LIMIT}

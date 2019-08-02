@@ -32,6 +32,7 @@ const RINGCENTRAL_API = {
   API_GENERATE_CODE: `/${API_VERSION}/interop/generate-code`,
 
   API_SUBSCRIPTION: `/${API_VERSION}/subscription`,
+  API_TELEPHONY_PRESENCE: `/${API_VERSION}/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true`,
 };
 
 const RC_ITEM_API = {

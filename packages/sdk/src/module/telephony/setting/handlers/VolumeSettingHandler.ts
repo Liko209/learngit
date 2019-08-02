@@ -52,11 +52,11 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
           ERCServiceFeaturePermission.CONFERENCING,
         )));
     return isEnable ? ESettingItemState.ENABLE : ESettingItemState.INVISIBLE;
-  }
+  };
 
   private _onPermissionChange = async () => {
     isChrome() && (await this.getUserSettingEntity());
-  }
+  };
 
   private _onVolumeUpdate = (type: number, value: string) => {
     const volume = Number(value);
@@ -66,7 +66,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
     ) {
       this.getUserSettingEntity();
     }
-  }
+  };
 
   dispose() {
     super.dispose();
@@ -84,9 +84,6 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
     const volume = Number(TelephonyGlobalConfig.getCurrentVolume());
 
     const settingItem: UserSettingEntity<number> = {
-      weight: 0,
-      valueType: 0,
-      parentModelId: 0,
       id: SettingEntityIds.Phone_Volume,
       value: volume,
       state: await this._getEntityState(),

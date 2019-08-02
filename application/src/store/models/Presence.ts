@@ -19,6 +19,10 @@ export default class PresenceModel extends Base<Presence> {
     this.presence = PRESENCE.NOTREADY;
   }
 
+  isDND() {
+    return this.presence === PRESENCE.DND;
+  }
+
   static fromJS(data: Presence) {
     return new PresenceModel(data);
   }

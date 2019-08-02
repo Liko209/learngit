@@ -6,7 +6,7 @@
 
 import { WithTranslation } from 'react-i18next';
 import { IMedia } from '@/interface/media';
-import { JuiAudioStatus } from 'jui/pattern/AudioPlayer/types';
+import { JuiAudioStatus } from 'jui/components/AudioPlayer/types';
 import { JuiAudioActionIcon } from 'jui/components/AudioPlayer';
 
 type AudioEvent = {

@@ -190,7 +190,7 @@ describe('ProfileDataController', () => {
       'should return $expectRes when global setting is $global_setting and isTeam is $isTeam',
       async ({ global_setting, isTeam, expectRes }) => {
         const groupId = 1;
-        profileDataController['_isTeam'] = jest.fn().mockReturnValue(isTeam);
+        groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
         settingService.getById = jest
           .fn()
           .mockReturnValue({ value: global_setting });
@@ -204,7 +204,7 @@ describe('ProfileDataController', () => {
 
   describe('isNotificationMute()', () => {
     it.each`
-      mute         | desktop_notifications | global_setting | expectRes
+      muted        | desktop_notifications | global_setting | expectRes
       ${undefined} | ${true}               | ${true}        | ${false}
       ${undefined} | ${true}               | ${false}       | ${false}
       ${undefined} | ${false}              | ${true}        | ${true}
@@ -225,7 +225,7 @@ describe('ProfileDataController', () => {
       ${true}      | ${undefined}          | ${false}       | ${true}
     `(
       'should return $expectRes when mute is $mute and desktop_notification is $desktop_notifications and global_setting is $global_setting',
-      async ({ mute, desktop_notifications, global_setting, expectRes }) => {
+      async ({ muted, desktop_notifications, global_setting, expectRes }) => {
         const groupId = 1;
         profileDataController['_getGlobalSetting'] = jest
           .fn()
@@ -233,7 +233,7 @@ describe('ProfileDataController', () => {
         profileDataController.getProfile = jest.fn().mockReturnValue({
           conversation_level_notifications: {
             [groupId]: {
-              mute,
+              muted,
               desktop_notifications,
             },
           },

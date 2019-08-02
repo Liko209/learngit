@@ -79,6 +79,7 @@ class SendPostController implements ISendPostController {
 
   async reSendPost(id: number) {
     if (id < 0) {
+      this.preInsertController.updateStatus(id, PROGRESS_STATUS.INPROGRESS);
       const dao = daoManager.getDao(PostDao);
       const post = await dao.get(id);
       if (post) {
@@ -154,11 +155,11 @@ class SendPostController implements ISendPostController {
       ...backup,
     });
     if (backup.id) {
-      return this.postActionController.partialModifyController.updatePartially(
-        backup.id,
-        preHandlePartial,
-        async (newPost: Post) => newPost,
-        (
+      return this.postActionController.partialModifyController.updatePartially({
+        entityId: backup.id,
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: async (newPost: Post) => newPost,
+        doPartialNotify: (
           originalEntities: Post[],
           updatedEntities: Post[],
           partialEntities: Partial<Raw<Post>>[],
@@ -169,7 +170,7 @@ class SendPostController implements ISendPostController {
             partialEntities,
           );
         },
-      );
+      });
     }
     throw new Error('updateLocalPost error invalid id');
   }
@@ -225,7 +226,10 @@ class SendPostController implements ISendPostController {
   }
 
   async handleSendPostFail(originalPost: Post, groupId: number) {
-    this.preInsertController.updateStatus(originalPost, PROGRESS_STATUS.FAIL);
+    this.preInsertController.updateStatus(
+      originalPost.id,
+      PROGRESS_STATUS.FAIL,
+    );
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );

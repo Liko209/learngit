@@ -9,7 +9,8 @@ import { IMediaService, MediaEventName } from '@/interface/media';
 import { MediaService } from '@/modules/media/service';
 import { AudioPlayerViewModel } from '../AudioPlayer.ViewModel';
 import { Media } from '@/modules/media/Media';
-import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { JuiAudioStatus } from 'jui/components/AudioPlayer';
+import { mainLogger } from 'sdk';
 
 jupiter.registerService(IMediaService, MediaService);
 
@@ -39,6 +40,14 @@ const emit = (media: Media, eventName: MediaEventName, returnValue?: any) => {
     return event.name === eventName;
   })[0];
   event && event.handler && event.handler(returnValue);
+};
+
+const sleep = function(time: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => {
+      resolve();
+    }, time);
+  });
 };
 
 describe('AudioPlayerViewModel', () => {
@@ -86,14 +95,13 @@ describe('AudioPlayerViewModel', () => {
       expect(vm._media).toEqual(null);
       expect(vm._currentSrc).toEqual('');
 
-      const warnFn = jest.spyOn(console, 'warn').mockImplementation();
+      const warnFn = jest.spyOn(mainLogger, 'warn').mockImplementation();
 
       vm._propMediaReaction(media);
       expect(warnFn).toBeCalled();
       expect(vm._media.trackId).not.toEqual('trackId');
       expect(vm._currentSrc).toEqual('example.mp3');
     })
-
     it('should get media when props id update', () => {
       const mediaService: IMediaService = jupiter.get(IMediaService);
       const media = mediaService.createMedia({
@@ -107,7 +115,6 @@ describe('AudioPlayerViewModel', () => {
       vm._propIdReaction('propsID');
       expect(vm._media).toEqual(media);
     })
-
     it('should create media and dispose old media when src update', () => {
       const vm = new AudioPlayerViewModel({});
 
@@ -126,7 +133,6 @@ describe('AudioPlayerViewModel', () => {
       expect(vm._media.src).toEqual('example2.mp3');
     })
   })
-
 
   describe('createMedia()', () => {
     it('should create media by media service', () => {
@@ -176,6 +182,7 @@ describe('AudioPlayerViewModel', () => {
         const { vm, media } = setup();
 
         await vm.playHandler();
+        await sleep(300);
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.LOADING);
         expect(playMockFn).toHaveBeenCalled();
 
@@ -189,6 +196,7 @@ describe('AudioPlayerViewModel', () => {
         });
 
         await vm.playHandler();
+        await sleep(300);
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.LOADING);
         expect(onBeforePlay).toHaveBeenCalled();
 
@@ -219,25 +227,24 @@ describe('AudioPlayerViewModel', () => {
 
         expect(vm.currentTime).toEqual(startTime);
         await vm.playHandler();
+        await sleep(300);
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.LOADING);
         expect(playMockFn).toHaveBeenCalled();
 
         emit(media, 'play');
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.PAUSE);
       });
-      it('should call onPlay when media played', async () => {
-        const onPlay = jest.fn();
-        const { vm, media } = setup({
-          onPlay
-        });
+      it('should not show loading status when media canplay inline 250ms', async () => {
+        const playMockFn = jest.spyOn(HTMLMediaElement.prototype, 'play');
+        const { vm, media } = setup();
 
         await vm.playHandler();
-        expect(vm.mediaStatus).toEqual(JuiAudioStatus.LOADING);
-        expect(onPlay).toHaveBeenCalled();
-
+        await sleep(100);
+        expect(vm.mediaStatus).toEqual(JuiAudioStatus.PLAY);
         emit(media, 'play');
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.PAUSE);
-      });
+        expect(playMockFn).toHaveBeenCalled();
+      })
     });
 
     describe('pause', () => {
@@ -288,6 +295,7 @@ describe('AudioPlayerViewModel', () => {
       it('should reload media when status is reload', async () => {
         const { vm } = setup();
         await vm.reloadHandler();
+        await sleep(300);
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.LOADING);
       });
       it('should reload media when onBeforeReload return true', async () => {

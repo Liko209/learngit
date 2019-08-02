@@ -5,9 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import {
- observable, computed, action, reaction
-} from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
@@ -21,7 +19,8 @@ import {
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
 import {
-  ANONYMOUS,
+  ANONYMOUS_NAME,
+  ANONYMOUS_NUM,
   INCOMING_STATE,
   DIALING,
   INITIAL_REPLY_COUNTDOWN_TIME,
@@ -209,7 +208,7 @@ class TelephonyStore {
     if (this.person) {
       return this.person.userDisplayName;
     }
-    return this.callerName === ANONYMOUS || !this.callerName
+    return this.callerName === ANONYMOUS_NAME || !this.callerName
       ? ''
       : this.callerName;
   }
@@ -558,8 +557,8 @@ class TelephonyStore {
   }
 
   @computed
-  get callId() {
-    return this.call.callId;
+  get uuid() {
+    return this.call.uuid;
   }
 
   // TODO: should change the prop's name since it's isomorphic to `CALL_DIRECTION`
@@ -614,7 +613,7 @@ class TelephonyStore {
   @computed
   get phoneNumber() {
     const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
-    return phoneNumber !== ANONYMOUS ? phoneNumber : '';
+    return phoneNumber !== ANONYMOUS_NUM ? phoneNumber : '';
   }
 
   @action

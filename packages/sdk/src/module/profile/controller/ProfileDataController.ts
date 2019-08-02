@@ -110,20 +110,20 @@ class ProfileDataController {
       DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
     >(SettingEntityIds.Notification_NewMessages);
     const value = model && model.value;
-    let shouldNotification;
+    let isMute;
     switch (value) {
       case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE:
-        shouldNotification = false;
+        isMute = false;
         break;
       case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF:
-        shouldNotification = true;
+        isMute = true;
         break;
       case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION:
       default:
-        shouldNotification = this._isTeam(conversationId) ? true : false;
+        isMute = await this._isTeam(conversationId);
         break;
     }
-    return shouldNotification;
+    return isMute;
   }
 
   async isNotificationMute(conversationId: number) {
@@ -135,7 +135,7 @@ class ProfileDataController {
     if (!notification) {
       return this._getGlobalSetting(conversationId);
     }
-    if (notification.mute) {
+    if (notification.muted) {
       return true;
     }
     if (notification.desktop_notifications === undefined) {

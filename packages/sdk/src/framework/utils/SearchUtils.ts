@@ -7,7 +7,7 @@ import UserPermissionType from '../../module/permission/types';
 import { IPermissionService } from '../../module/permission/service/IPermissionService';
 import { container } from '../../container';
 import _ from 'lodash';
-/* eslint-disable */
+
 const SplitTermsSymbols = new RegExp(/[\s,._-]+/);
 
 class SearchUtils {
@@ -57,6 +57,7 @@ class SearchUtils {
 
   static getValidPhoneNumber(value: string): string {
     let result: string = '';
+    /* eslint-disable no-continue */
     for (let i = 0; i < value.length; ++i) {
       const c = value.charAt(i);
       if (SearchUtils.isSpecialChar(c)) {
