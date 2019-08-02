@@ -81,6 +81,7 @@ class SplitIOClient {
   }
 
   shutdown(shouldClearCache: boolean) {
+    mainLogger.log('shutdown splitIO', shouldClearCache);
     this.client.destroy();
   }
 }
