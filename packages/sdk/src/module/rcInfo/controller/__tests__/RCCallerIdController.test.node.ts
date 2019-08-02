@@ -57,6 +57,12 @@ const expectResult = [
     label: 'MainCompanyNumberWithNickname',
   },
   {
+    id: 6,
+    usageType: 'CompanyFaxNumber',
+    phoneNumber: '1',
+    label: 'Company Fax Number',
+  },
+  {
     id: 4,
     usageType: 'CompanyNumber',
     phoneNumber: '1',
@@ -67,12 +73,6 @@ const expectResult = [
     usageType: 'AdditionalCompanyNumber',
     phoneNumber: '1',
     label: 'Company Number',
-  },
-  {
-    id: 6,
-    usageType: 'CompanyFaxNumber',
-    phoneNumber: '1',
-    label: 'Company Fax Number',
   },
 ];
 describe('RCInfoFetchController', () => {
@@ -417,8 +417,8 @@ describe('RCInfoFetchController', () => {
           },
         );
       await rcCallerIdController.setDefaultCallerId(2);
-      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
-      expect(RCInfoApi.setExtensionCallerId).toBeCalledWith(requestParams);
+      expect(partialModifyController.updatePartially).toHaveBeenCalledTimes(1);
+      expect(RCInfoApi.setExtensionCallerId).toHaveBeenCalledWith(requestParams);
     });
 
     it('should update caller id when caller id is blocked', async () => {
@@ -446,8 +446,8 @@ describe('RCInfoFetchController', () => {
           },
         );
       await rcCallerIdController.setDefaultCallerId(0);
-      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
-      expect(RCInfoApi.setExtensionCallerId).toBeCalledWith(requestParams);
+      expect(partialModifyController.updatePartially).toHaveBeenCalledTimes(1);
+      expect(RCInfoApi.setExtensionCallerId).toHaveBeenCalledWith(requestParams);
     });
   });
   describe('hasSetCallerId()', () => {
