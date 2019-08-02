@@ -264,6 +264,7 @@ class RTCAccount implements IRTCAccount {
     } else if (this._state === RTC_ACCOUNT_STATE.FAILED) {
       this._scheduleRegisterRetryTimer();
     }
+    window['sipState'] = state;
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
     }
