@@ -406,7 +406,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then should display ${callerIdNumber} in caller ID seclection of the dialer page`, async () => {
-    await t.expect(app.homePage.telephonyDialog.callerIdSelector.textContent).eql(callerIdNumber);
+    const txt = await app.homePage.telephonyDialog.callerIdSelector.textContent;
+    await t.expect(callerIdNumber).contains(txt);
   });
 });
 
