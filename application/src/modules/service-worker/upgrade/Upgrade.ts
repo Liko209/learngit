@@ -114,7 +114,7 @@ class Upgrade {
   }
 
   public onMessageHandler(msgData: string) {
-    let data = {};
+    let data: SWMessageData = {};
     try {
       data = JSON.parse(msgData);
     } catch (err) {
