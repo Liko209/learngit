@@ -33,4 +33,18 @@ describe('FirebasePerformance', () => {
       expect(spyOn).not.toHaveBeenCalled();
     });
   });
+
+  describe('attributes', () => {
+    it('should put/remove/get attribute correctly ', async () => {
+      const firebasePerformance = new FirebasePerformance();
+      firebasePerformance.putAttribute('test1', 'a');
+      const result = firebasePerformance.getAttribute('test1');
+      expect(result!.attr).toBe('test1');
+      expect(result!.value).toBe('a');
+
+      firebasePerformance.removeAttribute('test1');
+      const result2 = firebasePerformance.getAttribute('test1');
+      expect(result2).toBeUndefined();
+    });
+  });
 });
