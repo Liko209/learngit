@@ -145,4 +145,11 @@ describe('ToastCallError', () => {
     ToastCallError.toastAutoRecording();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
+
+  it('should display switch call error: No network [JPT-2532]', () => {
+    ToastCallError.toast = jest.fn();
+    ToastCallError.toastSwitchCallNoNetwork();
+    const i18nkey = 'telephony.prompt.switchCall.noNetwork';
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
 });

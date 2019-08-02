@@ -291,4 +291,15 @@ describe('Telephony store', () => {
     store.backToDialer();
     expect(store.isRecentCalls).toBeFalsy();
   });
+
+  it('should return empty string when phoneNumber is anonymous', () => {
+    const call: any = {
+      direction: 'Inbound',
+      fromNum: 'anonymous',
+    };
+    (getEntity as jest.Mock).mockReturnValue(call);
+    const store = createStore();
+    store.id = 1;
+    expect(store.phoneNumber).toEqual('');
+  });
 });

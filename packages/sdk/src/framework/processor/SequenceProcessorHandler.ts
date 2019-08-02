@@ -14,7 +14,7 @@ type SequenceProcessorOption = {
   name: string;
   addProcessorStrategy?: (
     totalProcessors: IProcessor[],
-    newProcessors: IProcessor,
+    newProcessor: IProcessor,
     existed: boolean,
   ) => IProcessor[];
   maxSize?: number;

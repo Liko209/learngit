@@ -15,7 +15,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip/src';
-import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../../types';
+import { MAKE_CALL_ERROR_CODE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
 import { MakeCallController } from '../MakeCallController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
@@ -23,6 +23,8 @@ import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 import { GlobalConfigService } from '../../../config';
 import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from 'voip';
 import { RTC_SLEEP_MODE_EVENT } from 'voip/src/utils/types';
+import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
+import { RCInfoService } from 'sdk/module/rcInfo';
 
 jest.mock('../TelephonyCallController');
 jest.mock('voip/src');
@@ -57,10 +59,9 @@ describe('TelephonyAccountController', () => {
   let accountController: TelephonyAccountController;
   let rtcAccount: RTCAccount;
   let callControllerList: Map<number, TelephonyCallController>;
-
   const callId = 123;
   const toNum = '123';
-  const fromNum = '456';
+  const fromNumber = '456';
 
   function setup() {
     mockAcc = new MockAccount();
@@ -95,6 +96,88 @@ describe('TelephonyAccountController', () => {
     setup();
   });
 
+  describe('switchCall', () => {
+    let makeCallController: MakeCallController;
+    const myNumber = '113';
+    beforeEach(() => {
+      makeCallController = new MakeCallController();
+      Object.assign(accountController, {
+        _makeCallController: makeCallController,
+      });
+      accountController.setLastCalledNumber = jest.fn();
+    });
+
+    it('should pass expected parameter to _makeCallInternal when is outbound call', async () => {
+      const activeCall = {
+        direction: 'Outbound',
+        from: '21010',
+        fromName: 'Florence Connelly',
+        id: '8ec28384e8d54846beafae947febdaa9',
+        sipData: {
+          fromTag: '10.74.2.219-5070-285e39746afa4a2',
+          toTag: 'k6rqhp560h',
+        },
+        to: '21007',
+        toName: 'Yilia Hong',
+      };
+      accountController['_makeCallInternal'] = jest
+        .fn()
+        .mockResolvedValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      const result = await accountController.switchCall(
+        myNumber,
+        activeCall as ActiveCall,
+      );
+      expect(result).toEqual(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      expect(accountController['_makeCallInternal']).toHaveBeenCalledWith(
+        '113',
+        true,
+        {
+          replaceName: 'Yilia Hong',
+          replaceNumber: '21007',
+          replacesCallId: '8ec28384e8d54846beafae947febdaa9',
+          replacesFromTag: '10.74.2.219-5070-285e39746afa4a2',
+          replacesToTag: 'k6rqhp560h',
+          callDirection: 'Outbound',
+        },
+      );
+    });
+
+    it('should pass expected parameter to _makeCallInternal when is inbound call', async () => {
+      const activeCall = {
+        direction: 'Inbound',
+        from: '21010',
+        fromName: 'Florence Connelly',
+        id: '8ec28384e8d54846beafae947febdaa9',
+        sipData: {
+          fromTag: '10.74.2.219-5070-285e39746afa4a2',
+          toTag: 'k6rqhp560h',
+        },
+        to: '21007',
+        toName: 'Yilia Hong',
+      };
+      accountController['_makeCallInternal'] = jest
+        .fn()
+        .mockResolvedValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      const result = await accountController.switchCall(
+        myNumber,
+        activeCall as ActiveCall,
+      );
+      expect(result).toEqual(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      expect(accountController['_makeCallInternal']).toHaveBeenCalledWith(
+        '113',
+        true,
+        {
+          replaceName: 'Florence Connelly',
+          replaceNumber: '21010',
+          replacesCallId: '8ec28384e8d54846beafae947febdaa9',
+          replacesFromTag: '10.74.2.219-5070-285e39746afa4a2',
+          replacesToTag: 'k6rqhp560h',
+          callDirection: 'Inbound',
+        },
+      );
+    });
+  });
+
   describe('makeCall', () => {
     let makeCallController: MakeCallController;
     beforeEach(() => {
@@ -108,7 +191,7 @@ describe('TelephonyAccountController', () => {
     it('should return error when there is no sip prov', async () => {
       const spy = jest.spyOn(mockCall, 'onCallStateChange');
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce(null);
-      const res = await accountController.makeCall(toNum, fromNum);
+      const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
     });
 
@@ -117,7 +200,7 @@ describe('TelephonyAccountController', () => {
       rtcAccount.getSipProvFlags = jest
         .fn()
         .mockReturnValueOnce({ voipCountryBlocked: true });
-      const res = await accountController.makeCall(toNum, fromNum);
+      const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
     });
 
@@ -127,7 +210,7 @@ describe('TelephonyAccountController', () => {
         voipCountryBlocked: false,
         voipFeatureEnabled: false,
       });
-      const res = await accountController.makeCall(toNum, fromNum);
+      const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
     });
 
@@ -142,7 +225,7 @@ describe('TelephonyAccountController', () => {
         .fn()
         .mockReturnValue(MAKE_CALL_ERROR_CODE.N11_101);
       accountController.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
-      const res = await accountController.makeCall(toNum, fromNum);
+      const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
     });
 
@@ -162,7 +245,7 @@ describe('TelephonyAccountController', () => {
       rtcAccount.makeCall = jest.fn().mockReturnValue({
         setCallDelegate: jest.fn(),
       });
-      const res = await accountController.makeCall(toNum, fromNum);
+      const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
       expect(rtcAccount.makeCall).toHaveBeenCalled();
       expect(callControllerList.size).toBe(1);
@@ -184,7 +267,7 @@ describe('TelephonyAccountController', () => {
       jest.spyOn(rtcAccount, 'makeCall').mockReturnValueOnce(null);
       accountController.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
       rtcAccount.makeCall = jest.fn().mockReturnValue(null);
-      const res = await accountController.makeCall(toNum, fromNum);
+      const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
       expect(rtcAccount.makeCall).toHaveBeenCalled();
       expect(callControllerList.size).toBe(0);
