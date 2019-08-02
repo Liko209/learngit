@@ -11,7 +11,8 @@ const _inline = {
 };
 
 const _block = {
-  header: (attr: StringMap, insert: any) => `${'#'.repeat(attr.header)} ${insert}`,
+  header: (attr: StringMap, insert: any) =>
+    `${'#'.repeat(attr.header)} ${insert}`,
   blockquote: (attr: StringMap, insert: any) => `> ${insert}`,
   list: (attr: StringMap, insert: any, extra: { ordered: number }) => {
     extra.ordered += 1;

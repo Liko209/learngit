@@ -5,6 +5,7 @@
  */
 // dynamic change at mention name if username changed
 const UN_ESCAPE_HTML_AT_MENTION_REGEXP = /&lt;a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)((?!&gt;).)+&gt;@((((?!&lt;).))+)&lt;&sol;a&gt;/g;
+const TEAM_MENTION_ID = 1;
 
 function decode(text: string) {
   const DECODE = {
@@ -26,7 +27,10 @@ function decode(text: string) {
 }
 
 function atMentionTemplate(id: string, name: string) {
-  return `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span>`;
+  return `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@' data-is-team='${Math.abs(
+    Number(id),
+  ) ===
+    TEAM_MENTION_ID}'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span>`;
 }
 
 const handleAtMention = (str: string) => {
@@ -36,10 +40,16 @@ const handleAtMention = (str: string) => {
     text = text.replace(/\n/g, () => '<br />');
   }
   if (UN_ESCAPE_HTML_AT_MENTION_REGEXP.test(text)) {
-    text = `<p>${text.replace(UN_ESCAPE_HTML_AT_MENTION_REGEXP, (match, id, $1, name) => atMentionTemplate(id, name))}</p>`;
+    text = `<p>${text.replace(
+      UN_ESCAPE_HTML_AT_MENTION_REGEXP,
+      (match, id, $1, name) => atMentionTemplate(id, name),
+    )}</p>`;
   }
   return text;
 };
 export {
-  handleAtMention, UN_ESCAPE_HTML_AT_MENTION_REGEXP, decode, atMentionTemplate
+  handleAtMention,
+  UN_ESCAPE_HTML_AT_MENTION_REGEXP,
+  decode,
+  atMentionTemplate,
 };

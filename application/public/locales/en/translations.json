@@ -312,6 +312,7 @@
     "message": "Message",
     "atMentionAllTeam": "Team",
     "atMentionAllAdmin": "admin",
+    "atMentionTeamSuffix": "(notify everyone)",
     "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
     "typingIndicator": {
       "oneTyping": "<0>{{personA}}</0> is typing...",
