@@ -35,11 +35,14 @@ class DaoManager extends Manager<
     this._observers = [];
   }
 
+  getDatabaseType() {
+    return window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
+      ? DatabaseType.DexieDB
+      : DatabaseType.LokiDB;
+  }
+
   async initDatabase(clearDataFunc: () => Promise<void>): Promise<void> {
-    const dbType =
-      window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
-        ? DatabaseType.DexieDB
-        : DatabaseType.LokiDB;
+    const dbType = this.getDatabaseType();
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {

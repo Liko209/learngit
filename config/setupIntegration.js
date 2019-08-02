@@ -21,30 +21,6 @@ jest.mock('jui/components/AutoSizer/AutoSizer');
 jest.mock('jui/components/VirtualizedList/InfiniteList');
 jest.mock('jui/hoc/withDelay/withDelay');
 
-// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
-// Make IDBKeyRange global so your code can create key ranges.
-Object.defineProperty(window, 'indexedDB', {
-  value: require('fake-indexeddb'),
-});
-Object.defineProperty(window, 'IDBKeyRange', {
-  value: require('fake-indexeddb/lib/FDBKeyRange'),
-});
-Object.defineProperty(window, 'IDBIndex', {
-  value: require('fake-indexeddb/lib/FDBIndex'),
-});
-Object.defineProperty(window, 'IDBCursor', {
-  value: require('fake-indexeddb/lib/FDBCursor'),
-});
-Object.defineProperty(window, 'IDBObjectStore', {
-  value: require('fake-indexeddb/lib/FDBObjectStore'),
-});
-Object.defineProperty(window, 'IDBTransaction', {
-  value: require('fake-indexeddb/lib/FDBTransaction'),
-});
-Object.defineProperty(window, 'IDBDatabase', {
-  value: require('fake-indexeddb/lib/FDBDatabase'),
-});
-
 // Create a localStorage and sessionStorage at window
 class FakeStorage {
   store = {};

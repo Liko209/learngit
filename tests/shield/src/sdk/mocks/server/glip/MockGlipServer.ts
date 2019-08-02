@@ -172,7 +172,7 @@ export class MockGlipServer implements IGlipServerContext, IMockServer {
       company_id: company!._id,
       profile: this.profileDao.findOne()!,
       companies: [company!],
-      people: this.personDao.lokiCollection.find(),
+      people: this.personDao.find(),
       groups: await this.groupDao.getGroups(),
       teams: await this.groupDao.getTeams(),
       posts: this.postDao.getPosts() || [],

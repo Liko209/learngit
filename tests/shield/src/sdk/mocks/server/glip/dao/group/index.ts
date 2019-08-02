@@ -1,6 +1,7 @@
 import { IDatabase } from 'foundation/db';
 import { GlipBaseDao } from '../../GlipBaseDao';
 import { GlipGroup } from '../../types';
+import { sanitized } from '../../utils';
 
 export class GlipGroupDao extends GlipBaseDao<GlipGroup> {
   constructor(db: IDatabase) {
@@ -8,20 +9,26 @@ export class GlipGroupDao extends GlipBaseDao<GlipGroup> {
   }
 
   async getAll(filter: (item: GlipGroup) => boolean) {
-    return this.createQuery()
-      .filter(filter)
-      .toArray();
+    return sanitized(
+      await this.createQuery()
+        .filter(filter)
+        .toArray(),
+    );
   }
 
   async getGroups() {
-    return this.createQuery()
-      .filter(item => !item.is_team)
-      .toArray();
+    return sanitized(
+      await this.createQuery()
+        .filter((item: GlipGroup) => !item.is_team)
+        .toArray(),
+    );
   }
 
   async getTeams() {
-    return this.createQuery()
-      .filter(item => !!item.is_team)
-      .toArray();
+    return sanitized(
+      await this.createQuery()
+        .filter((item: GlipGroup) => !!item.is_team)
+        .toArray(),
+    );
   }
 }
