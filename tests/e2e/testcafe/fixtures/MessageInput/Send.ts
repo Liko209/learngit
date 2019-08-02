@@ -294,7 +294,7 @@ test.meta(<ITestMeta>{
   }
 
   await h(t).withLog(`And I create one new teams`, async () => {
-    await h(t).scenarioHelper.createTeam(group);
+    await h(t).scenarioHelper.createOrOpenChat(group);
   });
 
   await h(t).withLog('When I enter a conversation', async () => {
