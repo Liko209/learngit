@@ -12,7 +12,6 @@ import {
   ICallerPhoneNumber,
   CallerIdViewProps,
 } from './types';
-import './styles.css';
 import { LazyFormatPhone } from './LazyFormatPhone';
 import { CallerIdContainer } from 'jui/pattern/Dialer';
 import { RuiTooltip } from 'rcui/components/Tooltip';

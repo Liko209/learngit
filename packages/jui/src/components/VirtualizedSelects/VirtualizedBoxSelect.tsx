@@ -13,6 +13,7 @@ import {
   StyledSelectBoxContainer,
   StyledSelectBoxHeader,
 } from '../Selects/BoxSelect';
+import './styles.css';
 
 type JuiVirtualizedBoxSelectProps = Exclude<
   JuiVirtualizedSelectProps,
