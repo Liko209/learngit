@@ -134,36 +134,42 @@ describe('TelephonyEngineController', () => {
   });
 
   describe('isEmergencyAddrConfirmed', () => {
-    it('should return true when no sip prov', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue(null);
+    it('should return false when no local address', () => {
+      TelephonyGlobalConfig.getEmergencyAddress = jest
+        .fn()
+        .mockReturnValue(null);
       const res = engineController.isEmergencyAddrConfirmed();
-      expect(res).toBeTruthy();
+      expect(res).toBeFalsy();
     });
-    it('should return false when no emergency addr in sip prov', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue('test');
+    it('should return true when local address is set, but no address in sip prov', () => {
+      TelephonyGlobalConfig.getEmergencyAddress = jest
+        .fn()
+        .mockReturnValue({ a: 'a', b: 'b' });
       engineController.getRemoteEmergencyAddress = jest
         .fn()
         .mockReturnValue(undefined);
       const res = engineController.isEmergencyAddrConfirmed();
-      expect(res).toBeFalsy();
+      expect(res).toBeTruthy();
     });
-    it('should return false when no emergency addr saved in local', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue('test');
+
+    it('should return false when local address is not equal to remote address', () => {
+      TelephonyGlobalConfig.getEmergencyAddress = jest
+        .fn()
+        .mockReturnValue({ a: 'a', b: 'b' });
       engineController.getRemoteEmergencyAddress = jest
         .fn()
-        .mockReturnValue('test');
-      engineController.getLocalEmergencyAddress = jest.fn();
+        .mockReturnValue({ b: 'c', a: 'a' });
       const res = engineController.isEmergencyAddrConfirmed();
       expect(res).toBeFalsy();
     });
-    it('should return true when both sip prov and local storage have emergency address saved', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue('test');
+
+    it('should return true when local address is  equal to remote address', () => {
+      TelephonyGlobalConfig.getEmergencyAddress = jest
+        .fn()
+        .mockReturnValue({ a: 'a', b: 'b' });
       engineController.getRemoteEmergencyAddress = jest
         .fn()
-        .mockReturnValue('test');
-      engineController.getLocalEmergencyAddress = jest
-        .fn()
-        .mockReturnValue('test');
+        .mockReturnValue({ b: 'b', a: 'a' });
       const res = engineController.isEmergencyAddrConfirmed();
       expect(res).toBeTruthy();
     });

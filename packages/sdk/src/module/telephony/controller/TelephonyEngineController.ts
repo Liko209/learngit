@@ -28,6 +28,7 @@ import { Call } from '../entity';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
 import { notificationCallback } from '../types';
+import _ from 'lodash';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -224,13 +225,15 @@ class TelephonyEngineController {
   }
 
   isEmergencyAddrConfirmed() {
-    if (!this._accountController.getSipProv()) {
-      // Sip Provision is not ready
-      return true;
+    const localAddr = this.getLocalEmergencyAddress();
+    if (!localAddr) {
+      return false;
     }
-    return (
-      !!this.getRemoteEmergencyAddress() && !!this.getLocalEmergencyAddress()
-    );
+    const remoteAddr = this.getRemoteEmergencyAddress();
+    if (remoteAddr) {
+      return _.isEqual(localAddr, remoteAddr);
+    }
+    return true;
   }
 }
 
