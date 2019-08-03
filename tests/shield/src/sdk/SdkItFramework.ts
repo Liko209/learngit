@@ -36,8 +36,10 @@ import {
   createApiResponse,
   createResponse,
 } from './utils';
+import { GlipScenario } from 'shield/sdk/mocks/glip/GlipScenario';
 
 import assert = require('assert');
+import { SendPost } from 'sdk/module/__tests__/message/sendPost/scenario';
 // import { IGlipIndex } from './mocks/server/glip/api/index/index.get.contract';
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
@@ -151,34 +153,53 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
     );
   };
 
+  function isExtendsOf(target: any, prototype: any): boolean {
+    if (!prototype) {
+      return false;
+    }
+    if (prototype === target) {
+      return true;
+    }
+    if (prototype !== Object.prototype) {
+      return isExtendsOf(target, Reflect.getPrototypeOf(prototype));
+    }
+    return false;
+  }
+
   const useScenario: ItContext['helper']['useScenario'] = async (
-    scenarioFactory,
+    cls,
     props,
   ) => {
-    const emptyIndexData: InitialData = _.cloneDeep({
-      ...glipInitialData,
-      companies: [],
-      items: [],
-      people: [],
-      public_teams: [],
-      groups: [],
-      teams: [],
-      posts: [],
-    });
-    const result = scenarioFactory(
-      itCtx,
-      createInitialDataHelper(emptyIndexData),
-      props,
-    );
-    return new Promise(resolve => {
-      debug('useScenario: sync scenario data');
-      mockApi(IGlipIndex, createResponse({ data: emptyIndexData }));
-      sdk.syncService.syncData({
-        onIndexHandled: async () => {
-          resolve(result as any);
-        },
+    // createInitialDataHelper(emptyIndexData),
+    // console.log('TCL: cls', cls, cls instanceof sendPost.Success);
+    if (isExtendsOf(GlipScenario, cls)) {
+      const emptyIndexData: InitialData = _.cloneDeep({
+        ...glipInitialData,
+        companies: [],
+        items: [],
+        people: [],
+        public_teams: [],
+        groups: [],
+        teams: [],
+        posts: [],
       });
-    });
+      const result = new cls(
+        itCtx,
+        createInitialDataHelper(emptyIndexData),
+        props,
+      );
+      return new Promise(resolve => {
+        debug('useScenario: sync scenario data');
+        mockApi(IGlipIndex, createResponse({ data: emptyIndexData }));
+        sdk.syncService.syncData({
+          onIndexHandled: async () => {
+            resolve(result as any);
+          },
+        });
+      });
+    }
+    return {} as any;
+    // createScenario(cls, itCtx, props);
   };
   // provide for it case to mock data.
   const itCtx: ItContext = {

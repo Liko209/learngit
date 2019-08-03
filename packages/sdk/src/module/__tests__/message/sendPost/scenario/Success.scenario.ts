@@ -10,7 +10,7 @@ import { GlipGroup } from 'shield/sdk/mocks/glip/types';
 import { GlipScenario } from 'shield/sdk/mocks/glip/GlipScenario';
 
 export class Success extends GlipScenario {
-  post: { text: string; id: number; };
+  post: { text: string; id: number };
   team: GlipGroup;
   constructor(
     protected context: ItContext,
@@ -31,11 +31,11 @@ export class Success extends GlipScenario {
     } = props || {};
     const { helper } = context;
     const glipDataHelper = helper.glipDataHelper();
-    const team = this.team = glipDataHelper.team.createTeam(
+    const team = (this.team = glipDataHelper.team.createTeam(
       teamName,
       uids,
       teamId ? { _id: teamId } : undefined,
-    );
+    ));
     glipIndexDataHelper.teams.insertOrUpdate(team);
     // glipIndexDataHelper.profile.insertOrUpdate(i)
 

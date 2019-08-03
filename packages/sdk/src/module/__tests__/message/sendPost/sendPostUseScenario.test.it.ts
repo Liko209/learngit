@@ -6,7 +6,7 @@
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
-import { sendPost } from './scenario/sendPost.scenario';
+import { SendPost } from './scenario';
 import { Post } from 'sdk/module/post/entity';
 
 jit('Send post test', context => {
@@ -19,8 +19,8 @@ jit('Send post test', context => {
 
   describe('PostService', () => {
     it('send post success', async () => {
-      const sendPostScenario = await helper.useScenario(sendPost.success);
-      const { post, team } = sendPostScenario;
+      const scenario = await helper.useScenario(SendPost.Success);
+      const { post, team } = scenario;
       await postService.sendPost({
         text: post.text,
         groupId: team._id,
@@ -35,8 +35,8 @@ jit('Send post test', context => {
     let sendFailedTeamId: number;
     let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      const sendPostFailScenario = await helper.useScenario(sendPost.fail);
-      sendFailedTeamId = sendPostFailScenario.team._id;
+      const scenario = await helper.useScenario(SendPost.Fail);
+      sendFailedTeamId = scenario.team._id;
       await expect(
         postService.sendPost({
           text: 'test post 2',
@@ -52,7 +52,7 @@ jit('Send post test', context => {
       expect(sendFailedPost.id < 0).toBeTruthy();
     });
     it('resend post successfully', async () => {
-      await helper.useScenario(sendPost.success, {
+      await helper.useScenario(SendPost.Success, {
         teamId: sendFailedTeamId,
         postText: sendFailedPost.text,
       });

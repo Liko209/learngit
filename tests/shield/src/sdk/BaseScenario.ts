@@ -6,7 +6,5 @@
 import { ItContext } from './types';
 
 export class BaseScenario {
-  constructor(
-    protected context: ItContext
-  ) {}
+  constructor(protected context: ItContext) {}
 }

@@ -6,7 +6,7 @@
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
-import { incomingPost } from './post/scenario/incomingPost.scenario';
+import { Post } from './post/scenario';
 
 jit('Send post test', context => {
   let postService: PostService;
@@ -18,10 +18,8 @@ jit('Send post test', context => {
 
   describe('received post', () => {
     it('received a post', async () => {
-      const incomingPostScenario = await helper.useScenario(
-        incomingPost.success,
-      );
-      await incomingPostScenario.emitPost();
+      const scenario = await helper.useScenario(Post.IncomingPost);
+      await scenario.emitPost();
       const result = await postService.getPostsByGroupId({
         groupId: 16386,
       });
