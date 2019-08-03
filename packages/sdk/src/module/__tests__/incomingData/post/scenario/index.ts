@@ -1,4 +1,4 @@
-import { IncomingPost } from './IncomingPosts.scenario';
+import { IncomingPost } from './IncomingPost.scenario';
 
 export const Post = {
   IncomingPost,
