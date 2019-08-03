@@ -84,7 +84,8 @@ function splice<V extends any[], K extends SpliceCommand<V>['$splice']>(
 function update<
   T extends object | any[],
   A = T extends Array<infer A> ? A : any
->(value: T, spec: UpdateSpec<T>) {
+>(value: T, spec?: UpdateSpec<T>): T {
+  if (_.isUndefined(spec)) return value;
   if (Object.prototype.hasOwnProperty.call(spec, '$set')) {
     return set(value, (spec as SetCommand<T>)['$set']);
   }
@@ -92,20 +93,20 @@ function update<
     return apply(value, (spec as ApplyCommand<T>)['$apply']);
   }
   if (Object.prototype.hasOwnProperty.call(spec, '$delete')) {
-    return _delete(value, (spec as DeleteCommand<T>)['$delete']);
+    return _delete(value, (spec as DeleteCommand<T>)['$delete']) as T;
   }
   if (Object.prototype.hasOwnProperty.call(spec, '$splice')) {
-    return splice(value as A[], (spec as SpliceCommand<A[]>)['$splice']);
+    return splice(value as A[], (spec as SpliceCommand<A[]>)['$splice']) as T;
   }
   if (Object.prototype.hasOwnProperty.call(spec, '$push')) {
-    return push(value as A[], (spec as PushCommand<A[]>)['$push']);
+    return push(value as A[], (spec as PushCommand<A[]>)['$push']) as T;
   }
   const copy = _.clone(value);
   for (const key in spec) {
     if (Object.prototype.hasOwnProperty.call(spec, key)) {
       if (_.isObject(spec[key]) || _.isArray(spec[key])) {
         copy[key] = update(copy[key] || spec[key], spec[key]);
-      } else {
+      } else if (!_.isUndefined(spec[key])) {
         copy[key] = spec[key];
       }
     }

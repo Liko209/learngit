@@ -9,7 +9,7 @@ import {
 import _ from 'lodash';
 import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
-import { createResponse } from './utils';
+import { createResponse } from '../utils';
 import {
   META_ROUTE,
   META_PARAM_PARAM,

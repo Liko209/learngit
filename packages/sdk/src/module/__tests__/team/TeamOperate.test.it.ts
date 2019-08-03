@@ -8,7 +8,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { jit } from 'shield/sdk';
 import { IApiContract, IRequestResponse } from 'shield/sdk/types';
 import { readApiJson } from 'shield/sdk/utils';
-import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
+import { IGlipTeamPost } from 'shield/sdk/mocks/glip/api/team/team.post.contract';
 
 jit('Group Integration test', ({ helper, sdk, template }) => {
   let groupService: GroupService;

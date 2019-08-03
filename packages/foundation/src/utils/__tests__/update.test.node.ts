@@ -9,6 +9,22 @@ import { update, UpdateSpec } from '../update';
 describe('test update', () => {
   describe('update directly as deep partial update', () => {
     it('update array partially at root 1', () => {
+      const source = {
+        x: [1, 2, 3],
+        y: 11,
+      };
+      const copy = _.cloneDeep(source);
+      const result = update(source, {
+        x: [22],
+        y: undefined,
+      });
+      expect(source).toEqual(copy);
+      expect(result).toEqual({
+        x: [22, 2, 3],
+        y: 11,
+      });
+    });
+    it('update array partially at root 1', () => {
       const source = [1, 2, 3];
       const copy = _.cloneDeep(source);
       const result = update(source, [4, 5, 6, 7]);
