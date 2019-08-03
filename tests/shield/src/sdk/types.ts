@@ -16,7 +16,7 @@ import { Nullable } from 'sdk/types';
 import { GlipInitialDataHelper, GlipDataHelper } from './mocks/glip/data/data';
 import { InitialData } from './mocks/glip/types';
 import { MockSocketServer } from './server/MockSocketServer';
-import { BaseScenario } from "shield/sdk/BaseScenario";
+import { BaseScenario } from 'shield/sdk/BaseScenario';
 
 type ItContext = {
   // ACCOUNT user info
@@ -41,9 +41,13 @@ type ItContext = {
     // glip socketServer, use to send message to client.
     socketServer: MockSocketServer;
     clearMocks: () => void;
-    useScenario: <T extends BaseScenario>(
-      scenarioClass: { new (...arg: any): T},
-      props?: any,
+    useScenario: <
+      T extends BaseScenario<any>,
+      P = (T extends BaseScenario<infer P> ? P : object),
+      Props extends P = P,
+    >(
+      scenarioClass: { new (...arg: any): T },
+      props?: Props,
     ) => Promise<T>;
   };
   // sdk setup/cleanUp

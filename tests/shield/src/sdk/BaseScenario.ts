@@ -5,6 +5,6 @@
  */
 import { ItContext } from './types';
 
-export class BaseScenario {
-  constructor(protected context: ItContext) {}
+export class BaseScenario<Props extends object> {
+  constructor(protected context: ItContext, public props: Props) {}
 }

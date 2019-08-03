@@ -7,6 +7,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
 import { Post } from './post/scenario';
+import * as idUtils from 'shield/sdk/mocks/glip/utils';
 
 jit('Send post test', context => {
   let postService: PostService;
@@ -18,14 +19,22 @@ jit('Send post test', context => {
 
   describe('received post', () => {
     it('received a post', async () => {
-      const scenario = await helper.useScenario(Post.IncomingPost);
+      const teamId = idUtils.genTeamId();
+      const scenario = await helper.useScenario(Post.IncomingPost, {
+        team: {
+          _id: teamId,
+          set_abbreviation: 'hahahahaha',
+        },
+        post: {
+          group_id: teamId,
+          text: 'no',
+        },
+      });
       await scenario.emitPost();
       const result = await postService.getPostsByGroupId({
-        groupId: 16386,
+        groupId: teamId,
       });
-      expect(
-        result.posts.find(item => item.text === 'hello'),
-      ).not.toBeUndefined();
+      expect(result.posts.find(item => item.text === 'no')).not.toBeUndefined();
     });
   });
 });

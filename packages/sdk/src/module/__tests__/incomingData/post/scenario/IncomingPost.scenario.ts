@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ItContext, ISocketInfo } from 'shield/sdk';
-import { get} from 'shield/sdk/utils'
+import { get } from 'shield/sdk/utils';
 import { wait } from 'shield/utils/asyncTest';
 import dataDispatcher from 'sdk/component/DataDispatcher';
 import { SOCKET } from 'sdk/service/eventKey';
@@ -13,6 +13,7 @@ import { GlipInitialDataHelper } from 'shield/sdk/mocks/glip/data/data';
 import { update, UpdateSpec } from 'foundation/utils/update';
 import { GlipPost, GlipGroup } from 'shield/sdk/mocks/glip/types';
 import _ from 'lodash';
+import { BaseScenario } from 'shield/sdk/BaseScenario';
 
 type SocketMessage<T> = ISocketInfo<{
   body: {
@@ -22,44 +23,41 @@ type SocketMessage<T> = ISocketInfo<{
     objects: [T[]];
   };
 }>;
+type Props = {
+  post?: UpdateSpec<GlipPost>;
+  team?: UpdateSpec<GlipGroup>;
+};
 
-export class IncomingPost extends GlipScenario {
+export class IncomingPost extends GlipScenario<Props> {
   constructor(
     protected context: ItContext,
     protected glipIndexDataHelper: GlipInitialDataHelper,
-    public props?: {
-      post?: UpdateSpec<GlipPost>;
-      team?: UpdateSpec<GlipGroup>;
-    },
+    public props: Props,
   ) {
     super(context, glipIndexDataHelper, props);
     const { helper } = context;
     const glipDataHelper = helper.glipDataHelper();
-    const team = update(glipDataHelper.team.createTeam(
-      'Test Team with thomas',
-      [123],
-    ), get(props, v => v.team));
+    const team = update(
+      glipDataHelper.team.createTeam('Test Team with thomas', [123]),
+      get(props, v => v.team),
+    );
 
     glipIndexDataHelper.teams.insertOrUpdate(team);
   }
-  
+
   emitPost = async () => {
-    const packet: SocketMessage<GlipPost> = require('../data/RECEIVE_POST.SOCKET.json');
+    const packet: SocketMessage<
+      GlipPost
+    > = require('../data/RECEIVE_POST.SOCKET.json');
     const modifyPacket = update(packet, {
       data: {
         body: {
           timestamp: 122,
-          objects: [
-            [
-              get(this.props, p => p.post)
-            ]
-          ]
-        }
-      }
+          objects: [[get(this.props, p => p.post)]],
+        },
+      },
     });
-    this.context.helper.socketServer.emitPacket(
-      modifyPacket,
-    );
+    this.context.helper.socketServer.emitPacket(modifyPacket);
     const waitSocketIncoming = async (eventKey: string) => {
       await new Promise(resolve => {
         dataDispatcher.once(eventKey, async () => {
