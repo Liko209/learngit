@@ -446,7 +446,7 @@ class RCInfoFetchController {
 
   async getDigitalLines(): Promise<DeviceRecord[]> {
     const deviceInfo: DeviceInfo = await this.rcInfoUserConfig.getDeviceInfo();
-    return deviceInfo ? deviceInfo.records : [];
+    return deviceInfo && deviceInfo.records ? deviceInfo.records : [];
   }
 
   async getForwardingFlipNumbers(

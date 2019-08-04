@@ -15,6 +15,8 @@ import {
   RTCNoAudioStateEvent,
   RTCNoAudioDataEvent,
   RTCCallOptions,
+  RTCSipEmergencyServiceAddr,
+  RTCSipProvisionInfo,
 } from 'voip';
 import { TelephonyCallController } from './TelephonyCallController';
 import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
@@ -34,7 +36,7 @@ import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { Call, CALL_STATE } from '../entity';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
-import { ENTITY, SERVICE } from 'sdk/service/eventKey';
+import { ENTITY } from 'sdk/service/eventKey';
 import notificationCenter, {
   NotificationEntityPayload,
 } from 'sdk/service/notificationCenter';
@@ -42,6 +44,7 @@ import { EVENT_TYPES } from 'sdk/service';
 import { TelephonyDataCollectionController } from './TelephonyDataCollectionController';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
+import { E911Controller } from './E911Controller';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
@@ -52,11 +55,13 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _entityCacheController: IEntityCacheController<Call>;
   private _callControllerList: Map<number, TelephonyCallController> = new Map();
   private _telephonyDataCollectionController: TelephonyDataCollectionController;
+  private _e911Controller: E911Controller;
 
   constructor(rtcEngine: RTCEngine) {
     this._rtcAccount = rtcEngine.createAccount(this);
     this._makeCallController = new MakeCallController();
     this._subscribeNotifications();
+    this._e911Controller = new E911Controller(this._rtcAccount);
   }
 
   private _handleCallStateChanged = (
@@ -121,12 +126,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return this._rtcAccount.state();
   }
 
-  getEmergencyAddress() {
-    const sipProv = this._rtcAccount.getSipProv();
-    if (sipProv && sipProv.device) {
-      return sipProv.device.emergencyServiceAddress;
-    }
-    return undefined;
+  setLocalEmergencyAddress(emergencyAddress: RTCSipEmergencyServiceAddr) {
+    this._e911Controller.setLocalEmergencyAddress(emergencyAddress);
+  }
+
+  updateLocalEmergencyAddress(emergencyAddress: RTCSipEmergencyServiceAddr) {
+    this._e911Controller.updateLocalEmergencyAddress(emergencyAddress);
+  }
+
+  getRemoteEmergencyAddress() {
+    return this._e911Controller.getRemoteEmergencyAddress();
   }
 
   getSipProv() {
@@ -440,11 +449,25 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return this._rtcAccount.callCount();
   }
 
+  onReceiveSipProv(
+    newSipProv: RTCSipProvisionInfo,
+    oldSipProv: RTCSipProvisionInfo,
+  ) {
+    telephonyLogger.debug('onReceiveSipProv');
+    this._e911Controller.onReceiveSipProv(newSipProv, oldSipProv);
+  }
+
+  getLocalEmergencyAddress() {
+    return this._e911Controller.getLocalEmergencyAddress();
+  }
+
+  isEmergencyAddrConfirmed() {
+    return this._e911Controller.isEmergencyAddrConfirmed();
+  }
+
   onReceiveNewProvFlags(sipFlags: RTCSipFlags) {
-    notificationCenter.emit(
-      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_UPDATED,
-      sipFlags,
-    );
+    telephonyLogger.debug('onReceiveNewProvFlags');
+    this._e911Controller.onReceiveNewProvFlags(sipFlags);
   }
 
   private _processLogoutIfNeeded() {
