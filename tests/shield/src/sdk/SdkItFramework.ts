@@ -108,7 +108,6 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
     glipData = parseInitialData(initialData);
     glipDataHelper = useAccount(initialData.company_id, initialData.user_id);
     return createInitialDataHelper(initialData);
-    // return glipData;
   };
 
   const getGlipDataHelper = () => {
@@ -121,7 +120,6 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
   };
 
   const mockResponse: MockResponse = (requestResponse, extractor, mapper) => {
-    // const requestResponse = createSuccessResponse(apiPath, response);
     if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
       const requestResponsePool: IMockRequestResponse[] = [];
       jest

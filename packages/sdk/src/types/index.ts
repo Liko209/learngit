@@ -3,17 +3,17 @@ import { DBConfig } from './db';
 
 type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> };
 
-type Undefinedable<T> = T | null;
+type Nullable<T> = T | null;
 type UndefinedAble<T> = T | undefined;
 
 type NonFunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? never : K
 }[keyof T] &
-string;
+  string;
 type FunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
 }[keyof T] &
-string;
+  string;
 
 interface INewable<T> {
   new (...args: any[]): T;
@@ -28,7 +28,7 @@ export {
   INewable,
   ISdkConfig,
   DeepPartial,
-  Undefinedable as Nullable,
+  Nullable,
   UndefinedAble,
   NonFunctionPropertyNames,
   FunctionPropertyNames,
