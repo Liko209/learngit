@@ -154,6 +154,11 @@ class E911ViewComponent extends Component<Props> {
     this.context();
   };
 
+  onCancel = () => {
+    this.context();
+    this.props.closeE911();
+  }
+
   render() {
     const {
       t,
@@ -221,7 +226,7 @@ class E911ViewComponent extends Component<Props> {
             variant="text"
             data-test-automation-id="e911-DialogCancelButton"
             autoFocus={false}
-            onClick={this.context}
+            onClick={this.onCancel}
             // disabled={loading}
           >
             {t('common.dialog.cancel')}
