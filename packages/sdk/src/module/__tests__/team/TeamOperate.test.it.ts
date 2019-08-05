@@ -9,6 +9,7 @@ import { jit } from 'shield/sdk';
 import { IApiContract, IRequestResponse } from 'shield/sdk/types';
 import { readApiJson } from 'shield/sdk/utils';
 import { IGlipTeamPost } from 'shield/sdk/mocks/glip/api/team/team.post.contract';
+import { Team } from './scenario';
 
 jit('Group Integration test', ({ helper, sdk, template }) => {
   let groupService: GroupService;
@@ -24,28 +25,16 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
   });
   describe('GroupService', () => {
     it('create team', async () => {
-      const mockInfo = helper.mockResponse(
-        readApiJson<IGlipTeamPost>(require('./data/CREATE_TEAM.SUCCESS.json')),
-        api => {
-          const {
-            response: { data },
-          } = api;
-          return {
-            id: data._id,
-            creatorId: data.creator_id,
-            members: data.members,
-            name: data.set_abbreviation,
-          };
-        },
-      );
-      await groupService.createTeam(mockInfo.creatorId, mockInfo.members, {
-        name: mockInfo.name,
+      const { entity } = await helper.useScenario(Team.Create.Success);
+
+      await groupService.createTeam(entity.creator_id, entity.members, {
+        name: entity.set_abbreviation,
       });
-      const result = await groupService.getById(mockInfo.id!);
+      const result = await groupService.getById(entity._id!);
       expect(result).not.toBeUndefined();
-      expect(result!.set_abbreviation).toEqual(mockInfo.name);
-      expect(result!.creator_id).toEqual(mockInfo.creatorId);
-      expect(result!.members).toEqual(mockInfo.members);
+      expect(result!.set_abbreviation).toEqual(entity.set_abbreviation);
+      expect(result!.creator_id).toEqual(entity.creator_id);
+      expect(result!.members).toEqual(entity.members);
     });
     it('modify team name', async () => {
       const mockInfo = helper.mockResponse(
