@@ -19,8 +19,7 @@ type JuiDropdownContactInfoProps = {
 };
 
 const JuiStyledDropdown = styled('div')`
-  min-width: ${width(30)};
-  transition: width 0.2s ease;
+  width: ${width(61)};
   background: ${({ theme }) => theme.palette.background.paper};
   cursor: pointer;
 `;
@@ -29,8 +28,6 @@ const StyledContactWrapper = styled('div')`
   display: flex;
   align-items: center;
   padding: ${spacing(3, 4)};
-  width: ${width(61)};
-  box-sizing: border-box;
   background: ${({ theme }) => theme.palette.grey['100']};
 `;
 
