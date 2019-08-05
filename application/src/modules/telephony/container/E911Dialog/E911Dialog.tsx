@@ -11,27 +11,29 @@ import { i18nP } from '@/utils/i18nT';
 import { Dialog } from '@/containers/Dialog';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 
+const Z_INDEX_GREATER_THAN_TOOLTIP = 1600;
+
 type E911DialogProps = {
   id: string;
   content: string;
   onOK?: () => any;
   okText?: string;
   onCancel: () => any;
-}
+};
 
 type titleProps = {
   id: string;
   onClick: () => void;
-}
+};
 
-function DialogTitle({ id, onClick }: titleProps) {
+function DialogTitle({ onClick }: titleProps) {
   return (
     <StyledDialogHeader>
       <StyledJuiDialogTitle>
         {i18nP('common.dialog.Alert')}
       </StyledJuiDialogTitle>
       <JuiIconButton
-        data-test-automation-id={`${id}DialogCrossButton`}
+        data-test-automation-id="emergencyPromptDialogCrossButton"
         variant="plain"
         onClick={onClick}
         tooltipTitle={i18nP('common.dialog.close')}
@@ -39,7 +41,7 @@ function DialogTitle({ id, onClick }: titleProps) {
         close
       </JuiIconButton>
     </StyledDialogHeader>
-  )
+  );
 }
 
 function alertE911Dialog({
@@ -62,36 +64,42 @@ function alertE911Dialog({
         }}
       />
     ),
-    modalProps: { 'data-test-automation-id': `${id}Dialog` },
+    modalProps: {
+      'data-test-automation-id': `${id}Dialog`,
+      style: {
+        'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
+      }
+    },
     okBtnProps: { 'data-test-automation-id': `${id}OkButton` },
     cancelBtnProps: { 'data-test-automation-id': `${id}CancelButton` },
     size: 'small',
   });
 }
 
-function simpleE911Dialog({
-  id,
-  content,
-  onCancel,
-}: E911DialogProps) {
+function simpleE911Dialog({ id, content, onCancel }: E911DialogProps) {
   const dialog = Dialog.simple(
-    (
-      <>
-        <DialogTitle
-          id={id}
-          onClick={() => {
-            onCancel();
-            dialog.dismiss();
-          }}
-        />
-        <JuiDialogContent data-test-automation-id={`${id}DialogContent`}>
-          {content}
-        </JuiDialogContent>
-      </>
-    ),
+    <>
+      <DialogTitle
+        data-test-automation-id="e911-prompt-dialog"
+        id={id}
+        onClick={() => {
+          onCancel();
+          dialog.dismiss();
+        }}
+      />
+      <JuiDialogContent data-test-automation-id={`${id}DialogContent`}>
+        {content}
+      </JuiDialogContent>
+    </>,
     {
       size: 'small',
-    });
+      componentProps: {
+        style: {
+          'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
+        }
+      }
+    },
+  );
 }
 
-export { alertE911Dialog, simpleE911Dialog }
+export { alertE911Dialog, simpleE911Dialog };

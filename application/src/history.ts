@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import {
-  LocationDescriptorObject, Path, LocationState, createBrowserHistory
+  LocationDescriptorObject, Path, LocationState, createBrowserHistory, createMemoryHistory
 } from 'history';
 
-const history = createBrowserHistory();
+const history = process && process.env.NODE_ENV === 'test' ? createMemoryHistory() : createBrowserHistory();
 const historyPush = history.push;
 const historyReplace = history.replace;
 

@@ -34,9 +34,17 @@ import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
 import { BlockNumberDialog } from './PhoneTab/index';
 
 export class HomePage extends BaseWebComponent {
-  async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
+  async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
     await this.waitUntilExist(this.leftPanel, timeout)
     await this.waitForAllSpinnersToDisappear();
+    if (confirmE911Form) {
+      if (await this.emergencyConfirmFromEntry.exists) {
+        await this.t
+          .click(this.emergencyConfirmFromEntry)
+          .click(this.emergencyConformButton);
+      }
+    }
+
     if (alwaysFocus)
       await h(this.t).interceptHasFocus(true);
   }
@@ -56,6 +64,17 @@ export class HomePage extends BaseWebComponent {
     await h(this.t).directLoginWithUser(url, user);
     await this.ensureLoaded();
   }
+
+  get emergencyConfirmFromEntry() {
+    return this.getSelector('a').withText('Confirm address now.');
+  }
+
+  get emergencyConformButton() {
+    // FIXME
+    return this.getSelectorByAutomationId('e911-DialogOKButton');
+  }
+
+
 
   get leftPanel() {
     return this.getComponent(LeftPanel);
@@ -156,6 +175,38 @@ export class HomePage extends BaseWebComponent {
 
   async openDialer() {
     await this.t.hover('html').click(this.dialpadButton);
+    await this.closeE911Prompt();
+  }
+
+  get e911AlertDialog() {
+    return this.getSelectorByAutomationId('e911-prompt-dialog');
+  }
+
+  async closeE911Prompt() {
+    const button = this.getSelectorByAutomationId('emergencyPromptDialogCrossButton');
+    if (await button.exists) {
+      await this.t.click(button);
+    }
+  }
+
+  get e911DialogCancelButton() {
+    return this.getSelectorByAutomationId('e911-DialogCancelButton');
+  }
+
+  get e911DialogConfirmButton() {
+    return this.getSelectorByAutomationId('e911-DialogOKButton');
+  }
+
+  async closeE911Form() {
+    if (await this.e911DialogCancelButton.exists) {
+      await this.t.click(this.e911DialogCancelButton);
+    }
+  }
+
+  async confirmE911Form() {
+    if (await this.e911DialogConfirmButton.exists) {
+      await this.t.click(this.e911DialogConfirmButton);
+    }
   }
 
   async hoverDialpadButton() {

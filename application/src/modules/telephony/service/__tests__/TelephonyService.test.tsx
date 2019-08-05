@@ -23,7 +23,7 @@ const phoneNumberService = {
 describe('TelephonyService', () => {
   @testable
   class needE911Prompt {
-    @test('should needE911Prompt if account has DL and emergency has benn confirmed')
+    @test('should needE911Prompt if account has DL and emergency has been confirmed')
     @mockService(RCInfoService, 'getDigitalLines', [1])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
