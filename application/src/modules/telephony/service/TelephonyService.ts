@@ -474,7 +474,7 @@ class TelephonyService {
         const lines = await this._rcInfoService.getDigitalLines();
         if (lines.length > 0) {
           // prompt to confirm
-          this.openE911();
+          this.openE911(() => this._makeCall(toNumber, callback));
         } else {
           // toast error
           Notification.flashToast({
@@ -1043,11 +1043,11 @@ class TelephonyService {
     }
   };
 
-  openE911 = () => {
+  openE911 = (successCallback?: Function) => {
     if (this._telephonyStore.hasShowE911) {
       return;
     }
-    OpenDialogE911();
+    OpenDialogE911(successCallback);
     this._telephonyStore.switchE911Status();
   };
 

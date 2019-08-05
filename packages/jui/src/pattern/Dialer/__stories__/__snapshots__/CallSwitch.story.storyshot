@@ -93,6 +93,7 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
   max-width: 100% !important;
   box-sizing: border-box;
   margin: 0 auto;
+  pointer-events: auto;
 }
 
 .c0 .message {
@@ -105,7 +106,6 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
 
 .c0 .action {
   margin-right: 0;
-  pointer-events: auto;
 }
 
 .c0 .c4 + .c2 {

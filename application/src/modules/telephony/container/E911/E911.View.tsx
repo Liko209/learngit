@@ -152,6 +152,7 @@ class E911ViewComponent extends Component<Props> {
     const { onSubmit } = this.props;
     await onSubmit();
     this.context();
+    this.props.successCallback && this.props.successCallback();
   };
 
   onCancel = () => {
