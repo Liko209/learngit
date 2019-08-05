@@ -6,7 +6,7 @@
 
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
-import { container, decorate, injectable } from 'framework';
+import { container, jupiter, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyService } from '../../../service/TelephonyService';
@@ -16,7 +16,10 @@ import { DialerViewModel } from '../Dialer.ViewModel';
 import { GlobalConfigService } from 'sdk/module/config';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { getEntity } from '@/store/utils';
+import { MediaService } from '@/modules/media/service';
+import { IMediaService } from '@/interface/media';
 
+jupiter.registerService(IMediaService, MediaService);
 jest.mock('@/store/utils');
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);

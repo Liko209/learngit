@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { runInAction } from 'mobx';
 import { test, testable } from 'shield';
 import { mockService } from 'shield/sdk';
-import { mockGlobalValue } from 'shield/application';
+import { mockGlobalValue, mockEntity } from 'shield/application';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -20,14 +21,17 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { ProfileService } from 'sdk/module/profile';
 import { TelephonyService } from '../TelephonyService';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
-import { container, Jupiter, injectable, decorate } from 'framework';
+import { container, jupiter, injectable, decorate } from 'framework';
 import { config } from '@/modules/telephony/module.config';
 import { TelephonyService as ServerTelephonyService } from 'sdk/module/telephony';
-
+import { MediaService } from '@/modules/media/service';
+import { IMediaService } from '@/interface/media';
+import { ENTITY_NAME } from '@/store';
 
 jest.mock('@/containers/Notification');
 
 decorate(injectable(), FeaturesFlagsService);
+jupiter.registerService(IMediaService, MediaService);
 
 describe('Prompt user to confirm emergency address first when user tries to make outbound call to non-ext number', () => {
   let telephonyService: TelephonyService;
@@ -37,6 +41,13 @@ describe('Prompt user to confirm emergency address first when user tries to make
 
     container.bind(FeaturesFlagsService).to(FeaturesFlagsService);
   });
+
+  const mockVolumeEntity = (name: string, id: any) => {
+    if (name === ENTITY_NAME.USER_SETTING) {
+      return { value: 1 };
+    }
+    return {};
+  };
 
   @testable
   class t1 {
@@ -52,14 +63,17 @@ describe('Prompt user to confirm emergency address first when user tries to make
     @mockService(PermissionService, 'hasPermission', true)
     @mockService.resolve(ProfileService, 'getProfile', {})
     @mockGlobalValue(true)
+    @mockEntity(mockVolumeEntity)
     beforeEach() {
-      const jupiter = container.get(Jupiter);
       jupiter.registerModule(config);
-      telephonyService = container.get(TELEPHONY_SERVICE);
     }
 
     @test('should prompt when Clicks a phone number in the conversation stream')
     async t2() {
+      runInAction(() => {
+        telephonyService = jupiter.get(TELEPHONY_SERVICE);
+      });
+
       jest
         .spyOn(telephonyService, 'isShortNumber')
         .mockResolvedValueOnce(false);
@@ -83,6 +97,9 @@ describe('Prompt user to confirm emergency address first when user tries to make
       'should not prompt when Clicks a short phone number in the conversation stream',
     )
     async t3() {
+      runInAction(() => {
+        telephonyService = jupiter.get(TELEPHONY_SERVICE);
+      });
       jest.spyOn(telephonyService, 'isShortNumber').mockResolvedValueOnce(true);
       jest
         .spyOn(telephonyService, '_makeCall')
@@ -118,14 +135,16 @@ describe('Prompt user to confirm emergency address first when user tries to make
     @mockService(PermissionService, 'hasPermission', true)
     @mockService.resolve(ProfileService, 'getProfile', {})
     @mockGlobalValue(true)
+    @mockEntity(mockVolumeEntity)
     beforeEach() {
-      const jupiter = container.get(Jupiter);
       jupiter.registerModule(config);
-      telephonyService = container.get(TELEPHONY_SERVICE);
     }
 
     @test('should show flash toast when not digital line')
     async t1() {
+      runInAction(() => {
+        telephonyService = jupiter.get(TELEPHONY_SERVICE);
+      });
       Notification.flashToast = jest.fn();
       jest
         .spyOn(telephonyService, 'isShortNumber')
