@@ -11,7 +11,9 @@ import {
 } from 'sdk/api/ringcentral/types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 
-type E911Props = {};
+type E911Props = {
+  successCallback?: Function;
+};
 
 type E911ViewProps = E911Props & {
   handleFieldChange: (

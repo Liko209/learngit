@@ -15,8 +15,8 @@ const E911 = buildContainer<E911Props>({
   ViewModel: E911ViewModel,
 });
 
-const OpenDialogE911 = () => {
-  Dialog.simple(<E911 />, {
+const OpenDialogE911 = (successCallback?: Function) => {
+  Dialog.simple(<E911 successCallback={successCallback} />, {
     scroll: 'body',
   });
 };
