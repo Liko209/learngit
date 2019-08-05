@@ -6,6 +6,7 @@ export type MentionBlotData = {
   denotationChar: string;
   name: string;
   id: number;
+  isTeam: boolean;
 };
 
 class MentionBlot extends Embed {

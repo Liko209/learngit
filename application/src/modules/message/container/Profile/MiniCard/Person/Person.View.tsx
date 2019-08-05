@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import {
   JuiMiniCard,
   JuiMiniCardHeader,
-  JuiMiniCardFooter,
+  JuiMiniCardFooter
 } from 'jui/pattern/MiniCard';
 import { ProfileMiniCardPersonViewProps } from './types';
 import { ProfileMiniCardPersonHeader } from './Header';
@@ -18,7 +18,7 @@ import { ProfileMiniCardPersonFooter } from './Footer';
 @observer
 class ProfileMiniCardPersonView extends Component<
   ProfileMiniCardPersonViewProps
-  > {
+> {
   render() {
     const { id, isMe } = this.props;
     return (

@@ -19,7 +19,6 @@ const StyledMask = styled.div`
 
 const StyledMaskWrapper = styled.div`
   position: relative;
-  display: table;
   border-radius: 50%;
   background-color: ${palette('common', 'white')};
   overflow: hidden;

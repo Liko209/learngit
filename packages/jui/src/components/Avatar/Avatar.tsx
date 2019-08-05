@@ -149,7 +149,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   );
 
   const avatarWithMask = mask ? (
-    <StyledMaskWrapper>
+    <StyledMaskWrapper onClick={rest.onClick}>
       {avatar}
       {maskWithIcon}
     </StyledMaskWrapper>

@@ -14,13 +14,18 @@ import { TeamPermissionController } from '../TeamPermissionController';
 jest.mock('../../../../api');
 
 describe('GroupController', () => {
+  let teamController: GroupController;
+  beforeEach(() => {
+    teamController = new GroupController(
+      {} as any,
+      {} as any,
+      {} as any,
+      {} as any,
+    );
+    jest.clearAllMocks();
+  });
   describe('getTeamActionController()', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
     it('should call partial modify controller', async () => {
-      const teamController = new GroupController(undefined);
-
       const dao = new BaseDao('Post', new TestDatabase());
       jest.spyOn(daoManager, 'getDao').mockImplementationOnce(() => {
         return dao;
@@ -34,14 +39,18 @@ describe('GroupController', () => {
       expect(result instanceof GroupActionController).toBe(true);
     });
   });
+
   describe('getTeamPermissionController()', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
     it('should get TeamPermissionController', () => {
-      const teamController = new GroupController(undefined);
       const result = teamController.getTeamPermissionController();
       expect(result instanceof TeamPermissionController).toBe(true);
+    });
+  });
+
+  describe('getGroupActionController()', () => {
+    it('should get getGroupActionController', () => {
+      const result = teamController.getGroupActionController();
+      expect(result instanceof GroupActionController).toBe(true);
     });
   });
 });

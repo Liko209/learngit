@@ -9,5 +9,11 @@ import { ITracer } from './ITracer';
 export interface IPerformance {
   initialize(): Promise<void>;
 
+  putAttribute(attr: string, value: string): void;
+
+  removeAttribute(attr: string): void;
+
+  getAttribute(attr: string): { attr: string; value: string } | undefined;
+
   getTracer(traceName: string): ITracer;
 }

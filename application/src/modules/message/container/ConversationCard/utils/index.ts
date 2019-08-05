@@ -1,6 +1,7 @@
 import { TypeDictionary } from 'sdk/utils';
 import PostModel from '@/store/models/Post';
 import { RepliedEntityHandlers } from '../types';
+import { TEAM_MENTION_ID } from '../../ConversationPage/MessageInput/Mention/constants';
 
 export function isEditable(post: PostModel) {
   const { itemTypeIds, id } = post;
@@ -11,6 +12,15 @@ export function isEditable(post: PostModel) {
       (!!itemTypeIds[TypeDictionary.TYPE_ID_TASK] ||
         !!itemTypeIds[TypeDictionary.TYPE_ID_EVENT])
     )
+  );
+}
+
+export function isMentionIdsContainTeam(ids: number[]) {
+  return (
+    ids &&
+    ids.some(id => {
+      return id === TEAM_MENTION_ID;
+    })
   );
 }
 

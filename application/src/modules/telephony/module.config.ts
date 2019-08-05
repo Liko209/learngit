@@ -10,6 +10,8 @@ import { TelephonyStore } from './store';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
 import { TelephonySettingManager } from './TelephonySettingManager/TelephonySettingManager';
 import { TELEPHONY_SERVICE } from './interface/constant';
+import { IRingtonePrefetcher } from './interface/IRingtonePrefetcher';
+import { RingtonePrefetcher } from './service/RingtonePrefetcher';
 
 const config: ModuleConfig = {
   entry: TelephonyModule,
@@ -21,6 +23,7 @@ const config: ModuleConfig = {
     TelephonyStore,
     TelephonyNotificationManager,
     TelephonySettingManager,
+    { name: IRingtonePrefetcher, value: RingtonePrefetcher },
   ],
 };
 

@@ -1255,8 +1255,7 @@ class MentionUsers extends BaseWebComponent {
   }
 
   get members() {
-    this.warnFlakySelector();
-    return this.self.find('div').withAttribute('uid');
+    return this.getSelector('[data-test-automation-class="match-item"]');
   }
 
   async selectMemberByNth(n: number) {

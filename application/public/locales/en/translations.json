@@ -167,6 +167,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
+    "guests": "Guests",
     "showUnreads": "Show unread",
     "meGroup": "me",
     "mentionPosts": "Mentions",
@@ -318,6 +319,7 @@
     "message": "Message",
     "atMentionAllTeam": "Team",
     "atMentionAllAdmin": "admin",
+    "atMentionTeamSuffix": "(notify everyone)",
     "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
     "typingIndicator": {
       "oneTyping": "<0>{{personA}}</0> is typing...",
@@ -484,13 +486,17 @@
         "phone": "Phone",
         "homepageError": "Invalid webpage address",
         "editProfileNetworkError": "We weren't able to save the edit. Check your network connection, then try again.",
-        "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later."
+        "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later.",
+        "editProfilePhotoTitle": "Edit profile photo",
+        "editProfilePhotoUploadPhoto": "Upload photo",
+        "editProfilePhotoZoomText": "Zoom"
       }
     },
     "group": {
       "addPeople": "Add people"
     },
     "team": {
+      "showAllCount": "Show all {{count}}",
       "Members": "Members",
       "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",

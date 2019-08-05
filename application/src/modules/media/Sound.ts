@@ -30,6 +30,7 @@ class Sound {
   private _loadError: boolean;
   private _seek: number;
   private _hasSinkId: boolean;
+  private _holdPlaying: boolean;
 
   private _node: (HTMLMediaElement & { setSinkId?: any; sinkId?: any }) | null;
 
@@ -87,10 +88,11 @@ class Sound {
     }
   }
 
-  dispose() {
+  async dispose() {
     if (this._node) {
       this._node.pause();
       this._node.currentTime = 0;
+      this._node.setSinkId && (await this._node.setSinkId(''));
 
       this._events
         .filter(evt => evt.type === MediaEventType.ON && evt.name === 'error')
@@ -99,12 +101,11 @@ class Sound {
         });
       this._node.src = '';
 
+      this._node = null;
       if (process.env.NODE_ENV !== 'test') {
         const audio = document.getElementById(this._id);
         audio && audio.parentNode && audio.parentNode.removeChild(audio);
       }
-
-      this._node = null;
     }
     setTimeout(() => {
       this._unbindAllEvents();
@@ -165,24 +166,27 @@ class Sound {
 
     this._soundEventBind();
 
+    if (this._outputDevice && this._node.setSinkId) {
+      const node = this._node;
+      // fix bug https://jira.ringcentral.com/browse/FIJI-7786
+      setTimeout(() => {
+        node
+          .setSinkId(this._outputDevice)
+          .then(() => {
+            this._hasSinkId = true;
+            this._holdPlaying && this._soundPlay();
+          })
+          .catch(() => {
+            this._hasSinkId = false;
+          });
+      }, 0);
+    }
     this._node.src = this._url;
     this._node.preload = 'auto';
     this._node.volume = this._volume;
     this._node.muted = this._muted;
     this._node.loop = this._loop;
     this._node.autoplay = this._autoplay;
-
-    if (this._outputDevice && this._node.setSinkId) {
-      this._node
-        .setSinkId(this._outputDevice)
-        .then(() => {
-          this._hasSinkId = true;
-        })
-        .catch(() => {
-          this._hasSinkId = false;
-        });
-    }
-
     this._node.load();
   }
 
@@ -215,8 +219,10 @@ class Sound {
           play
             .then(() => {
               this._loadError = false;
+              this._holdPlaying = false;
               if (this._isDeviceSound && !this._hasSinkId) {
                 this._soundStop();
+                this._holdPlaying = true;
                 return;
               }
             })

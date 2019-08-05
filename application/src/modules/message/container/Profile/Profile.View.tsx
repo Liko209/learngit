@@ -28,6 +28,9 @@ const MappingComponent = {
 
 const factory = (id: number, type: PROFILE_TYPE, typeId: number) => {
   const Component = MappingComponent[type][typeId];
+  if (!Component) {
+    return null;
+  }
   return <Component id={id} />;
 };
 

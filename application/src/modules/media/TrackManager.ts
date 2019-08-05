@@ -13,8 +13,8 @@ import { MediaTrack } from './MediaTrack';
 
 class TrackManager {
   private _tracks: MediaTrack[] = [];
+  private _allOutputDevices: MediaDeviceType[] = [];
   private _globalVolume: number = 1;
-  private _outputDevices: MediaDeviceType[] = [];
 
   useMediaTrack(trackId?: string) {
     let mediaTrack: MediaTrack;
@@ -45,7 +45,7 @@ class TrackManager {
   }
 
   setAllTrackOutputDevices(devices: MediaDeviceType[]) {
-    this._outputDevices = devices;
+    this._allOutputDevices = devices;
     this._tracks.forEach(track => {
       track.setOutputDevices(devices);
     });
@@ -56,11 +56,15 @@ class TrackManager {
   }
 
   getAllOutputDevicesId() {
-    return this._outputDevices;
+    return this._allOutputDevices;
   }
 
   createTrack(options: MediaTrackOptions) {
     return this._createTrack(options);
+  }
+
+  updateAllOutputDevices(devices: MediaDeviceType[]) {
+    this._allOutputDevices = devices;
   }
 
   dispose() {
@@ -69,8 +73,8 @@ class TrackManager {
     });
 
     this._tracks = [];
+    this._allOutputDevices = [];
     this._globalVolume = 1;
-    this._outputDevices = [];
   }
 
   private _getTrackById(id: string) {
@@ -100,7 +104,7 @@ class TrackManager {
   }
 
   get outputDevices() {
-    return this._outputDevices;
+    return this._allOutputDevices;
   }
 }
 

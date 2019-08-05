@@ -85,11 +85,17 @@ class AnalyticsCollector {
   }
 
   // [FIJI-3202] Segment - Add event - Send post
-  sendPost(source: string, postType: string, destination: string) {
+  sendPost(
+    source: string,
+    postType: string,
+    destination: string,
+    atTeam='no',
+  ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
       source,
       postType,
       destination,
+      atTeam,
     });
   }
 

@@ -12,7 +12,7 @@ type MentionProps = {
 };
 
 type MentionViewProps = {
-  ids: number[];
+  membersId: number[];
   open: boolean;
   currentIndex: number;
   searchTerm?: string;
@@ -20,7 +20,6 @@ type MentionViewProps = {
   selectHandler: Function;
   isEditMode?: boolean;
   isOneToOneGroup: boolean;
-  initIndex: number;
 };
 
 export { MentionProps, MentionViewProps };

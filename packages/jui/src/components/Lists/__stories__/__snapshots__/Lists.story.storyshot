@@ -320,6 +320,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 }
 
 .c1.c1 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -332,6 +333,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 }
 
 .c1.c1 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -693,6 +695,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 }
 
 .c4.c4 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -705,6 +708,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 }
 
 .c4.c4 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;

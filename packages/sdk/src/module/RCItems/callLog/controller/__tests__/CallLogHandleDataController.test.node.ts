@@ -64,7 +64,7 @@ describe('CallLogHandleDataController', () => {
       } as any;
 
       await controller.handleMissedCallEvent(mockData);
-      expect(mockConfig.getPseudoCallLogInfo).not.toBeCalled();
+      expect(mockConfig.getPseudoCallLogInfo).not.toHaveBeenCalled();
     });
 
     it('should do nothing when can not get sessionId', async () => {
@@ -75,7 +75,7 @@ describe('CallLogHandleDataController', () => {
       } as any;
 
       await controller.handleMissedCallEvent(mockData);
-      expect(mockConfig.getPseudoCallLogInfo).not.toBeCalled();
+      expect(mockConfig.getPseudoCallLogInfo).not.toHaveBeenCalled();
     });
 
     it('should do nothing when can not get timestamp', async () => {
@@ -86,7 +86,7 @@ describe('CallLogHandleDataController', () => {
       } as any;
 
       await controller.handleMissedCallEvent(mockData);
-      expect(mockConfig.getPseudoCallLogInfo).not.toBeCalled();
+      expect(mockConfig.getPseudoCallLogInfo).not.toHaveBeenCalled();
     });
 
     it('should do nothing when can not get extensionId', async () => {
@@ -98,7 +98,7 @@ describe('CallLogHandleDataController', () => {
       } as any;
 
       await controller.handleMissedCallEvent(mockData);
-      expect(mockConfig.getPseudoCallLogInfo).not.toBeCalled();
+      expect(mockConfig.getPseudoCallLogInfo).not.toHaveBeenCalled();
     });
 
     it('should do nothing when already has pseudo missed call', async () => {
@@ -116,7 +116,7 @@ describe('CallLogHandleDataController', () => {
       controller['_getCallLogBySessionId'] = jest.fn();
 
       await controller.handleMissedCallEvent(mockData);
-      expect(controller['_getCallLogBySessionId']).not.toBeCalled();
+      expect(controller['_getCallLogBySessionId']).not.toHaveBeenCalled();
     });
 
     it('should do nothing when already has db missed call', async () => {
@@ -137,7 +137,7 @@ describe('CallLogHandleDataController', () => {
       controller['_getCallLogFromMissedCall'] = jest.fn();
 
       await controller.handleMissedCallEvent(mockData);
-      expect(controller['_getCallLogFromMissedCall']).not.toBeCalled();
+      expect(controller['_getCallLogFromMissedCall']).not.toHaveBeenCalled();
     });
 
     it('should parse and save/notify pseudo data, JPT-2504', async () => {
@@ -158,13 +158,48 @@ describe('CallLogHandleDataController', () => {
       notificationCenter.emitEntityUpdate = jest.fn();
 
       await controller.handleMissedCallEvent(mockData);
-      expect(mockConfig.setPseudoCallLogInfo).toBeCalledWith({
+      expect(mockConfig.setPseudoCallLogInfo).toHaveBeenCalledWith({
         id: {
-          id: 'id' + CALL_DIRECTION.INBOUND,
+          id: `id${CALL_DIRECTION.INBOUND}`,
           result: CALL_RESULT.MISSED,
         },
       });
-      expect(mockSourceController.bulkUpdate.mock.calls[0][0][0]).toHaveProperty('__isPseudo', true);
+      expect(
+        mockSourceController.bulkUpdate.mock.calls[0][0][0],
+      ).toHaveProperty('__isPseudo', true);
+    });
+
+    it('should parse and save/notify pseudo data for anonymous number', async () => {
+      mockConfig.getSyncToken.mockReturnValue('token');
+      mockConfig.getPseudoCallLogInfo.mockReturnValue({
+        id: {
+          result: CALL_RESULT.BUSY,
+        },
+      });
+      const mockData = {
+        timestamp: 'time',
+        sessionId: 'id',
+        extensionId: 10,
+        from: 'anonymous',
+      } as any;
+      controller['_getCallLogBySessionId'] = jest.fn().mockReturnValue({
+        result: CALL_RESULT.STOPPED,
+      });
+      notificationCenter.emitEntityUpdate = jest.fn();
+
+      await controller.handleMissedCallEvent(mockData);
+      expect(mockConfig.setPseudoCallLogInfo).toHaveBeenCalledWith({
+        id: {
+          id: `id${CALL_DIRECTION.INBOUND}`,
+          result: CALL_RESULT.MISSED,
+        },
+      });
+      expect(
+        mockSourceController.bulkUpdate.mock.calls[0][0][0],
+      ).toHaveProperty('__isPseudo', true);
+      expect(
+        mockSourceController.bulkUpdate.mock.calls[0][0][0],
+      ).toHaveProperty('from', undefined);
     });
   });
 
@@ -177,7 +212,7 @@ describe('CallLogHandleDataController', () => {
       } as any;
 
       await controller.handleRCPresenceEvent(mockData);
-      expect(mockConfig.getPseudoCallLogInfo).not.toBeCalled();
+      expect(mockConfig.getPseudoCallLogInfo).not.toHaveBeenCalled();
     });
 
     it('should not update when activeCalls is undefined', async () => {
@@ -190,9 +225,9 @@ describe('CallLogHandleDataController', () => {
       controller['_saveDataAndNotify'] = jest.fn();
 
       await controller.handleRCPresenceEvent(mockData);
-      expect(controller['_isSelfCall']).not.toBeCalled();
-      expect(mockConfig.getPseudoCallLogInfo).toBeCalled();
-      expect(controller['_saveDataAndNotify']).not.toBeCalled();
+      expect(controller['_isSelfCall']).not.toHaveBeenCalled();
+      expect(mockConfig.getPseudoCallLogInfo).toHaveBeenCalled();
+      expect(controller['_saveDataAndNotify']).not.toHaveBeenCalled();
     });
 
     it('should parse and save/notify pseudo data, JPT-2504', async () => {
@@ -226,15 +261,10 @@ describe('CallLogHandleDataController', () => {
       controller['_getCallLogBySessionId'] = jest
         .fn()
         .mockReturnValue(undefined);
-      mockSourceController.bulkUpdate = jest
-        .fn()
-        .mockImplementation((data: CallLog[]) => {
-          expect(data[1].from).toBeUndefined();
-        });
 
       await controller.handleRCPresenceEvent(mockData);
-      expect(mockConfig.getPseudoCallLogInfo).toBeCalled();
-      expect(mockConfig.setPseudoCallLogInfo).toBeCalledWith({
+      expect(mockConfig.getPseudoCallLogInfo).toHaveBeenCalled();
+      expect(mockConfig.setPseudoCallLogInfo).toHaveBeenCalledWith({
         sessionId1: {},
         sessionId2: {
           id: 'sessionId2Outbound',
@@ -245,8 +275,15 @@ describe('CallLogHandleDataController', () => {
           result: 'Unknown',
         },
       });
-      expect(mockSourceController.bulkUpdate.mock.calls[0][0][0]).toHaveProperty('__isPseudo', true);
-      expect(mockSourceController.bulkUpdate.mock.calls[0][0][1]).toHaveProperty('__isPseudo', true);
+      expect(
+        mockSourceController.bulkUpdate.mock.calls[0][0][0],
+      ).toHaveProperty('__isPseudo', true);
+      expect(
+        mockSourceController.bulkUpdate.mock.calls[0][0][1],
+      ).toHaveProperty('__isPseudo', true);
+      expect(
+        mockSourceController.bulkUpdate.mock.calls[0][0][1],
+      ).toHaveProperty('from', undefined);
     });
   });
 

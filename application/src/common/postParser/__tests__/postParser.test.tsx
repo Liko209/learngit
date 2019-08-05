@@ -453,6 +453,18 @@ describe('glipdown text', () => {
           '123  ss',
         ]);
       });
+
+      it('should unescape mention name', () => {
+        expect(
+          postParser(`sdds${atmention('999', '&amp;')}123  ss`, {
+            atMentions: { map },
+          }),
+        ).toEqual([
+          'sdds',
+          <JuiAtMention key={0} id='999' isCurrent={false} name='&' />,
+          '123  ss',
+        ]);
+      })
     });
     describe('emojis', () => {
       it('should parse emoji one with special character', () => {
@@ -854,7 +866,7 @@ Anim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.`,
             { html: true, atMentions: { map } },
           ),
         ).toEqual([
-          <JuiAtMention id='12332' isCurrent={false} name='@Steve' key={0} />,
+          <JuiAtMention id='12332' isCurrent={false} name='Steve' key={0} />,
           ' wrote:',
           <q key={1}>
             {`Est laborum sit nulla sint deserunt cillum et cillum.
@@ -885,6 +897,23 @@ Veniam anim velit amet aliqua proident.`}
           `&lt;a&gt;dsfdsf&lt;/a&gt;`,
         );
       });
+
+      it('should not encode special chars at the end of link', () => {
+        expect(postParser(`"https://jira.ringcentral.com/browse/FIJI-7628"`, { html: true })).toEqual([
+          '"',
+          <a href='https://jira.ringcentral.com/browse/FIJI-7628"' target='_blank' rel='noreferrer' key={0}>
+            https://jira.ringcentral.com/browse/FIJI-7628"
+          </a>,
+          ';',
+        ])
+        expect(postParser(`'https://jira.ringcentral.com/browse/FIJI-7628'`, { html: true })).toEqual([
+          "'",
+          <a href="https://jira.ringcentral.com/browse/FIJI-7628'" target='_blank' rel='noreferrer' key={0}>
+            https://jira.ringcentral.com/browse/FIJI-7628'
+          </a>,
+          ';',
+        ])
+      })
     });
   });
 
@@ -905,7 +934,7 @@ Veniam anim velit amet aliqua proident.`}
             key={0}
             id='187817987'
             isCurrent={false}
-            name='@Jesse'
+            name='Jesse'
           />,
           ' ',
           <Emoji
@@ -937,7 +966,7 @@ Veniam anim velit amet aliqua proident.`}
           <JuiAtMention
             id='187817987'
             isCurrent={false}
-            name='@Jesse'
+            name='Jesse'
             key={0}
           />,
           ' wrote:',
@@ -976,7 +1005,7 @@ Veniam anim velit amet aliqua proident.`}
           }),
         ).toEqual([
           'sdds',
-          <JuiAtMention key={0} id='12244' isCurrent={false} name='@🤣' />,
+          <JuiAtMention key={0} id='12244' isCurrent={false} name='🤣' />,
           '123  ss',
         ]);
       });
@@ -995,7 +1024,7 @@ Veniam anim velit amet aliqua proident.`}
             key={0}
             id='122334'
             isCurrent={false}
-            name='@www.baidu.com'
+            name='www.baidu.com'
           />,
           '123  ss',
         ]);
@@ -1023,14 +1052,14 @@ Veniam anim velit amet aliqua proident.`}
           <JuiAtMention
             id='187629571'
             isCurrent={false}
-            name='@Chris Zhan'
+            name='Chris Zhan'
             key={1}
           />,
           ' ',
           <JuiAtMention
             id='187678723'
             isCurrent={false}
-            name='@Shining Miao'
+            name='Shining Miao'
             key={2}
           />,
           '   please help review',
@@ -1047,7 +1076,7 @@ Veniam anim velit amet aliqua proident.`}
           }),
         ).toEqual([
           'sdds',
-          <JuiAtMention key={0} id='1200' isCurrent={false} name='@**bold**' />,
+          <JuiAtMention key={0} id='1200' isCurrent={false} name='**bold**' />,
           '123  ss',
         ]);
       });
@@ -1083,7 +1112,7 @@ Veniam anim velit amet aliqua proident.`}
             key={0}
             id='123233'
             isCurrent={false}
-            name='@Aaliyah Lind'
+            name='Aaliyah Lind'
           />,
         ]);
 
@@ -1097,7 +1126,7 @@ Veniam anim velit amet aliqua proident.`}
             key={0}
             id='123233'
             isCurrent={false}
-            name='@Aaliyah Lind'
+            name='Aaliyah Lind'
           />,
           ' </a>',
         ]);
@@ -1112,7 +1141,7 @@ Veniam anim velit amet aliqua proident.`}
             key={0}
             id='123233'
             isCurrent={false}
-            name='@Aaliyah Lind'
+            name='Aaliyah Lind'
           />,
           '<a></a>',
         ]);
@@ -1135,13 +1164,13 @@ Veniam anim velit amet aliqua proident.`}
             key={0}
             id='123233'
             isCurrent={false}
-            name='@Aaliyah Lind'
+            name='Aaliyah Lind'
           />,
           <JuiAtMention
             key={1}
             id='123233'
             isCurrent={false}
-            name='@Aaliyah Lind'
+            name='Aaliyah Lind'
           />,
         ]);
       });
@@ -1167,7 +1196,7 @@ Veniam anim velit amet aliqua proident.`}
           <JuiAtMention
             id='123233'
             isCurrent={false}
-            name='@Aaliyah Lind'
+            name='Aaliyah Lind'
             key={1}
           />,
         ]);
@@ -1208,7 +1237,7 @@ Veniam anim velit amet aliqua proident.`}
         ).toEqual([
           <i key={0}>sdds</i>,
           <i key={1}>
-            <JuiAtMention key={0} id='12993' isCurrent={false} name='@SS' />
+            <JuiAtMention key={0} id='12993' isCurrent={false} name='SS' />
             123
           </i>,
           '  ',

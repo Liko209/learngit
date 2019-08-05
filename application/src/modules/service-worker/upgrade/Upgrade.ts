@@ -3,26 +3,37 @@
  * @Date: 2018-11-22 19:22:43
  * Copyright © RingCentral. All rights reserved.
  */
-import history from '@/history';
+
 import { mainLogger, powerMonitor } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
+import { SyncService } from 'sdk/module/sync/service';
 import { TelephonyService } from 'sdk/module/telephony';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import _ from 'lodash';
 
 const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
 const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
-const FOREGROUND_RELOAD_THRESHOLD = 60 * 60 * 1000;
+const IDLE_THRESHOLD = 3 * 60 * 1000;
+const BACKGROUND_TIMER_INTERVAL = IDLE_THRESHOLD / 2;
+const USER_ACTION_EVENT_DEBOUNCE = 500;
 const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
+type SWMessageData = {
+  type?: string;
+  status?: boolean;
+  siblingCount?: number;
+  reason?: string;
+};
 class Upgrade {
   private _hasNewVersion: boolean = false;
   private _hasSkippedWaiting: boolean = false;
   private _hasControllerChanged: boolean = false;
   private _refreshing: boolean = false;
   private _swURL: string;
-  private _lastCheckTime?: Date;
-  private _lastRouterChangeTime?: Date = new Date();
+  private _lastCheckUpdateTime?: Date;
+  private _lastBackgroundTimerFire?: Date = new Date();
+  private _lastUserActionTime?: Date = new Date();
   private _queryTimer: NodeJS.Timeout;
 
   queryInterval = DEFAULT_UPDATE_INTERVAL;
@@ -33,17 +44,20 @@ class Upgrade {
     );
 
     this._resetQueryTimer();
-    window.addEventListener('online', this._onlineHandler.bind(this));
-    window.addEventListener('blur', this._blurHandler.bind(this));
-    history.listen((location: any, action: string) => {
-      if (action === 'PUSH') {
-        this._lastRouterChangeTime = new Date();
-      }
-    });
+    setInterval(this._backgroundTimerHandler, BACKGROUND_TIMER_INTERVAL);
+    window.addEventListener('online', this._onlineHandler);
+    document.addEventListener(
+      'mousemove',
+      _.debounce(this._mouseMoveHandler, USER_ACTION_EVENT_DEBOUNCE),
+    );
+    document.addEventListener(
+      'keypress',
+      _.debounce(this._keyPressHandler, USER_ACTION_EVENT_DEBOUNCE),
+    );
 
     // In case suspend or lock screen for a long time, expected to not reload after unlock screen.
     powerMonitor.onUnlock(() => {
-      this._lastRouterChangeTime = new Date();
+      this._lastUserActionTime = new Date();
     });
   }
 
@@ -83,18 +97,7 @@ class Upgrade {
 
     this._hasNewVersion = true;
 
-    if (this._isInPowerSavingMode()) {
-      mainLogger.info(`${logTag} Postpone upgrade due to power saving mode`);
-      return;
-    }
-
-    if (this._appInFocus()) {
-      if (
-        this._isTimeOut(FOREGROUND_RELOAD_THRESHOLD, this._lastRouterChangeTime)
-      ) {
-        this.skipWaitingIfAvailable('Foreground upgrade');
-      }
-    } else {
+    if (!this._appInFocus()) {
       this.skipWaitingIfAvailable('Background upgrade');
     }
   }
@@ -104,19 +107,41 @@ class Upgrade {
 
     this._hasControllerChanged = true;
 
-    if (this._appInFocus()) {
-      if (
-        this._isTimeOut(FOREGROUND_RELOAD_THRESHOLD, this._lastRouterChangeTime)
-      ) {
-        this.reloadIfAvailable('Foreground upgrade');
+    if (!this._appInFocus()) {
+      this.reloadIfAllSiblingAvailable('Background upgrade');
+    }
+  }
+
+  public onMessageHandler(msgData: string) {
+    let data: SWMessageData = {};
+    try {
+      data = JSON.parse(msgData);
+    } catch (err) {
+      mainLogger.info(
+        `${logTag}onMessageHandler ${data}, parse failed: ${err}`,
+      );
+    }
+
+    if (data.type === 'siblingCanReload') {
+      mainLogger.info(
+        `${logTag}[SiblingCanReload]:[${data.siblingCount}] ${data.status} ${
+          data.reason ? data.reason : ''
+        }`,
+      );
+
+      const triggerSource = 'Message';
+      if (data.status) {
+        this.reloadIfAvailable(triggerSource);
+      } else {
+        mainLogger.info(
+          `${logTag}[${triggerSource}] Forbidden to reload due to sibling in focus`,
+        );
       }
-    } else {
-      this.reloadIfAvailable('Background upgrade');
     }
   }
 
   public skipWaitingIfAvailable(triggerSource: string) {
-    if (this._hasNewVersion && this._canDoReload()) {
+    if (this._hasNewVersion && this._canDoReload(triggerSource)) {
       this._hasNewVersion = false;
       mainLogger.info(
         `${logTag}[${triggerSource}] Will skip waiting due to new version is detected`,
@@ -127,8 +152,28 @@ class Upgrade {
     }
   }
 
+  public reloadIfAllSiblingAvailable(triggerSource: string) {
+    if (this._hasControllerChanged) {
+      // In some unknown cases, it get the onControllerChange event, even if there's no version get published.
+      if (!this._hasSkippedWaiting) {
+        mainLogger.info(
+          `${logTag}[${triggerSource}] No reload due to has no done skipped waiting`,
+        );
+
+        return;
+      }
+
+      if (this._hasServiceWorkerController()) {
+        this._checkSiblingCanReload();
+        return;
+      }
+
+      this.reloadIfAvailable(triggerSource);
+    }
+  }
+
   public reloadIfAvailable(triggerSource: string) {
-    if (this._hasControllerChanged && this._canDoReload()) {
+    if (this._hasControllerChanged && this._canDoReload(triggerSource)) {
       // In some unknown cases, it get the onControllerChange event, even if there's no version get published.
       if (!this._hasSkippedWaiting) {
         mainLogger.info(
@@ -160,7 +205,7 @@ class Upgrade {
     window.sessionStorage.removeItem(WAITING_WORKER_FLAG);
   }
 
-  private async _queryIfHasNewVersion() {
+  private _queryIfHasNewVersion = async () => {
     if (!window.navigator.onLine) {
       this.logInfo('Ignore update due to offline');
       return;
@@ -168,7 +213,7 @@ class Upgrade {
 
     const registration = await this._getRegistration('Update');
     this._startServiceWorkerUpdate(registration);
-  }
+  };
 
   private async _serviceWorkerSkipWaiting() {
     const registration = await this._getRegistration('Skip Waiting');
@@ -191,7 +236,18 @@ class Upgrade {
   }
 
   private _hasServiceWorkerController() {
-    return !!navigator.serviceWorker.controller;
+    return !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+  }
+
+  private _sendMessageToSW(data: Object) {
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage(data);
+    }
+  }
+
+  private _checkSiblingCanReload() {
+    this.logInfo(`Will check if sibling can reload`);
+    this._sendMessageToSW({ type: 'checkSiblingCanReload' });
   }
 
   private async _getRegistration(triggerSource: string) {
@@ -212,7 +268,7 @@ class Upgrade {
       mainLogger.warn(`${logTag}Fail to start update. Invalid registration`);
       return;
     }
-    this._lastCheckTime = new Date();
+    this._lastCheckUpdateTime = new Date();
 
     const activeWorker = registration.active;
     const installingWorker = registration.installing;
@@ -242,30 +298,63 @@ class Upgrade {
     mainLogger.info(`${logTag}Checking new version`);
   }
 
-  private _isTimeOut(interval: number, fromDate?: Date) {
-    if (!fromDate) {
-      return true;
-    }
-
+  private _intervalToNow(fromDate?: Date) {
+    const fromTime = fromDate ? fromDate.getTime() : 0;
     const now = new Date();
-    const duration = now.getTime() - fromDate.getTime();
-    return duration > interval;
+    return now.getTime() - fromTime;
   }
 
-  private _onlineHandler() {
-    if (this._isTimeOut(ONLINE_UPDATE_THRESHOLD, this._lastCheckTime)) {
+  private _isTimeOut(interval: number, fromDate?: Date) {
+    return this._intervalToNow(fromDate) > interval;
+  }
+
+  private _onlineHandler = () => {
+    if (this._isTimeOut(ONLINE_UPDATE_THRESHOLD, this._lastCheckUpdateTime)) {
       this._resetQueryTimer();
       this._queryIfHasNewVersion();
     } else {
       mainLogger.info(`${logTag}Ignore online immediately update`);
     }
+  };
+
+  private _distanceToLastBackgroundTimerFire() {
+    return this._intervalToNow(this._lastBackgroundTimerFire);
   }
 
-  private _blurHandler() {
-    this.reloadIfAvailable('Blur upgrade');
-
-    this.skipWaitingIfAvailable('Blur upgrade');
+  private _isNearToPowerSavingByTimerDetection() {
+    return (
+      this._distanceToLastBackgroundTimerFire() > BACKGROUND_TIMER_INTERVAL * 3
+    );
   }
+
+  private _backgroundTimerHandler = () => {
+    if (this._isNearToPowerSavingByTimerDetection()) {
+      mainLogger.info(
+        `${logTag}Reset user action time due to power saving by timer detection: ${this._distanceToLastBackgroundTimerFire() /
+          1000}`,
+      );
+      // To avoid do refresh when resume computer
+      this._lastUserActionTime = new Date();
+    }
+
+    this._lastBackgroundTimerFire = new Date();
+
+    this._tryUpgradeIfAvailable('Timer upgrade');
+  };
+
+  private _tryUpgradeIfAvailable(triggerSource: string) {
+    this.reloadIfAllSiblingAvailable(triggerSource);
+
+    this.skipWaitingIfAvailable(triggerSource);
+  }
+
+  private _mouseMoveHandler = () => {
+    this._lastUserActionTime = new Date();
+  };
+
+  private _keyPressHandler = () => {
+    this._lastUserActionTime = new Date();
+  };
 
   private _resetQueryTimer() {
     if (this._queryTimer) {
@@ -273,39 +362,67 @@ class Upgrade {
     }
 
     this._queryTimer = setInterval(
-      this._queryIfHasNewVersion.bind(this),
+      this._queryIfHasNewVersion,
       this.queryInterval,
     );
   }
 
-  private _canDoReload() {
-    if (this._isInPowerSavingMode()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to power saving mode`);
+  private _canDoReload(triggerSource: string) {
+    const idleInterval = this._intervalToNow(this._lastUserActionTime);
+    if (idleInterval < IDLE_THRESHOLD) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to App is not in idle: ${idleInterval /
+          1000}`,
+      );
       return false;
     }
 
-    if (this._hasInProgressCall()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to call in progress`);
+    if (this._appInFocus()) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to App is in focus`,
+      );
+      return false;
+    }
+
+    if (this._isInPowerSavingMode()) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to power saving mode`,
+      );
       return false;
     }
 
     if (this._dialogIsPresenting()) {
       mainLogger.info(
-        `${logTag}Forbidden to reload due to dialog is presenting`,
+        `${logTag}[${triggerSource}] Forbidden to reload due to dialog is presenting`,
       );
       return false;
     }
 
     if (this._editorIsOnFocusAndNotEmpty()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to editor is focused`);
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to editor is focused`,
+      );
       return false;
     }
 
-    const itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    if (itemService.hasUploadingFiles()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to uploading file`);
+    if (this._hasInProgressCall()) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to call in progress`,
+      );
+      return false;
+    }
+
+    if (this._isInDataSyncing()) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to data syncing`,
+      );
+      return false;
+    }
+
+    if (this._isInFileUploading()) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to file uploading`,
+      );
       return false;
     }
 
@@ -356,6 +473,20 @@ class Upgrade {
       ServiceConfig.TELEPHONY_SERVICE,
     );
     return telephony.getAllCallCount() > 0;
+  }
+
+  private _isInDataSyncing() {
+    const service = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    );
+    return service.isDataSyncing();
+  }
+
+  private _isInFileUploading() {
+    const service = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    return service.hasUploadingFiles();
   }
 
   private _appInFocus() {

@@ -96,6 +96,7 @@ class StreamViewComponent extends Component<Props> {
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    dataAnalysis.page('Jup_Web/DT_msg_conversationHistory');
   }
 
   componentDidUpdate(prevProps: Props) {

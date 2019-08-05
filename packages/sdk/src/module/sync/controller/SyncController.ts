@@ -46,6 +46,7 @@ import { dataCollectionHelper } from 'sdk/framework';
 const LOG_TAG = 'SyncController';
 class SyncController {
   private _isFetchingRemaining: boolean;
+  private _isDataSyncing: boolean = false;
   private _syncListener: SyncListener;
   private _progressBar: {
     start: () => void;
@@ -89,7 +90,12 @@ class SyncController {
     return null;
   }
 
+  isDataSyncing() {
+    return this._isDataSyncing;
+  }
+
   async syncData(syncListener?: SyncListener) {
+    this._isDataSyncing = true;
     this._syncListener = syncListener || {};
     const lastIndexTimestamp = this.getIndexTimestamp();
     mainLogger.log(LOG_TAG, `start syncData time: ${lastIndexTimestamp}`);
@@ -103,6 +109,7 @@ class SyncController {
     } catch (e) {
       mainLogger.log(LOG_TAG, 'syncData fail', e);
     }
+    this._isDataSyncing = false;
   }
 
   handleStoppingSocketEvent() {
@@ -169,6 +176,7 @@ class SyncController {
         }
         this._isFetchingRemaining = true;
         await this._fetchRemaining(time);
+        notificationCenter.emitKVChange(SERVICE.FETCH_REMAINING_DONE);
         mainLogger.info(LOG_TAG, 'fetch remaining data success');
       } catch (e) {
         this._isFetchingRemaining = false;
