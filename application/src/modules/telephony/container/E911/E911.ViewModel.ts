@@ -293,8 +293,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     current.checked = !current.checked;
   };
 
-  closeE911 = () => {
-    this._telephonyStore.switchE911Status();
+  closeE911 = (status: boolean) => {
+    this._telephonyStore.switchE911Status(status);
   }
 }
 

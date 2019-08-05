@@ -1048,7 +1048,7 @@ class TelephonyService {
       return;
     }
     OpenDialogE911(successCallback);
-    this._telephonyStore.switchE911Status();
+    this._telephonyStore.switchE911Status(true);
   };
 
   needConfirmE911 = async () => {

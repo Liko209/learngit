@@ -157,7 +157,7 @@ class E911ViewComponent extends Component<Props> {
 
   onCancel = () => {
     this.context();
-    this.props.closeE911();
+    this.props.closeE911(false);
   }
 
   render() {

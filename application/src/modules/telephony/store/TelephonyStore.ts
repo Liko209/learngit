@@ -632,8 +632,8 @@ class TelephonyStore {
   };
 
   @action
-  switchE911Status = () => {
-    this.hasShowE911 = !this.hasShowE911;
+  switchE911Status = (status: boolean) => {
+    this.hasShowE911 = status;
   }
 }
 
