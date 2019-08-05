@@ -250,18 +250,24 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
         dismissible: false,
       });
    
-      const e911 = this.E911SettingItemEntity.value;
-      if (e911 && e911.countryIsoCode !== dialPlanISOCode) {
-        setTimeout(() => {
-          this._telephonyService.openE911();
-        }, OPEN_E911_TIME)
-      }
+      await this._openE911(dialPlanISOCode);
 
       return true;
     } catch {
       return false;
     }
   };
+
+  private async _openE911(dialPlanISOCode: string) {
+    const e911 = this.E911SettingItemEntity.value;
+    const lines = await this.rcInfoService.getDigitalLines();
+
+    if (e911 && e911.countryIsoCode !== dialPlanISOCode && lines.length > 0) {
+      setTimeout(() => {
+        this._telephonyService.openE911();
+      }, OPEN_E911_TIME)
+    }
+  }
 
   private _handleAreaCodeError = async () => {
     this.areaCodeError = true;

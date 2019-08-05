@@ -70,6 +70,9 @@ const regionService = {
   setAreaCode: () => {
     return true;
   },
+  getDigitalLines() {
+    return [1];
+  },
 };
 const telephonyService = {
   openE911: jest.fn(),
@@ -233,6 +236,25 @@ describe('RegionSettingItemViewModel', () => {
       (getEntity as jest.Mock) = jest.fn().mockReturnValue({
         value: {
           countryIsoCode: 'US',
+        },
+      });
+      Notification.flashToast = jest.fn();
+
+      const VM = new RegionSettingItemViewModel();
+      await VM.loadRegionSetting();
+      await VM.saveRegion(VM.dialPlanISOCode, VM.areaCode);
+      jest.runAllTimers();
+
+      expect(telephonyService.openE911).not.toHaveBeenCalled();
+      done();
+    });
+
+    it('should not call E911 if not DL', async (done: jest.DoneCallback) => {
+      regionService.getDigitalLines = () => [];
+
+      (getEntity as jest.Mock) = jest.fn().mockReturnValue({
+        value: {
+          countryIsoCode: 'CN',
         },
       });
       Notification.flashToast = jest.fn();
