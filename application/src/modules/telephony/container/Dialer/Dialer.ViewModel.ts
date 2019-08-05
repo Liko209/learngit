@@ -43,7 +43,8 @@ class DialerViewModel extends StoreViewModel<DialerProps> implements DialerViewP
           return;
         }
         const needConfirmE911 = await this._telephonyService.needConfirmE911();
-        if (!needConfirmE911 && this.shouldShowPrompt) {
+        const needE911Prompt = await this._telephonyService.needE911Prompt();
+        if (needE911Prompt && this.shouldShowPrompt) {
           return this.showPromptDialog();
         }
         if (needConfirmE911 && this.shouldShowConfirm) {

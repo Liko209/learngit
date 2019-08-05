@@ -1052,6 +1052,12 @@ class TelephonyService {
     const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed();
     return lines.length > 0 && !isEmergency;
   };
-}
+
+  needE911Prompt = async () => {
+    const lines = await this._rcInfoService.getDigitalLines();
+    const hasConfirmed = this._serverTelephonyService.isEmergencyAddrConfirmed();
+    return lines.length > 0 && hasConfirmed;
+  };
+};
 
 export { TelephonyService };
