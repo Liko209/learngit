@@ -21,6 +21,7 @@ import { PRESENCE } from 'sdk/module/presence/constant';
 import { JuiDivider } from 'jui/components/Divider';
 import { dataAnalysis } from 'sdk';
 import { PresenceMenu } from '../PresenceMenu';
+import { OpenProfile } from '@/common/OpenProfile';
 
 type Props = ViewProps & WithTranslation;
 
@@ -71,6 +72,10 @@ class AvatarActionsComponent extends React.Component<Props> {
     return <Avatar uid={currentUserId} size="large" />;
   }
 
+  openProfile = () => {
+    OpenProfile.show(this.props.currentUserId);
+  };
+
   handleOpenEditProfile = () => {
     this.props.handleOpen();
   };
@@ -101,6 +106,7 @@ class AvatarActionsComponent extends React.Component<Props> {
       >
         <JuiStyledDropdown>
           <JuiDropdownContactInfo
+            handleClick={this.openProfile}
             Avatar={this._DropdownAvatar()}
             openEditProfile={this.handleOpenEditProfile}
             name={person.displayName}

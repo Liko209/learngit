@@ -15,17 +15,22 @@ type JuiDropdownContactInfoProps = {
   name: string | undefined;
   content: string;
   openEditProfile: () => void;
+  handleClick: () => void;
 };
 
 const JuiStyledDropdown = styled('div')`
-  width: ${width(61)};
+  min-width: ${width(30)};
+  transition: width 0.2s ease;
   background: ${({ theme }) => theme.palette.background.paper};
+  cursor: pointer;
 `;
 
 const StyledContactWrapper = styled('div')`
   display: flex;
   align-items: center;
   padding: ${spacing(3, 4)};
+  width: ${width(61)};
+  box-sizing: border-box;
   background: ${({ theme }) => theme.palette.grey['100']};
 `;
 
@@ -63,14 +68,32 @@ const StyledContactInfoEdit = styled('span')`
 
 const JuiDropdownContactInfo = React.memo(
   (props: JuiDropdownContactInfoProps) => {
-    const { Avatar, name, content, openEditProfile } = props;
+    const { Avatar, name, content, openEditProfile, handleClick } = props;
+    const _ref = React.useRef<HTMLDivElement>(null);
+
+    const _clickEventHandler = React.useCallback(
+      (event: React.SyntheticEvent) => {
+        if (!_ref.current || !event.target) {
+          return;
+        }
+
+        if (_ref.current === event.target) return;
+
+        handleClick();
+      },
+      [],
+    );
 
     return (
-      <StyledContactWrapper>
+      <StyledContactWrapper
+        data-test-automation-id="dropMenuEditProfile"
+        onClick={_clickEventHandler}
+      >
         {Avatar}
         <StyledContactInfoWrapper>
           {name && <StyledContactInfoName>{name}</StyledContactInfoName>}
           <StyledContactInfoEdit
+            ref={_ref}
             data-test-automation-id="avatarEditProfile"
             onClick={openEditProfile}
           >
