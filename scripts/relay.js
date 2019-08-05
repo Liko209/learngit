@@ -14,13 +14,21 @@ http.createServer(function (request, response) {
     request.on("end", function () {
         response.writeHead(201);
         response.end();
-
-        data = JSON.parse(data);
-        const options = {
-            method: 'POST',
-            headers: data.headers
-        };
-        sendRequest(data.url, options, Buffer.from(data.content || '', 'base64'));
+        try {
+            data = JSON.parse(data);
+            const options = {
+                method: 'POST',
+                headers: data.headers
+            };
+            sendRequest(data.url, options, Buffer.from(data.content || '', 'base64'));
+        } catch (e) {
+            const timestamp = new Date().toISOString();
+            const msg = {
+                requestData: data,
+                error: e.toString(),
+            };
+            console.error(`ERROR ${timestamp} ${JSON.stringify(msg)}`);
+        }
     });
 }).listen(PORT, HOST);
 console.log(`server is started, listening on ${HOST}:${PORT}`);
