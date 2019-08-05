@@ -26,7 +26,7 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 const regExpEscape = new RegExp(Object.keys(mapEscape).join('|'), 'g');
 
 const regExpUnescape = new RegExp(
-  `${Object.keys(mapUnescape).join('?|')  }?`,
+  `${Object.keys(mapUnescape).join('?|')}?`,
   'g',
 );
 
