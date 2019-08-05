@@ -39,8 +39,6 @@ import {
 import { GlipScenario } from 'shield/sdk/mocks/glip/GlipScenario';
 
 import assert = require('assert');
-import { SendPost } from 'sdk/module/__tests__/message/sendPost/scenario';
-// import { IGlipIndex } from './mocks/server/glip/api/index/index.get.contract';
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 
@@ -170,8 +168,6 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
     cls,
     props,
   ) => {
-    // createInitialDataHelper(emptyIndexData),
-    // console.log('TCL: cls', cls, cls instanceof sendPost.Success);
     if (isExtendsOf(GlipScenario, cls)) {
       const emptyIndexData: InitialData = _.cloneDeep({
         ...glipInitialData,

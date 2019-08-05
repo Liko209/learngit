@@ -6,7 +6,7 @@
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
-import { SendPost } from './scenario';
+import { Post as PostScenario } from './scenario';
 import { Post } from 'sdk/module/post/entity';
 
 jit('Send post test', context => {
@@ -19,7 +19,7 @@ jit('Send post test', context => {
 
   describe('PostService', () => {
     it('send post success', async () => {
-      const scenario = await helper.useScenario(SendPost.Success);
+      const scenario = await helper.useScenario(PostScenario.Send.Success);
       const { post, team } = scenario;
       await postService.sendPost({
         text: post.text,
@@ -35,7 +35,7 @@ jit('Send post test', context => {
     let sendFailedTeamId: number;
     let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      const scenario = await helper.useScenario(SendPost.Fail);
+      const scenario = await helper.useScenario(PostScenario.Send.Fail);
       sendFailedTeamId = scenario.team._id;
       await expect(
         postService.sendPost({
@@ -52,7 +52,7 @@ jit('Send post test', context => {
       expect(sendFailedPost.id < 0).toBeTruthy();
     });
     it('resend post successfully', async () => {
-      await helper.useScenario(SendPost.Success, {
+      await helper.useScenario(PostScenario.Send.Success, {
         targetTeam: {
           _id: sendFailedTeamId,
         },
