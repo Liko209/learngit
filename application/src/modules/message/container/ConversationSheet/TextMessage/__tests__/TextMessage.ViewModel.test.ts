@@ -15,7 +15,7 @@ import Backend from 'i18next-xhr-backend';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import i18next from 'i18next';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { observable, autorun, runInAction } from 'mobx';
+import { observable, autorun } from 'mobx';
 
 jest.mock('@/utils/i18nT', () => ({
   i18nP: (str: string) => str,
@@ -201,7 +201,7 @@ describe('TextMessageViewModel', () => {
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       vm = new TextMessageViewModel({ id: 123, keyword: '' });
       expect(renderToStaticMarkup(vm.renderText as React.ReactElement)).toBe(
-        `MockJuiAtMention: @${originalText}`,
+        `MockJuiAtMention: ${originalText}`,
       );
     });
   });
@@ -223,7 +223,7 @@ describe('TextMessageViewModel', () => {
         expect(renderToStaticMarkup(vm.renderText)).toBe(currentExpect);
       });
 
-      currentExpect = 'abcd MockJuiAtMention: @Aaliyah Armstrong';
+      currentExpect = 'abcd MockJuiAtMention: Aaliyah Armstrong';
       // Modify the post.text to a non-string content
       // Then vm.renderText should be updated
       post.text = `abcd <a class='at_mention_compose' rel='{"id":56868867}'>@Aaliyah Armstrong</a>`;
