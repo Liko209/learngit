@@ -11,6 +11,7 @@ export const ERROR_CODES_RC = {
   CLG_104: 'CLG-104',
   MSG_333: 'MSG-333',
   EME_201: 'EME-201',
+  EME_202: 'EME-202',
 };
 
 export const ERROR_MSG_RC = {
