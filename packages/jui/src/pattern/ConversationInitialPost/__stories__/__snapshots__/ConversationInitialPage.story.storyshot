@@ -32,6 +32,10 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
   color: #fff;
 }
 
+.c11.c11.textButtonStyle {
+  color: #0684bd;
+}
+
 .c11.c11.textButtonStyle.disabled {
   color: #bfbfbf;
 }

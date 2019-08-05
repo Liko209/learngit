@@ -15,11 +15,11 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
   line-height: 16px;
   color: #0684bd;
   text-align: center;
+  box-shadow: unset;
 }
 
 .c1.c1.containedButtonStyle {
   color: rgba(0,0,0,0.87);
-  box-shadow: unset;
   background-color: #fff;
 }
 
@@ -30,10 +30,6 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
 .c1.c1.containedButtonStyle.disabled {
   background-color: #bfbfbf;
   color: rgba(0,0,0,0.87);
-}
-
-.c1.c1.containedButtonStyle:active {
-  box-shadow: unset;
 }
 
 .c1.c1.textButtonStyle {
@@ -121,7 +117,7 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
 }
 
 <div
-  className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c0"
+  className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c0 MuiTypography-body2"
   radius={0}
   role="alertdialog"
 >
@@ -134,11 +130,11 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
     className="MuiSnackbarContent-action action"
   >
     <button
-      className="MuiButtonBase-root MuiButton-root MuiButton-text textButtonStyle MuiButton-flat MuiButton-sizeLarge c1"
+      className="MuiButtonBase-root MuiButton-root c1 MuiButton-text textButtonStyle MuiButton-sizeLarge"
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -148,7 +144,7 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      tabIndex="0"
+      tabIndex={0}
       type="button"
     >
       <span

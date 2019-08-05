@@ -31,6 +31,10 @@ describe('E911SettingHandler', () => {
     telephonyService = {
       subscribeEmergencyAddressChange: jest.fn(),
       subscribeSipProvChange: jest.fn(),
+      subscribeSipProvEAUpdated: jest.fn(),
+      subscribeSipProvReceived: jest.fn(),
+      updateLocalEmergencyAddress: jest.fn(),
+      setLocalEmergencyAddress: jest.fn(),
     } as any;
     rcInfoService = {} as any;
     ServiceLoader.getInstance = jest
@@ -76,7 +80,7 @@ describe('E911SettingHandler', () => {
       expect(rcInfoService.updateLine).toHaveBeenCalledWith(1, {
         emergencyServiceAddress: emergencyAddr,
       });
-      expect(TelephonyGlobalConfig.setEmergencyAddress).toHaveBeenCalledWith(
+      expect(telephonyService.updateLocalEmergencyAddress).toHaveBeenCalledWith(
         emergencyAddr,
       );
     });
@@ -96,19 +100,34 @@ describe('E911SettingHandler', () => {
         emergencyServiceAddress: emergencyAddr,
         originalDeviceId: 2,
       });
-      expect(TelephonyGlobalConfig.setEmergencyAddress).toHaveBeenCalledWith(
+      expect(telephonyService.setLocalEmergencyAddress).toHaveBeenCalledWith(
         emergencyAddr,
       );
     });
   });
 
   describe('_getDefaultEmergencyAddress', () => {
-    it('should return local address if there is any', async () => {
+    it('should return local address if it is same as remote address', async () => {
       telephonyService.getLocalEmergencyAddress = jest
+        .fn()
+        .mockReturnValue(emergencyAddr);
+      telephonyService.getRemoteEmergencyAddress = jest
         .fn()
         .mockReturnValue(emergencyAddr);
       const res = await settingHandler._getDefaultEmergencyAddress();
       expect(res).toBe(emergencyAddr);
+    });
+
+    it('should return remote address if local address is not same as remote address', async () => {
+      const remoteAddr = { test: 'test' };
+      telephonyService.getLocalEmergencyAddress = jest
+        .fn()
+        .mockReturnValue(emergencyAddr);
+      telephonyService.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue(remoteAddr);
+      const res = await settingHandler._getDefaultEmergencyAddress();
+      expect(res).toBe(remoteAddr);
     });
 
     it('should return address from first digital line', async () => {
@@ -122,7 +141,11 @@ describe('E911SettingHandler', () => {
   });
 
   describe('fetchUserSettingEntity', () => {
-    it('should return emergency address', async () => {
+    const dl = [];
+    beforeEach(() => {
+      rcInfoService.getDigitalLines = jest.fn().mockReturnValue(dl);
+    });
+    it('should return emergency address [JPT-2697]', async () => {
       rcInfoService.isVoipCallingAvailable = jest.fn().mockReturnValue(true);
       rcInfoService.isRCFeaturePermissionEnabled = jest
         .fn()
@@ -133,6 +156,8 @@ describe('E911SettingHandler', () => {
       telephonyService.getLocalEmergencyAddress = jest
         .fn()
         .mockReturnValue(emergencyAddr);
+      dl.length = 0;
+      dl.push(1);
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_E911,
@@ -159,7 +184,7 @@ describe('E911SettingHandler', () => {
       });
     });
 
-    it('should hide config item when no assigned line', async () => {
+    it('should hide config item when no assigned line ', async () => {
       rcInfoService.isVoipCallingAvailable = jest.fn().mockReturnValue(false);
       telephonyService.getRemoteEmergencyAddress = jest
         .fn()

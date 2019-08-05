@@ -1,6 +1,6 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-03-14 15:24:53 
+ * @Author: Potar.He
+ * @Date: 2019-03-14 15:24:53
  * @Last Modified by: Potar.He
  * @Last Modified time: 2019-03-14 15:56:35
  */
@@ -12,6 +12,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
+import { E911Address } from './e911address';
 
 fixture('Telephony/EntryPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -28,6 +29,8 @@ test.meta(<ITestMeta>{
   const anotherUser = users[5];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
   await h(t).glip(loginUser).setDefaultPhoneApp('glip');
   const anotherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
@@ -181,6 +184,8 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).glip(loginUser).resetProfile();
   const beSearchUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[5].rcId);
 

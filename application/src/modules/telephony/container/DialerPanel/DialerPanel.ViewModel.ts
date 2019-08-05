@@ -4,7 +4,7 @@ import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 
 export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
   implements DialerPanelViewProps {
@@ -13,6 +13,7 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
     TELEPHONY_SERVICE,
   );
 
+  @action
   makeCall = async (val: string) => {
     // make sure `this._telephonyStore.dialerCall()` run before `this._telephonyStore.end()`
     if (!(await this._telephonyService.makeCall(val))) {
@@ -21,7 +22,8 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
       });
       this._telephonyStore.end();
     }
-  }
+    this._telephonyStore.enterFirstLetterThroughKeypadForInputString();
+  };
 
   onAfterDialerOpen = () => this._telephonyService.onAfterDialerOpen();
 
