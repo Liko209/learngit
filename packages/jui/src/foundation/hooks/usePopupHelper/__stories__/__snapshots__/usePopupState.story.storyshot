@@ -32,6 +32,10 @@ exports[`Storyshots Hooks/usePopupState Click to open menu: Hooks/usePopupState 
   color: #fff;
 }
 
+.c0.c0.textButtonStyle {
+  color: #0684bd;
+}
+
 .c0.c0.textButtonStyle.disabled {
   color: #bfbfbf;
 }

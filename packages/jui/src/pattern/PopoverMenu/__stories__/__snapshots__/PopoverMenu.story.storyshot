@@ -32,6 +32,10 @@ exports[`Storyshots Pattern/PopoverMenu PopoverMenu: Pattern/PopoverMenu Popover
   color: #fff;
 }
 
+.c1.c1.textButtonStyle {
+  color: #0684bd;
+}
+
 .c1.c1.textButtonStyle.disabled {
   color: #bfbfbf;
 }
