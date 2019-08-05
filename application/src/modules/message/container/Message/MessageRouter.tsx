@@ -17,6 +17,8 @@ import {
   VISUAL_MODE,
   withResponsive,
   RIGHT_SHELL_DEFAULT_WIDTH,
+  RIGHT_SHELL_MAX_WIDTH,
+  RIGHT_SHELL_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
@@ -49,8 +51,8 @@ const SwitchResponsive = withResponsive(Switch, {
 
 const RightRailResponsive = withResponsive(RightRail, {
   TriggerButton,
-  maxWidth: 360,
-  minWidth: 200,
+  maxWidth: RIGHT_SHELL_MAX_WIDTH,
+  minWidth: RIGHT_SHELL_MIN_WIDTH,
   defaultWidth: RIGHT_SHELL_DEFAULT_WIDTH,
   visualMode: VISUAL_MODE.BOTH,
   enable: {

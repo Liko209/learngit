@@ -30,7 +30,7 @@ class LaunchDarklyController extends AbstractPermissionController
   }
 
   async initClient() {
-    if (this.isIniting || this.isClientReady) {
+    if (this.isIniting) {
       return;
     }
     const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -59,12 +59,10 @@ class LaunchDarklyController extends AbstractPermissionController
         },
       },
       readyCallback: (): void => {
-        this.isClientReady = true;
         this.launchDarklyCallback && this.launchDarklyCallback();
         mainLogger.log('incoming event launchDarklyreadyCallback');
       },
       updateCallback: (): void => {
-        this.isClientReady = true;
         this.launchDarklyCallback && this.launchDarklyCallback();
         mainLogger.log('incoming event launchDarklyUpdateCallback');
       },
@@ -75,9 +73,9 @@ class LaunchDarklyController extends AbstractPermissionController
       this.launchDarklyClient = new LaunchDarklyClient(params);
     }
   }
-  shutdownClient() {
-    this.launchDarklyClient && this.launchDarklyClient.shutdown();
-    this.isClientReady = false;
+  shutdownClient(shouldClearCache: boolean) {
+    this.launchDarklyClient &&
+      this.launchDarklyClient.shutdown(shouldClearCache);
     this.isIniting = false;
   }
 
@@ -103,7 +101,7 @@ class LaunchDarklyController extends AbstractPermissionController
   }
 
   private _isClientFlagsReady() {
-    return this.isClientReady && this.launchDarklyClient.hasFlags();
+    return this.launchDarklyClient && this.launchDarklyClient.hasFlags();
   }
 
   private _defaultPermission(type: UserPermissionType) {

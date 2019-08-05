@@ -153,9 +153,9 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     });
   }
 
-  private async _editPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
-    await this._handleEditPost(content, ids, mentionIdsContainTeam);
+  private _editPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
     this._exitEditMode();
+    this._handleEditPost(content, ids, mentionIdsContainTeam);
   }
 
   private _deletePost = async () => {

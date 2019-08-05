@@ -21,7 +21,7 @@ describe('MediaService', () => {
   describe('createMedia()', () => {
     it('should create mediaTrack', () => {
       const media = new MediaService().createMedia({
-        src: []
+        src: [],
       });
       expect(media).toBeInstanceOf(Media);
     });
@@ -32,7 +32,7 @@ describe('MediaService', () => {
       const mediaService = new MediaService();
       const media = mediaService.createMedia({
         src: [],
-        id: mediaId
+        id: mediaId,
       });
       const checkMedia = mediaService.getMedia(mediaId);
       expect(checkMedia).toEqual(media);
@@ -62,26 +62,26 @@ describe('MediaService', () => {
       const devices = [
         {
           deviceId: 'device1',
-          label: 'device1'
+          label: 'device1',
         },
         {
           deviceId: 'device2',
-          label: 'device2'
+          label: 'device2',
         },
         {
           deviceId: 'default',
-          label: 'default'
+          label: 'default',
         },
         {
           deviceId: 'VirtualDevice',
-          label: 'VirtualDevice'
-        }
+          label: 'VirtualDevice',
+        },
       ];
       jest
         .spyOn(utils, 'getEntity')
-        .mockReturnValue({ id: '', isMocked: true, value: devices });
+        .mockReturnValue({ id: '', isMocked: true, source: devices });
       const mediaService = new MediaService();
-      expect(mediaService.outputDevices).toEqual(['device1', 'device2']);
+      expect(mediaService.allOutputDevices).toEqual(['device1', 'device2']);
     });
   });
 });

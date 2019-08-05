@@ -47,6 +47,8 @@ type ResponsiveState = {
 };
 
 const RIGHT_SHELL_DEFAULT_WIDTH = 268;
+const RIGHT_SHELL_MIN_WIDTH = 200;
+const RIGHT_SHELL_MAX_WIDTH = 360;
 
 const StyledResizable = styled<ResizableProps & any>(Resizable)`
   overflow: hidden;
@@ -233,7 +235,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             show: !this.isManualMode || this.localShowState,
             position: enable.right ? 'left' : 'right',
           }}
-          handleClasses={{left: 'resize-handle'}}
+          handleClasses={{ left: 'resize-handle' }}
         >
           {this._renderChildren()}
           {visual && (
@@ -295,4 +297,6 @@ export {
   ResponsiveProps,
   ResponsiveInfo,
   RIGHT_SHELL_DEFAULT_WIDTH,
+  RIGHT_SHELL_MIN_WIDTH,
+  RIGHT_SHELL_MAX_WIDTH,
 };

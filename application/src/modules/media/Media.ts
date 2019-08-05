@@ -20,7 +20,7 @@ import { Utils } from './Utils';
 class Media implements IMedia {
   private _trackId: MediaOptions['trackId'];
   private _mediaId: string;
-  private _src: MediaOptions['src'];
+  private _src: MediaOptions['src'] = '';
   private _muted: boolean;
   private _volume: number;
   private _loop: boolean;
@@ -86,6 +86,15 @@ class Media implements IMedia {
       this._useTrack.stop();
     }
     this._currentTime = 0;
+    return this;
+  }
+
+  setSrc(src: MediaOptions['src']) {
+    if (this._isMediaInTrack()) {
+      this.dispose();
+    }
+    this._src = src;
+    this._resetMedia();
     return this;
   }
 
@@ -178,7 +187,7 @@ class Media implements IMedia {
   private _setup(o: MediaOptions) {
     this._trackId = o.trackId;
     this._mediaId = o.id || '';
-    this._src = o.src;
+    this._src = o.src || '';
     this._muted = o.muted || false;
     this._volume =
       o.volume && Utils.isValidVolume(o.volume) ? o.volume : 1 || 1;
@@ -226,7 +235,7 @@ class Media implements IMedia {
   }
 
   get src() {
-    return this._src;
+    return this._src || '';
   }
 
   get trackId() {

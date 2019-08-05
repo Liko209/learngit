@@ -82,6 +82,10 @@ type TelephonyDataCollectionInfoConfigType = {
   userInfo: TelephonyDataCollectionInfoUserInfoType;
 };
 
+enum RINGER_ADDITIONAL_TYPE {
+  ALL = 'all',
+  OFF = 'off',
+}
 type CallOptions = RTCCallOptions & {
   replaceName?: string;
   replaceNumber?: string;
@@ -97,6 +101,7 @@ export {
   TelephonyCallInfo,
   LogoutCallback,
   CALL_ACTION_ERROR_CODE,
+  RINGER_ADDITIONAL_TYPE,
   CallOptions,
   EmergencyServiceAddress,
   TelephonyDataCollectionInfoConfigType,

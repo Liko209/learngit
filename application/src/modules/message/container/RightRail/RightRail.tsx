@@ -217,14 +217,14 @@ class RightRailComponent extends React.Component<Props> {
   };
 
   render() {
-    const { id } = this.props;
+    const { id, width } = this.props;
     if (!id) {
       return null;
     }
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
-        <RightShelfMemberList groupId={id} />
+        {width > 0 ? <RightShelfMemberList groupId={id} /> : null}
         {this._renderTabs()}
       </JuiRightShelf>
     );

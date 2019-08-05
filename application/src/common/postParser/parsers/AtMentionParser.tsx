@@ -11,6 +11,7 @@ import { JuiAtMention } from 'jui/components/AtMention';
 import { PostParser } from './PostParser';
 import { AT_MENTION_REGEX } from '../utils';
 import { AtMentionTransformer } from './AtMentionTransformer';
+import { HTMLUnescape } from '@/common/postParser/utils';
 
 class AtMentionParser extends PostParser implements IPostParser {
   type = ParserType.AT_MENTION;
@@ -28,7 +29,9 @@ class AtMentionParser extends PostParser implements IPostParser {
     const id = result[1];
     const user = map[id] || {};
     const { name, isCurrent } = user;
-    const text = name || AtMentionTransformer.atMentionDataMap[id];
+    const text =
+      name ||
+      HTMLUnescape(AtMentionTransformer.atMentionDataMap[id].replace(/^@/, ''));
     if (customReplaceFunc) {
       return customReplaceFunc(strValue, id, text, !!isCurrent);
     }

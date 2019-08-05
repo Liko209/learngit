@@ -34,11 +34,13 @@ const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
     .list-item-primary {
       /* warning don't add display flex */
       /* https://css-tricks.com/flexbox-truncated-text/ */
+      display: block;
       color: ${({ primaryColor }) => getAccentColor(primaryColor)};
       ${typography('body1')};
       ${ellipsis()};
     }
     .list-item-secondary {
+      display: block;
       color: ${grey('600')};
       ${typography('caption1')};
       ${ellipsis()};

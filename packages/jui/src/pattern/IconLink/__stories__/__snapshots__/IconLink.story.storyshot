@@ -32,6 +32,10 @@ exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
   color: #fff;
 }
 
+.c2.c2.textButtonStyle {
+  color: #0684bd;
+}
+
 .c2.c2.textButtonStyle.disabled {
   color: #bfbfbf;
 }

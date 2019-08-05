@@ -51,6 +51,10 @@ class PresenceService extends EntityBaseService<Presence> {
     return await this._presenceController.getById(id);
   }
 
+  getSynchronously(id: number) {
+    return this._presenceController.getById(id);
+  }
+
   async getCurrentUserPresence(): Promise<PRESENCE | undefined> {
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,

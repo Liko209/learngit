@@ -21,6 +21,7 @@ import {
   mockEntity,
   mockGlobalValue,
 } from 'shield/application';
+import * as media from '@/modules/media/module.config';
 
 window['RTCPeerConnection'] = true;
 

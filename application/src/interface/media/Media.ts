@@ -5,7 +5,7 @@
  */
 
 type MediaOptions = {
-  src: string | string[];
+  src?: string | string[];
   trackId?: string;
   id?: string;
   muted?: boolean;

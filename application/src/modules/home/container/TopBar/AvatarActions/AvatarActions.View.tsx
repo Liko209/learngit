@@ -11,17 +11,16 @@ import { ViewProps } from './types';
 import { JuiMenuList } from 'jui/components';
 import {
   JuiAvatarActions,
-  JuiDropdownContactInfo,
   JuiStyledDropdown,
   JuiStyledDropdownMenuItem,
 } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { JuiDivider } from 'jui/components/Divider';
 import { dataAnalysis } from 'sdk';
 import { PresenceMenu } from '../PresenceMenu';
 import { OpenProfile } from '@/common/OpenProfile';
+import { DropdownContactInfo } from '../DropdownContactInfo';
 
 type Props = ViewProps & WithTranslation;
 
@@ -105,14 +104,13 @@ class AvatarActionsComponent extends React.Component<Props> {
         }}
       >
         <JuiStyledDropdown>
-          <JuiDropdownContactInfo
+          <DropdownContactInfo
             handleClick={this.openProfile}
             Avatar={this._DropdownAvatar()}
             openEditProfile={this.handleOpenEditProfile}
             name={person.displayName}
             content={t('home.editProfile')}
           />
-          <JuiDivider key="divider-avatar-menu" />
           <JuiMenuList data-test-automation-id="avatarMenu">
             <PresenceMenu presence={presence} title={this._tooltip} />
             <JuiStyledDropdownMenuItem

@@ -181,7 +181,9 @@ class RightShelfMemberListViewComponent extends Component<Props> {
               <MemberListMoreCount
                 data-test-automation-id="rightShellMemberListMore"
                 count={
-                  (allMemberLength ? (allMemberLength - fullGuestIds.length) : fullMemberIds.length) - shownMemberIds.length
+                  (allMemberLength
+                    ? allMemberLength - fullGuestIds.length
+                    : fullMemberIds.length) - shownMemberIds.length
                 }
               />
             ) : null}

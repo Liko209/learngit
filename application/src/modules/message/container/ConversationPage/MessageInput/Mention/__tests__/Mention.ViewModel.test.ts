@@ -7,6 +7,7 @@ import { getEntity } from '@/store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { toJS } from 'mobx';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/search');
@@ -40,7 +41,7 @@ describe('mentionViewModel', () => {
     expect(mentionViewModel._id).toBe(1);
     expect(mentionViewModel.currentIndex).toBe(0);
     expect(mentionViewModel.open).toBe(false);
-    expect(mentionViewModel.members).toEqual([]);
+    expect(mentionViewModel.membersId).toEqual([]);
     expect(mentionViewModel.searchTerm).toBe(undefined);
   });
 
@@ -68,7 +69,7 @@ describe('mentionViewModel', () => {
   it('_doFuzzySearchPersons()', async () => {
     mockSearchService = {
       doFuzzySearchPersons: jest.fn().mockResolvedValue({
-        sortableModels: [1, 2, 3],
+        sortableModels: [{id: 1}, {id: 2}, {id: 3}],
       }),
     };
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockSearchService);
@@ -84,7 +85,7 @@ describe('mentionViewModel', () => {
       arrangeIds: mockGroupEntityData.members,
       fetchAllIfSearchKeyEmpty: true,
     });
-    expect(mentionViewModel.members).toEqual([1, 2, 3]);
+    expect(mentionViewModel.membersId).toEqual([1, 2, 3]);
   });
 
   it('_selectHandler()', async () => {
@@ -98,15 +99,16 @@ describe('mentionViewModel', () => {
       quill,
     });
     handler();
-    expect(quill.getModule).not.toHaveBeenCalled();
+    expect(quill.getModule).not.toBeCalled();
     mentionViewModel.open = true;
     // currentIndex default will be 1 because of title will within VL
-    mentionViewModel.members = [1];
+    mentionViewModel.membersId = [1];
+    mentionViewModel.membersDisplayName = ['name'];
     handler();
-    expect(quill.getModule).toHaveBeenCalledWith('mention');
-    expect(mentionModules.select).toHaveBeenCalledWith(
-      mentionViewModel.members[mentionViewModel.currentIndex].id,
-      mentionViewModel.members[mentionViewModel.currentIndex].displayName,
+    expect(quill.getModule).toBeCalledWith('mention');
+    expect(mentionModules.select).toBeCalledWith(
+      mentionViewModel.membersId[ mentionViewModel.currentIndex],
+      mentionViewModel.membersDisplayName[ mentionViewModel.currentIndex],
       mentionViewModel._denotationChar,
       mentionViewModel.isTeam,
     );
@@ -132,7 +134,7 @@ describe('mentionViewModel', () => {
 
   it('_upHandler()', async () => {
     const handler = mentionViewModel._upHandler(mentionViewModel);
-    mentionViewModel.members = [1, 2, 3];
+    mentionViewModel.membersId = [1, 2, 3];
     mentionViewModel.currentIndex = 1;
     handler();
     expect(mentionViewModel.currentIndex).toBe(0);
@@ -144,7 +146,7 @@ describe('mentionViewModel', () => {
 
   it('_downHandler()', async () => {
     const handler = mentionViewModel._downHandler(mentionViewModel);
-    mentionViewModel.members = [1, 2, 3];
+    mentionViewModel.membersId = [1, 2, 3];
     mentionViewModel.currentIndex = 1;
     handler();
     expect(mentionViewModel.currentIndex).toBe(2);
