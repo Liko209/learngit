@@ -30,7 +30,8 @@ class AtMentionParser extends PostParser implements IPostParser {
     const user = map[id] || {};
     const { name, isCurrent } = user;
     const text =
-      name || HTMLUnescape(AtMentionTransformer.atMentionDataMap[id]);
+      name ||
+      HTMLUnescape(AtMentionTransformer.atMentionDataMap[id].replace(/^@/, ''));
     if (customReplaceFunc) {
       return customReplaceFunc(strValue, id, text, !!isCurrent);
     }
