@@ -174,6 +174,15 @@ class Upgrade {
 
   public reloadIfAvailable(triggerSource: string) {
     if (this._hasControllerChanged && this._canDoReload(triggerSource)) {
+      // In some unknown cases, it get the onControllerChange event, even if there's no version get published.
+      if (!this._hasSkippedWaiting) {
+        mainLogger.info(
+          `${logTag}[${triggerSource}] No reload due to has no done skipped waiting`,
+        );
+
+        return;
+      }
+
       this._hasControllerChanged = false;
       mainLogger.info(
         `${logTag}[${triggerSource}] Will auto reload due to service worker controller is changed`,
