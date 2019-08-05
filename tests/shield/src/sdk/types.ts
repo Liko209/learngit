@@ -43,8 +43,8 @@ type ItContext = {
     clearMocks: () => void;
     useScenario: <
       T extends BaseScenario<any>,
-      P = (T extends BaseScenario<infer P> ? P : object),
-      Props extends P = P,
+      P = T extends BaseScenario<infer P> ? P : object,
+      Props extends P = P
     >(
       scenarioClass: { new (...arg: any): T },
       props?: Props,
@@ -209,14 +209,6 @@ interface IScenarioDataHelper<T> {
   factory: IFactory<T>;
 }
 
-type Scenario = {};
-
-type ScenarioFactory<Props extends object = object> = (
-  context: ItContext,
-  glipIndexDataHelper: GlipInitialDataHelper,
-  props?: Props,
-) => Scenario;
-
 export {
   ItContext,
   IJRequest,
@@ -245,6 +237,4 @@ export {
   ISocketInfo,
   IFactory,
   IScenarioDataHelper,
-  Scenario,
-  ScenarioFactory,
 };

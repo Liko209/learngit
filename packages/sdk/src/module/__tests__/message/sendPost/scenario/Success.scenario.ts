@@ -3,11 +3,16 @@
  * @Date: 2019-07-25 16:21:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { readApiJson, ScenarioFactory, ItContext, Scenario } from 'shield/sdk';
+import {
+  readApiJson,
+  ItContext,
+  get,
+} from 'shield/sdk';
 import { IGlipPostPost } from 'shield/sdk/mocks/glip/api/post/post.post.contract';
 import { GlipInitialDataHelper } from 'shield/sdk/mocks/glip/data/data';
-import { GlipGroup } from 'shield/sdk/mocks/glip/types';
+import { GlipGroup, GlipPost } from 'shield/sdk/mocks/glip/types';
 import { GlipScenario } from 'shield/sdk/mocks/glip/GlipScenario';
+import { UpdateSpec, update } from 'foundation/src/utils/update';
 
 export class Success extends GlipScenario {
   post: { text: string; id: number };
@@ -15,45 +20,38 @@ export class Success extends GlipScenario {
   constructor(
     protected context: ItContext,
     protected glipIndexDataHelper: GlipInitialDataHelper,
-    public props?: {
-      teamId?: number;
-      teamName?: string;
-      uids?: number[];
-      postText?: string;
+    public props: {
+      targetTeam?: UpdateSpec<GlipGroup>;
+      sendPost?: UpdateSpec<GlipPost>;
     },
   ) {
     super(context, glipIndexDataHelper, props);
-    const {
-      teamName = 'Test Team with thomas',
-      uids = [123],
-      postText = '',
-      teamId = undefined,
-    } = props || {};
     const { helper } = context;
     const glipDataHelper = helper.glipDataHelper();
-    const team = (this.team = glipDataHelper.team.createTeam(
-      teamName,
-      uids,
-      teamId ? { _id: teamId } : undefined,
+    const team = (this.team = update(
+      glipDataHelper.team.createTeam('Test Team with thomas', [123]),
+      get(props, v => v.targetTeam),
     ));
     glipIndexDataHelper.teams.insertOrUpdate(team);
-    // glipIndexDataHelper.profile.insertOrUpdate(i)
-
-    this.post = helper.mockResponse(
-      readApiJson<IGlipPostPost>(require('../data/SEND_POST.SUCCESS.json')),
-      data => {
-        // modify the response
-        data.request.data!.group_id = team._id;
-        data.response.data.group_id = team._id;
-        postText && (data.response.data.text = postText);
-        data.response.data._id = helper
-          .glipDataHelper()
-          .post.factory.build()._id;
-        return {
-          text: postText || data.request.data!.text!,
-          id: data.response.data._id,
-        };
-      },
+    const rawJson = readApiJson<IGlipPostPost>(
+      require('../data/SEND_POST.SUCCESS.json'),
     );
+    const apiJson = update(rawJson, {
+      request: {
+        data: {
+          group_id: team._id,
+        },
+      },
+      response: {
+        data: update(get(props, v => v.sendPost, rawJson.response.data)!, {
+          group_id: team._id,
+        }),
+      },
+    });
+
+    this.post = helper.mockResponse(apiJson, data => ({
+      text: data.response.data.text,
+      id: data.response.data._id,
+    }));
   }
 }

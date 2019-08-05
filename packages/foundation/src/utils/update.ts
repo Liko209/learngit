@@ -85,7 +85,7 @@ function update<
   T extends object | any[],
   A = T extends Array<infer A> ? A : any
 >(value: T, spec?: UpdateSpec<T>): T {
-  if (_.isUndefined(spec)) return value;
+  if (_.isUndefined(spec) || _.isUndefined(value)) return value;
   if (Object.prototype.hasOwnProperty.call(spec, '$set')) {
     return set(value, (spec as SetCommand<T>)['$set']);
   }

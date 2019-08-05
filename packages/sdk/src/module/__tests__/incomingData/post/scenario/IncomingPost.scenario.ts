@@ -13,7 +13,6 @@ import { GlipInitialDataHelper } from 'shield/sdk/mocks/glip/data/data';
 import { update, UpdateSpec } from 'foundation/utils/update';
 import { GlipPost, GlipGroup } from 'shield/sdk/mocks/glip/types';
 import _ from 'lodash';
-import { BaseScenario } from 'shield/sdk/BaseScenario';
 
 type SocketMessage<T> = ISocketInfo<{
   body: {
@@ -23,16 +22,15 @@ type SocketMessage<T> = ISocketInfo<{
     objects: [T[]];
   };
 }>;
-type Props = {
-  post?: UpdateSpec<GlipPost>;
-  team?: UpdateSpec<GlipGroup>;
-};
 
-export class IncomingPost extends GlipScenario<Props> {
+export class IncomingPost extends GlipScenario {
   constructor(
     protected context: ItContext,
     protected glipIndexDataHelper: GlipInitialDataHelper,
-    public props: Props,
+    public props: {
+      post?: UpdateSpec<GlipPost>;
+      team?: UpdateSpec<GlipGroup>;
+    },
   ) {
     super(context, glipIndexDataHelper, props);
     const { helper } = context;

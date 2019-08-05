@@ -7,7 +7,7 @@ import { ItContext } from 'shield/sdk/types';
 import { GlipInitialDataHelper } from './data/data';
 import { BaseScenario } from 'shield/sdk/BaseScenario';
 
-export class GlipScenario<Props extends object> extends BaseScenario<Props> {
+export class GlipScenario<Props extends object = object> extends BaseScenario<Props> {
   constructor(
     protected context: ItContext,
     protected glipIndexDataHelper: GlipInitialDataHelper,

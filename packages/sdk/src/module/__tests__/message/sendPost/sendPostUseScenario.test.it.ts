@@ -53,8 +53,12 @@ jit('Send post test', context => {
     });
     it('resend post successfully', async () => {
       await helper.useScenario(SendPost.Success, {
-        teamId: sendFailedTeamId,
-        postText: sendFailedPost.text,
+        targetTeam: {
+          _id: sendFailedTeamId,
+        },
+        sendPost: {
+          text: sendFailedPost.text,
+        },
       });
       await postService.reSendPost(sendFailedPost.id);
       const groupPosts = await postService.getPostsByGroupId({

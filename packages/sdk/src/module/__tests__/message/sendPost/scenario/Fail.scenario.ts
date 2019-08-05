@@ -14,7 +14,7 @@ export class Fail extends GlipScenario {
   constructor(
     protected context: ItContext,
     protected glipIndexDataHelper: GlipInitialDataHelper,
-    public props?: { teamName?: string; uids?: number[] },
+    public props: { teamName?: string; uids?: number[] },
   ) {
     super(context, glipIndexDataHelper, props);
     const { teamName = 'Test Team with thomas', uids = [123] } = props || {};
