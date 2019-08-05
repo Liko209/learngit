@@ -20,33 +20,26 @@ const JuiSizeDetector = ({
   sources,
   handleSizeChanged,
 }: JuiSizeDetectorProps) => {
-  let targets = sources;
-  const body = window.document.getElementsByTagName('body')[0];
-  if (!targets) {
-    targets = [body];
-  }
-
+  const targets = sources ? sources : [document.body];
   const updateSize = (entries: ResizeObserverEntry[]) => {
     const { width, height } = entries[0].contentRect;
     handleSizeChanged({ width, height });
   };
   useEffect(() => {
-    if (targets) {
-      let disposers: ResizeObserver[] | undefined = targets.map(
-        (target: HTMLElement) => {
-          const observer = new ResizeObserver(updateSize);
-          observer.observe(target);
-          return observer;
-        },
+    let disposers: ResizeObserver[] | undefined = targets.map(
+      (target: HTMLElement) => {
+        const observer = new ResizeObserver(updateSize);
+        observer.observe(target);
+        return observer;
+      },
+    );
+    return () => {
+      (disposers as ResizeObserver[]).forEach((ro: ResizeObserver) =>
+        ro.disconnect(),
       );
-      return () => {
-        (disposers as ResizeObserver[]).forEach((ro: ResizeObserver) => ro.disconnect());
-        disposers = undefined;
-      };
-    }
-
-    return () => {};
-  }, [targets]);
+      disposers = undefined;
+    };
+  }, []);
   return <></>;
 };
 
@@ -70,23 +63,23 @@ class JuiSizeManager implements ISizeManager {
     this._resizeCallback.forEach((callback: ResizeCallback) => {
       callback(this);
     });
-  }
+  };
   updateSize = (key: string, size: Size) => {
     if (key) {
       this._sizes[key] = size;
       this._notifySizeChanged();
     }
-  }
+  };
   addConstantSize = (key: string, size: Size) => {
     this.updateSize(key, size);
-  }
+  };
   removeConstantSize = (key: string) => {
     if (key) {
       delete this._sizes[key];
       this._notifySizeChanged();
     }
-  }
-  getSize = (key: string) => this._sizes[key] || { width: 0, height: 0 }
+  };
+  getSize = (key: string) => this._sizes[key] || { width: 0, height: 0 };
   getUsedSize = (key: string) => {
     const accSize: Size = { width: 0, height: 0 };
     Object.keys(this._sizes).forEach((keyLooper: string) => {
@@ -97,23 +90,23 @@ class JuiSizeManager implements ISizeManager {
       }
     });
     return accSize;
-  }
+  };
   addResizeCallback = (callback: ResizeCallback) => {
     if (!this._resizeCallback.includes(callback)) {
       this._resizeCallback.push(callback);
     }
-  }
+  };
 
   removeResizeCallback = (callback: ResizeCallback) => {
     const index = this._resizeCallback.indexOf(callback);
     if (index !== -1) {
       this._resizeCallback.splice(index, 1);
     }
-  }
+  };
 
   removeAllCallback = () => {
     this._resizeCallback = [];
-  }
+  };
 }
 
 export {
