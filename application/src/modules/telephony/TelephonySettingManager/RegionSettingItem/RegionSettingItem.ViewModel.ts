@@ -18,7 +18,7 @@ import {
 import i18nT from '@/utils/i18nT';
 import { JuiIconographyProps } from 'jui/foundation/Iconography';
 import { UserSettingEntity } from 'sdk/module/setting';
-import { getEntity } from '@/store/utils/entities';
+import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import {
@@ -26,10 +26,11 @@ import {
   CountriesListType,
   RegionSettingItemViewProps,
 } from './types';
-import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
+import { RegionSettingInfo, E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { TelephonyService } from '@/modules/telephony/service';
+import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 
 const AVOID_AREA_CODE_BEGIN_NUM = '0';
 const AREA_CODE_ALLOW_LEN = 3;
@@ -69,6 +70,14 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     return getEntity<UserSettingEntity, SettingModel<RegionSettingInfo>>(
       ENTITY_NAME.USER_SETTING,
       this.props.id,
+    );
+  }
+
+  @computed
+  get E911SettingItemEntity() {
+    return getEntity<UserSettingEntity, SettingModel<E911SettingInfo>>(
+      ENTITY_NAME.USER_SETTING,
+      SettingEntityIds.Phone_E911,
     );
   }
 
@@ -240,10 +249,13 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
         fullWidth: false,
         dismissible: false,
       });
-
-      setTimeout(() => {
-        this._telephonyService.openE911();
-      }, OPEN_E911_TIME)
+   
+      const e911 = this.E911SettingItemEntity.value;
+      if (e911 && e911.countryIsoCode !== dialPlanISOCode) {
+        setTimeout(() => {
+          this._telephonyService.openE911();
+        }, OPEN_E911_TIME)
+      }
 
       return true;
     } catch {

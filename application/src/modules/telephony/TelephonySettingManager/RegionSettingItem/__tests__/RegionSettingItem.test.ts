@@ -3,6 +3,7 @@
  * @Date: 2019-05-09 14:00:02
  * Copyright © RingCentral. All rights reserved.
  */
+import { getEntity } from '@/store/utils';
 
 import { RegionSettingItemViewModel } from '../RegionSettingItem.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
@@ -200,13 +201,23 @@ describe('RegionSettingItemViewModel', () => {
   describe('saveRegion()', () => {
     jest.useFakeTimers();
 
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should return true and show notification when save region successful', async (done: jest.DoneCallback) => {
+      (getEntity as jest.Mock) = jest.fn().mockReturnValue({
+        value: {
+          countryIsoCode: 'CN',
+        },
+      });
       Notification.flashToast = jest.fn();
 
       const VM = new RegionSettingItemViewModel();
       await VM.loadRegionSetting();
-
       const saveState = await VM.saveRegion(VM.dialPlanISOCode, VM.areaCode);
+
+      jest.runAllTimers();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'setting.phone.general.regionSetting.saveSuccessText',
@@ -214,19 +225,36 @@ describe('RegionSettingItemViewModel', () => {
       );
       expect(VM.disabledOkBtn).toBeTruthy();
       expect(saveState).toEqual(true);
+      expect(telephonyService.openE911).toHaveBeenCalled();
       done();
     });
+
+    it('should not call E911 if save region === e911 setting country', async (done: jest.DoneCallback) => {
+      (getEntity as jest.Mock) = jest.fn().mockReturnValue({
+        value: {
+          countryIsoCode: 'US',
+        },
+      });
+      Notification.flashToast = jest.fn();
+
+      const VM = new RegionSettingItemViewModel();
+      await VM.loadRegionSetting();
+      await VM.saveRegion(VM.dialPlanISOCode, VM.areaCode);
+      jest.runAllTimers();
+
+      expect(telephonyService.openE911).not.toHaveBeenCalled();
+      done();
+    });
+
     it('should return false when save failed [JPT-2691]', async (done: jest.DoneCallback) => {
       const VM = new RegionSettingItemViewModel();
       await VM.loadRegionSetting();
 
       const saveState = await VM.saveRegion(VM.dialPlanISOCode, '101');
-      jest.runAllTimers();
 
       expect(VM.areaCodeError).toBeTruthy();
       expect(VM.disabledOkBtn).toBeTruthy();
       expect(saveState).toEqual(false);
-      expect(telephonyService.openE911).toHaveBeenCalled();
       done();
     });
     it('JPT-1807: Display error when failed to match the rules of area code', async (done: jest.DoneCallback) => {
