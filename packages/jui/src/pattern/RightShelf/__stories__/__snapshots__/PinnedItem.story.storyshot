@@ -31,6 +31,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
 }
 
 .c6.c6 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -43,6 +44,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
 }
 
 .c6.c6 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
