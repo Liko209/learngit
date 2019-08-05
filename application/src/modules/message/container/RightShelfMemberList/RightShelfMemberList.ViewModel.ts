@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2019-07-26 13:51:55
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2019-07-26 13:51:55
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { observable, action, computed } from 'mobx';
 import {
   RightShelfMemberListViewProps,
@@ -18,6 +18,10 @@ import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import {
+  RIGHT_SHELL_DEFAULT_WIDTH,
+  RIGHT_SHELL_MIN_WIDTH,
+} from 'jui/foundation/Layout/Responsive';
 
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
@@ -32,7 +36,7 @@ class RightShelfMemberListViewModel
   );
 
   @observable
-  private _wrapperWidth: number;
+  private _wrapperWidth: number = RIGHT_SHELL_DEFAULT_WIDTH;
 
   @observable
   isLoading: boolean = true;
@@ -197,7 +201,8 @@ class RightShelfMemberListViewModel
 
   @action
   setWrapperWidth = (width: number) => {
-    this._wrapperWidth = width;
+    this._wrapperWidth =
+      width < RIGHT_SHELL_MIN_WIDTH ? RIGHT_SHELL_MIN_WIDTH : width;
   };
 }
 
