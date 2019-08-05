@@ -22,13 +22,13 @@ class MediaManager {
     const mediaTrack = trackManager.useMediaTrack(opts.trackId);
     const mediaId = Utils.formatMediaId({
       trackId: mediaTrack.id,
-      mediaId: opts.id || `${this._mediaCounters++}`
+      mediaId: opts.id || `${this._mediaCounters++}`,
     });
     const newMedia = new Media(
       Object.assign({}, opts, {
         trackId: mediaTrack.id,
-        id: mediaId
-      })
+        id: mediaId,
+      }),
     );
     this._medias.push(newMedia);
     return newMedia;
@@ -66,6 +66,11 @@ class MediaManager {
     trackManager.setAllTrackOutputDevices(devices);
   }
 
+  updateAllOutputDevices(devices: MediaDeviceType[]) {
+    trackManager.updateAllOutputDevices(devices);
+    this._updateAllDevicesMedia(devices);
+  }
+
   canPlayType(mimeType: string) {
     if (this._canPlayTypes.includes(mimeType)) {
       return true;
@@ -85,6 +90,15 @@ class MediaManager {
     this._muted = false;
     this._globalVolume = 1;
     this._outputDevices = [];
+  }
+
+  private _updateAllDevicesMedia(devices: MediaDeviceType[]) {
+    const allDevicesMedia = this._medias.filter(media => {
+      return Utils.difference(media.outputDevices, devices).length === 0;
+    });
+    allDevicesMedia.forEach(media => {
+      media.setOutputDevices(devices);
+    });
   }
 
   get muted() {

@@ -95,6 +95,15 @@ describe('TrackManager', () => {
       expect(track2.outputDevices).toEqual(newDevices);
     });
   });
+  describe('updateAllOutputDevices()', () => {
+    it('should update all output devices', () => {
+      const newDevices = ['device1', 'device2'];
+      const trackManager = new TrackManager();
+
+      trackManager.updateAllOutputDevices(newDevices);
+      expect(trackManager.outputDevices).toEqual(newDevices);
+    })
+  })
   describe('dispose()', () => {
     it('should dispose all track and reset trackManager', () => {
       const trackManager = new TrackManager();

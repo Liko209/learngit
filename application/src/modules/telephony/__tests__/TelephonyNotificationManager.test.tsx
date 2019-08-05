@@ -20,6 +20,9 @@ import { ENTITY_NAME } from '@/store/constants';
 import { NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import { CALL_STATE, CALL_DIRECTION } from 'sdk/module/telephony/entity';
 import { observable } from 'mobx';
+import * as media from '@/modules/media/module.config';
+
+jest.mock('@/modules/media/service');
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');

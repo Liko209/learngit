@@ -111,6 +111,13 @@ describe('ToastCallError', () => {
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
 
+  it('should display park error', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.ParkError';
+    ToastCallError.toastParkError();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
+
   it('should display permission error', () => {
     ToastCallError.toast = jest.fn();
     const i18nkey = 'telephony.prompt.NoCallPermission';
