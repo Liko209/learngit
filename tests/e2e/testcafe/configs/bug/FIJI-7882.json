@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/ConversationStream"],
+    "fixtures": ["./fixtures/ActionBar/Edit.ts"],
     "browsers": [
       "selenium:chrome"
     ]
