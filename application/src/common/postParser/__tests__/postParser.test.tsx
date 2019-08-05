@@ -885,6 +885,23 @@ Veniam anim velit amet aliqua proident.`}
           `&lt;a&gt;dsfdsf&lt;/a&gt;`,
         );
       });
+
+      it('should not encode special chars at the end of link', () => {
+        expect(postParser(`"https://jira.ringcentral.com/browse/FIJI-7628"`, { html: true })).toEqual([
+          '"',
+          <a href='https://jira.ringcentral.com/browse/FIJI-7628"' target='_blank' rel='noreferrer' key={0}>
+            https://jira.ringcentral.com/browse/FIJI-7628"
+          </a>,
+          ';',
+        ])
+        expect(postParser(`'https://jira.ringcentral.com/browse/FIJI-7628'`, { html: true })).toEqual([
+          "'",
+          <a href="https://jira.ringcentral.com/browse/FIJI-7628'" target='_blank' rel='noreferrer' key={0}>
+            https://jira.ringcentral.com/browse/FIJI-7628'
+          </a>,
+          ';',
+        ])
+      })
     });
   });
 
