@@ -25,60 +25,44 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
   });
   describe('GroupService', () => {
     it('create team', async () => {
-      const { entity } = await helper.useScenario(Team.Create.Success);
+      const { createdTeam } = await helper.useScenario(Team.Create.Success);
 
-      await groupService.createTeam(entity.creator_id, entity.members, {
-        name: entity.set_abbreviation,
-      });
-      const result = await groupService.getById(entity._id!);
+      await groupService.createTeam(
+        createdTeam.creator_id,
+        createdTeam.members,
+        {
+          name: createdTeam.set_abbreviation,
+        },
+      );
+      const result = await groupService.getById(createdTeam._id!);
       expect(result).not.toBeUndefined();
-      expect(result!.set_abbreviation).toEqual(entity.set_abbreviation);
-      expect(result!.creator_id).toEqual(entity.creator_id);
-      expect(result!.members).toEqual(entity.members);
+      expect(result!.set_abbreviation).toEqual(createdTeam.set_abbreviation);
+      expect(result!.creator_id).toEqual(createdTeam.creator_id);
+      expect(result!.members).toEqual(createdTeam.members);
     });
     it('modify team name', async () => {
-      const mockInfo = helper.mockResponse(
-        readApiJson<IApiContract<any, Group>>(
-          require('./data/MODIFY_TEAM_NAME.SUCCESS.json'),
-        ),
-        reqRes => {
-          const {
-            response: { data },
-          } = reqRes;
-          return {
-            teamId: Number(data._id!),
-            name: data.set_abbreviation,
-          };
-        },
-      );
-      await groupService.updateTeamSetting(mockInfo.teamId, {
-        name: mockInfo.name,
+      const { updatedTeam } = await helper.useScenario(Team.Update.Success);
+      await groupService.updateTeamSetting(updatedTeam._id, {
+        name: updatedTeam.set_abbreviation,
       });
-      const result = await groupService.getById(mockInfo.teamId);
+      const result = await groupService.getById(updatedTeam._id);
       expect(result).not.toBeUndefined();
-      expect(result!.set_abbreviation).toEqual(mockInfo.name);
+      expect(result!.set_abbreviation).toEqual(updatedTeam.set_abbreviation);
     });
     it('disable all team permission', async () => {
-      const mockTeamInfo = helper.mockResponse(
-        readApiJson<IApiContract<any, Group>>(
-          require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
-        ),
-        reqRes => {
-          const {
-            response: { data },
-          } = reqRes;
-          data.permissions!.user!.level = 0;
-          return {
-            teamId: Number(data._id),
-            name: data.set_abbreviation,
-            permissions: data.permissions,
-          };
+      const { updatedTeam } = await helper.useScenario(Team.Update.Success, {
+        teamInfo: {
+          permissions: {
+            user: {
+              level: 0,
+            },
+          },
         },
-      );
-      const beforeUpdate = await groupService.getById(mockTeamInfo.teamId);
-      expect(beforeUpdate!.permissions).not.toEqual(mockTeamInfo.permissions);
-      await groupService.updateTeamSetting(mockTeamInfo.teamId, {
-        name: mockTeamInfo.name,
+      });
+      const beforeUpdate = await groupService.getById(updatedTeam._id);
+      expect(beforeUpdate!.permissions).not.toEqual(updatedTeam.permissions);
+      await groupService.updateTeamSetting(updatedTeam._id, {
+        name: updatedTeam.set_abbreviation,
         permissionFlags: {
           TEAM_ADD_MEMBER: false,
           TEAM_PIN_POST: false,
@@ -86,31 +70,24 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
           TEAM_ADD_INTEGRATIONS: false,
         },
       });
-      const afterUpdate = await groupService.getById(mockTeamInfo.teamId);
+      const afterUpdate = await groupService.getById(updatedTeam._id);
       expect(afterUpdate).not.toBeUndefined();
-      expect(afterUpdate!.permissions).toEqual(mockTeamInfo.permissions);
+      expect(afterUpdate!.permissions).toEqual(updatedTeam.permissions);
     });
     it('enable all team permission', async () => {
-      const mockInfo = helper.mockResponse(
-        readApiJson<IApiContract<any, Group>>(
-          require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
-        ),
-        reqRes => {
-          const {
-            response: { data },
-          } = reqRes;
-          data.permissions!.user!.level = 15;
-          return {
-            teamId: Number(data._id),
-            name: data.set_abbreviation,
-            permissions: data.permissions,
-          };
+      const { updatedTeam } = await helper.useScenario(Team.Update.Success, {
+        teamInfo: {
+          permissions: {
+            user: {
+              level: 15,
+            },
+          },
         },
-      );
-      const beforeUpdate = await groupService.getById(mockInfo.teamId);
-      expect(beforeUpdate!.permissions).not.toEqual(mockInfo.permissions);
-      await groupService.updateTeamSetting(mockInfo.teamId, {
-        name: mockInfo.name,
+      });
+      const beforeUpdate = await groupService.getById(updatedTeam._id);
+      expect(beforeUpdate!.permissions).not.toEqual(updatedTeam.permissions);
+      await groupService.updateTeamSetting(updatedTeam._id, {
+        name: updatedTeam.set_abbreviation,
         permissionFlags: {
           TEAM_ADD_MEMBER: true,
           TEAM_PIN_POST: true,
@@ -118,12 +95,12 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
           TEAM_ADD_INTEGRATIONS: true,
         },
       });
-      const afterUpdate = await groupService.getById(mockInfo.teamId);
+      const afterUpdate = await groupService.getById(updatedTeam._id);
       expect(afterUpdate).not.toBeUndefined();
-      expect(afterUpdate!.permissions).toEqual(mockInfo.permissions);
+      expect(afterUpdate!.permissions).toEqual(updatedTeam.permissions);
     });
     it('add team member', async () => {
-      const mockInfo = helper.mockResponse(
+      const updatedTeam = helper.mockResponse(
         readApiJson<IApiContract<any, Group>>(
           require('./data/ADD_TEAM_MEMBER.SUCCESS.json'),
         ),
@@ -135,20 +112,20 @@ jit('Group Integration test', ({ helper, sdk, template }) => {
           newMembers: reqRes.response.data!.members,
         }),
       );
-      await groupService.addTeamMembers(mockInfo.addMembers, mockInfo.id);
-      const result = await groupService.getById(mockInfo.id!);
+      await groupService.addTeamMembers(updatedTeam.addMembers, updatedTeam.id);
+      const result = await groupService.getById(updatedTeam.id!);
       expect(result).not.toBeUndefined();
-      expect(result!.members).toEqual(mockInfo.newMembers);
+      expect(result!.members).toEqual(updatedTeam.newMembers);
     });
     it('archived team', async () => {
-      const mockInfo = helper.mockResponse(
+      const updatedTeam = helper.mockResponse(
         require('./data/ARCHIVED_TEAM.SUCCESS.json'),
         (reqRes: IRequestResponse<Group, Group>) => ({
           id: reqRes.request.data!._id!,
         }),
       );
-      await groupService.archiveTeam(mockInfo.id);
-      const result = await groupService.getById(mockInfo.id!);
+      await groupService.archiveTeam(updatedTeam.id);
+      const result = await groupService.getById(updatedTeam.id!);
       expect(result).not.toBeUndefined();
       expect(result!.is_archived).toBeTruthy();
     });
