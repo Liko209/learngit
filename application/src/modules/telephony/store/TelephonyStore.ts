@@ -146,6 +146,10 @@ class TelephonyStore {
   @observable
   isExt: boolean = false;
 
+  // only exist one e911 dialog
+  @observable
+  hasShowE911: boolean = false;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -626,6 +630,11 @@ class TelephonyStore {
   backToDialer = () => {
     this.isRecentCalls = false;
   };
+
+  @action
+  switchE911Status = (status: boolean) => {
+    this.hasShowE911 = status;
+  }
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE };

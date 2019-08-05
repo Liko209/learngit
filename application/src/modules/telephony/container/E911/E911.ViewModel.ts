@@ -3,6 +3,7 @@
  * @Date: 2019-07-23 14:24:51
  * Copyright © RingCentral. All rights reserved.
  */
+import { container } from 'framework';
 import { observable, computed, action, IReactionPublic } from 'mobx';
 import { ChangeEvent } from 'react';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -18,6 +19,7 @@ import { catchError } from '@/common/catchError';
 
 import { OutOfCountryDisclaimer } from './config';
 import addressConfig from './address.json';
+import { TelephonyStore } from '../../store';
 
 import {
   E911Props,
@@ -83,6 +85,10 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     return ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+  }
+
+  get _telephonyStore() {
+    return container.get(TelephonyStore)
   }
 
   @computed
@@ -286,6 +292,10 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     const current = this.checkboxList[index];
     current.checked = !current.checked;
   };
+
+  closeE911 = (status: boolean) => {
+    this._telephonyStore.switchE911Status(status);
+  }
 }
 
 export { E911ViewModel };
