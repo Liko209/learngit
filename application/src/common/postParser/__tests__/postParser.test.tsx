@@ -453,6 +453,18 @@ describe('glipdown text', () => {
           '123  ss',
         ]);
       });
+
+      it('should unescape mention name', () => {
+        expect(
+          postParser(`sdds${atmention('999', '&amp;')}123  ss`, {
+            atMentions: { map },
+          }),
+        ).toEqual([
+          'sdds',
+          <JuiAtMention key={0} id='999' isCurrent={false} name='@&' />,
+          '123  ss',
+        ]);
+      })
     });
     describe('emojis', () => {
       it('should parse emoji one with special character', () => {
