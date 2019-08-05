@@ -16,7 +16,6 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { notificationCenter, ENTITY } from 'sdk/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
-import { RC_INFO_KEYS } from 'sdk/module/rcInfo/config/constants';
 
 jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('sdk/module/profile');
@@ -39,9 +38,6 @@ describe('CallerIdSettingHandler ', () => {
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
-      parentModelId: 0,
-      weight: 0,
-      valueType: 0,
       id: SettingEntityIds.Phone_CallerId,
       source: [{ id: 1 }, { id: 2 }],
       state: 0,
@@ -111,9 +107,6 @@ describe('CallerIdSettingHandler ', () => {
         .mockReturnValue({ value: CALLING_OPTIONS.RINGCENTRAL });
       const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
-        parentModelId: 0,
-        weight: 0,
-        valueType: 0,
         state: 2,
         id: SettingEntityIds.Phone_CallerId,
         source: [{ id: 1 }, { id: 2 }],
@@ -127,13 +120,10 @@ describe('CallerIdSettingHandler ', () => {
       const res = await callerIdSettingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_CallerId,
-        parentModelId: 0,
         source: [{ id: 1 }, { id: 2 }],
         state: 0,
         value: { id: 2 },
         valueSetter: expect.any(Function),
-        valueType: 0,
-        weight: 0,
       });
     });
   });
@@ -152,7 +142,7 @@ describe('CallerIdSettingHandler ', () => {
       await callerIdSettingHandler.updateValue({
         id: 111,
       } as any);
-      expect(rcInfoService.setDefaultCallerId).toBeCalledWith(111);
+      expect(rcInfoService.setDefaultCallerId).toHaveBeenCalledWith(111);
     });
   });
 
@@ -172,7 +162,7 @@ describe('CallerIdSettingHandler ', () => {
         ],
       );
       setTimeout(() => {
-        expect(callerIdSettingHandler.getUserSettingEntity).toBeCalled();
+        expect(callerIdSettingHandler.getUserSettingEntity).toHaveBeenCalled();
         expect(
           callerIdSettingHandler.notifyUserSettingEntityUpdate,
         ).toHaveBeenCalledWith({});
@@ -190,10 +180,12 @@ describe('CallerIdSettingHandler ', () => {
         [],
       );
       setTimeout(() => {
-        expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(
+          callerIdSettingHandler.getUserSettingEntity,
+        ).not.toHaveBeenCalled();
         expect(
           callerIdSettingHandler.notifyUserSettingEntityUpdate,
-        ).not.toBeCalled();
+        ).not.toHaveBeenCalled();
         done();
       });
     });

@@ -1,0 +1,21 @@
+{
+  "host": "https://api.mixpanel.com",
+  "path": "/track",
+  "method": "GET",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api.mixpanel.com",
+    "path": "/track",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "statusText": "",
+    "data": 0,
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-cache, no-store"
+    }
+  }
+}

@@ -13,6 +13,8 @@ import {
   ERCWebUris,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
+  IAssignLineRequest,
+  IUpdateLineRequest,
   StateRecord,
 } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
@@ -51,6 +53,7 @@ class RCInfoService extends EntityBaseService<IdModel>
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.rcInfoSettings);
     this.getRCInfoController().blockNumberController.init();
+    this.getRCInfoController().rcPresenceController.start();
   }
 
   protected onStopped() {
@@ -179,6 +182,12 @@ class RCInfoService extends EntityBaseService<IdModel>
       ));
     mainLogger.debug(`isVoipCallingAvailable: ${result}`);
     return result;
+  }
+
+  async getAccountMainNumber() {
+    return this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountMainNumber();
   }
 
   async isRCFeaturePermissionEnabled(
@@ -314,6 +323,28 @@ class RCInfoService extends EntityBaseService<IdModel>
     await this.getRCInfoController().blockNumberController.addBlockedNumber(
       phoneNumber,
     );
+  }
+
+  syncUserRCPresence() {
+    this.getRCInfoController().rcPresenceController.syncRCPresence();
+  }
+
+  async getDigitalLines() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getDigitalLines();
+  }
+
+  async assignLine(deviceId: string, data: IAssignLineRequest) {
+    await this.getRCInfoController()
+      .getRCDeviceController()
+      .assignLine(deviceId, data);
+  }
+
+  async updateLine(deviceId: string, data: IUpdateLineRequest) {
+    await this.getRCInfoController()
+      .getRCDeviceController()
+      .updateLine(deviceId, data);
   }
 }
 

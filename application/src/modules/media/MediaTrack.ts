@@ -205,7 +205,7 @@ class MediaTrack {
   }
 
   private _getUrlFromSrcArray(src: MediaOptions['src']) {
-    if (src.length === 0) {
+    if (!src || (src && src.length === 0)) {
       return '';
     }
     let url: string = '';
@@ -222,7 +222,6 @@ class MediaTrack {
       if (ext) {
         ext = ext[1].toLowerCase();
       }
-      /* eslint-disable no-console */
       if (!ext) {
         mainLogger.warn('[MediaModule] No file extension was found!');
       }
@@ -294,16 +293,9 @@ class MediaTrack {
     },
   ) {
     const currentUsedDevices = this._outputDevices;
-    const diffDevices = Utils.difference(devices, currentUsedDevices);
+    this._removeDeviceSounds(currentUsedDevices);
 
-    const removeDevices = currentUsedDevices.filter(device =>
-      diffDevices.includes(device),
-    );
-    const addDevices = devices.filter(device => !!diffDevices.includes(device));
-
-    this._removeDeviceSounds(removeDevices);
-
-    const newDeviceSounds = this._createDeviceSound(addDevices, options);
+    const newDeviceSounds = this._createDeviceSound(devices, options);
     newDeviceSounds.forEach(sound => {
       this._sounds.push(sound);
     });

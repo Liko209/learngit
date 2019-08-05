@@ -21,6 +21,7 @@ import { catchError } from '@/common/catchError';
 import { Dialog } from '@/containers/Dialog';
 import { mainLogger } from 'sdk';
 import i18nT from '@/utils/i18nT';
+import { isMentionIdsContainTeam} from '../utils';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -103,9 +104,10 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   @action
   private _buildEnterHandler = () => {
     const self = this;
-    return function (this: any) {
+    return function(this: any) {
       const quill: Quill = this.quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
+      const mentionIdsContainTeam = isMentionIdsContainTeam(mentionIds);
       if (content.length > CONTENT_LENGTH) {
         self.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -116,13 +118,13 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       }
       self.error = '';
       if (content.trim() || self._post.itemIds.length) {
-        self._editPost(content, mentionIds);
+        self._editPost(content, mentionIds, mentionIdsContainTeam);
       } else {
         self._handleDelete();
       }
       self.removeDraft();
     };
-  }
+  };
 
   private _buildEscHandler = () => this._exitEditMode;
 
@@ -141,17 +143,18 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     server: 'message.prompt.editPostFailedForServerIssue',
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
-  private _handleEditPost(content: string, ids: number[]) {
-    return this._postService.editPost({
+  private async _handleEditPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
+    await this._postService.editPost({
       text: content,
       groupId: this.gid,
       postId: this.id,
       mentionNonItemIds: ids,
+      isTeamMention: mentionIdsContainTeam
     });
   }
 
-  private async _editPost(content: string, ids: number[]) {
-    await this._handleEditPost(content, ids);
+  private async _editPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
+    await this._handleEditPost(content, ids, mentionIdsContainTeam);
     this._exitEditMode();
   }
 

@@ -49,7 +49,8 @@ describe('RCInfoFetchController', () => {
           return {
             hasPermission: jest.fn().mockReturnValue(true),
           };
-        } else if (config === ServiceConfig.COMPANY_SERVICE) {
+        }
+        if (config === ServiceConfig.COMPANY_SERVICE) {
           return {
             getUserAccountTypeFromSP430: jest.fn().mockReturnValue(accoutType),
           };
@@ -212,6 +213,45 @@ describe('RCInfoFetchController', () => {
         ERCServiceFeaturePermission.ON_DEMAND_CALL_RECORDING,
       );
       expect(res).toBeTruthy();
+    });
+
+    it.each`
+      rolePermissions | serviceFeatures                                                                            | permission                                  | result   | comment
+      ${[]}           | ${[{ featureName: 'SMS', enabled: true }, { featureName: 'VoipCalling', enabled: false }]} | ${ERCServiceFeaturePermission.VOIP_CALLING} | ${false} | ${'has sms permission, no voip permission'}
+      ${[]}           | ${[{ featureName: 'CallSwitch', enabled: true }]}                                          | ${ERCServiceFeaturePermission.CALL_SWITCH}  | ${true}  | ${'has call switch permission'}
+      ${[]}           | ${[{ featureName: 'CallSwitch', enabled: false }]}                                         | ${ERCServiceFeaturePermission.CALL_SWITCH}  | ${false} | ${'no call switch permission'}
+      ${[]}           | ${[{ featureName: 'WebPhone', enabled: true }]}                                            | ${ERCServiceFeaturePermission.WEB_PHONE}    | ${true}  | ${'has web phone permission'}
+      ${[]}           | ${[{ featureName: 'WebPhone', enabled: false }]}                                           | ${ERCServiceFeaturePermission.WEB_PHONE}    | ${false} | ${'no web phone permission'}
+    `(
+      'should return $result when $comment',
+      async ({ rolePermissions, serviceFeatures, permission, result }) => {
+        mockFetchController.getRCRolePermissions.mockReturnValueOnce({
+          permissions: rolePermissions,
+        });
+
+        mockFetchController.getRCExtensionInfo = jest
+          .fn()
+          .mockResolvedValueOnce({
+            serviceFeatures,
+          });
+        const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+          permission,
+        );
+        expect(res).toBe(result);
+      },
+    );
+
+    it('should return false when users ', async () => {
+      mockFetchController.getRCExtensionInfo.mockReturnValueOnce({
+        serviceFeatures: [
+          { featureName: 'SMS', enabled: true },
+          { featureName: 'VoipCalling', enabled: false },
+        ],
+      });
+      const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.VOIP_CALLING,
+      );
+      expect(res).toBe(false);
     });
   });
 });

@@ -3,14 +3,12 @@
  * @Date: 2018-09-28 16:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { MentionViewProps } from './types';
 import { JuiMentionPanel } from 'jui/pattern/MessageInput/Mention/MentionPanel';
 import { JuiMentionPanelSection } from 'jui/pattern/MessageInput/Mention/MentionPanelSection';
-import { JuiMentionPanelSectionHeader } from 'jui/pattern/MessageInput/Mention/MentionPanelSectionHeader';
 import ReactResizeDetector from 'react-resize-detector';
 import {
   JuiVirtualList,
@@ -19,12 +17,7 @@ import {
   JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
 import { MentionItem } from './MentionItem';
-import {
-  ITEM_HEIGHT,
-  MAX_ITEM_NUMBER,
-  TITLE_HEIGHT,
-  ITEM_DIFF,
-} from './constants';
+import { ITEM_HEIGHT, MAX_ITEM_NUMBER } from './constants';
 
 @observer
 class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
@@ -32,44 +25,20 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
   _listRef: RefObject<JuiVirtualList<number, number>> = createRef();
 
   get(index: number) {
-    const { initIndex, ids } = this.props;
-    return ids[index - initIndex];
+    const { ids } = this.props;
+    return ids[index];
   }
 
   size() {
-    const { initIndex, ids } = this.props;
-    return ids.length + initIndex;
+    const { ids } = this.props;
+    return ids.length;
   }
 
   private _rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
-    const {
-      t,
-      searchTerm,
-      currentIndex,
-      selectHandler,
-      isOneToOneGroup,
-    } = this.props;
+    const { currentIndex, selectHandler } = this.props;
     const { item, index, style } = cellProps;
-    if (index === 0 && !isOneToOneGroup) {
-      return (
-        <JuiMentionPanelSectionHeader
-          key={index}
-          title={t(
-            searchTerm && searchTerm.trim()
-              ? 'message.suggestedPeople'
-              : 'message.teamMembers',
-          )}
-        />
-      );
-    }
-    const newStyle = isOneToOneGroup
-      ? style
-      : {
-          ...style,
-          top: Number(style.top) - ITEM_DIFF, // every item has 40px but title is 32px
-        };
     return (
-      <JuiVirtualCellWrapper key={item} style={newStyle}>
+      <JuiVirtualCellWrapper key={item} style={style}>
         <MentionItem
           id={item}
           index={index}
@@ -88,7 +57,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
   }
 
   render() {
-    const { open, ids, isEditMode, isOneToOneGroup } = this.props;
+    const { open, ids, isEditMode } = this.props;
     const memberIdsLength = ids.length;
 
     if (open && memberIdsLength > 0) {
@@ -98,7 +67,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
           : ITEM_HEIGHT * memberIdsLength;
       return (
         <JuiMentionPanel isEditMode={isEditMode}>
-          <ReactResizeDetector handleWidth={true}>
+          <ReactResizeDetector handleWidth>
             {({ width = 2000 }: { width: number }) => {
               return (
                 <JuiMentionPanelSection>
@@ -108,11 +77,9 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
                     overscan={5}
                     rowRenderer={this._rowRenderer}
                     width={width}
-                    height={
-                      mentionHeight + (isOneToOneGroup ? 0 : TITLE_HEIGHT)
-                    }
+                    height={mentionHeight}
                     fixedCellHeight={ITEM_HEIGHT}
-                    data-test-automation-id='mention-list'
+                    data-test-automation-id="mention-list"
                   />
                 </JuiMentionPanelSection>
               );

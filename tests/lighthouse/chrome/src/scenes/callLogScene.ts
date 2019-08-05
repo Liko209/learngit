@@ -11,7 +11,7 @@ import { MetricService, FileService } from "../services";
 class CallLogScene extends Scene {
 
   tags(): Array<string> {
-    return ["Phone", "Call", "Log", "Memory", "Trace", "API"];
+    return ["CallLogScene", "Phone", "Call", "Log", "Memory", "Trace", "API"];
   }
 
   async preHandle() {

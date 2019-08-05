@@ -595,6 +595,15 @@ describe('RCInfoFetchController', () => {
     });
   });
 
+  describe('getDigitalLines', () => {
+    it('should get value from config', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getDeviceInfo = jest.fn().mockReturnValue({records: 'test'});
+      const res = await rcInfoFetchController.getDigitalLines();
+      expect(res).toBe('test');
+    });
+  });
+
   describe('getAccountServiceInfo', () => {
     it('should get value from config', async () => {
       // prettier-ignore

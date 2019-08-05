@@ -34,6 +34,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I login to Unified login page with RC account correct password and correct extension', async () => {
+    await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
     await app.loginPage.interactiveSignIn(loginUser.company.number, loginUser.extension, loginUser.password);
   });
 

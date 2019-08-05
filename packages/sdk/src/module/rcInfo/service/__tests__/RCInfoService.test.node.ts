@@ -27,9 +27,11 @@ jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
+jest.mock('../../controller/RCDeviceController');
 jest.mock('sdk/module/account');
 jest.mock('../../controller/BlockNumberController');
 jest.mock('sdk/module/company');
+jest.mock('../../controller/RCPresenceController');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -124,6 +126,15 @@ describe('RCInfoService', () => {
       await rcInfoService.getRCBrandId();
       expect(
         rcInfoController.getRCAccountInfoController().getAccountBrandId,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe('getAccountMainNumber()', () => {
+    it('should call controller with correct parameter', async () => {
+      await rcInfoService.getAccountMainNumber();
+      expect(
+        rcInfoController.getRCAccountInfoController().getAccountMainNumber,
       ).toHaveBeenCalled();
     });
   });
@@ -394,6 +405,36 @@ describe('RCInfoService', () => {
     });
   });
 
+  describe('getDigitalLines()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getDigitalLines();
+      expect(
+        rcInfoService['getRCInfoController']().getRCInfoFetchController()
+          .getDigitalLines,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe('assignLine()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.assignLine('1', 'test');
+      expect(
+        rcInfoService['getRCInfoController']().getRCDeviceController()
+          .assignLine,
+      ).toHaveBeenCalledWith('1', 'test');
+    });
+  });
+
+  describe('updateLine()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.updateLine('1', 'test');
+      expect(
+        rcInfoService['getRCInfoController']().getRCDeviceController()
+          .updateLine,
+      ).toHaveBeenCalledWith('1', 'test');
+    });
+  });
+
   describe('deleteBlockedNumbers()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.deleteBlockedNumbers(['1123', '6']);
@@ -411,6 +452,16 @@ describe('RCInfoService', () => {
         rcInfoService['getRCInfoController']().blockNumberController
           .addBlockedNumber,
       ).toHaveBeenCalledWith('1123');
+    });
+  });
+
+  describe('addBlockedNumber()', () => {
+    it('should call controller with correct parameter', () => {
+      const controller = rcInfoService['getRCInfoController']()
+        .rcPresenceController;
+      controller.syncRCPresence = jest.fn();
+      rcInfoService.syncUserRCPresence();
+      expect(controller.syncRCPresence).toHaveBeenCalled();
     });
   });
 });

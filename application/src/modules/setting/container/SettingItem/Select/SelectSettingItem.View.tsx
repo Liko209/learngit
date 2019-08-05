@@ -16,6 +16,8 @@ import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { catchError } from '@/common/catchError';
 import { JuiText } from 'jui/components/Text';
 import { JuiListItemSecondaryAction } from 'jui/components';
+import { JuiVirtualizedBoxSelect } from 'jui/components/VirtualizedSelects';
+import { SETTING_ITEM_TYPE } from '@/interface/setting';
 
 type SourceItemType =
   | {
@@ -80,21 +82,35 @@ class SelectSettingItemViewComponent<
       </JuiBoxSelect>
     );
   }
+  private _renderVirtualizedSelect() {
+    const { settingItem, ...rest } = this.props;
+    return (
+      <JuiVirtualizedBoxSelect
+        onChange={this._handleChange}
+        automationId={`settingItemSelectBox-${settingItem.automationId}`}
+        renderValue={this._renderValue}
+        name="settings"
+        isFullWidth
+        {...rest}
+      >
+        {this._renderSource()}
+      </JuiVirtualizedBoxSelect>
+    );
+  }
   private _renderSource() {
     return this.props.source.map((item: T) => this._renderSourceItem(item));
   }
 
   private _renderSourceItem(sourceItem: T) {
     const itemValue = this.props.extractValue(sourceItem);
+    const { secondaryActionRenderer, automationId } = this.props.settingItem;
     return (
       <JuiMenuItem
-        hasSecondaryAction={!!this.props.settingItem.secondaryActionRenderer}
+        hasSecondaryAction={!!secondaryActionRenderer}
         key={itemValue}
         value={itemValue}
         disabled={itemValue === ''}
-        automationId={`settingItemSelectBoxItem-${
-          this.props.settingItem.automationId
-        }-${itemValue}`}
+        automationId={`settingItemSelectBoxItem-${automationId}-${itemValue}`}
         data-test-automation-class={'settingItemSelectBoxItem'}
         data-test-automation-value={itemValue}
       >
@@ -136,7 +152,9 @@ class SelectSettingItemViewComponent<
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >
-        {this._renderSelect()}
+        {settingItem.type === SETTING_ITEM_TYPE.VIRTUALIZED_SELECT
+          ? this._renderVirtualizedSelect()
+          : this._renderSelect()}
       </JuiSettingSectionItem>
     );
   }

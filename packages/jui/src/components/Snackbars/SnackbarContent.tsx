@@ -79,7 +79,8 @@ const SnackbarContent = styled<SnackbarContentProps>(WrapperContent)`
     overflow: hidden;
     background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
-    border-radius: ${({ fullWidth, theme }) => (fullWidth ? 0 : `${theme.shape.borderRadius}px`)} !important;
+    border-radius: ${({ fullWidth, theme }) =>
+      fullWidth ? 0 : `${theme.shape.borderRadius}px`} !important;
     max-width: ${props => (props.fullWidth ? '100%' : width(160))} !important;
     box-sizing: border-box;
     margin: 0 auto;

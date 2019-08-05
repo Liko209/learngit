@@ -19,8 +19,6 @@ export type CallerIdSelectorProps = {
 
 export type CallerIdSelectorState = {
   focusIndex: number;
-  displayStartIdx: number;
-  displayEndIdx: number;
 };
 
 export enum Direction {
@@ -30,8 +28,8 @@ export enum Direction {
 
 export type CallerIdViewProps = {
   tooltipProps: Pick<
-  RuiTooltipProps,
-  Exclude<keyof RuiTooltipProps, 'children' | 'title'>
+    RuiTooltipProps,
+    Exclude<keyof RuiTooltipProps, 'children' | 'title'>
   >;
   callerIdProps: CallerIdSelectorProps;
 };

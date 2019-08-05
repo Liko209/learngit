@@ -3,7 +3,7 @@
  * @Date: 2019-06-01 14:56:34
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -16,7 +16,6 @@ import {
   StyledActionWrapper,
   // StyledVoicemailDetail,
 } from 'jui/pattern/Phone/VoicemailItem';
-import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
 import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
 import {
@@ -26,6 +25,8 @@ import {
   ResponsiveObject,
 } from './types';
 import { ENTITY_TYPE } from '../constants';
+import { AudioPlayer } from '@/modules/media/container/AudioPlayer';
+
 import { getCreateTime } from '@/utils/date';
 
 type VoicemailItemProps = VoicemailViewProps &
@@ -38,8 +39,6 @@ type State = {
 
 @observer
 class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
-  private _AudioPlayer = React.createRef<JuiAudioPlayer>();
-
   state = {
     showCall: false,
   };
@@ -55,54 +54,14 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
   }
 
   get playerMode() {
-    const {
-      isHover,
-      isAudioActive,
-      voiceMailResponsiveMap: voiceMailResponsiveMap,
-    } = this.props;
+    const { isHover, showFullAudioPlayer, voiceMailResponsiveMap } = this.props;
 
     if (voiceMailResponsiveMap.audioMode === JuiAudioMode.FULL) {
-      return isHover || isAudioActive ? JuiAudioMode.FULL : JuiAudioMode.MINI;
+      return isHover || showFullAudioPlayer
+        ? JuiAudioMode.FULL
+        : JuiAudioMode.MINI;
     }
     return voiceMailResponsiveMap.audioMode;
-  }
-
-  componentDidUpdate({ selected: preSelected }: VoicemailItemProps) {
-    const { selected } = this.props;
-
-    if (preSelected && !selected && this._AudioPlayer.current) {
-      this._AudioPlayer.current.pause();
-    }
-  }
-
-  componentWillUnmount() {
-    const { selected, onVoicemailPlay } = this.props;
-
-    if (!selected) return;
-
-    onVoicemailPlay(null);
-
-    if (this._AudioPlayer.current) {
-      this._AudioPlayer.current.pause();
-    }
-  }
-
-  private _getTips() {
-    const { t } = this.props;
-    return {
-      play: t('common.play'),
-      pause: t('common.pause'),
-      reload: t('common.reload'),
-    };
-  }
-
-  private _getLabels() {
-    const { t } = this.props;
-    return {
-      play: t('voicemail.labels.play'),
-      pause: t('voicemail.labels.pause'),
-      reload: t('voicemail.labels.reload'),
-    };
   }
 
   render() {
@@ -112,9 +71,11 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       readStatus,
       isUnread,
       audio,
+      onPlay,
+      onPaused,
       onError,
+      onEnded,
       onBeforePlay,
-      onBeforeAction,
       updateStartTime,
       createTime,
       direction,
@@ -122,7 +83,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       onMouseOver,
       onMouseLeave,
       isHover,
-      voiceMailResponsiveMap: voiceMailResponsiveMap,
+      voiceMailResponsiveMap,
       // onChange,
       // selected,
     } = this.props;
@@ -132,7 +93,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       // <StyleVoicemailItem expanded={selected} onChange={onChange}>
       <StyleVoicemailItem
         data-id={id}
-        data-test-automation-class='voicemail-item'
+        data-test-automation-class="voicemail-item"
         expanded={false}
       >
         <VoicemailSummary
@@ -145,27 +106,26 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
               caller={caller}
               readStatus={readStatus}
               direction={direction}
-              isMissedCall={true}
+              isMissedCall
             />
           </StyledContactWrapper>
           {audio && (
             <StyledAudioPlayerWrapper>
-              <JuiAudioPlayer
-                responsiveSize={voiceMailResponsiveMap}
-                ref={this._AudioPlayer}
-                onBeforePlay={onBeforePlay}
-                onBeforeAction={onBeforeAction}
-                onTimeUpdate={updateStartTime}
-                onError={onError}
-                mode={this.playerMode}
-                isHighlight={isUnread}
+              <AudioPlayer
+                autoDispose={false}
+                id={id.toString()}
+                media={audio.media}
                 src={audio.downloadUrl}
                 duration={audio.vmDuration}
-                // should be improve
-                // audio player should support set startTime function
+                mode={this.playerMode}
+                isHighlight={isUnread}
+                onBeforePlay={onBeforePlay}
+                onTimeUpdate={updateStartTime}
+                onPlay={onPlay}
+                onPaused={onPaused}
+                onError={onError}
+                onEnded={onEnded}
                 startTime={audio.startTime}
-                actionTips={this._getTips()}
-                actionLabels={this._getLabels()}
               />
             </StyledAudioPlayerWrapper>
           )}

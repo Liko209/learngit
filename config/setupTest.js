@@ -3,11 +3,14 @@
  * @Date: 2019-05-08 23:01:16
  * Copyright © RingCentral. All rights reserved.
  */
-import './jest/setup/setupConsole';
-import './jest/setup/setupHTMLElement';
-import './jest/setup/setupTimezone';
-import './jest/setup/setupMobx';
-import './jest/setup/setupStyledTheme';
+import './jest/setup/console';
+import './jest/setup/timezone';
+import './jest/setup/mobx';
+import './jest/setup/styledTheme';
+import './jest/setup/media';
+import './jest/setup/selection';
+import './jest/setup/promise';
+
 import { FakeStorage } from './utils';
 /* eslint-disable */
 
@@ -38,6 +41,5 @@ afterAll(() => {
 
   process.off('unhandledRejection', log);
   process.env.LISTENING_TO_UNHANDLED_REJECTION = false;
-
   global.gc && global.gc();
 });

@@ -27,8 +27,9 @@ type MuiMenuItemPropsExtend = MuiMenuItemProps & {
   button?: any;
 };
 
+type StyledMuiMenuItemProps = MuiMenuItemPropsExtend & { umi?: boolean };
+
 const StyledRightWrapper = styled.div`
-  width: ${width(5)};
   height: ${height(5)};
   display: flex;
   align-items: center;
@@ -49,7 +50,7 @@ const rippleEnter = (theme: Theme) => keyframes`
 
 const StyledIconButtonMore = styled(JuiIconButton)<JuiIconButtonProps>``;
 
-const hoverStyle = css`
+const hoverStyle = css<StyledMuiMenuItemProps>`
   background-color: ${({ theme }) =>
     fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
   ${StyledIconButtonMore} {
@@ -69,17 +70,24 @@ const JuiMenuContain = styled(JuiMenu)`
 
 const FilteredComponent = ({
   isItemHover,
+  umi,
   ...rest
-}: MuiMenuItemPropsExtend) => <MuiMenuItem {...rest} />;
+}: StyledMuiMenuItemProps) => <MuiMenuItem {...rest} />;
 
-const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
+const StyledItemText = styled(ItemText)`
+  && {
+    padding: 0;
+  }
+`;
+
+const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
   && {
     white-space: nowrap;
-    padding: ${spacing(0, 4, 0, 3)};
+    padding: ${spacing(0, 3, 0, 3)};
     height: ${height(8)};
     min-height: unset;
     line-height: ${height(8)};
-    color: ${grey('900')};
+
     /**
      * Workaround to resolve transition conflicts with react-sortable-hoc
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
@@ -91,6 +99,7 @@ const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
           easing: theme.transitions.easing.easeInOut,
         })};
   }
+
   &&&& {
     ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
   }
@@ -99,8 +108,9 @@ const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
     z-index: ${({ theme }) => theme.zIndex.dragging};
   }
 
-  &&:active p {
-    color: ${palette('primary', 'main')};
+  && ${StyledItemText} {
+    color: ${({ theme, umi }) =>
+      umi ? theme.palette.grey['900'] : theme.palette.grey['700']};
   }
 
   && ${StyledIconButtonMore} {
@@ -113,11 +123,15 @@ const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
     ${hoverStyle}
   }
 
-  &&.selected {
-    background-color: ${({ theme }) =>
-      fade(grey('700')({ theme }), theme.opacity['1'])};
-    p {
-      color: ${palette('primary', 'main')};
+  &&&&.selected {
+    background-color: ${palette('primary', '600')};
+
+    && ${StyledItemText} {
+      color: ${({ theme }) => theme.palette.common.white};
+    }
+
+    && ${StyledIconButtonMore} {
+      color: ${({ theme }) => theme.palette.common.white};
     }
   }
 
@@ -137,19 +151,20 @@ const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
     animation-name: ${({ theme }) => rippleEnter(theme)};
     z-index: ${({ theme }) => theme.zIndex.ripple};
   }
-` as React.ComponentType<MuiMenuItemPropsExtend & { isItemHover?: boolean }>;
+` as React.ComponentType<
+  MuiMenuItemPropsExtend & { isItemHover?: boolean; umi?: boolean }
+>;
 
 const StyledPresenceWrapper = styled.div`
   width: ${width(2)};
   height: ${height(2)};
-  margin: ${spacing(1.5)};
+  margin-right: ${spacing(3)};
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
 `;
 
 type JuiConversationListItemProps = {
   title: string;
   presence?: () => JSX.Element | null;
-  umi?: () => JSX.Element | undefined;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
@@ -174,7 +189,6 @@ const JuiConversationListItem: IConversationListItem = memo(
       title,
       indicator,
       presence,
-      umi,
       onClick,
       onMoreClick,
       component,
@@ -188,7 +202,9 @@ const JuiConversationListItem: IConversationListItem = memo(
       ...rest
     } = props;
 
-    const fontWeight = umiHint ? 'bold' : 'normal';
+    const fontWeight = umiHint || selected ? 900 : 'normal';
+    const IconButtonMoreColor = selected ? 'common.white' : 'grey.400';
+
     return hidden ? (
       <></>
     ) : (
@@ -196,6 +212,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         onClick={onClick}
         component={component}
         selected={selected}
+        umi={Boolean(umiHint)}
         classes={{ selected: 'selected' }}
         TouchRippleProps={{ classes: touchRippleClasses }}
         isItemHover={isItemHover}
@@ -204,13 +221,13 @@ const JuiConversationListItem: IConversationListItem = memo(
         {presence && (
           <StyledPresenceWrapper>{presence()}</StyledPresenceWrapper>
         )}
-        <ItemText style={{ fontWeight }}>{title}</ItemText>
-        {umi && umi()}
+        <StyledItemText style={{ fontWeight }}>{title}</StyledItemText>
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconButtonMore
             size="medium"
             variant="plain"
+            color={IconButtonMoreColor}
             data-test-automation-id="conversationListItemMoreButton"
             tooltipTitle={moreTooltipTitle}
             onClick={onMoreClick}

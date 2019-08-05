@@ -24,5 +24,6 @@ const config: DeepPartial<ApiConfig> = {
   splitio: {
     clientSecret: '',
   },
+  data_collection: '',
 };
 export default config;

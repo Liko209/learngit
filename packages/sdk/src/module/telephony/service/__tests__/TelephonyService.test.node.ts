@@ -21,7 +21,10 @@ import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
 import { PhoneSetting } from '../../setting';
 import { SettingService } from 'sdk/module/setting';
+import { CallSwitchController } from '../../controller/CallSwitchController';
+import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 
+jest.mock('../../controller/CallSwitchController');
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
 jest.mock('../../controller/MakeCallController');
@@ -32,11 +35,11 @@ jest.mock('../../config/TelephonyUserConfig');
 describe('TelephonyService', () => {
   let telephonyService: TelephonyService;
   let engineController: TelephonyEngineController;
-  let accountController;
+  let accountController: TelephonyAccountController;
   let makeCallController: MakeCallController;
   let mockSetting: PhoneSetting;
   let mockSettingService: SettingService;
-
+  let callSwitchController: CallSwitchController;
   const callId = '123';
   const toNum = '123';
   class MockAcc implements ITelephonyAccountDelegate {
@@ -69,6 +72,8 @@ describe('TelephonyService', () => {
     telephonyService = new TelephonyService();
     engineController = new TelephonyEngineController();
     accountController = new TelephonyAccountController(null, null, null);
+    callSwitchController = new CallSwitchController(null as any);
+    telephonyService['_callSwitchController'] = callSwitchController;
     mockSetting = ({
       getById: jest.fn(),
       getHandlerMap: jest.fn(),
@@ -124,10 +129,33 @@ describe('TelephonyService', () => {
     });
   });
 
+  describe('switchCall', () => {
+    const fromNumber = '1880191';
+    it('should call account controller to switch call', async () => {
+      const call = { to: '456' } as ActiveCall;
+      await telephonyService.switchCall(fromNumber, call);
+      expect(accountController.switchCall).toHaveBeenCalledWith(
+        fromNumber,
+        call,
+      );
+    });
+
+    it('should return error when account controller is not created', async () => {
+      engineController.getAccountController = jest
+        .fn()
+        .mockReturnValueOnce(null);
+      const result = await telephonyService.makeCall(fromNumber, {} as any);
+      expect(accountController.switchCall).not.toHaveBeenCalled();
+      expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_STATE);
+    });
+  });
+
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
-      await telephonyService.makeCall('123', '456');
-      expect(accountController.makeCall).toHaveBeenCalledWith('123', '456');
+      await telephonyService.makeCall('123', { fromNumber: '456' });
+      expect(accountController.makeCall).toHaveBeenCalledWith('123', {
+        fromNumber: '456',
+      });
     });
 
     it('should return error when account controller is not created', async () => {
@@ -144,6 +172,7 @@ describe('TelephonyService', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
       expect(accountController.hangUp).toHaveBeenCalledWith('123');
+      expect(callSwitchController.onCallEnded).toHaveBeenCalledWith('123');
     });
   });
   describe('mute', () => {
@@ -284,10 +313,12 @@ describe('TelephonyService', () => {
     });
   });
 
-  describe('getEmergencyAddress', () => {
-    it('should call getEmergencyAddress', () => {
-      telephonyService.getEmergencyAddress();
-      expect(accountController.getEmergencyAddress).toHaveBeenCalled();
+  describe('getSwitchCall', () => {
+    it('should call callSwitchController', async () => {
+      const retData = { id: 1 };
+      callSwitchController.getSwitchCall = jest.fn().mockResolvedValue(retData);
+      const r = await telephonyService.getSwitchCall();
+      expect(r).toEqual(retData);
     });
   });
 });

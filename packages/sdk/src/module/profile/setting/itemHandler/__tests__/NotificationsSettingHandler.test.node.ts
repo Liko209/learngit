@@ -31,9 +31,6 @@ describe('NotificationsSettingHandler ', () => {
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
       id: SettingEntityIds.Notification_Browser,
-      parentModelId: 1,
-      valueType: 1,
-      weight: 1,
       state: 0,
       value: {
         wantNotifications: true,

@@ -12,6 +12,7 @@ import {
   dataAnalysis,
   sleepModeDetector,
   mainLogger,
+  Performance,
 } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
@@ -27,15 +28,19 @@ import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './module/account';
-import { UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
 import { AccountGlobalConfig } from './module/account/config';
 import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 import { PhoneParserUtility } from './utils/phoneParser';
 import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
-import { PermissionService, LaunchDarklyController, SplitIOController } from 'sdk/module/permission';
-
+import {
+  PermissionService,
+  LaunchDarklyController,
+  SplitIOController,
+} from 'sdk/module/permission';
+import { jobScheduler } from './framework/utils/jobSchedule';
+import { UserConfigService } from './module/config';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -80,7 +85,9 @@ class Sdk {
     );
 
     if (!loginResp || !loginResp.success) {
-      window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      if (process.env.NODE_ENV !== 'test') {
+        window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      }
     }
     this._subscribeNotification();
     this._initDataAnalysis();
@@ -101,7 +108,7 @@ class Sdk {
       dbAdapter: dbConfig.adapter,
     });
     Api.init(apiConfig, this.networkManager);
-    await this.daoManager.initDatabase();
+    await this.daoManager.initDatabase(this.clearAllData);
 
     this.permissionService.injectControllers(new LaunchDarklyController());
     this.permissionService.injectControllers(new SplitIOController());
@@ -192,6 +199,13 @@ class Sdk {
         mainLogger.tags(LOG_TAG).info('stop loading');
         notificationCenter.emitKVChange(SERVICE.STOP_LOADING);
       }
+
+      if (AccountGlobalConfig.getUserDictionary()) {
+        Performance.instance.putAttribute(
+          'userId',
+          AccountGlobalConfig.getUserDictionary(),
+        );
+      }
     }
     mainLogger.tags(LOG_TAG).info('end onAuthSuccess');
   }
@@ -245,6 +259,16 @@ class Sdk {
   private _resetDataAnalysis() {
     dataAnalysis.reset();
   }
+
+  clearAllData = async () => {
+    await this.daoManager.deleteDatabase();
+    // remove relevant config
+    if (AccountGlobalConfig.getUserDictionary()) {
+      // TODO FIJI-4396
+      this.syncService.userConfig.clearSyncConfigsForDBUpgrade();
+      jobScheduler.userConfig.clearFetchDataConfigs();
+    }
+  };
 }
 
 export default Sdk;

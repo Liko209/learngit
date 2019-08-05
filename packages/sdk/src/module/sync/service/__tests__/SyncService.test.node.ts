@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-jest.mock('../../../../dao');
-
 import { SyncService } from '../SyncService';
 import { notificationCenter, WINDOW, SERVICE } from '../../../../service';
 import { SyncUserConfig } from '../../config/SyncUserConfig';
 import { SyncController } from '../../controller/SyncController';
+
+jest.mock('../../../../dao');
 
 jest.mock('../../config/SyncUserConfig');
 jest.mock('../../controller/SyncController');
@@ -24,6 +24,7 @@ describe('SyncService ', () => {
     handleWakeUpFromSleep: jest.fn(),
     handleWindowFocused: jest.fn(),
     updateIndexTimestamp: jest.fn(),
+    isDataSyncing: jest.fn(),
   };
   beforeEach(() => {
     syncService = new SyncService();
@@ -35,7 +36,7 @@ describe('SyncService ', () => {
   describe('userConfig', () => {
     it('should create userConfig', () => {
       syncService.userConfig;
-      expect(SyncUserConfig).toBeCalled();
+      expect(SyncUserConfig).toHaveBeenCalled();
     });
   });
 
@@ -43,7 +44,7 @@ describe('SyncService ', () => {
     it('should create getSyncController', () => {
       syncService['_syncController'] = undefined as any;
       syncService['getSyncController']();
-      expect(SyncController).toBeCalled();
+      expect(SyncController).toHaveBeenCalled();
     });
   });
 
@@ -57,14 +58,25 @@ describe('SyncService ', () => {
   describe('syncData', () => {
     it('should call syncData of controller', async () => {
       await syncService.syncData();
-      expect(syncController.syncData).toBeCalled();
+      expect(syncController.syncData).toHaveBeenCalled();
+    });
+  });
+
+  describe('isDataSyncing', () => {
+    it('should call isDataSyncing of controller', () => {
+      syncController.isDataSyncing = jest.fn().mockReturnValue(false);
+      expect(syncService.isDataSyncing()).toBeFalsy();
+      syncController.isDataSyncing = jest.fn().mockReturnValue(true);
+      expect(syncService.isDataSyncing()).toBeTruthy();
     });
   });
 
   describe('handleSocketConnectionStateChanged', () => {
     it('should call handleSocketConnectionStateChanged of controller', () => {
       syncService.handleSocketConnectionStateChanged({ state: 'connected' });
-      expect(syncController.handleSocketConnectionStateChanged).toBeCalledWith({
+      expect(
+        syncController.handleSocketConnectionStateChanged,
+      ).toHaveBeenCalledWith({
         state: 'connected',
       });
     });

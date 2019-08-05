@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SendPostType, EditPostType } from '../../types';
+import { Post } from '../../entity';
 
 interface ISendPostController {
   sendPost(params: SendPostType): void;
   reSendPost(id: number): void;
-  editFailedPost(params: EditPostType): Promise<void>;
+  editFailedPost(params: EditPostType): Promise<Post | null>;
 }
 
 export { ISendPostController };

@@ -204,6 +204,27 @@ describe('BaseDao', () => {
     expect(result[0].boolean).toBe(false);
   });
 
+  it('should skip null item when call batchGet', async () => {
+    const testItems = [
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+    ];
+
+    await dao.bulkPut(testItems);
+
+    const result = await dao.batchGet([1, 2, 4], true);
+    expect(result.length).toBe(2);
+    expect(result).toEqual(testItems);
+  });
+
   it('should return correctly result even has invalid ids', async () => {
     await dao.bulkPut([
       {
@@ -272,12 +293,10 @@ describe('BaseDao', () => {
   });
 
   it('should put if updating item not exists', async () => {
-    await dao.update(
-      {
-        id: -1,
-        name: 'NAME1',
-      },
-    );
+    await dao.update({
+      id: -1,
+      name: 'NAME1',
+    });
     await expect(dao.get(-1)).resolves.toMatchObject({
       id: -1,
       name: 'NAME1',

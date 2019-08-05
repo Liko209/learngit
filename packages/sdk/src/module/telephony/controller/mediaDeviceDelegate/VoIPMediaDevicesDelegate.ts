@@ -11,8 +11,9 @@ import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
 import { DeviceSyncManger } from './DeviceSyncManger';
 import { LastUsedDeviceManager } from './LastUsedDeviceManager';
-import { SOURCE_TYPE, IStorage, RINGER_ADDITIONAL_TYPE } from './types';
+import { SOURCE_TYPE, IStorage } from './types';
 import { notificationCenter } from 'sdk/service';
+import { RINGER_ADDITIONAL_TYPE } from '../../types';
 
 const LOG_TAG = '[MediaDevicesDelegate]';
 const DEFAULT_VOLUME = 0.5;
@@ -35,7 +36,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         on: handleChanged => {
           notificationCenter.on(
             RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-            handleChanged,
+            handleChanged
           );
           return () =>
             notificationCenter.off(
@@ -45,8 +46,8 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         },
       },
       this._buildLastUsedDeviceManager(
-        TELEPHONY_GLOBAL_KEYS.USED_MICROPHONE_HISTORY,
-      ),
+        TELEPHONY_GLOBAL_KEYS.USED_MICROPHONE_HISTORY
+      )
     );
     this._speakerSyncManager = new DeviceSyncManger(
       this._buildDeviceStorage(TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER),
@@ -59,12 +60,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           this._rtcEngine.getDefaultDeviceId(devices),
       },
       this._buildLastUsedDeviceManager(
-        TELEPHONY_GLOBAL_KEYS.USED_SPEAKER_HISTORY,
-      ),
+        TELEPHONY_GLOBAL_KEYS.USED_SPEAKER_HISTORY
+      )
     );
     this._ringerSyncManager = new DeviceSyncManger(
       (ringerStorage = this._buildDeviceStorage(
-        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
+        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER
       )),
       {
         getDevices: (): MediaDeviceInfo[] => this.getRingerDevicesList(),
@@ -76,8 +77,8 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           this._rtcEngine.getDefaultDeviceId(devices),
       },
       this._buildLastUsedDeviceManager(
-        TELEPHONY_GLOBAL_KEYS.USED_RINGER_HISTORY,
-      ),
+        TELEPHONY_GLOBAL_KEYS.USED_RINGER_HISTORY
+      )
     );
     this._initDevicesState();
     this._subscribe();
@@ -93,7 +94,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           handleChanged(value);
         TelephonyGlobalConfig.on(key, finalCallback);
         return () => TelephonyGlobalConfig.off(key, finalCallback);
-      },
+      }
     };
     return storage;
   }
@@ -103,7 +104,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       get: () => TelephonyGlobalConfig.get(key),
       set: (value: string) => {
         TelephonyGlobalConfig.put(key, value);
-      },
+      }
     });
   }
 
@@ -133,7 +134,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     );
     notificationCenter.on(
       RTC_MEDIA_ACTION.VOLUME_CHANGED,
-      this._handleVolumeChanged,
+      this._handleVolumeChanged
     );
   }
 
@@ -150,7 +151,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
-    },
+    }
   ) {
     if (delta.deleted.length || delta.hashChanged) {
       manager.ensureDevice();
@@ -158,7 +159,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     if (delta.added.length) {
       manager.setDevice({
         source: SOURCE_TYPE.NEW_DEVICE,
-        deviceId: _.last(delta.added)!.deviceId,
+        deviceId: _.last(delta.added)!.deviceId
       });
     }
   }
@@ -209,11 +210,11 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       this._handlerDeviceChange(
         this._microphoneSyncManager,
         audioInputs.devices,
-        audioInputs.delta,
+        audioInputs.delta
       );
       notificationCenter.emit(
         RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED,
-        audioInputs.devices,
+        audioInputs.devices
       );
     }
     if (
@@ -224,16 +225,16 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       this._handlerDeviceChange(
         this._speakerSyncManager,
         audioOutputs.devices,
-        audioOutputs.delta,
+        audioOutputs.delta
       );
       this._handlerDeviceChangeForRinger(
         this._ringerSyncManager,
         audioOutputs.devices,
-        audioOutputs.delta,
+        audioOutputs.delta
       );
       notificationCenter.emit(
         RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED,
-        audioOutputs.devices,
+        audioOutputs.devices
       );
     }
   }
@@ -245,12 +246,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
-    },
+    }
   ) {
     if (
       !([
         RINGER_ADDITIONAL_TYPE.ALL,
-        RINGER_ADDITIONAL_TYPE.OFF,
+        RINGER_ADDITIONAL_TYPE.OFF
       ] as string[]).includes(ringerStorage.get())
     ) {
       this._handlerDeviceChange(manager, devices, delta);
@@ -264,12 +265,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         ...outputs,
         {
           deviceId: RINGER_ADDITIONAL_TYPE.ALL,
-          label: RINGER_ADDITIONAL_TYPE.ALL,
+          label: RINGER_ADDITIONAL_TYPE.ALL
         } as MediaDeviceInfo,
         {
           deviceId: RINGER_ADDITIONAL_TYPE.OFF,
-          label: RINGER_ADDITIONAL_TYPE.OFF,
-        } as MediaDeviceInfo,
+          label: RINGER_ADDITIONAL_TYPE.OFF
+        } as MediaDeviceInfo
       ];
     }
     return outputs;

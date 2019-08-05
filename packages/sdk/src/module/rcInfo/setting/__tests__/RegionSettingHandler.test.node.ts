@@ -7,12 +7,7 @@
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IRCInfoService } from '../../service/IRCInfoService';
-import { SettingModuleIds } from '../../../setting/constants';
-import {
-  ESettingValueType,
-  UserSettingEntity,
-  SettingEntityIds,
-} from '../../../setting';
+import { UserSettingEntity, SettingEntityIds } from '../../../setting';
 import { RegionSettingHandler } from '../RegionSettingHandler';
 import { RC_INFO } from 'sdk/service';
 
@@ -40,10 +35,7 @@ describe('RegionSettingHandler', () => {
     } as any;
     mockDefaultSettingItem = {
       id: SettingEntityIds.Phone_Extension,
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
       valueGetter: expect.anything(),
-      valueType: 3,
-      weight: SettingModuleIds.ExtensionSetting.weight,
       state: 0,
     };
     settingHandler = new RegionSettingHandler(rcInfoService);
@@ -128,13 +120,10 @@ describe('RegionSettingHandler', () => {
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
         id: SettingEntityIds.Phone_Region,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
         value: {
           areaCode: '650',
           countryInfo: { id: 1, callingCode: 'us' },
         },
-        valueType: ESettingValueType.OBJECT,
-        weight: SettingModuleIds.RegionSetting.weight,
         state: 1,
       });
     });

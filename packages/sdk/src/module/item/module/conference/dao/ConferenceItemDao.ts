@@ -6,7 +6,7 @@
 
 import { SanitizedConferenceItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
-import { IDatabase } from 'foundation/src/db';
+import { IDatabase } from 'foundation/db';
 
 class ConferenceItemDao extends SubItemDao<SanitizedConferenceItem> {
   static COLLECTION_NAME = 'conferenceItem';

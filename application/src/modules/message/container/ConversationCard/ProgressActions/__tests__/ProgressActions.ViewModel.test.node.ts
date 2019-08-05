@@ -9,6 +9,16 @@ import { getEntity } from '@/store/utils';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { IMessageService, IMessageStore } from '@/modules/message/interface';
+import { MessageService } from '@/modules/message/service';
+import { MessageStore } from '@/modules/message/store';
+import { jupiter } from 'framework';
+import { TypeDictionary } from 'sdk/utils';
+
+jupiter.registerService(IMessageService, MessageService);
+jupiter.registerService(IMessageStore, MessageStore);
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/post');
@@ -41,6 +51,8 @@ const mockPostData = {
   id: -123,
   progressStatus: PROGRESS_STATUS.FAIL,
   itemIds: [1],
+  text: '',
+  itemTypeIds: {},
 };
 
 const nprops = {
@@ -85,6 +97,25 @@ describe('ProgressActionsViewModel', () => {
     });
   });
 
+  describe('showEditAction', () => {
+    it.each`
+      _isText  | _isEventOrTask | expected
+      ${true}  | ${true}        | ${false}
+      ${true}  | ${false}       | ${true}
+      ${false} | ${true}        | ${false}
+      ${false} | ${false}       | ${false}
+    `(
+      'should be $expected when _isText is $_isText and _isEventOrTask is $_isEventOrTask',
+      ({ _isText, _isEventOrTask, expected }) => {
+        mockPostData.text = _isText ? 'test' : '';
+        mockPostData.itemTypeIds = _isEventOrTask
+          ? { [TypeDictionary.TYPE_ID_TASK]: true }
+          : {};
+        expect(nvm.showEditAction).toBe(expected);
+      },
+    );
+  });
+
   describe('resend()', () => {
     it('should be called on post service method when invoke it', async () => {
       await nvm.resend();
@@ -105,12 +136,43 @@ describe('ProgressActionsViewModel', () => {
       expect(postService.reSendPost).toHaveBeenCalledTimes(0);
       expect(Notification.flashToast).toHaveBeenCalled();
     });
+
+    it('should debounce the call', async () => {
+      await Promise.all([
+        nvm.resend(),
+        nvm.resend(),
+        nvm.resend(),
+        nvm.resend(),
+      ]);
+      expect(postService.reSendPost).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('edit()', () => {
+    it('should enter edit mode when being called [JPT-2545]', async () => {
+      window.requestAnimationFrame = jest.fn().mockImplementation(fn => fn());
+      await nvm.edit();
+      const globalStore = storeManager.getGlobalStore();
+      expect(
+        globalStore.get(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS).includes(nvm.id),
+      ).toBeTruthy();
+    });
   });
 
   describe('delete()', () => {
     it('should be called on post service method when invoke it', async () => {
       await nvm.deletePost();
       expect(postService.deletePost).toHaveBeenCalled();
+    });
+
+    it('should debounce the call', async () => {
+      await Promise.all([
+        nvm.deletePost(),
+        nvm.deletePost(),
+        nvm.deletePost(),
+        nvm.deletePost(),
+      ]);
+      expect(postService.deletePost).toHaveBeenCalledTimes(1);
     });
   });
 });

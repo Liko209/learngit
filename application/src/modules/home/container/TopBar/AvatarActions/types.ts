@@ -4,15 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { PRESENCE } from 'sdk/module/presence/constant';
+import PersonModel from '@/store/models/Person';
 
 type Props = {};
 
 type ViewProps = {
   currentUserId: number;
   presence: PRESENCE;
-  toggleAboutPage: (electronAppVersion?: string, electronVersion?: string) => void;
+  person: PersonModel;
+  toggleAboutPage: (
+    electronAppVersion?: string,
+    electronVersion?: string,
+  ) => void;
   handleSignOut: () => void;
   handleSendFeedback: () => void;
+  handleOpen: () => void;
 };
 
 export { Props, ViewProps };

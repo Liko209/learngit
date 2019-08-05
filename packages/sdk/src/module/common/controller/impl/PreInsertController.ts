@@ -19,7 +19,7 @@ import { mainLogger } from 'foundation';
 const LOG_TAG = '[PreInsertController]';
 const UNIQUE_ID = 'unique_id';
 class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
-implements IPreInsertController<T> {
+  implements IPreInsertController<T> {
   private _preInsertIdController: IPreInsertIdController;
 
   constructor(
@@ -33,7 +33,7 @@ implements IPreInsertController<T> {
   }
 
   async insert(entity: T): Promise<void> {
-    this.updateStatus(entity, PROGRESS_STATUS.INPROGRESS);
+    this.updateStatus(entity.id, PROGRESS_STATUS.INPROGRESS);
     notificationCenter.emitEntityUpdate(this.getEntityNotificationKey(entity), [
       entity,
     ]);
@@ -55,7 +55,9 @@ implements IPreInsertController<T> {
     if (preInsertKey && !this.isInPreInsert(preInsertKey)) {
       this.dao && (await this.dao.update([entity]));
     } else {
-      mainLogger.tags(LOG_TAG).info(`update() ${entity.id} not exists pre-insert`);
+      mainLogger
+        .tags(LOG_TAG)
+        .info(`update() ${entity.id} not exists pre-insert`);
     }
   }
 
@@ -81,7 +83,7 @@ implements IPreInsertController<T> {
       const progressEntity = _.cloneDeep(entity);
       progressEntity.id > 0 && (progressEntity.id = originalEntityId);
       this._notifyChange(entity, originalEntityId);
-      this.updateStatus(progressEntity, PROGRESS_STATUS.SUCCESS);
+      this.updateStatus(progressEntity.id, PROGRESS_STATUS.SUCCESS);
       return originalEntityId;
     }
     mainLogger
@@ -90,25 +92,25 @@ implements IPreInsertController<T> {
     return undefined;
   }
 
-  updateStatus(entity: T, status: PROGRESS_STATUS): void {
+  updateStatus(entityId: number, status: PROGRESS_STATUS): void {
     switch (status) {
       case PROGRESS_STATUS.INPROGRESS:
-        this.progressService.addProgress(entity.id, {
-          id: entity.id,
+        this.progressService.addProgress(entityId, {
+          id: entityId,
           status: PROGRESS_STATUS.INPROGRESS,
         });
         break;
 
       case PROGRESS_STATUS.FAIL:
-        this.progressService.updateProgress(entity.id, {
-          id: entity.id,
+        this.progressService.updateProgress(entityId, {
+          id: entityId,
           status: PROGRESS_STATUS.FAIL,
         });
         break;
 
       case PROGRESS_STATUS.SUCCESS:
       case PROGRESS_STATUS.CANCELED:
-        this.progressService.deleteProgress(entity.id);
+        this.progressService.deleteProgress(entityId);
         break;
       default:
         break;

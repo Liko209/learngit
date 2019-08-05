@@ -41,18 +41,18 @@ const StyledInput = styled<Props>(Input)`
     color: ${grey('900')};
     width: ${width(50)};
     ${({ heightSize }: Props) => {
-    if (heightSize === 'default') {
-      return css`
+      if (heightSize === 'default') {
+        return css`
           height: ${height(8)};
         `;
-    }
-    if (heightSize === 'large') {
-      return css`
+      }
+      if (heightSize === 'large') {
+        return css`
           height: ${height(10)};
         `;
-    }
-    return;
-  }}
+      }
+      return;
+    }}
   }
 
   &:hover {

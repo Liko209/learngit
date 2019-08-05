@@ -248,10 +248,9 @@ class JuiMessageInput extends React.PureComponent<Props> {
           onBlur={onBlur}
           onFocus={onFocus}
         />
-        {error ? <StyledError>{error}</StyledError> : null}
+        {error ? <StyledError>{error}</StyledError> : footerNode}
         {children}
         <GlobalStyle />
-        {footerNode}
         {attachmentsNode}
       </Wrapper>
     );

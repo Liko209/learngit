@@ -245,7 +245,7 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
       onMouseDown={[Function]}
     >
       <button
-        aria-describedby={null}
+        aria-label=""
         className="MuiButtonBase-root MuiIconButton-root c1"
         data-test-automation-id="conversation-chatbar-emoji-button"
         disabled={false}
@@ -257,13 +257,11 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
         onKeyUp={[Function]}
         onMouseDown={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="round"
       >
@@ -285,9 +283,6 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
     </span>
   </div>

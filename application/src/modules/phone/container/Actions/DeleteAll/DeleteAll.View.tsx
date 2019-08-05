@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
-
 import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
