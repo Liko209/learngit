@@ -41,7 +41,7 @@ class PresenceController {
     });
   }
 
-  async getById(id: number): Promise<Presence> {
+  getById(id: number): Presence {
     const presence = this._getPresenceFromCache(id);
     if (presence) {
       return presence;
@@ -85,6 +85,7 @@ class PresenceController {
       this.reset();
       notificationCenter.emitEntityReload(ENTITY.PRESENCE, [], true);
     } else if (state === 'disconnected') {
+      this.reset();
       this.resetPresence();
     }
   }
