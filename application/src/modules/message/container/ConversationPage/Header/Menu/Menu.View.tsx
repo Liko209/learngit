@@ -15,16 +15,20 @@ import { ConvertToTeam } from '@/containers/ConvertToTeam';
 import { CONVERSATION_TYPES } from '@/constants';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { teamActionHandler } from '@/common/handleTeamAction';
+import { getProfileDialogComponent } from '@/common/OpenProfile';
 
 @observer
 class MenuComponent extends React.Component<
   WithTranslation & MenuProps & MenuViewProps
-  > {
+> {
   renderProfile = (title: string) => (
-    <OpenProfileDialog id={this.props.profileId}>
+    <OpenProfileDialog
+      profileDialog={getProfileDialogComponent(this.props.profileId)}
+      id={this.props.profileId}
+    >
       <JuiMenuItem data-test-automation-id="profileEntry">{title}</JuiMenuItem>
     </OpenProfileDialog>
-  )
+  );
 
   renderPeopleMenu = () => {
     const { t } = this.props;
@@ -32,7 +36,7 @@ class MenuComponent extends React.Component<
     return (
       <JuiMenuList>{this.renderProfile(t('people.team.profile'))}</JuiMenuList>
     );
-  }
+  };
 
   renderGroupMenu = () => {
     const { t } = this.props;
@@ -45,7 +49,7 @@ class MenuComponent extends React.Component<
         </JuiMenuItem>
       </JuiMenuList>
     );
-  }
+  };
 
   onConvertToTeam = () => ConvertToTeam.show({ id: this.props.id });
 
@@ -71,7 +75,7 @@ class MenuComponent extends React.Component<
         {isAdmin && !isCompanyTeam ? adminActions : null}
       </JuiMenuList>
     );
-  }
+  };
 
   onDeleteTeam = () => teamActionHandler.onTeamDelete(this.props.id);
 
@@ -86,7 +90,7 @@ class MenuComponent extends React.Component<
       default:
         return this.renderPeopleMenu();
     }
-  }
+  };
 
   renderMenuAnchor = () => (
     <JuiIconButton
@@ -96,7 +100,7 @@ class MenuComponent extends React.Component<
     >
       more_vert
     </JuiIconButton>
-  )
+  );
 
   render() {
     return (

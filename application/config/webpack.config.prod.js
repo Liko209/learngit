@@ -466,7 +466,7 @@ module.exports = {
         '': '/',
       },
       cleanupOutdatedCaches: true,
-      importScripts: ['sw-notification.js'],
+      importScripts: ['sw-notification.js', 'sw-upgrade.js'],
       runtimeCaching,
     }),
     new SentryWebpackPluginWrapper({

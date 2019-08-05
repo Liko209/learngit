@@ -30,7 +30,7 @@ type ItemListViewProps = Props & ViewProps & WithTranslation;
 @observer
 class ItemListComponent extends React.Component<ItemListViewProps> {
   private _infiniteListProps = {
-    minRowHeight: ITEM_HEIGHT,
+    fixedRowHeight: ITEM_HEIGHT,
     loadMoreStrategy: new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG),
     loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
     loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
@@ -47,9 +47,7 @@ class ItemListComponent extends React.Component<ItemListViewProps> {
   }
 
   render() {
-    const {
-      type, height, listHandler, t,
-    } = this.props;
+    const { type, height, listHandler, t } = this.props;
     const { size, total } = listHandler;
     const { subheader } = getTabConfig(type);
     const listHeight = Math.max(height - HEADER_HEIGHT, 0);

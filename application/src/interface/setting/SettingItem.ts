@@ -8,6 +8,7 @@ import { ComponentType } from 'react';
 enum SETTING_ITEM_TYPE {
   TOGGLE,
   SELECT,
+  VIRTUALIZED_SELECT,
   LINK,
   SLIDER,
 }

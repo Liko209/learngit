@@ -11,6 +11,7 @@ import { CALLER_ID_FEATURE_NAME } from '../../config/constants';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { RC_INFO } from 'sdk/service';
 import { RCInfoApi } from 'sdk/api';
+import { PartialUpdateParams } from 'sdk/framework/controller/interface/IPartialModifyController';
 jest.mock('sdk/api');
 
 function clearMocks() {
@@ -56,6 +57,12 @@ const expectResult = [
     label: 'MainCompanyNumberWithNickname',
   },
   {
+    id: 6,
+    usageType: 'CompanyFaxNumber',
+    phoneNumber: '1',
+    label: 'Company Fax Number',
+  },
+  {
     id: 4,
     usageType: 'CompanyNumber',
     phoneNumber: '1',
@@ -66,12 +73,6 @@ const expectResult = [
     usageType: 'AdditionalCompanyNumber',
     phoneNumber: '1',
     label: 'Company Number',
-  },
-  {
-    id: 6,
-    usageType: 'CompanyFaxNumber',
-    phoneNumber: '1',
-    label: 'Company Fax Number',
   },
 ];
 describe('RCInfoFetchController', () => {
@@ -405,18 +406,19 @@ describe('RCInfoFetchController', () => {
       partialModifyController.updatePartially = jest
         .fn()
         .mockImplementation(
-          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
-            expect(itemId).toBe(normalId);
-            expect(prehandleFunc({ id: normalId }, originalModel)).toEqual({
+          (params: PartialUpdateParams<any>) => {
+            const {entityId, preHandlePartialEntity, doUpdateEntity} = params;
+            expect(entityId).toBe(normalId);
+            expect(preHandlePartialEntity!({ id: normalId }, originalModel)).toEqual({
               id: normalId,
               ...requestParams,
             });
-            doUpdateFunc({ id: normalId, ...requestParams });
+            doUpdateEntity!({ id: normalId, ...requestParams });
           },
         );
       await rcCallerIdController.setDefaultCallerId(2);
-      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
-      expect(RCInfoApi.setExtensionCallerId).toBeCalledWith(requestParams);
+      expect(partialModifyController.updatePartially).toHaveBeenCalledTimes(1);
+      expect(RCInfoApi.setExtensionCallerId).toHaveBeenCalledWith(requestParams);
     });
 
     it('should update caller id when caller id is blocked', async () => {
@@ -433,18 +435,19 @@ describe('RCInfoFetchController', () => {
       partialModifyController.updatePartially = jest
         .fn()
         .mockImplementation(
-          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
-            expect(itemId).toBe(normalId);
-            expect(prehandleFunc({ id: normalId }, originalModel)).toEqual({
+          ( params: PartialUpdateParams<any>) => {
+            const {entityId, preHandlePartialEntity, doUpdateEntity} = params;
+            expect(entityId).toBe(normalId);
+            expect(preHandlePartialEntity!({ id: normalId }, originalModel)).toEqual({
               id: normalId,
               ...requestParams,
             });
-            doUpdateFunc({ id: normalId, ...requestParams });
+            doUpdateEntity!({ id: normalId, ...requestParams });
           },
         );
       await rcCallerIdController.setDefaultCallerId(0);
-      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
-      expect(RCInfoApi.setExtensionCallerId).toBeCalledWith(requestParams);
+      expect(partialModifyController.updatePartially).toHaveBeenCalledTimes(1);
+      expect(RCInfoApi.setExtensionCallerId).toHaveBeenCalledWith(requestParams);
     });
   });
   describe('hasSetCallerId()', () => {

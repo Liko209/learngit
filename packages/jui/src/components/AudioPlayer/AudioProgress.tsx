@@ -72,8 +72,8 @@ const JuiAudioProgress = ({
         value={value}
         step={0.1}
         onChange={onChange}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
+        onMouseDown={onDragStart}
+        onChangeCommitted={onDragEnd}
         valueLabelDisplay={'off'}
       />
       {elDurationsClock}

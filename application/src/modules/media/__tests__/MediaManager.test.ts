@@ -11,11 +11,11 @@ import { Media } from '../Media';
 const trackBaseOpts = {
   id: 'testTrackId',
   volume: 1,
-  muted: false
+  muted: false,
 };
 
 const mediaBaseOpts = {
-  src: ['example1.mp3']
+  src: ['example1.mp3'],
 };
 
 describe('MediaManager', () => {
@@ -59,8 +59,8 @@ describe('MediaManager', () => {
       const mediaId = 1234124123;
       const media = mediaManager.createMedia(
         Object.assign({}, mediaBaseOpts, {
-          id: mediaId
-        })
+          id: mediaId,
+        }),
       );
       expect(media.trackId).toEqual(trackBaseOpts.id);
       expect(media.id).toEqual(`[${trackBaseOpts.id}]-[${mediaId}]`);
@@ -95,12 +95,33 @@ describe('MediaManager', () => {
       const devices = ['device1', 'device2'];
       const setAllTrackOutputDevices = jest.spyOn(
         trackManager,
-        'setAllTrackOutputDevices'
+        'setAllTrackOutputDevices',
       );
       const mediaManager = new MediaManager();
       mediaManager.setOutputDevices(devices);
       expect(mediaManager.outputDevices).toEqual(devices);
       expect(setAllTrackOutputDevices).toHaveBeenCalled();
+    });
+  });
+  describe('updateAllOutputDevices', () => {
+    it('should update all device media when media manager update all output devices', () => {
+      const newAllDevices = ['device1', 'device2'];
+      const updateAllOutputDevices = jest.spyOn(
+        trackManager,
+        'updateAllOutputDevices',
+      );
+
+      const mediaSetOutputDevices = jest.fn();
+      const media = {
+        outputDevices: newAllDevices,
+        setOutputDevices: mediaSetOutputDevices,
+      } as any as Media;
+
+      const mediaManager = new MediaManager();
+      mediaManager._medias = [media];
+      mediaManager.updateAllOutputDevices(newAllDevices);
+      expect(updateAllOutputDevices).toHaveBeenCalled();
+      expect(mediaSetOutputDevices).toHaveBeenCalled();
     });
   });
   describe('canPlayType()', () => {

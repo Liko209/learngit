@@ -12,12 +12,14 @@ interface IMedia {
   play: (options?: PlayOptions) => IMedia;
   pause: () => IMedia;
   stop: () => IMedia;
+  setSrc: (src: string | string[]) => IMedia;
   setLoop: (loop: boolean) => IMedia;
   setMute: (muted: boolean) => IMedia;
   setVolume: (volume: number) => IMedia;
-  setOutputDevices: (devices: MediaDeviceType[]) => IMedia;
+  setOutputDevices: (devices: MediaDeviceType[] | 'all') => IMedia;
   setCurrentTime: (time: number, continuePlay?: boolean) => IMedia;
   dispose: () => void;
+  onReset: (handler: () => void) => void;
 
   /**
    * States

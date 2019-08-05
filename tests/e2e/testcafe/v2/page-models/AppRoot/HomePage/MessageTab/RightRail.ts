@@ -124,6 +124,10 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('right-shelf-more');
   }
 
+  get resizeHandle() {
+    return this.getSelector('.resize-handle');
+  }
+
   get expandStatusButtonDisplayed() {
     return this.expandStatusButtonByClass.exists;
   }
@@ -180,6 +184,14 @@ export class RightRail extends BaseWebComponent {
 
   get pinnedTab() {
     return this.getComponent(PinnedTab);
+  }
+
+  get memberListSection() {
+    return this.getComponent(RightShelfMemberList);
+  }
+
+  async resize(direction: 'left' | 'right', offset: number) {
+    await this.t.drag(this.resizeHandle, offset * (direction === 'right' ? 1 : -1), 0);
   }
 }
 
@@ -488,5 +500,39 @@ class PinnedItem extends BaseWebComponent {
     await this.t
       .expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists)
       .ok();
+  }
+}
+
+class RightShelfMemberList extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
+
+  get header() {
+    return this.getSelectorByAutomationId('rightShellMemberListHeader');
+  }
+
+  get showAllLink() {
+    return this.getSelectorByAutomationId('rightShellMemberListHeader').find('span[data-test-automation-id="rightShellMemberListHeaderShowAllLink"]')
+  }
+
+  get addMemberButton() {
+    return this.getSelectorByAutomationId('rightShellMemberListHeaderAddButton')
+  }
+
+  get body() {
+    return this.getSelectorByAutomationId('rightShellMemberListBody');
+  }
+
+  get members() {
+    return this.getSelectorByAutomationId('rightShellMemberListMembers')
+  }
+
+  get guests() {
+    return this.getSelectorByAutomationId('rightShellMemberListGuests')
+  }
+
+  getAvatarById(id: number) {
+    return this.getSelectorByAutomationId('rightShellMemberListAvatar').filter(`[uid='${id}']`)
   }
 }

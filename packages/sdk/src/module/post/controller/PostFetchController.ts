@@ -126,7 +126,49 @@ class PostFetchController {
       count: result.posts && result.posts.length,
       infos: { groupId },
     });
+
+    if (QUERY_DIRECTION.BOTH === direction && postId && limit) {
+      this.setHasMoreNewerIfBothDirection(result, limit, postId);
+    }
+
     return result;
+  }
+
+  setHasMoreNewerIfBothDirection(
+    result: IPostResult,
+    limit: number,
+    postId: number,
+  ) {
+    if (result.posts) {
+      const ids = result.posts.map(post => post && post.id);
+      mainLogger.info(
+        LOG_FETCH_POST,
+        'setHasMoreNewerIfBothDirection() ids =',
+        ids,
+        ' limit = ',
+        limit,
+        ' postId = ',
+        postId,
+      );
+      if (result.posts.length === limit) {
+        const centerPost = result.posts[limit / 2];
+        if (centerPost) {
+          if (centerPost.id > postId) {
+            result.hasMore.newer = true;
+          } else if (centerPost.id < postId) {
+            result.hasMore.newer = false;
+          }
+        }
+      } else {
+        result.hasMore.newer = false;
+      }
+    } else {
+      result.hasMore.newer = false;
+      mainLogger.info(
+        LOG_FETCH_POST,
+        'setHasMoreNewerIfBothDirection posts = undefined',
+      );
+    }
   }
 
   async getUnreadPostsByGroupId({

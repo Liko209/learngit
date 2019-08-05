@@ -7,12 +7,12 @@
 import { dataAnalysis } from 'sdk';
 
 export function newConversation() {
-  dataAnalysis.page('Jup_Web/DT_conversation_newConversation');
+  dataAnalysis.page('Jup_Web/DT_msg_newConversation');
 }
 
-type Action = 'Create new group' | 'Convert to team' | 'Cancel';
+type Action = 'createNewGroup' | 'convertToTeam' | 'cancel';
 export function newConversationAction(action: Action) {
-  dataAnalysis.track('Jup_Web/DT_conversation_newConversationAction', {
+  dataAnalysis.track('Jup_Web/DT_msg_newConversationAction', {
     action,
   });
 }

@@ -10,12 +10,7 @@ enum SOURCE_TYPE {
   LAST_USED,
   NEW_DEVICE,
   DEVICE_MANAGER,
-  DEFAULT,
-}
-
-enum RINGER_ADDITIONAL_TYPE {
-  ALL = 'all',
-  OFF = 'off',
+  DEFAULT
 }
 
 type Disposer = () => void;
@@ -43,9 +38,8 @@ interface ILastUsedDeviceManager {
 
 export {
   SOURCE_TYPE,
-  RINGER_ADDITIONAL_TYPE,
   IStorage,
   IDeviceManager,
   ILastUsedDeviceManager,
-  Disposer,
+  Disposer
 };

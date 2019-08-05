@@ -53,7 +53,9 @@ describe('backNForward ViewModel', () => {
       expect(newCursor).toBe(oldCursor);
     }
 
-    @test('should make history stack cursor + 1 or - 1 when execute back or forward')
+    @test(
+      'should make history stack cursor + 1 or - 1 when execute back or forward',
+    )
     t2() {
       historyStack.push('/messages/text');
       historyStack.push('/messages/text1');

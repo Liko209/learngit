@@ -204,6 +204,16 @@ class RCInfoApi extends Api {
     return RCInfoApi.rcNetworkClient.http<BlockNumberItem>(query);
   }
 
+  static getRCPresence() {
+    const query = {
+      method: NETWORK_METHOD.GET,
+      authFree: false,
+      via: NETWORK_VIA.HTTP,
+      path: RINGCENTRAL_API.API_TELEPHONY_PRESENCE,
+    };
+    return RCInfoApi.rcNetworkClient.http(query);
+  }
+
   static assignLine(deviceId: string, data: IAssignLineRequest) {
     const query = {
       data,

@@ -6,9 +6,10 @@
 import { VoIPMediaDevicesDelegate } from '../VoIPMediaDevicesDelegate';
 import RTCEngine, { RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
-import { SOURCE_TYPE, RINGER_ADDITIONAL_TYPE } from '../types';
+import { SOURCE_TYPE } from '../types';
 import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 import notificationCenter from 'sdk/service/notificationCenter';
+import { RINGER_ADDITIONAL_TYPE } from 'sdk/module/telephony/types';
 
 jest.mock('voip/src/api/RTCEngine');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');

@@ -7,7 +7,7 @@
 const EVENT_PREFIX = '/restapi/v1.0/account/~/extension/~/';
 
 enum RCSubscriptionKeys {
-  TelephonyDetail = 'presence?detailedTelephonyState=true',
+  TelephonyDetail = 'presence?detailedTelephonyState=true&sipData=true',
   MissedCall = 'missed-calls',
   MessageStore = 'message-store',
 }

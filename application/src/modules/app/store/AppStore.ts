@@ -8,6 +8,7 @@ import { NetworkBanner } from '../container/TopBanner/Banners/NetworkBanner';
 import { TopBannerConfig, BannerType } from '../container/TopBanner/types';
 import { ElectronUpgradeBanner } from '../container/TopBanner/Banners/ElectronUpgradeBanner';
 import { NotificationEnableBanner } from '../container/TopBanner/Banners/NotificationEnableBanner';
+import { SwitchCallBanner } from '../container/TopBanner/Banners/SwitchCallBanner';
 import { DndBanner } from '../container/TopBanner/Banners/DndBanner';
 
 class AppStore {
@@ -35,6 +36,12 @@ class AppStore {
     },
     {
       priority: 300,
+      Component: SwitchCallBanner,
+      props: {},
+      isShow: true,
+    },
+    {
+      priority: 400,
       Component: NotificationEnableBanner,
       props: {},
       isShow: true,

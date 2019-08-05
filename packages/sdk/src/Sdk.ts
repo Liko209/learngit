@@ -12,6 +12,7 @@ import {
   dataAnalysis,
   sleepModeDetector,
   mainLogger,
+  Performance,
 } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
@@ -39,6 +40,7 @@ import {
   SplitIOController,
 } from 'sdk/module/permission';
 import { jobScheduler } from './framework/utils/jobSchedule';
+import { UserConfigService } from './module/config';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -197,6 +199,13 @@ class Sdk {
         mainLogger.tags(LOG_TAG).info('stop loading');
         notificationCenter.emitKVChange(SERVICE.STOP_LOADING);
       }
+
+      if (AccountGlobalConfig.getUserDictionary()) {
+        Performance.instance.putAttribute(
+          'userId',
+          AccountGlobalConfig.getUserDictionary(),
+        );
+      }
     }
     mainLogger.tags(LOG_TAG).info('end onAuthSuccess');
   }
@@ -205,6 +214,9 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     this.daoManager.deleteDatabase();
+    ServiceLoader.getInstance<UserConfigService>(
+      ServiceConfig.USER_CONFIG_SERVICE,
+    ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
   }

@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { number } from '@storybook/addon-knobs';
+import { number, select } from '@storybook/addon-knobs';
 import styled from '../../../foundation/styled-components';
 import { JuiMenuItem } from '../../Menus/MenuItem';
 import { JuiVirtualizedBoxSelect } from '../VirtualizedBoxSelect';
@@ -15,10 +15,24 @@ const Wrapper = styled.div`
   padding: 100px;
 `;
 
+type TestBoxSelectProps = {
+  heightSize: 'default' | 'large';
+  menuItemStyle?: 'fixed' | 'MUINative';
+  disabled: boolean;
+};
+
 storiesOf('Components/VirtualizedSelects', module).add(
   'VirtualizedBoxSelect',
   () => {
     const itemCount = number('itemCount', 1000);
+    const heightSize = select<TestBoxSelectProps['heightSize']>(
+      'heightSize',
+      {
+        default: 'default',
+        large: 'large',
+      },
+      'large',
+    );
 
     const Demo = () => {
       const disabledIndexes = [5];
@@ -38,7 +52,9 @@ storiesOf('Components/VirtualizedSelects', module).add(
       return (
         <Wrapper>
           <JuiVirtualizedBoxSelect
+            automationId="virtualized-boxSelect"
             value={value}
+            heightSize={heightSize}
             onChange={(e: any) => setValue(e.target.value)}
           >
             {items}

@@ -476,15 +476,20 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Emit visible range change
   //
   useLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const { scrollHeight, clientHeight, scrollTop } = ref.current;
+    const scrollInfo = { scrollHeight, clientHeight, scrollTop };
     if (isFirstRenderRef.current) {
       // [THE RANGE PROBLEM]
       // The first time list rendered, initial visible range was computed
       // from height/minRowHeight, which is not really represent what
       // the user can see. Sot, we need to recompute visible range before
       // Emit visible range change event.
-      onVisibleRangeChange(computeVisibleRange());
+      onVisibleRangeChange(computeVisibleRange(), scrollInfo);
     } else {
-      onVisibleRangeChange(visibleRange);
+      onVisibleRangeChange(visibleRange, scrollInfo);
     }
   }, [keyMapper(visibleRange.startIndex), keyMapper(visibleRange.stopIndex)]);
 
