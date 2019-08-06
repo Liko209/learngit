@@ -7,3 +7,5 @@ export * from './electron';
 export * from './registerModule';
 export * from './mountWithTheme';
 export * from './asyncTest';
+export * from './renderHooks';
+export * from './mockErrorEvent';

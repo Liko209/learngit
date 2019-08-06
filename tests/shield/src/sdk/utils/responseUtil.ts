@@ -5,7 +5,12 @@
  */
 
 import _ from 'lodash';
-import { IApiContract, IRequestResponse, IApiPath, ISocketInfo } from '../types';
+import {
+  IApiContract,
+  IRequestResponse,
+  IApiPath,
+  ISocketInfo,
+} from '../types';
 import { IResponse } from 'foundation/network/network';
 
 import assert = require('assert');
