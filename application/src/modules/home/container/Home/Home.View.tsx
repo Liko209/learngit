@@ -57,9 +57,19 @@ class HomeViewComponent extends Component<Props> {
     window.removeEventListener('storage', this._storageEventHandler);
     notificationCenter.off(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
   }
- 
+
   showE911Confirm = async () => {
-    const { openE911,t ,needConfirmE911 } = this.props;
+    const {
+      openE911,
+      t,
+      needConfirmE911,
+      markE911,
+      shouldShowE911,
+    } = this.props;
+    if (shouldShowE911()) {
+      return;
+    }
+
     const need = await needConfirmE911();
     if (!need) {
       return;
@@ -74,6 +84,7 @@ class HomeViewComponent extends Component<Props> {
             color="white"
             handleOnClick={() => {
               openE911();
+              markE911();
               flagToast.dismiss && flagToast.dismiss();
             }}
           >
@@ -85,6 +96,7 @@ class HomeViewComponent extends Component<Props> {
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: true,
+      onClose: markE911,
     });
   }
 

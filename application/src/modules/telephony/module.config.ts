@@ -12,6 +12,7 @@ import { TelephonySettingManager } from './TelephonySettingManager/TelephonySett
 import { TELEPHONY_SERVICE } from './interface/constant';
 import { IRingtonePrefetcher } from './interface/IRingtonePrefetcher';
 import { RingtonePrefetcher } from './service/RingtonePrefetcher';
+import { E911Config } from './E911.config';
 
 const config: ModuleConfig = {
   entry: TelephonyModule,
@@ -23,6 +24,7 @@ const config: ModuleConfig = {
     TelephonyStore,
     TelephonyNotificationManager,
     TelephonySettingManager,
+    E911Config,
     { name: IRingtonePrefetcher, value: RingtonePrefetcher },
   ],
 };
