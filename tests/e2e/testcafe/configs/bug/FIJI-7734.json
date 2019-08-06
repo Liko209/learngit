@@ -1,6 +1,9 @@
 {
   "on_merge": {
     "fixtures": ["./fixtures/ContentPanel/*.ts"],
+    "exclude_tags": [
+      "JPT-212"
+    ],
     "browsers": ["selenium:chrome"]
   }
 }
