@@ -22,6 +22,7 @@ const StyledMaskWrapper = styled.div`
   border-radius: 50%;
   background-color: ${palette('common', 'white')};
   overflow: hidden;
+  z-index: 2;
   cursor: pointer;
   &:after {
     content: '';
@@ -31,6 +32,7 @@ const StyledMaskWrapper = styled.div`
     right: 0;
     bottom: 0;
     background: transparent;
+    border-radius: 50%;
   }
   &:hover:after {
     background: ${palette('common', 'white', 0.1)};
