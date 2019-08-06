@@ -71,42 +71,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   transform: translateX(8px);
 }
 
-.c2.c2 {
-  width: 24px;
-  height: 24px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  background-color: #f5f6fb;
-}
-
-.c2.c2:hover {
-  opacity: 0.88;
-  cursor: pointer;
-}
-
-.c2.c2:active {
-  opacity: 0.76;
-}
-
-.c2 > .avatar-short-name {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
 .c0.c0 {
   padding: 8px;
   width: 100%;
@@ -142,6 +106,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 }
 
 .c3.c3 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -154,6 +119,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 }
 
 .c3.c3 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -167,6 +133,42 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 
 .c3.c3.multiline {
   margin: 0;
+}
+
+.c2.c2 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  background-color: #f5f6fb;
+}
+
+.c2.c2:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c2.c2:active {
+  opacity: 0.76;
+}
+
+.c2 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 <ul
@@ -426,6 +428,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
 }
 
 .c6.c6 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -438,6 +441,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
 }
 
 .c6.c6 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -725,6 +729,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 }
 
 .c4.c4 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -737,6 +742,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 }
 
 .c4.c4 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -818,7 +824,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
       className="c5"
     >
       <button
-        aria-describedby={null}
         aria-label=""
         className="MuiButtonBase-root MuiIconButton-root c6"
         disabled={false}
@@ -829,13 +834,11 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         onKeyUp={[Function]}
         onMouseDown={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="plain"
       >
@@ -860,9 +863,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         </span>
       </button>
     </div>
-    <span
-      className="MuiTouchRipple-root"
-    />
   </div>
 </ul>
 `;

@@ -11,6 +11,7 @@ type RTCRegisterAsyncTask = {
 
 enum RTC_PROV_EVENT {
   NEW_PROV = 'newProv',
+  PROV_ARRIVE = 'provArrive',
 }
 
 enum REGISTRATION_ERROR_CODE {

@@ -24,18 +24,23 @@ const RightShellMemberListHeader = styled.div`
   border-top: 1px solid ${grey('300')};
   border-bottom: 1px solid ${grey('300')};
   font-size: 0;
+  & {
+    a span {
+      ${typography('caption2')};
+    }
+  }
 `;
 
 const RightShellMemberListTitle = styled.span`
-  ${typography('caption1')};
+  ${typography('caption2')};
   color: ${palette('common', 'black')};
   padding-right: ${spacing(3)};
   position: relative;
 `;
 
 const RightShellMemberListSubTitle = styled.div`
-  ${typography('caption1')};
-  color: ${palette('grey', 500)};
+  ${typography('caption2')};
+  color: ${palette('grey', 600)};
   padding-bottom: ${spacing(2)};
   margin-left: ${spacing(1)};
   margin-top: ${spacing(2)};
@@ -43,11 +48,16 @@ const RightShellMemberListSubTitle = styled.div`
   border-bottom: 1px solid ${grey('300')};
 `;
 
-type BodyProps = { loading: boolean; [attr: string]: any };
-const RightShellMemberListBody = styled(({ loading, ...rest }: BodyProps) => (
-  <div {...rest} />
-))`
-  height: ${({ loading, theme }) => (loading ? height(56)({ theme }) : 'auto')};
+type BodyProps = {
+  loading: boolean;
+  height: number | string;
+  [attr: string]: any;
+};
+const RightShellMemberListBody = styled(
+  ({ loading, height, ...rest }: BodyProps) => <div {...rest} />,
+)`
+  height: ${({ height }) =>
+    typeof height === 'number' ? `${height}px` : height};
   padding: ${spacing(4, 3, 2)};
   position: relative;
 `;
@@ -67,19 +77,20 @@ const RightShellMemberListMoreCount = styled.div`
   width: ${width(8)};
   height: ${height(8)};
   ${typography('caption1')};
-  color: ${palette('grey', 500)};
+  color: ${palette('grey', 600)};
   line-height: ${height(8)};
   text-align: center;
 `;
 
 const JuiRightShellMemberListBody = ({
   loading,
+  height,
   children,
   ...rest
 }: BodyProps) => {
   const Loading = withLoading(() => <div />);
   return (
-    <RightShellMemberListBody loading={loading} {...rest}>
+    <RightShellMemberListBody loading={loading} height={height} {...rest}>
       {loading ? <Loading loading /> : children}
     </RightShellMemberListBody>
   );

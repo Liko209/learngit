@@ -11,16 +11,16 @@ import { ViewProps } from './types';
 import { JuiMenuList } from 'jui/components';
 import {
   JuiAvatarActions,
-  JuiDropdownContactInfo,
   JuiStyledDropdown,
   JuiStyledDropdownMenuItem,
 } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { JuiDivider } from 'jui/components/Divider';
 import { dataAnalysis } from 'sdk';
 import { PresenceMenu } from '../PresenceMenu';
+import { OpenProfile } from '@/common/OpenProfile';
+import { DropdownContactInfo } from '../DropdownContactInfo';
 
 type Props = ViewProps & WithTranslation;
 
@@ -53,18 +53,6 @@ class AvatarActionsComponent extends React.Component<Props> {
     return t(i18nMap[presence] || 'presence.offline');
   }
 
-  private get title() {
-    const { t, presence } = this.props;
-    const i18nMap = {
-      [PRESENCE.AVAILABLE]: 'presence.available',
-      [PRESENCE.DND]: 'presence.doNotDisturb',
-      [PRESENCE.INMEETING]: 'presence.inMeeting',
-      [PRESENCE.ONCALL]: 'presence.onCall',
-      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
-    };
-    return t(i18nMap[presence] || 'presence.offline');
-  }
-
   private _Anchor() {
     const { currentUserId } = this.props;
     return (
@@ -83,8 +71,13 @@ class AvatarActionsComponent extends React.Component<Props> {
     return <Avatar uid={currentUserId} size="large" />;
   }
 
-  // TODO: when edit profile completed then Replenish
-  handleOpenEditProfile = () => {};
+  openProfile = () => {
+    OpenProfile.show(this.props.currentUserId);
+  };
+
+  handleOpenEditProfile = () => {
+    this.props.handleOpen();
+  };
 
   handleDropdown = () => {
     dataAnalysis.page('Jup_Web/DT__appOptions');
@@ -111,15 +104,15 @@ class AvatarActionsComponent extends React.Component<Props> {
         }}
       >
         <JuiStyledDropdown>
-          <JuiDropdownContactInfo
+          <DropdownContactInfo
+            handleClick={this.openProfile}
             Avatar={this._DropdownAvatar()}
             openEditProfile={this.handleOpenEditProfile}
             name={person.displayName}
             content={t('home.editProfile')}
           />
-          <JuiDivider key="divider-avatar-menu" />
           <JuiMenuList data-test-automation-id="avatarMenu">
-            <PresenceMenu presence={presence} title={this.title} />
+            <PresenceMenu presence={presence} title={this._tooltip} />
             <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}
               aria-label={t('home.aboutRingCentral')}

@@ -21,6 +21,7 @@ import { StateService } from '../../service';
 import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { StateActionController } from './StateActionController';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 const LOG_TAG = 'StateDataHandleController';
@@ -42,11 +43,28 @@ const STATE_REGEXP = new RegExp(`^(${GROUP_STATE_KEYS.join('|')}):(\\d+)`);
 
 class StateDataHandleController {
   private _taskArray: DataHandleTask[];
+  private _ignoredIdSet: Set<number>;
+
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
+    private _actionController: StateActionController,
   ) {
     this._taskArray = [];
+    this._ignoredIdSet = new Set<number>();
+  }
+
+  updateIgnoredStatus(ids: number[], isIgnored: boolean) {
+    if (isIgnored) {
+      ids.forEach((id: number) => {
+        if (!this._ignoredIdSet.has(id)) {
+          this._ignoredIdSet.add(id);
+          this._actionController.updateReadStatus(id, false, true);
+        }
+      });
+    } else {
+      ids.forEach(id => this._ignoredIdSet.delete(id));
+    }
   }
 
   async handleState(
@@ -480,6 +498,7 @@ class StateDataHandleController {
     ) {
       return 0;
     }
+
     const group_cursor =
       (finalState.group_post_cursor || 0) +
       (finalState.group_post_drp_cursor || 0);
@@ -551,17 +570,29 @@ class StateDataHandleController {
       await this._entitySourceController.bulkUpdate(
         transformedState.groupStates,
       );
+
+      // should set umi = 0 when conversation is ignored
+      const GroupStatesForNotify = transformedState.groupStates.filter(
+        (groupState: GroupState) => {
+          if (this._ignoredIdSet.has(groupState.id)) {
+            this._actionController.updateReadStatus(groupState.id, false, true);
+            return false;
+          }
+          return true;
+        },
+      );
+
       if (shouldEmitNotification(source)) {
         if (changeMap) {
           changeMap.set(ENTITY.GROUP_STATE, {
-            entities: transformedState.groupStates,
-            partials: transformedState.groupStates,
+            entities: GroupStatesForNotify,
+            partials: GroupStatesForNotify,
           });
         } else {
           notificationCenter.emitEntityUpdate(
             ENTITY.GROUP_STATE,
-            transformedState.groupStates,
-            transformedState.groupStates,
+            GroupStatesForNotify,
+            GroupStatesForNotify,
           );
         }
       }

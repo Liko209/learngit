@@ -20,6 +20,7 @@ import {
 } from 'jui/pattern/Profile/Dialog';
 import { Menu } from '../Menu';
 import { MembersViewProps } from './types';
+import { ProfileMiniCard } from '@/modules/message/container/MiniCard/Profile';
 
 type State = {
   isHover: boolean;
@@ -55,10 +56,6 @@ class MemberListItem extends React.Component<
     const { pid } = this.props;
     event.stopPropagation();
     const anchor = event.currentTarget as HTMLElement;
-    const {
-      ProfileMiniCard,
-    } = await import('@/modules/message/container/MiniCard/Profile');
-
     const profileMiniCard = new ProfileMiniCard();
 
     profileMiniCard.show({

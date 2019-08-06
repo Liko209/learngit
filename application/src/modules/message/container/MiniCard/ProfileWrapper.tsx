@@ -6,7 +6,7 @@
 
 import React, { useEffect, useRef, SFC, memo } from 'react';
 import portalManager from '@/common/PortalManager';
-import { Profile, PROFILE_TYPE } from '../Profile';
+import { ProfileMiniCardPerson } from '../Profile/MiniCard/Person';
 
 type ProfileWrapperProps = {
   id: number;
@@ -40,7 +40,7 @@ const ProfileWrapper: SFC<ProfileWrapperProps> = memo(
 
     return (
       <div ref={_ref}>
-        <Profile id={id} type={PROFILE_TYPE.MINI_CARD} />
+        <ProfileMiniCardPerson id={id} />
       </div>
     );
   },

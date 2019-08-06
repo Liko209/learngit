@@ -32,6 +32,10 @@ exports[`Storyshots Components/Buttons Contained Button: Components/Buttons Cont
   color: #fff;
 }
 
+.c0.c0.textButtonStyle {
+  color: #0684bd;
+}
+
 .c0.c0.textButtonStyle.disabled {
   color: #bfbfbf;
 }
@@ -140,6 +144,10 @@ exports[`Storyshots Components/Buttons Text Button: Components/Buttons Text Butt
 .c0.c0.containedButtonStyle.disabled {
   background-color: #bfbfbf;
   color: #fff;
+}
+
+.c0.c0.textButtonStyle {
+  color: #0684bd;
 }
 
 .c0.c0.textButtonStyle.disabled {

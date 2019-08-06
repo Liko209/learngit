@@ -12,7 +12,6 @@ import {
   DeviceRecord,
   IUpdateLineRequest,
 } from 'sdk/api';
-
 import { StateRecord } from 'sdk/api/ringcentral/types';
 
 enum ERCServiceFeaturePermission {

@@ -11,6 +11,7 @@ import {
   IDeviceRequest,
   IAssignLineRequest,
   IUpdateLineRequest,
+  ICountryRequest,
 } from '../types';
 
 jest.mock('../../api');
@@ -86,6 +87,21 @@ describe('RCInfoApi', () => {
         path: RINGCENTRAL_API.API_DEVICE_INFO,
         params: request,
         priority: REQUEST_PRIORITY.HIGH,
+        method: 'get',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
+
+  describe('getCountryInfo', () => {
+    it('should be called with correct params', () => {
+      const request: ICountryRequest = { page: 1, perPage: 500 };
+      RCInfoApi.getCountryInfo(request);
+      expect(RCInfoApi.rcNetworkClient.http).toHaveBeenCalledWith({
+        path: RINGCENTRAL_API.API_COUNTRY_INFO,
+        params: request,
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
@@ -293,6 +309,19 @@ describe('RCInfoApi', () => {
         via: NETWORK_VIA.HTTP,
         data: 'mockRequest',
         HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
+
+  describe('getRCPresence', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.getRCPresence();
+      expect(RCInfoApi.rcNetworkClient.http).toHaveBeenCalledWith({
+        authFree: false,
+        method: 'get',
+        path:
+          '/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
+        via: NETWORK_VIA.HTTP,
       });
     });
   });

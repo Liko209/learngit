@@ -18,6 +18,7 @@ type JuiZoomProps = {
   className?: string;
   viewRef?: RefObject<HTMLDivElement>;
   zoomOptions?: Partial<JuiZoomOptions>;
+  transFormInCenter?: boolean;
   onZoomRectChange?: (newZoomRect: ElementRect) => void;
   applyTransform?: boolean;
 };
@@ -58,9 +59,9 @@ const ZoomWrapper = styled.div`
 function ensureOptions(zoomOptions?: Partial<JuiZoomOptions>): JuiZoomOptions {
   return zoomOptions
     ? {
-      ...DEFAULT_OPTIONS,
-      ...zoomOptions,
-    }
+        ...DEFAULT_OPTIONS,
+        ...zoomOptions,
+      }
     : DEFAULT_OPTIONS;
 }
 
@@ -135,6 +136,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps> {
   };
 
   onWheel = (ev: React.WheelEvent) => {
+    const { transFormInCenter } = this.props;
     const { step, wheel } = ensureOptions(this.props.zoomOptions);
     if (!wheel) return;
     const point: Position = {
@@ -146,7 +148,10 @@ class JuiZoomComponent extends React.Component<JuiZoomProps> {
     const factor = Math.min(Math.abs(ev.deltaY), 10) / 10;
     const { maxScale, minScale } = ensureOptions(this.props.zoomOptions);
     const toScale = scale + sign * step * scale * factor;
-    this.zoomTo(Math.max(Math.min(toScale, maxScale), minScale), point);
+    this.zoomTo(
+      Math.max(Math.min(toScale, maxScale), minScale),
+      transFormInCenter ? undefined : point,
+    );
   };
 
   render() {
@@ -192,8 +197,8 @@ class JuiZoomComponent extends React.Component<JuiZoomProps> {
 }
 
 class JuiZoomArea extends React.Component<
-Omit<JuiZoomProps, 'transform' | 'onTransformChange'>,
-{ transform: Transform }
+  Omit<JuiZoomProps, 'transform' | 'onTransformChange'>,
+  { transform: Transform }
 > {
   constructor(props: Omit<JuiZoomProps, 'transform' | 'onTransformChange'>) {
     super(props);

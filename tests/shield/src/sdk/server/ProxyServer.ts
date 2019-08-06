@@ -36,7 +36,7 @@ export class ProxyServer implements IMockServer {
       pool,
       item =>
         item.host === host &&
-        item.request.method === method &&
+        item.request.method.toLowerCase() === method.toLowerCase() &&
         (item.path === path || item.pathRegexp.test(path)),
     );
   }
@@ -50,6 +50,7 @@ export class ProxyServer implements IMockServer {
     request: IJRequest<any>,
     listener: INetworkRequestExecutorListener,
   ) => {
+    request.host = request.host.replace(/https:\/\//, '');
     const transRequestInfo = {
       host: request.host,
       path: request.path,

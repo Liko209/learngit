@@ -87,30 +87,37 @@ describe('ProfileService', () => {
       await profileService.handleGroupIncomesNewPost([456]);
       expect(
         mockProfileActionController.handleGroupIncomesNewPost,
-      ).toBeCalledWith([456]);
+      ).toHaveBeenCalledWith([456]);
     });
   });
 
   describe('getProfile()', () => {
     it('should call controller', async () => {
       await profileService.getProfile();
-      expect(mockProfileDataController.getProfile).toBeCalled();
+      expect(mockProfileDataController.getProfile).toHaveBeenCalled();
     });
   });
 
   describe('isConversationHidden()', () => {
     it('should call controller', async () => {
       await profileService.isConversationHidden(678);
-      expect(mockProfileDataController.isConversationHidden).toBeCalledWith(
+      expect(mockProfileDataController.isConversationHidden).toHaveBeenCalledWith(
         678,
       );
+    });
+  });
+
+  describe('isNotificationMute()', () => {
+    it('should call controller', async () => {
+      await profileService.isNotificationMute(1);
+      expect(mockProfileDataController.isNotificationMute).toHaveBeenCalledWith(1);
     });
   });
 
   describe('reorderFavoriteGroups()', () => {
     it('should call controller', async () => {
       await profileService.reorderFavoriteGroups([1, 2], 678, 90);
-      expect(mockProfileActionController.reorderFavoriteGroups).toBeCalledWith(
+      expect(mockProfileActionController.reorderFavoriteGroups).toHaveBeenCalledWith(
         [1, 2],
         678,
         90,
@@ -121,7 +128,7 @@ describe('ProfileService', () => {
   describe('markGroupAsFavorite()', () => {
     it('should call controller', async () => {
       await profileService.markGroupAsFavorite(678, false);
-      expect(mockProfileActionController.markGroupAsFavorite).toBeCalledWith(
+      expect(mockProfileActionController.markGroupAsFavorite).toHaveBeenCalledWith(
         678,
         false,
       );
@@ -131,14 +138,14 @@ describe('ProfileService', () => {
   describe('markMeConversationAsFav()', () => {
     it('should call controller', async () => {
       await profileService.markMeConversationAsFav();
-      expect(mockProfileActionController.markMeConversationAsFav).toBeCalled();
+      expect(mockProfileActionController.markMeConversationAsFav).toHaveBeenCalled();
     });
   });
 
   describe('putFavoritePost()', () => {
     it('should call controller', async () => {
       await profileService.putFavoritePost(46, true);
-      expect(mockProfileActionController.putFavoritePost).toBeCalledWith(
+      expect(mockProfileActionController.putFavoritePost).toHaveBeenCalledWith(
         46,
         true,
       );
@@ -148,14 +155,14 @@ describe('ProfileService', () => {
   describe('reopenConversation()', () => {
     it('should call controller', async () => {
       await profileService.reopenConversation(46);
-      expect(mockProfileActionController.reopenConversation).toBeCalledWith(46);
+      expect(mockProfileActionController.reopenConversation).toHaveBeenCalledWith(46);
     });
   });
 
   describe('hideConversation()', () => {
     it('should call controller', async () => {
       await profileService.hideConversation(46, false, true);
-      expect(mockProfileActionController.hideConversation).toBeCalledWith(
+      expect(mockProfileActionController.hideConversation).toHaveBeenCalledWith(
         46,
         false,
         true,
@@ -166,7 +173,7 @@ describe('ProfileService', () => {
   describe('getFavoriteGroupIds()', () => {
     it('should call controller', async () => {
       await profileService.getFavoriteGroupIds();
-      expect(mockProfileDataController.getFavoriteGroupIds).toBeCalled();
+      expect(mockProfileDataController.getFavoriteGroupIds).toHaveBeenCalled();
     });
   });
 
@@ -174,7 +181,7 @@ describe('ProfileService', () => {
     it('should call controller', async () => {
       const mockOptions = { mock: 'options' } as any;
       await profileService.updateSettingOptions(mockOptions);
-      expect(mockSettingsActionController.updateSettingOptions).toBeCalledWith(
+      expect(mockSettingsActionController.updateSettingOptions).toHaveBeenCalledWith(
         mockOptions,
       );
     });
@@ -195,7 +202,7 @@ describe('ProfileService', () => {
       profileService['_profileSetting'] = mockProfileSetting;
       // mockProfileSetting.unsubscribe = jest.fn();
       profileService['onStarted']();
-      expect(mockSettingService.registerModuleSetting).toBeCalledWith(
+      expect(mockSettingService.registerModuleSetting).toHaveBeenCalledWith(
         mockProfileSetting,
       );
     });
@@ -206,7 +213,7 @@ describe('ProfileService', () => {
       profileService['_profileSetting'] = mockProfileSetting;
       // mockProfileSetting.unsubscribe = jest.fn();
       profileService['onStopped']();
-      expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith(
+      expect(mockSettingService.unRegisterModuleSetting).toHaveBeenCalledWith(
         mockProfileSetting,
       );
     });

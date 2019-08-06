@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
-.c0 {
+.c1 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c1 {
+.c2 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -19,7 +19,18 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
   font-size: 24px;
 }
 
-.c2.c2 {
+.c0.c0 {
+  -webkit-align-items: start;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: start;
+}
+
+.c0 .form-control-label {
+  margin: 10px 0px 0px;
+}
+
+.c3.c3 {
   font-size: 1rem;
   font-weight: 500;
   line-height: 22px;
@@ -34,7 +45,7 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
   }
 >
   <label
-    className="MuiFormControlLabel-root"
+    className="MuiFormControlLabel-root c0"
   >
     <span
       aria-disabled={false}
@@ -56,10 +67,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
         className="MuiIconButton-label"
       >
         <span
-          className=" unselect icon c0"
+          className=" unselect icon c1"
         >
           <svg
-            className="c1"
+            className="c2"
           >
             <use
               href="#icon-unselect"
@@ -76,14 +87,14 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
       </span>
     </span>
     <span
-      className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+      className="MuiTypography-root MuiFormControlLabel-label form-control-label MuiTypography-body1"
     >
       SecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondary
     </span>
   </label>
   <br />
   <label
-    className="MuiFormControlLabel-root"
+    className="MuiFormControlLabel-root c0"
   >
     <span
       aria-disabled={false}
@@ -105,10 +116,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
         className="MuiIconButton-label"
       >
         <span
-          className=" indeterminate icon c0"
+          className=" indeterminate icon c1"
         >
           <svg
-            className="c1"
+            className="c2"
           >
             <use
               href="#icon-indeterminate"
@@ -125,7 +136,7 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
       </span>
     </span>
     <span
-      className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+      className="MuiTypography-root MuiFormControlLabel-label form-control-label MuiTypography-body1"
     >
       Indeterminate
     </span>
@@ -135,7 +146,7 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
     className="MuiFormControl-root"
   >
     <label
-      className="MuiFormLabel-root c2"
+      className="MuiFormLabel-root c3"
     >
       Pick two
     </label>
@@ -143,7 +154,7 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
       className="MuiFormGroup-root"
     >
       <label
-        className="MuiFormControlLabel-root"
+        className="MuiFormControlLabel-root c0"
       >
         <span
           aria-disabled={false}
@@ -165,10 +176,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
             className="MuiIconButton-label"
           >
             <span
-              className=" unselect icon c0"
+              className=" unselect icon c1"
             >
               <svg
-                className="c1"
+                className="c2"
               >
                 <use
                   href="#icon-unselect"
@@ -186,13 +197,13 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
           </span>
         </span>
         <span
-          className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+          className="MuiTypography-root MuiFormControlLabel-label form-control-label MuiTypography-body1"
         >
           one
         </span>
       </label>
       <label
-        className="MuiFormControlLabel-root"
+        className="MuiFormControlLabel-root c0"
       >
         <span
           aria-disabled={false}
@@ -214,10 +225,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
             className="MuiIconButton-label"
           >
             <span
-              className=" unselect icon c0"
+              className=" unselect icon c1"
             >
               <svg
-                className="c1"
+                className="c2"
               >
                 <use
                   href="#icon-unselect"
@@ -235,7 +246,7 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
           </span>
         </span>
         <span
-          className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+          className="MuiTypography-root MuiFormControlLabel-label form-control-label MuiTypography-body1"
         >
           two
         </span>

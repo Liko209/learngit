@@ -12,7 +12,7 @@ abstract class AbstractPermissionController {
     this._subscribeNotifications();
   }
 
-  abstract shutdownClient(): void;
+  abstract shutdownClient(shouldClearCache: boolean): void;
 
   abstract initClient(): void;
 
@@ -24,10 +24,10 @@ abstract class AbstractPermissionController {
       this.initClient();
     });
     notificationCenter.on(SERVICE.LOGOUT, () => {
-      this.shutdownClient();
+      this.shutdownClient(true);
     });
     window.addEventListener('unload', () => {
-      this.shutdownClient();
+      this.shutdownClient(false);
     });
   }
 }

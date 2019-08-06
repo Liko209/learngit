@@ -7,3 +7,7 @@ window.HTMLMediaElement.prototype.load = () => {};
 window.HTMLMediaElement.prototype.play = () => {};
 window.HTMLMediaElement.prototype.pause = () => {};
 window.HTMLMediaElement.prototype.addTextTrack = () => {};
+window.HTMLAudioElement.prototype.setSinkId = function(sinkId) {
+  this.sinkId = sinkId;
+  return Promise.resolve();
+};

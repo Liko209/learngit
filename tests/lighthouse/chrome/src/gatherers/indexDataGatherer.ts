@@ -41,6 +41,12 @@ class IndexDataGatherer extends DebugGatherer {
     "handle_index_data",
     "handle_remaining_data",
     "handle_initial_data",
+    "first_login",
+    "prepare_person_cache",
+    "conversation_handle_data_from_server",
+    "conversation_fetch_from_server",
+    "load_phone_parser",
+    "init_phone_parser"
   ];
 
   constructor() {

@@ -10,12 +10,24 @@ export class SettingMenu extends BaseWebComponent {
     return this.getSelectorByAutomationId('signOut', this.self);
   }
 
+  get editProfileButton() {
+    return this.getSelectorByAutomationId('avatarEditProfile');
+  }
+
   get viewYourProfileButton() {
     return this.getSelectorByAutomationId('viewYourProfile', this.self);
   }
 
-  async clickViewYourProfile() {
-    await this.t.click(this.viewYourProfileButton);
+  get dropMenuEditProfile() {
+    return this.getSelectorByAutomationId('dropMenuEditProfile');
+  }
+
+  async clickDropMenuEditProfile() {
+    await this.t.click(this.dropMenuEditProfile);
+  }
+
+  async clickEditYourProfile() {
+    await this.t.click(this.editProfileButton);
   }
 
   get aboutButton() {

@@ -26,17 +26,10 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   }
 
   get _actions() {
-    const {
-      entity,
-      shouldShowBlock,
-      person,
-      showCall,
-      isBlock,
-      isPseudo,
-    } = this.props;
+    const { entity, shouldShowBlock, person, isBlock, isPseudo } = this.props;
 
     return [
-      showCall && !isBlock && Call,
+      !isBlock && Call,
       person !== null && Message,
       entity === ENTITY_TYPE.VOICEMAIL && Read,
       entity === ENTITY_TYPE.VOICEMAIL && Download,

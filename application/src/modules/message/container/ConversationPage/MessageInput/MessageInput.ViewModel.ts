@@ -27,6 +27,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
+import {isMentionIdsContainTeam} from '../../ConversationCard/utils'
 import { mainLogger } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
@@ -36,7 +37,7 @@ import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
-import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import { ZipItemLevel } from 'sdk/module/log/types';
 import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
 
@@ -310,7 +311,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       // @ts-ignore
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
-
+      const mentionIdsContainTeam = isMentionIdsContainTeam(mentionIds);
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -322,12 +323,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       vm.error = '';
       const items = vm.items;
       if (content.trim() || items.length > 0) {
-        vm._sendPost(content, mentionIds);
+        vm._sendPost(content, mentionIds, mentionIdsContainTeam);
       }
     };
   }
 
-  private _sendPost = async (content: string, ids: number[]) => {
+  private _sendPost = async (content: string, ids: number[], containsTeamMention: boolean) => {
     if (_.isEmpty(ids) && content && DEBUG_COMMAND_MAP[content.trim()]) {
       DEBUG_COMMAND_MAP[content.trim()]();
       this.contentChange('');
@@ -337,13 +338,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.cleanDraft();
     const items = this.items;
     try {
-      this._trackSendPost();
+      this._trackSendPost(containsTeamMention);
       const realContent: string = content.trim();
       await this._postService.sendPost({
         text: realContent,
         groupId: this.props.id,
         itemIds: items.map((item: FileItem) => item.id),
         mentionNonItemIds: ids,
+        isTeamMention: containsTeamMention,
       });
       // clear context (attachments) after post
       //
@@ -358,19 +360,21 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   forceSendPost = () => {
-    this._sendPost('', []);
+    this._sendPost('', [],false);
   }
 
   addOnPostCallback = (callback: OnPostCallback) => {
     this._onPostCallbacks.push(callback);
   }
 
-  private _trackSendPost() {
+  private _trackSendPost(containsTeamMention:boolean) {
     const type = this.items.length ? 'file' : 'text';
+    const isAtTeam = containsTeamMention ? 'yes' : 'no'
     analyticsCollector.sendPost(
       'conversation thread',
       type,
       this._group.analysisType,
+      isAtTeam,
     );
   }
 
@@ -382,6 +386,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._handleDraftSave.cancel()
     this.forceSaveDraft();
   }
+
 }
 
 export {

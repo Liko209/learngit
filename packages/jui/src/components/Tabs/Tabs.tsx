@@ -44,9 +44,6 @@ type Props = {
   forceFlex?: boolean;
 };
 
-const CLASSES = {
-  tabs: { root: 'root' },
-};
 
 const MORE = 10000; // more tab mui auto add child index
 
@@ -433,7 +430,6 @@ class JuiTabs extends PureComponent<Props, States> {
         onChange={this._handleChangeTab}
         indicatorColor='primary'
         textColor='primary'
-        classes={CLASSES.tabs}
         ref={this._containerRef}
       >
         {measure ? this._renderForMeasure() : this._renderForShow()}

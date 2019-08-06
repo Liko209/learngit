@@ -58,6 +58,7 @@ describe('messageNotificationManager', () => {
     creator_id: 1,
   };
   const postWithMentionMe = {
+    creator_id: otherUserId,
     id: 4,
     group_id: 1,
     at_mention_non_item_ids: [currentUserId],
@@ -91,6 +92,10 @@ describe('messageNotificationManager', () => {
     },
   };
 
+  const mockedProfileService = {
+    isNotificationMute: jest.fn().mockReturnValue(false),
+  };
+
   const mockedCompanyService = {
     getById: async (i: number) => {
       return { customEmoji: {} };
@@ -105,7 +110,6 @@ describe('messageNotificationManager', () => {
   beforeEach(() => {
     const userId = 123432;
     jest.clearAllMocks();
-    notificationManager = new MessageNotificationManager();
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(currentUserId);
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(type => {
       switch (type) {
@@ -113,6 +117,8 @@ describe('messageNotificationManager', () => {
           return mockedPostService;
         case ServiceConfig.GROUP_SERVICE:
           return mockedGroupService;
+        case ServiceConfig.PROFILE_SERVICE:
+          return mockedProfileService;
         case ServiceConfig.COMPANY_SERVICE:
           return mockedCompanyService;
         case ServiceConfig.SETTING_SERVICE:
@@ -121,10 +127,10 @@ describe('messageNotificationManager', () => {
           return { userConfig: { getGlipUserId: () => userId } };
       }
     });
+    notificationManager = new MessageNotificationManager();
   });
   describe('shouldEmitNotification()', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
     it('should not show notification when post is sent from current user', async () => {
@@ -193,6 +199,39 @@ describe('messageNotificationManager', () => {
       it('should show notification when post is from team with @mention other users', async () => {
         const result = await notificationManager.shouldEmitNotification(
           postWithMentionOthers,
+        );
+        expect(result).toBeFalsy();
+      });
+    });
+    describe('when post is from a conversation which has customized settings for notifications', () => {
+      it('should not show notification when post is from a conversation which has muted notifications and user is not mentioned in this post', async () => {
+        mockedProfileService.isNotificationMute.mockReturnValue(true);
+        const result = await notificationManager.shouldEmitNotification(
+          postMessage,
+        );
+        expect(result).toBeFalsy();
+      });
+      it('should show notification when post is from a conversation which has muted notifications and user is mentioned in this post', async () => {
+        mockedProfileService.isNotificationMute.mockReturnValue(true);
+        jest
+          .spyOn(notificationManager, 'getCurrentMessageNotificationSetting')
+          .mockImplementation(() =>
+            Promise.resolve(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE),
+          );
+        const result = await notificationManager.shouldEmitNotification(
+          postWithMentionMe,
+        );
+        expect(result).toBeTruthy();
+      });
+      it('should not show notification when post is from a conversation which has muted notifications and user is mentioned in this post but global setting for New Messages is Off', async () => {
+        mockedProfileService.isNotificationMute.mockReturnValue(true);
+        jest
+          .spyOn(notificationManager, 'getCurrentMessageNotificationSetting')
+          .mockImplementation(() =>
+            Promise.resolve(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF),
+          );
+        const result = await notificationManager.shouldEmitNotification(
+          postWithMentionMe,
         );
         expect(result).toBeFalsy();
       });
@@ -275,12 +314,12 @@ describe('messageNotificationManager', () => {
         notificationManager.handlePostContent({
           text: `<a class='at_mention_compose' rel='{"id":12332}'>@Helena</a>`,
         } as PostModel),
-      ).toEqual('@Helena');
+      ).toEqual('Helena');
       expect(
         notificationManager.handlePostContent({
           text: `<a class='at_mention_compose' rel='{"id":12333}'>@Jack Sparrow</a>`,
         } as PostModel),
-      ).toEqual('@Jack Sparrow');
+      ).toEqual('Jack Sparrow');
     });
 
     it('should remove markdown', () => {
@@ -394,7 +433,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.group',
         translationArgs,
@@ -415,7 +454,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.group',
         translationArgs,
@@ -436,7 +475,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(2);
+      expect(i18n.default).toHaveBeenCalledTimes(3);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.mentioned',
         translationArgs,

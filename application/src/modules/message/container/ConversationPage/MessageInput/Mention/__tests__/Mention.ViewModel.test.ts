@@ -7,6 +7,7 @@ import { getEntity } from '@/store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { toJS } from 'mobx';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/search');
@@ -40,7 +41,7 @@ describe('mentionViewModel', () => {
     expect(mentionViewModel._id).toBe(1);
     expect(mentionViewModel.currentIndex).toBe(0);
     expect(mentionViewModel.open).toBe(false);
-    expect(mentionViewModel.members).toEqual([]);
+    expect(mentionViewModel.membersId).toEqual([]);
     expect(mentionViewModel.searchTerm).toBe(undefined);
   });
 
@@ -68,7 +69,7 @@ describe('mentionViewModel', () => {
   it('_doFuzzySearchPersons()', async () => {
     mockSearchService = {
       doFuzzySearchPersons: jest.fn().mockResolvedValue({
-        sortableModels: [1, 2, 3],
+        sortableModels: [{id: 1}, {id: 2}, {id: 3}],
       }),
     };
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockSearchService);
@@ -78,13 +79,13 @@ describe('mentionViewModel', () => {
       memberIds: mockGroupEntityData.members,
     });
 
-    expect(mockSearchService.doFuzzySearchPersons).toBeCalledWith({
+    expect(mockSearchService.doFuzzySearchPersons).toHaveBeenCalledWith({
       searchKey: '',
       excludeSelf: true,
       arrangeIds: mockGroupEntityData.members,
       fetchAllIfSearchKeyEmpty: true,
     });
-    expect(mentionViewModel.members).toEqual([1, 2, 3]);
+    expect(mentionViewModel.membersId).toEqual([1, 2, 3]);
   });
 
   it('_selectHandler()', async () => {
@@ -101,15 +102,15 @@ describe('mentionViewModel', () => {
     expect(quill.getModule).not.toBeCalled();
     mentionViewModel.open = true;
     // currentIndex default will be 1 because of title will within VL
-    mentionViewModel.members = [1];
+    mentionViewModel.membersId = [1];
+    mentionViewModel.membersDisplayName = ['name'];
     handler();
     expect(quill.getModule).toBeCalledWith('mention');
     expect(mentionModules.select).toBeCalledWith(
-      mentionViewModel.members[ mentionViewModel.currentIndex - mentionViewModel.initIndex
-].id,
-      mentionViewModel.members[ mentionViewModel.currentIndex - mentionViewModel.initIndex
-].displayName,
+      mentionViewModel.membersId[ mentionViewModel.currentIndex],
+      mentionViewModel.membersDisplayName[ mentionViewModel.currentIndex],
       mentionViewModel._denotationChar,
+      mentionViewModel.isTeam,
     );
     expect(mentionViewModel.open).toBe(false);
   });
@@ -122,7 +123,7 @@ describe('mentionViewModel', () => {
     });
     handler();
     expect(mentionViewModel.currentIndex).toBe(1);
-    expect(mentionViewModel._selectHandler).toBeCalled();
+    expect(mentionViewModel._selectHandler).toHaveBeenCalled();
   });
 
   it('_escapeHandler()', async () => {
@@ -133,10 +134,10 @@ describe('mentionViewModel', () => {
 
   it('_upHandler()', async () => {
     const handler = mentionViewModel._upHandler(mentionViewModel);
-    mentionViewModel.members = [1, 2, 3];
+    mentionViewModel.membersId = [1, 2, 3];
     mentionViewModel.currentIndex = 1;
     handler();
-    expect(mentionViewModel.currentIndex).toBe(3);
+    expect(mentionViewModel.currentIndex).toBe(0);
     handler();
     expect(mentionViewModel.currentIndex).toBe(2);
     handler();
@@ -145,12 +146,12 @@ describe('mentionViewModel', () => {
 
   it('_downHandler()', async () => {
     const handler = mentionViewModel._downHandler(mentionViewModel);
-    mentionViewModel.members = [1, 2, 3];
+    mentionViewModel.membersId = [1, 2, 3];
     mentionViewModel.currentIndex = 1;
     handler();
     expect(mentionViewModel.currentIndex).toBe(2);
     handler();
-    expect(mentionViewModel.currentIndex).toBe(3);
+    expect(mentionViewModel.currentIndex).toBe(0);
     handler();
     expect(mentionViewModel.currentIndex).toBe(1);
   });
@@ -177,6 +178,49 @@ describe('mentionViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
       mentionViewModel = new MentionViewModel({ id: 1 });
       expect(mentionViewModel.isOneToOneGroup).toBeTruthy();
+    });
+  });
+
+  describe('searchTermMatchTeam()', () => {
+    beforeEach(() => {
+      mentionViewModel = new MentionViewModel({ id: 1 });
+    });
+    it('should return true when search empty text', () => {
+      const searchTerm = '';
+      mentionViewModel.searchTerm = searchTerm;
+      expect(mentionViewModel.searchTermMatchTeam).toBeTruthy();
+    });
+    it('should return true when search team', () => {
+      const searchTerm = 'team';
+      mentionViewModel.searchTerm = searchTerm;
+      expect(mentionViewModel.searchTermMatchTeam).toBeTruthy();
+    });
+    it('should return false if search some text out of team', () => {
+      const searchTerm = 'teamtest';
+      mentionViewModel.searchTerm = searchTerm;
+      expect(mentionViewModel.searchTermMatchTeam).toBeFalsy();
+    });
+  });
+  describe('isTeam()', () => {
+    it('should return true when groupType is team', () => {
+      const mockGroupEntityData: {
+        type: CONVERSATION_TYPES;
+      } = {
+        type: CONVERSATION_TYPES.TEAM,
+      };
+      (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
+      mentionViewModel = new MentionViewModel({ id: 1 });
+      expect(mentionViewModel.isTeam).toBeTruthy();
+    });
+    it('should return false when grouptype is not team', () => {
+      const mockGroupEntityData: {
+        type: CONVERSATION_TYPES;
+      } = {
+        type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+      };
+      (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
+      mentionViewModel = new MentionViewModel({ id: 1 });
+      expect(mentionViewModel.isTeam).toBeFalsy();
     });
   });
 });

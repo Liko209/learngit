@@ -173,7 +173,9 @@ describe('Presence Controller', () => {
 
     it('should call resetPresence() when state changed to disconnected [JPT-2585]', () => {
       presenceController.resetPresence = jest.fn();
+      presenceController.reset = jest.fn();
       presenceController.handleSocketStateChange('disconnected');
+      expect(presenceController.reset).toHaveBeenCalled();
       expect(presenceController.resetPresence).toHaveBeenCalled();
     });
   });

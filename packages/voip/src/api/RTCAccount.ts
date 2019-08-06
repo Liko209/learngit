@@ -91,6 +91,7 @@ class RTCAccount implements IRTCAccount {
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
   ): RTCCall | null {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'makeCall');
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
       return null;
@@ -236,6 +237,12 @@ class RTCAccount implements IRTCAccount {
     this._regManager.on(REGISTRATION_EVENT.SWITCH_BACK_PROXY_ACTION, () => {
       this._switchBackProxy();
     });
+    this._provManager.on(
+      RTC_PROV_EVENT.PROV_ARRIVE,
+      (newSipProv, oldSipProv) => {
+        this._delegate.onReceiveSipProv(newSipProv, oldSipProv);
+      },
+    );
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
       this._delegate.onReceiveNewProvFlags(info.sipFlags);
@@ -263,6 +270,7 @@ class RTCAccount implements IRTCAccount {
     } else if (this._state === RTC_ACCOUNT_STATE.FAILED) {
       this._scheduleRegisterRetryTimer();
     }
+    window['sipState'] = state;
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
     }

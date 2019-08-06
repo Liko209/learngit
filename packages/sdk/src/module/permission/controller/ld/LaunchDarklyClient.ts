@@ -38,12 +38,23 @@ class LaunchDarklyClient {
     return this._flags && Object.keys(this._flags).length > 0;
   }
 
-  shutdown() {
+  shutdown(shouldClearCache: boolean) {
     if (this._ldclient) {
+      this._flags = {};
       this._ldclient.off('change', () => {});
       this._ldclient.off('ready', () => {});
       this._ldclient.setStreaming(false);
+      shouldClearCache && this._deleteLocalCache();
     }
+  }
+  private _deleteLocalCache() {
+    const ldReg = /^ld:[a-zA-Z0-9]+:[a-zA-Z0-9]+/;
+    Object.keys(localStorage).map(key => {
+      if (ldReg.test(key)) {
+        localStorage.removeItem(key);
+        mainLogger.log('delete launchDarkly cache data', key);
+      }
+    });
   }
 
   private _initLDClient(options: Options) {

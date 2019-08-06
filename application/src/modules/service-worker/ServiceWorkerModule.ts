@@ -20,6 +20,9 @@ class ServiceWorkerModule extends AbstractModule {
       () => {
         this._upgradeHandler.onControllerChanged();
       },
+      (data: string) => {
+        this._upgradeHandler.onMessageHandler(data);
+      },
       (text: string) => {
         this._upgradeHandler.logInfo(text);
       },

@@ -17,6 +17,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   notificationCallback,
   TelephonyDataCollectionInfoConfigType,
+  CallOptions,
 } from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
@@ -26,13 +27,19 @@ import { PhoneSetting } from '../setting';
 import { ITelephonyService } from './ITelephonyService';
 import { HealthModuleController } from 'sdk/framework/controller/impl/HealthModuleController';
 import { MODULE_NAME, MODULE_IDENTIFY } from '../constants';
+import { CallSwitchController } from '../controller/CallSwitchController';
+import {
+  RCPresenceEventPayload,
+  ActiveCall,
+} from 'sdk/module/rcEventSubscription/types';
+import { RTCSipEmergencyServiceAddr } from 'voip';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
   private _phoneSetting: PhoneSetting;
-
+  private _callSwitchController: CallSwitchController;
   constructor() {
     super({ isSupportedCache: true, entityName: 'CALL' });
     this.setSubscriptionController(
@@ -55,6 +62,7 @@ class TelephonyService extends EntityBaseService<Call>
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.phoneSetting);
+    this._callSwitchController.start();
   }
 
   protected onStopped() {
@@ -87,6 +95,7 @@ class TelephonyService extends EntityBaseService<Call>
 
   private _init() {
     this.telephonyController.initEngine();
+    this._callSwitchController = new CallSwitchController(this);
   }
 
   get userConfig() {
@@ -105,18 +114,29 @@ class TelephonyService extends EntityBaseService<Call>
     return accountController ? accountController.getCallCount() : 0;
   };
 
-  makeCall = async (toNumber: string, fromNumber?: string) => {
+  makeCall = async (toNumber: string, options?: CallOptions) => {
     const accountController = this.telephonyController.getAccountController();
     if (accountController) {
       return this.telephonyController
         .getAccountController()
-        .makeCall(toNumber, fromNumber);
+        .makeCall(toNumber, options);
+    }
+    return MAKE_CALL_ERROR_CODE.INVALID_STATE;
+  };
+
+  switchCall = async (myNumber: string, switchCall: ActiveCall) => {
+    const accountController = this.telephonyController.getAccountController();
+    if (accountController) {
+      return this.telephonyController
+        .getAccountController()
+        .switchCall(myNumber, switchCall);
     }
     return MAKE_CALL_ERROR_CODE.INVALID_STATE;
   };
 
   hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
+    this._callSwitchController.onCallEnded(callId);
   };
 
   mute = (callId: number) => {
@@ -211,6 +231,20 @@ class TelephonyService extends EntityBaseService<Call>
       .setDataCollectionInfoConfig(info);
   };
 
+  async getSwitchCall() {
+    return this._callSwitchController.getSwitchCall();
+  }
+
+  async handleRCPresence(
+    presence: RCPresenceEventPayload,
+    isFromPush: boolean,
+  ) {
+    return this._callSwitchController.handleTelephonyPresence(
+      presence,
+      isFromPush,
+    );
+  }
+
   isEmergencyAddrConfirmed = () => {
     return this.telephonyController.isEmergencyAddrConfirmed();
   };
@@ -228,12 +262,33 @@ class TelephonyService extends EntityBaseService<Call>
     return this.telephonyController.getLocalEmergencyAddress();
   };
 
+  isAddressEqual = (
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) => {
+    return this.telephonyController.isAddressEqual(objAddr, othAddr);
+  };
+
+  setLocalEmergencyAddress = (emergencyAddress: RTCSipEmergencyServiceAddr) => {
+    this.telephonyController.setLocalEmergencyAddress(emergencyAddress);
+  };
+
+  updateLocalEmergencyAddress = (
+    emergencyAddress: RTCSipEmergencyServiceAddr,
+  ) => {
+    this.telephonyController.updateLocalEmergencyAddress(emergencyAddress);
+  };
+
   subscribeEmergencyAddressChange = (listener: notificationCallback) => {
     this.telephonyController.subscribeEmergencyAddressChange(listener);
   };
 
-  subscribeSipProvChange = (listener: notificationCallback) => {
-    this.telephonyController.subscribeSipProvChange(listener);
+  subscribeSipProvEAUpdated = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvEAUpdated(listener);
+  };
+
+  subscribeSipProvReceived = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvReceived(listener);
   };
 }
 

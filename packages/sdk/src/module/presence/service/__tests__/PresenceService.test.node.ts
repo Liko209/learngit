@@ -71,6 +71,11 @@ describe('Presence Controller', () => {
     expect(presenceController.getById).toHaveBeenCalledWith(1);
   });
 
+  it('should call getById() with correct parameter', async () => {
+    await presenceService.getSynchronously(1);
+    expect(presenceController.getById).toHaveBeenCalledWith(1);
+  });
+
   describe('getPresenceActionController', () => {
     it('should not create PresenceActionController when have presenceActionController', () => {
       const result = presenceService.getPresenceActionController();

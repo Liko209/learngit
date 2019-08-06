@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import { TopBannerView } from '../TopBanner.View';
 import { ElectronUpgradeBanner } from '../Banners/ElectronUpgradeBanner/ElectronUpgradeBanner';
 import { NetworkBanner } from '../Banners/NetworkBanner';
+import { DndBanner } from '../Banners/DndBanner';
 import { container } from 'framework';
 
 jest.spyOn(container, 'get').mockReturnValue({
@@ -49,6 +50,27 @@ describe('TopBannerView', () => {
       });
       const wrapper = shallow(<TopBannerView />);
       expect(wrapper.find(ElectronUpgradeBanner).length).toBe(0);
+    });
+
+    it('should not display banner defined in data if priority is less than other banner [JPT-2531]', () => {
+      jest.spyOn(container, 'get').mockReturnValue({
+        topBanners: [
+          {
+            priority: 200,
+            Component: DndBanner,
+            props: {},
+            isShow: true,
+          },
+          {
+            priority: 100,
+            Component: NetworkBanner,
+            props: {},
+            isShow: true,
+          },
+        ],
+      });
+      const wrapper = mount(<TopBannerView />);
+      expect(wrapper).toMatchSnapshot();
     });
   });
 });

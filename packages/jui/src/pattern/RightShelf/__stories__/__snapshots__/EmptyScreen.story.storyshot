@@ -32,6 +32,10 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
   color: #fff;
 }
 
+.c6.c6.textButtonStyle {
+  color: #0684bd;
+}
+
 .c6.c6.textButtonStyle.disabled {
   color: #bfbfbf;
 }

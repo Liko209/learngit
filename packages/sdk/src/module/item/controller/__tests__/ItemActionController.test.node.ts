@@ -18,6 +18,7 @@ import { RequestController } from '../../../../framework/controller/impl/Request
 import { ItemDao } from '../../dao';
 import { daoManager } from '../../../../dao';
 import { ServiceLoader } from '../../../serviceLoader';
+import { PartialUpdateParams } from 'sdk/framework/controller/interface/IPartialModifyController';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -76,30 +77,29 @@ describe('ItemActionController', () => {
       );
       partialUpdateController.updatePartially = jest
         .fn()
-        .mockImplementation(
-          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
-            expect(itemId).toBe(normalId);
-            expect(
-              prehandleFunc(
-                { id: normalId, deactivated: true },
-                { id: normalId, deactivated: false, name: 'name' },
-              ),
-            ).toEqual({ id: normalId, deactivated: true });
-            doUpdateFunc({ id: normalId, deactivated: true });
-          },
-        );
+        .mockImplementation((params: PartialUpdateParams<any>) => {
+          const { entityId, preHandlePartialEntity, doUpdateEntity } = params;
+          expect(entityId).toBe(normalId);
+          expect(
+            preHandlePartialEntity!(
+              { id: normalId, deactivated: true },
+              { id: normalId, deactivated: false, name: 'name' },
+            ),
+          ).toEqual({ id: normalId, deactivated: true });
+          doUpdateEntity!({ id: normalId, deactivated: true });
+        });
       await itemActionController.deleteItem(normalId);
-      expect(partialUpdateController.updatePartially).toBeCalledWith(
-        normalId,
-        expect.anything(),
-        expect.anything(),
-      );
-      expect(requestController.put).toBeCalledWith({
+      expect(partialUpdateController.updatePartially).toHaveBeenCalledWith({
+        entityId: normalId,
+        preHandlePartialEntity: expect.anything(),
+        doUpdateEntity: expect.anything(),
+      });
+      expect(requestController.put).toHaveBeenCalledWith({
         id: normalId,
         deactivated: true,
       });
-      expect(progressService.deleteProgress).not.toBeCalled();
-      expect(notificationCenter.emitEntityDelete).not.toBeCalled();
+      expect(progressService.deleteProgress).not.toHaveBeenCalled();
+      expect(notificationCenter.emitEntityDelete).not.toHaveBeenCalled();
     });
 
     it('should just delete item when item id < 0', async () => {
@@ -111,10 +111,10 @@ describe('ItemActionController', () => {
         return { id: TypeDictionary.TYPE_ID_FILE, group_ids: [1] };
       });
       await itemActionController.deleteItem(negativeId);
-      expect(entitySourceController.delete).toBeCalledWith(negativeId);
-      expect(requestController.put).not.toBeCalled();
-      expect(notificationCenter.emitEntityDelete).toBeCalled();
-      expect(progressService.deleteProgress).toBeCalled();
+      expect(entitySourceController.delete).toHaveBeenCalledWith(negativeId);
+      expect(requestController.put).not.toHaveBeenCalled();
+      expect(notificationCenter.emitEntityDelete).toHaveBeenCalled();
+      expect(progressService.deleteProgress).toHaveBeenCalled();
     });
   });
 });

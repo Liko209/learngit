@@ -1,0 +1,776 @@
+{
+  "UK": {
+    "customerName": "John Smith",
+    "street": {
+      "label": "Address",
+      "ghostText": "App.911 24 Sir Thomas Street"
+    },
+    "street2": {
+      "label": "Road/Street",
+      "ghostText": "Road/Street",
+      "optional": true
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Liverpool"
+    },
+    "state": {
+      "label": "County",
+      "ghostText": "West Yorkshire",
+      "optional": true
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "L1 6JB"
+    }
+  },
+  "US": {
+    "customerName": "John Doe",
+    "street": {
+      "label": "Street address",
+      "ghostText": "120 1st St SW"
+    },
+    "street2": {
+      "label": "Additional address",
+      "ghostText": "Suite 500 or Building A, Floor 3",
+      "optional": true
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Alabaster"
+    },
+    "zip": {
+      "label": "Zip code",
+      "ghostText": "35007"
+    }
+  },
+  "Puerto Rico": {
+    "customerName": "John Doe",
+    "street": {
+      "label": "Street address",
+      "ghostText": "120 1st St SW"
+    },
+    "street2": {
+      "label": "Additional address",
+      "ghostText": "Suite 500 or Building A, Floor 3",
+      "optional": true
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Alabaster"
+    },
+    "zip": {
+      "label": "Zip code",
+      "ghostText": "35007"
+    }
+  },
+  "Canada": {
+    "customerName": "John Doe",
+    "street": {
+      "label": "Street address",
+      "ghostText": "120 1st St SW"
+    },
+    "street2": {
+      "label": "Additional address",
+      "ghostText": "Suite 500 or Building A, Floor 3",
+      "optional": true
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Alabaster"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "AB T2P 4K8"
+    }
+  },
+  "Germany": {
+    "customerName": "Max Mustermann",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Alterweg 110a"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "40210"
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Dusseldorf"
+    }
+  },
+  "France": {
+    "customerName": "Jean Dupont",
+    "street": {
+      "label": "Street address",
+      "ghostText": "710 Rue Poncelet"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "65311"
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Paris"
+    }
+  },
+  "Netherlands": {
+    "customerName": "Jan Jansen",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Surinamestraat 27"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "6531"
+    },
+    "city": {
+      "label": "City / Town / Locality",
+      "ghostText": "Den Haag"
+    }
+  },
+  "Switzerland": {
+    "customerName": "Monsieur Pierre Dupont",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Kappelergasse 1"
+    },
+    "zip": {
+      "label": "Post code",
+      "ghostText": "8022"
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Zurich"
+    }
+  },
+  "Spain": {
+    "customerName": "Juan Perez",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Calle Aduana, 29"
+    },
+    "zip": {
+      "label": "Post code",
+      "ghostText": "28070"
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Madrid"
+    }
+  },
+  "Ireland:": {
+    "customerName": "Seán Ó Rudaí",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Sub-building, Building Name, House Number"
+    },
+    "zip": {
+      "label": "Post code / EIR code",
+      "ghostText": "D02 AF30"
+    },
+    "state": {
+      "label": "Town / County",
+      "ghostText": "Dublin"
+    }
+  },
+  "Singapore:": {
+    "customerName": "Ms. Tan Bee Soo",
+    "street": {
+      "label": "Street number and name",
+      "ghostText": "10 Sandilands Road"
+    },
+    "state": {
+      "label": "Name of town",
+      "ghostText": "Singapore"
+    },
+    "zip": {
+      "label": "Post code",
+      "ghostText": "308215"
+    }
+  },
+  "Philippines:": {
+    "customerName": "Mr. Faye Capio",
+    "street": {
+      "label": "Unit number, house/building/street number + street name",
+      "ghostText": "Unit 102A, Quezon Street"
+    },
+    "city": {
+      "label": "City/District",
+      "ghostText": "Pasig City"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "7019"
+    },
+    "state": {
+      "label": "Province",
+      "ghostText": "Zamboanga del Sur",
+      "optional": true
+    }
+  },
+  "Mexico": {
+    "customerName": "Juan de los Palotes",
+    "street": {
+      "label": "Street name, number, Apt",
+      "ghostText": "Garth Rd 3 – 403"
+    },
+    "street2": {
+      "label": "Village/Name of quarter",
+      "ghostText": "Colonia Baytown"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "77520"
+    },
+    "state": {
+      "label": "Locality / Province",
+      "ghostText": "CANCUN, Q. ROO",
+      "optional": true
+    }
+  },
+  "Sweden": {
+    "customerName": "Anna Svensson",
+    "street": {
+      "label": "Street name + number",
+      "ghostText": "Varvsgatan 1"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "112 01"
+    },
+    "city": {
+      "label": "City/Town",
+      "ghostText": "Stockholm"
+    }
+  },
+  "Denmark": {
+    "customerName": "Anders Andersen",
+    "street": {
+      "label": "Street name + number",
+      "ghostText": "Brammingevej 11"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "5000"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Odense C"
+    }
+  },
+  "Finland": {
+    "customerName": "Matti Meikäläinen",
+    "street": {
+      "label": "Street name + number",
+      "ghostText": "Fredrikinkatu 6"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "00100"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Helsinki"
+    }
+  },
+  "Malaysia": {
+    "customerName": "Jenny Ahmad",
+    "street": {
+      "label": "Unit/lot number, building/area name",
+      "ghostText": "Lot 7, Bintang Centre"
+    },
+    "street2": {
+      "label": "Lot number (for building), street name",
+      "ghostText": "11 Medan Angsana",
+      "optional": true
+    },
+    "zip": {
+      "label": "Postcode Post office/Mail centre",
+      "ghostText": "42700 BANTING"
+    },
+    "state": {
+      "label": "State",
+      "ghostText": "SELANGOR",
+      "optional": true
+    }
+  },
+  "Hong Kong": {
+    "customerName": "Wang Wu",
+    "street": {
+      "label": "Flat number, Floor number, Name/number of house/building",
+      "ghostText": "12/F, Acacia Building"
+    },
+    "street2": {
+      "label": "Street number and street name",
+      "ghostText": "70 Mody Rd",
+      "optional": true
+    },
+    "state": {
+      "label": "Name of district",
+      "ghostText": "Tuen Mun",
+      "optional": true
+    }
+  },
+  "Norway": {
+    "customerName": "Kari Nordmann",
+    "street": {
+      "label": "Street name + number",
+      "ghostText": "Storgata 2"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "2670"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Otta"
+    }
+  },
+  "Taiwan": {
+    "customerName": "Zhang San",
+    "street": {
+      "label": "Number, Alley, Lane, Road/Street Name",
+      "ghostText": "2F., No.7, Gongyuan St."
+    },
+    "zip": {
+      "label": "ZIP codes",
+      "ghostText": "600"
+    },
+    "city": {
+      "label": "Township and District, County and City",
+      "ghostText": "Chiayi City, 1st Dist."
+    }
+  },
+  "Austria": {
+    "customerName": "Herr X",
+    "street": {
+      "label": "Street name + number",
+      "ghostText": "Postgasse 15"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "8750"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Judenburg"
+    }
+  },
+  "Portugal": {
+    "customerName": "Jose dos Anzois",
+    "street": {
+      "label": "Street name + Street number + door",
+      "ghostText": "R. Comercio 148, 2 Esc"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "1100-150"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Lisboa"
+    }
+  },
+  "Belgium": {
+    "customerName": "Jan Jansen",
+    "street": {
+      "label": "Street name + Street number + door",
+      "ghostText": "Avenue de Jette 28"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "1090"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Jette"
+    }
+  },
+  "Italy": {
+    "customerName": "Mario Rossi",
+    "street": {
+      "label": "Street name and number",
+      "ghostText": "Via Labicana, 14"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "00184"
+    },
+    "city": {
+      "label": "Town Country",
+      "ghostText": "Roma"
+    }
+  },
+  "Australia": {
+    "customerName": "John Citizen",
+    "street": {
+      "label": "Street (Subunit Number Name)",
+      "ghostText": "1 Parsons St,Unit 2"
+    },
+    "state": {
+      "label": "Locality State",
+      "ghostText": "Kalgoorlie WA"
+    },
+    "zip": {
+      "label": "Postcode",
+      "ghostText": "6430"
+    }
+  },
+  "Israel": {
+    "customerName": "Israel Israeli",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Kampen St 15"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Eilat"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "8851318"
+    }
+  },
+  "Luxembourg": {
+    "customerName": "Jaques Muller",
+    "street": {
+      "label": "Street address",
+      "ghostText": "180 Route de Longwy"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "4732"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Petange"
+    }
+  },
+  "Romaina": {
+    "customerName": "Ion Popescu",
+    "street": {
+      "label": "Street address",
+      "ghostText": "str. Golului, nr. 3"
+    },
+    "city": {
+      "label": "City/Village, County/Sector",
+      "ghostText": "Resita, Caras-Severin"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "320084"
+    }
+  },
+  "Czech Republic": {
+    "customerName": "Jan Novák",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Na Rovni 17"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "162 00"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Praha"
+    }
+  },
+  "Argentina": {
+    "customerName": "Jan Novák",
+    "street": {
+      "label": "Street address (street name + house/building number)",
+      "ghostText": "Piedras No 623 Piso2 Dto.4"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "C1070AAM"
+    },
+    "city": {
+      "label": "City/Town/Province",
+      "ghostText": "Capital Federal"
+    }
+  },
+  "Brazil": {
+    "customerName": "William Rossi",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Avenida Joao Jorge, 102, ap. 4"
+    },
+    "street2": {
+      "label": "Neighbourhood",
+      "ghostText": "Vila Industrial",
+      "optional": true
+    },
+    "state": {
+      "label": "Municipality - State",
+      "ghostText": "Campinas - SP"
+    },
+    "zip": {
+      "label": "CEP (Postal Code)",
+      "ghostText": "30840-470"
+    }
+  },
+  "Chile": {
+    "customerName": "Sr. Juan Perez",
+    "street": {
+      "label": "Street and number, apartment number",
+      "ghostText": "Nelson N 10, Dep. 415"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "2340000",
+      "optional": true
+    },
+    "city": {
+      "label": "Comuna/Town/City/Municipality",
+      "ghostText": "El Tabo, Region de Valparais"
+    }
+  },
+  "New Zealand": {
+    "customerName": "Mr. John Key",
+    "street": {
+      "label": "Flat number/house number, street address or PO box number",
+      "ghostText": "21 Vogel Street"
+    },
+    "street2": {
+      "label": "Suburb or RD number or PO box lobby name",
+      "ghostText": "Roslyn",
+      "optional": true
+    },
+    "city": {
+      "label": "Town/City",
+      "ghostText": "Palmerston North"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "4414"
+    }
+  },
+  "Poland": {
+    "customerName": "Jan Kowalski",
+    "street": {
+      "label": "Street address",
+      "ghostText": "ul. Wiejska 3/7"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "00-902"
+    },
+    "city": {
+      "label": "Town/City",
+      "ghostText": "Warszawa"
+    }
+  },
+  "Slovakia": {
+    "customerName": "Jozef Foltan",
+    "street": {
+      "label": "Street name, number",
+      "ghostText": "Stefanikova trieda 61"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "949 01"
+    },
+    "city": {
+      "label": "Town/City",
+      "ghostText": "Nitra"
+    }
+  },
+  "Japan": {
+    "customerName": "Tanaka Hanako",
+    "street": {
+      "label": "Street address (street)",
+      "ghostText": "4-3-2 Hakusan"
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Bunkyo"
+    },
+    "state": {
+      "label": "Prefecture (Province)",
+      "ghostText": "Tokyo",
+      "optional": true
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "112-0001"
+    }
+  },
+  "South Korea": {
+    "customerName": "Gildong Hong",
+    "street": {
+      "label": "Street address (house/building number, street name)",
+      "ghostText": "102, Sajik-ro"
+    },
+    "city": {
+      "label": "District, County, or City",
+      "ghostText": "Jongno-Gu"
+    },
+    "state": {
+      "label": "Province",
+      "ghostText": "Seoul",
+      "optional": true
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "06546"
+    }
+  },
+  "Peru": {
+    "customerName": "Roberto Prada",
+    "street": {
+      "label": "Street address (street name, number)",
+      "ghostText": "av. del Ejercito 450"
+    },
+    "city": {
+      "label": "Sub-locality",
+      "ghostText": "Magdalena del Mar"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "15074"
+    },
+    "state": {
+      "label": "Province",
+      "ghostText": "Lima",
+      "optional": true
+    }
+  },
+  "Hungary": {
+    "customerName": "Kors Janos",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Bem rakpart 947"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "1055"
+    },
+    "city": {
+      "label": "City/Town",
+      "ghostText": "Budapest"
+    }
+  },
+  "Croatia": {
+    "customerName": "Hrjone Harvet",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Ulica marsala Tita 258"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "10 000"
+    },
+    "city": {
+      "label": "Town",
+      "ghostText": "Zagreb"
+    }
+  },
+  "South Africa": {
+    "customerName": "Megan Wiese",
+    "street": {
+      "label": "Street address",
+      "ghostText": "555 Kempston Road"
+    },
+    "city": {
+      "label": "City/Suburb",
+      "ghostText": "Port Elizabeth"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "6000"
+    }
+  },
+  "China": {
+    "customerName": "Megan Chen",
+    "street": {
+      "label": "District and street address",
+      "ghostText": "East District, Mingdu Road #7"
+    },
+    "street2": {
+      "label": "Building name and room number",
+      "ghostText": "BHungShi Garden, Building F, Room 2807",
+      "optional": true
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Beijing City"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "528400"
+    },
+    "state": {
+      "label": "Province",
+      "ghostText": "Beijing",
+      "optional": true
+    }
+  },
+  "Colombia": {
+    "customerName": "Laura Perez",
+    "street": {
+      "label": "Street address, apartment number",
+      "ghostText": "Carrera 11 # 35 – 66 Apto 912"
+    },
+    "street2": {
+      "label": "Building name",
+      "ghostText": "Edificio Lambare",
+      "optional": true
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Bogota"
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "111511"
+    }
+  },
+  "Costa Rica": {
+    "customerName": "Vanessa Jimenez",
+    "street": {
+      "label": "Street address",
+      "ghostText": "Casa #888"
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Desamparados"
+    },
+    "state": {
+      "label": "Province",
+      "ghostText": "San Jose",
+      "optional": true
+    },
+    "zip": {
+      "label": "Postal code",
+      "ghostText": "40502"
+    }
+  },
+  "default": {
+    "customerName": "John Doe",
+    "street": {
+      "label": "Street address",
+      "ghostText": "120 1st St SW"
+    },
+    "street2": {
+      "label": "Additional address",
+      "ghostText": "Suite 500 or Building A, Floor 3",
+      "optional": true
+    },
+    "city": {
+      "label": "City",
+      "ghostText": "Alabaster"
+    },
+    "state": {
+      "label": "State/Province",
+      "ghostText": "",
+      "optional": true
+    },
+    "zip": {
+      "label": "Zip code",
+      "ghostText": "35007"
+    }
+  }
+}

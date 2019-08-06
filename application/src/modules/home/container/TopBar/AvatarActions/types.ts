@@ -18,6 +18,7 @@ type ViewProps = {
   ) => void;
   handleSignOut: () => void;
   handleSendFeedback: () => void;
+  handleOpen: () => void;
 };
 
 export { Props, ViewProps };

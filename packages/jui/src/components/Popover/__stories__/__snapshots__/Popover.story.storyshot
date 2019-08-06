@@ -32,6 +32,10 @@ exports[`Storyshots Components/Popover Popover: Components/Popover Popover 1`] =
   color: #fff;
 }
 
+.c0.c0.textButtonStyle {
+  color: #0684bd;
+}
+
 .c0.c0.textButtonStyle.disabled {
   color: #bfbfbf;
 }

@@ -20,6 +20,7 @@ import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG, TabConfig } from './ItemList/config';
 import { PinnedList } from './PinnedList';
 import { IMessageStore } from '@/modules/message/interface';
+import { RightShelfMemberList } from '../RightShelfMemberList';
 
 type Props = {
   id: number;
@@ -216,13 +217,14 @@ class RightRailComponent extends React.Component<Props> {
   };
 
   render() {
-    const { id } = this.props;
+    const { id, width } = this.props;
     if (!id) {
       return null;
     }
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
+        {width > 0 ? <RightShelfMemberList groupId={id} /> : null}
         {this._renderTabs()}
       </JuiRightShelf>
     );

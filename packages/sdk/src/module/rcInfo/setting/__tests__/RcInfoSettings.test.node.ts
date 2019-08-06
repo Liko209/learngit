@@ -25,6 +25,8 @@ describe('RcInfoSetting ', () => {
         return {
           subscribeEmergencyAddressChange: jest.fn(),
           subscribeSipProvChange: jest.fn(),
+          subscribeSipProvEAUpdated: jest.fn(),
+          subscribeSipProvReceived: jest.fn(),
         };
       });
   }

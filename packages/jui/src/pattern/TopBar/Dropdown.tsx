@@ -15,11 +15,13 @@ type JuiDropdownContactInfoProps = {
   name: string | undefined;
   content: string;
   openEditProfile: () => void;
+  handleClick: () => void;
 };
 
 const JuiStyledDropdown = styled('div')`
   width: ${width(61)};
   background: ${({ theme }) => theme.palette.background.paper};
+  cursor: pointer;
 `;
 
 const StyledContactWrapper = styled('div')`
@@ -63,14 +65,35 @@ const StyledContactInfoEdit = styled('span')`
 
 const JuiDropdownContactInfo = React.memo(
   (props: JuiDropdownContactInfoProps) => {
-    const { Avatar, name, content, openEditProfile } = props;
+    const { Avatar, name, content, openEditProfile, handleClick } = props;
+    const _ref = React.useRef<HTMLDivElement>(null);
+
+    const _clickEventHandler = React.useCallback(
+      (event: React.SyntheticEvent) => {
+        if (!_ref.current || !event.target) {
+          return;
+        }
+
+        if (_ref.current === event.target) return;
+
+        handleClick();
+      },
+      [],
+    );
 
     return (
-      <StyledContactWrapper>
+      <StyledContactWrapper
+        data-test-automation-id="dropMenuEditProfile"
+        onClick={_clickEventHandler}
+      >
         {Avatar}
         <StyledContactInfoWrapper>
           {name && <StyledContactInfoName>{name}</StyledContactInfoName>}
-          <StyledContactInfoEdit onClick={openEditProfile}>
+          <StyledContactInfoEdit
+            ref={_ref}
+            data-test-automation-id="avatarEditProfile"
+            onClick={openEditProfile}
+          >
             {content}
           </StyledContactInfoEdit>
         </StyledContactInfoWrapper>

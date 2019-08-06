@@ -32,6 +32,61 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   fill: #ff3737;
 }
 
+.c3.c3 {
+  padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 8px;
+}
+
+.c6.c6 {
+  margin-right: 8px;
+  min-width: 0;
+}
+
+.c8 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c8.c8 {
+  padding: 0;
+}
+
+.c8.c8 .list-item-primary {
+  display: block;
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c8.c8 .list-item-secondary {
+  display: block;
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c8.c8.multiline {
+  margin: 0;
+}
+
 .c7.c7 {
   width: 32px;
   height: 32px;
@@ -66,59 +121,6 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c3.c3 {
-  padding: 8px;
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  padding-left: 8px;
-}
-
-.c6.c6 {
-  margin-right: 8px;
-  min-width: 0;
-}
-
-.c8 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c8.c8 {
-  padding: 0;
-}
-
-.c8.c8 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c8.c8 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c8.c8.multiline {
-  margin: 0;
 }
 
 .c0.c0 {

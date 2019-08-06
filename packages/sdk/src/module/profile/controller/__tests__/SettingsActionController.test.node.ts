@@ -13,35 +13,25 @@ import {
   CALLING_OPTIONS,
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
 } from '../../constants';
+import { PartialUpdateParams } from 'sdk/framework/controller/interface/IPartialModifyController';
 
 describe('SettingsActionController', () => {
   let settingsActionController: SettingsActionController;
   const mockPartialModify = {
     updatePartially: jest
       .fn()
-      .mockImplementation(
-        async (
-          entityId: number,
-          preHandlePartialEntity?: (
-            partialEntity: Partial<Raw<Profile>>,
-            originalEntity: Profile,
-          ) => Partial<Raw<Profile>>,
-          doUpdateEntity?: (updatedEntity: Profile) => Promise<Profile>,
-        ) => {
-          let mockProfile = {
-            id: entityId,
-          } as any;
-          if (preHandlePartialEntity) {
-            mockProfile = await preHandlePartialEntity(
-              mockProfile,
-              mockProfile,
-            );
-          }
-          if (doUpdateEntity) {
-            await doUpdateEntity(mockProfile);
-          }
-        },
-      ),
+      .mockImplementation(async (params: PartialUpdateParams<any>) => {
+        const { entityId, preHandlePartialEntity, doUpdateEntity } = params;
+        let mockProfile = {
+          id: entityId,
+        } as any;
+        if (preHandlePartialEntity) {
+          mockProfile = await preHandlePartialEntity(mockProfile, mockProfile);
+        }
+        if (doUpdateEntity) {
+          await doUpdateEntity(mockProfile);
+        }
+      }),
   } as any;
   const mockRequestController = {
     put: jest.fn(),
@@ -96,7 +86,7 @@ describe('SettingsActionController', () => {
       ];
 
       await settingsActionController.updateSettingOptions(mockOptions);
-      expect(mockRequestController.put).toBeCalledWith({
+      expect(mockRequestController.put).toHaveBeenCalledWith({
         id: mockProfileId,
         [SETTING_KEYS.CALL_OPTION]: 'ringcentral',
         [SETTING_KEYS.DEFAULT_NUMBER]: 45678,

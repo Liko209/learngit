@@ -48,4 +48,4 @@ class OpenProfile {
   }
 }
 
-export { OpenProfile };
+export { OpenProfile, getProfileDialogComponent };

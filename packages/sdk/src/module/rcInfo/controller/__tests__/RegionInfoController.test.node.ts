@@ -511,6 +511,37 @@ describe('RegionInfoController', () => {
     });
   });
 
+  describe('getAllCountryList', () => {
+    it('should get country list from server', async () => {
+      _rcInfoFetchController.requestCountryList = jest
+        .fn()
+        .mockReturnValue([1, 2]);
+      const res = await regionInfoController.getAllCountryList();
+      expect(_rcInfoFetchController.requestCountryList).toHaveBeenCalledWith({
+        page: 1,
+        perPage: 500,
+      });
+      expect(res).toEqual([1, 2]);
+    });
+
+    it('should get country list from cache', async () => {
+      Object.assign(regionInfoController, {
+        _countryList: [3, 4],
+      });
+      _rcInfoFetchController.requestCountryList = jest
+        .fn()
+        .mockReturnValue([1, 2]);
+      const res = await regionInfoController.getAllCountryList();
+      expect(
+        _rcInfoFetchController.requestCountryList,
+      ).not.toHaveBeenCalledWith({
+        page: 1,
+        perPage: 500,
+      });
+      expect(res).toEqual([3, 4]);
+    });
+  });
+
   describe('_getRightAreaCode', () => {
     const myCountryInfo = {
       callingCode: '86',
