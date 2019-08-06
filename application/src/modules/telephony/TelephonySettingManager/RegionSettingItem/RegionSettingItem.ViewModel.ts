@@ -199,7 +199,10 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     this.areaCodeError = false;
     this.disabledOkBtn = false;
 
-    if (this._currentCountryAreaCode === areaCode) {
+    if (
+      this._currentCountryAreaCode === areaCode &&
+      this._currentCountryInfo.isoCode === this.dialPlanISOCode
+    ) {
       this.disabledOkBtn = true;
     }
     // check

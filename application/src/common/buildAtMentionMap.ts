@@ -12,7 +12,7 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { i18nP } from '@/utils/i18nT';
+import i18nT from '@/utils/i18nT';
 import { AtMentionsMapType } from '@/common/postParser';
 
 const _getDisplayName = (id: number) => {
@@ -42,8 +42,8 @@ const buildAtMentionMap = (post: PostModel) => {
   });
   kv['-1'] = {
     name: post.isAdminMention
-      ? i18nP('message.atMentionAllAdmin')
-      : i18nP('message.atMentionAllTeam'),
+      ? i18nT('message.atMentionAllAdmin')
+      : i18nT('message.atMentionAllTeam'),
     isCurrent:
       post.isTeamMention ||
       (post.isAdminMention &&

@@ -45,6 +45,7 @@ class StateController {
       this._stateDataHandleController = new StateDataHandleController(
         this._entitySourceController,
         this.getStateFetchDataController(),
+        this.getStateActionController(),
       );
     }
     return this._stateDataHandleController;

@@ -14,6 +14,8 @@ jest.mock('@/utils/i18nT', () => (key: string) => key);
 
 jest.mock('framework');
 
+jest.mock('@/utils/i18nT', () => (key: string) => key);
+
 const currentCountryInfo = {
   id: '1',
   name: 'United States',
@@ -141,7 +143,7 @@ describe('RegionSettingItemViewModel', () => {
   });
 
   describe('handleAreaCodeChange()', () => {
-    it('should disable the okBtn when area code is not changed', async (done: jest.DoneCallback) => {
+    it('should disable the okBtn when area code and country is not changed', async (done: jest.DoneCallback) => {
       const VM = new RegionSettingItemViewModel();
       await VM.loadRegionSetting();
 
@@ -153,6 +155,25 @@ describe('RegionSettingItemViewModel', () => {
       } as React.ChangeEvent<HTMLInputElement>);
 
       expect(VM.disabledOkBtn).toBeTruthy();
+      done();
+    });
+    it('should not disable the okBtn when area code not change but country changed', async (done: jest.DoneCallback) => {
+      const VM = new RegionSettingItemViewModel();
+      await VM.loadRegionSetting();
+
+      expect(VM.currentCountryAreaCode).toEqual('970');
+      VM.handleDialPlanChange({
+        target: {
+          value: 'CA',
+        },
+      } as React.ChangeEvent<HTMLInputElement>);
+      VM.handleAreaCodeChange({
+        target: {
+          value: '970',
+        },
+      } as React.ChangeEvent<HTMLInputElement>);
+
+      expect(VM.disabledOkBtn).not.toBeTruthy();
       done();
     });
     it('should hide the error message and enable the okBtn when enter the right areaCode', async (done: jest.DoneCallback) => {
