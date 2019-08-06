@@ -33,7 +33,7 @@
       "in": "in"
     },
     "time": {
-      "at": "at",
+      "at": "{{date}} at",
       "today": "Today",
       "yesterday": "Yesterday",
       "tomorrow": "Tomorrow",
@@ -214,7 +214,7 @@
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",
-      "on": "on",
+      "on": "on {{date}}",
       "postInitialTitle": "Get Started",
       "shareFile": "Share a file",
       "createTask": "Create a task",

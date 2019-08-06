@@ -17,7 +17,7 @@ type SheetsType = { [type: string]: number[] };
 function getDateAndTime(timestamp: number): string {
   const getAMOrPM: string = dateFormatter.localTime(moment(timestamp));
   const date: string = recentlyTwoDayAndOther(timestamp);
-  return `${date} ${i18nP('common.time.at')} ${getAMOrPM}`;
+  return `${i18nP('common.time.at', { date })} ${getAMOrPM}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number): string {
@@ -78,13 +78,15 @@ function getDurationTimeText(
   const date: string = repeatEndingOn
     ? dateFormatter.exactDate(moment(repeatEndingOn))
     : '';
-  const hideUntil = (repeat: string, repeatEnding: string) => repeat === '' || // task not set repeat will be ''
+  const hideUntil = (repeat: string, repeatEnding: string) =>
+    repeat === '' || // task not set repeat will be ''
     repeat === 'none' ||
     repeatEnding === 'none' ||
     repeatEnding === 'after' ||
     repeatEndingOn === null;
   // if has repeat and is forever need hide times
-  const hideTimes = (repeatEndingAfter: string, repeatEnding: string) => repeatEnding === 'none' || repeatEnding === 'on';
+  const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
+    repeatEnding === 'none' || repeatEnding === 'on';
   const repeatText = date ? ` ${i18nP('item.until')} ${date}` : '';
 
   return `${i18nP(REPEAT_TEXT[repeat]) || ''} ${
