@@ -13,6 +13,7 @@ import { Omit } from 'jui/foundation/utils/typeHelper';
 type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
   dismissible?: boolean;
   autoHideDuration?: number;
+  onClose?: () => void;
 };
 
 const MAX_SHOW_COUNT = 3;
@@ -28,17 +29,19 @@ class Notification extends AbstractViewModel {
       Notification._buffer.push(props);
       return {};
     }
+    const { onClose, ...rest } = props;
     const duplicateIndex = notificationData.findIndex(
       ({ message }) => message === props.message,
     );
     const id = Date.now();
     const dismiss = () => {
       Notification._removeNotification(id);
+      onClose && onClose();
     };
     const toast = {
       id,
       dismiss,
-      ...props,
+      ...rest,
     };
     if (duplicateIndex >= 0) {
       notificationData.splice(duplicateIndex, 1, toast);

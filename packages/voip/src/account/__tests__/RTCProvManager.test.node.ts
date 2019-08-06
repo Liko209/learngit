@@ -13,7 +13,7 @@ import {
 } from '../constants';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { ITelephonyDaoDelegate } from 'foundation';
-import { RTCSipProvisionInfo } from '../types';
+import { RTCSipProvisionInfo, RTC_PROV_EVENT } from '../types';
 
 describe('RTCProvManager', () => {
   afterEach(() => {
@@ -73,8 +73,8 @@ describe('RTCProvManager', () => {
         .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(null);
       await provManager.acquireSipProv();
-      expect(provManager.emit).toBeCalled();
-      expect(provManager._sendSipProvRequest).toBeCalled();
+      expect(provManager.emit).toHaveBeenCalled();
+      expect(provManager._sendSipProvRequest).toHaveBeenCalled();
     });
 
     it('should send provisioning request when local provisioning info is NOT exists after call aquireSipProv. [JPT-1006]', async () => {
@@ -86,8 +86,8 @@ describe('RTCProvManager', () => {
         .mockReturnValue(null);
       await provManager.acquireSipProv();
       localStorage.remove('sip-info');
-      expect(provManager.emit).not.toBeCalled();
-      expect(provManager._sendSipProvRequest).toBeCalled();
+      expect(provManager.emit).not.toHaveBeenCalled();
+      expect(provManager._sendSipProvRequest).toHaveBeenCalled();
     });
 
     it('should do nothing if new returned provisioning info is same as current provisioning info. [ JPT-1007]', async () => {
@@ -99,8 +99,8 @@ describe('RTCProvManager', () => {
         .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvData_normal);
       await provManager.acquireSipProv();
-      expect(provManager.emit).toBeCalledTimes(1);
-      expect(provManager._sendSipProvRequest).toBeCalled();
+      expect(provManager.emit).toHaveBeenCalledTimes(1);
+      expect(provManager._sendSipProvRequest).toHaveBeenCalled();
     });
 
     it('should update provisioning info in local storage and current memory when new returned provisioning info is different. [JPT-1008]', async () => {
@@ -114,8 +114,8 @@ describe('RTCProvManager', () => {
         .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(newProveResponse);
       await provManager.acquireSipProv();
-      expect(provManager.emit).toBeCalledTimes(2);
-      expect(provManager._sendSipProvRequest).toBeCalled();
+      expect(provManager.emit).toHaveBeenCalledTimes(3);
+      expect(provManager._sendSipProvRequest).toHaveBeenCalled();
       const newLocalProvInfo = localStorage.get('sip-info');
       expect(newLocalProvInfo.sipInfo[0].username).toBe('345');
       expect(provManager._sipProvisionInfo.sipInfo[0].username).toBe('345');
@@ -131,7 +131,7 @@ describe('RTCProvManager', () => {
         .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
-      expect(pm._sendSipProvRequest).not.toBeCalled();
+      expect(pm._sendSipProvRequest).not.toHaveBeenCalled();
     });
 
     it('should Emit NewProvision , reset 24h and error retry timers after validating the provision api response successfully(has provision before) JPT-729', async () => {
@@ -145,8 +145,8 @@ describe('RTCProvManager', () => {
         .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
-      expect(pm.emit).toBeCalled();
-      expect(pm._resetFreshTimer).toBeCalled();
+      expect(pm.emit).toHaveBeenCalled();
+      expect(pm._resetFreshTimer).toHaveBeenCalled();
       expect(pm._requestErrorRetryInterval).toBe(
         kRTCProvRequestErrorRetryTimerMin,
       );
@@ -160,8 +160,8 @@ describe('RTCProvManager', () => {
         .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
-      expect(pm.emit).toBeCalled();
-      expect(pm._resetFreshTimer).toBeCalled();
+      expect(pm.emit).toHaveBeenCalled();
+      expect(pm._resetFreshTimer).toHaveBeenCalled();
       expect(pm._requestErrorRetryInterval).toBe(
         kRTCProvRequestErrorRetryTimerMin,
       );
@@ -187,7 +187,7 @@ describe('RTCProvManager', () => {
         expect(pm.retrySeconds).toBe(interval);
         jest.advanceTimersByTime(interval * 1000);
       }
-      expect(pm._clearFreshTimer).toBeCalled();
+      expect(pm._clearFreshTimer).toHaveBeenCalled();
     });
 
     it('should Retry request provision at max(kRTCProvRequestErrorRetryTimerMin,16,32...3600s,retryAfter)(retryAfter > kRTCProvRequestErrorRetryTimerMin)  interval when request sip provision failed ', async () => {
@@ -214,7 +214,7 @@ describe('RTCProvManager', () => {
         expect(pm.retrySeconds).toBe(interval);
         jest.advanceTimersByTime(interval * 1000);
       }
-      expect(pm._clearFreshTimer).toBeCalled();
+      expect(pm._clearFreshTimer).toHaveBeenCalled();
     });
 
     it('should Retry request provision at 2h interval(retryAfter < 2h) when response is invalid JPT-658', async () => {
@@ -227,7 +227,7 @@ describe('RTCProvManager', () => {
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
       expect(pm.retrySeconds).toBe(kRTCProvParamsErrorRetryTimer);
-      expect(pm._clearFreshTimer).toBeCalled();
+      expect(pm._clearFreshTimer).toHaveBeenCalled();
     });
 
     it('should Retry request provision at retryAfter interval(retryAfter > 2h) when response is invalid', async () => {
@@ -241,7 +241,7 @@ describe('RTCProvManager', () => {
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
       expect(pm.retrySeconds).toBe(7300);
-      expect(pm._clearFreshTimer).toBeCalled();
+      expect(pm._clearFreshTimer).toHaveBeenCalled();
     });
 
     it('should do nothing when same sip provision is returned JPT-659', async () => {
@@ -254,8 +254,13 @@ describe('RTCProvManager', () => {
         .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
-      expect(pm.emit).not.toBeCalled();
-      expect(pm._resetFreshTimer).toBeCalled();
+      expect(pm.emit).toHaveBeenCalledTimes(1);
+      expect(pm.emit).toHaveBeenCalledWith(
+        RTC_PROV_EVENT.PROV_ARRIVE,
+        mockProvData_normal,
+        mockProvData_normal,
+      );
+      expect(pm._resetFreshTimer).toHaveBeenCalled();
       expect(pm._requestErrorRetryInterval).toBe(
         kRTCProvRequestErrorRetryTimerMin,
       );
@@ -272,7 +277,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       await pm.acquireSipProv();
       await pm.acquireSipProv();
-      expect(pm._sendSipProvRequest).toBeCalledTimes(1);
+      expect(pm._sendSipProvRequest).toHaveBeenCalledTimes(1);
     });
 
     it('should do nothing when acquire provision again after previous request is invalid JPT-724', async () => {
@@ -287,7 +292,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       await pm.acquireSipProv();
       await pm.acquireSipProv();
-      expect(pm._sendSipProvRequest).toBeCalledTimes(1);
+      expect(pm._sendSipProvRequest).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -301,7 +306,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Transport value is null JPT-647', async () => {
@@ -313,7 +318,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Password filed is missed JPT-636', async () => {
@@ -325,7 +330,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Password value is null JPT-648', async () => {
@@ -337,7 +342,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Domain filed is missed JPT-637', async () => {
@@ -349,7 +354,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Domain value is null JPT-649', async () => {
@@ -361,7 +366,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Username filed is missed JPT-638', async () => {
@@ -373,7 +378,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Username value is null JPT-650', async () => {
@@ -385,7 +390,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Authorization filed is missed JPT-640', async () => {
@@ -397,7 +402,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when Authorization value is null JPT-651', async () => {
@@ -409,7 +414,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when OutboundProxy filed is missed JPT-641', async () => {
@@ -421,7 +426,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
 
     it('should The provision response be invalid when OutboundProxy value is null JPT-652', async () => {
@@ -433,7 +438,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
-      expect(pm._checkSipProvInfoParams).lastReturnedWith(false);
+      expect(pm._checkSipProvInfoParams).toHaveLastReturnedWith(false);
     });
   });
 });

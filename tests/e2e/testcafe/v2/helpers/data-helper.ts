@@ -65,6 +65,7 @@ class DataHelper {
         .map(user => buildUsers(user, companies[phoneNumber]));
       companies[phoneNumber].users = users;
     }
+
     const mainCompanyNumber = formatNumberWithPlusSymbol(data.mainNumber);
     const mainCompany = companies[mainCompanyNumber];
     const glipTeams: any[] = data.teams || data.glipTeams;
@@ -73,7 +74,10 @@ class DataHelper {
         glipId: team._id,
       }
     })
-    mainCompany.groups = groups || [];
+
+    if (mainCompany) {
+      mainCompany.groups = groups || [];
+    }
     let guestCompany: ICompany, anotherGuestCompany: ICompany;
     if (phoneNumbers.length > 1) {
       const guestPhoneNumbers = _.pull(phoneNumbers, data.mainNumber);

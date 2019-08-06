@@ -511,7 +511,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
 class CallerIdList extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="listbox"]')
+    return this.getSelector('.virtualized_select-list-container');
   }
 
   get callerIds() {
@@ -637,3 +637,4 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
     await this.t.hover(this.unMuteButton);
   }
 }
+

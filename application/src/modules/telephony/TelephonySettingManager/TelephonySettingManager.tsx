@@ -19,6 +19,7 @@ import {
   CallerIdSelectValue,
 } from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
+import { E911SettingItem } from './E911SettingItem';
 import {
   DefaultPhoneAppSelectItem,
   beforeDefaultPhoneAppSettingSave,
@@ -112,12 +113,18 @@ class TelephonySettingManager {
               weight: 300,
             },
             {
+              id: PHONE_SETTING_ITEM.PHONE_E911,
+              automationId: 'e911Setting',
+              type: E911SettingItem,
+              weight: 400,
+            },
+            {
               id: PHONE_SETTING_ITEM.PHONE_EXTENSIONS,
               automationId: 'extensions',
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
-              weight: 400,
+              weight: 500,
               dataTracking: {
                 name: 'extensionSettings',
                 type: 'phoneGeneral',
