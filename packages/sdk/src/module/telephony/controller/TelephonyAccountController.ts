@@ -465,6 +465,13 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return this._e911Controller.isEmergencyAddrConfirmed();
   }
 
+  isAddressEqual(
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) {
+    return this._e911Controller.isAddressEqual(objAddr, othAddr);
+  }
+
   onReceiveNewProvFlags(sipFlags: RTCSipFlags) {
     telephonyLogger.debug('onReceiveNewProvFlags');
     this._e911Controller.onReceiveNewProvFlags(sipFlags);

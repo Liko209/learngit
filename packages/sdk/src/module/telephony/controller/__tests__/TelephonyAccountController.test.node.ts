@@ -331,6 +331,17 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('isAddressEqual', () => {
+    it('should call with correct parameters', () => {
+      const addr1 = { a: 'a' };
+      const addr2 = { b: 'b' };
+      e911Controller.isAddressEqual = jest.fn().mockReturnValue(true);
+      const res = accountController.isAddressEqual(addr1, addr2);
+      expect(e911Controller.isAddressEqual).toHaveBeenCalledWith(addr1, addr2);
+      expect(res).toBeTruthy();
+    });
+  });
+
   describe('getSipProv', () => {
     it('should return sip prov from rtc account', () => {
       rtcAccount.getSipProv = jest.fn();

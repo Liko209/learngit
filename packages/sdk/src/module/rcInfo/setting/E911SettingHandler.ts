@@ -21,7 +21,6 @@ import {
 import { mainLogger } from 'foundation';
 import { notificationCenter } from 'sdk/service';
 import { SERVICE, RC_INFO } from 'sdk/service/eventKey';
-import _ from 'lodash';
 
 export class E911SettingHandler extends AbstractSettingEntityHandler<
   EmergencyServiceAddress
@@ -163,7 +162,10 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
     if (localAddr) {
       const remoteAddr = telephonyService.getRemoteEmergencyAddress();
       emergencyAddr = localAddr;
-      if (remoteAddr && !_.isEqual(remoteAddr, localAddr)) {
+      if (
+        remoteAddr &&
+        !telephonyService.isAddressEqual(remoteAddr, localAddr)
+      ) {
         mainLogger.info('Prefer remote EA when it is not equal to local EA');
         emergencyAddr = remoteAddr;
       }
