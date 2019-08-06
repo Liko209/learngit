@@ -5,6 +5,7 @@
  */
 
 export { BuildUtils } from './BuildUtils';
+
 export { uniqueArray, getCurrentTime } from './jsUtils/jsUtils';
 export { HeartBeatCheck } from './checker/HeartBeatCheck';
 export { sleepModeDetector } from './checker/SleepModeDetector';
