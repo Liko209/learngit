@@ -3,10 +3,10 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, untracked } from 'mobx';
+import { computed } from 'mobx';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import {
   UmiProps,
   UmiViewProps,
@@ -16,10 +16,8 @@ import {
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { AppStore } from '@/modules/app/store';
-import { StateService, GROUP_BADGE_TYPE } from 'sdk/module/state';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { GROUP_BADGE_TYPE } from 'sdk/module/state';
 import BadgeModel from '@/store/models/Badge';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
 import { MESSAGE_SETTING_ITEM } from '@/modules/message/interface';
@@ -118,7 +116,10 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
         break;
     }
 
-    return this._removeCurrentUmiFromSection(counts);
+    return {
+      unreadCount: counts.unreadCount,
+      important: !!counts.mentionCount,
+    };
   }
 
   private _getMergedUnreadCounts(ids: string[]): UnreadCounts {
@@ -137,65 +138,6 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       counts.mentionCount += badge.mentionCount;
     });
     return counts;
-  }
-
-  private _removeCurrentUmiFromSection(counts: UnreadCounts) {
-    untracked(() => {
-      const shouldShowUMI = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI);
-      if (!shouldShowUMI) {
-        const currentConversationId = getGlobalValue(
-          GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-        );
-        const stateService = ServiceLoader.getInstance<StateService>(
-          ServiceConfig.STATE_SERVICE,
-        );
-        const currentUnreadInfo = stateService.getSingleGroupBadge(
-          currentConversationId,
-        );
-        if (
-          currentUnreadInfo &&
-          currentUnreadInfo.unreadCount &&
-          this._isInThisSection(currentUnreadInfo.id)
-        ) {
-          if (currentUnreadInfo.isTeam) {
-            counts.unreadCount =
-              counts.unreadCount - currentUnreadInfo.mentionCount;
-          } else {
-            counts.unreadCount =
-              counts.unreadCount - currentUnreadInfo.unreadCount;
-          }
-          counts.mentionCount =
-            (counts.mentionCount || 0) - currentUnreadInfo.mentionCount;
-        }
-      }
-    });
-    return {
-      unreadCount: counts.unreadCount,
-      important: !!counts.mentionCount,
-    };
-  }
-
-  private _isInThisSection(badgeType: string): boolean {
-    if (this.props.type === UMI_SECTION_TYPE.ALL) {
-      return true;
-    }
-    switch (badgeType) {
-      case GROUP_BADGE_TYPE.TEAM: {
-        return this.props.type === UMI_SECTION_TYPE.TEAM;
-      }
-      case GROUP_BADGE_TYPE.DIRECT_MESSAGE: {
-        return this.props.type === UMI_SECTION_TYPE.DIRECT_MESSAGE;
-      }
-      case GROUP_BADGE_TYPE.FAVORITE_TEAM: {
-        return this.props.type === UMI_SECTION_TYPE.FAVORITE;
-      }
-      case GROUP_BADGE_TYPE.FAVORITE_DM: {
-        return this.props.type === UMI_SECTION_TYPE.FAVORITE;
-      }
-      default:
-        break;
-    }
-    return false;
   }
 
   updateAppUmi() {

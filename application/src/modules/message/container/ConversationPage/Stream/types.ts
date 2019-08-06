@@ -66,7 +66,7 @@ type StreamViewProps = {
   items: StreamItem[];
   hasMore: (direction: DIRECTION) => boolean;
   notEmpty: boolean;
-  markAsRead: () => void;
+  updateIgnoredStatus: (isIgnore: boolean) => void;
   loadInitialPosts: () => Promise<void>;
   enableNewMessageSeparatorHandler: () => void;
   disableNewMessageSeparatorHandler: () => void;
