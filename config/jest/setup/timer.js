@@ -2,23 +2,44 @@ const timerIds = [];
 const intervalIds = [];
 const { wrapFunction } = require('../../utils');
 
+jest.mock('pubnub', () => {
+  const mock = {
+    stop: jest.fn(),
+    unsubscribeAll: jest.fn(),
+    addListener: jest.fn(),
+    subscribe: jest.fn(),
+    decrypt: jest.fn(),
+  };
+  return () => mock;
+});
+
 const setup = () => {
+  const wrapSetTimeout = wrapFunction(global.setTimeout, {
+    after: (id, cb, timeout) => {
+      timerIds.push(id);
+      return id;
+    },
+  });
+  const wrapSetInterval = wrapFunction(global.setInterval, {
+    after: (id, cb, timeout) => {
+      intervalIds.push(id);
+      return id;
+    },
+  });
   Object.defineProperty(global, 'setTimeout', {
-    value: wrapFunction(global.setTimeout, {
-      after: (id, cb, timeout) => {
-        timerIds.push(id);
-        return id;
-      },
-    }),
+    value: wrapSetTimeout,
+    writable: true,
+  });
+  Object.defineProperty(window, 'setTimeout', {
+    value: wrapSetTimeout,
     writable: true,
   });
   Object.defineProperty(global, 'setInterval', {
-    value: wrapFunction(global.setInterval, {
-      after: (id, cb, timeout) => {
-        intervalIds.push(id);
-        return id;
-      },
-    }),
+    value: wrapSetInterval,
+    writable: true,
+  });
+  Object.defineProperty(window, 'setInterval', {
+    value: wrapSetInterval,
     writable: true,
   });
 };
@@ -26,7 +47,6 @@ const setup = () => {
 setup();
 
 const tearDown = () => {
-  // console.log('TCL: tearDown -> tearDown', timerIds.length);
   timerIds.forEach(id => {
     clearTimeout(id);
   });
