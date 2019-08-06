@@ -93,7 +93,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   }
 
   get _telephonyStore() {
-    return container.get(TelephonyStore)
+    return container.get(TelephonyStore);
   }
 
   @computed
@@ -228,6 +228,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     server: 'telephony.e911.prompt.backendError',
   })
   onSubmit = async () => {
+    const { successCallback } = this.props;
     // if state type is text field only send state field to backend
     if (!this.shouldShowSelectState) {
       this.value.stateName = '';
@@ -240,7 +241,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     try {
       await (this.settingItemEntity.valueSetter &&
         this.settingItemEntity.valueSetter(this.value));
-    } catch(e) {
+      successCallback && successCallback();
+    } catch (e) {
       Notification.flashToast({
         message: 'telephony.e911.prompt.backendError',
         type: ToastType.ERROR,
@@ -249,7 +251,6 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       });
       return e;
     }
-    
   };
 
   @action
@@ -311,7 +312,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
 
   closeE911 = (status: boolean) => {
     this._telephonyStore.switchE911Status(status);
-  }
+  };
 }
 
 export { E911ViewModel };

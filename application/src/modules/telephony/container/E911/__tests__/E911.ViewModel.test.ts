@@ -441,24 +441,28 @@ describe('E911ViewModel', () => {
     @mockService(RCInfoService, mockRCInfoServiceMethods())
     beforeEach() {}
 
-    @test('should be save value if field change')
+    @test('should be save value if field change [JPT-2710]')
     @mockEntity({
       valueSetter,
     })
-    t1() {
-      const vm = new E911ViewModel({});
-      vm.onSubmit();
+    async t1() {
+      const props = {
+        successCallback: jest.fn(),
+      };
+      const vm = new E911ViewModel(props);
+      await vm.onSubmit();
       expect(valueSetter).toHaveBeenCalledWith(vm.value);
+      expect(props.successCallback).toHaveBeenCalled();
     }
 
     @test('should be clear state name/isoCode/Id if show text state')
     @mockEntity({
       valueSetter,
     })
-    t2() {
+    async t2() {
       const vm = new E911ViewModel({});
       vm.value.country = 'country';
-      vm.onSubmit();
+      await vm.onSubmit();
       expect(vm.value.stateName).toBe('');
       expect(vm.value.stateIsoCode).toBe('');
       expect(vm.value.stateId).toBe('');
@@ -469,9 +473,9 @@ describe('E911ViewModel', () => {
     @mockEntity({
       valueSetter,
     })
-    t3() {
+    async t3() {
       const vm = new E911ViewModel({});
-      vm.onSubmit();
+      await vm.onSubmit();
       expect(vm.value.outOfCountry).toBeFalsy();
     }
 
