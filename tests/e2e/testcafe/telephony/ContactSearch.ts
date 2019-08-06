@@ -58,8 +58,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Click the the first item via mouse', async () => {
-    await telephonyDialog.contactSearchList.selectNth(0);
-    // the first select conn't trigger click, so the trick is click it again.
+    await t.wait(2e3);
     await telephonyDialog.contactSearchList.selectNth(0);
   });
 
@@ -79,6 +78,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Click the the 2nd item via mouse', async () => {
     await telephonyDialog.contactSearchList.ensureLoaded();
+    await t.wait(1e3);
     await telephonyDialog.contactSearchList.selectNth(1)
   });
 
