@@ -16,6 +16,11 @@ import SettingModel from '@/store/models/UserSetting';
 import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 import { OutOfCountryDisclaimer } from './config';
 import addressConfig from './address.json';
@@ -120,8 +125,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   }
 
   @catchError.flash({
-    network: 'telephony.e911.prompt.backendError',
-    server: 'telephony.e911.prompt.networkError',
+    network: 'telephony.e911.prompt.networkError',
+    server: 'telephony.e911.prompt.backendError',
   })
   @action
   async getState(country: Country) {
@@ -143,8 +148,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   }
 
   @catchError.flash({
-    network: 'telephony.e911.prompt.backendError',
-    server: 'telephony.e911.prompt.networkError',
+    network: 'telephony.e911.prompt.networkError',
+    server: 'telephony.e911.prompt.backendError',
   })
   @action
   async getCountryInfo() {
@@ -219,8 +224,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   };
 
   @catchError.flash({
-    network: 'telephony.e911.prompt.backendError',
-    server: 'telephony.e911.prompt.networkError',
+    network: 'telephony.e911.prompt.networkError',
+    server: 'telephony.e911.prompt.backendError',
   })
   onSubmit = async () => {
     // if state type is text field only send state field to backend
@@ -232,8 +237,19 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
 
     this.value.outOfCountry = this.checkboxList.length > 0;
 
-    await (this.settingItemEntity.valueSetter &&
-      this.settingItemEntity.valueSetter(this.value));
+    try {
+      await (this.settingItemEntity.valueSetter &&
+        this.settingItemEntity.valueSetter(this.value));
+    } catch(e) {
+      Notification.flashToast({
+        message: 'telephony.e911.prompt.backendError',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+      });
+      return e;
+    }
+    
   };
 
   @action

@@ -146,8 +146,8 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
     );
     const remoteAddr = telephonyService.getRemoteEmergencyAddress();
     !remoteAddr
-      ? this._assignLine(emergencyAddress)
-      : this._updateLine(emergencyAddress);
+      ? await this._assignLine(emergencyAddress)
+      : await this._updateLine(emergencyAddress);
   }
 
   async fetchUserSettingEntity() {
