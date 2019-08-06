@@ -1,11 +1,18 @@
 import { LogUploader } from '../LogUploader';
 import { LogEntity } from 'foundation';
-import { AccountService } from '../../../module/account';
+import { AccountService } from '../../account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
-import { ServiceLoader } from '../../../module/serviceLoader';
+import { ServiceLoader } from '../../serviceLoader';
 import { Pal } from '../../../pal/pal';
 import { IApplicationInfo } from '../../../pal/applicationInfo';
+import pako from 'pako';
+
+jest.mock('pako', () => {
+  return {
+    deflate: jest.fn().mockImplementation(str => str),
+  };
+});
 jest.mock('sdk/api');
 jest.mock('../../../pal/pal', () => {
   const mockPal: Pal = {
@@ -42,17 +49,19 @@ describe('LogUploader', () => {
     platform: 'desktop',
     env: 'prod',
   };
-  beforeEach(() => {
-    Api.httpConfig = {
-      sumologic: {
-        server: 'url/',
-        uniqueHttpCollectorCode: 'code',
-      },
-    };
-    (axios.post as jest.Mock).mockResolvedValue({});
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
-  });
   describe('upload()', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      Api.httpConfig = {
+        sumologic: {
+          server: 'url/',
+          uniqueHttpCollectorCode: 'code',
+        },
+      };
+      (axios.post as jest.Mock).mockResolvedValue({});
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
+    });
     it('should call post correctly', async () => {
       (accountService.getCurrentUserInfo as jest.Mock).mockResolvedValue({
         id: 12345,
@@ -64,10 +73,11 @@ describe('LogUploader', () => {
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
       mockLog.sessionId = 'sessionA';
-      jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
+      pako.deflate.mockReturnValue('mm');
       await logUploader.upload([mockLog]);
-      expect(axios.post).toBeCalledWith('url/code', 'mm', {
+      expect(axios.post).toHaveBeenCalledWith('url/code', 'mm', {
         headers: {
+          'Content-Encoding': 'deflate',
           'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
             mockAppInfo.browser
           }/${mockAppInfo.os}/${mockAppInfo.env}/abc@rc.com/12345/sessionA/${
@@ -77,6 +87,26 @@ describe('LogUploader', () => {
         },
       });
     });
+    it('should call sendBeacon correctly in emergencyMode', async () => {
+      (accountService.getCurrentUserInfo as jest.Mock).mockResolvedValue({
+        id: 12345,
+        email: 'abc@rc.com',
+      });
+      (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(
+        mockAppInfo,
+      );
+      const logUploader = new LogUploader();
+      const mockLog = new LogEntity();
+      mockLog.sessionId = 'sessionA';
+      pako.deflate.mockReturnValue('mm');
+      jest.spyOn(window.navigator, 'sendBeacon').mockReturnValue(true);
+      jest
+        .spyOn(logUploader, '_combineAndCompressMessageWithLimit')
+        .mockReturnValue(['a']);
+      await logUploader.upload([mockLog], true);
+      expect(axios.post).not.toHaveBeenCalled();
+      expect(window.navigator.sendBeacon).toHaveBeenCalled();
+    });
     it('should call post correctly when getCurrentUserInfo error', async () => {
       (accountService.getCurrentUserInfo as jest.Mock).mockRejectedValue('');
       (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(
@@ -85,10 +115,11 @@ describe('LogUploader', () => {
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
       mockLog.sessionId = 'sessionA';
-      jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
+      pako.deflate.mockReturnValue('mm');
       await logUploader.upload([mockLog]);
-      expect(axios.post).toBeCalledWith('url/code', 'mm', {
+      expect(axios.post).toHaveBeenCalledWith('url/code', 'mm', {
         headers: {
+          'Content-Encoding': 'deflate',
           'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
             mockAppInfo.browser
           }/${mockAppInfo.os}/${mockAppInfo.env}/service@glip.com//sessionA/${
@@ -99,7 +130,7 @@ describe('LogUploader', () => {
       });
     });
   });
-  describe('transform()', () => {
+  describe('_zipMessage()', () => {
     it('should transform message correctly', () => {
       const logUploader = new LogUploader();
       const mockLog1 = new LogEntity();
@@ -107,7 +138,7 @@ describe('LogUploader', () => {
       const mockLog2 = new LogEntity();
       mockLog2.message = 'b';
       const result = logUploader.transform([mockLog1, mockLog2]);
-      expect(result).toEqual('a\t\nb');
+      expect(result).toEqual('a\t\nb\t\n');
     });
   });
   describe('errorHandler()', () => {
@@ -122,6 +153,20 @@ describe('LogUploader', () => {
     it('should retry other error', () => {
       const logUploader = new LogUploader();
       expect(logUploader.errorHandler(createError(500))).toEqual('retry');
+    });
+  });
+
+  describe('_combineAndCompressMessageWithLimit()', () => {
+    it('should combine zip message', () => {
+      const logUploader = new LogUploader();
+      jest
+        .spyOn(logUploader, '_zipAndBase64')
+        .mockImplementation((v: string) => v.replace(/b/g, ''));
+      const result = logUploader['_combineAndCompressMessageWithLimit'](
+        ['ab', 'ab', 'ab'],
+        3,
+      );
+      expect(result).toEqual('aaa');
     });
   });
 });
