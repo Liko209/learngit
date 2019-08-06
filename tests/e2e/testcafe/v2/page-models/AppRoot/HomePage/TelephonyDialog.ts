@@ -637,3 +637,4 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
     await this.t.hover(this.unMuteButton);
   }
 }
+
