@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/phoneSetting/E911.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

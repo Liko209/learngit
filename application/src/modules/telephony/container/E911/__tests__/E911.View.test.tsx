@@ -41,8 +41,8 @@ const defaultFields = {
 
 describe('E911View', () => {
   @testable
-  class JPT2702 {
-    @test('should check ghost text if show text field')
+  class JPT2678 {
+    @test('should check ghost text if show text field [JPT-2678]')
     t1() {
       const props = {
         value: {
@@ -78,7 +78,7 @@ describe('E911View', () => {
 
   @testable
   class JPT2681 {
-    @test('should check maxlength = 100 if show text field')
+    @test('should check maxlength = 100 if show text field [JPT-2681]')
     t1() {
       const props = {
         value: {
@@ -106,7 +106,9 @@ describe('E911View', () => {
 
   @testable
   class JPT2674 {
-    @test('should check emergency address dialog i18n when show dialog')
+    @test(
+      'should check emergency address dialog i18n when show dialog [JPT-2674]',
+    )
     t1() {
       const props = {
         value: {

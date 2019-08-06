@@ -28,7 +28,7 @@ type titleProps = {
 
 function DialogTitle({ onClick }: titleProps) {
   return (
-    <StyledDialogHeader>
+    <StyledDialogHeader data-test-automation-id="DialogTitle">
       <StyledJuiDialogTitle>
         {i18nP('common.dialog.Alert')}
       </StyledJuiDialogTitle>
@@ -70,8 +70,6 @@ function alertE911Dialog({
         'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
       }
     },
-    okBtnProps: { 'data-test-automation-id': `${id}OkButton` },
-    cancelBtnProps: { 'data-test-automation-id': `${id}CancelButton` },
     size: 'small',
   });
 }
@@ -94,6 +92,7 @@ function simpleE911Dialog({ id, content, onCancel }: E911DialogProps) {
     {
       size: 'small',
       componentProps: {
+        'data-test-automation-id': `${id}Dialog`,
         style: {
           'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
         }

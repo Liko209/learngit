@@ -21,6 +21,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ERROR_CODES_RC, JError } from 'sdk/error';
 
 import { OutOfCountryDisclaimer } from './config';
 import addressConfig from './address.json';
@@ -35,6 +36,14 @@ import {
   FieldItem,
   CheckBox,
 } from './types';
+
+const ERROR_MAP = {
+  [ERROR_CODES_RC.EME_201]: 'EME-201',
+  [ERROR_CODES_RC.EME_202]: 'EME-202',
+  [ERROR_CODES_RC.EME_203]: 'EME-203',
+  [ERROR_CODES_RC.EME_204]: 'EME-204',
+  [ERROR_CODES_RC.EME_205]: 'EME-205',
+};
 
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
@@ -243,15 +252,23 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
         this.settingItemEntity.valueSetter(this.value));
       successCallback && successCallback();
     } catch (e) {
+      // need use different tip message according to backend error
+      this.handleSubmitError(e);
+    }
+  };
+
+  handleSubmitError(e: JError) {
+    if (ERROR_MAP[e.code]) {
       Notification.flashToast({
         message: 'telephony.e911.prompt.backendError',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       });
-      return e;
+      return;
     }
-  };
+    throw e;
+  }
 
   @action
   async getRegion() {

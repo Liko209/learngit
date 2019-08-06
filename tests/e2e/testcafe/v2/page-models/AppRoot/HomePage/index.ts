@@ -32,6 +32,7 @@ import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
 import { DeleteAllCalllDialog } from './PhoneTab/CallHistory';
 import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
 import { BlockNumberDialog } from './PhoneTab/index';
+import { AddressConfirmDialog, EmergencyConfirmDialog, EmergencyPromptDialog } from './E911';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
@@ -173,9 +174,11 @@ export class HomePage extends BaseWebComponent {
     await this.t.hover(this.topBarAvatar);
   }
 
-  async openDialer() {
+  async openDialer(closeE911Prompt: boolean = true) {
     await this.t.hover('html').click(this.dialpadButton);
-    await this.closeE911Prompt();
+    if (closeE911Prompt) {
+      await this.closeE911Prompt();
+    }
   }
 
   get e911AlertDialog() {
@@ -286,5 +289,17 @@ export class HomePage extends BaseWebComponent {
 
   get deleteCallHistoryDialog() {
     return this.getComponent(DeleteCallHistoryDialog);
+  }
+
+  get addressConfirmDialog() {
+    return this.getComponent(AddressConfirmDialog);
+  }
+
+  get emergencyConfirmDialog() {
+    return this.getComponent(EmergencyConfirmDialog);
+  }
+
+  get emergencyPromptDialog() {
+    return this.getComponent(EmergencyPromptDialog);
   }
 }
