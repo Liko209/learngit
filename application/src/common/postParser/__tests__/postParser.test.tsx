@@ -804,6 +804,26 @@ describe('glipdown text', () => {
           </Emoji>,
         ]);
       });
+
+      it('should parse :D as emoji', () => {
+        expect(
+          postParser(`:D`, {
+            html: true,
+            emoji: {},
+          }),
+        ).toEqual([
+          <Emoji
+            emoji='smiley'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
+            😃
+          </Emoji>,
+        ]);
+      })
     });
 
     describe('html', () => {
