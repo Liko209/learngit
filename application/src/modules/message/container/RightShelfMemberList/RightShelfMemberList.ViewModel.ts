@@ -3,7 +3,7 @@
  * @Date: 2019-07-26 13:51:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed, IReactionDisposer } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import {
   RightShelfMemberListViewProps,
   RightShelfMemberListProps,
@@ -49,10 +49,6 @@ class RightShelfMemberListViewModel
   @observable
   fullGuestIds: number[] = [];
 
-  disposer1: IReactionDisposer;
-  disposer2: IReactionDisposer;
-  disposer3: IReactionDisposer;
-
   private _membersCache: {
     [groupId: string]: number[];
   } = {};
@@ -66,9 +62,7 @@ class RightShelfMemberListViewModel
       SERVICE.FETCH_REMAINING_DONE,
       this._getMemberAndGuestIds.bind(this),
     );
-    this.disposer1 && this.disposer1();
-    this.disposer2 && this.disposer2();
-    this.disposer3 && this.disposer3();
+    super.dispose();
   };
 
   init = () => {
@@ -76,7 +70,7 @@ class RightShelfMemberListViewModel
       SERVICE.FETCH_REMAINING_DONE,
       this._getMemberAndGuestIds.bind(this),
     );
-    this.disposer1 = this.reaction(
+    this.reaction(
       () => this.props.groupId,
       (id: number) => {
         if (id === undefined) return;
@@ -87,7 +81,7 @@ class RightShelfMemberListViewModel
       },
       { fireImmediately: true },
     );
-    this.disposer2 = this.reaction(
+    this.reaction(
       () => this.allMemberLength,
       (len: number) => {
         // only react to member length change within the same conversation
@@ -115,7 +109,7 @@ class RightShelfMemberListViewModel
         this._getMemberAndGuestIds();
       },
     );
-    this.disposer3 = this.reaction(
+    this.reaction(
       () => this._guestCompanyIdsLen,
       (len: number) => {
         if (len === undefined) return;
