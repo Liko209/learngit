@@ -35,7 +35,7 @@ describe('SwitchCallBannerViewModel', () => {
       await vm._updateSwitchCall();
       await vm.switchCall();
       expect(_telephonyService.switchCall).toHaveBeenCalledWith({});
-      expect(vm._dialog).toBe(null);
+      expect(vm._dialog).toBe(undefined);
       expect(vm.callOnOtherDevice).toBe(undefined);
     });
   });
