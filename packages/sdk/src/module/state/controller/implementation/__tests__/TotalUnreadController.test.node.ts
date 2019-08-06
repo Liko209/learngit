@@ -77,7 +77,12 @@ describe('TotalUnreadController', () => {
       });
   });
 
+  it('132123', () => {
+    expect(1).toEqual(1);
+  });
+
   describe('reset()', () => {
+
     it('should reset all unread', () => {
       totalUnreadController['_singleGroupBadges'].set(5683, {
         id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
