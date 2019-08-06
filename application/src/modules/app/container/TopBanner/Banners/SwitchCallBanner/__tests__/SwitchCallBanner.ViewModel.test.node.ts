@@ -32,10 +32,10 @@ describe('SwitchCallBannerViewModel', () => {
       const _telephonyService: TelephonyService = container.get(
         TELEPHONY_SERVICE,
       );
-      await vm._updateSwitchCall();
+      jest.spyOn(_telephonyService, 'switchCall').mockResolvedValue(true);
       await vm.switchCall();
       expect(_telephonyService.switchCall).toHaveBeenCalledWith({});
-      expect(vm._dialog).toBe(undefined);
+      expect(vm._dialog).toBe(null);
       expect(vm.callOnOtherDevice).toBe(undefined);
     });
   });
