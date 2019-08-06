@@ -43,7 +43,7 @@ const ERROR_MAP = {
   [ERROR_CODES_RC.EME_203]: 'EME-203',
   [ERROR_CODES_RC.EME_204]: 'EME-204',
   [ERROR_CODES_RC.EME_205]: 'EME-205',
-}
+};
 
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
@@ -237,6 +237,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     server: 'telephony.e911.prompt.backendError',
   })
   onSubmit = async () => {
+    const { successCallback } = this.props;
     // if state type is text field only send state field to backend
     if (!this.shouldShowSelectState) {
       this.value.stateName = '';
@@ -247,11 +248,12 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     this.value.outOfCountry = this.checkboxList.length > 0;
 
     try {
-    await (this.settingItemEntity.valueSetter &&
-      this.settingItemEntity.valueSetter(this.value));
-    } catch(e) {
+      await (this.settingItemEntity.valueSetter &&
+        this.settingItemEntity.valueSetter(this.value));
+      successCallback && successCallback();
+    } catch (e) {
       // need use different tip message according to backend error
-      this.handleSubmitError(e)
+      this.handleSubmitError(e);
     }
   };
 
