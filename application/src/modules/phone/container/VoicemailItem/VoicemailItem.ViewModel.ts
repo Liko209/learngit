@@ -7,7 +7,6 @@
 import { container, jupiter } from 'framework';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { RCInfoService } from 'sdk/module/rcInfo';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import VoicemailModel from '@/store/models/Voicemail';
@@ -16,7 +15,6 @@ import { ATTACHMENT_TYPE, READ_STATUS } from 'sdk/module/RCItems/constants';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Notification } from '@/containers/Notification';
-import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import {
   ToastMessageAlign,
   ToastType,
@@ -37,19 +35,12 @@ const FLASH_TOAST_DURATION = 3000;
 class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   implements VoicemailViewProps {
   private _phoneStore: PhoneStore = container.get(PhoneStore);
-  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
-    ServiceConfig.RC_INFO_SERVICE,
-  );
 
   @observable
   private _mediaPlaying: boolean = false;
 
-  @observable canEditBlockNumbers: boolean = false;
-
   constructor(props: VoicemailProps) {
     super(props);
-
-    this._fetchBlockPermission();
 
     this.reaction(
       () => this.attachment,
@@ -91,6 +82,11 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       }
     }
     return voiceMailDefaultResponsiveInfo;
+  }
+
+  @computed
+  get canEditBlockNumbers() {
+    return this._phoneStore.canEditBlockNumbers;
   }
 
   @computed
@@ -157,15 +153,15 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     return this.props.activeVoicemailId === this.props.id;
   }
 
-  @computed
-  get showFullAudioPlayer() {
-    return this.selected && this._mediaPlaying;
-  }
-
   @action
   onChange = (event: React.ChangeEvent, newExpanded: boolean) => {
     this._phoneStore.setVoicemailId(newExpanded ? this.props.id : null);
   };
+
+  @computed
+  get showFullAudioPlayer() {
+    return this.selected && this._mediaPlaying;
+  }
 
   @action
   onBeforePlay = async () => {
@@ -242,16 +238,6 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   get createTime() {
     return this.voicemail.creationTime;
   }
-
-  private async _fetchBlockPermission() {
-    this.canEditBlockNumbers = await this._rcInfoService.isRCFeaturePermissionEnabled(
-      ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
-    );
-  }
-
-  shouldShowCall = async () => {
-    return this._rcInfoService.isVoipCallingAvailable();
-  };
 
   dispose() {
     super.dispose();

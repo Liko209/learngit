@@ -36,7 +36,6 @@ type CallLogItemViewProps = {
   isPseudo?: boolean;
   direction: RCMessage['direction'];
   callLogResponsiveMap: CallLogResponsiveObject;
-  shouldShowCall: () => Promise<boolean>;
 } & CallLogItemProps;
 
 export {
