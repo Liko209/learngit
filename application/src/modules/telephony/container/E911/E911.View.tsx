@@ -136,6 +136,7 @@ class E911ViewComponent extends Component<Props> {
                     color="primary"
                     value={checked}
                     onChange={setCheckBox(index)}
+                    data-test-automation-id={`out-of-country-${index}`}
                   />
                 }
                 label={t(label)}
