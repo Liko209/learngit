@@ -127,8 +127,8 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I logout and login agarin', async () => {
     await app.homePage.logout();
-    await h(t).directLoginWithUser(SITE_URL,loginUser);
-    await app.homePage.ensureLoaded(undefined,undefined, false);
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded(undefined, undefined, false);
   });
 
   await h(t).withLog('Then the address confirm alert dialog should not appear', async () => {
@@ -241,19 +241,9 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.ensureDismiss();
     await app.homePage.openDialer(false);
     await app.homePage.telephonyDialog.ensureLoaded();
-    await emergencyConfirmDialog.ensureLoaded();
   });
 
-  await h(t).withLog('Then alert dialog should show {confirmMessage}', async (step) => {
-    step.setMetadata('confirmMessage', confirmMessage);
-    await t.expect(emergencyConfirmDialog.dialogContent.textContent).eql(confirmMessage);
-  });
-
-  await h(t).withLog('When I click close button', async () => {
-    await emergencyConfirmDialog.clickCloseButton();
-  });
-
-  await h(t).withLog('Then the alert dialog should close', async () => {
+  await h(t).withLog('Then the alert dialog should not popup', async () => {
     await emergencyConfirmDialog.ensureDismiss();
   });
 
