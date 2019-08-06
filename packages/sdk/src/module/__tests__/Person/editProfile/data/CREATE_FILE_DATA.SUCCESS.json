@@ -1,0 +1,87 @@
+{
+  "host": "glip",
+  "path": "/api/s3/v1/post-policy",
+  "method": "post",
+  "type": "request-response",
+  "via": "socket",
+  "request": {
+    "host": "glip",
+    "path": "/api/s3/v1/post-policy",
+    "method": "post",
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU2NDk2OTA3MzY5MSwidHlwZSI6IndlYiIsInVpZCI6MjExMzUzOSwiY2lkIjo4MTkzLCJpYXQiOjE1NjQ5NjkwNzMsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.mpzwyBwZdzHGvRBL3zF2sbq8Pkjz7ruGPDwtJJnxCFs1BNJ2eDBxWE3d28D2p3DK_zZDP4zdNntzBuF1DrtPNA"
+    },
+    "data": {
+      "size": 613850,
+      "filename": "star-wars-wallpaper-3--.jpg",
+      "for_file_type": true,
+      "filetype": "jpg",
+      "request_id": "31"
+    }
+  },
+  "response": {
+    "headers": {
+      "set_cookie": [],
+      "Content-Type": "application/json; charset=utf-8",
+      "x-original-content-length": "3013",
+      "X-Request-Id": "user_id:2113539;id:9aa54cdb-8389-4feb-b5d1-1e0242e92c8e",
+      "X-Frame-Options": "DENY"
+    },
+    "status": 200,
+    "data": {
+      "height": null,
+      "width": null,
+      "filename": "star-wars-wallpaper-3--.jpg",
+      "size": 613850,
+      "stored_file_id": 12075020,
+      "type": "customer_files",
+      "for_file_type": true,
+      "storage_path": "web/customer_files/12075020/star-wars-wallpaper-3--.jpg",
+      "encoded_storage_path": "web/customer_files/12075020/star-wars-wallpaper-3--.jpg",
+      "stored_file": {
+        "created_at": 1564984260333,
+        "creator_id": 2113539,
+        "version": 533638494027776,
+        "model_size": 0,
+        "is_new": true,
+        "download_url": "https://glipasialabnet-glpdevxmn.s3.amazonaws.com/web/customer_files/12075020/star-wars-wallpaper-3--.jpg?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=8dUx0mcU572xaubXWQhjmB6Yz3E%3D&response-content-disposition=attachment",
+        "versions": [null],
+        "storage_path": "web/customer_files/12075020/star-wars-wallpaper-3--.jpg",
+        "storage_url": "https://glipasialabnet-glpdevxmn.s3.amazonaws.com/web/customer_files/12075020/star-wars-wallpaper-3--.jpg?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=bm3%2BXME0%2BkzJ5kWahsqUP3TKCkk%3D",
+        "last_modified": 1564984260333,
+        "size": 613850,
+        "for_file_type": true,
+        "_id": 12075020,
+        "history": [
+          {
+            "download_url": "https://glipasialabnet-glpdevxmn.s3.amazonaws.com/web/customer_files/12075020/star-wars-wallpaper-3--.jpg?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=8dUx0mcU572xaubXWQhjmB6Yz3E%3D&response-content-disposition=attachment",
+            "versions": [null],
+            "storage_path": "web/customer_files/12075020/star-wars-wallpaper-3--.jpg",
+            "storage_url": "https://glipasialabnet-glpdevxmn.s3.amazonaws.com/web/customer_files/12075020/star-wars-wallpaper-3--.jpg?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=bm3%2BXME0%2BkzJ5kWahsqUP3TKCkk%3D",
+            "last_modified": 1564984260333,
+            "size": 613850,
+            "creator_id": 2113539,
+            "for_file_type": true,
+            "is_new": true,
+            "created_at": 1564984260333
+          }
+        ],
+        "modified_at": 1564984260333,
+        "deactivated": false
+      },
+      "post_url": "https://glipasialabnet-glpdevxmn.s3-accelerate.amazonaws.com/",
+      "policy_date": "2019-08-05T05:51:00.346Z",
+      "signed_post_form": {
+        "key": "web/customer_files/12075020/star-wars-wallpaper-3--.jpg",
+        "acl": "private",
+        "success_action_status": 201,
+        "policy": "eyJleHBpcmF0aW9uIjoiMjAxOS0wOC0wNVQwNjo1MTowMC4zNDZaIiwiY29uZGl0aW9ucyI6W3siYnVja2V0IjoiZ2xpcGFzaWFsYWJuZXQtZ2xwZGV2eG1uIn0seyJrZXkiOiJ3ZWIvY3VzdG9tZXJfZmlsZXMvMTIwNzUwMjAvc3Rhci13YXJzLXdhbGxwYXBlci0zLS0uanBnIn0seyJhY2wiOiJwcml2YXRlIn0seyJzdWNjZXNzX2FjdGlvbl9zdGF0dXMiOiIyMDEifSxbInN0YXJ0cy13aXRoIiwiJENvbnRlbnQtVHlwZSIsIiJdLFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLDAsNjEzODUwXSx7IngtYW16LXNlcnZlci1zaWRlLWVuY3J5cHRpb24iOiJBRVMyNTYifSx7IngtYW16LWFsZ29yaXRobSI6IkFXUzQtSE1BQy1TSEEyNTYifSx7IngtYW16LWNyZWRlbnRpYWwiOiJBS0lBSUwyVEVQS0hVMjNGUUhOUS8yMDE5MDgwNS9hcC1zb3V0aGVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSx7IngtYW16LWRhdGUiOiIyMDE5MDgwNVQwMDAwMDBaIn1dfQ==",
+        "x-amz-server-side-encryption": "AES256",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "AKIAIL2TEPKHU23FQHNQ/20190805/ap-southeast-1/s3/aws4_request",
+        "x-amz-date": "20190805T000000Z",
+        "x-amz-signature": "6de7965f8563bd3d192fe208956d76c040225bec674100eec4eef3251f47dcfd"
+      }
+    }
+  }
+}

@@ -16,7 +16,10 @@ export function readJson<
   ResData = A extends IApiContract<any, infer B> ? B : any
 >(json: IRequestResponse<ReqData, ResData>) {
   ['path', 'method', 'request', 'response'].forEach(k =>
-    assert(json[k], `json lack of property[${k}]`),
+    assert(
+      json && Object.prototype.hasOwnProperty.call(json, [k]),
+      `json lack of property[${k}]`,
+    ),
   );
   return json;
 }
