@@ -21,8 +21,16 @@ jest.mock('i18next', () => ({
     },
   },
   isInitialized: true,
-  t: (text: string) =>
-    text ? text.substring(text.lastIndexOf('.') + 1) : text,
+  t: (text: string, object: any) => {
+    const args = object ? object.date : '';
+    return text
+      ? args
+        ? `${args} ${text.substring(text.lastIndexOf('.') + 1)}`
+        : `${text.substring(text.lastIndexOf('.') + 1)}`
+      : args
+      ? `${args} ${text}`
+      : text;
+  },
 }));
 
 const DAY = 24 * 3600 * 1000;
