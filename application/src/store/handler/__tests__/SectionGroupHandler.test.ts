@@ -270,7 +270,7 @@ describe('SectionGroupHandler', () => {
       SectionGroupHandler.getInstance();
       const fakeData = [
         {
-          id: 1,
+          id: 2,
           is_team: false,
           created_at: 0,
           creator_id: 2,
@@ -703,7 +703,7 @@ describe('SectionGroupHandler', () => {
       SectionGroupHandler.getInstance();
       const fakeData = [
         {
-          id: 1,
+          id: 2,
           is_team: false,
           created_at: 0,
           creator_id: 2,

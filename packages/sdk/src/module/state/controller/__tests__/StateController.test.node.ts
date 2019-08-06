@@ -36,14 +36,14 @@ describe('StateController', () => {
   describe('getStateActionController()', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getStateActionController();
-      expect(buildRequestController).toBeCalledWith({
+      expect(buildRequestController).toHaveBeenCalledWith({
         basePath: '/save_state_partial',
         networkClient: Api.glipNetworkClient,
       });
-      expect(StateFetchDataController).toBeCalledWith(
+      expect(StateFetchDataController).toHaveBeenCalledWith(
         mockEntitySourceController,
       );
-      expect(StateActionController).toBeCalled();
+      expect(StateActionController).toHaveBeenCalled();
       expect(result instanceof StateActionController).toBe(true);
     });
   });
@@ -51,10 +51,11 @@ describe('StateController', () => {
   describe('getStateDataHandleController()', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getStateDataHandleController();
-      expect(StateFetchDataController).toBeCalledWith(
+      expect(StateFetchDataController).toHaveBeenCalledWith(
         mockEntitySourceController,
       );
-      expect(StateDataHandleController).toBeCalled();
+      expect(StateActionController).toHaveBeenCalled();
+      expect(StateDataHandleController).toHaveBeenCalled();
       expect(result instanceof StateDataHandleController).toBe(true);
     });
   });
@@ -62,7 +63,7 @@ describe('StateController', () => {
   describe('getStateFetchDataController()', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getStateFetchDataController();
-      expect(StateFetchDataController).toBeCalledWith(
+      expect(StateFetchDataController).toHaveBeenCalledWith(
         mockEntitySourceController,
       );
       expect(result instanceof StateFetchDataController).toBe(true);
@@ -72,7 +73,7 @@ describe('StateController', () => {
   describe('getTotalUnreadController()', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getTotalUnreadController();
-      expect(TotalUnreadController).toBeCalledWith(
+      expect(TotalUnreadController).toHaveBeenCalledWith(
         groupService,
         mockEntitySourceController,
       );

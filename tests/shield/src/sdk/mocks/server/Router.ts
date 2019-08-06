@@ -3,9 +3,7 @@
  * @Date: 2019-07-10 16:18:42
  * Copyright © RingCentral. All rights reserved.
  */
-import {
- IRouter, IJRequest, IJResponse, RequestHandler
-} from '../../types';
+import { IRouter, IJRequest, IJResponse, RequestHandler } from '../../types';
 import _ from 'lodash';
 import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
@@ -34,7 +32,11 @@ export class Router implements IRouter {
 
   constructor() {}
 
-  applyRoute(cls: { new (...params: any): object }, instance: any, context: any) {
+  applyRoute(
+    cls: { new (...params: any): object },
+    instance: any,
+    context: any,
+  ) {
     const routeMetaArray = getMeta<IRoute<IApiContract>>(
       cls.prototype,
       META_ROUTE,

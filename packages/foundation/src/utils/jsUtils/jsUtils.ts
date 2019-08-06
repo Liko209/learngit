@@ -6,4 +6,12 @@ function getCurrentTime() {
   return new Date().getTime();
 }
 
-export { uniqueArray, getCurrentTime };
+const TEXT_ENCODER = window['TextEncoder']
+  ? new TextEncoder()
+  : { encode: (str: string) => str };
+
+function bytes(str: string) {
+  return TEXT_ENCODER.encode(str).length;
+}
+
+export { uniqueArray, getCurrentTime, bytes };

@@ -33,6 +33,9 @@ describe('StateDataHandleController', () => {
   let mockStateFetchDataController: StateFetchDataController;
   const mockAccountService = { userConfig: { getGlipUserId: jest.fn() } };
   const mockStateService = { myStateConfig: { setMyStateId: jest.fn() } };
+  const mockActionController = {
+    updateReadStatus: jest.fn(),
+  } as any;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -47,6 +50,7 @@ describe('StateDataHandleController', () => {
     stateDataHandleController = new StateDataHandleController(
       mockEntitySourceController,
       mockStateFetchDataController,
+      mockActionController,
     );
 
     ServiceLoader.getInstance = jest
@@ -60,6 +64,23 @@ describe('StateDataHandleController', () => {
         }
         return;
       });
+  });
+
+  describe('updateIgnoredStatus', () => {
+    it('should update correctly when isIgnored = true', () => {
+      stateDataHandleController['_ignoredIdSet'].add(2);
+      stateDataHandleController.updateIgnoredStatus([1,2,3], true);
+      expect(stateDataHandleController['_ignoredIdSet'].size).toEqual(3);
+      expect(mockActionController.updateReadStatus).toBeCalledTimes(2);
+    });
+
+    it('should update correctly when isIgnored = false', () => {
+      stateDataHandleController['_ignoredIdSet'].add(2);
+      stateDataHandleController['_ignoredIdSet'].add(3);
+      stateDataHandleController['_ignoredIdSet'].add(4);
+      stateDataHandleController.updateIgnoredStatus([1,2,4], false);
+      expect(stateDataHandleController['_ignoredIdSet'].size).toEqual(1);
+    });
   });
 
   describe('handleState()', () => {
@@ -792,7 +813,7 @@ describe('StateDataHandleController', () => {
   });
 
   describe('_updateEntitiesAndDoNotification', () => {
-    it('should update and notify', async () => {
+    it('should update and notify non-ignore conversation correctly', async () => {
       const mockUpdate = jest.fn();
       daoManager.getDao = jest.fn().mockReturnValueOnce({
         update: mockUpdate,
@@ -803,12 +824,17 @@ describe('StateDataHandleController', () => {
           {
             id: 3444,
           },
+          {
+            id: 3456,
+          },
         ],
       } as any;
+      stateDataHandleController['_ignoredIdSet'].add(3456);
       await stateDataHandleController['_updateEntitiesAndDoNotification'](
         transformedState,
       );
       expect(mockUpdate).toHaveBeenCalledTimes(1);
+      expect(mockActionController.updateReadStatus).toHaveBeenCalledTimes(1);
       expect(mockStateService.myStateConfig.setMyStateId).toHaveBeenCalledTimes(
         1,
       );

@@ -133,6 +133,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+    await app.waitForPhoneReady();
   });
 
   // conversation page header

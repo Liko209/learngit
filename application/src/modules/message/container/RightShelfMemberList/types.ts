@@ -12,6 +12,7 @@ type RightShelfMemberListProps = {
 type RightShelfMemberListViewProps = RightShelfMemberListProps & {
   group: GroupModel;
   isLoading: boolean;
+  loadingH: number;
   fullMemberIds: number[];
   fullGuestIds: number[];
   shownMemberIds: number[];
@@ -21,6 +22,7 @@ type RightShelfMemberListViewProps = RightShelfMemberListProps & {
   personNameMap: { [id: string]: string };
   setWrapperWidth: (width: number) => void;
   init: () => void;
+  dispose: () => void;
 };
 
 export { RightShelfMemberListProps, RightShelfMemberListViewProps };

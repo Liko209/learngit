@@ -6,7 +6,7 @@
 import { LogEntity } from 'foundation/log/types';
 
 interface ILogUploader {
-  upload(logs: LogEntity[]): Promise<void>;
+  upload(logs: LogEntity[], emergencyMode?: boolean): Promise<void>;
 
   errorHandler(error: Error): 'ignore' | 'retry' | 'abort' | 'abortAll';
 }

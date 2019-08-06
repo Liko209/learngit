@@ -7,7 +7,7 @@ import {
   IZipItemProvider,
   ZipItem,
   ZipItemLevel,
-} from 'sdk/service/uploadLogControl/types';
+} from 'sdk/module/log/types';
 import { getAppContextInfo } from '@/utils/error';
 
 export class ContextInfoZipItemProvider implements IZipItemProvider {

@@ -106,8 +106,8 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
   handleOk = (
     imageRef: React.RefObject<HTMLImageElement> | null,
   ) => async () => {
-    if (!imageRef || !imageRef.current) return;
     if (!this.currentFile) return portalManager.dismissLast();
+    if (!imageRef || !imageRef.current) return;
     const { onPhotoEdited } = this.props;
     const { scale, translateX, translateY } = this.transform;
     const { width, height } = this.initSize;
