@@ -52,7 +52,6 @@ type BodyProps = { loading: boolean; [attr: string]: any };
 const RightShellMemberListBody = styled(({ loading, ...rest }: BodyProps) => (
   <div {...rest} />
 ))`
-  height: ${({ loading, theme }) => (loading ? height(56)({ theme }) : 'auto')};
   padding: ${spacing(4, 3, 2)};
   position: relative;
 `;

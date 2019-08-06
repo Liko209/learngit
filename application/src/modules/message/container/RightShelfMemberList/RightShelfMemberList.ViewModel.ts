@@ -3,7 +3,7 @@
  * @Date: 2019-07-26 13:51:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed } from 'mobx';
+import { observable, action, computed, IReactionDisposer } from 'mobx';
 import {
   RightShelfMemberListViewProps,
   RightShelfMemberListProps,
@@ -23,8 +23,10 @@ import {
   RIGHT_SHELL_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 
+const GUEST_SECTION_HEIGHT = 95;
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
+const AVATAR_MARGIN_BOTTOM = 8;
 const WRAPPER_PADDING = 24;
 class RightShelfMemberListViewModel
   extends StoreViewModel<RightShelfMemberListProps>
@@ -47,6 +49,10 @@ class RightShelfMemberListViewModel
   @observable
   fullGuestIds: number[] = [];
 
+  disposer1: IReactionDisposer;
+  disposer2: IReactionDisposer;
+  disposer3: IReactionDisposer;
+
   private _membersCache: {
     [groupId: string]: number[];
   } = {};
@@ -55,19 +61,33 @@ class RightShelfMemberListViewModel
     super(props);
   }
 
+  dispose = () => {
+    notificationCenter.off(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
+    this.disposer1 && this.disposer1();
+    this.disposer2 && this.disposer2();
+    this.disposer3 && this.disposer3();
+  };
+
   init = () => {
-    notificationCenter.on(SERVICE.FETCH_REMAINING_DONE, () => {
-      this._getMemberAndGuestIds();
-    });
-    this.reaction(
+    notificationCenter.on(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
+    this.disposer1 = this.reaction(
       () => this.props.groupId,
       (id: number) => {
         if (id === undefined) return;
-        this._getMemberAndGuestIds();
+        this.isLoading = true;
+        setTimeout(() => {
+          this._getMemberAndGuestIds();
+        });
       },
       { fireImmediately: true },
     );
-    this.reaction(
+    this.disposer2 = this.reaction(
       () => this.allMemberLength,
       (len: number) => {
         // only react to member length change within the same conversation
@@ -95,7 +115,7 @@ class RightShelfMemberListViewModel
         this._getMemberAndGuestIds();
       },
     );
-    this.reaction(
+    this.disposer3 = this.reaction(
       () => this._guestCompanyIdsLen,
       (len: number) => {
         if (len === undefined) return;
@@ -152,6 +172,20 @@ class RightShelfMemberListViewModel
   @computed
   get isTeam() {
     return this.group.isTeam;
+  }
+
+  @computed
+  get loadingH() {
+    return (
+      (this._guestCompanyIdsLen > 0 ? GUEST_SECTION_HEIGHT : 0) +
+      Math.min(
+        this.allMemberLength && this.allMemberLength > this.countPerRow
+          ? Math.ceil(this.allMemberLength / this.countPerRow)
+          : 1,
+        this._guestCompanyIdsLen > 0 ? 3 : 4,
+      ) *
+        (AVATAR_WIDTH + AVATAR_MARGIN_BOTTOM)
+    );
   }
 
   @computed

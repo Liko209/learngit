@@ -63,6 +63,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   }
 
   componentWillUnmount() {
+    this.props.dispose();
     this._resizeObserver && this._resizeObserver.disconnect();
   }
 
@@ -126,6 +127,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       t,
       group,
       isLoading,
+      loadingH,
       fullMemberIds,
       fullGuestIds,
       shownMemberIds,
@@ -173,6 +175,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
         </MemberListHeader>
         <MemberListBody
           loading={isLoading}
+          style={{ height: isLoading ? `${loadingH}px` : 'auto' }}
           data-test-automation-id="rightShellMemberListBody"
         >
           <MemberListAvatarWrapper data-test-automation-id="rightShellMemberListMembers">
