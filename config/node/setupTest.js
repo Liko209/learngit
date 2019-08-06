@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 const setupTimer = require('../jest/setup/timer');
+require('../jest/setup/thirdParty');
 
 afterAll(() => {
   setupTimer.tearDown();

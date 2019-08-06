@@ -2,17 +2,6 @@ const timerIds = [];
 const intervalIds = [];
 const { wrapFunction } = require('../../utils');
 
-jest.mock('pubnub', () => {
-  const mock = {
-    stop: jest.fn(),
-    unsubscribeAll: jest.fn(),
-    addListener: jest.fn(),
-    subscribe: jest.fn(),
-    decrypt: jest.fn(),
-  };
-  return () => mock;
-});
-
 const setup = () => {
   const wrapSetTimeout = wrapFunction(global.setTimeout, {
     after: (id, cb, timeout) => {
