@@ -14,7 +14,6 @@ import {
 } from 'foundation';
 import DaoManager from '../DaoManager';
 import { BaseDao, BaseKVDao } from '../../framework/dao';
-// import Dexie from 'dexie';
 import Loki from 'lokijs';
 import { IdModel } from '../../framework/model';
 import { DaoGlobalConfig } from '../config';

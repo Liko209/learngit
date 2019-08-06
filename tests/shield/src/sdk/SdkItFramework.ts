@@ -193,7 +193,6 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
       });
     }
     return {} as any;
-    // createScenario(cls, itCtx, props);
   };
   // provide for it case to mock data.
   const itCtx: ItContext = {

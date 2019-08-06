@@ -97,12 +97,12 @@ export function doPartialUpdate<T extends GlipModel>(
   throw 'do partial update fail';
 }
 
-type NullUndefinedAble<T> = T | null | undefined;
+type EmptyAble<T> = T | null | undefined;
 
-function sanitized<T extends NullUndefinedAble<object>>(item: T): T;
-function sanitized<T extends NullUndefinedAble<object[]>>(items: T): T;
+function sanitized<T extends EmptyAble<object>>(item: T): T;
+function sanitized<T extends EmptyAble<object[]>>(items: T): T;
 
-function sanitized<T extends NullUndefinedAble<object | object[]>>(items: T) {
+function sanitized<T extends EmptyAble<object | object[]>>(items: T) {
   if (Array.isArray(items)) {
     return items.map(item => {
       return item ? _.omit(item, ['$loki']) : item;
