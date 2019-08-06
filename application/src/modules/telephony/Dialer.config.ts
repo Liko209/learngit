@@ -7,18 +7,18 @@ import { UserConfig } from 'sdk/module/config/UserConfig';
 import { TELEPHONY_KEYS } from './configKeys';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
-class E911UIConfig extends UserConfig {
+class DialerUIConfig extends UserConfig {
   constructor() {
-    super(AccountGlobalConfig.getUserDictionary(), 'E911');
+    super(AccountGlobalConfig.getUserDictionary(), 'dialer');
   }
 
-  setE911Marked(marked: boolean) {
-    this.put(TELEPHONY_KEYS.E911_MARKED, marked);
+  setDialerMarked(marked: boolean) {
+    this.put(TELEPHONY_KEYS.DIALER_MARKED, marked);
   }
 
-  getE911Marked() {
-    return this.get(TELEPHONY_KEYS.E911_MARKED);
+  getDialerMarked() {
+    return this.get(TELEPHONY_KEYS.DIALER_MARKED);
   }
 }
 
-export { E911UIConfig };
+export { DialerUIConfig };
