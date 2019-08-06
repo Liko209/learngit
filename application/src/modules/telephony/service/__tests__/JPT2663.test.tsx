@@ -33,7 +33,7 @@ jest.mock('@/containers/Notification');
 decorate(injectable(), FeaturesFlagsService);
 jupiter.registerService(IMediaService, MediaService);
 
-describe('Prompt user to confirm emergency address first when user tries to make outbound call to non-ext number', () => {
+describe('Prompt user to confirm emergency address first when user tries to make outbound call to non-ext number [JPT-2663]', () => {
   let telephonyService: TelephonyService;
 
   beforeAll(() => {

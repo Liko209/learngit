@@ -41,8 +41,8 @@ const defaultFields = {
 
 describe('E911View', () => {
   @testable
-  class JPT2702 {
-    @test('should check ghost text if show text field [JPT-2702]')
+  class JPT2678 {
+    @test('should check ghost text if show text field [JPT-2678]')
     t1() {
       const props = {
         value: {

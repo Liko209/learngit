@@ -6,12 +6,23 @@
 import { test, testable } from 'shield';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
+import { networkErrorFunc, serverErrorFunc } from 'shield/utils';
 import { RCInfoService } from 'sdk/module/rcInfo';
+import { Notification } from '@/containers/Notification';
 
 import { E911ViewModel } from '../E911.ViewModel';
 import { OutOfCountryDisclaimer } from '../config';
 
 jest.mock('@/containers/Notification');
+
+const checkNotification = (message: string) => ({
+  message,
+  dismissible: false,
+  fullWidth: false,
+  messageAlign: 'left',
+  type: 'error',
+  autoHideDuration: 3000,
+});
 
 const defaultFields = {
   customerName: 'John Doe',
@@ -488,6 +499,43 @@ describe('E911ViewModel', () => {
       vm.checkboxList = [1];
       await vm.onSubmit();
       expect(vm.value.outOfCountry).toBeTruthy();
+    }
+
+    @test('should be handle error if network error [JPT-2694]')
+    @mockEntity({
+      valueSetter: networkErrorFunc,
+    })
+    async t5() {
+      const vm = new E911ViewModel({});
+      await vm.onSubmit();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        checkNotification('telephony.e911.prompt.networkError'),
+      );
+    }
+
+    @test('should be handle error if server error [JPT-2693]')
+    @mockEntity({
+      valueSetter: serverErrorFunc,
+    })
+    async t6() {
+      const vm = new E911ViewModel({});
+      await vm.onSubmit();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        checkNotification('telephony.e911.prompt.backendError'),
+      );
+    }
+
+    @test(
+      'should be handle server error if submit with others server error type',
+    )
+    @mockEntity({
+      valueSetter: serverErrorFunc,
+    })
+    async t7() {
+      const vm = new E911ViewModel({});
+      jest.spyOn(vm, 'handleSubmitError').mockImplementation();
+      await vm.onSubmit();
+      expect(vm.handleSubmitError).toHaveBeenCalled();
     }
   }
 
