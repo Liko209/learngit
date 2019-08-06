@@ -175,7 +175,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
         </MemberListHeader>
         <MemberListBody
           loading={isLoading}
-          style={{ height: isLoading ? `${loadingH}px` : 'auto' }}
+          height={isLoading ? loadingH : 'auto'}
           data-test-automation-id="rightShellMemberListBody"
         >
           <MemberListAvatarWrapper data-test-automation-id="rightShellMemberListMembers">

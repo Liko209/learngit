@@ -48,10 +48,16 @@ const RightShellMemberListSubTitle = styled.div`
   border-bottom: 1px solid ${grey('300')};
 `;
 
-type BodyProps = { loading: boolean; [attr: string]: any };
-const RightShellMemberListBody = styled(({ loading, ...rest }: BodyProps) => (
-  <div {...rest} />
-))`
+type BodyProps = {
+  loading: boolean;
+  height: number | string;
+  [attr: string]: any;
+};
+const RightShellMemberListBody = styled(
+  ({ loading, height, ...rest }: BodyProps) => <div {...rest} />,
+)`
+  height: ${({ height }) =>
+    typeof height === 'number' ? `${height}px` : height};
   padding: ${spacing(4, 3, 2)};
   position: relative;
 `;
@@ -78,12 +84,13 @@ const RightShellMemberListMoreCount = styled.div`
 
 const JuiRightShellMemberListBody = ({
   loading,
+  height,
   children,
   ...rest
 }: BodyProps) => {
   const Loading = withLoading(() => <div />);
   return (
-    <RightShellMemberListBody loading={loading} {...rest}>
+    <RightShellMemberListBody loading={loading} height={height} {...rest}>
       {loading ? <Loading loading /> : children}
     </RightShellMemberListBody>
   );
