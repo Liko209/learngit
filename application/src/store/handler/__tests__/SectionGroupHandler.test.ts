@@ -97,7 +97,7 @@ afterEach(() => {
   SectionGroupHandler.getInstance().dispose();
 });
 
-describe.skip('SectionGroupHandler', () => {
+describe('SectionGroupHandler', () => {
   describe('Basic functions/configs', () => {
     it('getInstance', () => {
       expect(SectionGroupHandler.getInstance() !== undefined).toBeTruthy();
