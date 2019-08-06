@@ -34,6 +34,33 @@ class E911Controller {
     TelephonyGlobalConfig.setEmergencyAddress(emergencyAddress);
   }
 
+  private _getComparableAddr(addr: RTCSipEmergencyServiceAddr) {
+    const newAddr = _.cloneDeep(addr);
+    // ignore country comparison
+    newAddr.outOfCountry = true;
+
+    // could be empty string
+    newAddr.stateId = newAddr.stateId || '';
+    newAddr.stateIsoCode = newAddr.stateIsoCode || '';
+    newAddr.stateName = newAddr.stateName || '';
+    newAddr.street2 = newAddr.street2 || '';
+    newAddr.state = newAddr.state || '';
+
+    return newAddr;
+  }
+
+  isAddressEqual(
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) {
+    if (_.isEqual(objAddr, othAddr)) {
+      return true;
+    }
+    const addr1 = this._getComparableAddr(objAddr);
+    const addr2 = this._getComparableAddr(othAddr);
+    return _.isEqual(addr1, addr2);
+  }
+
   getRemoteEmergencyAddress() {
     if (this._emergencyAddr) {
       // local EA will be used before refreshing sip prov
@@ -79,7 +106,7 @@ class E911Controller {
     const remoteAddr = this.getRemoteEmergencyAddress();
 
     if (remoteAddr) {
-      const res = _.isEqual(localAddr, remoteAddr);
+      const res = this.isAddressEqual(localAddr, remoteAddr);
       !res && telephonyLogger.info('EA has been changed, need to update');
       return res;
     }

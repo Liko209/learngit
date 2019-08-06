@@ -163,6 +163,20 @@ describe('TelephonyEngineController', () => {
     });
   });
 
+  describe('isAddressEqual', () => {
+    it('should call with correct parameters', () => {
+      accountController.isAddressEqual = jest.fn().mockReturnValue(true);
+      const addr1 = { a: 'a' };
+      const addr2 = { b: 'b' };
+      const res = engineController.isAddressEqual(addr1, addr2);
+      expect(accountController.isAddressEqual).toHaveBeenCalledWith(
+        addr1,
+        addr2,
+      );
+      expect(res).toBeTruthy();
+    });
+  });
+
   describe('getUserInfo()', () => {
     it('should call corresponding api when get user info', async () => {
       AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValueOnce({

@@ -243,6 +243,13 @@ class TelephonyEngineController {
   isEmergencyAddrConfirmed() {
     return this._accountController.isEmergencyAddrConfirmed();
   }
+
+  isAddressEqual(
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) {
+    return this._accountController.isAddressEqual(objAddr, othAddr);
+  }
 }
 
 export { TelephonyEngineController };

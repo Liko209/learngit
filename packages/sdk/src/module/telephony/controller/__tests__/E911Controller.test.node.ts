@@ -38,6 +38,88 @@ describe('E911Controller', () => {
     });
   });
 
+  describe('isAddressEqual', () => {
+    const addr1 = {
+      city: 'BEIJING',
+      country: 'CN',
+      countryId: '46',
+      countryIsoCode: 'CN',
+      countryName: 'China',
+      customerName: 'skye wang china',
+      outOfCountry: true,
+      state: '',
+      stateId: '',
+      stateIsoCode: '',
+      stateName: '',
+      street: 'RODE7',
+      street2: 'shanghai',
+      zip: '523305',
+    };
+
+    const addr2 = {
+      street: 'RODE7',
+      street2: 'shanghai',
+      city: 'BEIJING',
+      country: 'CN',
+      countryId: '46',
+      countryIsoCode: 'CN',
+      countryName: 'China',
+      zip: '523305',
+      customerName: 'skye wang china',
+      outOfCountry: true,
+    };
+
+    const addr3 = {
+      city: 'BEIJING',
+      country: 'CN',
+      countryId: '46',
+      countryIsoCode: 'CN',
+      countryName: 'China',
+      customerName: 'skye wang china',
+      outOfCountry: false,
+      stateId: '',
+      stateIsoCode: '',
+      stateName: '',
+      street: 'RODE7',
+      street2: 'shanghai',
+      zip: '523305',
+    };
+
+    const addr4 = {
+      city: 'BEIJING',
+      country: 'CN',
+      countryId: '46',
+      countryIsoCode: 'CN',
+      countryName: 'China',
+      customerName: 'skye wang china1',
+      outOfCountry: true,
+      state: 'beijin',
+      stateId: '',
+      stateIsoCode: '',
+      stateName: '',
+      street: 'RODE7',
+      street2: 'shanghai',
+      zip: '523305',
+    };
+
+    it('should return true when some items are empty', () => {
+      const res = e911Controller.isAddressEqual(addr1, addr2);
+      expect(res).toBeTruthy();
+    });
+    it('should return true when some items are empty, switch address', () => {
+      const res = e911Controller.isAddressEqual(addr2, addr1);
+      expect(res).toBeTruthy();
+    });
+    it('should return true when country is different', () => {
+      const res = e911Controller.isAddressEqual(addr1, addr3);
+      expect(res).toBeTruthy();
+    });
+    it('should return false when there is any difference', () => {
+      const res = e911Controller.isAddressEqual(addr1, addr4);
+      expect(res).toBeFalsy();
+    });
+  });
+
   describe('updateLocalEmergencyAddress', () => {
     it('should update emergency address to local', () => {
       const addr = { a: 'test' };

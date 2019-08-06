@@ -262,6 +262,13 @@ class TelephonyService extends EntityBaseService<Call>
     return this.telephonyController.getLocalEmergencyAddress();
   };
 
+  isAddressEqual = (
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) => {
+    return this.telephonyController.isAddressEqual(objAddr, othAddr);
+  };
+
   setLocalEmergencyAddress = (emergencyAddress: RTCSipEmergencyServiceAddr) => {
     this.telephonyController.setLocalEmergencyAddress(emergencyAddress);
   };

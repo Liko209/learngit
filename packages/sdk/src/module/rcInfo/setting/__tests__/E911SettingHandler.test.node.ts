@@ -35,6 +35,7 @@ describe('E911SettingHandler', () => {
       subscribeSipProvReceived: jest.fn(),
       updateLocalEmergencyAddress: jest.fn(),
       setLocalEmergencyAddress: jest.fn(),
+      isAddressEqual: jest.fn(),
     } as any;
     rcInfoService = {} as any;
     ServiceLoader.getInstance = jest
@@ -114,6 +115,7 @@ describe('E911SettingHandler', () => {
       telephonyService.getRemoteEmergencyAddress = jest
         .fn()
         .mockReturnValue(emergencyAddr);
+      telephonyService.isAddressEqual = jest.fn().mockReturnValue(true);
       const res = await settingHandler._getDefaultEmergencyAddress();
       expect(res).toBe(emergencyAddr);
     });
@@ -126,6 +128,7 @@ describe('E911SettingHandler', () => {
       telephonyService.getRemoteEmergencyAddress = jest
         .fn()
         .mockReturnValue(remoteAddr);
+      telephonyService.isAddressEqual = jest.fn().mockReturnValue(false);
       const res = await settingHandler._getDefaultEmergencyAddress();
       expect(res).toBe(remoteAddr);
     });
