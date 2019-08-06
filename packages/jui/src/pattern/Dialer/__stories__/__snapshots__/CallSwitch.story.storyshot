@@ -1,0 +1,161 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
+.c1.c1 {
+  min-width: 104px;
+  padding: 10px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  text-transform: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #0684bd;
+  text-align: center;
+  box-shadow: unset;
+}
+
+.c1.c1.containedButtonStyle {
+  color: rgba(0,0,0,0.87);
+  background-color: #fff;
+}
+
+.c1.c1.containedButtonStyle:hover {
+  opacity: 0.88;
+}
+
+.c1.c1.containedButtonStyle.disabled {
+  background-color: #bfbfbf;
+  color: rgba(0,0,0,0.87);
+}
+
+.c1.c1.textButtonStyle {
+  color: #fff;
+}
+
+.c1.c1.textButtonStyle.disabled {
+  color: #bfbfbf;
+}
+
+.c1.c1.textButtonStyle:hover {
+  background-color: rgba(255,255,255,0.12);
+}
+
+.c1.c1.outlineButtonStyle {
+  border-color: #0684bd;
+}
+
+.c1.c1.roundButtonStyle {
+  height: 28px;
+  border-radius: 28px;
+  padding: 0px 16px;
+  background-color: #fff;
+  color: #0684bd;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+}
+
+.c1.c1.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c1.c1.roundButtonStyle:hover:active {
+  background-color: #f5f6fb;
+}
+
+.c1.c1.roundButtonStyle .rippleVisible {
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c0.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  line-height: 24px;
+  padding: 12px 16px;
+  overflow: hidden;
+  background-color: #26a304;
+  box-shadow: none;
+  border-radius: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.c0 .message {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  padding: 0px;
+  text-align: center;
+}
+
+.c0 .action {
+  margin-right: 0;
+  pointer-events: auto;
+}
+
+.c0 .c4 + .c2 {
+  margin-left: 12px;
+}
+
+.c0 .c4 + .c3 {
+  margin-left: 16px;
+}
+
+<div
+  className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c0 MuiTypography-body2"
+  radius={0}
+  role="alertdialog"
+>
+  <div
+    className="MuiSnackbarContent-message message"
+  >
+    You're currently on an active call on another device.
+  </div>
+  <div
+    className="MuiSnackbarContent-action action"
+  >
+    <button
+      className="MuiButtonBase-root MuiButton-root c1 MuiButton-text textButtonStyle MuiButton-sizeLarge"
+      disabled={false}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onDragLeave={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex={0}
+      type="button"
+    >
+      <span
+        className="MuiButton-label"
+      >
+        Switch call to this device
+      </span>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </button>
+  </div>
+</div>
+`;

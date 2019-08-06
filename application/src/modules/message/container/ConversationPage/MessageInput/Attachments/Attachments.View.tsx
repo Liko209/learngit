@@ -3,7 +3,7 @@
  * @Date: 2018-12-11 09:44:03
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -75,7 +75,7 @@ class AttachmentsViewComponent extends Component<
               fileNameChildren: postParser(name, { fileName: true }),
             }))}
             removeAttachment={cancelUploadFile}
-            data-test-automation-id='message-attachment-node'
+            data-test-automation-id="message-attachment-node"
           />
         ) : null}
         {this._showDuplicateFilesDialogIfNeeded()}

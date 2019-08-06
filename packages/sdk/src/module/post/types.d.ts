@@ -10,6 +10,7 @@ export type SendPostType = {
   groupId: number;
   itemIds?: number[];
   itemId?: number;
+  isTeamMention?: boolean;
   mentionNonItemIds?: number[];
   mentionItemIds?: number[];
   parentId?: number;

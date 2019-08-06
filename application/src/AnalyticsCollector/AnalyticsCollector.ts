@@ -12,7 +12,9 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
+import { PRESENCE } from 'sdk/module/presence/constant';
 import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
+import { ConversationType, NewConversationSource } from './types';
 
 class AnalyticsCollector {
   constructor() {
@@ -34,9 +36,7 @@ class AnalyticsCollector {
     if (!user.email || !company.name) {
       return;
     }
-    const {
-      email, companyId, inviterId, displayName,
-    } = user;
+    const { email, companyId, inviterId, displayName } = user;
     const { name, rcAccountId } = company;
     const version = await fetchVersionInfo();
     const properties = {
@@ -85,11 +85,17 @@ class AnalyticsCollector {
   }
 
   // [FIJI-3202] Segment - Add event - Send post
-  sendPost(source: string, postType: string, destination: string) {
+  sendPost(
+    source: string,
+    postType: string,
+    destination: string,
+    atTeam='no',
+  ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
       source,
       postType,
       destination,
+      atTeam,
     });
   }
 
@@ -109,6 +115,13 @@ class AnalyticsCollector {
   // [FIJI-4687] Segment - Block/Unblock a number
   blockNumber(source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_blockNumber', {
+      source,
+    });
+  }
+
+  // [FIJI-963] set presence
+  setPresence(source: PRESENCE) {
+    dataAnalysis.track('Jup_Web/DT_appOptions_setPresence', {
       source,
     });
   }
@@ -171,6 +184,30 @@ class AnalyticsCollector {
 
   phoneCallBack(source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_outboundCall', {
+      source,
+    });
+  }
+
+  // [FIJI-7269]
+  conversationAddPerson(
+    conversationType: ConversationType,
+    source: NewConversationSource,
+  ) {
+    dataAnalysis.track('Jup_Web/DT_msg_addPerson', {
+      conversationType,
+      source,
+    });
+  }
+
+  // [FIJI-7325]
+  openCallSwitch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_clickCallSwitch', {
+      source,
+    });
+  }
+
+  confirmCallSwitch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_confirmCallSwitch', {
       source,
     });
   }

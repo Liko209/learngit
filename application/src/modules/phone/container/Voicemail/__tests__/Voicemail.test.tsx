@@ -6,7 +6,21 @@
 import React from 'react';
 import { Voicemail } from '../Voicemail';
 import { test, testable } from 'shield';
-import { mountWithTheme } from 'shield/utils';
+import { mountWithTheme, registerModule } from 'shield/utils';
+import { config } from '../../../module.config';
+
+registerModule(config);
+
+jest.mock('jui/components/AutoSizer/AutoSizer');
+jest.mock('jui/components/VirtualizedList/InfiniteList');
+
+jest.mock('react-resize-detector', () => {
+  const ReactResizeDetector = (props: any) => {
+    const { children } = props;
+    return children(1000, 1000);
+  };
+  return ReactResizeDetector;
+});
 
 describe('Voicemail', () => {
   // will remove until upgrade material ui

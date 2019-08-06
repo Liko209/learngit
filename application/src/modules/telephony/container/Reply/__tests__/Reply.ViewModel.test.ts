@@ -88,7 +88,7 @@ describe('ReplyViewModel', () => {
         TELEPHONY_SERVICE,
       );
       replyViewModel.replyWithMessage();
-      expect(_telephonyService.replyWithMessage).toBeCalled();
+      expect(_telephonyService.replyWithMessage).toHaveBeenCalled();
     });
   });
 });

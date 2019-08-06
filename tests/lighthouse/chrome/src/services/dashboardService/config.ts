@@ -31,7 +31,7 @@ class DashboardConfig {
   };
   icons: FlagConfig = {
     warning: ":warning:",
-    block: ":negative_squared_cross_mark:",
+    block: ":x:",
     pass: ":white_check_mark:"
   };
   lodingTimeUrl: string = "http://xmn145.rcoffice.ringcentral.com:9005/question/140";
@@ -67,7 +67,17 @@ class DashboardConfig {
           "name": "ui_profile_render",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/210",
           "apiGoal": 1000
-        }
+        },
+        "goto_conversation_shelf_fetch_items": {
+          "name": "goto_conversation_shelf_fetch_items",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/210",
+          "apiGoal": 1000
+        },
+        "init_group_members": {
+          "name": "init_group_members",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/291",
+          "apiGoal": 1000
+        },
       }
     },
     "SearchScene": {
@@ -100,6 +110,11 @@ class DashboardConfig {
         "ui_globalsearch_tab_render": {
           "name": "ui_globalsearch_tab_render",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/208",
+          "apiGoal": 2000
+        },
+        "scroll_search_post": {
+          "name": "scroll_search_post",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/289",
           "apiGoal": 2000
         }
       }
@@ -285,6 +300,36 @@ class DashboardConfig {
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/152",
           "apiGoal": 2000
         },
+        "first_login": {
+          "name": "first_login",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/292",
+          "apiGoal": 2000
+        },
+        "prepare_person_cache": {
+          "name": "prepare_person_cache",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/293",
+          "apiGoal": 2000
+        },
+        "conversation_handle_data_from_server": {
+          "name": "conversation_handle_data_from_server",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/294",
+          "apiGoal": 2000
+        },
+        "conversation_fetch_from_server": {
+          "name": "conversation_fetch_from_server",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/295",
+          "apiGoal": 2000
+        },
+        "load_phone_parser": {
+          "name": "load_phone_parser",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/296",
+          "apiGoal": 2000
+        },
+        "init_phone_parser": {
+          "name": "init_phone_parser",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/297",
+          "apiGoal": 2000
+        },
       }
     },
     "SearchPhoneScene": {
@@ -308,9 +353,14 @@ class DashboardConfig {
       "k": 3,
       "b": 700,
       "metric": {
-        "init_call_log_badge": {
-          "name": "init_call_log_badge",
+        "filter_and_sort_call_log": {
+          "name": "filter_and_sort_call_log",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/199",
+          "apiGoal": 2000
+        },
+        "filter_and_sort_voicemail": {
+          "name": "filter_and_sort_voicemail",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/253",
           "apiGoal": 2000
         },
         "fetch_call_log": {
@@ -350,8 +400,23 @@ class DashboardConfig {
           "name": "delete_rc_message_from_server",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/206",
           "apiGoal": 2000
+        },
+        "fetch_recent_call_logs": {
+          "name": "fetch_recent_call_logs",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/254",
+          "apiGoal": 2000
+        },
+        "delete_call_log": {
+          "name": "delete_call_log",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/255",
+          "apiGoal": 2000
+        },
+        "delete_call_log_from_server": {
+          "name": "delete_call_log_from_server",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/256",
+          "apiGoal": 2000
+        },
 
-        }
       }
     },
   };

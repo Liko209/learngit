@@ -11,17 +11,25 @@ import MuiMenuItem, {
 import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import {
-  spacing, grey, palette, width, height,
-} from '../../foundation/utils';
+import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton, JuiIconButtonProps } from '../../components/Buttons';
 
+// can't get component and touchRippleClasses from MenuItemProps
+type MuiMenuItemPropsExtend = MuiMenuItemProps & {
+  component?: React.ElementType;
+  TouchRippleProps?: any;
+  isItemHover?: boolean;
+  // type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+  button?: any;
+};
+
+type StyledMuiMenuItemProps = MuiMenuItemPropsExtend & { umi?: boolean };
+
 const StyledRightWrapper = styled.div`
-  width: ${width(5)};
   height: ${height(5)};
   display: flex;
   align-items: center;
@@ -42,13 +50,9 @@ const rippleEnter = (theme: Theme) => keyframes`
 
 const StyledIconButtonMore = styled(JuiIconButton)<JuiIconButtonProps>``;
 
-const WrapperListItem = ({
-  isItemHover,
-  ...rest
-}: MuiMenuItemProps & { isItemHover?: boolean }) => <MuiMenuItem {...rest} />;
-
-const hoverStyle = css`
-  background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
+const hoverStyle = css<StyledMuiMenuItemProps>`
+  background-color: ${({ theme }) =>
+    fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
   ${StyledIconButtonMore} {
     display: inline-flex;
   }
@@ -63,23 +67,39 @@ const JuiMenuContain = styled(JuiMenu)`
     }
   }
 `;
-const StyledListItem = styled(WrapperListItem)`
+
+const FilteredComponent = ({
+  isItemHover,
+  umi,
+  ...rest
+}: StyledMuiMenuItemProps) => <MuiMenuItem {...rest} />;
+
+const StyledItemText = styled(ItemText)`
+  && {
+    padding: 0;
+  }
+`;
+
+const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
   && {
     white-space: nowrap;
-    padding: ${spacing(0, 4, 0, 3)};
+    padding: ${spacing(0, 3, 0, 3)};
     height: ${height(8)};
+    min-height: unset;
     line-height: ${height(8)};
-    color: ${grey('900')};
+
     /**
      * Workaround to resolve transition conflicts with react-sortable-hoc
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
      */
     transition: transform 0s ease,
-      ${({ theme }) => theme.transitions.create('background-color', {
-    duration: theme.transitions.duration.shortest,
-    easing: theme.transitions.easing.easeInOut,
-  })};
+      ${({ theme }) =>
+        theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shortest,
+          easing: theme.transitions.easing.easeInOut,
+        })};
   }
+
   &&&& {
     ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
   }
@@ -88,8 +108,9 @@ const StyledListItem = styled(WrapperListItem)`
     z-index: ${({ theme }) => theme.zIndex.dragging};
   }
 
-  &&:active p {
-    color: ${palette('primary', 'main')};
+  && ${StyledItemText} {
+    color: ${({ theme, umi }) =>
+      umi ? theme.palette.grey['900'] : theme.palette.grey['700']};
   }
 
   && ${StyledIconButtonMore} {
@@ -102,10 +123,15 @@ const StyledListItem = styled(WrapperListItem)`
     ${hoverStyle}
   }
 
-  &&.selected {
-    background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'])};
-    p {
-      color: ${palette('primary', 'main')};
+  &&&&.selected {
+    background-color: ${palette('primary', '600')};
+
+    && ${StyledItemText} {
+      color: ${({ theme }) => theme.palette.common.white};
+    }
+
+    && ${StyledIconButtonMore} {
+      color: ${({ theme }) => theme.palette.common.white};
     }
   }
 
@@ -125,28 +151,28 @@ const StyledListItem = styled(WrapperListItem)`
     animation-name: ${({ theme }) => rippleEnter(theme)};
     z-index: ${({ theme }) => theme.zIndex.ripple};
   }
-`;
+` as React.ComponentType<
+  MuiMenuItemPropsExtend & { isItemHover?: boolean; umi?: boolean }
+>;
 
 const StyledPresenceWrapper = styled.div`
   width: ${width(2)};
   height: ${height(2)};
-  margin: ${spacing(1.5)};
+  margin-right: ${spacing(3)};
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
 `;
 
 type JuiConversationListItemProps = {
   title: string;
-  presence?: JSX.Element | null;
-  umi?: JSX.Element;
+  presence?: () => JSX.Element | null;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
   umiHint?: boolean;
   hidden?: boolean;
-  isItemHover?: boolean;
   moreTooltipTitle: string;
-} & MuiMenuItemProps;
+} & MuiMenuItemPropsExtend;
 
 type IConversationListItem = {
   dependencies?: React.ComponentType[];
@@ -163,7 +189,6 @@ const JuiConversationListItem: IConversationListItem = memo(
       title,
       indicator,
       presence,
-      umi,
       onClick,
       onMoreClick,
       component,
@@ -177,7 +202,9 @@ const JuiConversationListItem: IConversationListItem = memo(
       ...rest
     } = props;
 
-    const fontWeight = umiHint ? 'bold' : 'normal';
+    const fontWeight = umiHint || selected ? 900 : 'normal';
+    const IconButtonMoreColor = selected ? 'common.white' : 'grey.400';
+
     return hidden ? (
       <></>
     ) : (
@@ -185,19 +212,22 @@ const JuiConversationListItem: IConversationListItem = memo(
         onClick={onClick}
         component={component}
         selected={selected}
+        umi={Boolean(umiHint)}
         classes={{ selected: 'selected' }}
         TouchRippleProps={{ classes: touchRippleClasses }}
         isItemHover={isItemHover}
         {...rest}
       >
-        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-        <ItemText style={{ fontWeight }}>{title}</ItemText>
-        {umi}
+        {presence && (
+          <StyledPresenceWrapper>{presence()}</StyledPresenceWrapper>
+        )}
+        <StyledItemText style={{ fontWeight }}>{title}</StyledItemText>
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconButtonMore
             size="medium"
             variant="plain"
+            color={IconButtonMoreColor}
             data-test-automation-id="conversationListItemMoreButton"
             tooltipTitle={moreTooltipTitle}
             onClick={onMoreClick}

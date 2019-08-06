@@ -11,6 +11,9 @@ import { ENTITY_NAME } from '@/store';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { MentionProps } from '../types';
+import GroupModel from '@/store/models/Group';
+import { Group } from 'sdk/module/group/entity';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class MentionItemViewModel extends StoreViewModel<MentionProps> {
   constructor(props: MentionProps) {
@@ -18,9 +21,21 @@ class MentionItemViewModel extends StoreViewModel<MentionProps> {
   }
 
   @computed
-  get person() {
-    const { id } = this.props;
-    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
+  get id() {
+    return this.props.id;
+  }
+
+  @computed
+  get isTeam() {
+    return GlipTypeUtil.extractTypeId(this.id) === TypeDictionary.TYPE_ID_TEAM;
+  }
+
+  @computed
+  get item() {
+    if (this.isTeam) {
+      return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+    }
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
   }
 }
 

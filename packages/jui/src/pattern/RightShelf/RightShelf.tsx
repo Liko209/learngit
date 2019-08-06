@@ -14,6 +14,7 @@ const JuiRightShelf = styled('div')`
   border-left: 1px solid ${grey('300')};
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 `;
 
 const JuiRightShelfContent = styled.div`

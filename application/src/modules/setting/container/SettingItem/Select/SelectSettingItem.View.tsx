@@ -15,16 +15,19 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { catchError } from '@/common/catchError';
 import { JuiText } from 'jui/components/Text';
+import { JuiListItemSecondaryAction } from 'jui/components';
+import { JuiVirtualizedBoxSelect } from 'jui/components/VirtualizedSelects';
+import { SETTING_ITEM_TYPE } from '@/interface/setting';
 
 type SourceItemType =
   | {
-    id: number | string;
-  }
+      id: number | string;
+    }
   | string
   | number;
 type Props<T> = SelectSettingItemViewProps<T> &
-SelectSettingItemProps &
-WithTranslation;
+  SelectSettingItemProps &
+  WithTranslation;
 
 @observer
 class SelectSettingItemViewComponent<
@@ -79,20 +82,35 @@ class SelectSettingItemViewComponent<
       </JuiBoxSelect>
     );
   }
+  private _renderVirtualizedSelect() {
+    const { settingItem, ...rest } = this.props;
+    return (
+      <JuiVirtualizedBoxSelect
+        onChange={this._handleChange}
+        automationId={`settingItemSelectBox-${settingItem.automationId}`}
+        renderValue={this._renderValue}
+        name="settings"
+        isFullWidth
+        {...rest}
+      >
+        {this._renderSource()}
+      </JuiVirtualizedBoxSelect>
+    );
+  }
   private _renderSource() {
     return this.props.source.map((item: T) => this._renderSourceItem(item));
   }
 
   private _renderSourceItem(sourceItem: T) {
     const itemValue = this.props.extractValue(sourceItem);
+    const { secondaryActionRenderer, automationId } = this.props.settingItem;
     return (
       <JuiMenuItem
+        hasSecondaryAction={!!secondaryActionRenderer}
         key={itemValue}
         value={itemValue}
         disabled={itemValue === ''}
-        automationId={`settingItemSelectBoxItem-${
-          this.props.settingItem.automationId
-        }-${itemValue}`}
+        automationId={`settingItemSelectBoxItem-${automationId}-${itemValue}`}
         data-test-automation-class={'settingItemSelectBoxItem'}
         data-test-automation-value={itemValue}
       >
@@ -103,17 +121,29 @@ class SelectSettingItemViewComponent<
 
   private _renderMenuItemChildren(sourceItem: T, itemValue: string) {
     const { source, settingItem } = this.props;
-    const { sourceRenderer } = settingItem;
-    return sourceRenderer ? (
+    const { sourceRenderer, secondaryActionRenderer } = settingItem;
+    const option = sourceRenderer ? (
       sourceRenderer({ source, value: sourceItem })
     ) : (
       <JuiTextWithEllipsis>{itemValue}</JuiTextWithEllipsis>
     );
+    if (!secondaryActionRenderer) {
+      return option;
+    }
+    const secondaryAction = (
+      <JuiListItemSecondaryAction>
+        {secondaryActionRenderer({ source, value: sourceItem })}
+      </JuiListItemSecondaryAction>
+    );
+    return (
+      <>
+        {option}
+        {secondaryAction}
+      </>
+    );
   }
   render() {
-    const {
-      t, id, disabled, settingItem,
-    } = this.props;
+    const { t, id, disabled, settingItem } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}
@@ -122,7 +152,9 @@ class SelectSettingItemViewComponent<
         label={t(settingItem.title || '')}
         description={t(settingItem.description || '')}
       >
-        {this._renderSelect()}
+        {settingItem.type === SETTING_ITEM_TYPE.VIRTUALIZED_SELECT
+          ? this._renderVirtualizedSelect()
+          : this._renderSelect()}
       </JuiSettingSectionItem>
     );
   }

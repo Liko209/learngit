@@ -215,7 +215,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
   className="c0"
 >
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c1"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c1 MuiTypography-body2"
     radius={0}
     role="alertdialog"
   >
@@ -226,7 +226,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
     </div>
   </div>
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c2"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c2 MuiTypography-body2"
     radius={0}
     role="alertdialog"
   >
@@ -242,7 +242,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         className="MuiButtonBase-root c3 c4 c5"
         color="white"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -252,7 +252,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         Action
@@ -260,7 +260,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
     </div>
   </div>
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c6"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c6 MuiTypography-body2"
     radius={0}
     role="alertdialog"
   >
@@ -276,7 +276,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         className="MuiButtonBase-root c3 c4 c5"
         color="white"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -286,7 +286,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         Action
@@ -295,7 +295,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         className="MuiButtonBase-root c3 c4 c5"
         color="white"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -305,7 +305,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         Action
@@ -313,7 +313,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
     </div>
   </div>
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c7"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c7 MuiTypography-body2"
     radius={0}
     role="alertdialog"
   >
@@ -329,7 +329,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         className="MuiButtonBase-root c3 c4 c5"
         color="white"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -339,7 +339,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         Action
@@ -348,7 +348,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         className="MuiButtonBase-root c3 c4 c5"
         color="white"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -358,7 +358,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         Action
@@ -367,7 +367,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         className="MuiButtonBase-root c3 c8 c9"
         color="white"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -377,7 +377,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         <span

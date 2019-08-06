@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { ToastWrapper } from '@/containers/ToastWrapper';
 
+import { ActivityTimer } from '../ActivityTimer';
 import { HomeRouter } from '../HomeRouter';
 import { LeftNav } from '../LeftNav';
 import { TopBar } from '../TopBar';
@@ -71,6 +72,7 @@ class HomeView extends Component<HomeViewProps> {
       <>
         <ToastWrapper />
         <Wrapper>
+          <ActivityTimer />
           <TopBar />
           <Bottom id="app-main-section">
             <LeftNav />

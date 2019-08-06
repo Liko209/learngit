@@ -24,7 +24,6 @@ test(formalName('Show massage draft when refreshing App', ['P2', 'JPT-2360']), a
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let teamId1, teamId2, conversation1, conversation2;
   await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
@@ -83,7 +82,6 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let team = <IGroup>{
     type: "Team",
@@ -218,7 +216,6 @@ test(formalName(`Check shouldn't mark draft icon in the conversation list when r
   const loginUser = users[4];
   const adminUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).glip(adminUser).init();
 
   let team = <IGroup>{
@@ -498,7 +495,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let team1 = <IGroup>{
     type: 'Team',
@@ -597,7 +593,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let conversation1, conversation2;
   let team1 = <IGroup>{
@@ -686,7 +681,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let conversation1, conversation2;
   let team1 = <IGroup>{
@@ -802,7 +796,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   const adminUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).glip(adminUser).init();
 
   let team = <IGroup>{

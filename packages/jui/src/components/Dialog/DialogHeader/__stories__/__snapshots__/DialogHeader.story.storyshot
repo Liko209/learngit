@@ -19,31 +19,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   font-size: 24px;
 }
 
-.c3 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c3.c3 > *:nth-child(n + 2) {
-  margin-left: -10px;
-}
-
 .c8.c8 .c5,
 .c8.c8 .c5 svg {
   font-size: 20px;
@@ -136,6 +111,31 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   color: rgba(0,0,0,0.12);
 }
 
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c3.c3 > *:nth-child(n + 2) {
+  margin-left: -10px;
+}
+
 .c0 {
   background-color: white;
   padding: 0px 24px;
@@ -172,7 +172,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   line-height: 24px;
 }
 
-.c1.c1.vertical h2 {
+.c1.c1.vertical h6 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -227,12 +227,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
     <div
       className="MuiDialogTitle-root c1"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Title
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c2"
@@ -240,13 +240,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -257,8 +259,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -308,31 +309,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c3 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c3.c3 > *:nth-child(n + 2) {
-  margin-left: -10px;
 }
 
 .c10.c10 .c5,
@@ -468,6 +444,31 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   animation-name: cBKRfH;
 }
 
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c3.c3 > *:nth-child(n + 2) {
+  margin-left: -10px;
+}
+
 .c0 {
   background-color: white;
   padding: 0px 24px;
@@ -504,7 +505,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   line-height: 24px;
 }
 
-.c1.c1.vertical h2 {
+.c1.c1.vertical h6 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -567,12 +568,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
     <div
       className="MuiDialogTitle-root c1"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Title
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c2"
@@ -580,13 +581,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -597,8 +600,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -627,10 +629,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c8"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -641,8 +644,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -677,10 +679,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -691,8 +694,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="round"
@@ -723,10 +725,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c8"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -737,8 +740,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -772,42 +774,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 `;
 
 exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and information: Components/Dialog/DialogHeader Title with avatar and information 1`] = `
-.c2.c2 {
-  width: 32px;
-  height: 32px;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 22px;
-  background-color: #6FAFEB;
-}
-
-.c2.c2:hover {
-  opacity: 0.88;
-  cursor: pointer;
-}
-
-.c2.c2:active {
-  opacity: 0.76;
-}
-
-.c2 > .avatar-short-name {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
 .c11 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -824,31 +790,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c8 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c8.c8 > *:nth-child(n + 2) {
-  margin-left: -10px;
 }
 
 .c15.c15 .c10,
@@ -984,6 +925,67 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   animation-name: cBKRfH;
 }
 
+.c8 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c8.c8 > *:nth-child(n + 2) {
+  margin-left: -10px;
+}
+
+.c2.c2 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c2.c2:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c2.c2:active {
+  opacity: 0.76;
+}
+
+.c2 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
 .c0 {
   background-color: white;
   padding: 0px 24px;
@@ -1020,7 +1022,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   line-height: 22px;
 }
 
-.c6.c6.vertical h2 {
+.c6.c6.vertical h6 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -1146,7 +1148,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         className=""
       >
         <div
-          className="MuiAvatar-root MuiAvatar-colorDefault c2"
+          className="MuiAvatar-root c2 MuiAvatar-colorDefault"
           color="lake"
           size="medium"
         >
@@ -1171,14 +1173,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
     <div
       className="MuiDialogTitle-root c6"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Bulldog friendship.jpegdddddddddddddddddddd
          
         (1 / 20)
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c7"
@@ -1186,13 +1188,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -1203,8 +1207,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -1233,10 +1236,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -1247,8 +1251,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -1283,10 +1286,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1297,8 +1301,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="round"
@@ -1329,10 +1332,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -1343,8 +1347,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -1389,7 +1392,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         className=""
       >
         <div
-          className="MuiAvatar-root MuiAvatar-colorDefault c2"
+          className="MuiAvatar-root c2 MuiAvatar-colorDefault"
           color="lake"
           size="medium"
         >
@@ -1414,7 +1417,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
     <div
       className="MuiDialogTitle-root c6"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         <span>
@@ -1425,7 +1428,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           (1 / 20)
         </span>
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c7"
@@ -1433,13 +1436,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -1450,8 +1455,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -1480,10 +1484,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -1494,8 +1499,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -1530,10 +1534,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1544,8 +1549,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="round"
@@ -1576,10 +1580,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -1590,8 +1595,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"

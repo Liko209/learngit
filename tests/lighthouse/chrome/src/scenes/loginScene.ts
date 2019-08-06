@@ -10,6 +10,10 @@ import { HomePageGatherer } from '../gatherers';
 class LoginScene extends Scene {
   private _finallyUrl: string;
 
+  tags(): Array<string> {
+    return ["LoginScene", "Lighthouse"];
+  }
+
   async preHandle() {
     this.config = SceneConfigFactory.getConfig();
 

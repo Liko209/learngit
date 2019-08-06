@@ -14,17 +14,40 @@ class MediaManager {
   private _muted: boolean = false;
   private _globalVolume: number = 1;
   private _outputDevices: MediaDeviceType[] = [];
+
+  private _medias: Media[] = [];
   private _mediaCounters: number = 1000;
 
   createMedia(opts: MediaOptions) {
     const mediaTrack = trackManager.useMediaTrack(opts.trackId);
+    const mediaId = Utils.formatMediaId({
+      trackId: mediaTrack.id,
+      mediaId: opts.id || `${this._mediaCounters++}`,
+    });
     const newMedia = new Media(
       Object.assign({}, opts, {
         trackId: mediaTrack.id,
-        id: `${mediaTrack.id}-${this._mediaCounters++}`,
+        id: mediaId,
       }),
     );
+    this._medias.push(newMedia);
     return newMedia;
+  }
+
+  getMedia(mediaId: string | number) {
+    let media: Media;
+    const checkMediaId = mediaId.toString();
+    const medias = this._medias.filter(media => media.id === checkMediaId);
+    if (!medias || (medias && medias.length === 0)) {
+      media = this._medias.filter(media => {
+        const oriMediaId = Utils.dismantleMediaId(media.id);
+        return oriMediaId.mediaId === checkMediaId;
+      })[0];
+    } else {
+      media = medias[0];
+    }
+
+    return media || null;
   }
 
   setGlobalVolume(vol: number) {
@@ -41,6 +64,11 @@ class MediaManager {
     }
     this._outputDevices = devices;
     trackManager.setAllTrackOutputDevices(devices);
+  }
+
+  updateAllOutputDevices(devices: MediaDeviceType[]) {
+    trackManager.updateAllOutputDevices(devices);
+    this._updateAllDevicesMedia(devices);
   }
 
   canPlayType(mimeType: string) {
@@ -62,6 +90,15 @@ class MediaManager {
     this._muted = false;
     this._globalVolume = 1;
     this._outputDevices = [];
+  }
+
+  private _updateAllDevicesMedia(devices: MediaDeviceType[]) {
+    const allDevicesMedia = this._medias.filter(media => {
+      return Utils.difference(media.outputDevices, devices).length === 0;
+    });
+    allDevicesMedia.forEach(media => {
+      media.setOutputDevices(devices);
+    });
   }
 
   get muted() {

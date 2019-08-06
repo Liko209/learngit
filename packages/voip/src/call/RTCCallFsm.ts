@@ -21,6 +21,7 @@ const CallFsmEvent = {
   MUTE: 'muteEvent',
   UNMUTE: 'unmuteEvent',
   TRANSFER: 'transferEvent',
+  WARM_TRANSFER: 'warmTransferEvent',
   FORWARD: 'forwardEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
@@ -57,12 +58,24 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
     // Observer FSM State
     // enter pending state will also report connecting for now
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_ANSWERING, () => this._onEnterAnswering());
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_PENDING, () => this._onEnterPending());
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTING, () => this._onEnterConnecting());
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTED, () => this._onEnterConnected());
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_DISCONNECTED, () => this._onEnterDisconnected());
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_LEAVE_CONNECTED, () => this._onLeaveConnected());
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_ANSWERING, () =>
+      this._onEnterAnswering(),
+    );
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_PENDING, () =>
+      this._onEnterPending(),
+    );
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTING, () =>
+      this._onEnterConnecting(),
+    );
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTED, () =>
+      this._onEnterConnected(),
+    );
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_DISCONNECTED, () =>
+      this._onEnterDisconnected(),
+    );
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_LEAVE_CONNECTED, () =>
+      this._onLeaveConnected(),
+    );
   }
 
   public state(): string {
@@ -143,6 +156,15 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
       { name: CallFsmEvent.TRANSFER, params: target },
       (params: any) => {
         this._onTransfer(params);
+      },
+    );
+  }
+
+  warmTransfer(targetSession: any): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.WARM_TRANSFER, params: targetSession },
+      (params: any) => {
+        this._onWarmTransfer(params);
       },
     );
   }
@@ -287,6 +309,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
   }
 
+  onWarmTransferAction(targetSession: any) {
+    this.emit(CALL_FSM_NOTIFY.WARM_TRANSFER_ACTION, targetSession);
+  }
+
   onForwardAction(target: string) {
     this.emit(CALL_FSM_NOTIFY.FORWARD_ACTION, target);
   }
@@ -327,6 +353,22 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.UNHOLD_ACTION);
   }
 
+  onHoldSuccessAction(): void {
+    this.emit(CALL_FSM_NOTIFY.HOLD_SUCCESS_ACTION);
+  }
+
+  onHoldFailedAction(): void {
+    this.emit(CALL_FSM_NOTIFY.HOLD_FAILED_ACTION);
+  }
+
+  onUnholdSuccessAction(): void {
+    this.emit(CALL_FSM_NOTIFY.UNHOLD_SUCCESS_ACTION);
+  }
+
+  onUnholdFailedAction(): void {
+    this.emit(CALL_FSM_NOTIFY.UNHOLD_FAILED_ACTION);
+  }
+
   onDtmfAction(digits: string) {
     this.emit(CALL_FSM_NOTIFY.DTMF_ACTION, digits);
   }
@@ -362,6 +404,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onTransfer(target: string) {
     this._callFsmTable.transfer(target);
+  }
+
+  private _onWarmTransfer(targetSession: any) {
+    this._callFsmTable.warmTransfer(targetSession);
   }
 
   private _onForward(target: string) {

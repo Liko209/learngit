@@ -74,7 +74,7 @@ export const execQuery = <T extends {}>(
   equals.forEach(({ key, value, ignoreCase }: IEqual) => {
     const condition = ignoreCase
       ? { [key]: { $regex: new RegExp(value, 'i') } }
-      : { [key]: value };
+      : { $or: [{ [key]: value }, { [key]: { $contains: value } }] };
     resultSet = resultSet.find(condition);
   });
 

@@ -1,35 +1,20 @@
 import _ from 'lodash';
 import {
-  LocationDescriptorObject,
-  Path,
-  LocationState,
-  createBrowserHistory,
+  LocationDescriptorObject, Path, LocationState, createBrowserHistory
 } from 'history';
 
 const history = createBrowserHistory();
 const historyPush = history.push;
 const historyReplace = history.replace;
 
-const isSameLocation = (
-  options: LocationDescriptorObject | Path,
-  newState?: LocationState,
-) => {
+const isSameLocation = (options: LocationDescriptorObject | Path, newState?: LocationState) => {
   const {
-    pathname, search, hash, state,
+    pathname, search, hash, state
   } = history.location;
-  if (
-    typeof options === 'string' &&
-    (`${pathname}${search}${hash}` !== options || !_.isEqual(newState, state))
-  ) {
+  if (typeof options === 'string' && (`${pathname}${search}${hash}` !== options || !_.isEqual(newState, state))) {
     return false;
   }
-  if (
-    typeof options === 'object' &&
-    (pathname !== options.pathname ||
-      search !== options.search ||
-      hash !== options.hash ||
-      !_.isEqual(state, options.state))
-  ) {
+  if (typeof options === 'object' && (pathname !== options.pathname || search !== options.search || hash !== options.hash || !_.isEqual(state, options.state))) {
     return false;
   }
   return true;

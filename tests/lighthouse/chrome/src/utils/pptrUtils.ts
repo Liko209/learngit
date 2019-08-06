@@ -22,7 +22,9 @@ class PptrUtils {
     const memory = [];
     if (Config.takeHeapSnapshot) {
       const listener = (data) => {
-        memory.push(data.chunk);
+        if (data.chunk) {
+          memory.push(data.chunk);
+        }
       }
 
       driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
@@ -41,7 +43,8 @@ class PptrUtils {
 
       logger.info('tracking heap object.');
     }
-    return memory.join('');
+    
+    return memory.length > 0 ? memory.join('') : '';
   }
 
   static async collectGarbage(driver) {
@@ -84,7 +87,7 @@ class PptrUtils {
     selector: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
     opt["timeout"] = opt["timeout"] / cnt;
@@ -107,7 +110,7 @@ class PptrUtils {
     selector: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
     opt["timeout"] = opt["timeout"] / cnt;
@@ -133,7 +136,7 @@ class PptrUtils {
     xpath: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
     opt["timeout"] = opt["timeout"] / cnt;

@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { SFC, memo } from 'react';
-import MuiBadge, { BadgeProps as MuiBadgeProps } from '@material-ui/core/Badge';
+import MuiBadge, {
+  BadgeProps as MuiBadgeProps,
+} from '@material-ui/core/Badge/index';
 import styled, { css } from '../../foundation/styled-components';
 
 const MAX_SIZE = 6;

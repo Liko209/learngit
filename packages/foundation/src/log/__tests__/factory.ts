@@ -1,4 +1,4 @@
-import Factory, { Builder } from 'factory.ts';
+import { Sync as Factory, Builder } from 'factory.ts';
 import { LogEntity, LogConfig } from '../types';
 import { LOG_LEVEL } from '../constants';
 const logEntityBuilder: Builder<LogEntity> = {

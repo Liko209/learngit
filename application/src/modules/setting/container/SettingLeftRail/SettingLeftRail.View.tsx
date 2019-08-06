@@ -5,6 +5,7 @@
  */
 import React, { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { UnregisterCallback } from 'history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import {
@@ -13,10 +14,7 @@ import {
   JuiListNavItemIconographyLeft,
   JuiListNavItemText,
 } from 'jui/components';
-import {
-  JuiLeftRail,
-  JuiLeftRailStickyTop,
-} from 'jui/pattern/LeftRail/LeftRail';
+import { JuiLeftRail } from 'jui/pattern/LeftRail/LeftRail';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { SettingLeftRailViewProps } from './types';
@@ -40,15 +38,22 @@ class SettingLeftRailViewComponent extends Component<Props> {
   @observable
   selectedPath: string = `/${window.location.pathname.split('/').pop()}`;
 
+  private _unListen: UnregisterCallback;
+
   componentDidMount() {
     const { history } = this.props;
-    history.listen(location => {
+    this._unListen = history.listen(location => {
       const newSelectedPath = location.pathname.split('/').pop();
       if (this.selectedPath !== newSelectedPath) {
         this.selectedPath = `/${newSelectedPath}`;
       }
     });
   }
+
+  componentWillUnmount() {
+    this._unListen();
+  }
+
   private _renderNavItems() {
     const { t, pages, goToSettingPage } = this.props;
 
@@ -71,11 +76,9 @@ class SettingLeftRailViewComponent extends Component<Props> {
   render() {
     return (
       <JuiLeftRail>
-        <JuiLeftRailStickyTop>
-          <StyledList component="nav" data-test-automation-id="settingLeftRail">
-            {this._renderNavItems()}
-          </StyledList>
-        </JuiLeftRailStickyTop>
+        <StyledList component="nav" data-test-automation-id="settingLeftRail">
+          {this._renderNavItems()}
+        </StyledList>
       </JuiLeftRail>
     );
   }

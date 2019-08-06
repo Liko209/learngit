@@ -77,9 +77,7 @@ const getConversationId = async (id: number | number[]) => {
 };
 
 async function goToConversationWithLoading(params: GoToConversationParams) {
-  const {
-    id, jumpToPostId, beforeJump, hasBeforeJumpFun,
-  } = params;
+  const { id, jumpToPostId, beforeJump, hasBeforeJumpFun } = params;
   let needReplaceHistory = false;
 
   const timer = setTimeout(() => {
@@ -129,4 +127,5 @@ export {
   getConversationId,
   GoToConversationParams,
   DELAY_LOADING,
+  ERROR_CONVERSATION_NOT_FOUND,
 };

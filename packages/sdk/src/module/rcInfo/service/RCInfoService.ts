@@ -13,6 +13,9 @@ import {
   ERCWebUris,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
+  IAssignLineRequest,
+  IUpdateLineRequest,
+  StateRecord,
 } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
@@ -50,6 +53,7 @@ class RCInfoService extends EntityBaseService<IdModel>
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.rcInfoSettings);
     this.getRCInfoController().blockNumberController.init();
+    this.getRCInfoController().rcPresenceController.start();
   }
 
   protected onStopped() {
@@ -180,6 +184,12 @@ class RCInfoService extends EntityBaseService<IdModel>
     return result;
   }
 
+  async getAccountMainNumber() {
+    return this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountMainNumber();
+  }
+
   async isRCFeaturePermissionEnabled(
     featurePermission: ERCServiceFeaturePermission,
   ) {
@@ -281,6 +291,10 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getAccountId();
   }
 
+  async getStateList(countryId: string): Promise<StateRecord[]> {
+    return this.regionInfoController.getStateList(countryId);
+  }
+
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {
     return await this.getRCInfoController()
       .getRCInfoFetchController()
@@ -309,6 +323,28 @@ class RCInfoService extends EntityBaseService<IdModel>
     await this.getRCInfoController().blockNumberController.addBlockedNumber(
       phoneNumber,
     );
+  }
+
+  syncUserRCPresence() {
+    this.getRCInfoController().rcPresenceController.syncRCPresence();
+  }
+
+  async getDigitalLines() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getDigitalLines();
+  }
+
+  async assignLine(deviceId: string, data: IAssignLineRequest) {
+    await this.getRCInfoController()
+      .getRCDeviceController()
+      .assignLine(deviceId, data);
+  }
+
+  async updateLine(deviceId: string, data: IUpdateLineRequest) {
+    await this.getRCInfoController()
+      .getRCDeviceController()
+      .updateLine(deviceId, data);
   }
 }
 

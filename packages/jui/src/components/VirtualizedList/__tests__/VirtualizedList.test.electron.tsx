@@ -85,10 +85,10 @@ const buildExpect = (
       startIndex: number,
       stopIndex: number,
     ) => {
-      expect(handleVisibleRangeChange).toBeCalledWith({
+      expect(handleVisibleRangeChange.mock.calls[0][0]).toEqual({
         startIndex,
         stopIndex,
-      });
+      }, );
       expect(handleRenderedRangeChange).toBeCalledWith({
         startIndex,
         stopIndex,

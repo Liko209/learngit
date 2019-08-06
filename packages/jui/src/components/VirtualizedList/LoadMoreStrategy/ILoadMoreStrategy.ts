@@ -3,9 +3,8 @@
  * @Date: 2019-04-01 13:12:52
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  UndefinedAble, IndexRange, Delta, IndexConstraint,
-} from '../types';
+import { UndefinedAble, IndexRange, Delta, IndexConstraint } from '../types';
+import { DIRECTION } from '../../Lists';
 
 type LoadMoreStrategyParams = Readonly<{
   visibleRange: Readonly<IndexRange>;
@@ -15,7 +14,7 @@ type LoadMoreStrategyParams = Readonly<{
   delta?: Readonly<Delta>;
 }>;
 
-type LoadMoreInfo = { direction?: 'up' | 'down'; count: number };
+type LoadMoreInfo = { direction?: DIRECTION; count: number };
 
 interface ILoadMoreStrategy {
   getLoadMoreInfo(params: LoadMoreStrategyParams): LoadMoreInfo;

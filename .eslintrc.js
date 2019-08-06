@@ -25,7 +25,9 @@ module.exports = {
     'import/named': 'off',
     'import/export': 'off',
     'import/prefer-default-export': 'off',
-    'import/no-unresolved': [0, { caseSensitive: false }],
+    'import/no-unresolved': [0, {
+      caseSensitive: false
+    }],
     'import/no-extraneous-dependencies': 'off',
     'import/order': 'off',
     'import/first': 'error',
@@ -47,7 +49,7 @@ module.exports = {
     'no-bitwise': 'off',
     'no-return-assign': 'off',
     'no-empty-function': 'off',
-    'no-console': 'off',
+    'no-console': 'error',
     'no-nested-ternary': 'off',
     'no-unused-expressions': 'off',
     'lines-between-class-members': 'off',
@@ -65,13 +67,15 @@ module.exports = {
     'react/jsx-indent': 'off',
     'react/destructuring-assignment': 'off',
     'jsx-a11y/mouse-events-have-key-events': 'off',
-    "jsx-quotes": [1, "prefer-double"],
+    'jsx-quotes': [1, 'prefer-double'],
     'class-methods-use-this': 'off',
     'operator-assignment': 'off',
     'operator-linebreak': 'off',
-    'comma-dangle': 'off',
+    "comma-dangle": ["error", "only-multiline"],
     'no-unexpected-multiline': 'off',
-    'max-len': ['off', { code: 80 }],
+    'max-len': ['off', {
+      code: 80
+    }],
     'implicit-arrow-linebreak': 'off',
   },
   settings: {

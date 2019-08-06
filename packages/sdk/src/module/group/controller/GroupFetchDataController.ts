@@ -43,8 +43,10 @@ import { LAST_ACCESS_VALID_PERIOD } from '../../search/constants';
 import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { SortUtils } from 'sdk/framework/utils';
+import { PresenceService } from 'sdk/module/presence';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
-/* eslint-disable */
+
 const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
@@ -120,7 +122,7 @@ export class GroupFetchDataController {
     const permissionService = ServiceLoader.getInstance<PermissionService>(
       ServiceConfig.PERMISSION_SERVICE,
     );
-    const maxCount = (permissionService.getFeatureFlag(
+    const maxCount = await (permissionService.getFeatureFlag(
       UserPermissionType.LEFT_RAIL_MAX_COUNT,
     )) as number;
     mainLogger
@@ -178,6 +180,65 @@ export class GroupFetchDataController {
       return Array.from(personIds);
     }
     return [];
+  }
+
+  async getMembersAndGuestIds(
+    groupId: number,
+    onlineFirst: boolean = true,
+    sortFunc?: (A: Person, B: Person) => number,
+  ) {
+    let memberIds: number[] = [];
+    const guestIds: number[] = [];
+    const group = await this.entitySourceController.getEntityLocally(groupId);
+    if (group) {
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+      let members = await personService.getPersonsByIds(group.members);
+      const presenceService = ServiceLoader.getInstance<PresenceService>(
+        ServiceConfig.PRESENCE_SERVICE,
+      );
+      members = members.sort((lPerson: Person, rPerson: Person) => {
+        let result = 0;
+        if (onlineFirst) {
+          const lPresence = presenceService.getSynchronously(lPerson.id);
+          const rPresence = presenceService.getSynchronously(rPerson.id);
+          if (
+            lPresence && lPresence.presence === PRESENCE.AVAILABLE &&
+            (!rPresence || rPresence.presence !== PRESENCE.AVAILABLE)
+            ) {
+            result = -1;
+          } else if (
+            (!lPresence || lPresence.presence !== PRESENCE.AVAILABLE) &&
+            rPresence && rPresence.presence === PRESENCE.AVAILABLE
+            ) {
+            result = 1;
+          }
+        }
+        if (!result) {
+          if (sortFunc) {
+            result = sortFunc(lPerson, rPerson);
+          } else {
+            const lName = personService.getFullName(lPerson).toLowerCase();
+            const rName = personService.getFullName(rPerson).toLowerCase();
+            result = lName < rName ? -1 : lName > rName ? 1 : 0;
+          }
+        }
+        return result;
+      });
+      const memberSet = new Set(group.members);
+      const guestCompanyIds = new Set(group.guest_user_company_ids);
+      members.forEach((person: Person) => {
+        memberSet.delete(person.id);
+        if (guestCompanyIds.has(person.company_id)) {
+          guestIds.push(person.id);
+        } else {
+          memberIds.push(person.id);
+        }
+      })
+      memberIds = memberIds.concat(Array.from(memberSet));
+    }
+    return { memberIds, guestIds };
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
@@ -306,7 +367,8 @@ export class GroupFetchDataController {
     const recentSearchedGroups = recentFirst
       ? await this._getRecentSearchGroups([RecentSearchTypes.GROUP])
       : undefined;
-
+     // need @Thomas to fix 
+    /* eslint-disable no-constant-condition */
     return (group: Group, terms: Terms) => {
       do {
         if (!this._isValidGroup(group) || group.members.length <= 2) {
@@ -406,6 +468,7 @@ export class GroupFetchDataController {
     );
 
     let result: Map<ModelIdType, RecentSearchModel> = new Map();
+    /* eslint-disable no-await-in-loop */
     for (const iterator of types) {
       const recentGroups = await searchService.getRecentSearchRecordsByType(
         iterator,
@@ -443,7 +506,7 @@ export class GroupFetchDataController {
         const isValidGroup = myGroupsOnly
           ? group.members.includes(currentUserId)
           : !group.is_team ||
-          this._isPublicTeamOrIncludeUser(group, currentUserId);
+          this._isPublicTeamOrIncludeUser(group);
         if (!isValidGroup) {
           break;
         }
@@ -566,7 +629,6 @@ export class GroupFetchDataController {
       ? await this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
     const teamIdsIncludeMe = this._getTeamIdsIncludeMe();
-    const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
       let keyWeight: number = 0;
@@ -577,7 +639,7 @@ export class GroupFetchDataController {
 
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
-          isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          isMatched = this._isPublicTeamOrIncludeUser(team);
         }
 
         if (isMatched || searchKeyTerms.length === 0) {
@@ -601,7 +663,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        if (!this._isPublicTeamOrIncludeUser(team, currentUserId)) {
+        if (!this._isPublicTeamOrIncludeUser(team)) {
           break;
         }
 
@@ -762,7 +824,7 @@ export class GroupFetchDataController {
     return favoriteGroupIds.some((x: number) => groupId === x);
   }
 
-  private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
+  private _isPublicTeamOrIncludeUser(team: Group) {
     return (
       team.privacy === 'protected' || this._getTeamIdsIncludeMe().has(team.id)
     );
@@ -843,7 +905,7 @@ export class GroupFetchDataController {
       profile.favorite_group_ids.length > 0
     ) {
       let favoriteGroupIds = profile.favorite_group_ids.filter(
-        (id: any) => typeof id === 'number' && !isNaN(id),
+        (id: any) => typeof id === 'number' && !Number.isNaN(id),
       );
       const hiddenIds = await extractHiddenGroupIdsWithoutUnread(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);

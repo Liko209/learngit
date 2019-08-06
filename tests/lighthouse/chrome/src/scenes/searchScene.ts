@@ -12,6 +12,10 @@ import { MetricService, FileService } from "../services";
 class SearchScene extends Scene {
   private keywords: Array<string> = Config.searchKeywords;
 
+  tags(): Array<string> {
+    return ["SearchScene", "Search", "Post", "People", "Group", "Team", "Memory", "Trace", "API"];
+  }
+
   async preHandle() {
     this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 

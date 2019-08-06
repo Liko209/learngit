@@ -172,6 +172,8 @@ export class TeamSettingDialog extends BaseWebComponent {
     await this.toggle(this.allowPostMessageCheckbox, false);
   }
 
+
+
   get allowPinPostToggle() {
     return this.getSelectorByAutomationId('allowPinToggle', this.memberPermissionList);
   }
@@ -191,6 +193,28 @@ export class TeamSettingDialog extends BaseWebComponent {
   async notAllowMemberPinPost() {
     await this.toggle(this.allowPinPostCheckbox, false);
   }
+
+  get allowAtTeamMentionToggle() {
+    return this.getSelectorByAutomationId('allowMemberAtTeamMention', this.memberPermissionList);
+  }
+
+  get allowAtTeamMentionText() {
+    return this.allowAtTeamMentionToggle.parent('li').textContent;
+  }
+
+  get allowAtTeamMentionCheckbox() {
+    return this.checkboxOf(this.allowAtTeamMentionToggle);
+  }
+
+  async allowMemberAtTeamMention() {
+    await this.toggle(this.allowAtTeamMentionCheckbox, true);
+  }
+
+  async notAllowMemberAtTeamMention() {
+    await this.toggle(this.allowAtTeamMentionCheckbox, false);
+  }
+
+
 
   get deleteTeamButton() {
     return this.getSelectorByAutomationId("deleteTeamButton");

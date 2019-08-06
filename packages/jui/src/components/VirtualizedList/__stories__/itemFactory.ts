@@ -12,16 +12,34 @@ type DemoItemModel = {
 };
 
 const itemFactory = {
-  buildItem(id: number) {
+  buildItem(id: number, type: 'text' | 'image' = 'image') {
+    let item: DemoItemModel;
+    switch (type) {
+      default:
+      case 'text':
+        item = itemFactory.buildTextItem(id);
+        break;
+      case 'image':
+        item = itemFactory.buildImageItem(id, true);
+        break;
+    }
+    return item;
+  },
+
+  buildBaseItem(id: number) {
     return {
       id,
       text: `Item-${id}`,
     };
   },
 
+  buildTextItem(id: number) {
+    return itemFactory.buildBaseItem(id);
+  },
+
   buildCrazyItem(id: number) {
     return {
-      ...itemFactory.buildItem(id),
+      ...itemFactory.buildBaseItem(id),
       crazy: true,
     };
   },
@@ -29,27 +47,16 @@ const itemFactory = {
   buildImageItem(id: number, randomSize = false) {
     const height = randomSize ? Math.floor(Math.random() * 10) * 10 : 56;
     return {
-      ...itemFactory.buildItem(id),
+      ...itemFactory.buildBaseItem(id),
       imageUrl: `https://via.placeholder.com/500x${height}`,
     };
   },
 
-  buildItems(startId: number, count: number, type: 'item' | 'image' = 'image') {
+  buildItems(startId: number, count: number, type: 'text' | 'image' = 'image') {
     const items: DemoItemModel[] = [];
     for (let i = startId; i < startId + count; i++) {
-      let item: DemoItemModel;
-      switch (type) {
-        default:
-        case 'item':
-          item = itemFactory.buildItem(i);
-          break;
-        case 'image':
-          item = itemFactory.buildImageItem(i, true);
-          break;
-      }
-      items.push(item);
+      items.push(itemFactory.buildItem(i, type));
     }
-
     return items;
   },
 };

@@ -28,6 +28,7 @@ const ThemeDecorator = storyFn => {
 };
 
 // this decorator is used in storyshots.test.jsx not storyImageShots.test.jsx
+// addDecorator(storyFn => <ErrorBoundary storyFn={storyFn} />);
 addDecorator(ThemeDecorator);
 addDecorator(story => (
   <JssProvider generateClassName={generateClassName}>{story()}</JssProvider>
@@ -35,8 +36,8 @@ addDecorator(story => (
 
 addParameters({
   info: {
-    disable: true,
-  },
+    disable: true
+  }
 });
 
 // this req is used in both storyshots.test.jsx and storyImageShots.test.jsx

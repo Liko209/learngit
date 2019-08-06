@@ -216,6 +216,9 @@ test(formalName('new team popup can be open', ['P2', 'JPT-88']), async t => {
   await h(t).withLog('And Post messages toggle is true by default', async () => {
     await t.expect(createTeamModal.mayPostMessageToggle.checked).ok();
   });
+  await h(t).withLog('And At tem mention toggle is false by default', async () => {
+    await t.expect(createTeamModal.mayAtTeamMentionToggle.checked).notOk();
+  });
   await h(t).withLog('And Pin pist toggle is true by default', async () => {
     await t.expect(createTeamModal.mayPinPostToggle.checked).ok();
   });
@@ -543,6 +546,10 @@ test.meta(<ITestMeta>{
     await t.expect(createTeamModal.mayPostMessageToggle().checked).notOk();
   });
 
+  await h(t).withLog('Then the at team mention toggle should be turned off', async () => {
+    await t.expect(createTeamModal.mayAtTeamMentionToggle().checked).notOk();
+  });
+
   await h(t).withLog('And create a team', async () => {
     await createTeam(teamNames[1]);
   });
@@ -575,7 +582,6 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const createTeamModal = app.homePage.createTeamModal;
 
   const enterSymbols = async (text: string) => {
@@ -644,8 +650,7 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   const otherUser = users[5];
   const workerUser = users[1];
-  await h(t).platform(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfileAndState(workerUser);
   const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
   const createTeamModal = app.homePage.createTeamModal;

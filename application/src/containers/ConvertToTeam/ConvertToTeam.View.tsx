@@ -3,8 +3,6 @@
  * @Date: 2019-03-13 09:52:08
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -197,8 +195,8 @@ class ConvertToTeam extends Component<Props, State> {
     } = this.props;
     return (
       <JuiModal
-        open={true}
-        size='medium'
+        open
+        size="medium"
         title={t('people.team.convertToTeam')}
         onCancel={this._handleClose}
         onOK={this._handleOk}
@@ -212,7 +210,7 @@ class ConvertToTeam extends Component<Props, State> {
           'data-test-automation-id': 'convertToTeamCancelButton',
         }}
       >
-        <Loading loading={saving} alwaysComponentShow={true} delay={0}>
+        <Loading loading={saving} alwaysComponentShow delay={0}>
           <JuiTopText>
             {t('people.team.convertToTeamPreviousMessageHandle')}
           </JuiTopText>
@@ -220,7 +218,7 @@ class ConvertToTeam extends Component<Props, State> {
             value={name}
             id={t('people.team.teamName')}
             label={t('people.team.teamName')}
-            fullWidth={true}
+            fullWidth
             error={!!nameErrorKey}
             inputProps={NAME_INPUT_PROPS}
             inputRef={this.teamNameRef}

@@ -13,7 +13,12 @@ import {
 
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
-import { MAKE_CALL_ERROR_CODE } from '../types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  notificationCallback,
+  TelephonyDataCollectionInfoConfigType,
+  CallOptions,
+} from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -22,13 +27,18 @@ import { PhoneSetting } from '../setting';
 import { ITelephonyService } from './ITelephonyService';
 import { HealthModuleController } from 'sdk/framework/controller/impl/HealthModuleController';
 import { MODULE_NAME, MODULE_IDENTIFY } from '../constants';
+import { CallSwitchController } from '../controller/CallSwitchController';
+import {
+  RCPresenceEventPayload,
+  ActiveCall,
+} from 'sdk/module/rcEventSubscription/types';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
   private _phoneSetting: PhoneSetting;
-
+  private _callSwitchController: CallSwitchController;
   constructor() {
     super({ isSupportedCache: true, entityName: 'CALL' });
     this.setSubscriptionController(
@@ -51,6 +61,7 @@ class TelephonyService extends EntityBaseService<Call>
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.phoneSetting);
+    this._callSwitchController.start();
   }
 
   protected onStopped() {
@@ -68,7 +79,8 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController.logout();
   };
 
-  getVoipCallPermission = async () => this.telephonyController.getVoipCallPermission();
+  getVoipCallPermission = async () =>
+    this.telephonyController.getVoipCallPermission();
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
@@ -82,6 +94,7 @@ class TelephonyService extends EntityBaseService<Call>
 
   private _init() {
     this.telephonyController.initEngine();
+    this._callSwitchController = new CallSwitchController(this);
   }
 
   get userConfig() {
@@ -100,18 +113,29 @@ class TelephonyService extends EntityBaseService<Call>
     return accountController ? accountController.getCallCount() : 0;
   };
 
-  makeCall = async (toNumber: string, fromNumber?: string) => {
+  makeCall = async (toNumber: string, options?: CallOptions) => {
     const accountController = this.telephonyController.getAccountController();
     if (accountController) {
       return this.telephonyController
         .getAccountController()
-        .makeCall(toNumber, fromNumber);
+        .makeCall(toNumber, options);
+    }
+    return MAKE_CALL_ERROR_CODE.INVALID_STATE;
+  };
+
+  switchCall = async (myNumber: string, switchCall: ActiveCall) => {
+    const accountController = this.telephonyController.getAccountController();
+    if (accountController) {
+      return this.telephonyController
+        .getAccountController()
+        .switchCall(myNumber, switchCall);
     }
     return MAKE_CALL_ERROR_CODE.INVALID_STATE;
   };
 
   hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
+    this._callSwitchController.onCallEnded(callId);
   };
 
   mute = (callId: number) => {
@@ -122,17 +146,17 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController.getAccountController().unmute(callId);
   };
 
-  hold = async (callId: number) => await this.telephonyController.getAccountController().hold(callId);
+  hold = async (callId: number) =>
+    await this.telephonyController.getAccountController().hold(callId);
 
-  unhold = async (callId: number) => await this.telephonyController.getAccountController().unhold(callId);
+  unhold = async (callId: number) =>
+    await this.telephonyController.getAccountController().unhold(callId);
 
-  startRecord = async (callId: number) => await this.telephonyController
-    .getAccountController()
-    .startRecord(callId);
+  startRecord = async (callId: number) =>
+    await this.telephonyController.getAccountController().startRecord(callId);
 
-  stopRecord = async (callId: number) => await this.telephonyController
-    .getAccountController()
-    .stopRecord(callId);
+  stopRecord = async (callId: number) =>
+    await this.telephonyController.getAccountController().stopRecord(callId);
 
   dtmf = (callId: number, digits: string) => {
     this.telephonyController.getAccountController().dtmf(callId, digits);
@@ -160,15 +184,18 @@ class TelephonyService extends EntityBaseService<Call>
       .replyWithMessage(callId, message);
   };
 
-  park = async (callId: number) => await this.telephonyController.getAccountController().park(callId);
+  park = async (callId: number) =>
+    await this.telephonyController.getAccountController().park(callId);
 
-  flip = async (callId: number, flipNumber: number) => await this.telephonyController
-    .getAccountController()
-    .flip(callId, flipNumber);
+  flip = async (callId: number, flipNumber: number) =>
+    await this.telephonyController
+      .getAccountController()
+      .flip(callId, flipNumber);
 
-  forward = async (callId: number, phoneNumber: string) => await this.telephonyController
-    .getAccountController()
-    .forward(callId, phoneNumber);
+  forward = async (callId: number, phoneNumber: string) =>
+    await this.telephonyController
+      .getAccountController()
+      .forward(callId, phoneNumber);
 
   replyWithPattern = (
     callId: number,
@@ -194,6 +221,53 @@ class TelephonyService extends EntityBaseService<Call>
     }
     return this._phoneSetting;
   }
+
+  setDataCollectionInfoConfig = (
+    info: TelephonyDataCollectionInfoConfigType,
+  ) => {
+    this.telephonyController
+      .getAccountController()
+      .setDataCollectionInfoConfig(info);
+  };
+
+  async getSwitchCall() {
+    return this._callSwitchController.getSwitchCall();
+  }
+
+  async handleRCPresence(
+    presence: RCPresenceEventPayload,
+    isFromPush: boolean,
+  ) {
+    return this._callSwitchController.handleTelephonyPresence(
+      presence,
+      isFromPush,
+    );
+  }
+
+  isEmergencyAddrConfirmed = () => {
+    return this.telephonyController.isEmergencyAddrConfirmed();
+  };
+
+  getWebPhoneId = () => {
+    const accountController = this.telephonyController.getAccountController();
+    return accountController ? accountController.getWebPhoneId() : undefined;
+  };
+
+  getRemoteEmergencyAddress = () => {
+    return this.telephonyController.getRemoteEmergencyAddress();
+  };
+
+  getLocalEmergencyAddress = () => {
+    return this.telephonyController.getLocalEmergencyAddress();
+  };
+
+  subscribeEmergencyAddressChange = (listener: notificationCallback) => {
+    this.telephonyController.subscribeEmergencyAddressChange(listener);
+  };
+
+  subscribeSipProvChange = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvChange(listener);
+  };
 }
 
 export { TelephonyService };

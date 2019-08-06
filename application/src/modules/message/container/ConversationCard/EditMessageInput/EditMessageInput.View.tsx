@@ -3,7 +3,6 @@
  * @Date: 2018-12-08 21:00:36
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EditMessageInputViewProps } from './types';
@@ -13,9 +12,7 @@ import { Mention } from '@/modules/message/container/ConversationPage/MessageInp
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
 import { handleAtMention } from 'jui/pattern/MessageInput/Mention/handleAtMention';
-import { container } from 'framework';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
-import { MessageService } from '@/modules/message/service';
+import { IMessageService } from '@/modules/message/interface';
 import { reaction, IReactionDisposer } from 'mobx';
 
 type State = {
@@ -24,11 +21,12 @@ type State = {
 type Props = EditMessageInputViewProps & WithTranslation;
 @observer
 class EditMessageInputViewComponent extends Component<Props, State> {
+  @IMessageService private _messageService: IMessageService;
+
   private _messageInputRef: React.RefObject<
     JuiMessageInput
   > = React.createRef();
   private _mentionRef: React.RefObject<any> = React.createRef();
-  private _messageService = container.get<MessageService>(MESSAGE_SERVICE);
   private _disposer: IReactionDisposer;
   state = {
     modules: {},
@@ -85,12 +83,12 @@ class EditMessageInputViewComponent extends Component<Props, State> {
         error={error ? t(error) : error}
         modules={modules}
         autofocus={false}
-        isEditMode={true}
+        isEditMode
         onChange={saveDraft}
         onBlur={this.blurHandler}
         placeholder={t('message.action.typeNewMessage')}
       >
-        <Mention id={gid} pid={id} isEditMode={true} ref={this._mentionRef} />
+        <Mention id={gid} pid={id} isEditMode ref={this._mentionRef} />
       </JuiMessageInput>
     );
   }

@@ -14,24 +14,24 @@ type JuiExpansionPanelProps = {} & ExpansionPanelProps;
 const StyledExpansionPanel = styled(ExpansionPanel)`
   &.root {
     box-shadow: none;
+    &.expanded {
+      margin: 0;
+    }
   }
   border-bottom: ${({ theme }) => theme.shape.border4};
   &:before {
     display: none;
   }
-  &.expanded {
-    margin: 0;
-  }
 `;
 
 const JuiExpansionPanel = React.memo((props: JuiExpansionPanelProps) => (
-    <StyledExpansionPanel
-      classes={{
-        root: 'root',
-        expanded: 'expanded',
-      }}
-      {...props}
-    />
+  <StyledExpansionPanel
+    classes={{
+      root: 'root',
+      expanded: 'expanded',
+    }}
+    {...props}
+  />
 ));
 
 export { JuiExpansionPanel, JuiExpansionPanelProps };

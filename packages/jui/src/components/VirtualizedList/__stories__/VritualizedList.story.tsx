@@ -3,12 +3,13 @@
  * @Date: 2019-02-28 14:59:26
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useMemo, useState } from 'react';
-import { number } from '@storybook/addon-knobs';
+import React, { useRef, useMemo, useState, useCallback } from 'react';
+import { number, boolean } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
+import { RuiCircularProgress } from 'rcui/components/Progress';
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
-import { RuiCircularProgress } from 'rcui/components/Progress';
+import { JuiPaper } from '../../Paper';
 import { JuiInfiniteList } from '../InfiniteList';
 import {
   JuiVirtualizedList,
@@ -36,8 +37,12 @@ const StyledLoadingMore = styled.div`
   padding: ${spacing(15, 0)};
 `;
 
-const ListWrapper = styled.div`
-  width: 515px;
+const ListWrapper = styled(JuiPaper)`
+  display: flex;
+  flex-direction: column;
+  width: 517px;
+  height: 400px;
+  max-height: 100%;
   margin: 10px 0;
   border: 1px solid #ddd;
 `;
@@ -84,11 +89,11 @@ const DebugTable = ({
         </tr>
       </thead>
       <tbody>
-        <DebugTableRow name='visible' range={visibleRange} />
+        <DebugTableRow name="visible" range={visibleRange} />
         {renderedRange && (
-          <DebugTableRow name='rendered' range={renderedRange} />
+          <DebugTableRow name="rendered" range={renderedRange} />
         )}
-        {loadedRange && <DebugTableRow name='loaded' range={loadedRange} />}
+        {loadedRange && <DebugTableRow name="loaded" range={loadedRange} />}
       </tbody>
     </table>
   );
@@ -140,7 +145,7 @@ storiesOf('Components/VirtualizedList', module)
           <br />
           <label>
             scrollToIndex:
-            <input onInput={handleDataChange} type='number' />
+            <input onInput={handleDataChange} type="number" />
           </label>
 
           <br />
@@ -150,6 +155,56 @@ storiesOf('Components/VirtualizedList', module)
               height={listHeight}
               overscan={overscan}
               minRowHeight={40}
+              initialScrollToIndex={initialScrollToIndex}
+              onVisibleRangeChange={setVisibleRange}
+              onRenderedRangeChange={setRenderedRange}
+              stickToBottom
+            >
+              {children}
+            </JuiVirtualizedList>
+          </ListWrapper>
+          <br />
+          <DebugTable
+            visibleRange={visibleRange}
+            renderedRange={renderedRange}
+          />
+        </div>
+      );
+    };
+    return <Demo />;
+  })
+  .add('fixedRowHeight', () => {
+    const dataCount = number('dataCount', 100);
+    const overscan = number('overscan', 5);
+    const initialScrollToIndex = number('initialScrollToIndex', 0);
+    const listHeight = number('listHeight', 300);
+    const enableFixedRowHeight = boolean('enable fixedRowHeight', true);
+
+    const Demo = () => {
+      const ref = useRef<JuiVirtualizedListHandles>(null);
+      const {
+        items,
+        visibleRange,
+        setVisibleRange,
+        renderedRange,
+        setRenderedRange,
+      } = useDemoHelper({ initialDataCount: dataCount, itemType: 'text' });
+
+      const children = useMemo(
+        () => items.map(item => <DemoItem key={item.id} item={item} />),
+        [items],
+      );
+
+      return (
+        <div>
+          Total: {dataCount}
+          <ListWrapper>
+            <JuiVirtualizedList
+              ref={ref}
+              height={listHeight}
+              overscan={overscan}
+              minRowHeight={enableFixedRowHeight ? undefined : 100}
+              fixedRowHeight={enableFixedRowHeight ? 100 : undefined}
               initialScrollToIndex={initialScrollToIndex}
               onVisibleRangeChange={setVisibleRange}
               onRenderedRangeChange={setRenderedRange}
@@ -205,7 +260,7 @@ storiesOf('Components/VirtualizedList', module)
       const hasMore = (direction: 'up' | 'down') =>
         totalDataCount > items.length;
 
-      const loadInitialData = async () => {
+      const loadInitialData = useCallback(async () => {
         await sleep(initialLoadTime);
         prependItem(
           ...itemFactory.buildItems(
@@ -213,7 +268,7 @@ storiesOf('Components/VirtualizedList', module)
             Math.min(initialDataCount, totalDataCount),
           ),
         );
-      };
+      }, []);
 
       const loadMore = async (direction: 'up' | 'down', count: number) => {
         await sleep(moreLoadTime);
@@ -224,16 +279,15 @@ storiesOf('Components/VirtualizedList', module)
         }
       };
 
-      const loadingMoreRenderer = () => useMemo(() => <LoadingMore />, []);
-      const loadingRenderer = () =>
-        useMemo(() => <div>loading initial</div>, []);
+      const loadingMoreRenderer = useCallback(() => <LoadingMore />, []);
+      const loadingRenderer = useCallback(() => <div>loading initial</div>, []);
       const noRowsRenderer = useMemo(() => <div>Empty</div>, []);
 
       return (
         <>
           <ListWrapper>
             <JuiInfiniteList
-              height={300}
+              height={400}
               minRowHeight={40}
               loadMoreStrategy={loadMoreStrategy}
               overscan={overscan}
@@ -272,7 +326,7 @@ storiesOf('Components/VirtualizedList', module)
     const StickToBottomDemo = () => {
       const ref = useRef(null);
 
-      const [listHeight, setHeight] = useState(200);
+      const [listHeight, setHeight] = useState(400);
       const { items, prependItem, appendItem } = useDemoHelper({
         initialDataCount: 0,
       });
@@ -293,10 +347,12 @@ storiesOf('Components/VirtualizedList', module)
       };
 
       const handleAppendClick = () => {
-        const i = items[items.length - 1].id + 1;
+        const lastItem = items[items.length - 1];
+        const i = lastItem ? lastItem.id + 1 : startId;
         appendItem(itemFactory.buildImageItem(i, true));
       };
-      const loadInitialData = async () => {
+
+      const loadInitialData = useCallback(async () => {
         await sleep(initialLoadTime);
         prependItem(
           ...itemFactory.buildItems(
@@ -304,7 +360,7 @@ storiesOf('Components/VirtualizedList', module)
             Math.min(initialDataCount, totalDataCount),
           ),
         );
-      };
+      }, [listHeight]);
 
       const handleHeightChange = ({
         currentTarget,
@@ -314,14 +370,18 @@ storiesOf('Components/VirtualizedList', module)
           setHeight(parseInt(str, 10));
         }
       };
-      const loadMore = async (direction: 'up' | 'down') => {
-        await sleep(moreLoadTime);
-        if (direction === 'up') {
-          prependItem(
-            ...itemFactory.buildItems(items[0].id - pageSize, pageSize),
-          );
-        }
-      };
+
+      const loadMore = useCallback(
+        async (direction: 'up' | 'down') => {
+          await sleep(moreLoadTime);
+          if (direction === 'up') {
+            prependItem(
+              ...itemFactory.buildItems(items[0].id - pageSize, pageSize),
+            );
+          }
+        },
+        [items],
+      );
 
       return (
         <>
@@ -330,25 +390,26 @@ storiesOf('Components/VirtualizedList', module)
             <input
               ref={ref}
               onInput={handleHeightChange}
-              type='number'
+              type="number"
               defaultValue={`${listHeight}`}
             />
           </label>
           <button onClick={handleAppendClick}>Append Item</button>
-          <JuiInfiniteList
-            hasMore={hasMore}
-            height={listHeight}
-            minRowHeight={40}
-            initialScrollToIndex={initialDataCount - 1}
-            loadInitialData={loadInitialData}
-            loadMore={loadMore}
-            stickToBottom
-            loadingMoreRenderer={() => <LoadingMore />}
-            loadingRenderer={() => <div>loading initial</div>}
-            noRowsRenderer={<div>Empty</div>}
-          >
-            {children}
-          </JuiInfiniteList>
+          <ListWrapper style={{ height: listHeight }}>
+            <JuiInfiniteList
+              hasMore={hasMore}
+              height={listHeight}
+              minRowHeight={40}
+              initialScrollToIndex={initialDataCount - 1}
+              loadInitialData={loadInitialData}
+              loadMore={loadMore}
+              loadingMoreRenderer={() => <LoadingMore />}
+              loadingRenderer={() => <div>loading initial</div>}
+              noRowsRenderer={<div>Empty</div>}
+            >
+              {children}
+            </JuiInfiniteList>
+          </ListWrapper>
         </>
       );
     };

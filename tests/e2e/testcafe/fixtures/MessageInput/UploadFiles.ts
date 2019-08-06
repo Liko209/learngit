@@ -1034,8 +1034,8 @@ test.skip.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the image file size should be ${expectedWidth}x${expectedHeight}`, async () => {
-    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('width')).eql(expectedWidth);
-    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('height')).eql(expectedHeight);
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('width')).eql(expectedWidth);
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('height')).eql(expectedHeight);
   }, true);
 
   await h(t).withLog(`When I upload the same name file to the conversation whose size is ${finalWidth}x${finalHeight}`, async () => {
@@ -1052,12 +1052,12 @@ test.skip.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the last image size should be ${finalWidth}x${finalHeight}`, async () => {
-    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('width')).eql(finalWidth);
-    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('height')).eql(finalHeight);
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('width')).eql(finalWidth);
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('height')).eql(finalHeight);
   }, true);
 
   await h(t).withLog(`Then the first image size should be ${finalWidth}x${finalHeight}`, async () => {
-    await t.expect(conversationPage.nthPostItem(0).img.getBoundingClientRectProperty('width')).eql(finalWidth);
-    await t.expect(conversationPage.nthPostItem(0).img.getBoundingClientRectProperty('height')).eql(finalHeight);
+    await t.expect(conversationPage.nthPostItem(0).images.getBoundingClientRectProperty('width')).eql(finalWidth);
+    await t.expect(conversationPage.nthPostItem(0).images.getBoundingClientRectProperty('height')).eql(finalHeight);
   });
 });

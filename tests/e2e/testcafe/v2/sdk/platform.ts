@@ -83,7 +83,6 @@ export class RcPlatformSdk {
     });
   }
 
-
   async createGroup(data: any) {
     const url = 'restapi/v1.0/glip/groups';
     return await this.retryRequestOnException(async () => {
@@ -283,4 +282,54 @@ export class RcPlatformSdk {
       return await this.sdk.delete(url);
     });
   };
+
+  async messageStore(params?: object) {
+    const url = `/restapi/v1.0/account/~/extension/~/message-store`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.get(url, { params });
+    });
+  }
+
+  async deleteVoicemail(id: string) {
+    const url = `/restapi/v1.0/account/~/extension/~/message-store/${id}`;
+    await this.retryRequestOnException(async () => {
+      return await this.sdk.delete(url);
+    });
+  }
+
+
+  async deleteAllVoicemail(dateFrom = "2019-01-01") {
+    let ids: string[];
+    await this.messageStore({ dateFrom }).then(res => {
+      const records = res.data.records;
+      ids = records.filter(data => data.type == 'VoiceMail').map(data => data.id)
+    });
+    for (let id of ids) {
+      await this.deleteVoicemail(id);
+    }
+  }
+
+  async getDevices() {
+    const url = `/restapi/v1.0/account/~/extension/~/device`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.get(url);
+    });
+  }
+
+  async updateDevice(deviceId: number | string, data: any) {
+    const url = `/restapi/v1.0/account/~/device/${deviceId}`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.put(url, data);
+    });
+  }
+
+  async updateDevices(cb: (device: any, index: number) => any) {
+    // TODO: handel paging
+    const devices = await this.getDevices().then(res => res.data.records);
+    for (const i in devices) {
+      const device = devices[i];
+      await this.updateDevice(device.id, cb(device, Number(i)));
+    }
+  }
+
 }

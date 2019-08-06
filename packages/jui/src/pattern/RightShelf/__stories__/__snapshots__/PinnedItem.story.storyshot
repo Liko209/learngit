@@ -31,6 +31,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
 }
 
 .c6.c6 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -43,6 +44,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
 }
 
 .c6.c6 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -52,6 +54,10 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+}
+
+.c6.c6.multiline {
+  margin: 0;
 }
 
 .c2 {
@@ -137,11 +143,12 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
     className="c0"
   >
     <div
-      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
       data-postid={123}
       data-test-automation-id="pinned-section"
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -152,7 +159,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
-      tabIndex="0"
+      tabIndex={0}
     >
       <div
         className="c2"
@@ -180,7 +187,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           data-test-automation-id="pinned-creator"
         >
           <span
-            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+            className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
           >
             Virginia Gill
           </span>
@@ -202,20 +209,18 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           Files that get shared in your conversation automatically show up here.
         </div>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
   </div>
   <div
     className="c0"
   >
     <div
-      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
       data-postid={123}
       data-test-automation-id="pinned-section"
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -226,7 +231,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
-      tabIndex="0"
+      tabIndex={0}
     >
       <div
         className="c2"
@@ -254,7 +259,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           data-test-automation-id="pinned-creator"
         >
           <span
-            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+            className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
           >
             Virginia Gill
           </span>
@@ -276,20 +281,18 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           Files that get shared in your conversation automatically show up here.
         </div>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
   </div>
   <div
     className="c0"
   >
     <div
-      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
       data-postid={123}
       data-test-automation-id="pinned-section"
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -300,7 +303,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
-      tabIndex="0"
+      tabIndex={0}
     >
       <div
         className="c2"
@@ -328,7 +331,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           data-test-automation-id="pinned-creator"
         >
           <span
-            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+            className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
           >
             Virginia Gill
           </span>
@@ -350,20 +353,18 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           Files that get shared in your conversation automatically show up here.
         </div>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
   </div>
   <div
     className="c0"
   >
     <div
-      className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c1"
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
       data-postid={123}
       data-test-automation-id="pinned-section"
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -374,7 +375,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
-      tabIndex="0"
+      tabIndex={0}
     >
       <div
         className="c2"
@@ -402,7 +403,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           data-test-automation-id="pinned-creator"
         >
           <span
-            className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+            className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
           >
             Virginia Gill
           </span>
@@ -424,9 +425,6 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
           Files that get shared in your conversation automatically show up here.
         </div>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
   </div>
 </div>

@@ -3,12 +3,11 @@
  * @Date: 2018-12-05 18:30:30
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
-import storeManager from '@/store';
-import { getGlobalValue } from '@/store/utils';
+import storeManager, { ENTITY_NAME } from '@/store';
+import { getGlobalValue, getPresence, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
 import { container } from 'framework';
@@ -19,11 +18,15 @@ import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
+import { IMessageService } from '@/modules/message/interface';
 
 const globalStore = storeManager.getGlobalStore();
 
 class AvatarActionsViewModel extends StoreViewModel<Props>
   implements ViewProps {
+  @IMessageService private _messageService: IMessageService;
   @observable
   private _isShowDialog: boolean = false;
 
@@ -40,7 +43,7 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
       callCount = telephonyService.getAllCallCount();
     } catch (e) {
       mainLogger.info(
-        '[AvatarActionsViewModel] [UI TelephonyService] User has no Telephony permission: ${e}',
+        `[AvatarActionsViewModel] [UI TelephonyService] User has no Telephony permission: ${e}`,
       );
     }
 
@@ -100,6 +103,23 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
 
   handleSendFeedback = () => {
     UploadRecentLogs.show();
+  };
+
+  @computed
+  get presence() {
+    return getPresence(this.currentUserId);
+  }
+
+  @computed
+  get person() {
+    return getEntity<Person, PersonModel>(
+      ENTITY_NAME.PERSON,
+      this.currentUserId,
+    );
+  }
+
+  handleOpen = () => {
+    this._messageService.open(this.currentUserId);
   };
 }
 

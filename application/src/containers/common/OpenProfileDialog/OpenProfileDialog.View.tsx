@@ -9,20 +9,43 @@ import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { OpenProfileDialogProps, OpenProfileDialogViewProps } from './types';
 import portalManager from '@/common/PortalManager';
-import { OpenProfile } from '@/common/OpenProfile';
 import { withRCMode } from '@/containers/withRCMode';
+import { Dialog } from '@/containers/Dialog';
+import { JuiDialogFuncProps } from 'jui/components/Dialog';
 
 type Props = OpenProfileDialogProps & OpenProfileDialogViewProps;
 
 @observer
 @withRCMode()
 class OpenProfileDialogView extends Component<Props> {
+  private _dismiss: Function;
   constructor(props: Props) {
     super(props);
   }
 
+  private _show = (
+    id: number,
+    ProfileDialog: React.ComponentType<any>,
+    beforeClick?: (() => void) | null,
+    afterClick?: (() => void) | null,
+    options?: JuiDialogFuncProps,
+  ) => {
+    beforeClick && beforeClick();
+    if (this._dismiss) {
+      this._dismiss();
+    }
+    const { dismiss } = Dialog.simple(<ProfileDialog id={id} />, {
+      size: 'medium',
+      scroll: 'body',
+      ...options,
+    });
+
+    afterClick && afterClick();
+    this._dismiss = dismiss;
+  };
+
   private _onClickOpenProfileDialog = (event: MouseEvent<HTMLElement>) => {
-    const { id, beforeClick, afterClick } = this.props;
+    const { beforeClick, id, afterClick, profileDialog } = this.props;
     // needed for avoid Blinking when switching dialog
     const transitionDuration = portalManager.profilePortalIsShow
       ? {
@@ -30,8 +53,9 @@ class OpenProfileDialogView extends Component<Props> {
         }
       : undefined;
 
-    OpenProfile.show(
+    this._show(
       id,
+      profileDialog,
       () => {
         beforeClick && beforeClick(event);
       },

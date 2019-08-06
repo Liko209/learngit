@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
+
 enum CALL_STATE {
   IDLE = 'idle',
   CONNECTING = 'connecting',
@@ -24,16 +26,9 @@ enum RECORD_STATE {
   DISABLED = 'disabled',
 }
 
-enum CALL_DIRECTION {
-  OUTBOUND = 'outbound',
-  INBOUND = 'inbound',
-}
-
 enum MUTE_STATE {
   IDLE = 'idle',
   MUTED = 'muted',
 }
 
-export {
-  CALL_STATE, HOLD_STATE, RECORD_STATE, CALL_DIRECTION, MUTE_STATE,
-};
+export { CALL_STATE, HOLD_STATE, RECORD_STATE, CALL_DIRECTION, MUTE_STATE };

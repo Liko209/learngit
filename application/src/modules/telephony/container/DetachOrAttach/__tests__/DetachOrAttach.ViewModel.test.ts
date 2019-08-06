@@ -6,7 +6,7 @@
 
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable, Jupiter } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { CALL_STATE } from '../../../FSM';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
@@ -14,7 +14,12 @@ import { TelephonyService } from '../../../service/TelephonyService';
 import { DetachOrAttachViewModel } from '../DetachOrAttach.ViewModel';
 import { GlobalConfigService } from 'sdk/module/config';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
+import * as media from '@/modules/media/module.config';
 
+jest.mock('@/modules/media/service');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(media.config);
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AuthUserConfig');
 

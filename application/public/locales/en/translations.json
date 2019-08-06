@@ -3,7 +3,8 @@
     "button": {
       "ariaToggleOn": "On, click to turn off",
       "ariaToggleOff": "Off, click to turn on",
-      "tryAgain": "Try again"
+      "tryAgain": "Try again",
+      "unblock": "Unblock"
     },
     "dialog": {
       "OK": "OK",
@@ -15,7 +16,8 @@
       "send": "Send",
       "delete": "Delete",
       "close": "Close",
-      "deleteAll": "Delete all"
+      "deleteAll": "Delete all",
+      "edit": "Edit"
     },
     "prompt": {
       "NoInternetConnection": "No Internet Connection",
@@ -23,7 +25,9 @@
       "tryAgain": "Try again.",
       "tryAgainLater": "Try again later.",
       "thenTryAgain": "then try again.",
-      "loadError": "Oops! Something went wrong, please try again."
+      "loadError": "Oops! Something went wrong, please try again.",
+      "switchCall": "You're currently on an active call on another device.",
+      "switchCallAction": " Switch call to this device"
     },
     "preposition": {
       "in": "in"
@@ -76,6 +80,19 @@
     "reload": "Reload",
     "goToConversation": "Go to conversation"
   },
+  "presence": {
+    "available": "Available",
+    "doNotDisturb": "Do not disturb",
+    "inMeeting": "In a meeting",
+    "onCall": "On a call",
+    "offline": "Offline",
+    "invisible": "Invisible",
+    "prompt": {
+      "topBannerInfoWhenDnd": "All incoming calls and notifications are blocked.",
+      "updatePresenceFailedForServerIssue": "Sorry, something went wrong on our end, we weren't able to update your presence. Try again later.",
+      "updatePresenceFailedForNetworkIssue": "Sorry, we weren't able to update your presence. Check your network connection, then try again."
+    }
+  },
   "auth": {
     "signIn": "Sign in",
     "signOut": "Sign out",
@@ -97,7 +114,8 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
-    "openDialer": "Open the dialer"
+    "openDialer": "Open the dialer",
+    "editProfile": "Edit profile"
   },
   "globalSearch": {
     "search": "Search",
@@ -143,6 +161,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
+    "guests": "Guests",
     "showUnreads": "Show unread",
     "meGroup": "me",
     "mentionPosts": "Mentions",
@@ -230,7 +249,8 @@
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
       "newMessages": "new messages",
-      "newMessagesDivider": "New messages"
+      "newMessagesDivider": "New messages",
+      "jumpToLatest": "Jump to latest"
     },
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",
@@ -270,8 +290,7 @@
       "MessageLoadingErrorTipForNetworkIssue": "We aren't able to open this conversation. Check your network connection, ",
       "MessageLoadingErrorTipForServerIssue": "Sorry, something went wrong on our end and we aren't able to open this conversation. ",
       "NewMessage": "New Message",
-      "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
-      "newMessageTipLink": "create a Team instead.",
+      "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should <0>create a Team</0> instead.",
       "newMessageDirectlyTip": "Send the message to the selected contacts individually.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
@@ -282,7 +301,8 @@
       "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
       "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again.",
       "deleteFileBackendError": "Sorry, something went wrong on our end and we weren't able to delete this file. Try again later.",
-      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again."
+      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again.",
+      "editProfileTitle": "Edit Profile"
     },
     "fileAction": {
       "deleteFile": "Delete file",
@@ -293,6 +313,7 @@
     "message": "Message",
     "atMentionAllTeam": "Team",
     "atMentionAllAdmin": "admin",
+    "atMentionTeamSuffix": "(notify everyone)",
     "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
     "typingIndicator": {
       "oneTyping": "<0>{{personA}}</0> is typing...",
@@ -329,6 +350,7 @@
       "started a audio conference": "started an audio conference",
       "started a video chat": "started a video chat",
       "replied": "replied",
+      "reply": "replied to",
       "via": "via"
     },
     "meeting": {
@@ -447,9 +469,28 @@
       "webpage": "Webpage",
       "ariaWebpage": "web page",
       "ariaGoToMe": "Go to the workstation of yourself",
-      "ariaGoToOther": "Go to the conversation with {{name}}"
+      "ariaGoToOther": "Go to the conversation with {{name}}",
+      "edit": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "jobTitle": "Title",
+        "location": "Location",
+        "department": "Department",
+        "homepage": "Webpage",
+        "phone": "Phone",
+        "homepageError": "Invalid webpage address",
+        "editProfileNetworkError": "We weren't able to save the edit. Check your network connection, then try again.",
+        "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later.",
+        "editProfilePhotoTitle": "Edit profile photo",
+        "editProfilePhotoUploadPhoto": "Upload photo",
+        "editProfilePhotoZoomText": "Zoom"
+      }
+    },
+    "group": {
+      "addPeople": "Add people"
     },
     "team": {
+      "showAllCount": "Show all {{count}}",
       "Members": "Members",
       "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",
@@ -457,6 +498,7 @@
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
       "MembersMayPostMessages": "Allow members to post messages",
       "MembersMayAddOtherMembers": "Allow members to add other members",
+      "MembersCanAtTeamMention": "Allow members to @team mention",
       "MembersMayPinPosts": "Allow members to pin posts",
       "teamName": "Team name",
       "teamNamePlaceholder": "Enter team name",
@@ -464,6 +506,7 @@
       "allowTeamMembersTo": "Allow team members to",
       "addTeamMembers": "Add team members",
       "postMessages": "Post messages",
+      "atTeamMention": "@team mention",
       "pinPosts": "Pin posts",
       "leaveTeam": "Leave team",
       "leaveTeamConfirmTitle": "Leave team",
@@ -563,7 +606,11 @@
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
       "conversationArchived": "This team was archived. To know more, contact the team administrator.",
-      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator."
+      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator.",
+      "newConversationTitle": "New conversation",
+      "newConversationTip": "Adding people will start a new conversation without the current message history. If you'd like to keep the history, you can <0>convert to a team</0> instead.",
+      "newConversationBackendError": "Sorry, something went wrong on our end and we weren't able to add people. Try again later.",
+      "newConversationNetworkError": "Sorry, we weren't able to add people. Check your network connection, then try again."
     }
   },
   "contact": {
@@ -653,7 +700,12 @@
       "CountryBlock": "VoIP is not available in your country.",
       "VoipUnavailable": "VoIP is currently not available.",
       "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
-      "AutoRecording": "Cannot start call recording."
+      "AutoRecording": "Cannot start call recording.",
+      "switchCall": {
+        "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
+        "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
+        "callEnded": "Your call with {{displayName}} is ended."
+      }
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -673,12 +725,11 @@
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {
-      "directNumber": "Direct Number",
-      "mainCompanyNumber": "Main Company Number",
+      "directNumber": "Direct number",
+      "mainCompanyNumber": "Main company number",
       "blocked": "Blocked",
-      "nickName": "Nick Name",
-      "companyNumber": "Company Number",
-      "companyFaxNumber": "Company Fax Number"
+      "companyNumber": "Company number",
+      "companyFaxNumber": "Company fax number"
     },
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
@@ -694,7 +745,14 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "switchCall": {
+      "cancel": "Cancel",
+      "switch": "Switch",
+      "title": "Call Switch",
+      "content": "You're currently on an active call with {{displayName}}. Would you like to continue the call on this device?",
+      "unknownCaller": "an unknown caller"
+    }
   },
   "phone": {
     "tab": {
@@ -773,6 +831,7 @@
   },
   "integration": {},
   "setting": {
+    "playSound": "Play sound",
     "errorText": {
       "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
       "network": "We weren't able to save your settings. Check your network connection, then try again.",
@@ -794,6 +853,63 @@
           "label": "New message badge count"
         }
       },
+      "sounds": {
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Choose sound for new direct messages"
+        },
+        "teamMessages": {
+          "label": "Team messages",
+          "description": "Choose a sound for new team messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Choose sound for when you are mentioned"
+        },
+        "incomingCall": {
+          "label": "Incoming voice calls",
+          "description": "Choose a sound for incoming voice calls"
+        },
+        "voiceMail": {
+          "label": "New voicemail",
+          "description": "Choose a sound for new voicemail"
+        },
+        "options": {
+          "2Beep": "2 Beeps",
+          "3Beep": "3 Beeps",
+          "Alert1": "Alert",
+          "Alert2": "Alert 2",
+          "Alert3": "Alert 3",
+          "BingBong": "Bing Bong",
+          "Ching": "Ching",
+          "LogDrum2": "Log Drum",
+          "Snap": "Snap",
+          "Button9": "Squirt",
+          "Whoosh": "Whoosh",
+          "Whoosh2": "Whoosh 2",
+          "default": "Default",
+          "PhoneRing": "Phone Ring",
+          "air-raid-ring": "Air Raid",
+          "allusive-ring": "Allusive",
+          "attention-ring": "Attention",
+          "blub-blub-ring": "Blub Blub",
+          "buzzy-ring": "Buzzy",
+          "communication-channel-ring": "Channel Open",
+          "disco-ring": "Disco",
+          "door-bell-ring": "Door Bell",
+          "fab-ring": "Fairy",
+          "fast-bells-ring": "Fast Bells",
+          "high-gong-ring": "High Gong",
+          "indeed-ring": "Indeed",
+          "nice-ring": "Nice",
+          "ringing-bells-ring": "Ringing Bells",
+          "ring-ring": "Ring",
+          "simple-ring": "Simple",
+          "soothing-ring": "Soothing",
+          "0": "Off"
+        }
+      },
+
       "desktopNotifications": {
         "title": "Desktop notifications",
         "notificationsForBrowser": {

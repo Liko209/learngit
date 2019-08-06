@@ -21,7 +21,7 @@ const SETTING_ITEM__SPEAKER_SOURCE = SettingEntityIds.Phone_SpeakerSource;
 
 class MediaService implements IMediaService {
   private _globalVolume: number = 1;
-  private _outputDevices: MediaDeviceType[] = [];
+  private _allOutputDevices: MediaDeviceType[] = [];
 
   constructor() {
     autorun(() => {
@@ -29,9 +29,9 @@ class MediaService implements IMediaService {
         mediaManager.setGlobalVolume(this.globalVolume);
         this._globalVolume = this.globalVolume;
       }
-      if (this.outputDevices !== this._outputDevices) {
-        mediaManager.setOutputDevices(this.outputDevices);
-        this._outputDevices = this.outputDevices;
+      if (this.allOutputDevices !== this._allOutputDevices) {
+        mediaManager.updateAllOutputDevices(this.allOutputDevices);
+        this._allOutputDevices = this.allOutputDevices;
       }
     });
   }
@@ -39,6 +39,10 @@ class MediaService implements IMediaService {
   createMedia(mediaOptions: MediaOptions) {
     mediaManager.setGlobalVolume(this.globalVolume);
     return mediaManager.createMedia(mediaOptions);
+  }
+
+  getMedia(mediaId: string) {
+    return mediaManager.getMedia(mediaId);
   }
 
   canPlayType(mimeType: string) {
@@ -68,24 +72,26 @@ class MediaService implements IMediaService {
   }
 
   @computed
-  get outputDevices() {
-    const devices = this.outputDeviceEntity.value;
+  get allOutputDevices() {
+    const devices = this.outputDeviceEntity.source;
     let deviceIds = [];
     if (Array.isArray(devices) && devices.length !== 0) {
       deviceIds = devices
         .filter(
-          device => !this._isDefaultDevice(device) && !this._isVirtualDevice(device),
+          device =>
+            !MediaService.isDefaultDevice(device) &&
+            !MediaService.isVirtualDevice(device),
         )
         .map(device => device.deviceId);
     }
     return deviceIds;
   }
 
-  private _isDefaultDevice(device: MediaDeviceInfo) {
+  static isDefaultDevice(device: MediaDeviceInfo) {
     return device.deviceId === 'default' || /default/gi.test(device.label);
   }
 
-  private _isVirtualDevice(device: MediaDeviceInfo) {
+  static isVirtualDevice(device: MediaDeviceInfo) {
     return /Virtual/gi.test(device.label);
   }
 }

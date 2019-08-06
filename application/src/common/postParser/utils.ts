@@ -14,17 +14,16 @@ import {
 } from '@/common/emojiHelpers';
 import moize from 'moize';
 
-const isInRange = (index: number, range: TextRange) => index >= range.startIndex && index < range.startIndex + range.length;
+const isInRange = (index: number, range: TextRange) =>
+  index >= range.startIndex && index < range.startIndex + range.length;
 
-const containsRange = (who: TextRange, whom: TextRange) => (
+const containsRange = (who: TextRange, whom: TextRange) =>
   whom.length < who.length &&
-    isInRange(whom.startIndex, who) &&
-    isInRange(whom.startIndex + whom.length - 1, who)
-);
+  isInRange(whom.startIndex, who) &&
+  isInRange(whom.startIndex + whom.length - 1, who);
 
-const hasIntersection = (range1: TextRange, range2: TextRange) => (
-  isInRange(range1.startIndex, range2) || isInRange(range2.startIndex, range1)
-);
+const hasIntersection = (range1: TextRange, range2: TextRange) =>
+  isInRange(range1.startIndex, range2) || isInRange(range2.startIndex, range1);
 
 const getComplementRanges = (ranges: TextRange[], fullLength: number) => {
   if (!ranges || !ranges.length) {
@@ -68,25 +67,30 @@ const getComplementRanges = (ranges: TextRange[], fullLength: number) => {
 //   return div.innerHTML === str;
 // };
 
-const HTMLUnescape = (str: string) => str.replace(regExpUnescape, (match: string) => mapUnescape[match]);
+const HTMLUnescape = (str: string) =>
+  str.replace(
+    regExpUnescape,
+    (match: string) => mapUnescape[match] || mapUnescape[`${match  };`],
+  );
 const getStylesObject = moize(
-  (styles: string) => styles
-    .split(';')
-    .filter(style => style.split(':')[0] && style.split(':')[1])
-    .map(style => [
-      style
-        .split(':')[0]
-        .trim()
-        .replace(/-./g, c => c.substr(1).toUpperCase()),
-      style.split(':')[1].trim(),
-    ])
-    .reduce(
-      (styleObj, style) => ({
-        ...styleObj,
-        [style[0]]: style[1],
-      }),
-      {},
-    ),
+  (styles: string) =>
+    styles
+      .split(';')
+      .filter(style => style.split(':')[0] && style.split(':')[1])
+      .map(style => [
+        style
+          .split(':')[0]
+          .trim()
+          .replace(/-./g, c => c.substr(1).toUpperCase()),
+        style.split(':')[1].trim(),
+      ])
+      .reduce(
+        (styleObj, style) => ({
+          ...styleObj,
+          [style[0]]: style[1],
+        }),
+        {},
+      ),
   {
     maxSize: 100,
     transformArgs: ([styles]) => [styles],
@@ -118,6 +122,8 @@ const getTopLevelChildNodesFromHTML = (_html: string) => {
         val = /^(['|"]).+\1$/.test(val) ? val.slice(1, -1) : val;
         if (key === 'style') {
           val = getStylesObject(val);
+        } else {
+          val = HTMLUnescape(val);
         }
         return val;
       };
@@ -168,7 +174,6 @@ const MATCH_NOTHING_REGEX = /a^/g;
 const AT_MENTION_REGEX = /\s<at_mention id=([-?\d]*?) \/>/gi;
 const MIN_ATMENTION_PATTERN_LENGTH = 20;
 const MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH = 20;
-const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>)(.*?)(<\/a>)/gi;
 
 const EMOJI_REGEX = /\s?<emoji data='([a-zA-Z0-9+/=]+)' \/>/gi;
 const MIN_EMOJI_PATTERN_LEN = 17;
@@ -187,7 +192,8 @@ const EMOJI_ASCII_REGEX_SIMPLE =
 // const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
 const EMOJI_ONE_REGEX_SIMPLE = '(^|\\s)?(:[a-z0-9\\+\\-\\_]+:)';
 
-const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) => `(^|\\s)?(:${Object.keys(customEmojiMap).join(':|:')}:)`;
+const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
+  `(^|\\s)?(:${Object.keys(customEmojiMap).join(':|:')}:)`;
 
 const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 
@@ -200,6 +206,7 @@ const EMOJI_SIZE_MAP = {
 // modified from Markdown.global_url_regex
 /* eslint-disable max-len */
 const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;
+const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>)(.*?)(<\/a>)/gi;
 
 const VALID_PHONE_REG = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g;
 const NUMBER_WITH_PLUS = 10;
