@@ -149,16 +149,18 @@ class E911ViewComponent extends Component<Props> {
   }
 
   onSubmit = async () => {
-    const { onSubmit } = this.props;
+    const { onSubmit, closeE911, successCallback } = this.props;
     await onSubmit();
     this.context();
-    this.props.successCallback && this.props.successCallback();
+    successCallback && successCallback();
+    // we should ensure only have one E911 dialog
+    closeE911(false);
   };
 
   onCancel = () => {
     this.context();
     this.props.closeE911(false);
-  }
+  };
 
   render() {
     const {
