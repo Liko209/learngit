@@ -9,7 +9,6 @@ type ActionsProps = {
   isPseudo?: boolean;
   maxButtonCount: number;
   canEditBlockNumbers: boolean;
-  showCall: boolean;
 };
 
 type ActionsViewProps = {
