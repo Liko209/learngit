@@ -11,7 +11,6 @@ import './jest/setup/media';
 import './jest/setup/selection';
 import './jest/setup/promise';
 
-import * as setupTimer from './jest/setup/timer';
 import { FakeStorage } from './utils';
 /* eslint-disable */
 
@@ -39,7 +38,6 @@ beforeAll(() => {
 afterAll(() => {
   delete window.localStorage;
   delete window.sessionStorage;
-  setupTimer.tearDown();
 
   process.off('unhandledRejection', log);
   process.env.LISTENING_TO_UNHANDLED_REJECTION = false;
