@@ -1,6 +1,7 @@
 enum FORM_ITEM_TYPE {
   TOGGLE,
   SELECT,
+  VIRTUALIZED_SELECT,
 }
 
 type DataTracking = {
@@ -22,9 +23,9 @@ type FormItem = {
   automationId: string;
 
   /**
-   * The i18n key of label
+   * The i18n key of title
    */
-  label?: string;
+  title?: string;
 
   /**
    * The i18n key of description
@@ -43,7 +44,13 @@ type FormItem = {
 };
 
 type SelectFormItem<T> = FormItem & {
-  type: FORM_ITEM_TYPE.SELECT;
+  type: FORM_ITEM_TYPE.SELECT | FORM_ITEM_TYPE.VIRTUALIZED_SELECT;
+  /**
+   * Will be called before the Setting Save
+   */
+  beforeSaving?: (settingValue: any) => Promise<boolean> | boolean | void;
+  valueSetter?: (value: T | undefined) => Promise<void> | void;
+  valueExtractor: ((value?: T | undefined) => string) | undefined;
   /**
    * Decide how the select renders value
    */
@@ -52,4 +59,13 @@ type SelectFormItem<T> = FormItem & {
    * Decide how the select renders source
    */
   sourceRenderer?: (args: { value: T; source?: T[] }) => React.ReactNode;
+  /**
+   * Secondary action Renderer
+   */
+  secondaryActionRenderer?: (args: {
+    value: T;
+    source?: T[];
+  }) => React.ReactNode;
 };
+
+export { FORM_ITEM_TYPE, DataTracking, SelectFormItem };
