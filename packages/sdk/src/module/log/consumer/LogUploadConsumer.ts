@@ -3,7 +3,7 @@
  * @Date: 2018-12-26 15:21:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogEntity } from 'foundation';
+import { LogEntity, LOG_LEVEL } from 'foundation';
 import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
@@ -182,6 +182,10 @@ export class LogUploadConsumer implements ILogConsumer {
     });
     this._persistentFSM.initial();
     this._flushInTimeout();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('unload', this._onWindowUnload);
+    }
   }
 
   canConsume() {
@@ -366,4 +370,21 @@ export class LogUploadConsumer implements ILogConsumer {
     } while (true);
     return false;
   }
+
+  private _onWindowUnload = async () => {
+    if (!configManager.getConfig().uploadEnabled) return;
+    if (this._uploadTaskQueueLoop.size() > 0) {
+      await this._uploadTaskQueueLoop.abortAll();
+    }
+    const uploadingLogs = ((await this._logPersistent.getAll()) || []).flatMap(
+      item => {
+        return transform.toLogEntity(item);
+      },
+    );
+    const collectorLogs = this.logProducer.produce(Number.MAX_VALUE);
+    const logs = [...uploadingLogs, ...collectorLogs];
+    if (logs.filter(log => log.level >= LOG_LEVEL.ERROR).length) {
+      this._logUploader.upload(logs, true);
+    }
+  };
 }

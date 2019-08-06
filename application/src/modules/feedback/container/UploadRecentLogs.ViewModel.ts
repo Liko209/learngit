@@ -13,7 +13,7 @@ import { FeedbackService } from '../service/FeedbackService';
 import {
   TaskQueueLoop,
   Task,
-} from 'sdk/service/uploadLogControl/consumer/task';
+} from 'sdk/module/log/consumer/task';
 import { Nullable } from 'sdk/types';
 
 const TASK_NAME = {

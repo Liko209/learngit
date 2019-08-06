@@ -10,7 +10,7 @@ import { ILogUploader } from '../uploader/types';
 import { LogMemoryPersistent, ILogPersistent } from '../persistent';
 import { configManager } from '../../config';
 import { Task } from '../task';
-import { LogEntity } from 'foundation';
+import { LogEntity, LOG_LEVEL } from 'foundation';
 import { ILogProducer } from '../../collectors/types';
 import { spyOnTarget } from 'sdk/__tests__/utils';
 
@@ -332,6 +332,103 @@ describe('LogConsumer', () => {
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
       logConsumer['_persistentTaskQueueLoop'].peekAll();
+    });
+  });
+
+  describe('_onWindowUnload()', () => {
+    it('should abort task', async () => {
+      configManager.mergeConfig({
+        uploadEnabled: true,
+        uploadQueueLimit: 10,
+        memoryCountThreshold: 0,
+      });
+      mockAccessor.isAccessible.mockReturnValue(true);
+      (mockLogPersistent.count as jest.Mock).mockResolvedValue(0);
+      const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
+      jest
+        .spyOn(logConsumer['_uploadTaskQueueLoop'], 'size')
+        .mockReturnValue(1);
+      jest.spyOn(logConsumer['_uploadTaskQueueLoop'], 'abortAll');
+      await logConsumer['_onWindowUnload']();
+      expect(
+        logConsumer['_uploadTaskQueueLoop']['abortAll'],
+      ).toHaveBeenCalled();
+    });
+    it('should get log from logPersistent & logProducer', async () => {
+      configManager.mergeConfig({
+        uploadEnabled: true,
+        uploadQueueLimit: 10,
+        memoryCountThreshold: 0,
+      });
+      mockAccessor.isAccessible.mockReturnValue(true);
+      (mockLogPersistent.count as jest.Mock).mockResolvedValue(0);
+      const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
+      const log1 = logEntityFactory.build({ level: LOG_LEVEL.INFO });
+      jest.spyOn(logConsumer['_logPersistent'], 'getAll').mockResolvedValue([]);
+      jest.spyOn(logConsumer['logProducer'], 'produce').mockReturnValue([log1]);
+      await logConsumer['_onWindowUnload']();
+      expect(logConsumer['_logPersistent']['getAll']).toHaveBeenCalled();
+      expect(logConsumer['logProducer']['produce']).toHaveBeenCalled();
+    });
+    it('should not upload when not error log exists', async () => {
+      configManager.mergeConfig({
+        uploadEnabled: true,
+        uploadQueueLimit: 10,
+        memoryCountThreshold: 0,
+      });
+      mockAccessor.isAccessible.mockReturnValue(true);
+      (mockLogPersistent.count as jest.Mock).mockResolvedValue(0);
+      const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
+      const log1 = logEntityFactory.build({ level: LOG_LEVEL.INFO });
+      jest
+        .spyOn(logConsumer['_uploadTaskQueueLoop'], 'size')
+        .mockReturnValue(1);
+      jest.spyOn(logConsumer['_uploadTaskQueueLoop'], 'abortAll');
+      jest.spyOn(logConsumer['_logPersistent'], 'getAll').mockResolvedValue([]);
+      jest.spyOn(logConsumer['logProducer'], 'produce').mockReturnValue([log1]);
+      jest.spyOn(logConsumer['_logUploader'], 'upload');
+      await logConsumer['_onWindowUnload']();
+      expect(logConsumer['_logUploader']['upload']).not.toHaveBeenCalled();
+    });
+    it('should call upload when error log exists', async () => {
+      configManager.mergeConfig({
+        uploadEnabled: true,
+        uploadQueueLimit: 10,
+        memoryCountThreshold: 0,
+      });
+      mockAccessor.isAccessible.mockReturnValue(true);
+      (mockLogPersistent.count as jest.Mock).mockResolvedValue(0);
+      const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
+      const log1 = logEntityFactory.build({ level: LOG_LEVEL.ERROR });
+      jest
+        .spyOn(logConsumer['_uploadTaskQueueLoop'], 'size')
+        .mockReturnValue(1);
+      jest.spyOn(logConsumer['_uploadTaskQueueLoop'], 'abortAll');
+      jest.spyOn(logConsumer['_logPersistent'], 'getAll').mockResolvedValue([]);
+      jest.spyOn(logConsumer['logProducer'], 'produce').mockReturnValue([log1]);
+      jest.spyOn(logConsumer['_logUploader'], 'upload');
+      await logConsumer['_onWindowUnload']();
+      expect(logConsumer['_logUploader']['upload']).toHaveBeenCalled();
     });
   });
 });

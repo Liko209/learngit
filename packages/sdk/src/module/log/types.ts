@@ -1,3 +1,5 @@
+import { LogEntity } from 'foundation/src';
+
 /*
  * @Author: Paynter Chen
  * @Date: 2019-03-24 11:06:23
@@ -55,6 +57,10 @@ interface IZipWorker {
   zip(zipItems: ZipItem[]): Promise<Blob>;
 }
 
+interface ILogChunkSplitStrategy {
+  split: (logs: LogEntity[], size: number) => string[];
+}
+
 export {
   IZipWorker,
   ZipItemLevel,
@@ -64,4 +70,5 @@ export {
   LocalZip,
   UploadedZip,
   IZipProducer,
+  ILogChunkSplitStrategy,
 };

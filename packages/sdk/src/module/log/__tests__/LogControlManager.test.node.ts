@@ -7,11 +7,10 @@
 import axios from 'axios';
 import { logManager, mainLogger } from 'foundation/log/index';
 import { notificationCenter } from 'sdk/service';
-import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../eventKey';
+import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../../service/eventKey';
 import { LogControlManager } from '../LogControlManager';
 import { configManager } from '../config';
-import { ServiceLoader } from '../../../module/serviceLoader';
-import { HealthStatusItemProvider } from '../HealthStatusItemProvider';
+import { ServiceLoader } from '../../serviceLoader';
 import { ZipItemLevel } from '../types';
 
 jest.mock('../HealthStatusItemProvider', () => {
@@ -26,9 +25,9 @@ jest.mock('../HealthStatusItemProvider', () => {
 
 jest.mock('../utils', () => {
   return {
-    createWorker: () => {
-      zip: () => {};
-    },
+    createWorker: () => ({
+      zip: () => {},
+    }),
   };
 });
 jest.mock('../zip.worker');
@@ -54,29 +53,29 @@ describe('LogControlManager', () => {
       const spy = jest.spyOn(logControlManager, 'configByPermission');
       spy.mockClear();
       notificationCenter.emit(ENTITY.USER_PERMISSION);
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
     it('should call setNetworkState when receive WINDOW.ONLINE event', () => {
       const spy = jest.spyOn(logControlManager, 'setNetworkState');
       spy.mockClear();
       notificationCenter.emit(WINDOW.ONLINE, { onLine: false });
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).nthCalledWith(1, false);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenNthCalledWith(1, false);
       notificationCenter.emit(WINDOW.ONLINE, { onLine: true });
-      expect(spy).toBeCalledTimes(2);
-      expect(spy).nthCalledWith(2, true);
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenNthCalledWith(2, true);
     });
     it('should call flush when receive SERVICE.LOGOUT event', () => {
       const spy = jest.spyOn(logControlManager, 'flush');
       spy.mockClear();
       notificationCenter.emit(SERVICE.LOGOUT);
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
     it('should call flush when receive WINDOW.BLUR event', () => {
       const spy = jest.spyOn(logControlManager, 'flush');
       spy.mockClear();
       notificationCenter.emit(DOCUMENT.VISIBILITYCHANGE, { isHidden: true });
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -130,7 +129,7 @@ describe('LogControlManager', () => {
       // mockLogManager.config.mockClear();
       mockPermissionService.hasPermission.mockRejectedValue({});
       await logControlManager.configByPermission();
-      expect(spyMainLoggerWarn).toBeCalled();
+      expect(spyMainLoggerWarn).toHaveBeenCalled();
       expect(spyLogManagerConfig).not.toHaveBeenCalled();
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(1);
     });
