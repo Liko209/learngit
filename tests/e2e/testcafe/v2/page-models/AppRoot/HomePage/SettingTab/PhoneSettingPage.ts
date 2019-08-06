@@ -85,7 +85,7 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection,);
+    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection);
   }
 
   get callerIDDropDownItems() {
@@ -237,6 +237,23 @@ export class PhoneSettingPage extends BaseWebComponent {
       callerIDList.push(item);
     }
     return callerIDList;
+  }
+
+  /** emergency address */
+  get emergencyAddressSettingLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-E911Setting');
+  }
+
+  get emergencyAddressSettingDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-E911Setting');
+  }
+
+  get emergencyAddressSettingEditButton() {
+    return this.getSelectorByAutomationId('settingItemButton-e911Setting');
+  }
+
+  async clickEmergencyAddressSettingEditButton() {
+    await this.t.click(this.emergencyAddressSettingEditButton);
   }
 
   // Extension setting

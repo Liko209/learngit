@@ -28,4 +28,17 @@ export class AlertDialog extends BaseWebComponent {
   async shouldBeDismiss() {
     await this.t.expect(this.self.exists).notOk();
   }
+
+
+  /** E911 */
+  get confirmAddressButton() {
+    // todo: i18n
+    this.warnFlakySelector();
+    return this.self.find('span').withText('Confirm address now.');
+  }
+
+  async clickConfirmAddressButton() {
+    await this.t.click(this.confirmAddressButton);
+  }
+
 }
