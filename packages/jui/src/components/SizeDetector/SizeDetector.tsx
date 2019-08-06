@@ -16,10 +16,10 @@ type JuiSizeDetectorProps = {
   handleSizeChanged: (size: Size) => void;
 };
 
-const defaultSources = [document.body];
+const DEFAULT_SOURCES = [document.body];
 
 const JuiSizeDetector = ({
-  sources = defaultSources,
+  sources = DEFAULT_SOURCES,
   handleSizeChanged,
 }: JuiSizeDetectorProps) => {
   const updateSize = (entries: ResizeObserverEntry[]) => {
