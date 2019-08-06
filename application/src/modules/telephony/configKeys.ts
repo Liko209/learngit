@@ -5,6 +5,7 @@
  */
 const TELEPHONY_KEYS = {
   E911_MARKED: 'e911_marked',
+  DIALER_MARKED: 'dialer_marked',
 };
 
 export { TELEPHONY_KEYS };

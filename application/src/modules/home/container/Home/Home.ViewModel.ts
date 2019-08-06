@@ -10,7 +10,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Action, Location, UnregisterCallback } from 'history';
 import { action, observable, computed } from 'mobx';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
-import { E911Config } from '@/modules/telephony/E911.config';
+import { E911UIConfig } from '@/modules/telephony/E911.config';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
@@ -25,7 +25,7 @@ class HomeViewModel extends StoreViewModel {
     TELEPHONY_SERVICE,
   );
 
-  private _E911Config: E911Config = container.get(E911Config);
+  private _E911UIConfig: E911UIConfig = container.get(E911UIConfig);
 
   private _unListen: UnregisterCallback;
 
@@ -73,11 +73,11 @@ class HomeViewModel extends StoreViewModel {
   };
 
   shouldShowE911 = () => {
-    return this._E911Config.getE911Marked();
+    return this._E911UIConfig.getE911Marked();
   };
 
   markE911 = () => {
-    this._E911Config.setE911Marked(true);
+    this._E911UIConfig.setE911Marked(true);
   };
 }
 export { HomeViewModel };
