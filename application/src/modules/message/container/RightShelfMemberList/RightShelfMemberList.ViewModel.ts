@@ -23,8 +23,10 @@ import {
   RIGHT_SHELL_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 
+const GUEST_SECTION_HEIGHT = 95;
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
+const AVATAR_MARGIN_BOTTOM = 8;
 const WRAPPER_PADDING = 24;
 class RightShelfMemberListViewModel
   extends StoreViewModel<RightShelfMemberListProps>
@@ -55,15 +57,27 @@ class RightShelfMemberListViewModel
     super(props);
   }
 
+  dispose = () => {
+    notificationCenter.off(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
+    super.dispose();
+  };
+
   init = () => {
-    notificationCenter.on(SERVICE.FETCH_REMAINING_DONE, () => {
-      this._getMemberAndGuestIds();
-    });
+    notificationCenter.on(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
     this.reaction(
       () => this.props.groupId,
       (id: number) => {
         if (id === undefined) return;
-        this._getMemberAndGuestIds();
+        this.isLoading = true;
+        setTimeout(() => {
+          this._getMemberAndGuestIds();
+        });
       },
       { fireImmediately: true },
     );
@@ -152,6 +166,20 @@ class RightShelfMemberListViewModel
   @computed
   get isTeam() {
     return this.group.isTeam;
+  }
+
+  @computed
+  get loadingH() {
+    return (
+      (this._guestCompanyIdsLen > 0 ? GUEST_SECTION_HEIGHT : 0) +
+      Math.min(
+        this.allMemberLength && this.allMemberLength > this.countPerRow
+          ? Math.ceil(this.allMemberLength / this.countPerRow)
+          : 1,
+        this._guestCompanyIdsLen > 0 ? 3 : 4,
+      ) *
+        (AVATAR_WIDTH + AVATAR_MARGIN_BOTTOM)
+    );
   }
 
   @computed
