@@ -6,6 +6,7 @@
       "./fixtures/MessageInput/Emoji.ts",
       "./fixtures/Search"
     ],
+    "exclude_tags": ["JPT-1747"],
     "browsers": ["selenium:chrome"]
   }
 }
