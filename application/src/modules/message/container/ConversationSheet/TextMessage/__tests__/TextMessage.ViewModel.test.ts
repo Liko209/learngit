@@ -18,7 +18,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { observable, autorun, runInAction } from 'mobx';
 
 jest.mock('@/utils/i18nT', () => ({
-  i18nP: (str: string) => str,
+  __esModule: true,
+  default: (str: string) => str,
 }));
 jest.mock('@/store/utils');
 jest.mock('sdk/module/config/service/UserConfigService');
