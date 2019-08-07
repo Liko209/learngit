@@ -135,8 +135,8 @@ export class GroupFetchDataController {
         );
       if (groupType === GROUP_QUERY_TYPE.TEAM) {
         result = result.slice(offset, offset + pageSize);
+        hasMore = result.length === pageSize;
       }
-      hasMore = result.length === pageSize;
       mainLogger
         .tags(LOG_TAG)
         .info(
