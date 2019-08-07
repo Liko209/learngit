@@ -45,6 +45,19 @@ const ERROR_MAP = {
   [ERROR_CODES_RC.EME_205]: 'EME-205',
 };
 
+// if not network we should give a default country show text field
+const DEFAULT_COUNTRY = {
+  id: '1',
+  isoCode: 'US',
+  name: 'United States',
+  callingCode: '1',
+  emergencyCalling: false,
+  freeSoftphoneLine: true,
+  loginAllowed: true,
+  numberSelling: true,
+  signupAllowed: true,
+};
+
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
 class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
@@ -82,10 +95,11 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     super(props);
     this.reaction(
       () => this.settingItemEntity.value,
-      (value: E911SettingInfo, reaction: IReactionPublic) => {
+      async (value: E911SettingInfo, reaction: IReactionPublic) => {
         if (value) {
           const cloneValue = { ...value };
           this.value = cloneValue;
+          await this.getCountryList();
           this.getCountryInfo();
           this.getRegion();
           reaction.dispose();
@@ -165,11 +179,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @action
   async getCountryInfo() {
     let currentCountry;
-    const countryList = await this.rcInfoService.getAllCountryList();
     const { countryName } = this.value;
-
-    this.countryList = countryList;
-
     // if enter setting page directly
     // countryName has exist in setting model
     if (countryName) {
@@ -184,8 +194,24 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       this.getFields(currentCountry);
       this.saveStateOrCountry('country', currentCountry);
       this.getState(currentCountry);
+    } else {
+      this.getFields(DEFAULT_COUNTRY);
     }
   }
+
+  @catchError.flash({
+    network: 'telephony.e911.prompt.networkError',
+    server: 'telephony.e911.prompt.backendError',
+  })
+  @action
+  getCountryList = async () => {
+    if (this.countryList.length > 0) {
+      return;
+    }
+    const countryList = await this.rcInfoService.getAllCountryList();
+    this.countryList = countryList;
+    await this.getCountryInfo();
+  };
 
   @computed
   get shouldShowSelectState() {
