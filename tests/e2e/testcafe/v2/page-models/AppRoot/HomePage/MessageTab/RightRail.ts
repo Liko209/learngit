@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { H } from '../../../../helpers';
-import { BaseWebComponent } from "../../../BaseWebComponent";
+import { BaseWebComponent } from '../../../BaseWebComponent';
 
 export class RightRail extends BaseWebComponent {
   get self() {
@@ -11,13 +11,21 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('right_rail_trigger_button');
   }
 
+  get expandStatusButtonByClass() {
+    this.warnFlakySelector();
+    return this.getSelector('.double_chevron_right');
+  }
+
   get foldStatusButton() {
     return this.getSelectorByAutomationId('right_rail_trigger_button');
   }
 
   get title() {
     this.warnFlakySelector();
-    return this.self.find('#right-rail-header').child().nth(0);
+    return this.self
+      .find('#right-rail-header')
+      .child()
+      .nth(0);
   }
 
   async shouldBeFolded() {
@@ -26,6 +34,27 @@ export class RightRail extends BaseWebComponent {
 
   async shouldBeExpanded() {
     await this.t.expect(this.self.clientWidth).gt(0);
+  }
+
+  get foldStatusButtonByClass() {
+    this.warnFlakySelector();
+    return this.getSelector('.double_chevron_left');
+  }
+
+  async clickFoldStatusButton() {
+    await this.t.click(this.foldStatusButtonByClass);
+  }
+
+  async hoverFoldStatusButton() {
+    await this.t.hover(this.foldStatusButtonByClass);
+  }
+
+  async clickExpandStatusButton() {
+    await this.t.click(this.expandStatusButtonByClass);
+  }
+
+  async hoverExpandStatusButton() {
+    await this.t.hover(this.expandStatusButtonByClass);
   }
 
   async expand() {
@@ -53,7 +82,10 @@ export class RightRail extends BaseWebComponent {
   }
 
   getEntry(automationId: string) {
-    return this.getComponent(TabEntry, this.getSelectorByAutomationId(automationId));
+    return this.getComponent(
+      TabEntry,
+      this.getSelectorByAutomationId(automationId),
+    );
   }
 
   get pinnedEntry() {
@@ -89,7 +121,29 @@ export class RightRail extends BaseWebComponent {
   }
 
   get moreButton() {
-    return this.getSelectorByAutomationId('right-shelf-more')
+    return this.getSelectorByAutomationId('right-shelf-more');
+  }
+
+  get resizeHandle() {
+    return this.getSelector('.resize-handle');
+  }
+
+  get expandStatusButtonDisplayed() {
+    return this.expandStatusButtonByClass.exists;
+  }
+
+  async clickMoreButton() {
+    if (!(await this.expandStatusButtonDisplayed)) {
+      await this.clickFoldStatusButton();
+    }
+    await this.t.click(this.moreButton);
+  }
+
+  async hoverMoreButton() {
+    if (!(await this.expandStatusButtonDisplayed)) {
+      await this.clickFoldStatusButton();
+    }
+    await this.t.hover(this.moreButton);
   }
 
   async openMore() {
@@ -131,6 +185,14 @@ export class RightRail extends BaseWebComponent {
   get pinnedTab() {
     return this.getComponent(PinnedTab);
   }
+
+  get memberListSection() {
+    return this.getComponent(RightShelfMemberList);
+  }
+
+  async resize(direction: 'left' | 'right', offset: number) {
+    await this.t.drag(this.resizeHandle, offset * (direction === 'right' ? 1 : -1), 0);
+  }
 }
 
 class TabEntry extends BaseWebComponent {
@@ -158,7 +220,10 @@ class BaseTab extends BaseWebComponent {
 
   getSubTitle(name: string) {
     const reg = new RegExp(`^${name}`);
-    return this.getSelectorByAutomationId('rightRail-list-subtitle', this.self).withText(reg);
+    return this.getSelectorByAutomationId(
+      'rightRail-list-subtitle',
+      this.self,
+    ).withText(reg);
   }
 
   async countOnSubTitleShouldBe(n: number) {
@@ -177,7 +242,6 @@ class BaseTab extends BaseWebComponent {
     await this.t.expect(this.items.count).eql(n);
   }
 
-
   get titles() {
     return this.items.find('.list-item-primary');
   }
@@ -191,9 +255,9 @@ class BaseTab extends BaseWebComponent {
   }
 
   async nthItemTitleShouldBe(n: number, title: string) {
-    await this.t.expect(this.titles.nth(n).withText(title).exists).ok(
-      `n: ${n} , title: ${title}`
-    );
+    await this.t
+      .expect(this.titles.nth(n).withText(title).exists)
+      .ok(`n: ${n} , title: ${title}`);
   }
 
   async shouldHasTitle(title: string) {
@@ -214,7 +278,6 @@ class BaseTab extends BaseWebComponent {
 }
 
 class FilesTab extends BaseTab {
-
   get subTitle() {
     return this.getSubTitle('Files');
   }
@@ -226,7 +289,6 @@ class FilesTab extends BaseTab {
   nthItem(n: number) {
     return this.getComponent(ImageAndFileItem, this.items.nth(n));
   }
-
 }
 class ImagesTab extends BaseTab {
   get subTitle() {
@@ -240,7 +302,6 @@ class ImagesTab extends BaseTab {
   nthItem(n: number) {
     return this.getComponent(ImageAndFileItem, this.items.nth(n));
   }
-
 }
 
 class EventsTab extends BaseTab {
@@ -263,9 +324,11 @@ class NotesTab extends BaseTab {
   }
 
   get secondaryText() {
-    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+    return this.getSelectorByAutomationId(
+      'list-item-secondary-text',
+      this.self,
+    );
   }
-
 }
 
 class ImageAndFileItem extends BaseWebComponent {
@@ -276,7 +339,7 @@ class ImageAndFileItem extends BaseWebComponent {
   get fileThumbnail() {
     return this.getSelectorByAutomationId('iconThumbnail', this.self);
   }
-  
+
   get docIcon() {
     return this.getSelectorByIcon('doc', this.self);
   }
@@ -298,7 +361,10 @@ class ImageAndFileItem extends BaseWebComponent {
   }
 
   get secondaryText() {
-    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+    return this.getSelectorByAutomationId(
+      'list-item-secondary-text',
+      this.self,
+    );
   }
 
   get creator() {
@@ -316,7 +382,6 @@ class ImageAndFileItem extends BaseWebComponent {
   get previewIcon() {
     return this.getSelectorByIcon('image_preview', this.self);
   }
-
 }
 
 class LinksTab extends BaseTab {
@@ -333,7 +398,10 @@ class LinksTab extends BaseTab {
   }
 
   get secondaryTexts() {
-    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+    return this.getSelectorByAutomationId(
+      'list-item-secondary-text',
+      this.self,
+    );
   }
 }
 
@@ -357,15 +425,20 @@ class PinnedTab extends BaseTab {
   }
 
   nthItem(n: number) {
-    return this.getComponent(PinnedItem, this.items.nth(n))
+    return this.getComponent(PinnedItem, this.items.nth(n));
   }
 
   itemByPostId(postId: string) {
-    return this.getComponent(PinnedItem, this.items.filter(`[data-postid="${postId}"]`));
+    return this.getComponent(
+      PinnedItem,
+      this.items.filter(`[data-postid="${postId}"]`),
+    );
   }
 
   async shouldContainPostItem(postId: string) {
-    await this.t.expect(this.items.withAttribute('data-postid', postId).exists).ok();
+    await this.t
+      .expect(this.items.withAttribute('data-postid', postId).exists)
+      .ok();
   }
 }
 
@@ -374,19 +447,19 @@ class PinnedItem extends BaseWebComponent {
     return this.self.getAttribute('data-postid');
   }
   get creator() {
-    return this.getSelectorByAutomationId("pinned-creator", this.self);
+    return this.getSelectorByAutomationId('pinned-creator', this.self);
   }
 
   get createTime() {
-    return this.getSelectorByAutomationId("pinned-createTime", this.self);
+    return this.getSelectorByAutomationId('pinned-createTime', this.self);
   }
 
   get postText() {
-    return this.getSelectorByAutomationId("pinned-text", this.self);
+    return this.getSelectorByAutomationId('pinned-text', this.self);
   }
 
   get attachmentIcons() {
-    return this.getSelectorByAutomationId("pinned-item-icon", this.self);
+    return this.getSelectorByAutomationId('pinned-item-icon', this.self);
   }
 
   get nonFileOrImageAttachmentsTexts() {
@@ -398,7 +471,7 @@ class PinnedItem extends BaseWebComponent {
   }
 
   get moreAttachmentsInfo() {
-    return // TODO
+    return; // TODO
   }
 
   async shouldBePostId(postId: string) {
@@ -410,22 +483,56 @@ class PinnedItem extends BaseWebComponent {
   }
 
   async postTextShouldBe(text: string | RegExp) {
-    if (typeof text == "string") {
+    if (typeof text == 'string') {
       await this.t.expect(this.postText.withText(text).exists).ok();
     } else {
       await this.t.expect(this.postText.textContent).match(text);
     }
-
   }
 
   async shouldHasFileOrImage(fileName: string) {
-    await this.t.expect(this.fileOrImageFileNames.withText(fileName).exists).ok();
+    await this.t
+      .expect(this.fileOrImageFileNames.withText(fileName).exists)
+      .ok();
   }
 
   async shouldHasAttachmentsText(text: string) {
-    await this.t.expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists).ok();
+    await this.t
+      .expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists)
+      .ok();
+  }
+}
+
+class RightShelfMemberList extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
   }
 
+  get header() {
+    return this.getSelectorByAutomationId('rightShellMemberListHeader');
+  }
 
+  get showAllLink() {
+    return this.getSelectorByAutomationId('rightShellMemberListHeader').find('span[data-test-automation-id="rightShellMemberListHeaderShowAllLink"]')
+  }
 
+  get addMemberButton() {
+    return this.getSelectorByAutomationId('rightShellMemberListHeaderAddButton')
+  }
+
+  get body() {
+    return this.getSelectorByAutomationId('rightShellMemberListBody');
+  }
+
+  get members() {
+    return this.getSelectorByAutomationId('rightShellMemberListMembers')
+  }
+
+  get guests() {
+    return this.getSelectorByAutomationId('rightShellMemberListGuests')
+  }
+
+  getAvatarById(id: number) {
+    return this.getSelectorByAutomationId('rightShellMemberListAvatar').filter(`[uid='${id}']`)
+  }
 }

@@ -25,7 +25,7 @@ import {
   extractHiddenGroupIdsWithoutUnread,
 } from '../../profile';
 import { transform } from '../../../service/utils';
-import { uniqueArray } from '../../../utils';
+import { uniqueArray, GlipTypeUtil } from '../../../utils';
 import TypeDictionary from '../../../utils/glip-type-dictionary/types';
 import { compareName } from '../../../utils/helper';
 import { isValidEmailAddress } from '../../../utils/regexUtils';
@@ -43,13 +43,14 @@ import { LAST_ACCESS_VALID_PERIOD } from '../../search/constants';
 import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { SortUtils } from 'sdk/framework/utils';
+import { PresenceService } from 'sdk/module/presence';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
-/* eslint-disable */
 const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-const MAX_LEFT_RAIL_GROUP: number = 80;
+const DEFAULT_PAGE_SIZE = 20;
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -77,12 +78,18 @@ export class GroupFetchDataController {
     groupType = GROUP_QUERY_TYPE.ALL,
     offset = 0,
     limit: number,
-  ): Promise<Group[]> {
+    pageSize: number = DEFAULT_PAGE_SIZE,
+  ): Promise<{ data: Group[]; hasMore: boolean }> {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
-    mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
+    mainLogger
+      .tags(LOG_TAG)
+      .info(
+        `getGroupsByType() offset:${offset} limit:${limit} groupType:${groupType} pageSize:${pageSize}`,
+      );
     let result: Group[] = [];
+    let hasMore: boolean = false;
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
@@ -97,6 +104,7 @@ export class GroupFetchDataController {
       const hiddenIds = profile
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
+      mainLogger.tags(LOG_TAG).info(`getGroupsByType() check hiddenIds`);
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
@@ -110,27 +118,36 @@ export class GroupFetchDataController {
           (userId ? item.members.includes(userId) : true) &&
           (isTeam ? item.is_team === isTeam : !item.is_team),
       );
-      if (offset !== 0) {
-        result = result.slice(offset + 1, result.length);
-      }
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          `getGroupsByType() fetched from entity source done origin length: ${
+            result.length
+          } type: ${groupType}`,
+        );
       result = await this.groupHandleDataController.filterGroups(result, limit);
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          `getGroupsByType() after filterGroups: ${
+            result.length
+          } type: ${groupType}`,
+        );
+      if (groupType === GROUP_QUERY_TYPE.TEAM) {
+        result = result.slice(offset, offset + pageSize);
+      }
+      hasMore = result.length === pageSize;
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          'getGroupsByType() groupType:',
+          groupType,
+          'result:',
+          result.length,
+          hasMore,
+        );
     }
-    let count = result.length;
-    mainLogger
-      .tags(LOG_TAG)
-      .info('getGroupsByType() result origin count:', count);
-    if (count > MAX_LEFT_RAIL_GROUP) {
-      const permissionService = ServiceLoader.getInstance<PermissionService>(
-        ServiceConfig.PERMISSION_SERVICE,
-      );
-      const canShowAll = await permissionService.hasPermission(
-        UserPermissionType.CAN_SHOW_ALL_GROUP,
-      );
-      count = canShowAll ? count : MAX_LEFT_RAIL_GROUP;
-    }
-    return groupType === GROUP_QUERY_TYPE.FAVORITE
-      ? result
-      : result.slice(0, count);
+    return { data: result, hasMore };
   }
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
@@ -139,6 +156,105 @@ export class GroupFetchDataController {
       return groups.filter((group: Group) => group !== null) as Group[];
     }
     return [];
+  }
+
+  async getPersonIdsBySelectedItem(
+    ids: (number | string)[],
+  ): Promise<(number | string)[]> {
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    const canMentionTeam = permissionService.hasPermission(
+      UserPermissionType.CAN_MENTION_TEAM,
+    );
+    if (!canMentionTeam) {
+      return ids;
+    }
+    if (ids.length) {
+      const personIds = new Set<number | string>();
+      const groupIds: number[] = [];
+      ids.forEach((id: string | number) => {
+        if (
+          _.isString(id) ||
+          GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON)
+        ) {
+          personIds.add(id);
+        } else {
+          groupIds.push(id);
+        }
+      });
+      if (groupIds.length) {
+        const groups = await this.getGroupsByIds(groupIds);
+        groups.forEach(group => {
+          if (group.members && group.members.length) {
+            group.members.forEach(id => personIds.add(id));
+          }
+        });
+      }
+      return Array.from(personIds);
+    }
+    return [];
+  }
+
+  async getMembersAndGuestIds(
+    groupId: number,
+    onlineFirst: boolean = true,
+    sortFunc?: (A: Person, B: Person) => number,
+  ) {
+    let memberIds: number[] = [];
+    const guestIds: number[] = [];
+    const group = await this.entitySourceController.getEntityLocally(groupId);
+    if (group) {
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+      let members = await personService.getPersonsByIds(group.members);
+      const presenceService = ServiceLoader.getInstance<PresenceService>(
+        ServiceConfig.PRESENCE_SERVICE,
+      );
+      members = members.sort((lPerson: Person, rPerson: Person) => {
+        let result = 0;
+        if (onlineFirst) {
+          const lPresence = presenceService.getSynchronously(lPerson.id);
+          const rPresence = presenceService.getSynchronously(rPerson.id);
+          if (
+            lPresence &&
+            lPresence.presence === PRESENCE.AVAILABLE &&
+            (!rPresence || rPresence.presence !== PRESENCE.AVAILABLE)
+          ) {
+            result = -1;
+          } else if (
+            (!lPresence || lPresence.presence !== PRESENCE.AVAILABLE) &&
+            rPresence &&
+            rPresence.presence === PRESENCE.AVAILABLE
+          ) {
+            result = 1;
+          }
+        }
+        if (!result) {
+          if (sortFunc) {
+            result = sortFunc(lPerson, rPerson);
+          } else {
+            const lName = personService.getFullName(lPerson).toLowerCase();
+            const rName = personService.getFullName(rPerson).toLowerCase();
+            result = lName < rName ? -1 : lName > rName ? 1 : 0;
+          }
+        }
+        return result;
+      });
+      const memberSet = new Set(group.members);
+      const guestCompanyIds = new Set(group.guest_user_company_ids);
+      members.forEach((person: Person) => {
+        memberSet.delete(person.id);
+        if (guestCompanyIds.has(person.company_id)) {
+          guestIds.push(person.id);
+        } else {
+          memberIds.push(person.id);
+        }
+      });
+      memberIds = memberIds.concat(Array.from(memberSet));
+    }
+    return { memberIds, guestIds };
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
@@ -267,7 +383,8 @@ export class GroupFetchDataController {
     const recentSearchedGroups = recentFirst
       ? await this._getRecentSearchGroups([RecentSearchTypes.GROUP])
       : undefined;
-
+    // need @Thomas to fix
+    /* eslint-disable no-constant-condition */
     return (group: Group, terms: Terms) => {
       do {
         if (!this._isValidGroup(group) || group.members.length <= 2) {
@@ -367,6 +484,7 @@ export class GroupFetchDataController {
     );
 
     let result: Map<ModelIdType, RecentSearchModel> = new Map();
+    /* eslint-disable no-await-in-loop */
     for (const iterator of types) {
       const recentGroups = await searchService.getRecentSearchRecordsByType(
         iterator,
@@ -403,8 +521,7 @@ export class GroupFetchDataController {
 
         const isValidGroup = myGroupsOnly
           ? group.members.includes(currentUserId)
-          : !group.is_team ||
-            this._isPublicTeamOrIncludeUser(group, currentUserId);
+          : !group.is_team || this._isPublicTeamOrIncludeUser(group);
         if (!isValidGroup) {
           break;
         }
@@ -527,7 +644,6 @@ export class GroupFetchDataController {
       ? await this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
     const teamIdsIncludeMe = this._getTeamIdsIncludeMe();
-    const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
       let keyWeight: number = 0;
@@ -538,7 +654,7 @@ export class GroupFetchDataController {
 
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
-          isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          isMatched = this._isPublicTeamOrIncludeUser(team);
         }
 
         if (isMatched || searchKeyTerms.length === 0) {
@@ -562,7 +678,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        if (!this._isPublicTeamOrIncludeUser(team, currentUserId)) {
+        if (!this._isPublicTeamOrIncludeUser(team)) {
           break;
         }
 
@@ -723,7 +839,7 @@ export class GroupFetchDataController {
     return favoriteGroupIds.some((x: number) => groupId === x);
   }
 
-  private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
+  private _isPublicTeamOrIncludeUser(team: Group) {
     return (
       team.privacy === 'protected' || this._getTeamIdsIncludeMe().has(team.id)
     );
@@ -804,7 +920,7 @@ export class GroupFetchDataController {
       profile.favorite_group_ids.length > 0
     ) {
       let favoriteGroupIds = profile.favorite_group_ids.filter(
-        (id: any) => typeof id === 'number' && !isNaN(id),
+        (id: any) => typeof id === 'number' && !Number.isNaN(id),
       );
       const hiddenIds = await extractHiddenGroupIdsWithoutUnread(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);

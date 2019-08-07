@@ -10,10 +10,15 @@ import { withDialogOrNewWindow } from '../withDialogOrNewWindow';
 import { TelephonyService } from '../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store/TelephonyStore';
-import { container, injectable, decorate } from 'framework';
+import { container, injectable, decorate, Jupiter } from 'framework';
 import { ClientService } from '@/modules/common';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
+import * as media from '@/modules/media/module.config';
 
+jest.mock('@/modules/media/service');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(media.config);
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 decorate(injectable(), ClientService);

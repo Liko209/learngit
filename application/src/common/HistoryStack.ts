@@ -71,21 +71,24 @@ class HistoryStack {
       return true;
     }
     const [, category, subPath] = pathname.split('/');
-    return category.toLocaleLowerCase() === MESSAGES_CATEGORY_ROUTER && !getMessagesTitle(subPath);
+    return (
+      category.toLocaleLowerCase() === MESSAGES_CATEGORY_ROUTER &&
+      !getMessagesTitle(subPath)
+    );
   }
 
+  @computed
   get cursor() {
     let current = this._cursor;
-    const cursors = this._stack.reduce((
-      cursors: number[],
-      pathname: string,
-      index: number,
-    ) => {
-      if (this.isInvalidPath(pathname)) {
-        cursors.push(index);
-      }
-      return cursors;
-    }, []);
+    const cursors = this._stack.reduce(
+      (cursors: number[], pathname: string, index: number) => {
+        if (this.isInvalidPath(pathname)) {
+          cursors.push(index);
+        }
+        return cursors;
+      },
+      [],
+    );
     cursors.forEach((value: number) => {
       if (value <= this._cursor) {
         current -= 1;
@@ -94,11 +97,9 @@ class HistoryStack {
     return current;
   }
 
+  @computed
   get stack() {
-    const stack = this._stack.reduce((
-      stack: string[],
-      pathname: string,
-    ) => {
+    const stack = this._stack.reduce((stack: string[], pathname: string) => {
       if (!this.isInvalidPath(pathname)) {
         stack.push(pathname);
       }

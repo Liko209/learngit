@@ -27,6 +27,11 @@ enum RC_SIP_HEADER_NAME {
   RC_API_IDS = 'P-Rc-Api-Ids',
 }
 
+enum RC_REFER_EVENT {
+  REFER_REQUEST_ACCEPTED = 'referRequestAccepted',
+  REFER_REQUEST_REJECTED = 'referRequestRejected',
+}
+
 enum WEBPHONE_SESSION_EVENT {
   SDH_CREATED = 'SessionDescriptionHandler-created',
   ADD_TRACK = 'addTrack',
@@ -78,6 +83,13 @@ type OutboundRtpReport = {
   packetsSent: number;
 };
 
+type InviteOptions = {
+  fromNumber?: string;
+  homeCountryId?: string;
+  extraHeaders?: any;
+  RTCConstraints?: any;
+};
+
 type RttMS = {
   currentRoundTripTime: number;
 };
@@ -97,4 +109,6 @@ export {
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,
   MediaStatsReport,
+  RC_REFER_EVENT,
+  InviteOptions,
 };

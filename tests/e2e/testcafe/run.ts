@@ -30,7 +30,7 @@ async function runTests(runnerOpts) {
 
   runner
     .src([`${__dirname}/.dummy-test.ts`, ...runnerOpts.FIXTURES])
-    .filter(filterByTags(runnerOpts.INCLUDE_TAGS, runnerOpts.EXCLUDE_TAGS, readTestLog(runnerOpts.TESTS_LOG)))
+    .filter(filterByTags(runnerOpts.INCLUDE_TAGS, runnerOpts.EXCLUDE_TAGS, runnerOpts.CASE_FILTER, readTestLog(runnerOpts.TESTS_LOG)))
     .browsers(runnerOpts.BROWSERS)
     .reporter(runnerOpts.REPORTER, process.stdout)
     .screenshots(runnerOpts.SCREENSHOTS_PATH, runnerOpts.SCREENSHOT_ON_FAIL)
@@ -43,6 +43,7 @@ async function runTests(runnerOpts) {
       skipJsErrors: runnerOpts.SKIP_JS_ERROR,
       stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL,
       assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
+      debugOnFail: runnerOpts.DEBUG_ON_FAIL,
     });
   } finally {
     logger.info(`runner exit with ${failed} failed cases`);

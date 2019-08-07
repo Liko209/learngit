@@ -19,7 +19,7 @@ class PostUsedItemCache implements IUsedCache {
       ENTITY_NAME.POST,
     ) as MultiEntityMapStore<Post, PostModel>).getData();
 
-    const idsArray = Object.values(data).map(
+    const idsArray = Array.from(data.values()).map(
       (pstModel: PostModel) => pstModel.itemIds,
     );
 

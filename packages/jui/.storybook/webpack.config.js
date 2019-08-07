@@ -36,6 +36,10 @@ const moduleRules = [
   },
   {
     test: /\.svg$/,
+    include: [
+      path.resolve(__dirname, '../src/assets/country-flag'),
+      path.resolve(__dirname, '../src/assets/jupiter-icon'),
+    ],
     use: [
       {
         loader: 'svg-sprite-loader',

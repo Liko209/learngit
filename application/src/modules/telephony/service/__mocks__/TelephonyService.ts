@@ -10,6 +10,8 @@ class TelephonyService {
   getForwardingNumberList = jest.fn();
   getForwardPermission = jest.fn();
   makeCall = jest.fn();
+  switchCall = jest.fn();
+  getSwitchCall = jest.fn().mockResolvedValue({});
 }
 
 export { TelephonyService };

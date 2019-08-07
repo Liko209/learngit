@@ -17,6 +17,7 @@ import { goToConversationWithLoading } from '@/common/goToConversation';
 import { TypeDictionary } from 'sdk/utils';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { ProfileDialogGroup } from '@/modules/message/container/Profile/Dialog/Group';
 
 @observer
 class ProfileMiniCardGroupFooter extends Component<
@@ -50,7 +51,11 @@ class ProfileMiniCardGroupFooter extends Component<
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
-          <OpenProfileDialog id={id} beforeClick={this.handleCloseMiniCard}>
+          <OpenProfileDialog
+            id={id}
+            profileDialog={ProfileDialogGroup}
+            beforeClick={this.handleCloseMiniCard}
+          >
             <JuiButton variant="text" color="primary">
               {t('people.team.profile')}
             </JuiButton>

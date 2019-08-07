@@ -75,6 +75,7 @@ const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTU
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
+const CASE_FILTER = process.env.CASE_FILTER || configLoader.caseFilter;
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 const INIT_RESOLUTION = (process.env.INIT_RESOLUTION || process.env.MAX_RESOLUTION || '0x0').split('x').map(n => parseInt(n, 10));
 const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
@@ -86,6 +87,7 @@ const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
 const TESTS_LOG = process.env.TESTS_LOG || `tests-${new Date().toISOString().replace(/[:]/gm, '-')}.log`;
+const DEBUG_ON_FAIL = process.env.DEBUG_ON_FAIL === 'true';
 
 const GIT_SOURCE_BRANCH = process.env.BRANCH;
 const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
@@ -115,7 +117,9 @@ const RUNNER_OPTS = {
   LANGUAGE_CODE,
   DISABLE_SCREENSHOT,
   TESTS_LOG,
-}
+  DEBUG_ON_FAIL,
+  CASE_FILTER,
+};
 
 // beat dashboard configuration
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
@@ -123,6 +127,7 @@ const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.r
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
 const RUN_NAME = process.env.RUN_NAME || `[Jupiter][Debug][${new Date().toLocaleString()}]`;
 
+// see detail: https://wiki.ringcentral.com/display/XTO/Jupiter+account+type+detail
 enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
   "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)",
@@ -136,6 +141,9 @@ enum BrandTire {
   "CALL_LOG_READ_ONLY" = "kamino(Call-Log-Read-Only,Jupiter,1210,4488)",
   "CALL_LOG_USER0_WITH_OTHERS" = "kamino(Call_Log_User0_With_Others,Jupiter,1210,4488)",
   "RC_EMPTY_ONE_TIME" = "kamino(One-Time-Empty-Account,Jupiter,1210,4488)",
+  "RC_WITH_PHONE_DL" = "kamino(RC_WITH_PHONE_DL,Jupiter,1210,4488)",
+  "DID_WITH_MULTI_REGIONS" = "kamino(DID_Phone_With_Multi_Regions,Jupiter,1210,4488)",
+  "MAIN_50_WITH_GUEST_20" = "kamino(Main_50_With_Guest_20,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

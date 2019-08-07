@@ -4,19 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject, Jupiter } from 'framework';
-import { HomeService } from './service';
+import { IHomeService } from './interface/IHomeService';
 import { config } from './home.config';
 import { service } from 'sdk';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { IMessageService } from '@/modules/message/interface';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 class HomeModule extends AbstractModule {
-  @inject(HomeService) private _homeService: HomeService;
-  @inject(FeaturesFlagsService)
-  private _featuresFlagsService: FeaturesFlagsService;
+  @IHomeService private _homeService: IHomeService;
   @inject(Jupiter) private _jupiter: Jupiter;
   private _subModuleRegistered: boolean = false;
+  get _featuresFlagsService() {
+    return this._jupiter.get(FeaturesFlagsService);
+  }
 
   async bootstrap() {
     // load subModule
@@ -52,7 +53,7 @@ class HomeModule extends AbstractModule {
   addAsyncModuleOnInitializedListener() {
     if (this._homeService.hasModules(['message', 'telephony'])) {
       this._jupiter.onInitialized(
-        [MESSAGE_SERVICE, TELEPHONY_SERVICE],
+        [IMessageService, TELEPHONY_SERVICE],
         async (MessageService, TelephonyService) => {
           // TODO create Call HOC in telephony module and add Call component in home module
           const { Call } = await TelephonyService.callComponent();

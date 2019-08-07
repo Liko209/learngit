@@ -13,8 +13,8 @@ import HistoryStack from '@/common/HistoryStack';
 type recordProps = { title: string; pathname: string }[];
 
 type Props = WithTranslation & {
-  backRecord: recordProps;
-  forwardRecord: recordProps;
+  getBackRecord: () => recordProps;
+  getForwardRecord: () => recordProps;
   showBackPanel: boolean;
   showForwardPanel: boolean;
   disabledBack: boolean;
@@ -24,15 +24,15 @@ type Props = WithTranslation & {
   go: (type: OPERATION, index: number) => void;
   toggleBackPanel: (
     event:
-    | React.TouchEvent<Element>
-    | React.MouseEvent<HTMLElement>
-    | React.ChangeEvent<{}>,
+      | React.TouchEvent<Element>
+      | React.MouseEvent<HTMLElement>
+      | React.ChangeEvent<{}>,
   ) => void;
   toggleForwardPanel: (
     event:
-    | React.TouchEvent<Element>
-    | React.MouseEvent<HTMLElement>
-    | React.ChangeEvent<{}>,
+      | React.TouchEvent<Element>
+      | React.MouseEvent<HTMLElement>
+      | React.ChangeEvent<{}>,
   ) => void;
 };
 
@@ -44,8 +44,8 @@ class BackNForward extends Component<Props> {
 
   render() {
     const {
-      backRecord,
-      forwardRecord,
+      getBackRecord,
+      getForwardRecord,
       disabledBack,
       disabledForward,
       forward,
@@ -58,7 +58,7 @@ class BackNForward extends Component<Props> {
       <div style={{ display: 'flex' }}>
         <JuiHistoryOperation
           type={OPERATION.BACK}
-          menu={backRecord.reverse()}
+          menu={getBackRecord}
           disabled={disabledBack}
           tooltipTitle={t('common.back')}
           onClick={back}
@@ -67,7 +67,7 @@ class BackNForward extends Component<Props> {
         />
         <JuiHistoryOperation
           type={OPERATION.FORWARD}
-          menu={forwardRecord}
+          menu={getForwardRecord}
           tooltipTitle={t('common.forward')}
           disabled={disabledForward}
           onClick={forward}

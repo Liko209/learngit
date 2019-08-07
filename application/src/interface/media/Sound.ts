@@ -10,6 +10,8 @@ type SoundOptions = {
   url: string;
   muted: boolean;
   volume: number;
+  loop: boolean;
+  autoplay: boolean;
   seek: number;
   outputDevice?: MediaDeviceType;
   isDeviceSound?: boolean;

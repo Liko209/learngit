@@ -24,7 +24,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { DesktopNotificationsSettingModel as DNSM } from './NotificationsSettingHandler';
 
 class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
-DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_NewMessages;
 
@@ -38,8 +38,12 @@ DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
+      this.onProfileEntityUpdate(payload),
+    );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
   }
 
   async updateValue(value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS) {
@@ -60,11 +64,8 @@ DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
   }
   async fetchUserSettingEntity() {
     const settingItem: UserSettingEntity<
-    DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
+      DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
     > = {
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
       source: [
         DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
         DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION,

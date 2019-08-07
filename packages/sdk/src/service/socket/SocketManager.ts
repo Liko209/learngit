@@ -6,7 +6,12 @@
 import { SocketFSM, StateHandlerType } from './SocketFSM';
 import notificationCenter from '../notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../eventKey';
-import { mainLogger, HealthModuleManager, BaseHealthModule } from 'foundation';
+import {
+  mainLogger,
+  HealthModuleManager,
+  BaseHealthModule,
+  powerMonitor,
+} from 'foundation';
 import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
@@ -23,7 +28,6 @@ export class SocketManager {
   private _closingFSMs: { [key: string]: SocketFSM } = {};
   private _successConnectedUrls: string[] = [];
   private _hasLoggedIn: boolean = false;
-  private _isScreenLocked: boolean = false;
   private _isOffline: boolean = false;
   private _isFirstInit: boolean = true;
   private _currentId: number = 0;
@@ -46,6 +50,14 @@ export class SocketManager {
           state: this.activeFSM ? this.activeFSM.state : 'none',
         }),
       });
+
+    powerMonitor.onLock(this._onLockScreen);
+    powerMonitor.onUnlock(this._onUnlockScreen);
+  }
+
+  public cleanup() {
+    powerMonitor.offLock(this._onLockScreen);
+    powerMonitor.offUnlock(this._onUnlockScreen);
   }
 
   public static getInstance() {
@@ -69,26 +81,8 @@ export class SocketManager {
     mainLogger.tags(this._logPrefix).error(...messages);
   }
 
-  public onPowerMonitorEvent(actionName: string) {
-    this.info(
-      `[PowerMonitor] Locked[${this._isScreenLocked}] ==> ${actionName}`,
-    );
-
-    if (!this._isScreenLocked && actionName === 'lock-screen') {
-      this._isScreenLocked = true;
-      this._onLockScreen();
-    } else if (this._isScreenLocked && actionName === 'unlock-screen') {
-      this._isScreenLocked = false;
-      this._onUnlockScreen();
-    }
-  }
-
   public hasActiveFSM() {
     return this.activeFSM !== null;
-  }
-
-  public isScreenLocked() {
-    return this._isScreenLocked;
   }
 
   public isOffline() {
@@ -258,7 +252,7 @@ export class SocketManager {
       return;
     }
 
-    if (this._isScreenLocked) {
+    if (powerMonitor.isScreenLocked()) {
       this.info('Not start socket when online due to locked screen');
       return;
     }
@@ -296,13 +290,13 @@ export class SocketManager {
     }
   }
 
-  private _onLockScreen() {
+  private _onLockScreen = () => {
     if (!this.activeFSM) {
       this.info('No activeFSM when lock screen.');
     }
-  }
+  };
 
-  private _onUnlockScreen() {
+  private _onUnlockScreen = () => {
     if (this.isConnected()) {
       return;
     }
@@ -315,7 +309,7 @@ export class SocketManager {
       this.info('Will renew socketFSM due to unlocking screen.');
       this._restartFSM();
     }
-  }
+  };
 
   private _onReconnect(data: any) {
     // socket emit reconnect
@@ -459,10 +453,11 @@ export class SocketManager {
   }
 
   private _restartFSM() {
-    if (this._isScreenLocked || this._isDoingCanConnect()) {
+    const isScreenLocked = powerMonitor.isScreenLocked();
+    if (isScreenLocked || this._isDoingCanConnect()) {
       this.info(
-        'should not restartFSM _isScreenLocked:',
-        this._isScreenLocked,
+        'should not restartFSM isScreenLocked:',
+        isScreenLocked,
         ', _isDoingCanConnect:',
         this._isDoingCanConnect(),
       );

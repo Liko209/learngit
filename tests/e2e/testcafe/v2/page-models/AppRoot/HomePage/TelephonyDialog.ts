@@ -3,7 +3,7 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from 'testcafe';
 import { H } from '../../../helpers';
 import * as assert from 'assert';
-
+import { Selector } from 'testcafe';
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
@@ -209,8 +209,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
   //contact search
 
-  get contactSearchAvatar()
-  {
+  get contactSearchAvatar() {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-avatar');
   }
 
@@ -234,6 +233,31 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get forwardActionButton() {
     return this.getSelectorByAutomationId('telephony-forward-btn');
+  }
+
+  //call switch
+  get SwitchToptap(){
+    return this.getSelector('.MuiSnackbarContent-action.action').find('button').withText('Switch call to this device');
+  }
+  async clickSwitchToptap() {
+   await this.t.click(this.SwitchToptap);
+  }
+  get callSwitchDialog() {
+    return this.getSelectorByAutomationId('callSwitchDialog');
+  }
+
+  get SwitchOKButton() {
+    return  this.getSelectorByAutomationId('callSwitchOkButton');
+  }
+  async clickSwitchOKButton() {
+    await this.t.click(this.SwitchOKButton);
+  }
+  get CancelSwitchButton(){
+    return this.getSelectorByAutomationId('callSwitchCancelButton');
+  }
+
+  async clickCancelSwitchButton() {
+    await this.t.click(this.CancelSwitchButton);
   }
 
   // inbound call
@@ -411,7 +435,6 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickReplyWithWillCallBackEntryButton() {
-    await this.t.hover(this.replyWithWillCallBackEntry);
     await this.t.click(this.replyWithWillCallBackEntry);
   }
 
@@ -488,7 +511,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
 class CallerIdList extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="listbox"]')
+    return this.getSelector('.virtualized_select-list-container');
   }
 
   get callerIds() {
@@ -518,9 +541,9 @@ export class ContactSearchList extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-contact-search-list');
   }
 
-    /* scroll */
+  /* scroll */
   get scrollDiv() {
-      return this.getSelectorByAutomationId('virtualized-list', this.self);
+    return this.getSelectorByAutomationId('virtualized-list', this.self);
   }
 
   async scrollToY(y: number) {
@@ -532,10 +555,10 @@ export class ContactSearchList extends BaseWebComponent {
   }
 
   async scrollToMiddle() {
-      const scrollHeight = await this.scrollDiv.scrollHeight;
-      const clientHeight = await this.scrollDiv.clientHeight;
-      const middleHeight = (scrollHeight - clientHeight) / 2;
-      await this.scrollToY(middleHeight);
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    const clientHeight = await this.scrollDiv.clientHeight;
+    const middleHeight = (scrollHeight - clientHeight) / 2;
+    await this.scrollToY(middleHeight);
   }
 
   async expectStreamScrollToY(y: number) {
@@ -550,11 +573,11 @@ export class ContactSearchList extends BaseWebComponent {
     await this.t.click(this.searchResults.nth(n));
   }
 
-  get directDialIcon(){
+  get directDialIcon() {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0));
   }
 
-  get hasDirectDialIcon(){
+  get hasDirectDialIcon() {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0)).exists;
   }
 
@@ -614,3 +637,4 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
     await this.t.hover(this.unMuteButton);
   }
 }
+

@@ -40,8 +40,6 @@ class DashboardPair {
     let text = [];
     if (this.current) {
       text.push(this.current.toFixed(2), this.unit);
-    } else {
-      console.log('wuyx...', JSON.stringify(this));
     }
 
     if (this.last) {
@@ -88,35 +86,33 @@ class DashboardPair {
   }
 
   formatMemoryForHtml() {
-    let { color, text } = this._calculate(this.last, 100, 50, 1.1, 1.2);
+    let { color, text } = this._calculate(this.last, 500, 50, 1.1, 1.2);
 
     return `<span style="color:${color};margin-left:10px;margin-right:40px;">${text}</span>`
   }
 
   formatMemoryForGlip() {
-    let { icon, level } = this._calculate(this.last, 100, 50, 1.1, 1.2);
+    let { icon, level } = this._calculate(this.last, 500, 50, 1.1, 1.2);
     return { icon, level }
   }
 
   formatLinearRegressionForHtml(b: DashboardPair) {
     let resultOfK = this._calculate(this.last, 2, 0.2, 1.1, 1.2);
-    let resultOfB;
-    if (b) {
-      resultOfB = b._calculate(this.last, 500, 50, 1.1, 1.2);
-    }
+    let resultOfB = b._calculate(b.last, 500, 50, 1.1, 1.2);
+
     let color = _config.colors.pass;
 
-    if (resultOfK.level === 'warn' || (resultOfB && resultOfB.level === 'warn')) {
+    if (resultOfK.level === 'warn' || resultOfB.level === 'warn') {
       color = _config.colors.warning;
     }
 
-    if (resultOfK.level === 'block' || (resultOfB && resultOfB.level === 'block')) {
+    if (resultOfK.level === 'block' || resultOfB.level === 'block') {
       color = _config.colors.block;
     }
 
     let text = ['<span style="color:', color, ';margin-left:10px;margin-right:40px;font-size:18px">y = ',
       this.current, 'x + ', b.current];
-    if (resultOfB) {
+    if (this.last && b.last) {
       text.push('<span style="font-size: 14px;margin-left:10px;text-decoration: line-through;color:', color, '">y = ',
         this.last, 'x + ', b.last, '</span>');
     }

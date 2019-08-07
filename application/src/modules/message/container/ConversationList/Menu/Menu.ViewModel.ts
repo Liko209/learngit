@@ -8,13 +8,12 @@ import { computed } from 'mobx';
 import { ProfileService } from 'sdk/module/profile';
 import { StateService, GroupState } from 'sdk/module/state';
 import { Profile } from 'sdk/module/profile/entity';
-import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
-import { GLOBAL_KEYS } from '@/store/constants';
 import GroupStateModel from '@/store/models/GroupState';
 import { Group } from 'sdk/module/group/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -94,13 +93,6 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   ).hideConversation(this.groupId, true, shouldSkipNextTime)
 
   toggleRead = async () => {
-    const currentConversationId = getGlobalValue(
-      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-    );
-    if (this.groupId === currentConversationId && !this.isUnread) {
-      const globalStore = storeManager.getGlobalStore();
-      globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
-    }
     await ServiceLoader.getInstance<StateService>(
       ServiceConfig.STATE_SERVICE,
     ).updateReadStatus(this.groupId, !this.isUnread, false);

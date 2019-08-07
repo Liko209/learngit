@@ -39,7 +39,7 @@ test(formalName('Scale image', ['Foden.lin', 'P2', 'JPT-1248', 'JPT-1249', 'JPT-
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
+    await app.homePage.ensureLoaded()
   });
 
   await h(t).withLog('When I open a team and upload a image file that thumbnail support preview (png)', async () => {
@@ -47,15 +47,12 @@ test(formalName('Scale image', ['Foden.lin', 'P2', 'JPT-1248', 'JPT-1249', 'JPT-
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend(20e3);
+    await conversationPage.nthPostItem(-1).waitImageVisible();
   });
 
-
   //Entry 1: Conversation
-  const postId = await conversationPage.nthPostItem(-1).postId;
-  const posts = app.homePage.messageTab.conversationPage.posts;
-
   await h(t).withLog('When I click the image', async () => {
-    await t.click(posts.nth(-1).find('img'));
+    await t.click(conversationPage.nthPostItem(-1).images)
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;
@@ -115,8 +112,8 @@ test(formalName('Scale image', ['Foden.lin', 'P2', 'JPT-1248', 'JPT-1249', 'JPT-
     await imageTabEntry.enter();
   });
 
-  await h(t).withLog(`And I click the image item ${filesName[0]} thumbnail`, async () => {
-    await t.click(imageTab.nthItem(0).imageThumbnail)
+  await h(t).withLog(`And I click the image item ${filesName[0]}`, async () => {
+    await t.click(imageTab.nthItem(0).self)
   });
 
   await h(t).withLog('And I hover the image', async () => {
@@ -219,7 +216,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog(`When I click the image of the last post`, async () => {
-    await t.click(conversationPage.lastPostItem.img);
+    await t.click(conversationPage.lastPostItem.images);
   });
 
   await h(t).withLog(`Then the image viewer should be popup`, async () => {
@@ -242,7 +239,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When I close the viewer and open again`, async () => {
     await viewerDialog.clickCloseButton();
-    await t.click(conversationPage.lastPostItem.img);
+    await t.click(conversationPage.lastPostItem.images);
   });
 
   await h(t).withLog(`Then the image viewer should be popup`, async () => {
@@ -315,7 +312,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog(`When I click the small image`, async () => {
-    await t.click(conversationPage.postItemById(smallImagePostId).img);
+    await t.click(conversationPage.postItemById(smallImagePostId).images);
   });
 
   await h(t).withLog(`Then the image viewer should be popup`, async () => {
@@ -334,7 +331,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When I close the viewer and open large image`, async () => {
     await viewerDialog.clickCloseButton();
-    await t.click(conversationPage.postItemById(largeImagePostId).img);
+    await t.click(conversationPage.postItemById(largeImagePostId).images);
   });
 
   await h(t).withLog(`Then the image viewer should be popup`, async () => {

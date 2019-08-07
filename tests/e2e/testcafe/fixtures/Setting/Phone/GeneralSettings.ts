@@ -130,7 +130,7 @@ test.meta(<ITestMeta>{
   const saveButton = 'Save';
   const cancelButton = 'Cancel';
   const countryLabel = 'Country';
-  const areaCodeLabel = 'Area Code';
+  const areaCodeLabel = 'Area code';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -163,8 +163,11 @@ test.meta(<ITestMeta>{
   });
 });
 
-//Need account pool support
-//For now, use fixed account to run this case
+
+fixture('Phone/GeneralSettings')
+  .beforeEach(setupCase(BrandTire.DID_WITH_MULTI_REGIONS))
+  .afterEach(teardownCase());
+
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1790'],
@@ -179,17 +182,6 @@ test.meta(<ITestMeta>{
   const updateRegionDialog = settingTab.phoneSettingPage.updateRegionDialog;
   const countryListWithAreaCode = ['United States', 'China', 'Mexico'];
   const otherCountryWithoutAreaCode = 'France';
-
-  if (SITE_ENV == 'XMN-UP') {
-    loginUser.company.number = '2053800966';
-    loginUser.extension = '98001222';
-    loginUser.password = 'Test!123';
-  } else {
-    //GLP-CI1-XMN
-    loginUser.company.number = '(207) 464-2517';
-    loginUser.extension = '101';
-    loginUser.password = 'Test!123';
-  }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -218,7 +210,6 @@ test.meta(<ITestMeta>{
 
   for (let i in countryListWithAreaCode) {
     await h(t).withLog(`When select the country as "${countryListWithAreaCode[i]}"`, async () => {
-      // TODO
       await updateRegionDialog.clickCountryDropDown();
       await updateRegionDialog.selectCountryWithText(countryListWithAreaCode[i]);
     });
@@ -238,8 +229,6 @@ test.meta(<ITestMeta>{
 
 });
 
-//Need account pool support
-//For now, use fixed account to run this case
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1798'],
@@ -257,17 +246,6 @@ test.meta(<ITestMeta>{
   const country2 = 'China';
   const areaCodeForCountry2 = '10';
   const toast = 'Your region is updated successfully.';
-
-  if (SITE_ENV == 'XMN-UP') {
-    loginUser.company.number = '2053800966';
-    loginUser.extension = '98001222';
-    loginUser.password = 'Test!123';
-  } else {
-    //GLP-CI1-XMN
-    loginUser.company.number = '(207) 464-2517';
-    loginUser.extension = '101';
-    loginUser.password = 'Test!123';
-  }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);

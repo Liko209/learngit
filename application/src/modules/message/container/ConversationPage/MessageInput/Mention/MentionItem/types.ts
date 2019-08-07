@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '@/store/models/Person';
+import GroupModel from '@/store/models/Group';
 
 type MentionItemProps = {
   id: number;
@@ -12,11 +13,9 @@ type MentionItemProps = {
   currentIndex: number;
 };
 
-type MentionItemViewProps = {
-  selectHandler: Function;
-  index: number;
-  currentIndex: number;
-  person: PersonModel;
+type MentionItemViewProps = MentionItemProps & {
+  item: PersonModel & GroupModel;
+  isTeam: boolean;
 };
 
 export { MentionItemProps, MentionItemViewProps };

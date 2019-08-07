@@ -24,7 +24,9 @@ const fullWidthStyle = (theme: Theme, fullWidth?: boolean) => {
 };
 
 const JuiDialogContent = memo(styled(
-  ({ fullWidth, fill, ...props }: JuiDialogContentProps) => <MuiDialogContent {...props} classes={{ root: 'root' }} />,
+  ({ fullWidth, fill, ...props }: JuiDialogContentProps) => (
+    <MuiDialogContent {...props} classes={{ root: 'root' }} />
+  ),
 )`
   &.root {
     overflow-y: visible;
@@ -32,6 +34,9 @@ const JuiDialogContent = memo(styled(
   }
   & .root {
     ${({ theme, fullWidth }) => fullWidthStyle(theme, fullWidth)};
+  }
+  & > div[role='combobox']:last-child > div {
+    margin-bottom: 0;
   }
 `);
 

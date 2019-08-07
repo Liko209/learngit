@@ -156,7 +156,6 @@ describe('TestMenuViewModel', () => {
       });
       storeManager.getGlobalStore().set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, 1);
       await model.toggleRead();
-      expect(utils.getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI)).toBe(true);
       expect(stateService.updateReadStatus).toHaveBeenCalledTimes(1);
     }
   }

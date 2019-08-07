@@ -1,0 +1,23 @@
+/*
+* @Author: {{{userName}}} ({{{userEmail}}})
+* @Date: {{{currentDate}}}
+* Copyright © RingCentral. All rights reserved.
+*/
+import React from 'react';
+import { test, testable } from 'shield';
+import { shallow } from 'enzyme';
+//import { mountWithTheme } from 'shield/utils';
+import { {{ properCase name }}View } from '../{{ properCase name }}.View';
+
+
+describe('{{ properCase name }}View', () => {
+  @testable
+  class _viewMethods {
+    @test('should check text if exist while pass text as props')
+    t1() {
+      const props = {text: '1234'};
+      const wrapper = shallow(<{{ properCase name }}View {...props} />);
+      expect(wrapper.contains(props.text)).toBe(false);
+    }
+  }
+});

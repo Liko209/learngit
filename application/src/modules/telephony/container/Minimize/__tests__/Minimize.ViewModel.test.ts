@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable,Jupiter } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { MinimizeViewModel } from '../Minimize.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
@@ -13,6 +13,13 @@ import { GlobalConfigService } from 'sdk/module/config';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ClientService } from '@/modules/common';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
+import * as media from '@/modules/media/module.config';
+
+jest.mock('@/modules/media/service');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(media.config);
+
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);

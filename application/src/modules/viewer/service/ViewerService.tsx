@@ -47,7 +47,7 @@ class ViewerService implements IViewerService {
       {
         fullScreen: true,
         hideBackdrop: true,
-        TransitionComponent: JuiDialogOpenTransition,
+        TransitionComponent: JuiDialogOpenTransition as any,
         enableEscapeClose: true,
         onClose: () => dismiss(),
       },

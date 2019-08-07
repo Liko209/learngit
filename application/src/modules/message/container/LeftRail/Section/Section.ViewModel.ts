@@ -19,19 +19,16 @@ const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     dataNameForTest: 'Favorites',
     title: 'message.favoriteGroups',
-    iconName: 'star',
-    sortable: true,
+    sortable: true
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     dataNameForTest: 'Direct Messages',
-    title: 'message.directGroups',
-    iconName: 'direct_message',
+    title: 'message.directGroups'
   },
   [SECTION_TYPE.TEAM]: {
     dataNameForTest: 'Teams',
-    title: 'message.teamGroups',
-    iconName: 'team',
-  },
+    title: 'message.teamGroups'
+  }
 };
 
 class SectionViewModel extends StoreViewModel<SectionProps> {
@@ -45,7 +42,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
     super(props);
     this.autorun(() => {
       const ids = SectionGroupHandler.getInstance().getGroupIdsByType(
-        this.props.type,
+        this.props.type
       );
       this._groupIDs = [...ids];
     });
@@ -68,11 +65,6 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
   }
 
   @computed
-  get iconName() {
-    return this._config.iconName;
-  }
-
-  @computed
   get title() {
     return this._config.title;
   }
@@ -84,19 +76,19 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
 
   onSortEnd = ({
     oldIndex,
-    newIndex,
+    newIndex
   }: {
     oldIndex: number;
     newIndex: number;
   }) => {
     this.handleSortEnd(oldIndex, newIndex);
-  }
+  };
 
   @action
   async fetchGroups() {
     await SectionGroupHandler.getInstance().fetchGroups(
       this.props.type,
-      QUERY_DIRECTION.NEWER,
+      QUERY_DIRECTION.NEWER
     );
   }
 
@@ -114,7 +106,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
     }
     newOrder[newIndex] = id;
     return newOrder;
-  }
+  };
 
   @action
   handleSortEnd = async (oldIndex: number, newIndex: number) => {
@@ -122,7 +114,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
     this._groupIDs = this._reorder(oldIndex, newIndex);
 
     const profileService = ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
+      ServiceConfig.PROFILE_SERVICE
     );
     try {
       await profileService.reorderFavoriteGroups(oldIds, oldIndex, newIndex);
@@ -131,17 +123,17 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
         .tags('Section.ViewModel')
         .info('reorderFavoriteGroups fail:', error);
     }
-  }
+  };
 
   @action
   handleCollapse = () => {
     this.expanded = false;
-  }
+  };
 
   @action
   handleExpand = () => {
     this.expanded = true;
-  }
+  };
 }
 
 export default SectionViewModel;

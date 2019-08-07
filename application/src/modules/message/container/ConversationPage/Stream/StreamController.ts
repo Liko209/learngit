@@ -20,7 +20,6 @@ import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPo
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { HasMore } from '@/store/base/fetch/types';
 
 const BEFORE_ANCHOR_POSTS_COUNT = 20;
 
@@ -186,49 +185,30 @@ class StreamController {
   async fetchAllUnreadData() {
     this.enableNewMessageSep();
     await this._orderListHandler.fetchDataBy(
-      QUERY_DIRECTION.NEWER,
+      QUERY_DIRECTION.OLDER,
       this._unreadPostsLoader,
     );
     return this._orderListHandler.listStore.items;
   }
 
   private _unreadPostsLoader = async () => {
-    let hasMore: HasMore = { older: true, newer: true, both: true };
-    let postsNewerThanAnchor: Post[] = [];
-    let postsOlderThanAnchor: Post[] = [];
-
     // (1)
     // Fetch all posts between readThrough and firstPost
-    ({
-      hasMore,
-      posts: postsNewerThanAnchor,
+   const {
+     hasMore,
+      posts,
     } = await this._postService.getUnreadPostsByGroupId({
       groupId: this._groupId,
       unreadCount: this.historyUnreadCount,
       startPostId: this.historyReadThrough || 0,
       endPostId: this._orderListHandler.listStore.items[0].id,
-    }));
+    });
 
     // (2)
-    // Fetch $BEFORE_ANCHOR_POSTS_COUNT posts that older than
-    // oldest post of (1)
-    const oldestPost = _.last(postsNewerThanAnchor);
-    if (oldestPost) {
-      ({
-        posts: postsOlderThanAnchor,
-      } = await this._postService.getPostsByGroupId({
-        groupId: this._groupId,
-        postId: oldestPost.id,
-        direction: QUERY_DIRECTION.OLDER,
-        limit: BEFORE_ANCHOR_POSTS_COUNT,
-      }));
-    }
-
-    // (3)
-    // Return all the posts from (1) and (2)
+    // Return all the posts from (1)
     return {
       hasMore,
-      data: [...postsNewerThanAnchor, ...postsOlderThanAnchor],
+      data: posts,
     };
   }
 }

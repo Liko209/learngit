@@ -33,9 +33,9 @@ type CallLogItemViewProps = {
   duration: string;
   startTime: string;
   isMissedCall: boolean;
+  isPseudo?: boolean;
   direction: RCMessage['direction'];
   callLogResponsiveMap: CallLogResponsiveObject;
-  shouldShowCall: () => Promise<boolean>;
 } & CallLogItemProps;
 
 export {

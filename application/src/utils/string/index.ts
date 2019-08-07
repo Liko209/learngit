@@ -39,4 +39,20 @@ function matchInvalidEmail(value: string) {
   return '';
 }
 
-export { toTitleCase, matchInvalidEmail };
+/**
+ * Match email
+ */
+function matchUrl(value: string) {
+  return /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&:/~+#]*[\w\-@?^=%&/~+#])?/.test(
+    value,
+  );
+}
+
+/**
+ * Remove space before and after the string
+ */
+function trimStringBothSides(str: string) {
+  return str.replace(/(^\s*)|(\s*$)/g, '');
+}
+
+export { toTitleCase, matchInvalidEmail, trimStringBothSides, matchUrl };

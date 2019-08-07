@@ -8,13 +8,11 @@ import { container } from 'framework';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import StoreViewModel from '@/store/ViewModel';
-import storeManager from '@/store';
-import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
+import storeManager from '@/store/base/StoreManager';
 import { HomeStore } from '../../store';
 import { NavConfig } from '../../types';
 import { LeftNavProps } from './types';
-
-const getItem = (item: string) => localStorage.getItem(item);
+import { LeftNavConfig } from './LeftNavConfig';
 
 const removePlacement = ({ placement, ...navItem }: NavConfig) => navItem;
 
@@ -24,16 +22,9 @@ class LeftNavViewModel extends StoreViewModel {
 
   constructor(props: LeftNavProps) {
     super(props);
-    const key = this._expandKey();
-    const isLocalExpand =
-      getItem(key) === null ? false : JSON.parse(String(getItem(key)));
+    const isLocalExpand = LeftNavConfig.expanded();
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLocalExpand);
-  }
-
-  private _expandKey = () => {
-    const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    return `${userId}-expanded`;
   }
 
   @computed
@@ -52,16 +43,10 @@ class LeftNavViewModel extends StoreViewModel {
   }
 
   @computed
-  get groupIds() {
-    return SectionGroupHandler.getInstance().groupIds;
-  }
-
-  @computed
   get isLeftNavOpen() {
     const isExpand = getGlobalValue(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
-    const key = this._expandKey();
-    localStorage.setItem(key, JSON.stringify(isExpand));
-    return JSON.parse(getItem(key) || 'true');
+    LeftNavConfig.setExpanded(isExpand);
+    return isExpand;
   }
 }
 

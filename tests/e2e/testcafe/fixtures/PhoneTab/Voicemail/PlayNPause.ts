@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-06-06 09:53:59
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-06-12 11:02:20
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-07-17 13:33:45
  */
 
 import { BrandTire, SITE_URL } from '../../../config';
@@ -10,59 +10,11 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta, IUser } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { WebphoneSession } from 'webphone-client';
+import { ensuredOneVoicemail, addVoicemail } from './utils';
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
-
-
-async function ensuredVoicemails(t: TestController, caller: IUser, callee: IUser, app: AppRoot, voicemailCount = 1) {
-  const voicemailPage = app.homePage.phoneTab.voicemailPage;
-  const telephoneDialog = app.homePage.telephonyDialog;
-
-  let callerSession: WebphoneSession;
-  await h(t).withLog('When I login webphone with {number}#{extension}', async (step) => {
-    step.initMetadata({
-      number: caller.company.number,
-      extension: caller.extension
-    })
-    callerSession = await h(t).newWebphoneSession(caller);
-  });
-
-  for (let i = 0; i < voicemailCount; i++) {
-    await h(t).withLog('and caller session makeCall to callee', async () => {
-      await callerSession.makeCall(`${callee.company.number}#${callee.extension}`);
-    });
-
-    await h(t).withLog('Then the telephone dialog should be popup', async () => {
-      await telephoneDialog.ensureLoaded();
-    });
-
-    await h(t).withLog('When callee click "send to voicemail" button', async () => {
-      await telephoneDialog.clickSendToVoiceMailButton();
-    });
-
-    const waitTime = 20e3;
-    await h(t).withLog('and caller wait {time} seconds and hangup the call', async (step) => {
-      step.setMetadata('time', (waitTime / 1000).toString());
-      await t.wait(waitTime);
-      await callerSession.hangup();
-      await callerSession.waitForStatus('terminated');
-    });
-  }
-
-  await h(t).withLog('And refresh page', async () => {
-    await t.wait(5e3);
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('Then the voicemail page display records', async () => {
-    await t.expect(voicemailPage.items.count).gte(voicemailCount, { timeout: 60e3 });
-  });
-
-}
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
@@ -100,10 +52,7 @@ test.meta(<ITestMeta>{
     await telephoneDialog.clickMinimizeButton();
   }
 
-  let hasVoicemail = await voicemailPage.items.count;
-  if (hasVoicemail == 0) {
-    await ensuredVoicemails(t, caller, callee, app);
-  }
+  await ensuredOneVoicemail(t, caller, callee, app);
 
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
 
@@ -123,6 +72,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then The slider current time will return back to 00:00', async () => {
+    await t.hover(voicemailItem.self);
     await t.expect(voicemailItem.currentTimeSpan.textContent).eql('00:00');
   });
 });
@@ -163,10 +113,8 @@ test.meta(<ITestMeta>{
     await telephoneDialog.clickMinimizeButton()
   }
 
-  let voicemailCount = await voicemailPage.items.count;
-  if (voicemailCount == 0) {
-    await ensuredVoicemails(t, caller, callee, app);
-  }
+  await ensuredOneVoicemail(t, caller, callee, app);
+
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
 
   await h(t).withLog('When I play the first voicemail record', async () => {
@@ -234,10 +182,12 @@ test.meta(<ITestMeta>{
 
   let voicemailCount = await voicemailPage.items.count;
   if (voicemailCount < 2) {
-    await ensuredVoicemails(t, caller, callee, app, 2 - voicemailCount);
+    let callerSession = await h(t).newWebphoneSession(caller);
+    await addVoicemail(t, callerSession, callee.extension, app, 30e3, 2 - voicemailCount);
   }
+
   const firstVoicemail = voicemailPage.voicemailItemByNth(0);
-  const secondVoicemail = voicemailPage.voicemailItemByNth(0);
+  const secondVoicemail = voicemailPage.voicemailItemByNth(1);
 
 
   await h(t).withLog('When I play the first voicemail record', async () => {
@@ -254,12 +204,13 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I play the second voicemail', async () => {
-    await secondVoicemail.clickPauseButton();
+    await secondVoicemail.clickPlayButton();
   });
 
 
   await h(t).withLog('Then The first voicemail pauses', async () => {
-    await t.expect(firstVoicemail.currentTimeSpan.textContent).notEql('00:00');
     await t.expect(firstVoicemail.playButton.exists).ok();
+    await t.hover(firstVoicemail.self);
+    await t.expect(firstVoicemail.currentTimeSpan.textContent).notEql('00:00');
   });
 });

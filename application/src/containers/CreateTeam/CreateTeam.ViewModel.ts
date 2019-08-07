@@ -4,16 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, computed, observable } from 'mobx';
-
+import _ from 'lodash';
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
-
+import { dataAnalysis } from 'sdk';
 import { AbstractViewModel } from '@/base';
-import { getGlobalValue } from '@/store/utils';
-import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue, getSingleEntity } from '@/store/utils';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
 import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { UserPermission } from 'sdk/module/permission/entity';
+import UserPermissionModel from '@/store/models/UserPermission';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -44,17 +46,25 @@ class CreateTeamViewModel extends AbstractViewModel {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
+  @computed
+  get canMentionTeam() {
+    return getSingleEntity<UserPermission, UserPermissionModel>(
+      ENTITY_NAME.USER_PERMISSION,
+      'canMentionTeam',
+    );
+  }
+
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value.trim();
     this.teamName = name;
     this.disabledOkBtn = name === '';
     this.errorMsg = '';
     this.nameError = false;
-  }
+  };
 
   handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.description = e.target.value.trim();
-  }
+  };
 
   handleSearchContactChange = (items: any) => {
     const members = items.map((item: any) => {
@@ -66,7 +76,7 @@ class CreateTeamViewModel extends AbstractViewModel {
     this.emailErrorMsg = '';
     this.emailError = false;
     this.members = members;
-  }
+  };
 
   @action
   create = async (
@@ -82,11 +92,17 @@ class CreateTeamViewModel extends AbstractViewModel {
     const creatorId = userConfig.getGlipUserId();
     try {
       this.loading = true;
+      const personIds = await groupService.getPersonIdsBySelectedItem(
+        memberIds,
+      );
       const result = await groupService.createTeam(
         creatorId,
-        memberIds,
+        personIds,
         options,
       );
+      if (_.get(options, 'permissionFlags.TEAM_MENTION')) {
+        dataAnalysis.track('Jup_Web/DT_Messaging_Team_teamMentionSetting');
+      }
       this.loading = false;
       return result;
     } catch (error) {
@@ -97,7 +113,7 @@ class CreateTeamViewModel extends AbstractViewModel {
       }
       return null;
     }
-  }
+  };
 
   createErrorHandler(error: JError) {
     let serverUnknownError = false;

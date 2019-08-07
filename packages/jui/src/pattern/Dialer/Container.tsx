@@ -59,7 +59,8 @@ const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: ${({ removeMargin, theme }) => (removeMargin ? spacing(-5)({ theme }) : 0)};
+    margin-bottom: ${({ removeMargin, theme }) =>
+      removeMargin ? spacing(-5)({ theme }) : 0};
   }
 `;
 
@@ -74,7 +75,8 @@ const JuiKeypadAction = styled('div')`
       color: ${grey('700')};
       ${typography('caption1')};
       &.disabled {
-        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })};
+        color: ${({ theme }) =>
+          palette('action', 'disabledBackground')({ theme })};
       }
     }
   }
@@ -130,7 +132,7 @@ class JuiContainer extends PureComponent<Props> {
     const keypadActions = Array.isArray(KeypadActions)
       ? KeypadActions.map((Action: React.ComponentType) => (
           <Action key={Action.displayName} />
-      ))
+        ))
       : KeypadActions;
 
     return (
@@ -176,7 +178,8 @@ const ContactSearchContainer = styled.div<{ addMargin: boolean }>`
     min-height: 0;
     & > .contact-search-list-container {
       margin-top: ${({ addMargin }) => (addMargin ? spacing(11) : 0)};
-      height: ${({ addMargin, theme }) => `calc(${addMargin ? `100% - ${spacing(11)({ theme })}` : '100%'})`};
+      height: ${({ addMargin, theme }) =>
+        `calc(${addMargin ? `100% - ${spacing(11)({ theme })}` : '100%'})`};
       overflow: hidden;
     }
   }
@@ -217,24 +220,19 @@ const CallerIdContainer = (elm: React.FunctionComponent<any>) => styled(elm)<{}>
     font-size: ${({ theme }) => theme.typography.body1.fontSize};
     padding-bottom: 0;
 
-    div:nth-of-type(1) {
+    & > div:nth-child(1) {
       padding-bottom: 0;
     }
-    div:nth-of-type(2) {
+
+    & > div:nth-child(2) {
       background: transparent;
       border: none;
       width: auto;
       font-size: ${({ theme }) => theme.typography.caption2.fontSize};
       margin-right: ${spacing(-3)};
 
-      & > div > div[role='button'] {
-        padding: ${spacing(1.5, 4.5, 1.5, 1.5)};
-        overflow: hidden;
-        display: block;
-        text-overflow: ellipsis;
-        word-break: keep-all;
-        white-space: nowrap;
-        max-width: ${spacing(36)};
+      .select-input:focus {
+        background-color: transparent;
       }
     }
   }

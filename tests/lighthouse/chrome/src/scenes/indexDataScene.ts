@@ -11,6 +11,10 @@ import { MetricService, FileService } from "../services";
 
 class IndexDataScene extends Scene {
 
+  tags(): Array<string> {
+    return ["IndexDataScene", "Login", "Trace", "API"];
+  }
+
   async preHandle() {
     this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: false });
 

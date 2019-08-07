@@ -136,6 +136,35 @@ type DialingPlan = {
   navigation: INavigationInfo;
 };
 
+type IStateRequest = {
+  page: number;
+  perPage: number;
+  countryId: string;
+};
+
+type StateCountryInfo = {
+  uri: string;
+  id: string;
+};
+
+type StateInfo = {
+  id: string;
+  name: string;
+  isoCode: string;
+  country: StateCountryInfo;
+};
+
+type StateRecord = StateInfo & {
+  uri: string;
+};
+
+type CountryState = {
+  uri: string;
+  records: StateRecord[];
+  paging: PagingInfo;
+  navigation: INavigationInfo;
+};
+
 type IPhoneNumberRequest = IForwardingNumberRequest & {
   usageType?: string;
 };
@@ -149,6 +178,31 @@ type ICountryInfo = {
   uri: string;
   id: string;
   name: string;
+};
+
+type ICountryRequest = {
+  page: number;
+  perPage: number;
+};
+
+type CountryRecord = {
+  callingCode: string;
+  emergencyCalling: boolean;
+  freeSoftphoneLine: boolean;
+  id: string;
+  isoCode: string;
+  loginAllowed: boolean;
+  name: string;
+  numberSelling: boolean;
+  signupAllowed: boolean;
+  uri: string;
+};
+
+type CountryList = {
+  uri: string;
+  records: CountryRecord[];
+  paging: PagingInfo;
+  navigation: INavigationInfo;
 };
 
 type IPhoneNumberRecord = {
@@ -221,7 +275,6 @@ type RCAuthCodeInfo = {
   uri: string;
   code: string;
 };
-
 interface ITokenModel extends Token {
   access_token: string;
   endpoint_id: string;
@@ -288,4 +341,11 @@ export {
   RCBrandInfo,
   RCAuthCodeInfo,
   IForwardingNumberRequest,
+  ICountryInfo,
+  CountryState,
+  StateRecord,
+  IStateRequest,
+  ICountryRequest,
+  CountryList,
+  CountryRecord,
 };

@@ -12,23 +12,32 @@ interface IMedia {
   play: (options?: PlayOptions) => IMedia;
   pause: () => IMedia;
   stop: () => IMedia;
+  setSrc: (src: string | string[]) => IMedia;
+  setLoop: (loop: boolean) => IMedia;
   setMute: (muted: boolean) => IMedia;
   setVolume: (volume: number) => IMedia;
-  setOutputDevices: (devices: MediaDeviceType[]) => IMedia;
-
+  setOutputDevices: (devices: MediaDeviceType[] | 'all') => IMedia;
   setCurrentTime: (time: number, continuePlay?: boolean) => IMedia;
+  dispose: () => void;
+  onReset: (handler: () => void) => void;
 
   /**
    * States
    */
-  id?: string;
-  playing?: boolean;
+  id: string;
+  src: string | string[];
+  muted: boolean;
+  volume: number;
+  loop: boolean;
+  currentTime: number;
+  duration: number;
+  playing: boolean;
 
   /**
    * Listeners
    */
-  on: (event: MediaEventName, handler: () => void) => void;
-  off: (event: MediaEventName, handler: () => void) => void;
+  on: (event: MediaEventName, handler: (event: Event) => void) => void;
+  off: (event: MediaEventName, handler: (event: Event) => void) => void;
 }
 
 export { IMedia };

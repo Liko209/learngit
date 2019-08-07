@@ -3,11 +3,22 @@
  * @Date: 2019-05-30 18:14:57
  * Copyright © RingCentral. All rights reserved.
  */
+import { when } from 'mobx';
 import { test, testable } from 'shield';
 import { mockService } from 'shield/sdk';
+import { globalStore } from 'shield/integration-test';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 import { VoicemailViewModel } from '../Voicemail.ViewModel';
+import { config } from '../../../module.config';
+import { registerModule } from 'shield/utils';
+import { container } from 'framework';
+import { PhoneStore } from '../../../store';
+
+registerModule(config);
 
 describe('VoicemailViewModel', () => {
   const voicemailService = {
@@ -66,6 +77,34 @@ describe('VoicemailViewModel', () => {
         sortValue: 1,
       });
       expect(vm.isError).toBeTruthy();
+    }
+  }
+
+  @testable
+  class onVoicemailPlay {
+    @test(
+      'should pause audio when have a incoming call or make a call [JPT-2222]',
+    )
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
+    async t1() {
+      const vm = new VoicemailViewModel({});
+      vm.onVoicemailPlay = jest.fn();
+
+      const media = {
+        pause: jest.fn(),
+      };
+      const phoneStore = container.get(PhoneStore);
+
+      phoneStore.addAudio(1, {
+        media,
+      });
+
+      globalStore.set(GLOBAL_KEYS.INCOMING_CALL, true);
+
+      await when(
+        () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
+        () => expect(media.pause).toHaveBeenCalled(),
+      );
     }
   }
 });

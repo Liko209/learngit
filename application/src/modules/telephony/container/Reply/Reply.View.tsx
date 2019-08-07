@@ -30,6 +30,7 @@ import {
 } from 'sdk/module/telephony';
 import { getDisplayName } from '../../helpers';
 import { Avatar } from '@/containers/Avatar';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 type Props = ViewProps & WithTranslation;
 
@@ -60,7 +61,8 @@ class ReplyViewComponent extends React.Component<Props> {
       if (this._handleClickMap[`${pattern}${time}`]) {
         return this._handleClickMap[`${pattern}${time}`];
       }
-      this._handleClickMap[`${pattern}${time}`] = () => replyWithPattern(pattern, time, timeUnit);
+      this._handleClickMap[`${pattern}${time}`] = () =>
+        replyWithPattern(pattern, time, timeUnit);
       return this._handleClickMap[`${pattern}${time}`];
     }
 
@@ -212,7 +214,7 @@ class ReplyViewComponent extends React.Component<Props> {
       />
     );
   };
-  /* eslint-disable react/sort-comp */
+
   private _PreDefineMessages = [
     this._InMeeting,
     this._OnMyWay,
@@ -250,9 +252,7 @@ class ReplyViewComponent extends React.Component<Props> {
   };
 
   render() {
-    const {
-      t, replyCountdownTime, isExt, phone, name,
-    } = this.props;
+    const { t, replyCountdownTime, isExt, phone, name } = this.props;
 
     return (
       <>
@@ -260,7 +260,7 @@ class ReplyViewComponent extends React.Component<Props> {
           <JuiTitleBar />
           <JuiHeader
             Avatar={this._Avatar}
-            name={getDisplayName(t, name)}
+            name={getDisplayName(t, CALL_DIRECTION.INBOUND, name)}
             phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             showDialerInputField={false}
             Back={this._Back}

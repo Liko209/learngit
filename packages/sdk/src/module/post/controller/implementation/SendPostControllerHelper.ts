@@ -76,6 +76,7 @@ class SendPostControllerHelper {
       company_id: params.companyId,
       deactivated: false,
       parent_id: params.parentId,
+      is_team_mention: params.isTeamMention,
       source: 'Jupiter',
     };
 

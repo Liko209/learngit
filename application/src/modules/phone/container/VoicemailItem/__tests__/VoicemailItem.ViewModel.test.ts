@@ -9,11 +9,8 @@ import { testable, test } from 'shield';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { registerModule } from 'shield/utils';
-import { globalStore } from 'shield/integration-test';
 import { READ_STATUS, ATTACHMENT_TYPE } from 'sdk/module/RCItems/constants';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
-import { getGlobalValue } from '@/store/utils';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { Notification } from '@/containers/Notification';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import {
@@ -24,12 +21,14 @@ import {
 import { VoicemailItemViewModel } from '../VoicemailItem.ViewModel';
 import { config } from '../../../module.config';
 import { PhoneStore } from '../../../store';
-import { JuiAudioStatus, JuiAudioMode } from '../types';
+import { JuiAudioMode } from '../types';
+import { config as mediaConfig } from '../../../../media/module.config';
 
 jest.mock('@/utils/date');
 jest.mock('@/containers/Notification');
 
 registerModule(config);
+registerModule(mediaConfig);
 
 describe('VoicemailItemViewModel', () => {
   const voicemailService = {
@@ -208,7 +207,7 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
-  class isAudioActive {
+  class showFullAudioPlayer {
     @test('should be false if not has audio')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
@@ -216,45 +215,7 @@ describe('VoicemailItemViewModel', () => {
     })
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
-      expect(vm.isAudioActive).toBeFalsy();
-    }
-
-    @test('should be true if selected and startTime > 0')
-    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      attachments: [
-        {
-          id: 1,
-          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
-          startTime: 0,
-        },
-      ],
-    })
-    t2() {
-      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 1 });
-      const phoneStore = container.get(PhoneStore);
-      phoneStore.updateAudio(1, {
-        startTime: 1,
-      });
-      expect(vm.isAudioActive).toBeTruthy();
-    }
-
-    @test('should be false if startTime === 0')
-    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      attachments: [
-        {
-          id: 1,
-          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
-          startTime: 0,
-        },
-      ],
-    })
-    t3() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(1);
-      expect(vm.isAudioActive).toBeFalsy();
+      expect(vm.showFullAudioPlayer).toBeFalsy();
     }
 
     @test('should be false if not selected')
@@ -268,11 +229,11 @@ describe('VoicemailItemViewModel', () => {
         },
       ],
     })
-    t4() {
+    t2() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
       phoneStore.setVoicemailId(2);
-      expect(vm.isAudioActive).toBeFalsy();
+      expect(vm.showFullAudioPlayer).toBeFalsy();
     }
   }
 
@@ -303,8 +264,10 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
-  class onBeforeAction {
-    @test('should be buildDownloadUrl if before start')
+  class onBeforePlay {
+    @test(
+      'should be set voicemailId and read if voicemail not selected and to play audio [JPT-2218]',
+    )
     @mockEntity({
       attachments: [
         {
@@ -314,19 +277,24 @@ describe('VoicemailItemViewModel', () => {
         },
       ],
     })
-    @mockService(
-      voicemailService,
-      'buildDownloadUrl',
-      'www.google.com?token=token',
-    )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
+    @mockService(voicemailService, [
+      {
+        method: 'updateReadStatus',
+      },
+      { method: 'buildDownloadUrl', data: 'www.google.com?token=token' },
+    ])
     async t1() {
       const props = {
         id: 1,
-        onVoicemailPlay: () => {},
+        onVoicemailPlay: jest.fn(),
       };
       const vm = new VoicemailItemViewModel(props);
-      await vm.onBeforeAction(JuiAudioStatus.PLAY);
+      jest.spyOn(vm._mediaService, 'createMedia').mockReturnValue('media');
+      const ret = await vm.onBeforePlay();
+      expect(ret).toBeTruthy();
+      expect(voicemailService.updateReadStatus).toHaveBeenCalled();
+      expect(props.onVoicemailPlay).toBeCalledWith(1);
       when(
         () => !!vm.audio,
         () => {
@@ -340,31 +308,10 @@ describe('VoicemailItemViewModel', () => {
             uri: 'www.google.com',
             startTime: 0,
             downloadUrl: 'www.google.com?token=token',
+            media: 'media',
           });
         },
       );
-    }
-  }
-
-  @testable
-  class onBeforePlay {
-    @test(
-      'should be set voicemailId and read if voicemail not selected and to play audio [JPT-2218]',
-    )
-    @mockEntity({
-      attachments: [],
-    })
-    @mockService(voicemailService, 'updateReadStatus')
-    t1() {
-      const props = {
-        id: 1,
-        onVoicemailPlay: jest.fn(),
-      };
-      const vm = new VoicemailItemViewModel(props);
-      const phoneStore = container.get(PhoneStore);
-      vm.onBeforePlay();
-      expect(props.onVoicemailPlay).toBeCalledWith(1);
-      expect(voicemailService.updateReadStatus).toHaveBeenCalled();
     }
   }
 
@@ -404,7 +351,7 @@ describe('VoicemailItemViewModel', () => {
     })
     @mockService(voicemailService, 'buildDownloadUrl')
     t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
+      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 1 });
       const phoneStore = container.get(PhoneStore);
       vm.updateStartTime(123);
       const audio = phoneStore.audioCache.get(1);
@@ -413,47 +360,6 @@ describe('VoicemailItemViewModel', () => {
         startTime: 123,
         downloadUrl: '',
       });
-    }
-  }
-
-  @testable
-  class shouldPause {
-    @test('should be true if has incoming call [JPT-2222]')
-    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      attachments: [],
-    })
-    async t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      globalStore.set(GLOBAL_KEYS.INCOMING_CALL, true);
-      await when(
-        () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
-        () => {
-          expect(vm.shouldPause).toBeTruthy();
-        },
-      );
-    }
-  }
-
-  @testable
-  class shouldShowCall {
-    @test('should be true if has call permission [JPT-2384]')
-    @mockService(RCInfoService, [
-      {
-        method: 'isRCFeaturePermissionEnabled',
-        data: true,
-      },
-      {
-        method: 'isVoipCallingAvailable',
-        data: false,
-      },
-    ])
-    @mockEntity({
-      attachments: [],
-    })
-    async t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      expect(await vm.shouldShowCall()).toBeFalsy();
     }
   }
 });

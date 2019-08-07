@@ -5,4 +5,5 @@
  */
 export * from './ConversationList';
 export * from './ConversationListItem';
+export * from './ConversationListItemLoader';
 export * from './ConversationListSection';

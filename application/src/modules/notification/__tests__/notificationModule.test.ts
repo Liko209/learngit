@@ -1,20 +1,22 @@
 import { Jupiter, container } from 'framework';
 import { NotificationModule } from '../notificationModule';
 import { config } from '../module.config';
-import { config as leaveBlockerConfig } from '@/modules/leave-blocker/module.config';
 import { config as settingConfig } from '@/modules/setting/module.config';
-import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
+import { config as mediaConfig } from '@/modules/media/module.config';
 import { INotificationService } from '../interface';
+import { notificationCenter } from 'sdk/service';
+import { SERVICE } from 'sdk/service/eventKey';
 
-global.Notification = {
-  requestPermission: jest.fn(),
-  permission: 'default',
+global.Notification = function() {
+  return {};
 };
+global.Notification.requestPermission = jest.fn();
+global.Notification.permission = 'default';
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(settingConfig);
-jupiter.registerModule(leaveBlockerConfig);
 jupiter.registerModule(config);
+jupiter.registerModule(mediaConfig);
 
 jest.mock('../agent/SWNotification', () => ({
   SWNotification: () => ({
@@ -31,33 +33,35 @@ jest.mock('../agent/DesktopNotification', () => ({
 
 describe('NotificationModule', () => {
   let module: NotificationModule;
-  let leaveBlockerService: ILeaveBlockerService;
   let notificationService: INotificationService;
 
   beforeAll(() => {
     module = jupiter.get(NotificationModule);
-    leaveBlockerService = jupiter.get(ILeaveBlockerService);
     notificationService = jupiter.get(INotificationService);
-    jest.spyOn(leaveBlockerService, 'onLeave').mockImplementation(() => {});
-    jest.spyOn(leaveBlockerService, 'offLeave').mockImplementation(() => {});
+    notificationCenter.on = jest.fn();
+    notificationCenter.off = jest.fn();
     jest.spyOn(notificationService, 'clear').mockImplementation(() => {});
     jupiter.bootstrap();
   });
 
-  afterEach(() => {
-    module.dispose();
-  });
-
-  it('should add leave hooker when bootstrapped', async () => {
-    expect(leaveBlockerService.onLeave).toBeCalledWith(module.onLeaveHook);
+  it('should add logout listener when bootstrapped', async () => {
+    expect(notificationCenter.on).toHaveBeenCalledWith(
+      SERVICE.LOGOUT,
+      module.onLogoutHook,
+    );
   });
 
   describe('dispose()', () => {
-    it('should clear all the notification when disposed (logout or close tab)', () => {
-      expect(notificationService.clear).toBeCalled();
+    it('should clear all the notification when disposed (logout)', () => {
+      module.dispose();
+      expect(notificationService.clear).toHaveBeenCalled();
     });
-    it('should dismantle leaveBlock service when disposed', () => {
-      expect(leaveBlockerService.offLeave).toBeCalledWith(module.onLeaveHook);
+    it('should remove listener for logout when disposed', () => {
+      module.dispose();
+      expect(notificationCenter.off).toHaveBeenCalledWith(
+        SERVICE.LOGOUT,
+        module.onLogoutHook,
+      );
     });
   });
 });

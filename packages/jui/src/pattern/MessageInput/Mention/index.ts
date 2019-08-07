@@ -1,6 +1,4 @@
-import {
-  QuillOptionsStatic, RangeStatic, DeltaStatic, Sources,
-} from 'quill';
+import { QuillOptionsStatic, RangeStatic, DeltaStatic, Sources } from 'quill';
 import { Quill } from 'react-quill';
 import './blots/mention';
 import Keys from '../keys';
@@ -62,11 +60,12 @@ class Mention {
     return this._options.allowedChars!.test(s);
   }
 
-  select(id: number, name: string, denotationChar: string) {
+  select(id: number, name: string, denotationChar: string, isTeam: boolean) {
     const data = {
       id,
       name,
       denotationChar,
+      isTeam,
     };
     requestAnimationFrame(() => {
       this._quill.setSelection(this._cursorPos, 0);
@@ -77,9 +76,56 @@ class Mention {
       );
       this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'api');
       this._quill.insertText(this._mentionCharPos + 1, ' ', 'api');
+      if (this.hasTeamMention()) {
+        this.doRemoveStyleForMemberMention();
+      }
       this._quill.setSelection(this._mentionCharPos + 2, 0, 'api');
     });
   }
+
+  doRemoveStyleForMemberMention = () => {
+    const contents = this._quill.getContents();
+    const result: any[] = [];
+    let isTeamMentionKept = false;
+    let mentionCharPosDiff = 0;
+    contents.ops &&
+      contents.ops.forEach(delta => {
+        if (delta && delta.insert.mention) {
+          if (delta.insert.mention.isTeam === 'true' && !isTeamMentionKept) {
+            result.push(delta);
+            isTeamMentionKept = true;
+            return;
+          }
+          result.push({
+            insert: `${delta.insert.mention.denotationChar}${
+              delta.insert.mention.name
+            }`,
+          });
+          mentionCharPosDiff += delta.insert.mention.name.length;
+        } else {
+          result.push(delta);
+        }
+      });
+    const deltaResult = { ops: result };
+    this._mentionCharPos += mentionCharPosDiff;
+    this._quill.setContents(deltaResult as DeltaStatic);
+  };
+
+  hasTeamMention = () => {
+    const ops = this._quill.getContents().ops;
+    let hasTeam = false;
+    ops &&
+      ops.forEach(delta => {
+        if (
+          delta &&
+          delta.insert.mention &&
+          delta.insert.mention.isTeam === 'true'
+        ) {
+          hasTeam = true;
+        }
+      });
+    return hasTeam;
+  };
 
   onSomethingChange = () => {
     const range = this._quill.getSelection();
@@ -134,7 +180,7 @@ class Mention {
     } else {
       this._options.onMention(false);
     }
-  }
+  };
 
   onTextChange(delta: DeltaStatic, oldContents: DeltaStatic, source: Sources) {
     if (source === 'user') {

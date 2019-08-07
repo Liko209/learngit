@@ -2,7 +2,7 @@ import React from 'react';
 import { MemberView } from '../Member.View';
 import { OpenProfile } from '@/common/OpenProfile';
 import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 
 const vPropsFactory = (showMembersCount: boolean, membersCount: number) => ({
   showMembersCount,

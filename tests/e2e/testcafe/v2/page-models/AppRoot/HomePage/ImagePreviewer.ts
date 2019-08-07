@@ -81,6 +81,9 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   get downloadIcon() {
     return this.getSelectorByIcon('download', this.self);
   }
+  get moreButton() {
+    return this.getSelectorByAutomationId('fileActionMore', this.self);
+  }
 
   get downloadButton() {
     return this.downloadIcon.parent('a');

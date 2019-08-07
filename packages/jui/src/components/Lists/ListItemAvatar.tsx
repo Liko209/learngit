@@ -12,7 +12,10 @@ import { spacing } from '../../foundation/utils';
 type JuiListItemAvatarProps = MuiListItemAvatarProps;
 
 const JuiListItemAvatar = styled(MuiListItemAvatar)`
-  margin-right: ${spacing(2)};
+  && {
+    margin-right: ${spacing(2)};
+    min-width: 0;
+  }
 `;
 
 JuiListItemAvatar.displayName = 'JuiListItemAvatar';

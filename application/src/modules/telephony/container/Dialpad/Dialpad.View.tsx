@@ -10,13 +10,12 @@ import { JuiMinimizedCall, JuiDialpadBtn } from 'jui/pattern/Dialer';
 import { Mute } from '../Mute';
 import { getDisplayName } from '../../helpers';
 import { End } from '../End';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 type DialpadProps = ViewProps & WithTranslation;
 
 const Actions = [() => <Mute type="fab" />, () => <End size="medium" />];
-
-/* eslint-disable */
-class DialpadViewComponent extends React.Component<DialpadProps> {
+class DialpadViewComponent extends React.PureComponent<DialpadProps> {
   render() {
     const {
       showMinimized,
@@ -27,6 +26,7 @@ class DialpadViewComponent extends React.Component<DialpadProps> {
       id,
       startMinimizeAnimation,
       canUseTelephony,
+      direction,
     } = this.props;
 
     if (!canUseTelephony) {
@@ -36,9 +36,9 @@ class DialpadViewComponent extends React.Component<DialpadProps> {
       <JuiMinimizedCall
         onClick={maximize}
         Actions={Actions}
-        name={getDisplayName(t, name)}
+        name={getDisplayName(t, direction as CALL_DIRECTION, name)}
         label={typeof timing === 'string' ? timing : t(timing.key)}
-        data-test-automation-id='telephony-minimized-view'
+        data-test-automation-id="telephony-minimized-view"
       />
     ) : (
       <JuiDialpadBtn

@@ -41,6 +41,7 @@ const ITEM_HEIGHT = 40;
 const FULLSCREEN_WIDTH = 640;
 const LOADING_DELAY = 150;
 const LOAD_MORE_COUNT = 25;
+const MAX_HEIGHT = 480;
 
 export {
   ENTITY_MAP,
@@ -49,4 +50,5 @@ export {
   FULLSCREEN_WIDTH,
   LOADING_DELAY,
   LOAD_MORE_COUNT,
+  MAX_HEIGHT,
 };

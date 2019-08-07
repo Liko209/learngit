@@ -3,7 +3,6 @@
  * @Date: 2019-01-02 14:35:39
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { observer, Observer } from 'mobx-react';
@@ -19,8 +18,9 @@ import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG, TabConfig } from './ItemList/config';
-
 import { PinnedList } from './PinnedList';
+import { IMessageStore } from '@/modules/message/interface';
+import { RightShelfMemberList } from '../RightShelfMemberList';
 
 type Props = {
   id: number;
@@ -49,9 +49,11 @@ const CONTAINER_IDS = {
 };
 
 class TriggerButtonComponent extends React.Component<
-TriggerButtonProps,
-TriggerButtonState
+  TriggerButtonProps,
+  TriggerButtonState
 > {
+  @IMessageStore private _messageStore: IMessageStore;
+
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
     return isOpen
@@ -79,9 +81,23 @@ TriggerButtonState
     }, 0);
   }
 
+  componentDidMount() {
+    this._onIsOpenUpdated();
+  }
+
+  componentDidUpdate() {
+    this._onIsOpenUpdated();
+  }
+
   componentWillUnmount() {
     if (this._timerId) {
       clearTimeout(this._timerId);
+    }
+  }
+
+  _onIsOpenUpdated() {
+    if (this._messageStore.isRightRailOpen !== this.props.isOpen) {
+      this._messageStore.setIsRightRailOpen(this.props.isOpen);
     }
   }
 
@@ -201,13 +217,14 @@ class RightRailComponent extends React.Component<Props> {
   };
 
   render() {
-    const { id } = this.props;
+    const { id, width } = this.props;
     if (!id) {
       return null;
     }
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
+        {width > 0 ? <RightShelfMemberList groupId={id} /> : null}
         {this._renderTabs()}
       </JuiRightShelf>
     );

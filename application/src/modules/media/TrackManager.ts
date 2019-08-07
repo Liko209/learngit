@@ -13,8 +13,8 @@ import { MediaTrack } from './MediaTrack';
 
 class TrackManager {
   private _tracks: MediaTrack[] = [];
-  private _volume: number = 1;
-  private _outputDevices: MediaDeviceType[] = [];
+  private _allOutputDevices: MediaDeviceType[] = [];
+  private _globalVolume: number = 1;
 
   useMediaTrack(trackId?: string) {
     let mediaTrack: MediaTrack;
@@ -24,8 +24,8 @@ class TrackManager {
       mediaTrack = trackIds.includes(trackId)
         ? (this._getTrackById(trackId) as MediaTrack)
         : this._createTrack({
-          id: trackId,
-        });
+            id: trackId,
+          });
     } else {
       mediaTrack =
         this._getTrackById(DEFAULT_TRACK_ID) ||
@@ -38,13 +38,14 @@ class TrackManager {
   }
 
   setAllTrackVolume(vol: number) {
+    this._globalVolume = vol;
     this._tracks.forEach(track => {
       track.setMasterVolume(vol);
     });
   }
 
   setAllTrackOutputDevices(devices: MediaDeviceType[]) {
-    this._outputDevices = devices;
+    this._allOutputDevices = devices;
     this._tracks.forEach(track => {
       track.setOutputDevices(devices);
     });
@@ -55,11 +56,15 @@ class TrackManager {
   }
 
   getAllOutputDevicesId() {
-    return this._outputDevices;
+    return this._allOutputDevices;
   }
 
   createTrack(options: MediaTrackOptions) {
     return this._createTrack(options);
+  }
+
+  updateAllOutputDevices(devices: MediaDeviceType[]) {
+    this._allOutputDevices = devices;
   }
 
   dispose() {
@@ -68,8 +73,8 @@ class TrackManager {
     });
 
     this._tracks = [];
-    this._volume = 1;
-    this._outputDevices = [];
+    this._allOutputDevices = [];
+    this._globalVolume = 1;
   }
 
   private _getTrackById(id: string) {
@@ -82,11 +87,10 @@ class TrackManager {
   }
 
   private _createTrack(options: MediaTrackOptions) {
-    const newTrack = new MediaTrack(
-      Object.assign(options, {
-        masterVolume: this._volume,
-      }),
-    );
+    const newTrack = new MediaTrack({
+      masterVolume: this._globalVolume,
+      ...options,
+    });
     this._tracks.push(newTrack);
     return newTrack;
   }
@@ -96,11 +100,11 @@ class TrackManager {
   }
 
   get volume() {
-    return this._volume;
+    return this._globalVolume;
   }
 
   get outputDevices() {
-    return this._outputDevices;
+    return this._allOutputDevices;
   }
 }
 

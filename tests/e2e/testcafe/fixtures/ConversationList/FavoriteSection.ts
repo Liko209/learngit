@@ -25,7 +25,6 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let pvtChatId, teamId;
   await h(t).withLog('Given I have an extension with a private chat and a team', async () => {
@@ -83,9 +82,8 @@ test.meta(<ITestMeta>{
   keywords: ['ConversationList', 'FavoriteSection']
 })('User can reorder the list in favorite section by drag and drop.', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[0];
+  const loginUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat1 = <IGroup>{
     type: "DirectMessage",
@@ -135,7 +133,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I drag the last conversation and drop to first one', async () => {
-    await t.dragToElement(favoritesSection.conversations.nth(-1), favoritesSection.conversations.nth(0), { speed: 0.5 });
+    await t.dragToElement(favoritesSection.conversations.nth(-1), favoritesSection.conversations.nth(0), { speed: 0.5, offsetX: 5 });
     chatIdsOrderAfterDrag = await getGroupIdsByOrderInFavoriteSection();
   });
 

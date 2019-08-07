@@ -12,6 +12,7 @@ import {
   HA_PRIORITY,
   REQUEST_HEADER_KEYS,
   CONTENT_TYPES,
+  REQUEST_PRIORITY,
 } from 'foundation';
 import {
   RCClientInfo,
@@ -34,6 +35,13 @@ import {
   BlockNumberListResponse,
   BlockNumberItem,
   AddBlockNumberParams,
+  IDeviceRequest,
+  IAssignLineRequest,
+  IUpdateLineRequest,
+  IStateRequest,
+  CountryState,
+  CountryList,
+  ICountryRequest,
 } from './types';
 
 class RCInfoApi extends Api {
@@ -92,8 +100,8 @@ class RCInfoApi extends Api {
 
   static getPhoneParserData(localDataVersion: string) {
     const extraHeaders = {};
-    /* eslint-disable */
-    const localDataVersionWithQuote = `\"${localDataVersion}\"`;
+
+    const localDataVersionWithQuote = `"${localDataVersion}"`;
     extraHeaders[REQUEST_HEADER_KEYS.ACCEPT] = CONTENT_TYPES.XML;
     extraHeaders[REQUEST_HEADER_KEYS.IF_NONE_MATCH] = localDataVersionWithQuote;
     const query = this._getInfoRequestParams({
@@ -109,6 +117,14 @@ class RCInfoApi extends Api {
       params: request,
     });
     return RCInfoApi.rcNetworkClient.http<DialingPlan>(query);
+  }
+
+  static getCountryState(request?: IStateRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_STATE_INFO,
+      params: request,
+    });
+    return RCInfoApi.rcNetworkClient.http<CountryState>(query);
   }
 
   static getExtensionPhoneNumberList(request?: IPhoneNumberRequest) {
@@ -138,6 +154,23 @@ class RCInfoApi extends Api {
       path: RINGCENTRAL_API.API_SERVICE_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
+  }
+
+  static getCountryInfo(request: ICountryRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_COUNTRY_INFO,
+      params: request,
+    });
+    return RCInfoApi.rcNetworkClient.http<CountryList>(query);
+  }
+
+  static getDeviceInfo(request: IDeviceRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_DEVICE_INFO,
+      params: request,
+      priority: REQUEST_PRIORITY.HIGH,
+    });
+    return RCInfoApi.rcNetworkClient.http<DialingPlan>(query);
   }
 
   static getForwardingNumbers(request?: IForwardingNumberRequest) {
@@ -179,6 +212,34 @@ class RCInfoApi extends Api {
       path: RINGCENTRAL_API.BLOCKED_NUMBER,
     };
     return RCInfoApi.rcNetworkClient.http<BlockNumberItem>(query);
+  }
+
+  static getRCPresence() {
+    const query = {
+      method: NETWORK_METHOD.GET,
+      authFree: false,
+      via: NETWORK_VIA.HTTP,
+      path: RINGCENTRAL_API.API_TELEPHONY_PRESENCE,
+    };
+    return RCInfoApi.rcNetworkClient.http(query);
+  }
+
+  static assignLine(deviceId: string, data: IAssignLineRequest) {
+    const query = {
+      data,
+      method: NETWORK_METHOD.POST,
+      path: `${RINGCENTRAL_API.API_UPDATE_DEVICE}/${deviceId}/assign-line`,
+    };
+    return RCInfoApi.rcNetworkClient.http(query);
+  }
+
+  static updateLine(deviceId: string, data: IUpdateLineRequest) {
+    const query = {
+      data,
+      method: NETWORK_METHOD.PUT,
+      path: `${RINGCENTRAL_API.API_UPDATE_DEVICE}/${deviceId}`,
+    };
+    return RCInfoApi.rcNetworkClient.http(query);
   }
 }
 

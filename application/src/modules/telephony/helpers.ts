@@ -1,4 +1,14 @@
 import { isFunction } from 'lodash';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
+import { i18nP } from '@/utils/i18nT';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PersonService } from 'sdk/module/person';
+import { getEntity } from '@/store/utils';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
+import { ENTITY_NAME } from '@/store';
+import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 /**
  * Moves the caret (cursor) position to the end of the specified text field.
@@ -25,11 +35,18 @@ export const focusCampo = (inputField: HTMLInputElement | any) => {
   });
 };
 
-export const getDisplayName = (t: Function, name?: string): string => (typeof name !== 'string'
-  ? ''
-  : name.length
+export const getDisplayName = (
+  t: Function,
+  direction: CALL_DIRECTION,
+  name?: string,
+): string =>
+  typeof name !== 'string'
+    ? ''
+    : name.length
     ? name
-    : t('telephony.unknownCaller'));
+    : direction === CALL_DIRECTION.INBOUND
+    ? t('telephony.unknownCaller')
+    : t('telephony.unknownCallee');
 
 export function sleep(timeout: number = 0) {
   let timer: any;
@@ -44,4 +61,35 @@ export function sleep(timeout: number = 0) {
 
 export function toFirstLetterUpperCase(input: string) {
   return `${input[0].toUpperCase()}${input.slice(1, input.length)}`;
+}
+
+export async function getDisplayNameByCaller(caller: ActiveCall) {
+  const { from, fromName, to, toName, direction } = caller;
+  const phoneNumber = direction === CALL_DIRECTION.OUTBOUND ? to : from;
+  const callerName = direction === CALL_DIRECTION.OUTBOUND ? toName : fromName;
+
+  if (!phoneNumber || !caller) {
+    return i18nP('telephony.switchCall.unknownCaller');
+  }
+
+  const person = await ServiceLoader.getInstance<PersonService>(
+    ServiceConfig.PERSON_SERVICE,
+  ).matchContactByPhoneNumber(phoneNumber);
+  const personId = person ? person.id : undefined;
+
+  const personEntity = personId
+    ? getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, personId)
+    : null;
+
+  if (personEntity) {
+    return personEntity.userDisplayName;
+  }
+
+  if (callerName) {
+    return callerName === 'Anonymous'
+      ? i18nP('telephony.switchCall.unknownCaller')
+      : callerName;
+  }
+
+  return formatPhoneNumber(phoneNumber);
 }

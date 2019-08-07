@@ -22,10 +22,19 @@ type ViewProps = WithTranslation & {
   serverError: boolean;
   members: (number | string)[];
   errorEmail: string;
+  canMentionTeam: boolean;
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchContactChange: (items: any) => void;
   loading: boolean;
 };
 
-export { ViewProps };
+enum INIT_ITEMS {
+  IS_PUBLIC = 'isPublic',
+  CAN_ADD_MEMBER = 'canAddMember',
+  CAN_POST = 'canPost',
+  CAN_AT_TEAM_MENTION = 'canAtTeamMention',
+  CAN_PIN = 'canPin',
+}
+
+export { ViewProps, INIT_ITEMS };

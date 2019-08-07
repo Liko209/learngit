@@ -8,6 +8,8 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 import {
   ActiveVoicemailId,
   FetchVoicemailData,
@@ -19,9 +21,13 @@ import {
 import { INITIAL_COUNT } from './config';
 import { VoicemailListHandler } from './VoicemailListHandler';
 import { HoverControllerViewModel } from '../HoverController';
+import { container } from 'framework';
+import { PhoneStore } from '../../store';
 
 class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   implements VoicemailViewProps {
+  private _phoneStore: PhoneStore = container.get(PhoneStore);
+
   @observable
   isError = false;
 
@@ -66,6 +72,11 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
 
         this._setHandler(handler);
       },
+    );
+
+    this.reaction(
+      () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
+      () => this._pauseAllVoiceMail(),
     );
   }
 
@@ -131,6 +142,20 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   onFilterChange: IJuiChangePhoneFilter = value => {
     this._filterValue = value;
   };
+
+  private _pauseAllVoiceMail = () => {
+    const audioCache = this._phoneStore.audioCache;
+    if (audioCache.size !== 0) {
+      audioCache.forEach(audio => {
+        audio.media && audio.media.pause();
+      });
+    }
+  };
+
+  dispose() {
+    super.dispose();
+    this._pauseAllVoiceMail();
+  }
 }
 
 export { VoicemailViewModel };

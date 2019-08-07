@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable, Jupiter } from 'framework';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyStore } from '../../../store';
@@ -13,7 +13,12 @@ import { CallViewModel } from '../Call.ViewModel';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ClientService } from '@/modules/common';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
+import * as media from '@/modules/media/module.config';
 
+jest.mock('@/modules/media/service');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(media.config);
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AuthUserConfig');
 AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValue({

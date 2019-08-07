@@ -10,8 +10,10 @@ import {
 } from './ILoadMoreStrategy';
 
 import { UndefinedAble } from '../types';
+import { DIRECTION } from '../../Lists';
 
 const PRELOAD_COUNT_LIMIT = 50;
+const DEFAULT_PAGE_SIZE = 20;
 
 class ThresholdStrategy implements ILoadMoreStrategy {
   private _threshold: number;
@@ -48,7 +50,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     const isUpwards = Math.floor(startIndexDiff) < 0 || deltaY < 0;
     if (unloadCountUp >= this._minBatchCount && isUpwards) {
       return {
-        direction: 'up',
+        direction: DIRECTION.UP,
         count: unloadCountUp,
       };
     }
@@ -60,7 +62,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     const isDownwards = Math.floor(stopIndexDiff) > 0 || deltaY > 0;
     if (unloadCountDown >= this._minBatchCount && isDownwards) {
       return {
-        direction: 'down',
+        direction: DIRECTION.DOWN,
         count: unloadCountDown,
       };
     }
@@ -75,8 +77,14 @@ class ThresholdStrategy implements ILoadMoreStrategy {
 
   updatePreloadCount(count: number) {
     if (this._preloadInfo) {
-      this._preloadInfo.count =
-        count > PRELOAD_COUNT_LIMIT ? PRELOAD_COUNT_LIMIT : count;
+      const preloadCount = count - DEFAULT_PAGE_SIZE + 1;
+      if (preloadCount >= PRELOAD_COUNT_LIMIT) {
+        this._preloadInfo.count = PRELOAD_COUNT_LIMIT;
+      } else if (preloadCount <= DEFAULT_PAGE_SIZE) {
+        this._preloadInfo.count = DEFAULT_PAGE_SIZE;
+      } else {
+        this._preloadInfo.count = preloadCount;
+      }
     }
   }
 }

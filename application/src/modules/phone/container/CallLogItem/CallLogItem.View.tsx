@@ -3,12 +3,8 @@
  * @Date: 2019-06-03 14:44:12
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
-
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   StyledContactWrapper,
   StyleVoicemailItem,
@@ -27,33 +23,15 @@ import { Actions } from '../Actions';
 import { ENTITY_TYPE } from '../constants';
 import { getCreateTime } from '@/utils/date';
 
-type Props = CallLogItemViewProps & WithTranslation & CallLogItemProps;
-
-type State = {
-  showCall: boolean;
-};
+type Props = CallLogItemViewProps & CallLogItemProps;
 
 @observer
-class CallLogItemViewComponent extends Component<Props, State> {
-  state = {
-    showCall: false,
-  };
-
-  async componentDidMount() {
-    const { shouldShowCall } = this.props;
-    if (shouldShowCall) {
-      const showCall = await shouldShowCall();
-      this.setState({
-        showCall,
-      });
-    }
-  }
-
+class CallLogItemView extends Component<Props> {
   render() {
     const {
-      t,
       id,
       isUnread,
+      isPseudo,
       caller,
       icon,
       callType,
@@ -68,12 +46,11 @@ class CallLogItemViewComponent extends Component<Props, State> {
       onMouseLeave,
       callLogResponsiveMap,
     } = this.props;
-    const { showCall } = this.state;
 
     return (
       <StyleVoicemailItem
         data-id={id}
-        data-test-automation-class='call-history-item'
+        data-test-automation-class="call-history-item"
         expanded={false}
       >
         <VoicemailSummary
@@ -95,7 +72,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
             <CallLogStatus
               isShowCallInfo={callLogResponsiveMap.showCallInfo}
               icon={icon}
-              callType={t(callType)}
+              callType={callType}
               duration={duration}
               isMissedCall={isMissedCall}
             />
@@ -106,9 +83,9 @@ class CallLogItemViewComponent extends Component<Props, State> {
                 id={id}
                 caller={caller}
                 entity={ENTITY_TYPE.CALL_LOG}
+                isPseudo={isPseudo}
                 maxButtonCount={callLogResponsiveMap.buttonToShow}
                 canEditBlockNumbers={canEditBlockNumbers}
-                showCall={showCall}
               />
             </StyledActionWrapper>
           ) : (
@@ -121,9 +98,5 @@ class CallLogItemViewComponent extends Component<Props, State> {
     );
   }
 }
-
-const CallLogItemView = withTranslation('translations')(
-  CallLogItemViewComponent,
-);
 
 export { CallLogItemView };

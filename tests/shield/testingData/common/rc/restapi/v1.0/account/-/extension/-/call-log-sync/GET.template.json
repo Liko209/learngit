@@ -1,0 +1,43 @@
+{
+  "host": "rc",
+  "path": "/restapi/v1.0/account/~/extension/~/call-log-sync",
+  "method": "GET",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "path": "/restapi/v1.0/account/~/extension/~/call-log-sync",
+    "method": "GET",
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": "Bearer WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnaFhnQmVrWVlLVmQwNzVyblhVUnNCSV91RlY4U2s5T09LaF9WQjJ5dll2NFRKN2I1cDMzeXVzbFpTX1BlcjEtMndCV3hmdE5UY3BuSTIyRjVibjRMRmFYc0hyRWQxRWU2SWU3VEg0RW1hUTRISE1Cdm14SEQwRFM3bnlYT3JBTlRVVzVHdmJOUi04NHxURXctTnd8RWhDQVVad3ZHczZLdGUxMHJOYi1Hd3xBQQ",
+      "Content-Type": "application/json;charset=utf-8"
+    }
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "data": {
+      "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/extension/400162901008/call-log-sync?syncType=ISync&syncToken=FAMAAAFq9uVKGAQAAAFr1IzkowgAAABdK5FMEA4AAAFq9uVKGBEADwAxADUANQA4ADkAMgAwADMAOAAzADAAMAAwAF8AMBIAAAFr1IzkoxQBFQAYABoBkknUVg",
+      "records": [],
+      "syncInfo": {
+        "syncType": "ISync",
+        "syncToken": "FAMAAAFq9uVKGAQAAAFr1IzkowgAAABdK5FMEA4AAAFq9uVKGBEADwAxADUANQA4ADkAMgAwADMAOAAzADAAMAAwAF8AMBIAAAFr1I1KRxQBFQAYABoBg4zhEw",
+        "syncTime": "2019-07-09T02:25:57.831Z"
+      }
+    },
+    "headers": {
+      "date": "Tue, 09 Jul 2019 02:25:57 GMT",
+      "content-encoding": "gzip",
+      "x-rate-limit-limit": "60",
+      "routingkey": "XMN02P01PAS01",
+      "x-rate-limit-remaining": "59",
+      "content-length": "322",
+      "rcrequestid": "e2a6422a-a1f0-11e9-98e6-005056beb634",
+      "content-language": "en-US",
+      "x-rate-limit-group": "heavy",
+      "content-type": "application/json; charset=UTF-8",
+      "x-rate-limit-window": "60"
+    }
+  }
+}

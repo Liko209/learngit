@@ -4,25 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import { DialogActionsProps } from '@material-ui/core/DialogActions';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiDialogTitle } from './DialogTitle';
 import { JuiDialogContent } from './DialogContent';
 import { JuiDialogContentText } from './DialogContentText';
 import { JuiDialogActions } from './DialogActions';
 
-import { spacing } from '../../foundation/utils';
 import { Omit } from '../../foundation/utils/typeHelper';
-import styled from '../../foundation/styled-components';
 import { JuiButton, JuiButtonProps, JuiButtonColor } from '../Buttons/Button';
-
-const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
-  & button,
-  & a {
-    display: inline-block;
-    margin-left: ${spacing(2)};
-  }
-`;
 
 type JuiModalProps = {
   open?: boolean;
@@ -47,8 +36,8 @@ type JuiModalProps = {
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
-JuiDialogProps,
-'open'
+  JuiDialogProps,
+  'open'
 >;
 
 class JuiModal extends PureComponent<JuiModalProps, {}> {
@@ -99,11 +88,12 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
   renderContent() {
     const { children, content } = this.props;
 
-    const renderString = (type: string | React.ReactNode) => (typeof type === 'string' ? (
+    const renderString = (type: string | React.ReactNode) =>
+      typeof type === 'string' ? (
         <JuiDialogContentText>{type}</JuiDialogContentText>
-    ) : (
-      type
-    ));
+      ) : (
+        type
+      );
 
     return content ? renderString(content) : renderString(children);
   }
@@ -137,12 +127,12 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           {this.renderContent()}
         </JuiDialogContent>
         {contentAfter}
-        <StyledActions
+        <JuiDialogActions
           className="modal-actions"
           data-test-automation-id={'DialogActions'}
         >
           {footer ? footer : this.renderDefaultFooter()}
-        </StyledActions>
+        </JuiDialogActions>
       </JuiDialog>
     );
   }

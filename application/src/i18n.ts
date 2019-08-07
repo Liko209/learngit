@@ -7,11 +7,43 @@ import { initReactI18next } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
 import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
+import i18nOptions from './i18nOptions';
 
-const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
+/**
+ * momentWhitelist: white list for moment
+ * momentWhitelist must synchronize with i18nWhitelist
+ */
+
+const whitelist = {
+  en: '',
+  'de-DE': 'de',
+  'en-AU': 'en-au',
+  'en-GB': 'en-gb',
+  'es-419': 'es-do',
+  'es-ES': 'es',
+  'fr-CA': 'fr-ca',
+  'fr-FR': 'fr',
+  'it-IT': 'it',
+  'ja-JP': 'ja',
+  'pt-BR': 'pt-br',
+  'zh-CN': 'zh-cn',
+  'zh-HK': 'zh-hk',
+  'zh-TW': 'zh-tw',
+};
+
+Object.keys(whitelist).map(v => {
+  const name = whitelist[v];
+  if (!name) return;
+  module.require(`moment/locale/${name}.js`);
+});
+
+const getVariationOfAOrAn = function(value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
-  const actualValue = lastDotChar > 0 && lastDotChar !== value.length - 1 ? value.substring(lastDotChar + 1) : value;
+  const actualValue =
+    lastDotChar > 0 && lastDotChar !== value.length - 1
+      ? value.substring(lastDotChar + 1)
+      : value;
   const firstLetter = actualValue.substring(0, 1);
   let correctWordForm = '';
   if (letters.find((l: string) => firstLetter === l)) {
@@ -40,17 +72,22 @@ const interpolation = {
 };
 
 const config: i18next.InitOptions = {
+  ...i18nOptions,
   interpolation,
-  fallbackLng: 'en',
   // have a common namespace used around the full app
   ns: ['translations'],
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  whitelist: ['en', 'de-DE', 'en-AU', 'en-GB', 'es-419', 'es-ES', 'fr-CA', 'fr-FR', 'it-IT', 'ja-JP', 'pt-BR', 'zh-CN', 'zh-HK', 'zh-TW'],
+  whitelist: Object.keys(whitelist),
   postProcess: ['pseudo'],
   nsSeparator: ':::',
   load: 'currentOnly',
+  detection: {
+    order: ['querystring', 'localStorage', 'navigator', 'htmlTag'],
+    lookupLocalStorage: 'i18nextUserLng',
+    caches: [],
+  },
 };
 
 const ready = () => {

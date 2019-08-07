@@ -4,9 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  action, observable, computed, comparer, runInAction,
-} from 'mobx';
+import { action, observable, computed, comparer, runInAction } from 'mobx';
 import { MentionProps, MentionViewProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { SearchService } from 'sdk/module/search';
@@ -16,20 +14,13 @@ import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
-import { INIT_CURRENT_INDEX } from './constants';
 import { CONVERSATION_TYPES } from '@/constants';
+import { TEAM_TEXT, TEAM_MENTION_ID } from './constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-
-type searchMember = {
-  displayName: string;
-  id: number;
-};
+import { isTeamId } from '../helper';
 
 const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
-  if (vm.members.length && vm.open) {
-    return false;
-  }
-  return true;
+  return !(vm.membersId.length && vm.open);
 };
 
 const DELAY = 300;
@@ -44,11 +35,13 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @observable
   currentIndex: number = 0;
   @observable
-  members: searchMember[] = [];
+  membersId: number[] = [];
+  @observable
+  membersDisplayName: string[] = [];
   @observable
   searchTerm?: string;
 
-  private _canDoFuzzySearch: boolean = false;
+  private _canDoFuzzySearch: boolean = true;
 
   private _denotationChar?: string;
 
@@ -64,6 +57,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     {
       key: Keys.UP,
       handler: this._upHandler(this),
+    },
+    {
+      key: Keys.TAB,
+      handler: this._selectHandler(this),
     },
     {
       key: Keys.DOWN,
@@ -97,9 +94,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   reset() {
     this._canDoFuzzySearch = false;
+    this.searchTerm = undefined;
     this.open = false;
     this.currentIndex = 0;
-    this.members = [];
+    this.membersId = [];
+    this.membersDisplayName = [];
   }
 
   @computed
@@ -131,9 +130,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       this.open = false;
       return;
     }
+    const data = { searchTerm: this.searchTerm, memberIds: this._memberIds };
+    this._doFuzzySearchPersons(data);
     this.open = true;
     this._denotationChar = denotationChar;
-  }
+  };
 
   private _doFuzzySearchPersons = async ({
     searchTerm,
@@ -155,25 +156,39 @@ class MentionViewModel extends StoreViewModel<MentionProps>
 
     if (res) {
       runInAction(() => {
-        this.currentIndex = this.initIndex;
-        this.members = res.sortableModels;
+        this.currentIndex = 0;
+        this.membersDisplayName = res.sortableModels.map(
+          item => item.displayName,
+        );
+        this.membersId = res.sortableModels.map(item => item.id);
+        if (
+          this.isTeam &&
+          this._group.canMentionTeam &&
+          this.searchTermMatchTeam &&
+          !this.isEditMode
+        ) {
+          this.membersId.unshift(this._group.id);
+          this.membersDisplayName.unshift(TEAM_TEXT);
+        }
       });
     }
-  }
+  };
 
   @action
   private _selectHandler(vm: MentionViewModel) {
-    return function () {
-      if (!vm.open || !vm.members.length) {
+    return function() {
+      if (!vm.open || !vm.membersId.length) {
         return true;
       }
+      const isTeam = isTeamId(vm.membersId[vm.currentIndex]);
       // @ts-ignore
       const quill: Quill = this.quill;
       const mentionModules = quill.getModule('mention');
       mentionModules.select(
-        vm.members[vm.currentIndex - vm.initIndex].id,
-        vm.members[vm.currentIndex - vm.initIndex].displayName,
+        isTeam ? TEAM_MENTION_ID : vm.membersId[vm.currentIndex],
+        vm.membersDisplayName[vm.currentIndex],
         vm._denotationChar,
+        isTeam,
       );
       vm.currentIndex = 0;
       vm.open = false;
@@ -191,11 +206,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     this._selectHandler(this).apply({
       quill: (document.querySelector(query) as any).__quill,
     });
-  }
+  };
 
   @action
   private _escapeHandler(vm: MentionViewModel) {
-    return function () {
+    return function() {
       if (vm.open) {
         vm.open = false;
       }
@@ -205,28 +220,29 @@ class MentionViewModel extends StoreViewModel<MentionProps>
 
   @action
   private _upHandler(vm: MentionViewModel) {
-    return function () {
-      const size = vm.members.length + INIT_CURRENT_INDEX;
-      const currentIndex = (vm.currentIndex + size - 1) % size;
-      vm.currentIndex = currentIndex === 0 ? vm.members.length : currentIndex;
+    return function() {
+      const size = vm.membersId.length;
+      vm.currentIndex = (vm.currentIndex + size - 1) % size;
       return canTriggerDefaultEventHandler(vm);
     };
   }
 
   @action
   private _downHandler(vm: MentionViewModel) {
-    return function () {
-      const size = vm.members.length + INIT_CURRENT_INDEX;
-      const currentIndex = (vm.currentIndex + 1) % size;
-      vm.currentIndex = currentIndex === 0 ? INIT_CURRENT_INDEX : currentIndex;
+    return function() {
+      const size = vm.membersId.length;
+      vm.currentIndex = (vm.currentIndex + 1) % size;
       return canTriggerDefaultEventHandler(vm);
     };
   }
 
   @computed
-  get initIndex() {
-    // because of title will within VL
-    return this.isOneToOneGroup ? 0 : INIT_CURRENT_INDEX;
+  get searchTermMatchTeam() {
+    const searchTerm = this.searchTerm || '';
+    return (
+      searchTerm.trim() === '' ||
+      TEAM_TEXT.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1
+    );
   }
 
   @computed
@@ -235,13 +251,13 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   }
 
   @computed
-  get isEditMode() {
-    return this.props.isEditMode;
+  get isTeam() {
+    return this.groupType === CONVERSATION_TYPES.TEAM;
   }
 
   @computed
-  get ids() {
-    return this.members.map((member: searchMember) => member.id);
+  get isEditMode() {
+    return this.props.isEditMode;
   }
 
   mentionOptions = {

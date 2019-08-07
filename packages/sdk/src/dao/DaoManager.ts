@@ -13,17 +13,14 @@ import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { jobScheduler } from '../framework/utils/jobSchedule';
-import { AccountGlobalConfig } from '../module/account/config/AccountGlobalConfig';
 import { DaoGlobalConfig } from './config';
 import { IdModel, ModelIdType } from '../framework/model';
-import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 import { IDBObserver } from './IDBObserver';
 
 const LOG_TAG = 'DaoManager';
 
 class DaoManager extends Manager<
-BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
+  BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
 > {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
@@ -38,15 +35,16 @@ BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
     this._observers = [];
   }
 
-  async initDatabase(): Promise<void> {
-    const dbType = this.kvStorageManager.isLocalStorageSupported()
-      ? DatabaseType.DexieDB
-      : DatabaseType.LokiDB;
+  async initDatabase(clearDataFunc: () => Promise<void>): Promise<void> {
+    const dbType =
+      window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
+        ? DatabaseType.DexieDB
+        : DatabaseType.LokiDB;
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
       mainLogger.tags(LOG_TAG).info('schema changed, should clear all data');
-      await this.clearAllData();
+      await clearDataFunc();
     }
 
     const db = this.dbManager.getDatabase();
@@ -113,26 +111,6 @@ BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
       observer.onDBInitialized();
     } else {
       this._observers.push(observer);
-    }
-  }
-
-  async clearAllData() {
-    try {
-      await this.dbManager.deleteDatabase();
-    } catch (error) {
-      this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
-      await this.dbManager.deleteDatabase();
-    }
-
-    // remove relevant config
-    if (AccountGlobalConfig.getUserDictionary()) {
-      // TODO FIJI-4396
-      // 'any' because of circular reference
-      const synConfig = ServiceLoader.getInstance<any>(
-        ServiceConfig.SYNC_SERVICE,
-      ).userConfig;
-      synConfig.clearSyncConfigsForDBUpgrade();
-      jobScheduler.userConfig.clearFetchDataConfigs();
     }
   }
 

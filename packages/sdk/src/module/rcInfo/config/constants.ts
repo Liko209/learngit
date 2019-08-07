@@ -23,6 +23,7 @@ const RC_INFO_KEYS = {
   ACCOUNT_SERVICE_INFO: 'account_service_info',
   FORWARDING_NUMBERS: 'forwarding_numbers',
   BLOCK_NUMBER: 'block_number',
+  DEVICE_INFO: 'device_info',
 };
 
 const RC_INFO_GLOBAL_KEYS = {
@@ -49,10 +50,13 @@ const RC_INFO_HISTORY: ConfigChangeHistory = {
 
 const CALLER_ID_FEATURE_NAME = 'AdditionalSoftphone';
 
+const DEFAULT_PHONE_DATA_VERSION = '8.2';
+
 export {
   MODULE_NAME,
   RC_INFO_KEYS,
   RC_INFO_GLOBAL_KEYS,
   RC_INFO_HISTORY,
   CALLER_ID_FEATURE_NAME,
+  DEFAULT_PHONE_DATA_VERSION,
 };

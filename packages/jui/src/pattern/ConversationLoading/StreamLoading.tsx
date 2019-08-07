@@ -7,11 +7,11 @@ import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import {
   palette,
-  width,
-  height,
   spacing,
   typography,
   grey,
+  width,
+  height,
 } from '../../foundation/utils';
 import { JuiTypography } from '../../foundation/Typography';
 import { RuiCircularProgress } from 'rcui/components/Progress';
@@ -19,11 +19,11 @@ import { JuiLink } from '../../components/Link';
 
 const Progress = styled(RuiCircularProgress)`
   && {
-    width: ${width(11)} !important;
-    height: ${height(11)} !important;
+    width: ${width(6)} !important;
+    height: ${height(6)} !important;
     svg {
-      width: ${width(11)};
-      height: ${height(11)};
+      width: ${width(6)};
+      height: ${height(6)};
     }
   }
   margin: ${spacing(4)};
@@ -61,8 +61,8 @@ type State = {
 };
 
 class JuiStreamLoading extends React.PureComponent<
-JuiConversationLoadingProps,
-State
+  JuiConversationLoadingProps,
+  State
 > {
   timer: NodeJS.Timeout;
   showLinkTimer: NodeJS.Timeout;
@@ -108,7 +108,7 @@ State
         showLink: true,
       });
     }
-  }
+  };
 
   render() {
     const { showLink } = this.state;
@@ -130,6 +130,4 @@ State
   }
 }
 
-export {
-  Loading, Progress, Tip, TipLink, JuiStreamLoading,
-};
+export { Loading, Progress, Tip, TipLink, JuiStreamLoading };

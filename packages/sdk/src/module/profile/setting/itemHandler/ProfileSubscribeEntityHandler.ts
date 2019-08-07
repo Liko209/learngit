@@ -18,6 +18,7 @@ import { IProfileService } from '../../service/IProfileService';
 import { Profile } from '../../entity';
 import { AccountService } from 'sdk/module/account';
 import { SettingValue } from '../../types';
+import { UndefinedAble } from 'sdk/types';
 
 class ProfileSubscribeEntityHandler<
   T extends SettingValue
@@ -25,23 +26,28 @@ class ProfileSubscribeEntityHandler<
   id: SettingEntityIds;
   setting_key: SETTING_KEYS;
   source?: T[];
+  defaultValue?: T;
   constructor(
     private _profileService: IProfileService,
     settingEntity: {
       id: SettingEntityIds;
       setting_key: SETTING_KEYS;
       source?: T[];
+      defaultValue?: T;
     },
   ) {
     super();
     this.id = settingEntity.id;
     this.setting_key = settingEntity.setting_key;
     this.source = settingEntity.source;
+    this.defaultValue = settingEntity.defaultValue;
     this._subscribe();
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
+      this.onProfileEntityUpdate(payload),
+    );
   }
 
   async updateValue(value: T) {
@@ -51,12 +57,13 @@ class ProfileSubscribeEntityHandler<
   }
   async fetchUserSettingEntity() {
     const profile = await this._profileService.getProfile();
+    let value: UndefinedAble<T> = profile && profile[this.setting_key];
+    if (value === undefined) {
+      value = this.defaultValue;
+    }
     const settingItem: UserSettingEntity<T> = {
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
       source: this.source,
-      value: profile ? (profile[this.setting_key] as T) : undefined,
+      value,
       id: this.id,
       state: ESettingItemState.ENABLE,
       valueSetter: value => this.updateValue(value),

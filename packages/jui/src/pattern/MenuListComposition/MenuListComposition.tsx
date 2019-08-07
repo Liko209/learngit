@@ -13,15 +13,16 @@ import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 
+type DocumentMouseEvent = React.MouseEvent<any, MouseEvent>;
 type MenuItems = {
   label: string;
   automationId?: string;
   ariaLabel?: string;
-  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
+  onClick: (event: DocumentMouseEvent) => void;
 }[];
 
 type MenuExpandTrigger = React.SFC<{
-  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
+  onClick: (event: DocumentMouseEvent) => void;
 }>;
 
 type MenuListCompositionProps = {
@@ -35,7 +36,7 @@ type MenuListCompositionProps = {
 const MenuListCompositionWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-right: ${({ theme }) => `${theme.spacing.unit}px`};
+  margin-right: ${({ theme }) => `${theme.spacing(1)}px`};
 `;
 /* eslint-disable */
 const MenuWrapper = styled(Popper)``;
@@ -52,11 +53,11 @@ class JuiMenuListComposition extends React.PureComponent<
     };
   }
 
-  handleToggle = (event: React.MouseEvent<HTMLElement>) => {
+  handleToggle = (event: DocumentMouseEvent) => {
     this.setState({ open: !this.state.open, anchorEl: event.currentTarget });
   };
 
-  handleClose = (event: React.MouseEvent<HTMLElement>) => {
+  handleClose = (event: DocumentMouseEvent) => {
     const node = this.state.anchorEl;
     if (node && node.contains(event.target as Node)) {
       return;
@@ -66,7 +67,7 @@ class JuiMenuListComposition extends React.PureComponent<
   };
 
   handleMenuItemClick = (menuItemEvent: Function) => (
-    event: React.MouseEvent<HTMLElement>,
+    event: DocumentMouseEvent,
   ) => {
     this.handleClose(event);
     menuItemEvent();
@@ -77,7 +78,7 @@ class JuiMenuListComposition extends React.PureComponent<
     const { MenuExpandTrigger, menuItems, automationId } = this.props;
     return (
       <MenuListCompositionWrapper className={this.props.className}>
-        <MenuExpandTrigger aria-haspopup='true' onClick={this.handleToggle} />
+        <MenuExpandTrigger aria-haspopup="true" onClick={this.handleToggle} />
         <MenuWrapper
           open={open}
           anchorEl={anchorEl}

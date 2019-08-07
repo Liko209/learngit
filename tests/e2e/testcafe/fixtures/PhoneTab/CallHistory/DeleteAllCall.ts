@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { ensuredOneCallLog } from './utils';
+import { ensuredOneMissCallLog } from './utils';
 
 fixture('Phone/callHistory')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -54,7 +54,7 @@ test.meta(<ITestMeta>{
     await telephoneDialog.clickMinimizeButton()
   }
 
-  await ensuredOneCallLog(t, caller, callee, app);
+  await ensuredOneMissCallLog(t, caller, callee, app);
 
 
   await h(t).withLog('When I click more icon in the page head', async (step) => {

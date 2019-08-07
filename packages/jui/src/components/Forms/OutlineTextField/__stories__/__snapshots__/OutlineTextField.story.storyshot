@@ -146,7 +146,7 @@ exports[`Storyshots Components/Forms OutlineTextField: Components/Forms OutlineT
       onClick={[Function]}
     >
       <input
-        className="MuiInputBase-input MuiInputBase-inputType"
+        className="MuiInputBase-input"
         disabled={false}
         maxLength={20}
         onBlur={[Function]}
@@ -190,7 +190,7 @@ exports[`Storyshots Components/Forms OutlineTextField: Components/Forms OutlineT
       </svg>
     </span>
     <div
-      className="MuiInputBase-root MuiInputBase-adornedEnd c1"
+      className="MuiInputBase-root c1 MuiInputBase-adornedEnd"
       onClick={[Function]}
     >
       <input

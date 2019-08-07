@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ENTITY_NAME } from '@/store/constants';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { TDelta, ISortableModel } from './types';
@@ -33,6 +33,7 @@ export interface IFetchDataProvider<T> {
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: T,
+    offset?: number
   ): Promise<T[]>;
 }
 
@@ -46,8 +47,8 @@ export class FetchDataListHandler<
   protected _pageSize: number;
   protected _entityName?: ENTITY_NAME;
   protected _dataChangeCallBacks: DeltaDataHandler<
-  IdType,
-  SortableModel
+    IdType,
+    SortableModel
   >[] = [];
   protected _defaultHasMoreDown: boolean;
   protected _defaultHasMoreUp: boolean;
@@ -55,7 +56,7 @@ export class FetchDataListHandler<
   constructor(
     dataProvider: IFetchDataProvider<SortableModel> | null,
     options: IFetchDataListHandlerOptions<IdType, SortableModel>,
-    listStore: ListStore<SortableModel> = new ListStore<SortableModel>(),
+    listStore: ListStore<SortableModel> = new ListStore<SortableModel>()
   ) {
     super();
     this._fetchDataProvider = dataProvider;
@@ -65,7 +66,7 @@ export class FetchDataListHandler<
       hasMoreDown = false,
       hasMoreUp = false,
       entityName,
-      dataChangeCallBack,
+      dataChangeCallBack
     } = options;
     this._pageSize = pageSize;
     this._entityName = entityName;
@@ -105,7 +106,11 @@ export class FetchDataListHandler<
     }
   }
 
-  async fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
+  async fetchData(
+    direction: QUERY_DIRECTION,
+    pageSize?: number,
+    offset?: number
+  ) {
     const size = pageSize ? pageSize : this._pageSize;
     let anchor: SortableModel | undefined;
     if (direction === QUERY_DIRECTION.OLDER) {
@@ -114,19 +119,21 @@ export class FetchDataListHandler<
       anchor = this._listStore.last();
     }
 
-    return this.fetchDataInternal(direction, size, anchor);
+    return this.fetchDataInternal(direction, size, anchor, offset);
   }
 
   protected async fetchDataInternal(
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: SortableModel,
+    offset?: number
   ): Promise<any> {
     if (this._fetchDataProvider) {
       const result = await this._fetchDataProvider.fetchData(
         direction,
         this._pageSize,
         anchor,
+        offset
       );
       this.handlePageData(result, direction);
       this.updateEntityStore(result);
@@ -151,14 +158,14 @@ export class FetchDataListHandler<
     if (this._entityName) {
       storeManager.dispatchReplacedDataModels(
         this._entityName,
-        replaceEntities,
+        replaceEntities
       );
     }
   }
 
   protected handlePageData(
     result: SortableModel[],
-    direction: QUERY_DIRECTION,
+    direction: QUERY_DIRECTION
   ) {
     let inFront = false;
     if (direction === QUERY_DIRECTION.OLDER) {
