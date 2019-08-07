@@ -73,7 +73,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     this.reaction(
       () => ({ searchTerm: this.searchTerm, memberIds: this._memberIds }),
       (data: { searchTerm?: string; memberIds: number[] }) => {
-        if (this._canDoFuzzySearch || this.isEditMode) {
+        if ((this._canDoFuzzySearch || this.isEditMode) && this.open) {
           this._doFuzzySearchPersons(data);
         }
         this._canDoFuzzySearch = true;
