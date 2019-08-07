@@ -4,7 +4,7 @@ module.exports = {
     'plugin:jest/recommended',
     'airbnb-typescript',
     'prettier',
-    'prettier/@typescript-eslint',
+    'prettier/@typescript-eslint'
   ],
   plugins: ['react-hooks'],
   parserOptions: {
@@ -12,13 +12,13 @@ module.exports = {
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
-      modules: true,
-    },
+      modules: true
+    }
   },
   root: true,
   env: {
     browser: true,
-    es6: true,
+    es6: true
   },
   rules: {
     '@typescript-eslint/camelcase': 'off',
@@ -77,12 +77,13 @@ module.exports = {
       code: 80
     }],
     'implicit-arrow-linebreak': 'off',
+    'func-names': 'off'
   },
   settings: {
     react: {
       pragma: 'React',
-      version: 'detect',
+      version: 'detect'
     },
-    'import/ignore': ['node_modules'],
-  },
+    'import/ignore': ['node_modules']
+  }
 };
