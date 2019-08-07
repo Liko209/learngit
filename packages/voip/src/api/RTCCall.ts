@@ -738,6 +738,7 @@ class RTCCall {
       CallReport.instance().updateEstablishment(
         CALL_REPORT_PROPS.RECEIVED_183_TIME,
       );
+      this._setSipInfoIntoCallInfo();
       this._clearHangupTimer();
     }
   }
