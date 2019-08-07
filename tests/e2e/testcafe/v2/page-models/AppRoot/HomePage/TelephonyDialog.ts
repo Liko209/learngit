@@ -511,7 +511,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
 class CallerIdList extends BaseWebComponent {
   get self() {
-    return this.getSelector('.virtualized_select-list-container');
+    return this.getSelectorByAutomationId('caller-id-selector-list');
   }
 
   get callerIds() {

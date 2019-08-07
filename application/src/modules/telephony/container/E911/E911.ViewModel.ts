@@ -76,6 +76,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     customerName: '',
   };
 
+  @observable loading: boolean = false;
+
   constructor(props: E911Props) {
     super(props);
     this.reaction(
@@ -246,14 +248,16 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     }
 
     this.value.outOfCountry = this.checkboxList.length > 0;
-
+    this.loading = true;
     try {
       await (this.settingItemEntity.valueSetter &&
         this.settingItemEntity.valueSetter(this.value));
+      this.loading = false;
       successCallback && successCallback();
     } catch (e) {
       // need use different tip message according to backend error
       this.handleSubmitError(e);
+      this.loading = false;
     }
   };
 
