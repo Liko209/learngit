@@ -36,7 +36,11 @@ type ResponsiveProps = ResponsiveInfo & {
   visual?: boolean;
   TriggerButton?: React.ComponentType<any>;
   addResponsiveInfo?: (info: ResponsiveInfo) => {};
-  children: (width: number, height: number) => ReactNode | ReactNode;
+  children: (
+    width: number,
+    height: number,
+    isShow?: boolean,
+  ) => ReactNode | ReactNode;
 };
 
 type ResponsiveState = {
@@ -205,9 +209,16 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   }
 
   private _renderChildren = () => {
-    const { children } = this.props;
-    const { width, height } = this.state;
-    return typeof children === 'function' ? children(width, height) : children;
+    const { children, visual } = this.props;
+    const { width, height, isShow } = this.state;
+    let isOpen = visual !== false || isShow;
+    if (this.isManualMode) {
+      const localShowState = this.localShowState;
+      isOpen = !!localShowState && isOpen;
+    }
+    return typeof children === 'function'
+      ? children(width, height, isOpen)
+      : children;
   };
 
   renderMode = () => {
@@ -281,8 +292,13 @@ const withResponsive = (
     render() {
       return (
         <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>
-          {(width: number, height: number) => (
-            <WrappedComponent {...this.props} width={width} height={height} />
+          {(width: number, height: number, isShow?: boolean) => (
+            <WrappedComponent
+              {...this.props}
+              width={width}
+              height={height}
+              isShow={isShow}
+            />
           )}
         </Responsive>
       );
