@@ -381,7 +381,7 @@ class BaseJob {
 
     void createGzFiles(URI remoteUri, String dir) {
         String gzipCmd =
-            """find . -type f -size +150c -name "*.woff" -o -name "*.woff2" -o -name "*.wasm" -o -name "*.css" -o -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.map" -o -name "*.svg"  -o -name "*.xml" | xargs -I{} bash -c 'gzip -1 < {} > {}.gz'"""
+            """find . -type f -size +150c \\( -name "*.woff" -o -name "*.woff2" -o -name "*.wasm" -o -name "*.css" -o -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.map" -o -name "*.svg"  -o -name "*.xml" \\) | xargs -I{} bash -c 'gzip -1 < {} > {}.gz'"""
         ssh(remoteUri, "cd ${dir} && ${gzipCmd}".toString())
     }
 
