@@ -47,7 +47,6 @@ class RTCAccount implements IRTCAccount {
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
   private _userInfo: RTCUserInfo;
-  private _sleepModeListener: Listener;
   private _retryTimer: NodeJS.Timeout | null = null;
   private _failedTimes: number = 0;
 
@@ -61,9 +60,6 @@ class RTCAccount implements IRTCAccount {
     this._networkListener = (params: any) => {
       this._onNetworkChange(params);
     };
-    this._sleepModeListener = () => {
-      this._onWakeUpFromSleepMode();
-    };
     this._initListener();
   }
 
@@ -71,10 +67,6 @@ class RTCAccount implements IRTCAccount {
     RTCNetworkNotificationCenter.instance().removeListener(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
-    );
-    RTCNetworkNotificationCenter.instance().removeListener(
-      RTC_SLEEP_MODE_EVENT.WAKE_UP_FROM_SLEEP_MODE,
-      this._sleepModeListener,
     );
   }
 
@@ -251,10 +243,6 @@ class RTCAccount implements IRTCAccount {
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
     );
-    RTCNetworkNotificationCenter.instance().on(
-      RTC_SLEEP_MODE_EVENT.WAKE_UP_FROM_SLEEP_MODE,
-      this._sleepModeListener,
-    );
   }
 
   private _onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
@@ -376,11 +364,6 @@ class RTCAccount implements IRTCAccount {
     if (RTC_NETWORK_STATE.ONLINE === params.state) {
       this._reRegister();
     }
-  }
-
-  private _onWakeUpFromSleepMode() {
-    rtcLogger.debug(LOG_TAG, 'wake up from sleep mode');
-    this._reRegister();
   }
 
   getSipProvFlags(): RTCSipFlags | null {
