@@ -6,10 +6,15 @@
 import { ZipLogZipItemProvider } from '../ZipLogZipItemProvider';
 import { ZipConsumer } from '../ZipConsumer';
 
+global.Blob = () => {
+  return {
+    size: 111,
+  };
+};
 jest.mock('../utils', () => {
   return {
     createWorker: () => {
-      zip: () => {};
+      () => {};
     },
   };
 });
