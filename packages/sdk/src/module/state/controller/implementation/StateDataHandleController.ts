@@ -551,7 +551,6 @@ class StateDataHandleController {
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);
       }
-      // if (Date.now() === 0) {
       if (changeMap) {
         changeMap.set(ENTITY.MY_STATE, {
           entities: [myState],
@@ -564,7 +563,6 @@ class StateDataHandleController {
           [myState],
         );
       }
-      // }
     }
     if (transformedState.groupStates.length > 0) {
       await this._entitySourceController.bulkUpdate(

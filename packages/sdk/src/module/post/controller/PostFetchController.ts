@@ -88,7 +88,6 @@ class PostFetchController {
       );
       if (!shouldSaveToDb || shouldFetch) {
         result.hasMore[direction] = hasMorePostInRemote[direction];
-
         const validAnchorPostId = this._findValidAnchorPostId(
           direction,
           result.posts,

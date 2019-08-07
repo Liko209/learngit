@@ -13,10 +13,10 @@ exports[`TopBannerView render should not display banner defined in data if prior
 <TopBannerView>
   <styled.div>
     <StyledComponent
-      forwardedClass={
+      forwardedComponent={
         Object {
           "$$typeof": Symbol(react.forward_ref),
-          "attrs": undefined,
+          "attrs": Array [],
           "componentStyle": ComponentStyle {
             "componentId": "sc-bdVaJa",
             "isStatic": true,
@@ -33,6 +33,7 @@ exports[`TopBannerView render should not display banner defined in data if prior
             ],
           },
           "displayName": "styled.div",
+          "foldedComponentIds": Array [],
           "render": [Function],
           "styledComponentId": "sc-bdVaJa",
           "target": "div",

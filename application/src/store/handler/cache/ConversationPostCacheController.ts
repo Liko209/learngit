@@ -41,7 +41,10 @@ class ConversationPostCacheController extends PostCacheController {
   }
 
   private _preloadThumbnail(postModel: PostModel) {
-    const itemIds: number[] = postModel.itemIds.filter((id: number) => TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id));
+    const itemIds: number[] = postModel.itemIds.filter(
+      (id: number) =>
+        TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id),
+    );
 
     if (itemIds && itemIds.length) {
       this._getThumbnailPreloadController().preload(itemIds);
@@ -83,7 +86,8 @@ class ConversationPostCacheController extends PostCacheController {
                     sortableModel.id &&
                     sortableModel.id > 0
                   ) {
-                    this._preloadThumbnail(postStore.get(sortableModel.id));
+                    const model = postStore.get(sortableModel.id);
+                    model && this._preloadThumbnail(model);
                   }
                 },
               ),

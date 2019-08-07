@@ -57,11 +57,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
         .filter(this._isViewProp)
         .forEach((key: string) => {
           if (props[key] && props[key] !== this.vm[key]) {
-            const errorMessage = `buildContainer Error: '${
-              Container.displayName
-            }.props.${key}: ${props[key]}' conflict with '${
-              ViewModel.name
-            }.${key}: ${this.vm[key]}'`;
+            const errorMessage = `buildContainer Error: '${Container.displayName}.props.${key}: ${props[key]}' conflict with '${ViewModel.name}.${key}: ${this.vm[key]}'`;
 
             if (
               process.env.NODE_ENV === 'development' ||

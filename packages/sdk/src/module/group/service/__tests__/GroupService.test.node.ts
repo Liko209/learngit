@@ -252,7 +252,10 @@ describe('GroupService', () => {
           removeTeamMembers: mockRemoveTeamMembers,
         });
       await groupService.removeTeamMembers(mockMembers, mockTeamId);
-      expect(mockRemoveTeamMembers).toHaveBeenCalledWith(mockMembers, mockTeamId);
+      expect(mockRemoveTeamMembers).toHaveBeenCalledWith(
+        mockMembers,
+        mockTeamId,
+      );
     });
   });
   describe('isCurrentUserHasPermission()', () => {
@@ -300,7 +303,10 @@ describe('GroupService', () => {
           isTeamAdmin: mockIsTeamAdmin,
         });
       groupService.isTeamAdmin(mockPersonId, mockPermission);
-      expect(mockIsTeamAdmin).toHaveBeenCalledWith(mockPersonId, mockPermission);
+      expect(mockIsTeamAdmin).toHaveBeenCalledWith(
+        mockPersonId,
+        mockPermission,
+      );
     });
   });
   describe('archiveTeam()', () => {
@@ -397,28 +403,25 @@ describe('GroupService', () => {
 
     it('should call getGroupFetchDataController when call doFuzzySearchGroups  ', async () => {
       await groupService.doFuzzySearchGroups('123', true, true);
-      expect(mockGroupFetchDataController.doFuzzySearchGroups).toHaveBeenCalledWith(
-        '123',
-        true,
-        true,
-      );
+      expect(
+        mockGroupFetchDataController.doFuzzySearchGroups,
+      ).toHaveBeenCalledWith('123', true, true);
     });
 
     it('should call getGroupFetchDataController when call doFuzzySearchTeams  ', async () => {
       await groupService.doFuzzySearchTeams('123', false);
-      expect(mockGroupFetchDataController.doFuzzySearchTeams).toHaveBeenCalledWith(
-        '123',
-        false,
-        undefined,
-      );
+      expect(
+        mockGroupFetchDataController.doFuzzySearchTeams,
+      ).toHaveBeenCalledWith('123', false, undefined);
     });
 
     it('should call getGroupFetchDataController when call getGroupsByType', async () => {
-      await groupService.getGroupsByType(GROUP_QUERY_TYPE.ALL, 1, 1);
+      await groupService.getGroupsByType(GROUP_QUERY_TYPE.ALL, 1, 1, 20);
       expect(mockGroupFetchDataController.getGroupsByType).toHaveBeenCalledWith(
         GROUP_QUERY_TYPE.ALL,
         1,
         1,
+        20,
       );
     });
 
@@ -437,7 +440,9 @@ describe('GroupService', () => {
     });
     it('should call getGroupFetchDataController when call getLocalGroup', async () => {
       await groupService.getLocalGroup([1]);
-      expect(mockGroupFetchDataController.getLocalGroup).toHaveBeenCalledWith([1]);
+      expect(mockGroupFetchDataController.getLocalGroup).toHaveBeenCalledWith([
+        1,
+      ]);
     });
     it('should call getGroupFetchDataController when call getOrCreateGroupByMemberList', async () => {
       await groupService.getOrCreateGroupByMemberList([1]);
@@ -451,16 +456,16 @@ describe('GroupService', () => {
     });
     it('should call getGroupFetchDataController when call isFavored', async () => {
       await groupService.getGroupEmail(1);
-      expect(mockGroupFetchDataController.getGroupEmail).toHaveBeenCalledWith(1);
+      expect(mockGroupFetchDataController.getGroupEmail).toHaveBeenCalledWith(
+        1,
+      );
     });
 
     it('should call getGroupFetchDataController when call getMembersAndGuestIds  ', async () => {
       await groupService.getMembersAndGuestIds(123, true);
-      expect(mockGroupFetchDataController.getMembersAndGuestIds).toHaveBeenCalledWith(
-        123,
-        true,
-        undefined,
-      );
+      expect(
+        mockGroupFetchDataController.getMembersAndGuestIds,
+      ).toHaveBeenCalledWith(123, true, undefined);
     });
   });
 
@@ -472,10 +477,9 @@ describe('GroupService', () => {
 
     it('should call with right parameters', async () => {
       await groupService.handleGroupFetchedPosts(1, []);
-      expect(mockHandleDataController.handleGroupFetchedPost).toHaveBeenCalledWith(
-        1,
-        [],
-      );
+      expect(
+        mockHandleDataController.handleGroupFetchedPost,
+      ).toHaveBeenCalledWith(1, []);
     });
   });
 
@@ -508,14 +512,18 @@ describe('GroupService', () => {
     });
     it('should call with right parameters', async () => {
       await groupService.updateGroupPrivacy({ id: 1, privacy: '1' });
-      expect(mockGroupActionController.updateGroupPrivacy).toHaveBeenCalledWith({
-        id: 1,
-        privacy: '1',
-      });
+      expect(mockGroupActionController.updateGroupPrivacy).toHaveBeenCalledWith(
+        {
+          id: 1,
+          privacy: '1',
+        },
+      );
     });
     it('should call with right parameters', async () => {
       await groupService.isGroupCanBeShown(1);
-      expect(mockGroupActionController.isGroupCanBeShown).toHaveBeenCalledWith(1);
+      expect(mockGroupActionController.isGroupCanBeShown).toHaveBeenCalledWith(
+        1,
+      );
     });
     it('should call with right parameters', async () => {
       await groupService.updateGroupLastAccessedTime({ id: 1, timestamp: 1 });
