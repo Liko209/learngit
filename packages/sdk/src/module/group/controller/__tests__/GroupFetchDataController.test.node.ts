@@ -308,14 +308,15 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(result1).toEqual(mock);
+      console.info('result1', result1);
+      expect(result1).toEqual({data: mock, hasMore: false});
 
       const result22 = await groupFetchDataController.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
         0,
         20,
       );
-      expect(result22).toEqual([]);
+      expect(result22).toEqual({ data: [], hasMore: false });
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
         'filterGroups',
@@ -330,7 +331,7 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(result3).toEqual(mock);
+      expect(result3).toEqual({data: mock, hasMore: false});
     });
 
     it('getGroupsByIds()', async () => {
@@ -360,7 +361,10 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(result22).toEqual([{ id: 1, members: [1, 2, 3] }]);
+      expect(result22).toEqual({
+        data: [{ id: 1, members: [1, 2, 3] }],
+        hasMore: false,
+      });
     });
 
     it('should return all groups if left rail max count in LD is -1', async () => {
@@ -368,6 +372,7 @@ describe('GroupFetchDataController', () => {
       for (let i = 0; i < 85; i++) {
         mock.push({ id: 1 });
       }
+      const result = { data: mock, hasMore: false };
       jest.spyOn(permissionService, 'getFeatureFlag').mockReturnValueOnce(-1);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
@@ -383,56 +388,58 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(result3).toEqual(mock);
+      expect(result3).toEqual(result);
     });
 
-    it('should return limit groups if left rail max count is not -1 in LD', async () => {
-      const mock: any[] = [];
-      for (let i = 0; i < 85; i++) {
-        mock.push({ id: 1 });
-      }
-      const spy = jest.spyOn(permissionService, 'getFeatureFlag');
-      spy.mockReturnValueOnce(78);
-      jest.spyOn(
-        groupFetchDataController.groupHandleDataController,
-        'filterGroups',
-      );
-      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
-        mock,
-      );
-      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
-      groupDao.queryGroups.mockResolvedValue(mock);
-      const result3 = await groupFetchDataController.getGroupsByType(
-        GROUP_QUERY_TYPE.GROUP,
-        0,
-        20,
-      );
-      expect(spy).toHaveBeenCalled();
-      expect(result3).toEqual(mock.slice(0, 78));
-    });
+    // Temp remove, if we need support LD, will re-add it
+    // it('should return limit groups if left rail max count is not -1 in LD', async () => {
+    //   const mock: any[] = [];
+    //   for (let i = 0; i < 85; i++) {
+    //     mock.push({ id: 1 });
+    //   }
+    //   const spy = jest.spyOn(permissionService, 'getFeatureFlag');
+    //   spy.mockReturnValueOnce(78);
+    //   jest.spyOn(
+    //     groupFetchDataController.groupHandleDataController,
+    //     'filterGroups',
+    //   );
+    //   groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+    //     mock,
+    //   );
+    //   // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+    //   groupDao.queryGroups.mockResolvedValue(mock);
+    //   const result3 = await groupFetchDataController.getGroupsByType(
+    //     GROUP_QUERY_TYPE.GROUP,
+    //     0,
+    //     20,
+    //   );
+    //   expect(spy).toHaveBeenCalled();
+    //   expect(result3).toEqual(mock.slice(0, 78));
+    // });
 
-    it('should return all groups if result count < max count in LD', async () => {
-      const mock: any[] = [];
-      for (let i = 0; i < 20; i++) {
-        mock.push({ id: 1 });
-      }
-      jest.spyOn(permissionService, 'getFeatureFlag').mockReturnValueOnce(89);
-      jest.spyOn(
-        groupFetchDataController.groupHandleDataController,
-        'filterGroups',
-      );
-      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
-        mock,
-      );
-      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
-      groupDao.queryGroups.mockResolvedValue(mock);
-      const result3 = await groupFetchDataController.getGroupsByType(
-        GROUP_QUERY_TYPE.GROUP,
-        0,
-        20,
-      );
-      expect(result3).toEqual(mock);
-    });
+    // it('should return all groups if result count < max count in LD', async () => {
+    //   const mock: any[] = [];
+    //   for (let i = 0; i < 20; i++) {
+    //     mock.push({ id: 1 });
+    //   }
+    //   const result = { data: mock, hasMore: true };
+    //   jest.spyOn(permissionService, 'getFeatureFlag').mockReturnValueOnce(89);
+    //   jest.spyOn(
+    //     groupFetchDataController.groupHandleDataController,
+    //     'filterGroups',
+    //   );
+    //   groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+    //     mock,
+    //   );
+    //   // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+    //   groupDao.queryGroups.mockResolvedValue(mock);
+    //   const result3 = await groupFetchDataController.getGroupsByType(
+    //     GROUP_QUERY_TYPE.GROUP,
+    //     0,
+    //     20,
+    //   );
+    //   expect(result3).toEqual(result);
+    // });
   });
 
   describe('getLocalGroup()', () => {

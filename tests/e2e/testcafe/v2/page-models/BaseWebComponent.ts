@@ -127,7 +127,11 @@ export abstract class BaseWebComponent {
   }
 
   get spinners() {
-    return this.getSelector('div[role="progressbar"]');
+    return this.getSelector('div[role="progressbar"]:not([data-test-automation-id="conversation-list-spinner"])');
+  }
+
+  get  conversationListSpinner() {
+    return this.getSelectorByAutomationId('conversation-list-spinner');
   }
 
   get tooltip() {

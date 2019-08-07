@@ -19,6 +19,7 @@ type State = {
   isHover: boolean;
 };
 
+const HOVER_DELAY = 30;
 @observer
 class ConversationListItemViewComponent extends React.Component<Props, State> {
   @observable
@@ -32,6 +33,11 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   state = {
     isHover: false,
   };
+
+  _mouseEnterTimer: number | undefined = undefined;
+  // mouseOver is needed because when mouse jump from popover overlay to the menu item,
+  // it won't trigger mouseEnter event
+  _mouseOverTimer: number | undefined = undefined;
 
   constructor(props: Props) {
     super(props);
@@ -57,21 +63,39 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     return <Indicator id={this.props.groupId} showUmi={this._showUmi} />;
   }
 
-  private _handleMouseOver = (e: React.MouseEvent<HTMLElement>) => {
+  private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    this.setState({
-      isHover: true,
-    });
+    window.clearTimeout(this._mouseEnterTimer);
+    this._mouseEnterTimer = window.setTimeout(() => {
+      this.setState({
+        isHover: true,
+      });
+    }, HOVER_DELAY);
+  };
+
+  private _handleMoreOver = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    window.clearTimeout(this._mouseOverTimer);
+    this._mouseOverTimer = window.setTimeout(() => {
+      if (!this.state.isHover) {
+        this.setState({ isHover: true });
+      }
+    }, HOVER_DELAY);
   };
 
   private _handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    this.menuAnchorEl = null;
-    this.setState({
-      isHover: false,
-    });
+    window.clearTimeout(this._mouseEnterTimer);
+    window.clearTimeout(this._mouseOverTimer);
+    if (this.state.isHover) {
+      this.menuAnchorEl = null;
+      this.setState({
+        isHover: false,
+      });
+    }
   };
 
   render() {
@@ -82,7 +106,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           className="conversation-list-item"
           data-test-automation-id="conversation-list-item"
           tabIndex={0}
-          isItemHover={!!this.menuAnchorEl}
+          isItemHover={isHover}
           data-group-id={this.props.groupId}
           presence={this._presence}
           umiHint={this.props.umiHint}
@@ -92,8 +116,9 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           title={this.props.displayName}
           selected={this.props.selected}
           hidden={this.props.hidden}
-          onMouseOver={this._handleMouseOver}
           onMouseLeave={this._handleMouseLeave}
+          onMouseEnter={this._handleMouseEnter}
+          onMouseOver={this._handleMoreOver}
           moreTooltipTitle={this.props.t('common.more')}
         >
           {isHover && (

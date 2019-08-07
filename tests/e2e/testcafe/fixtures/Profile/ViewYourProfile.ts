@@ -14,7 +14,7 @@ fixture('Profile/ViewYourProfile')
 test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'P1', 'spike.yang']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-  const editProfileDialog = app.homePage.editProfileDialog;
+  const editProfileDialog = app.homePage.profileEditDialog;
   const profileDialog = app.homePage.profileDialog;
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -33,7 +33,7 @@ test(formalName('Open personal profile via top bar avatar then open conversation
   }, true);
 
   await h(t).withLog('When I close edit profile dialog and open setting menu in home page', async () => {
-    await editProfileDialog.clickCancelBtn();
+    await editProfileDialog.clickCancelButton();
     await app.homePage.openSettingMenu();
     await app.homePage.settingMenu.ensureLoaded();
   });
@@ -56,7 +56,7 @@ test.meta(<ITestMeta>{
 })(`Check the default options of the personal profile`, async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-  const editProfile = app.homePage.editProfileDialog;
+  const editProfile = app.homePage.profileEditDialog;
 
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -100,7 +100,7 @@ test.meta(<ITestMeta>{
 })(`Check if the inline error message is shown when the webpage input is not valid`, async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-  const editProfile = app.homePage.editProfileDialog;
+  const editProfile = app.homePage.profileEditDialog;
   const webpage = `Webpage ${uuid()}`;
   const inlineError = 'Invalid webpage address';
 
@@ -123,7 +123,7 @@ test.meta(<ITestMeta>{
     await editProfile.inputWebpage(webpage);
   });
   await h(t).withLog('When I click "Save" button in edit profile dialog', async () => {
-    await editProfile.clickSaveBtn();
+    await editProfile.clickSaveButton();
   });
   await h(t).withLog(`Then the inline error shows: {inlineError}`, async (step) => {
     step.setMetadata('inlineError', inlineError);
@@ -140,7 +140,7 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
   // const viewProfile = app.homePage.profileDialog;
-  const editProfile = app.homePage.editProfileDialog;
+  const editProfile = app.homePage.profileEditDialog;
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -223,7 +223,7 @@ test.meta(<ITestMeta>{
   });
 
   const viewProfile = app.homePage.profileDialog;
-  const editProfile = app.homePage.editProfileDialog;
+  const editProfile = app.homePage.profileEditDialog;
   await h(t).withLog('When I click "Profile" button in conversation setting menu', async () => {
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
@@ -253,7 +253,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I click "Cancel" button in edit profile dialog', async () => {
-    await editProfile.clickCancelBtn();
+    await editProfile.clickCancelButton();
   });
 
   await h(t).withLog('Then I the Edit Profile dialog is dismissed', async () => {
@@ -288,7 +288,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I click "Save" button in edit profile dialog', async () => {
-    await editProfile.clickSaveBtn();
+    await editProfile.clickSaveButton();
   });
   await h(t).withLog('Then I the Edit Profile dialog is dismissed', async () => {
     await editProfile.ensureDismiss();

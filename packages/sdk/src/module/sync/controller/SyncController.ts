@@ -343,7 +343,7 @@ class SyncController {
       this._handleIncomingCompany(companies, source, changeMap),
       this._handleIncomingItem(items, source, changeMap),
       this._handleIncomingPresence(presences, source, changeMap),
-      this._handleIncomingState(arrState, source),
+      this._handleIncomingState(arrState, source, changeMap),
     ])
       .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
       .then(() => this._handleIncomingPerson(people, source, changeMap))

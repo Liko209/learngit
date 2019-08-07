@@ -10,7 +10,7 @@ import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
 import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header, TopBarAvatar } from './header';
-import { MiniProfile, ProfileDialog, EditProfileDialog } from './ViewProfile';
+import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
@@ -32,6 +32,8 @@ import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
 import { DeleteAllCalllDialog } from './PhoneTab/CallHistory';
 import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
 import { BlockNumberDialog } from './PhoneTab/index';
+import { AvatarEditDialog } from './AvatarEditDialog';
+import { ProfileEditDialog } from './ProfileEditDialog';
 import { AddressConfirmDialog, EmergencyConfirmDialog, EmergencyPromptDialog } from './E911';
 
 export class HomePage extends BaseWebComponent {
@@ -138,12 +140,20 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(ProfileDialog);
   }
 
-  get editProfileDialog() {
-    return this.getComponent(EditProfileDialog);
+  get profileEditDialog() {
+    return this.getComponent(ProfileEditDialog);
   }
 
   get topBarAvatar() {
     return this.getSelectorByAutomationId('topBarAvatar');
+  }
+
+  get avatarShortName() {
+    return this.topBarAvatar.find('.avatar-short-name');
+  }
+
+  get avatarImage() {
+    return this.topBarAvatar.find('img');
   }
 
   get dialpadButton() {
@@ -289,6 +299,10 @@ export class HomePage extends BaseWebComponent {
 
   get deleteCallHistoryDialog() {
     return this.getComponent(DeleteCallHistoryDialog);
+  }
+
+  get AvatarEditDialog() {
+    return this.getComponent(AvatarEditDialog);
   }
 
   get addressConfirmDialog() {
