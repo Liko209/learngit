@@ -153,8 +153,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -233,8 +243,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -382,8 +402,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -467,8 +497,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -553,8 +593,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
