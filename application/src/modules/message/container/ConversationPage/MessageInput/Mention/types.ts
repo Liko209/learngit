@@ -12,7 +12,7 @@ type MentionProps = {
 };
 
 type MentionViewProps = {
-  ids: number[];
+  membersId: number[];
   open: boolean;
   currentIndex: number;
   searchTerm?: string;

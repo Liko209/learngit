@@ -3,6 +3,7 @@
  * @Date: 2019-07-10 16:21:24
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { GlipPost } from '../../types';
 import { IApiContract, defineApiPath } from 'shield/sdk';
 

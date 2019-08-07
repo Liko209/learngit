@@ -25,7 +25,9 @@ import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from 'voip';
 import { RTC_SLEEP_MODE_EVENT } from 'voip/src/utils/types';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { RCInfoService } from 'sdk/module/rcInfo';
+import { E911Controller } from '../E911Controller';
 
+jest.mock('../E911Controller');
 jest.mock('../TelephonyCallController');
 jest.mock('voip/src');
 jest.mock('../../controller/MakeCallController');
@@ -59,6 +61,7 @@ describe('TelephonyAccountController', () => {
   let accountController: TelephonyAccountController;
   let rtcAccount: RTCAccount;
   let callControllerList: Map<number, TelephonyCallController>;
+  let e911Controller: E911Controller;
   const callId = 123;
   const toNum = '123';
   const fromNumber = '456';
@@ -67,6 +70,7 @@ describe('TelephonyAccountController', () => {
     mockAcc = new MockAccount();
     mockCall = new MockCall();
     callControllerList = new Map();
+    e911Controller = new E911Controller({});
 
     rtcAccount = new RTCAccount(null);
     accountController = new TelephonyAccountController({
@@ -75,6 +79,7 @@ describe('TelephonyAccountController', () => {
 
     Object.assign(accountController, {
       _callControllerList: callControllerList,
+      _e911Controller: e911Controller,
     });
     ServiceLoader.getInstance = jest
       .fn()
@@ -316,20 +321,24 @@ describe('TelephonyAccountController', () => {
     });
   });
 
-  describe('getEmergencyAddress', () => {
+  describe('getRemoteEmergencyAddress', () => {
     it('should return undefined when no emergency addr', () => {
-      rtcAccount.getSipProv = jest.fn().mockReturnValue(null);
-      const res = accountController.getEmergencyAddress();
-      expect(res).toBe(undefined);
-    });
-    it('should return address from sip prov', () => {
-      rtcAccount.getSipProv = jest.fn().mockReturnValue({
-        device: {
-          emergencyServiceAddress: 'test',
-        },
-      });
-      const res = accountController.getEmergencyAddress();
+      e911Controller.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('test');
+      const res = accountController.getRemoteEmergencyAddress();
       expect(res).toBe('test');
+    });
+  });
+
+  describe('isAddressEqual', () => {
+    it('should call with correct parameters', () => {
+      const addr1 = { a: 'a' };
+      const addr2 = { b: 'b' };
+      e911Controller.isAddressEqual = jest.fn().mockReturnValue(true);
+      const res = accountController.isAddressEqual(addr1, addr2);
+      expect(e911Controller.isAddressEqual).toHaveBeenCalledWith(addr1, addr2);
+      expect(res).toBeTruthy();
     });
   });
 
@@ -455,29 +464,6 @@ describe('TelephonyAccountController', () => {
         RTC_REPLY_MSG_TIME_UNIT.DAY,
       );
       expect(callController.replyWithPattern).toHaveBeenCalled();
-    });
-  });
-
-  describe('getEmergencyAddress', () => {
-    it('should return emergency address if there is any', () => {
-      const emergencyAddress = { country: 'US', state: 'CA' };
-      const sipProv = {
-        device: {
-          emergencyServiceAddress: emergencyAddress,
-        },
-      };
-      rtcAccount.getSipProv = jest.fn().mockReturnValue(sipProv);
-      const res = accountController.getEmergencyAddress();
-      expect(res).toBe(emergencyAddress);
-    });
-
-    it('should return undefined when no emergency address', () => {
-      const sipProv = {
-        device: {},
-      };
-      rtcAccount.getSipProv = jest.fn().mockReturnValue(sipProv);
-      const res = accountController.getEmergencyAddress();
-      expect(res).toBe(undefined);
     });
   });
 

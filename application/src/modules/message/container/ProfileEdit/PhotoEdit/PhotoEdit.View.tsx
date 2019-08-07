@@ -29,6 +29,11 @@ import { accelerateURL } from '@/common/accelerateURL';
 import { Transform } from 'jui/components/ZoomArea';
 import portalManager from '@/common/PortalManager';
 import { withUploadFile } from 'jui/hoc/withUploadFile';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
 const CONTAINER_SIZE = 280;
@@ -81,11 +86,22 @@ class PhotoEditComponent extends Component<PhotoEdit> {
     transform: Transform;
     canDrag: boolean;
   }) => {
-    this.props.updateTransform(transform);
+    this.props.updateTransform({ ...transform });
   };
 
   handleFileChanged = (files: FileList) => {
     if (!files) return;
+    const { t } = this.props;
+    if (!/image\/*/.test(files[0].type)) {
+      Notification.flashToast({
+        message: t('message.prompt.editPhotoFileTypeError'),
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+      return;
+    }
     const { updateImageUrl } = this.props;
     updateImageUrl(files[0]);
   };
@@ -174,6 +190,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
         cancelText={t('common.dialog.cancel')}
         modalProps={{
           'data-test-automation-id': 'EditProfilePhoto',
+          scroll: 'body',
         }}
       >
         <JuiEditPhotoUploadContent>

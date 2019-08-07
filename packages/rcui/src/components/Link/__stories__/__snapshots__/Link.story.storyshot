@@ -3,6 +3,7 @@
 exports[`Storyshots Link Link: Link Link 1`] = `
 .c0 {
   color: #0684DB;
+  pointer-events: auto;
 }
 
 .c0:hover {

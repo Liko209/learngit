@@ -166,6 +166,9 @@ GenericDialerPanelProps
   };
 
   onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // since material-ui called onBlur on input
+    // we call this to make sure focus status right
+    this._telephonyStore.onDialerInputFocus();
     // let <ContactSearchList/> handle its own `Enter` key event
     if (
       !this.shouldEnterContactSearch &&

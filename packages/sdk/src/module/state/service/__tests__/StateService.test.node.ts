@@ -22,6 +22,7 @@ jest.mock('../../config');
 describe('StateService', () => {
   const mockGroupService = new GroupService();
   let stateService: StateService;
+  const mockUpdateIgnoredStatus = jest.fn();
   const mockUpdateReadStatus = jest.fn();
   const mockUpdateLastGroup = jest.fn();
   const mockGetAllGroupStatesFromLocal = jest.fn();
@@ -40,6 +41,7 @@ describe('StateService', () => {
     updateLastGroup: mockUpdateLastGroup,
   });
   const mockStateDataHandleController = jest.fn().mockReturnValue({
+    updateIgnoredStatus: mockUpdateIgnoredStatus,
     handleState: mockHandleState,
     handleGroupCursor: mockHandleGroupCursor,
   });
@@ -71,15 +73,24 @@ describe('StateService', () => {
   describe('getStateController()', () => {
     it('should create state controller', () => {
       stateService['_stateController'] = undefined as any;
-      stateService['getStateController']();
-      expect(StateController).toBeCalled();
+      stateService['stateController'];
+      expect(StateController).toHaveBeenCalled();
     });
   });
 
   describe('myStateConfig', () => {
     it('should create my state config', () => {
       stateService.myStateConfig;
-      expect(MyStateConfig).toBeCalled();
+      expect(MyStateConfig).toHaveBeenCalled();
+    });
+  });
+
+  describe('updateIgnoredStatus()', () => {
+    it('should call with correct params', async () => {
+      const ids: number[] = [5683];
+      const isIgnored: boolean = true;
+      await stateService.updateIgnoredStatus(ids, isIgnored);
+      expect(mockUpdateIgnoredStatus).toHaveBeenCalledWith(ids, isIgnored);
     });
   });
 
@@ -88,7 +99,7 @@ describe('StateService', () => {
       const id: number = 5683;
       const isUnread: boolean = true;
       await stateService.updateReadStatus(id, isUnread, true);
-      expect(mockUpdateReadStatus).toBeCalledWith(id, isUnread, true);
+      expect(mockUpdateReadStatus).toHaveBeenCalledWith(id, isUnread, true);
     });
   });
 
@@ -96,7 +107,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const id: number = 5683;
       await stateService.updateLastGroup(id);
-      expect(mockUpdateLastGroup).toBeCalledWith(id);
+      expect(mockUpdateLastGroup).toHaveBeenCalledWith(id);
     });
   });
 
@@ -104,7 +115,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const ids: number[] = [5683];
       await stateService.getAllGroupStatesFromLocal(ids);
-      expect(mockGetAllGroupStatesFromLocal).toBeCalledWith(ids);
+      expect(mockGetAllGroupStatesFromLocal).toHaveBeenCalledWith(ids);
     });
   });
 
@@ -112,21 +123,21 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const ids: number[] = [5683];
       await stateService.getGroupStatesFromLocalWithUnread(ids);
-      expect(mockGetGroupStatesFromLocalWithUnread).toBeCalledWith(ids);
+      expect(mockGetGroupStatesFromLocalWithUnread).toHaveBeenCalledWith(ids);
     });
   });
 
   describe('getMyState()', () => {
     it('should call with correct params', async () => {
       await stateService.getMyState();
-      expect(mockGetMyState).toBeCalledWith();
+      expect(mockGetMyState).toHaveBeenCalledWith();
     });
   });
 
   describe('getMyStateId()', () => {
     it('should call with correct params', async () => {
       await stateService.getMyStateId();
-      expect(mockGetMyStateId).toBeCalledWith();
+      expect(mockGetMyStateId).toHaveBeenCalledWith();
     });
   });
 
@@ -134,7 +145,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const states: Partial<State>[] = [];
       await stateService.handleState(states, SYNC_SOURCE.INDEX);
-      expect(mockHandleState).toBeCalledWith(
+      expect(mockHandleState).toHaveBeenCalledWith(
         states,
         SYNC_SOURCE.INDEX,
         undefined,
@@ -146,7 +157,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const groups: Partial<Group>[] = [];
       await stateService.handleGroupCursor(groups);
-      expect(mockHandleGroupCursor).toBeCalledWith(groups, undefined);
+      expect(mockHandleGroupCursor).toHaveBeenCalledWith(groups, undefined);
     });
   });
 
@@ -154,7 +165,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const payload = {} as NotificationEntityPayload<Group>;
       await stateService.handleStateChangeForTotalUnread(payload);
-      expect(mockHandleGroupState).toBeCalledWith(payload);
+      expect(mockHandleGroupState).toHaveBeenCalledWith(payload);
     });
   });
 
@@ -162,7 +173,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const payload = {} as NotificationEntityPayload<Group>;
       await stateService.handleGroupChangeForTotalUnread(payload);
-      expect(mockHandleGroup).toBeCalledWith(payload);
+      expect(mockHandleGroup).toHaveBeenCalledWith(payload);
     });
   });
 
@@ -170,7 +181,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const payload = {} as NotificationEntityPayload<Profile>;
       await stateService.handleProfileChangeForTotalUnread(payload);
-      expect(mockHandleProfile).toBeCalledWith(payload);
+      expect(mockHandleProfile).toHaveBeenCalledWith(payload);
     });
   });
 
@@ -178,7 +189,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const id: number = 55668833;
       await stateService.getSingleGroupBadge(id);
-      expect(mockGetSingleGroupBadge).toBeCalledWith(id);
+      expect(mockGetSingleGroupBadge).toHaveBeenCalledWith(id);
     });
   });
 
@@ -195,7 +206,7 @@ describe('StateService', () => {
   describe('_initBadge()', () => {
     it('should call controller', async () => {
       await stateService['_initBadge']();
-      expect(mockGetSingleGroupBadge).toBeCalled();
+      expect(mockGetSingleGroupBadge).toHaveBeenCalled();
     });
   });
 });

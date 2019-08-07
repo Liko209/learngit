@@ -4,44 +4,44 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /* eslint-disable */
+import { defaultNotificationOptions } from '@/common/catchError';
+import { Notification } from '@/containers/Notification';
 import history from '@/history';
-import storeManager from '@/store/base/StoreManager';
+import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
+import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import {
   FetchSortableDataListHandler,
+  IFetchSortableDataListHandlerOptions,
   IFetchSortableDataProvider,
   ISortableModel,
   ISortableModelWithData,
-  IFetchSortableDataListHandlerOptions,
 } from '@/store/base/fetch';
-import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
-import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
-import { GroupService } from 'sdk/module/group';
-import { Group } from 'sdk/module/group/entity';
-import { Profile } from 'sdk/module/profile/entity';
-import { GroupState } from 'sdk/module/state/entity';
-import { SECTION_TYPE } from '@/modules/message/container/LeftRail/Section/types';
+import storeManager from '@/store/base/StoreManager';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import GroupStateModel from '@/store/models/GroupState';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import _ from 'lodash';
-import { autorun, computed, observable, reaction } from 'mobx';
+import { autorun, computed, reaction } from 'mobx';
 import { mainLogger, PerformanceTracer } from 'sdk';
-import { QUERY_DIRECTION } from 'sdk/dao';
+import { MAINTAIN_DIRECTION, QUERY_DIRECTION } from 'sdk/dao';
 import { AccountService } from 'sdk/module/account';
+import { GroupService } from 'sdk/module/group';
+import { Group } from 'sdk/module/group/entity';
 import { ProfileService } from 'sdk/module/profile';
+import { Profile } from 'sdk/module/profile/entity';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { StateService } from 'sdk/module/state';
+import { GroupState } from 'sdk/module/state/entity';
+import { ENTITY, EVENT_TYPES, GROUP_QUERY_TYPE } from 'sdk/service';
 import {
   NotificationEntityPayload,
-  NotificationEntityReplaceBody,
   NotificationEntityReplacePayload,
+  NotificationEntityReplaceBody,
 } from 'sdk/service/notificationCenter';
 import { TDelta } from '../base/fetch/types';
-import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
-import { Notification } from '@/containers/Notification';
-import { defaultNotificationOptions } from '@/common/catchError';
 import { STORE_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 
 function groupTransformFunc(data: Group): ISortableModel {
   const {
@@ -52,12 +52,16 @@ function groupTransformFunc(data: Group): ISortableModel {
   } = data;
   return {
     id,
-    sortValue: -Math.max(
+    sortValue: Math.max(
       most_recent_post_created_at,
       created_at,
       __last_accessed_at,
     ),
   };
+}
+
+function groupSortFunc(lGroup: ISortableModel, rGroup: ISortableModel) {
+  return rGroup.sortValue - lGroup.sortValue;
 }
 
 class GroupDataProvider implements IFetchSortableDataProvider<Group> {
@@ -70,6 +74,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: ISortableModel,
+    offset?: number,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
@@ -84,20 +89,25 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
         break;
       case GROUP_QUERY_TYPE.TEAM:
         limitCount = await this._limitCountFunc();
+        pageSize = offset
+          ? pageSize
+          : limitCount < DEFAULT_LEFT_RAIL_GROUP
+          ? DEFAULT_LEFT_RAIL_GROUP
+          : limitCount;
         break;
     }
-
     const result = await groupService.getGroupsByType(
       this._queryType,
-      0,
+      offset,
       limitCount,
+      pageSize,
     );
     mainLogger.info(
-      `fetch left rail group: ${result && result.length} type: ${
+      `fetch left rail group: ${result && result.data.length} type: ${
         this._queryType
       }`,
     );
-    return { data: result, hasMore: false };
+    return result || { data: [], hasMore: false };
   }
 }
 
@@ -110,10 +120,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _oldFavGroupIds: number[] = [];
   private static _instance: SectionGroupHandler | undefined = undefined;
   private _hiddenGroupIds: number[] = [];
-  @observable
   private _lastGroupId: number = 0;
   private _dataLoader: Promise<any>;
   private _initFavorites = false;
+  private _maxLeftRailGroup = DEFAULT_LEFT_RAIL_GROUP;
 
   constructor() {
     super();
@@ -127,7 +137,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       .getGlobalStore()
       .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     this._subscribeNotification();
-    autorun(() => this._profileUpdateGroupSections());
+    autorun(() => this._handleFavoriteIdsChange());
     reaction(
       () => {
         const hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
@@ -136,9 +146,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         );
         return hiddenGroupIds || [];
       },
-      (newIds: number[]) => this._updateHiddenGroupIds(newIds),
+      (newIds: number[]) => this._handleHiddenIdsChange(newIds),
     );
-    autorun(() => this.removeOverLimitGroupByChangingIds());
     autorun(() => this.removeOverLimitGroupByChangingCurrentGroupId());
   }
 
@@ -153,109 +162,19 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._dataLoader = this._dataLoader.then(() => handler(this.groupIds));
   }
 
-  private _updateHiddenGroupIds(newIds: number[]) {
-    this.checkIfGroupOpenedFromHidden(this._hiddenGroupIds, newIds);
-    this._hiddenGroupIds = newIds;
-    this._removeGroupsIfExistedInHiddenGroups();
-  }
-
-  // FIJI-1662
-  async checkIfGroupOpenedFromHidden(oldIds: number[], newIds: number[]) {
-    const ids = _.difference(oldIds, newIds);
-    if (ids.length) {
-      await this._changeGroupsInGroupSections(ids, true);
-    }
-  }
-
-  private _removeGroupsIfExistedInHiddenGroups() {
-    const removeIds: number[] = [];
-    this._hiddenGroupIds.forEach((groupId: number) => {
-      const groupState: GroupStateModel = getEntity(
-        ENTITY_NAME.GROUP_STATE,
-        groupId,
-      );
-      if (!groupState.unreadCount || groupState.unreadCount <= 0) {
-        removeIds.push(groupId);
-      }
-    });
-    Object.keys(this._handlersMap).forEach((key: SECTION_TYPE) => {
-      const inters = _.intersection(removeIds, this.getGroupIdsByType(key));
-      if (inters.length) {
-        this._removeByIds(key, inters);
-      }
-    });
-    this._updateUrl(EVENT_TYPES.DELETE, this._hiddenGroupIds);
-  }
-
-  private async _changeGroupsInGroupSections(
-    groupIds: number[],
-    shouldAdd: boolean,
-  ) {
-    let ids = groupIds;
-    if (!shouldAdd) {
-      ids = _.intersection(groupIds, this.groupIdsExcludeFavorites);
-      if (!ids.length) {
-        return;
-      }
-    }
-    if (shouldAdd) {
-      const groupService = ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      );
-      const groups: Group[] = (await groupService.getGroupsByIds(ids)) || [];
-      const validGroups = groups.filter((group: Group) =>
-        groupService.isValid(group),
-      );
-      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(validGroups);
-      this._handlersMap[SECTION_TYPE.TEAM].upsert(validGroups);
-    } else {
-      this._remove(ids);
-    }
-  }
-
-  private async _profileUpdateGroupSections() {
-    const newFavIds =
-      getSingleEntity<Profile, ProfileModel>(
-        ENTITY_NAME.PROFILE,
-        'favoriteGroupIds',
-      ) || [];
-    if (!this._initFavorites) {
-      this._oldFavGroupIds = newFavIds;
-      this._initFavorites = true;
-      return;
-    }
-    if (this._oldFavGroupIds.toString() === newFavIds.toString()) {
-      return;
-    }
-
-    if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
-      const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
-      const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
-      this._oldFavGroupIds = newFavIds;
-      // handle favorite section change
-      const groupService = ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      );
-      const groups = await groupService.getGroupsByType(
-        GROUP_QUERY_TYPE.FAVORITE,
-        0,
-        Infinity,
-      );
-      this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(groups);
-
-      if (more.length) {
-        await this._changeGroupsInGroupSections(more, true);
-      }
-      if (less.length) {
-        await this._changeGroupsInGroupSections(less, false);
-      }
-    }
+  private _initHandlerMap() {
+    return Promise.all([
+      this._addFavoriteSection(),
+      this._addDirectMessageSection(),
+      this._addTeamSection(),
+    ]);
   }
 
   private _subscribeNotification() {
     this.subscribeNotification(
       ENTITY.GROUP,
       (payload: NotificationEntityPayload<Group>) => {
+        const keys = Object.keys(this._handlersMap);
         let ids: number[] = [];
         let removeFromCurrentTeam = false;
         if (payload.type === EVENT_TYPES.UPDATE) {
@@ -291,47 +210,172 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             );
         }
         // update url
-        this._updateUrl(EVENT_TYPES.DELETE, ids);
-        this._handleGroupsChanges(true);
+        removeFromCurrentTeam && this._updateUrl();
+        keys.forEach((key: string) => {
+          this._handlersMap[key].onDataChanged(payload);
+        });
       },
     );
 
-    this.subscribeNotification(ENTITY.GROUP_STATE, () => {
-      this._handleGroupsChanges(false);
-    });
+    this.subscribeNotification(
+      ENTITY.GROUP_STATE,
+      (payload: NotificationEntityPayload<GroupState>) => {
+        this._handleGroupStateChange(payload);
+      },
+    );
+
+    this.subscribeNotification(
+      ENTITY.PROFILE,
+      (payload: NotificationEntityPayload<Profile>) => {
+        this._handleMaxLeftRailGroupChange(payload);
+      },
+    );
   }
 
-  private async _handleGroupsChanges(isIncludeFavorite: boolean = true) {
+  private _handleMaxLeftRailGroupChange(
+    payload: NotificationEntityPayload<Profile>,
+  ) {
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      let maxCountChanged = false;
+      payload.body.entities.forEach((profile: Profile) => {
+        if (profile && profile.max_leftrail_group_tabs2) {
+          const count = Number(profile.max_leftrail_group_tabs2);
+          maxCountChanged = this._maxLeftRailGroup !== count;
+          this._updateMaxLeftRail(count);
+        }
+      });
+      maxCountChanged && this._refreshLeftRail();
+    }
+  }
+
+  private _updateMaxLeftRail(count: number) {
+    if (this._maxLeftRailGroup !== count) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          '_updateMaxLeftRail() update from:',
+          this._maxLeftRailGroup,
+          'to:',
+          count,
+        );
+      this._maxLeftRailGroup = count;
+      const handler = this._handlersMap[SECTION_TYPE.TEAM];
+      handler && handler.setPageSize(count);
+    }
+  }
+
+  private async _handleFavoriteIdsChange() {
+    const newFavIds =
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || [];
+    if (!this._initFavorites) {
+      this._oldFavGroupIds = newFavIds;
+      this._initFavorites = true;
+      return;
+    }
+
+    if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
+      mainLogger
+        .tags(LOG_TAG)
+        .info('_handleFavoriteIdsChange() favorite change, start handle');
+      const removeFromFavIds = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
+      const addToFavIds = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
+      this._oldFavGroupIds = newFavIds;
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
+      const result = await groupService.getGroupsByType(
+        GROUP_QUERY_TYPE.FAVORITE,
+        0,
+        Infinity,
+      );
+      this._handlersMap[SECTION_TYPE.FAVORITE].replaceAll(result.data);
+      if (removeFromFavIds) {
+        await this._addGroupsToSection(removeFromFavIds);
+      }
+      this._removeGroupsBySectionType(
+        SECTION_TYPE.DIRECT_MESSAGE,
+        addToFavIds,
+        false,
+      );
+      this._removeGroupsBySectionType(SECTION_TYPE.TEAM, addToFavIds, false);
+    }
+  }
+
+  private _handleHiddenIdsChange(newIds: number[]) {
+    mainLogger
+      .tags(LOG_TAG)
+      .info('_handleHiddenIdsChange() hidden group ids change, start handle');
+    this.checkIfGroupOpenedFromHidden(this._hiddenGroupIds, newIds);
+    this._hiddenGroupIds = newIds;
+    this._removeGroupsIfExistedInHiddenGroups();
+  }
+
+  // FIJI-1662
+  async checkIfGroupOpenedFromHidden(oldIds: number[], newIds: number[]) {
+    const ids = _.difference(oldIds, newIds);
+    if (ids.length) {
+      await this._addGroupsToSection(ids);
+    }
+  }
+
+  private _removeGroupsIfExistedInHiddenGroups() {
+    const currentGroupId = storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const removeIds: number[] = [];
+    let removeFromCurrentTeam = false;
+    const keys = Object.keys(this._handlersMap) as SECTION_TYPE[];
+    for (const key of keys) {
+      const inters = _.intersection(
+        this._hiddenGroupIds,
+        this.getGroupIdsByType(key),
+      );
+      if (inters.length) {
+        inters.forEach((groupId: number) => {
+          if (currentGroupId === groupId) {
+            removeFromCurrentTeam = true;
+          }
+          const groupState: GroupStateModel = getEntity(
+            ENTITY_NAME.GROUP_STATE,
+            groupId,
+          );
+          if (!groupState.unreadCount || groupState.unreadCount <= 0) {
+            removeIds.push(groupId);
+          }
+        });
+        this._removeByIds(key, inters);
+      }
+      if (inters.length === this._hiddenGroupIds.length) {
+        break;
+      }
+    }
+    removeFromCurrentTeam && this._updateUrl();
+  }
+
+  private async _refreshLeftRail() {
+    mainLogger.tags(LOG_TAG).info('_refreshLeftRail');
     const keys = Object.keys(this._handlersMap);
 
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
     keys.forEach(async (key: string) => {
-      if (key === SECTION_TYPE.FAVORITE && !isIncludeFavorite) {
+      if (key === SECTION_TYPE.FAVORITE) {
         return;
-      }
-      let limitCount = 0;
-      switch (key) {
-        case SECTION_TYPE.FAVORITE:
-          limitCount = Infinity;
-          break;
-        case SECTION_TYPE.DIRECT_MESSAGE:
-          limitCount = await this._getMaxLeftRailGroup();
-          break;
-        case SECTION_TYPE.TEAM:
-          limitCount = await this._getMaxLeftRailGroup();
-          break;
       }
 
       const result = await groupService.getGroupsByType(
         this._queryMap[key],
         0,
-        limitCount,
+        this._maxLeftRailGroup,
+        this._maxLeftRailGroup,
       );
       const entityMap = new Map<number, Group>();
-      if (result && result.length) {
-        result.forEach((group: Group) => {
+      if (result && result.data.length) {
+        result.data.forEach((group: Group) => {
           entityMap.set(group.id, group);
         });
       }
@@ -358,52 +402,85 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         type: EVENT_TYPES.REPLACE,
         body: notificationBody,
       };
-
+      key === SECTION_TYPE.TEAM &&
+        this._handlersMap[key].setHasMore(
+          result.hasMore,
+          QUERY_DIRECTION.NEWER,
+        );
       this._handlersMap[key].onDataChanged(notification);
     });
   }
 
-  private async _remove(ids: number[], checkLimit: boolean = false) {
-    let limit = 0;
-    if (checkLimit) {
-      limit = await this._getMaxLeftRailGroup();
+  private async _handleGroupStateChange(
+    payload: NotificationEntityPayload<GroupState>,
+  ) {
+    if (payload.type !== EVENT_TYPES.UPDATE || !payload.body.entities) {
+      return;
     }
-    mainLogger.tags(LOG_TAG).info(`_remove limit: ${limit}`);
-    const directIdsShouldBeRemoved: number[] = [];
-    const teamIdsShouldBeRemoved: number[] = [];
-    const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
-    const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
-    ids.forEach((id: number) => {
-      if (directIds.indexOf(id) >= limit) {
-        directIdsShouldBeRemoved.push(id);
-      }
-      if (teamIds.indexOf(id) >= limit) {
-        teamIdsShouldBeRemoved.push(id);
+    mainLogger.tags(LOG_TAG).info('_handleGroupStateChange');
+    const unreadIds: number[] = [];
+    const withoutUnreadIds: number[] = [];
+    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+
+    payload.body.entities.forEach((state: GroupState) => {
+      const hasUnread = state.unread_count;
+      if (hasUnread) {
+        unreadIds.push(state.id);
+      } else if (currentId !== state.id) {
+        withoutUnreadIds.push(state.id);
       }
     });
-    directIdsShouldBeRemoved.length &&
-      this._removeByIds(SECTION_TYPE.DIRECT_MESSAGE, directIdsShouldBeRemoved);
-    teamIdsShouldBeRemoved.length &&
-      this._removeByIds(SECTION_TYPE.TEAM, teamIdsShouldBeRemoved);
+    unreadIds.length && (await this._addGroupsToSection(unreadIds));
+    this._removeGroupsBySectionType(
+      SECTION_TYPE.DIRECT_MESSAGE,
+      withoutUnreadIds,
+      true,
+    );
+    this._removeGroupsBySectionType(SECTION_TYPE.TEAM, withoutUnreadIds);
   }
 
-  private _updateUrl(type: EVENT_TYPES, ids: number[]) {
-    const currentGroupId = storeManager
-      .getGlobalStore()
-      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    if (type === EVENT_TYPES.DELETE) {
-      if (ids.includes(currentGroupId)) {
-        history.replace('/messages');
+  private _removeGroupsBySectionType(
+    sectionType: SECTION_TYPE,
+    handleIds: number[],
+    checkLimit: boolean = true,
+  ) {
+    if (handleIds.length) {
+      const ids = this.getGroupIdsByType(sectionType);
+      const interIds = _.intersection(handleIds, ids);
+      let removeIds: number[] = [];
+      if (checkLimit) {
+        removeIds = interIds.filter((id: number) => {
+          return ids.indexOf(id) >= this._maxLeftRailGroup;
+        });
+      } else {
+        removeIds = interIds;
+      }
+      if (removeIds) {
+        this._handlersMap[sectionType].removeByIds(removeIds);
       }
     }
   }
 
-  private _initHandlerMap() {
-    return Promise.all([
-      this._addFavoriteSection(),
-      this._addDirectMessageSection(),
-      this._addTeamSection(),
-    ]);
+  private async _addGroupsToSection(ids: number[]) {
+    const diffIds = _.difference(ids, this.groupIdsExcludeFavorites);
+    if (diffIds.length) {
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
+      const addGroups: Group[] =
+        (await groupService.getGroupsByIds(diffIds)) || [];
+      const validGroups = addGroups.filter((group: Group) =>
+        groupService.isValid(group),
+      );
+      if (validGroups && validGroups.length) {
+        this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(validGroups);
+        this._handlersMap[SECTION_TYPE.TEAM].upsert(validGroups);
+      }
+    }
+  }
+
+  private _updateUrl() {
+    history.replace('/messages');
   }
 
   private _handleGroupChanged = (delta: TDelta) => {
@@ -432,6 +509,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           this._addToFetchProcessor(groupId);
         }
       });
+      const addCount = trulyAdded.length;
+      addCount && this._removeOverLimitGroups(addCount);
     }
   };
 
@@ -454,7 +533,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
     this._queryMap[sectionType] = queryType;
 
-    return this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
+    return this.fetchGroups(
+      sectionType,
+      QUERY_DIRECTION.NEWER,
+      config.offset,
+      config.pageSize,
+    );
   }
 
   private async _addFavoriteSection() {
@@ -494,8 +578,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       eventName: undefined, // it should not subscribe notification by itself
     });
   }
+
   private async _addDirectMessageSection() {
-    const isMatchFun = (model: Group) => {
+    const isMatchFun = (model: Group, sortableModel: ISortableModel) => {
       const groupState: GroupStateModel = getEntity(
         ENTITY_NAME.GROUP_STATE,
         model.id,
@@ -505,6 +590,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           ? groupState.unreadCount > 0
           : false;
       const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+      const currentConversationId = getGlobalValue(
+        GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+      );
+      const isCurrentConversation = currentConversationId === model.id;
       const createdByMeOrHasPostTime: boolean =
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;
@@ -516,8 +605,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         !model.is_team &&
-        createdByMeOrHasPostTime &&
-        groupService.isValid(model)
+        (isCurrentConversation || createdByMeOrHasPostTime) &&
+        groupService.isValid(model) &&
+        (hasUnread ||
+          this._isInLimitation(SECTION_TYPE.DIRECT_MESSAGE, sortableModel))
       );
     };
     return this._addSection(
@@ -526,6 +617,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       {
         isMatchFunc: isMatchFun,
         transformFunc: groupTransformFunc,
+        sortFunc: groupSortFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
       },
@@ -533,7 +625,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _addTeamSection() {
-    const isMatchFun = (model: Group) => {
+    const isMatchFun = (model: Group, sortableModel: ISortableModel) => {
       const groupState: GroupStateModel = getEntity(
         ENTITY_NAME.GROUP_STATE,
         model.id,
@@ -542,34 +634,87 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupState && groupState.unreadCount
           ? groupState.unreadCount > 0
           : false;
-      const isTeamInTeamSection = model.is_team as boolean;
-      const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const includesMe = userId && _.includes(model.members, userId);
+      const isTeam = !!model.is_team;
+      const includesMe = () => {
+        const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+        return userId && _.includes(model.members, userId);
+      };
       const groupService = ServiceLoader.getInstance<GroupService>(
         ServiceConfig.GROUP_SERVICE,
       );
       return (
+        isTeam &&
+        groupService.isValid(model) &&
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
-        isTeamInTeamSection &&
-        includesMe &&
-        groupService.isValid(model)
+        includesMe() &&
+        (hasUnread || this._isInLimitation(SECTION_TYPE.TEAM, sortableModel))
       );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
+      sortFunc: groupSortFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
+      offset: 0,
+      maintainDirection: MAINTAIN_DIRECTION.UP,
     });
   }
 
-  async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
+  private _isInLimitation(
+    sectionType: SECTION_TYPE,
+    sortableModel: ISortableModel,
+  ) {
+    const limitSortableModel: ISortableModel = this._handlersMap[sectionType]
+      .sortableListStore.items[this._maxLeftRailGroup - 1];
+    return limitSortableModel
+      ? sortableModel.sortValue >= limitSortableModel.sortValue
+      : true;
+  }
+
+  setLeftRailVisible(isVisible: boolean) {
+    const size = this._handlersMap[SECTION_TYPE.TEAM].size;
+    !isVisible &&
+      size > this._maxLeftRailGroup &&
+      this._handlersMap[SECTION_TYPE.TEAM].setHasMore(
+        true,
+        QUERY_DIRECTION.NEWER,
+      );
+    this._handlersMap[SECTION_TYPE.TEAM].maintainMode = !isVisible;
+  }
+
+  async fetchPagination(sectionType: SECTION_TYPE) {
+    const offset = this._handlersMap[SECTION_TYPE.TEAM].size;
+    mainLogger
+      .tags(LOG_TAG)
+      .info('fetchPagination() offset:', offset, sectionType);
+    this._handlersMap[sectionType].fetchData(
+      QUERY_DIRECTION.NEWER,
+      DEFAULT_LEFT_RAIL_GROUP,
+      offset,
+    );
+  }
+
+  hasMore(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
+    return this._handlersMap[sectionType].hasMore(direction);
+  }
+
+  async fetchGroups(
+    sectionType: SECTION_TYPE,
+    direction: QUERY_DIRECTION,
+    offset?: number,
+    pageSize?: number,
+  ) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
       const performanceTracer = PerformanceTracer.start();
       const groups =
-        (await this._handlersMap[sectionType].fetchData(direction)) || [];
+        (await this._handlersMap[sectionType].fetchData(
+          direction,
+          pageSize,
+          offset,
+        )) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
         groups.forEach((group: Group) => {
           this._addToFetchProcessor(group.id);
@@ -624,6 +769,87 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
   }
 
+  private async _removeOverLimitGroupByChangingCurrentGroupId(
+    type: SECTION_TYPE,
+    limit: number,
+    lastGroupId: number,
+  ) {
+    const lastGroupIndex = this.getGroupIdsByType(type).indexOf(lastGroupId);
+    if (lastGroupIndex >= limit) {
+      const result = this._isGroupWithoutUnread(lastGroupId);
+      if (result) {
+        this._removeByIds(type, [lastGroupId]);
+      }
+    }
+  }
+
+  private _isGroupWithoutUnread(id: number) {
+    const groupState: GroupStateModel = getEntity(ENTITY_NAME.GROUP_STATE, id);
+    return !groupState.unreadCount || groupState.unreadCount <= 0;
+  }
+
+  private _removeByIds(type: SECTION_TYPE, ids: number[]) {
+    if (ids.length === 0) return;
+    const handler = this._handlersMap[type];
+    handler.removeByIds(ids);
+  }
+
+  async removeOverLimitGroupByChangingCurrentGroupId() {
+    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const lastGroupId = this._lastGroupId;
+    mainLogger
+      .tags(LOG_TAG)
+      .info(
+        `removeOverLimitGroupByChangingCurrentGroupId limit: ${
+          this._maxLeftRailGroup
+        }`,
+      );
+    if (currentId !== lastGroupId) {
+      await this._removeOverLimitGroupByChangingCurrentGroupId(
+        SECTION_TYPE.DIRECT_MESSAGE,
+        this._maxLeftRailGroup,
+        lastGroupId,
+      );
+      await this._removeOverLimitGroupByChangingCurrentGroupId(
+        SECTION_TYPE.TEAM,
+        this._maxLeftRailGroup,
+        lastGroupId,
+      );
+      this._lastGroupId = currentId;
+    }
+  }
+
+  private _removeOverLimitGroups(addCount: number) {
+    this._removeOverLimitGroupsByType(SECTION_TYPE.DIRECT_MESSAGE, addCount);
+    this._removeOverLimitGroupsByType(SECTION_TYPE.TEAM, addCount);
+  }
+
+  private _removeOverLimitGroupsByType(
+    sectionType: SECTION_TYPE,
+    addCount: number,
+  ) {
+    const ids = this.getGroupIdsByType(sectionType);
+    const overLimitIds = ids.slice(
+      this._maxLeftRailGroup,
+      this._maxLeftRailGroup + addCount,
+    );
+    if (overLimitIds.length) {
+      let removeIds: number[] = [];
+      overLimitIds.forEach((id: number) => {
+        this._isGroupWithoutUnread(id) && removeIds.push(id);
+      });
+      mainLogger
+        .tags(LOG_TAG)
+        .info(
+          '_removeOverLimitGroupsByType type:',
+          sectionType,
+          'addCount:',
+          addCount,
+        );
+      this._removeByIds(sectionType, removeIds);
+    }
+  }
+
   getRemovedIds(
     states: GroupState[],
     groupIds: number[],
@@ -642,110 +868,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       }
     }
     return removedIds;
-  }
-
-  private async _removeOverLimitGroupByChangingCurrentGroupId(
-    type: SECTION_TYPE,
-    limit: number,
-    lastGroupId: number,
-  ) {
-    const lastGroupIndex = this.getGroupIdsByType(type).indexOf(lastGroupId);
-    if (lastGroupIndex >= limit) {
-      const result = await !this._hasUnreadInGroups([lastGroupId]);
-      if (result) {
-        this._removeByIds(type, [lastGroupId]);
-      }
-    }
-  }
-
-  private _removeByIds(type: SECTION_TYPE, ids: number[]) {
-    if (ids.length === 0) return;
-
-    const handler = this._handlersMap[type];
-    handler.removeByIds(ids);
-  }
-
-  private async _getStates(groupIds: number[]): Promise<GroupState[]> {
-    const stateService = ServiceLoader.getInstance<StateService>(
-      ServiceConfig.STATE_SERVICE,
-    );
-    const states = await stateService.getGroupStatesFromLocalWithUnread(
-      groupIds,
-    );
-    return states || [];
-  }
-
-  private async _hasUnreadInGroups(groupIds: number[]) {
-    return (await this._getStates(groupIds)).length === 0;
-  }
-
-  async removeOverLimitGroupByChangingCurrentGroupId() {
-    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const lastGroupId = this._lastGroupId;
-    const limit = await this._getMaxLeftRailGroup();
-    mainLogger
-      .tags(LOG_TAG)
-      .info(`removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`);
-    if (currentId !== lastGroupId) {
-      await this._removeOverLimitGroupByChangingCurrentGroupId(
-        SECTION_TYPE.DIRECT_MESSAGE,
-        limit,
-        lastGroupId,
-      );
-      await this._removeOverLimitGroupByChangingCurrentGroupId(
-        SECTION_TYPE.TEAM,
-        limit,
-        lastGroupId,
-      );
-      this._lastGroupId = currentId;
-    }
-  }
-
-  private async _removeOverLimitGroupByChangingIds(
-    type: SECTION_TYPE,
-    originalIds: number[],
-    limit: number,
-  ) {
-    const stateService = ServiceLoader.getInstance<StateService>(
-      ServiceConfig.STATE_SERVICE,
-    );
-    const states =
-      (await stateService.getGroupStatesFromLocalWithUnread(originalIds)) || [];
-    const ids = this.getRemovedIds(
-      states,
-      originalIds,
-      limit,
-      this._lastGroupId,
-    );
-    this._removeByIds(type, ids);
-  }
-  /*
-  FIJI-1269
-  */
-  async removeOverLimitGroupByChangingIds() {
-    // 1. observe current group change
-    // 2. check overflew groups
-    // 3. remove from list
-
-    if (this._lastGroupId === 0) {
-      return;
-    }
-    const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
-    const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
-    const limit = await this._getMaxLeftRailGroup();
-    mainLogger
-      .tags(LOG_TAG)
-      .info(`removeOverLimitGroupByChangingIds limit: ${limit}`);
-    await this._removeOverLimitGroupByChangingIds(
-      SECTION_TYPE.DIRECT_MESSAGE,
-      directIds,
-      limit,
-    );
-    await this._removeOverLimitGroupByChangingIds(
-      SECTION_TYPE.TEAM,
-      teamIds,
-      limit,
-    );
   }
 
   @computed
@@ -794,6 +916,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (profile && profile.max_leftrail_group_tabs2) {
       count = Number(profile.max_leftrail_group_tabs2);
     }
+    this._updateMaxLeftRail(count);
     return count;
   };
 }

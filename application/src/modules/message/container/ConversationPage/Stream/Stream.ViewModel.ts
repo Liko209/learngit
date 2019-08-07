@@ -127,7 +127,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   constructor(props: StreamProps) {
     super(props, BLACKLISTED_PROPS);
-    this.markAsRead = this.markAsRead.bind(this);
+    this.updateIgnoredStatus = this.updateIgnoredStatus.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
     this._historyHandler = new HistoryHandler();
@@ -247,8 +247,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   };
 
   @action
-  markAsRead() {
-      this._stateService.updateReadStatus(this.props.groupId, false, true);
+  updateIgnoredStatus(isIgnore: boolean) {
+    this._stateService.updateIgnoredStatus([this.props.groupId], isIgnore);
   }
 
   enableNewMessageSeparatorHandler = () => {
@@ -262,7 +262,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   dispose() {
     super.dispose();
     this._streamController.dispose();
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+    this.updateIgnoredStatus(false);
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
@@ -324,7 +324,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();
     this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
-    globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
+    this.updateIgnoredStatus(true);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   };
 

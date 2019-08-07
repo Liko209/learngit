@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
+import { container } from 'framework';
 import { computed, observable, action } from 'mobx';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { RCInfoService } from 'sdk/module/rcInfo';
@@ -17,7 +18,7 @@ import {
 import i18nT from '@/utils/i18nT';
 import { JuiIconographyProps } from 'jui/foundation/Iconography';
 import { UserSettingEntity } from 'sdk/module/setting';
-import { getEntity } from '@/store/utils/entities';
+import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import {
@@ -25,12 +26,15 @@ import {
   CountriesListType,
   RegionSettingItemViewProps,
 } from './types';
-import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
+import { RegionSettingInfo, E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { TelephonyService } from '@/modules/telephony/service';
+import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 
 const AVOID_AREA_CODE_BEGIN_NUM = '0';
 const AREA_CODE_ALLOW_LEN = 3;
-
+const OPEN_E911_TIME = 3000;
 class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
   implements RegionSettingItemViewProps {
   @observable
@@ -57,11 +61,23 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     callingCode: '',
   };
 
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
+
   @computed
   get settingItemEntity() {
     return getEntity<UserSettingEntity, SettingModel<RegionSettingInfo>>(
       ENTITY_NAME.USER_SETTING,
       this.props.id,
+    );
+  }
+
+  @computed
+  get E911SettingItemEntity() {
+    return getEntity<UserSettingEntity, SettingModel<E911SettingInfo>>(
+      ENTITY_NAME.USER_SETTING,
+      SettingEntityIds.Phone_E911,
     );
   }
 
@@ -183,7 +199,10 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     this.areaCodeError = false;
     this.disabledOkBtn = false;
 
-    if (this._currentCountryAreaCode === areaCode) {
+    if (
+      this._currentCountryAreaCode === areaCode &&
+      this._currentCountryInfo.isoCode === this.dialPlanISOCode
+    ) {
       this.disabledOkBtn = true;
     }
     // check
@@ -233,12 +252,25 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
         fullWidth: false,
         dismissible: false,
       });
+   
+      await this._openE911(dialPlanISOCode);
 
       return true;
     } catch {
       return false;
     }
   };
+
+  private async _openE911(dialPlanISOCode: string) {
+    const e911 = this.E911SettingItemEntity.value;
+    const lines = await this.rcInfoService.getDigitalLines();
+
+    if (e911 && e911.countryIsoCode !== dialPlanISOCode && lines.length > 0) {
+      setTimeout(() => {
+        this._telephonyService.openE911();
+      }, OPEN_E911_TIME)
+    }
+  }
 
   private _handleAreaCodeError = async () => {
     this.areaCodeError = true;

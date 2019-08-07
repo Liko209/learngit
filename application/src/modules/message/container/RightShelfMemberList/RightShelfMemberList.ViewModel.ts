@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2019-07-26 13:51:55
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2019-07-26 13:51:55
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { observable, action, computed } from 'mobx';
 import {
   RightShelfMemberListViewProps,
@@ -18,9 +18,15 @@ import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import {
+  RIGHT_SHELL_DEFAULT_WIDTH,
+  RIGHT_SHELL_MIN_WIDTH,
+} from 'jui/foundation/Layout/Responsive';
 
+const GUEST_SECTION_HEIGHT = 95;
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
+const AVATAR_MARGIN_BOTTOM = 8;
 const WRAPPER_PADDING = 24;
 class RightShelfMemberListViewModel
   extends StoreViewModel<RightShelfMemberListProps>
@@ -32,7 +38,7 @@ class RightShelfMemberListViewModel
   );
 
   @observable
-  private _wrapperWidth: number;
+  private _wrapperWidth: number = RIGHT_SHELL_DEFAULT_WIDTH;
 
   @observable
   isLoading: boolean = true;
@@ -51,15 +57,27 @@ class RightShelfMemberListViewModel
     super(props);
   }
 
+  dispose = () => {
+    notificationCenter.off(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
+    super.dispose();
+  };
+
   init = () => {
-    notificationCenter.on(SERVICE.FETCH_REMAINING_DONE, () => {
-      this._getMemberAndGuestIds();
-    });
+    notificationCenter.on(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
     this.reaction(
       () => this.props.groupId,
       (id: number) => {
         if (id === undefined) return;
-        this._getMemberAndGuestIds();
+        this.isLoading = true;
+        setTimeout(() => {
+          this._getMemberAndGuestIds();
+        });
       },
       { fireImmediately: true },
     );
@@ -151,6 +169,20 @@ class RightShelfMemberListViewModel
   }
 
   @computed
+  get loadingH() {
+    return (
+      (this._guestCompanyIdsLen > 0 ? GUEST_SECTION_HEIGHT : 0) +
+      Math.min(
+        this.allMemberLength && this.allMemberLength > this.countPerRow
+          ? Math.ceil(this.allMemberLength / this.countPerRow)
+          : 1,
+        this._guestCompanyIdsLen > 0 ? 3 : 4,
+      ) *
+        (AVATAR_WIDTH + AVATAR_MARGIN_BOTTOM)
+    );
+  }
+
+  @computed
   get countPerRow() {
     return Math.floor(
       (this._wrapperWidth - WRAPPER_PADDING) / (AVATAR_PADDING + AVATAR_WIDTH),
@@ -197,7 +229,8 @@ class RightShelfMemberListViewModel
 
   @action
   setWrapperWidth = (width: number) => {
-    this._wrapperWidth = width;
+    this._wrapperWidth =
+      width < RIGHT_SHELL_MIN_WIDTH ? RIGHT_SHELL_MIN_WIDTH : width;
   };
 }
 

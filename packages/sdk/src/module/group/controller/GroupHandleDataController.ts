@@ -214,7 +214,10 @@ class GroupHandleDataController {
     }
   };
 
-  extractGroupCursor(groups: Group[], changeMap?: Map<string, ChangeModel>) {
+  extractGroupCursor(
+    groups: Group[],
+    changeMap?: Map<string, ChangeModel>,
+  ) {
     const groupCursors = _.cloneDeep(groups);
     if (groupCursors.length) {
       if (changeMap) {

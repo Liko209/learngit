@@ -25,13 +25,13 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
   _listRef: RefObject<JuiVirtualList<number, number>> = createRef();
 
   get(index: number) {
-    const { ids } = this.props;
-    return ids[index];
+    const { membersId } = this.props;
+    return membersId[index];
   }
 
   size() {
-    const { ids } = this.props;
-    return ids.length;
+    const { membersId } = this.props;
+    return membersId.length;
   }
 
   private _rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
@@ -57,8 +57,8 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
   }
 
   render() {
-    const { open, ids, isEditMode } = this.props;
-    const memberIdsLength = ids.length;
+    const { open, membersId, isEditMode } = this.props;
+    const memberIdsLength = membersId.length;
 
     if (open && memberIdsLength > 0) {
       const mentionHeight =

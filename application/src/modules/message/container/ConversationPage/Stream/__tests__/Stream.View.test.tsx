@@ -31,7 +31,6 @@ const baseProps = {
   groupId: 1,
   viewRef: React.createRef(),
   setRowVisible: jest.fn().mockName('setRowVisible'),
-  markAsRead: jest.fn().mockName('markAsRead'),
   atBottom: jest.fn().mockName('atBottom'),
   atTop: jest.fn().mockName('atTop'),
   enableNewMessageSeparatorHandler: jest

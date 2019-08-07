@@ -15,6 +15,7 @@ test(formalName('Open personal profile via top bar avatar then open conversation
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
   const editProfileDialog = app.homePage.editProfileDialog;
+  const profileDialog = app.homePage.profileDialog;
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -29,6 +30,19 @@ test(formalName('Open personal profile via top bar avatar then open conversation
   });
   await h(t).withLog('Then user profile should be opened in edit mode', async () => {
     await editProfileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I close edit profile dialog and open setting menu in home page', async () => {
+    await editProfileDialog.clickCancelBtn();
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.ensureLoaded();
+  });
+
+  await h(t).withLog('And I click Avatar in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuEditProfile();
+  });
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
   }, true);
 
 });

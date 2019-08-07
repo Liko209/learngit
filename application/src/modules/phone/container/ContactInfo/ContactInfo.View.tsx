@@ -5,24 +5,17 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiListItemAvatar, JuiListItemText } from 'jui/components/Lists';
-import { ContactItem } from 'jui/pattern/ContactInfo';
+import { JuiContactInfo } from 'jui/pattern/Phone/ContactInfo';
 import { Avatar } from '@/containers/Avatar';
 import { Profile, PROFILE_TYPE } from '@/modules/message/container/Profile';
 import { MiniCard } from '@/modules/message/container/MiniCard';
-import { Person } from 'sdk/module/person/entity';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ANALYTICS_KEY } from '../constants';
 import { ContactInfoViewProps } from './types';
 
-type ContactInfoProps = ContactInfoViewProps & WithTranslation;
-type State = {
-  person: Person | null;
-};
-
 @observer
-class ContactInfoViewComponent extends Component<ContactInfoProps, State> {
+class ContactInfoView extends Component<ContactInfoViewProps> {
   openMiniProfile = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const { personId, didOpenMiniProfile, disableOpenMiniProfile } = this.props;
     if (disableOpenMiniProfile) {
@@ -62,16 +55,12 @@ class ContactInfoViewComponent extends Component<ContactInfoProps, State> {
     const { displayName, displayNumber, isUnread } = this.props;
 
     return (
-      <ContactItem disableButton isUnread={isUnread}>
+      <JuiContactInfo isUnread={isUnread}>
         <JuiListItemAvatar>{this._avatar()}</JuiListItemAvatar>
         <JuiListItemText primary={displayName} secondary={displayNumber} />
-      </ContactItem>
+      </JuiContactInfo>
     );
   }
 }
-
-const ContactInfoView = withTranslation('translations')(
-  ContactInfoViewComponent,
-);
 
 export { ContactInfoView };

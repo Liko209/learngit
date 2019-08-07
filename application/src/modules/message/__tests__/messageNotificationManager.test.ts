@@ -314,12 +314,12 @@ describe('messageNotificationManager', () => {
         notificationManager.handlePostContent({
           text: `<a class='at_mention_compose' rel='{"id":12332}'>@Helena</a>`,
         } as PostModel),
-      ).toEqual('@Helena');
+      ).toEqual('Helena');
       expect(
         notificationManager.handlePostContent({
           text: `<a class='at_mention_compose' rel='{"id":12333}'>@Jack Sparrow</a>`,
         } as PostModel),
-      ).toEqual('@Jack Sparrow');
+      ).toEqual('Jack Sparrow');
     });
 
     it('should remove markdown', () => {
@@ -433,7 +433,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.group',
         translationArgs,
@@ -454,7 +454,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.group',
         translationArgs,
@@ -475,7 +475,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(2);
+      expect(i18n.default).toHaveBeenCalledTimes(3);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.mentioned',
         translationArgs,

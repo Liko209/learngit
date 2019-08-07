@@ -116,9 +116,15 @@ class SwitchCallBannerViewModel extends StoreViewModel<Props> {
     await this._updateSwitchCall();
     if (this.callOnOtherDevice) {
       analyticsCollector.confirmCallSwitch(CONFIRM_CALL_SWITCH);
-      await this._telephonyService.switchCall(this.callOnOtherDevice);
-      this.reset();
+      const result = await this._telephonyService.switchCall(
+        this.callOnOtherDevice,
+      );
+      if (result) {
+        this.reset();
+      }
+      return;
     }
+    return;
   };
 
   @action

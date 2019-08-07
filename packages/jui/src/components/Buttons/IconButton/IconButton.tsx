@@ -199,6 +199,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     tooltipForceHide,
     color,
     disableToolTip = false,
+    disableTouchRipple = false,
     alwaysEnableTooltip = false,
     tooltipPlacement,
     ariaLabel,
@@ -220,7 +221,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   }
   const renderToolTip = () => (
     <StyledIconButton
-      disableRipple={rest.variant === 'plain'}
+      disableRipple={disableTouchRipple || rest.variant === 'plain'}
       colorScope={colorScope}
       colorName={colorName}
       aria-label={ariaLabel || tooltipTitle}

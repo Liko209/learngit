@@ -54,7 +54,10 @@ describe('Upgrade trigger', () => {
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
     jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, false);
+    expect(upgradeHandler._hasSkippedWaiting).toBeTruthy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toHaveBeenCalled();
   });
@@ -69,7 +72,10 @@ describe('Upgrade trigger', () => {
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
     jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, true);
+    expect(upgradeHandler._hasSkippedWaiting).toBeTruthy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toHaveBeenCalled();
   });
@@ -87,14 +93,31 @@ describe('Upgrade trigger', () => {
       .mockReturnValue(false);
     jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
 
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, true);
+    expect(upgradeHandler._hasSkippedWaiting).toBeTruthy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toHaveBeenCalled();
     mockFn.mockReset();
 
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+
+    upgradeHandler.setServiceWorkerURL('/service-worker.js', true);
+    jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(false);
+    jest
+      .spyOn(upgradeHandler, '_hasServiceWorkerController')
+      .mockReturnValue(false);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
+
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, true);
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).not.toHaveBeenCalled();
+    mockFn.mockReset();
   });
 
   it('manual update', () => {

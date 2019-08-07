@@ -9,6 +9,7 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
 import { ContactSearchList } from '../v2/page-models/AppRoot/HomePage/TelephonyDialog';
+import { E911Address } from './e911address';
 
 fixture('Telephony/Forward')
 .beforeEach(setupCase(BrandTire.RC_WITH_PHONE))
@@ -80,6 +81,8 @@ test.meta(<ITestMeta>{
   keywords: ['Forward']
 })('Should the tooltip "Forward" of "Forward" button in Forward page', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const tooltipText = 'Forward';
@@ -135,6 +138,8 @@ test.meta(<ITestMeta>{
   keywords: ['Forward']
 })('Call invalid forward number should prompt toast', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const callerWebPhone = await h(t).newWebphoneSession(caller);
@@ -190,6 +195,8 @@ test.meta(<ITestMeta>{
   keywords: ['Forward']
 })('Should forward call successfully by custom forward', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const caller = h(t).rcData.mainCompany.users[1];
   const forwarder = h(t).rcData.mainCompany.users[2];
   const app = new AppRoot(t);
@@ -274,6 +281,8 @@ test.skip.meta(<ITestMeta>{
   keywords: ['Forward']
 })('Show last entered and last viewed locations when back to the custom forward page', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const callerWebPhone = await h(t).newWebphoneSession(caller);
