@@ -16,7 +16,7 @@ import * as EmptyScreen from './style';
 import { JuiEmptyScreenProps } from './types';
 
 const Wrapper = styled(EmptyScreen.Wrapper)`
-  width: ${width(67)};
+  width: ${width(66)};
   padding: ${spacing(20, 10, 0)};
   align-items: flex-start;
 `;
@@ -46,9 +46,7 @@ const JuiFlexWrapper = styled.div`
 `;
 
 const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
-  const {
-    image, text, content, actions,
-  } = props;
+  const { image, text, content, actions } = props;
   /* eslint-disable react/no-array-index-key */
   return (
     <Wrapper>
@@ -65,7 +63,7 @@ const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
               <EmptyScreen.ActionWrapper key={inx}>
                 {action}
               </EmptyScreen.ActionWrapper>
-          ))
+            ))
           : actions}
       </EmptyScreen.Actions>
     </Wrapper>
