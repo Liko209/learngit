@@ -60,7 +60,6 @@ test.meta(<ITestMeta>{
   });
 });
 
-
 test.meta(<ITestMeta>{
   priority: ['p2'],
   caseIds: ['JPT-143'],
