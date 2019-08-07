@@ -10,6 +10,11 @@ export const ERROR_CODES_RC = {
   CLG_102: 'CLG-102',
   CLG_104: 'CLG-104',
   MSG_333: 'MSG-333',
+  EME_201: 'EME-201',
+  EME_202: 'EME-202',
+  EME_203: 'EME-203',
+  EME_204: 'EME-204',
+  EME_205: 'EME-205',
 };
 
 export const ERROR_MSG_RC = {

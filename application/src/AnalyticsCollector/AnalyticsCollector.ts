@@ -199,6 +199,10 @@ class AnalyticsCollector {
     });
   }
 
+  e911Setting() {
+    dataAnalysis.track('Jup_Web/DT_settings_updateE911Address');
+  }
+
   // [FIJI-7325]
   openCallSwitch(source: string) {
     dataAnalysis.track('Jup_Web/DT_clickCallSwitch', {

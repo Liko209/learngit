@@ -3,10 +3,8 @@
  * @Date: 2019-06-01 14:56:34
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   StyledTime,
   StyleVoicemailItem,
@@ -30,29 +28,10 @@ import { AudioPlayer } from '@/modules/media/container/AudioPlayer';
 import { getCreateTime } from '@/utils/date';
 
 type VoicemailItemProps = VoicemailViewProps &
-  VoicemailProps &
-  WithTranslation & { id: number; voiceMailResponsiveMap: ResponsiveObject };
-
-type State = {
-  showCall: boolean;
-};
+  VoicemailProps & { id: number; voiceMailResponsiveMap: ResponsiveObject };
 
 @observer
-class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
-  state = {
-    showCall: false,
-  };
-
-  async componentDidMount() {
-    const { shouldShowCall } = this.props;
-    if (shouldShowCall) {
-      const showCall = await shouldShowCall();
-      this.setState({
-        showCall,
-      });
-    }
-  }
-
+class VoicemailItemView extends Component<VoicemailItemProps> {
   get playerMode() {
     const { isHover, showFullAudioPlayer, voiceMailResponsiveMap } = this.props;
 
@@ -61,6 +40,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
         ? JuiAudioMode.FULL
         : JuiAudioMode.MINI;
     }
+
     return voiceMailResponsiveMap.audioMode;
   }
 
@@ -87,7 +67,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       // onChange,
       // selected,
     } = this.props;
-    const { showCall } = this.state;
 
     return (
       // <StyleVoicemailItem expanded={selected} onChange={onChange}>
@@ -142,7 +121,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
                 entity={ENTITY_TYPE.VOICEMAIL}
                 maxButtonCount={voiceMailResponsiveMap.buttonToShow}
                 canEditBlockNumbers={canEditBlockNumbers}
-                showCall={showCall}
               />
             </StyledActionWrapper>
           )}
@@ -154,9 +132,5 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
     );
   }
 }
-
-const VoicemailItemView = withTranslation('translations')(
-  VoicemailViewComponent,
-);
 
 export { VoicemailItemView };

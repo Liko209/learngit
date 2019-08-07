@@ -42,6 +42,8 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
 
     this._setHandler(this.getHandler());
 
+    const fireImmediately = this._getFireImmediately();
+
     this.reaction(
       () => this.props.filterValue,
       async (filterKey: string) => {
@@ -61,10 +63,16 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
 
         this._setHandler(handler);
       },
-      { fireImmediately: !this._isAllType && Boolean(this.props.filterValue) },
+      { fireImmediately },
     );
   }
 
+  @action
+  private _getFireImmediately() {
+    return !this._isAllType && Boolean(this.props.filterValue);
+  }
+
+  @action
   getHandler() {
     return new AllCallsListHandler(
       this.props.type,

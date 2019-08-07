@@ -83,9 +83,6 @@ describe('DiscontinuousPosListHandler', () => {
         const newPost = { id: 11111111111, text: 'text', deactivated: false };
         notificationCenter.emitEntityUpdate(eventName, [newPost]);
 
-        const store = storeManager.getEntityMapStore(entityName);
-        expect(store.has(newPost.id)).toBeFalsy();
-
         // still has 10 element after
         expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         done();

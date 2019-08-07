@@ -13,14 +13,13 @@ import { ActiveVoicemailId } from '../Voicemail/types';
 
 type VoicemailViewProps = {
   selected: boolean;
-  onChange: (event: React.ChangeEvent, expanded: boolean) => void;
   caller?: Caller;
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
-  canEditBlockNumbers: boolean;
   audio?: Audio;
   onPlay: () => void;
   onPaused: () => void;
+  canEditBlockNumbers: boolean;
   onError: () => void;
   onEnded: () => void;
   onBeforePlay: () => Promise<boolean> | boolean;
@@ -28,7 +27,6 @@ type VoicemailViewProps = {
   showFullAudioPlayer: boolean;
   createTime: string;
   direction: RCMessage['direction'];
-  shouldShowCall: () => Promise<boolean>;
 };
 
 type VoicemailProps = HoverControllerBaseViewProps & {

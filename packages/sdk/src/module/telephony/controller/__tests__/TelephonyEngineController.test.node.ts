@@ -134,54 +134,46 @@ describe('TelephonyEngineController', () => {
   });
 
   describe('isEmergencyAddrConfirmed', () => {
-    it('should return true when no sip prov', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue(null);
+    it('should call account controller', () => {
+      accountController.isEmergencyAddrConfirmed = jest
+        .fn()
+        .mockReturnValue(true);
       const res = engineController.isEmergencyAddrConfirmed();
       expect(res).toBeTruthy();
-    });
-    it('should return false when no emergency addr in sip prov', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue('test');
-      engineController.getRemoteEmergencyAddress = jest
-        .fn()
-        .mockReturnValue(undefined);
-      const res = engineController.isEmergencyAddrConfirmed();
-      expect(res).toBeFalsy();
-    });
-    it('should return false when no emergency addr saved in local', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue('test');
-      engineController.getRemoteEmergencyAddress = jest
-        .fn()
-        .mockReturnValue('test');
-      engineController.getLocalEmergencyAddress = jest.fn();
-      const res = engineController.isEmergencyAddrConfirmed();
-      expect(res).toBeFalsy();
-    });
-    it('should return true when both sip prov and local storage have emergency address saved', () => {
-      accountController.getSipProv = jest.fn().mockReturnValue('test');
-      engineController.getRemoteEmergencyAddress = jest
-        .fn()
-        .mockReturnValue('test');
-      engineController.getLocalEmergencyAddress = jest
-        .fn()
-        .mockReturnValue('test');
-      const res = engineController.isEmergencyAddrConfirmed();
-      expect(res).toBeTruthy();
-    });
-  });
-
-  describe('getLocalEmergencyAddress', () => {
-    it('should get emergency address from config', () => {
-      TelephonyGlobalConfig.getEmergencyAddress = jest.fn();
-      engineController.getLocalEmergencyAddress();
-      expect(TelephonyGlobalConfig.getEmergencyAddress).toHaveBeenCalled();
     });
   });
 
   describe('getRemoteEmergencyAddress', () => {
-    it('should call controller to get emergency address', () => {
-      accountController.getEmergencyAddress = jest.fn();
-      engineController.getRemoteEmergencyAddress();
-      expect(accountController.getEmergencyAddress).toHaveBeenCalled();
+    it('should call account controller to get address', () => {
+      accountController.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('test');
+      const res = engineController.getRemoteEmergencyAddress();
+      expect(res).toBe('test');
+    });
+  });
+
+  describe('getLocalEmergencyAddress', () => {
+    it('should call account controller to get address', () => {
+      accountController.getLocalEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('test');
+      const res = engineController.getLocalEmergencyAddress();
+      expect(res).toBe('test');
+    });
+  });
+
+  describe('isAddressEqual', () => {
+    it('should call with correct parameters', () => {
+      accountController.isAddressEqual = jest.fn().mockReturnValue(true);
+      const addr1 = { a: 'a' };
+      const addr2 = { b: 'b' };
+      const res = engineController.isAddressEqual(addr1, addr2);
+      expect(accountController.isAddressEqual).toHaveBeenCalledWith(
+        addr1,
+        addr2,
+      );
+      expect(res).toBeTruthy();
     });
   });
 

@@ -15,6 +15,11 @@ const JuiDialogActions = styled(
     margin: 0;
     transform: translateZ(0);
   }
+  & button,
+  & a {
+    display: inline-block;
+    margin-left: ${spacing(2)};
+  }
 `;
 
 export { JuiDialogActions };

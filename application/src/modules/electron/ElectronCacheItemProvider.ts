@@ -4,11 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  IZipItemProvider,
-  ZipItem,
-  ZipItemLevel,
-} from 'sdk/service/uploadLogControl/types';
+import { IZipItemProvider, ZipItem, ZipItemLevel } from 'sdk/module/log/types';
 
 export class ElectronCacheItemProvider implements IZipItemProvider {
   level: ZipItemLevel = ZipItemLevel.DEBUG_ALL;

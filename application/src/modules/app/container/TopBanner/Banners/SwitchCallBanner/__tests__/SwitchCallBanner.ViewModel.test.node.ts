@@ -35,8 +35,8 @@ describe('SwitchCallBannerViewModel', () => {
       jest.spyOn(_telephonyService, 'switchCall').mockResolvedValue(true);
       await vm.switchCall();
       expect(_telephonyService.switchCall).toHaveBeenCalledWith({});
-      expect(vm._dialog).toBe(null);
-      expect(vm.callOnOtherDevice).toBe(undefined);
+      expect(vm._dialog).toBe(undefined);
+      expect(vm.callOnOtherDevice).toEqual({});
     });
   });
 

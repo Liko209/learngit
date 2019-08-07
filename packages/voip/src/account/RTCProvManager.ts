@@ -169,8 +169,12 @@ class RTCProvManager extends EventEmitter2 {
     this._requestErrorRetryInterval = kRTCProvRequestErrorRetryTimerMin;
     rtcLogger.info(
       LOG_TAG,
-      `Reset SIP provisioning info error retry interval to ${this._requestErrorRetryInterval}`,
+      `Reset SIP provisioning info error retry interval to ${
+        this._requestErrorRetryInterval
+      }`,
     );
+
+    this.emit(RTC_PROV_EVENT.PROV_ARRIVE, responseData, this._sipProvisionInfo);
 
     if (
       !this._sipProvisionInfo ||

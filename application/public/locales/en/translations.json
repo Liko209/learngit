@@ -8,6 +8,7 @@
     },
     "dialog": {
       "OK": "OK",
+      "Alert": "Alert",
       "cancel": "Cancel",
       "update": "Update",
       "create": "Create",
@@ -16,6 +17,7 @@
       "send": "Send",
       "delete": "Delete",
       "close": "Close",
+      "confirm": "Confirm",
       "deleteAll": "Delete all",
       "edit": "Edit"
     },
@@ -78,7 +80,9 @@
     "play": "Play",
     "pause": "Pause",
     "reload": "Reload",
-    "goToConversation": "Go to conversation"
+    "goToConversation": "Go to conversation",
+    "country": "Country",
+    "eg": "e.g."
   },
   "presence": {
     "available": "Available",
@@ -115,6 +119,8 @@
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
     "openDialer": "Open the dialer",
+    "confirmAddressNow": "Confirm address now.",
+    "confirmEmergencyAddress": "To enable outbound calls outside your organization, confirm your emergency address.",
     "editProfile": "Edit profile"
   },
   "globalSearch": {
@@ -225,6 +231,7 @@
       "unlike": "Unlike",
       "bookmark": "Bookmark",
       "removeBookmark": "Remove bookmark",
+      "wrote": "wrote",
       "quote": "Quote",
       "pin": "Pin",
       "unpin": "Unpin",
@@ -302,7 +309,8 @@
       "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again.",
       "deleteFileBackendError": "Sorry, something went wrong on our end and we weren't able to delete this file. Try again later.",
       "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again.",
-      "editProfileTitle": "Edit Profile"
+      "editProfileTitle": "Edit profile",
+      "editPhotoFileTypeError": "You can only choose an image file. Please try again."
     },
     "fileAction": {
       "deleteFile": "Delete file",
@@ -669,6 +677,9 @@
     "unknownCaller": "Unknown Caller",
     "unknownCallee": "Unknown",
     "prompt": {
+      "emergencyAddressIsUnknown": "You emergency address is unknown. You are limited to making outbound calls to extensions in your organization only.",
+      "e911ServiceMayBeLimitedOrUnavailable": "E911 Service may be limited or unavailable. Your specific location may not be automatically communicated to the dispatcher.",
+      "e911ExtensionNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
       "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
       "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
@@ -746,6 +757,89 @@
     "noMatch": "No matched records",
     "searching": "Searching...",
     "forwardCall": "Forward Call",
+    "e911": {
+      "title": "Confirm address for emergency calls",
+      "customerName": "Customer Name",
+      "dialogDescription": "Emergency Service dispatchers will send emergency first responders to this exact location. Where will you be using this phone?",
+      "outOfCountryDisclaimers": "If you don't provide an emergency address, you will be limited to making calls to extensions in your organization only.",
+      "confirmEmergencyAddress": "Confirm emergency address",
+      "outOfCountryTitle": "Emergency address out of country",
+      "disclaimer": {
+        "US/CA1": "You will use this app at a physical location that is outside the United States or Canada. You are responsible for complying with all laws and regulations applicable to your use of the Services.",
+        "US/CA2": "By choosing this option, you agree that you will make available another phone to reach emergency services. You will update your Emergency Address immediately if and when you use this app from within the United States.",
+        "UK": "I am using the service from a physical location that is outside the United Kingdom. I understand that if I use the service from within the United Kingdom, I must provide a Registered Location to ensure that my 999/112 calls are properly routed to the appropriate Public Safety Answering Point.",
+        "default": "You will use this app at a physical location that is outside {{region}}. You are responsible for complying with all laws and regulations applicable to your use of the Services."
+      },
+      "prompt": {
+        "backendError": "Sorry, something went wrong on our end, we weren't able to save the update. Try again later.",
+        "networkError": "Sorry, we weren't able to save the update. Check your network connection, then try again."
+      },
+      "fields": {
+        "Address": "Address",
+        "City": "City",
+        "County": "County",
+        "Road/Street": "Road/Street",
+        "State/Province": "State/Province",
+        "Additional address": "Additional address",
+        "Zip Code": "Zip Code",
+        "Postal code": "Postal code",
+        "City / Town / Locality": "City / Town / Locality",
+        "Post code": "Post code",
+        "Town / County": "Town / County",
+        "Post code / EIR code": "Post code / EIR code",
+        "Street number and name": "Street number and name",
+        "Name of town": "Name of town",
+        "Unit number, house/building/street number + street name": "Unit number, house/building/street number + street name",
+        "City/District": "City/District",
+        "Province": "Province",
+        "Street name, number, Apt": "Street name, number, Apt.",
+        "Village/Name of quarter": "Village/Name of quarter",
+        "Locality / Province": "Locality / Province",
+        "Postcode": "Postcode",
+        "Street name + number": "Street name + number",
+        "City/Town": "City/Town",
+        "Town": "Town",
+        "Unit/lot number, building/area name": "Unit/lot number, building/area name",
+        "Lot number (for building), street name": "Lot number (for building), street name",
+        "State": "State",
+        "Street name and number": "Street name and number",
+        "Postcode Post office/Mail centre": "Postcode Post office/Mail centre",
+        "Flat number, Floor number, Name/number of house/building": "Flat number, Floor number, Name/number of house/building",
+        "Street number and street name": "Street number and street name",
+        "Name of district": "Name of district",
+        "Number, Alley, Lane, Road/Street Name": "Number, Alley, Lane, Road/Street Name",
+        "Township and District, County and City": "Township and District, County and City",
+        "ZIP codes": "ZIP codes",
+        "Street name + Street number + door": "Street name + Street number + door",
+        "Town Country": "Town Country",
+        "Street (Subunit Number Name)": "Street (Subunit Number Name)",
+        "Locality State": "Locality State",
+        "City/Village, County/Sector": "City/Village, County/Sector",
+        "Street address (street name + house/building number)": "Street address (street name + house/building number)",
+        "District and street address": "District and street address",
+        "Neighbourhood": "Neighbourhood",
+        "Municipality - State": "Municipality - State",
+        "CEP (Postal Code)": "CEP (Postal Code)",
+        "Street and number, apartment number": "Street and number, apartment number",
+        "Comuna/Town/City/Municipality": "Comuna/Town/City/Municipality",
+        "Flat number/house number, street address or PO box number": "Flat number/house number, street address or PO box number",
+        "Town/City": "Town/City",
+        "Suburb or RD number or PO box lobby name": "Suburb or RD number or PO box lobby name",
+        "Street name, number": "Street name, number",
+        "Street address": "Street address",
+        "Street address (street)": "Street address (street)",
+        "Prefecture (Province)": "Prefecture (Province)",
+        "Street address (house/building number, street name)": "Street address (house/building number, street name)",
+        "District, County, or City": "District, County, or City",
+        "Street address (street name, number)": "Street address (street name, number)",
+        "Sub-locality": "Sub-locality",
+        "City/Suburb": "City/Suburb",
+        "Street address, apartment number": "Street address, apartment number",
+        "Building name": "Building name",
+        "Building name and room number": "Building name and room number",
+        "Zip code": "Zip code"
+      }
+    },
     "switchCall": {
       "cancel": "Cancel",
       "switch": "Switch",
@@ -995,6 +1089,11 @@
           "areaCodeErrorText": "Invalid area code",
           "saveSuccessText": "Your region is updated successfully.",
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
+        },
+        "e911Setting": {
+          "e911Address": "Emergency address",
+          "e911AddressDesc": "Update or edit your e911 address on record with RingCentral for emergency situations.",
+          "yourSavedAddressIs": "Your saved address is: "
         }
       }
     },

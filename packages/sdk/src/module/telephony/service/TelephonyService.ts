@@ -32,6 +32,7 @@ import {
   RCPresenceEventPayload,
   ActiveCall,
 } from 'sdk/module/rcEventSubscription/types';
+import { RTCSipEmergencyServiceAddr } from 'voip';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
@@ -261,12 +262,33 @@ class TelephonyService extends EntityBaseService<Call>
     return this.telephonyController.getLocalEmergencyAddress();
   };
 
+  isAddressEqual = (
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) => {
+    return this.telephonyController.isAddressEqual(objAddr, othAddr);
+  };
+
+  setLocalEmergencyAddress = (emergencyAddress: RTCSipEmergencyServiceAddr) => {
+    this.telephonyController.setLocalEmergencyAddress(emergencyAddress);
+  };
+
+  updateLocalEmergencyAddress = (
+    emergencyAddress: RTCSipEmergencyServiceAddr,
+  ) => {
+    this.telephonyController.updateLocalEmergencyAddress(emergencyAddress);
+  };
+
   subscribeEmergencyAddressChange = (listener: notificationCallback) => {
     this.telephonyController.subscribeEmergencyAddressChange(listener);
   };
 
-  subscribeSipProvChange = (listener: notificationCallback) => {
-    this.telephonyController.subscribeSipProvChange(listener);
+  subscribeSipProvEAUpdated = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvEAUpdated(listener);
+  };
+
+  subscribeSipProvReceived = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvReceived(listener);
   };
 }
 
