@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/ContentPanel/*.ts"],
+    "fixtures": ["./fixtures/ContentPanel/!(JumpToUnreadButton|JumpToRecentButton)*.ts"],
     "exclude_tags": [
       "JPT-212"
     ],
