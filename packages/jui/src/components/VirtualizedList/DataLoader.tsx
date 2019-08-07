@@ -26,7 +26,7 @@ type JuiDataLoaderProps = {
       range: IndexRange,
       prevRange: IndexRange,
       constraint: IndexConstraint,
-      delta?: Delta
+      delta?: Delta,
     ) => void;
   }) => JSX.Element | null | void;
 };
@@ -36,12 +36,12 @@ const JuiDataLoader = ({
   loadInitialData,
   loadMoreStrategy,
   loadMore,
-  children
+  children,
 }: JuiDataLoaderProps) => {
   const prevVisibleRangeTimeRef = useRef(Date.now());
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
-  const [loadingInitial, setLoadingInitial] = useState(false);
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
   const isMountedRef = useMountState();
@@ -51,20 +51,20 @@ const JuiDataLoader = ({
       up: {
         setLoading: setLoadingUp,
         load: (count: number) => loadMore(DIRECTION.UP, count),
-        onFailed: noop
+        onFailed: noop,
       },
       down: {
         setLoading: setLoadingDown,
         load: (count: number) => loadMore(DIRECTION.DOWN, count),
-        onFailed: noop
+        onFailed: noop,
       },
       initial: {
         setLoading: setLoadingInitial,
         load: () => loadInitialData(),
-        onFailed: setLoadingInitialFailed
-      }
+        onFailed: setLoadingInitialFailed,
+      },
     }),
-    [loadMore, loadMore, loadInitialData]
+    [loadMore, loadMore, loadInitialData],
   );
 
   const loadData = useCallback(
@@ -89,7 +89,7 @@ const JuiDataLoader = ({
 
       return success;
     }, 1000),
-    [getMap]
+    [getMap],
   );
 
   const handleScroll = useCallback(
@@ -97,7 +97,7 @@ const JuiDataLoader = ({
       visibleRange: Readonly<IndexRange>,
       prevVisibleRange: Readonly<IndexRange>,
       indexConstraint: IndexConstraint,
-      delta?: Delta
+      delta?: Delta,
     ) => {
       if (loading) {
         return;
@@ -108,7 +108,7 @@ const JuiDataLoader = ({
         delta,
         visibleRange,
         prevVisibleRange,
-        prevVisibleRangeTime: prevVisibleRangeTimeRef.current
+        prevVisibleRangeTime: prevVisibleRangeTimeRef.current,
       });
       prevVisibleRangeTimeRef.current = Date.now();
 
@@ -116,7 +116,7 @@ const JuiDataLoader = ({
         loadData(direction, count);
       }
     },
-    [loadData, loadMoreStrategy, loading]
+    [loadData, loadMoreStrategy, loading],
   );
 
   useEffect(() => {
@@ -136,7 +136,7 @@ const JuiDataLoader = ({
     loadingUp,
     loadingDown,
     loadingInitialFailed,
-    onScroll: handleScroll
+    onScroll: handleScroll,
   });
   return childrenElement || null;
 };

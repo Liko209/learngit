@@ -26,6 +26,7 @@ type Props = {
   id: number;
   width: number;
   height: number;
+  isShow: boolean;
 } & WithTranslation;
 
 type TriggerButtonProps = {
@@ -217,14 +218,14 @@ class RightRailComponent extends React.Component<Props> {
   };
 
   render() {
-    const { id, width } = this.props;
+    const { id, isShow } = this.props;
     if (!id) {
       return null;
     }
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
-        {width > 0 ? <RightShelfMemberList groupId={id} /> : null}
+        {isShow ? <RightShelfMemberList groupId={id} /> : null}
         {this._renderTabs()}
       </JuiRightShelf>
     );
