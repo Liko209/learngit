@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
 import { execQuery } from '../queryExecutor';
-import { DexieTester } from './Setup';
+// import { DexieTester } from './Setup';
 import {
   extractCollectionsToIds,
   extractCollectionsToFirstNames,
@@ -16,7 +16,6 @@ describe.skip('execQuery<IPerson>()', () => {
   let table: Dexie.Table<IPerson>;
 
   beforeAll(async () => {
-    DexieTester.setup();
     ({ table } = await setupDexie());
   });
 
@@ -30,7 +29,7 @@ describe.skip('execQuery<IPerson>()', () => {
     });
   });
 
-  describe.skip('reverse', () => {
+  describe('reverse', () => {
     it('should reverse the collection', async () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [{ name: 'reverse' }],
