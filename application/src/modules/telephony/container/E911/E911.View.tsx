@@ -20,6 +20,7 @@ import dialogContext from '@/containers/Dialog/DialogContext';
 import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
 import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';
 import { RuiCheckbox } from 'rcui/components/Checkbox';
+import { Loading } from 'jui/hoc/withLoading';
 
 import { E911ViewProps, Country, State, FieldItem, CheckBox } from './types';
 
@@ -171,12 +172,13 @@ class E911ViewComponent extends Component<Props> {
       value,
       disabled,
       fields,
+      loading,
     } = this.props;
 
     const { countryName, customerName } = value;
 
     return (
-      <>
+      <Loading loading={loading} alwaysComponentShow delay={100}>
         <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
           {t('telephony.e911.title')}
         </JuiDialogTitle>
@@ -245,7 +247,7 @@ class E911ViewComponent extends Component<Props> {
             {t('common.dialog.confirm')}
           </JuiButton>
         </JuiDialogActions>
-      </>
+      </Loading>
     );
   }
 }
