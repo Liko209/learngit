@@ -75,6 +75,7 @@ const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTU
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
+const CASE_FILTER = process.env.CASE_FILTER || configLoader.caseFilter;
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 const INIT_RESOLUTION = (process.env.INIT_RESOLUTION || process.env.MAX_RESOLUTION || '0x0').split('x').map(n => parseInt(n, 10));
 const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
@@ -117,7 +118,8 @@ const RUNNER_OPTS = {
   DISABLE_SCREENSHOT,
   TESTS_LOG,
   DEBUG_ON_FAIL,
-}
+  CASE_FILTER,
+};
 
 // beat dashboard configuration
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";

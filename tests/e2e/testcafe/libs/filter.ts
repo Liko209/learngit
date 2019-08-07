@@ -9,6 +9,7 @@ import * as assert from "assert";
 import { ITestMeta } from "../v2/models";
 import * as _ from "lodash";
 import * as fs from "fs";
+import { compileExpression } from "filtrex";
 
 type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any) => boolean;
 
@@ -83,16 +84,27 @@ export function parseFormalName(formalName: string): INameTags {
   return { tags, name: rest.trim() };
 }
 
-export function filterByTags(includeTags: string[], excludeTags: string[], testLog?: Set<string>): CaseFilter {
+
+export function filterByTags(includeTags: string[], excludeTags: string[], query?: string, testLog?: Set<string>): CaseFilter {
+  let compiledFilter = null;
+  try {
+    compiledFilter = compileExpression(query);
+  } catch (e) { }
+
   return (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any): boolean => {
     // ensure at least one test is selected, or else testcafe will throw errors
     if (caseName === 'dummy test') return true;
     // skip if the case has already passed
     if (testLog && testLog.has(JSON.stringify([fixtureName, caseName]))) return false;
-
-    let flag: boolean = true;
+    // get tags
     const nameTags = parseFormalName(caseName);
     const testMetaTags = getTagsFromMeta(testMeta);
+    // if query is existed, return query result
+    if (compiledFilter) {
+      return compiledFilter({ caseName: nameTags.name, fixtureName, fixturePath, testMeta, fixtureMeta, tags: [...nameTags.tags, ...testMetaTags]}) > 0;
+    }
+    // simple tag based filter
+    let flag: boolean = true;
     if (includeTags && includeTags.length > 0) {
       flag = flag && hasAtLeastOneTagInTargetLists(includeTags, nameTags.tags, testMetaTags);
     }
