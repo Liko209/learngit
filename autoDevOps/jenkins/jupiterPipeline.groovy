@@ -356,7 +356,7 @@ class BaseJob {
     // ssh utils
     String ssh(URI remoteUri, String cmd) {
         String sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${remoteUri.getPort()?: 22} ${remoteUri.getUserInfo()}@${remoteUri.getHost()}".toString()
-        jenkins.sh(returnStdout: true, script: "${sshCmd} \"${cmd}\"").trim()
+        jenkins.sh(returnStdout: true, script: "${sshCmd} \"${cmd.replaceAll('"', '\\\\"')}\"").trim()
     }
 
     void scp(String source, URI targetUri, String target) {
@@ -377,6 +377,12 @@ class BaseJob {
 
     void copyRemoteDir(URI remoteUri, String sourceDir, String targetDir) {
         ssh(remoteUri, "mkdir -p ${targetDir} && cp -rf ${sourceDir}/* ${targetDir}/".toString())
+    }
+
+    void createGzFiles(URI remoteUri, String dir) {
+        String gzipCmd =
+            """find . -type f -size +150c -name "*.woff" -o -name "*.woff2" -o -name "*.wasm" -o -name "*.css" -o -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.map" -o -name "*.svg"  -o -name "*.xml" | xargs -I{} bash -c 'gzip -1 < {} > {}.gz'"""
+        ssh(remoteUri, "cd ${dir} && ${gzipCmd}".toString())
     }
 
     void removeRemoteDir(URI remoteUri, String dir) {
@@ -722,10 +728,12 @@ class JupiterJob extends BaseJob {
             // and create copy to branch name based folder
             removeRemoteDir(context.deployUri, context.appLinkDir)
             copyRemoteDir(context.deployUri, context.appHeadHashDir, context.appLinkDir)
+            createGzFiles(context.deployUri, context.appLinkDir)
             // and update version info
             updateRemoteVersionInfo()
             // for stage build, also create link to stage folder
             if (context.isStageBuild) {
+                removeRemoteDir(context.deployUri, context.appStageLinkDir)
                 copyRemoteDir(context.deployUri, context.appLinkDir, context.appStageLinkDir)
             }
         }
