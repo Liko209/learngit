@@ -9,6 +9,34 @@ import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
 import i18nOptions from './i18nOptions';
 
+/**
+ * momentWhitelist: white list for moment
+ * momentWhitelist must synchronize with i18nWhitelist
+ */
+
+const whitelist = {
+  en: '',
+  'de-DE': 'de',
+  'en-AU': 'en-au',
+  'en-GB': 'en-gb',
+  'es-419': 'es-do',
+  'es-ES': 'es',
+  'fr-CA': 'fr-ca',
+  'fr-FR': 'fr',
+  'it-IT': 'it',
+  'ja-JP': 'ja',
+  'pt-BR': 'pt-br',
+  'zh-CN': 'zh-cn',
+  'zh-HK': 'zh-hk',
+  'zh-TW': 'zh-tw',
+};
+
+Object.keys(whitelist).map(v => {
+  const name = whitelist[v];
+  if (!name) return;
+  module.require(`moment/locale/${name}.js`);
+});
+
 const getVariationOfAOrAn = function(value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
@@ -51,6 +79,7 @@ const config: i18next.InitOptions = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
+  whitelist: Object.keys(whitelist),
   postProcess: ['pseudo'],
   nsSeparator: ':::',
   load: 'currentOnly',
