@@ -327,7 +327,7 @@ class BaseJob {
     def stage(Map args, Closure block) {
         assert args.name, 'stage name is required'
         String  name     = args.name
-        int     time  = (null == args.timeout) ? 600: args.timeout
+        int     time  = (null == args.timeout) ? 1200 : args.timeout
         Boolean activity = (null == args.activity) ? true: args.activity
         jenkins.timeout(time: time, activity: activity, unit: 'SECONDS') {
             try {
@@ -544,7 +544,7 @@ class JupiterJob extends BaseJob {
     void checkout() {
         // keep node_modules to speed up build process
         // keep a lock file to help us decide if we need to upgrade dependencies
-        jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
+        jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK} || true"
         jenkins.checkout ([
             $class: 'GitSCM',
             branches: [[name: "${context.gitlabSourceNamespace}/${context.gitlabSourceBranch}"]],
@@ -612,7 +612,7 @@ class JupiterJob extends BaseJob {
         String dependencyLock = jenkins.sh(returnStdout: true, script: '''git ls-files | grep -e package.json -e package-lock.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
         if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
             jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
-            return
+            // return
         }
         jenkins.sh "npm config set registry ${context.npmRegistry}"
         jenkins.sh 'npm run fixed:version pre || true'  // suppress error
@@ -639,9 +639,9 @@ class JupiterJob extends BaseJob {
         if (isSkipUnitTest) return
 
         if (jenkins.sh(returnStatus: true, script: 'which xvfb-run') > 0) {
-            jenkins.sh 'npm run test -- --coverage -w 2'
+            jenkins.sh 'npm run test -- --coverage'
         } else {
-            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage -w 2'
+            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage'
         }
 
         String reportName = 'Coverage'
