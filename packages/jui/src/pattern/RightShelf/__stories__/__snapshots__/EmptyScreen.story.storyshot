@@ -115,7 +115,7 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
   -ms-flex-align: center;
   align-items: center;
   box-sizing: border-box;
-  width: 268px;
+  width: 264px;
   padding: 80px 40px 0px;
   -webkit-align-items: flex-start;
   -webkit-box-align: flex-start;
