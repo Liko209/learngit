@@ -8,5 +8,6 @@ require('../jest/setup/thirdParty');
 
 afterAll(() => {
   setupTimer.tearDown();
+  delete window.logger;
   global.gc && global.gc();
 });

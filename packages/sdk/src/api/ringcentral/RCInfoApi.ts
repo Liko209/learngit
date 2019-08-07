@@ -53,7 +53,7 @@ class RCInfoApi extends Api {
     };
   }
   static requestRCAPIVersion() {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_VERSION,
     });
 
@@ -61,35 +61,35 @@ class RCInfoApi extends Api {
   }
 
   static requestRCClientInfo() {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_CLIENT_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<RCClientInfo>(query);
   }
 
   static requestRCAccountInfo() {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_ACCOUNT_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<RCAccountInfo>(query);
   }
 
   static requestRCExtensionInfo() {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_EXTENSION_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<RCExtensionInfo>(query);
   }
 
   static requestRCRolePermissions() {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_ROLE_PERMISSIONS,
     });
     return RCInfoApi.rcNetworkClient.http<RCRolePermissions>(query);
   }
 
   static getSpecialNumbers(request?: ISpecialServiceRequest) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_SPECIAL_SERVICE_NUMBER,
       params: request,
     });
@@ -102,7 +102,7 @@ class RCInfoApi extends Api {
     const localDataVersionWithQuote = `"${localDataVersion}"`;
     extraHeaders[REQUEST_HEADER_KEYS.ACCEPT] = CONTENT_TYPES.XML;
     extraHeaders[REQUEST_HEADER_KEYS.IF_NONE_MATCH] = localDataVersionWithQuote;
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_PHONE_PARSER_DATA,
       headers: extraHeaders,
     });
@@ -110,7 +110,7 @@ class RCInfoApi extends Api {
   }
 
   static getDialingPlan(request?: IDialingPlanRequest) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_DIALING_PLAN,
       params: request,
     });
@@ -118,7 +118,7 @@ class RCInfoApi extends Api {
   }
 
   static getCountryState(request?: IStateRequest) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_STATE_INFO,
       params: request,
     });
@@ -126,20 +126,20 @@ class RCInfoApi extends Api {
   }
 
   static getExtensionPhoneNumberList(request?: IPhoneNumberRequest) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_EXTENSION_PHONE_NUMBER,
       params: request,
     });
     return RCInfoApi.rcNetworkClient.http<IExtensionPhoneNumberList>(query);
   }
   static getExtensionCallerId() {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_EXTENSION_CALLER_ID,
     });
     return RCInfoApi.rcNetworkClient.http<IExtensionCallerId>(query);
   }
   static setExtensionCallerId(request: IExtensionCallerIdRequest) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_EXTENSION_CALLER_ID,
       method: NETWORK_METHOD.PUT,
       data: request,
@@ -148,14 +148,14 @@ class RCInfoApi extends Api {
   }
 
   static getAccountServiceInfo() {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_SERVICE_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
   }
 
   static getDeviceInfo(request: IDeviceRequest) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_DEVICE_INFO,
       params: request,
       priority: REQUEST_PRIORITY.HIGH,
@@ -164,7 +164,7 @@ class RCInfoApi extends Api {
   }
 
   static getForwardingNumbers(request?: IForwardingNumberRequest) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       path: RINGCENTRAL_API.API_FORWARDING_NUMBERS,
       params: request,
     });
@@ -174,7 +174,7 @@ class RCInfoApi extends Api {
   }
 
   static getBlockNumberList(params: GetBlockNumberListParams) {
-    const query = this._getInfoRequestParams({
+    const query = RCInfoApi._getInfoRequestParams({
       params,
       path: RINGCENTRAL_API.BLOCKED_NUMBER,
     });

@@ -40,6 +40,7 @@ beforeAll(() => {
 afterAll(() => {
   delete window.localStorage;
   delete window.sessionStorage;
+  delete window.logger;
   setupTimer.tearDown();
 
   process.off('unhandledRejection', log);
