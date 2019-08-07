@@ -28,11 +28,7 @@ import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
-import {
-  RTC_NETWORK_EVENT,
-  RTC_NETWORK_STATE,
-  RTC_SLEEP_MODE_EVENT,
-} from '../utils/types';
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
 import { randomBetween } from '../utils/utils';
 
 const LOG_TAG = 'RTCAccount';
