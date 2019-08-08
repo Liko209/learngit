@@ -1,7 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./telephony/CallSwitch.ts"
+      "./telephony/Answer.ts"
     ],
     "browsers": [
       "selenium:chrome"
