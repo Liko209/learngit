@@ -196,14 +196,10 @@ export class GroupFetchDataController {
     return [];
   }
 
-  async getMembersAndGuestIds(
-    groupId: number,
-    onlineFirst: boolean = true,
-    sortFunc?: (A: Person, B: Person) => number,
-  ) {
+  getMembersAndGuestIds(groupId: number, sortByPresence: boolean = true) {
     let memberIds: number[] = [];
     const guestIds: number[] = [];
-    const group = await this.entitySourceController.getEntityLocally(groupId);
+    const group = this.groupService.getSynchronously(groupId);
     if (group) {
       const personService = ServiceLoader.getInstance<PersonService>(
         ServiceConfig.PERSON_SERVICE,
@@ -214,7 +210,7 @@ export class GroupFetchDataController {
       );
       members = members.sort((lPerson: Person, rPerson: Person) => {
         let result = 0;
-        if (onlineFirst) {
+        if (sortByPresence) {
           const lPresence = presenceService.getSynchronously(lPerson.id);
           const rPresence = presenceService.getSynchronously(rPerson.id);
           if (
@@ -232,13 +228,9 @@ export class GroupFetchDataController {
           }
         }
         if (!result) {
-          if (sortFunc) {
-            result = sortFunc(lPerson, rPerson);
-          } else {
-            const lName = personService.getFullName(lPerson).toLowerCase();
-            const rName = personService.getFullName(rPerson).toLowerCase();
-            result = lName < rName ? -1 : lName > rName ? 1 : 0;
-          }
+          const lName = personService.getFullName(lPerson).toLowerCase();
+          const rName = personService.getFullName(rPerson).toLowerCase();
+          result = lName < rName ? -1 : lName > rName ? 1 : 0;
         }
         return result;
       });
