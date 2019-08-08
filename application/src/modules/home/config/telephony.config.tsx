@@ -4,6 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import {
+  kDefaultPhoneTabPath,
+  ROUTE_ROOT_PATH,
+} from '@/modules/phone/container/LeftRail';
 import { PhoneUMI } from '@/modules/phone/container/PhoneUMI';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { SubModuleConfig } from '../types';
@@ -13,15 +17,15 @@ import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 const config: SubModuleConfig = {
   route: {
-    path: '/phone',
+    path: ROUTE_ROOT_PATH,
     component: lazyComponent({
-      loader: () => import(/*
-        webpackChunkName: "c.telephony" */ './lazy/Telephony'
-      ),
+      loader: () =>
+        import(/*
+        webpackChunkName: "c.telephony" */ './lazy/Telephony'),
     }),
   },
   nav: async () => ({
-    url: '/phone',
+    url: kDefaultPhoneTabPath,
     icon: 'leftNavPhone_border',
     Icon: (
       <JuiIconography iconColor={['grey', '900']}>
@@ -34,9 +38,9 @@ const config: SubModuleConfig = {
     placement: 'top',
     disable: !(await container.get(FeaturesFlagsService).canUseTelephony()),
   }),
-  moduleConfigLoader: () => import(/*
-    webpackChunkName: "m.telephony" */ '@/modules/telephony'
-  ),
+  moduleConfigLoader: () =>
+    import(/*
+    webpackChunkName: "m.telephony" */ '@/modules/telephony'),
 };
 
 export { config };
