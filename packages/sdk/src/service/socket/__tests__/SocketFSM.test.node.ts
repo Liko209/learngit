@@ -3,10 +3,11 @@
  * @Date: 2018-06-22 17:00:08
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../__tests__/types.d.ts" />
+// / <reference path="../../../__tests__/types.d.ts" />
 import { SocketFSM } from '../SocketFSM';
 import { mainLogger, SocketClient } from 'foundation';
 import SocketIO from '../__mocks__/socket';
+
 jest.mock('foundation');
 const mockLogger = {
   tags: jest.fn(),
@@ -223,7 +224,7 @@ describe('Socket FSM', () => {
       );
     });
 
-    it('Stop when connecting', () => {
+    it('Stop when connecting', (done: any) => {
       const fsm = fsmCreate();
       fsm.start();
       fsm.socketClient.socket.connect.mockResolvedValue(
@@ -234,8 +235,10 @@ describe('Socket FSM', () => {
           expect(fsm.state).toBe('disconnecting');
         })(),
       );
-
-      expect(fsm.socketClient).toBeNull();
+      setTimeout(() => {
+        expect(fsm.socketClient).toBeNull();
+        done();
+      });
 
       // fsm.socketClient.socket.disconnect.mockResolvedValue(
       //   (() => {
@@ -298,13 +301,13 @@ describe('Socket FSM', () => {
           expect(fsm.state).toBe('connecting');
           expect(fsm.state).not.toBe('disconnected');
           expect(fsm.isStateDisconnected()).toBeFalsy();
-          expect(spy1).toBeCalledTimes(0);
+          expect(spy1).toHaveBeenCalledTimes(0);
           expect(fsm.socketClient).not.toBeNull();
           expect(fsm.socketClient.socket).not.toBeNull();
           fsm.stopFSM();
           expect(fsm.glipPingPongStatusCallback).toBeUndefined();
           expect(fsm.stateHandler).toBeUndefined();
-          expect(spy1).toBeCalledTimes(1);
+          expect(spy1).toHaveBeenCalledTimes(1);
           spy1.mockReset();
           spy1.mockRestore();
           done();
@@ -328,7 +331,7 @@ describe('Socket FSM', () => {
           expect(fsm.isStateDisconnected()).toBeTruthy();
           expect(spy).toHaveBeenCalledTimes(0);
           fsm.stopFSM();
-          expect(spy1).toBeCalledTimes(1);
+          expect(spy1).toHaveBeenCalledTimes(1);
           expect(spy).toHaveBeenCalledTimes(0);
           spy.mockReset();
           spy.mockRestore();
