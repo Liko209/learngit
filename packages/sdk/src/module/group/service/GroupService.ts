@@ -34,7 +34,6 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
-import { Person } from 'sdk/module/person/entity';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
