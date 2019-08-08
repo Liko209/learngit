@@ -85,7 +85,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  }, true);
 
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
