@@ -52,16 +52,12 @@ function groupTransformFunc(data: Group): ISortableModel {
   } = data;
   return {
     id,
-    sortValue: Math.max(
+    sortValue: -Math.max(
       most_recent_post_created_at,
       created_at,
       __last_accessed_at,
     ),
   };
-}
-
-function groupSortFunc(lGroup: ISortableModel, rGroup: ISortableModel) {
-  return rGroup.sortValue - lGroup.sortValue;
 }
 
 class GroupDataProvider implements IFetchSortableDataProvider<Group> {
@@ -617,7 +613,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       {
         isMatchFunc: isMatchFun,
         transformFunc: groupTransformFunc,
-        sortFunc: groupSortFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
       },
@@ -654,7 +649,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
       transformFunc: groupTransformFunc,
-      sortFunc: groupSortFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
       offset: 0,
@@ -669,7 +663,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const limitSortableModel: ISortableModel = this._handlersMap[sectionType]
       .sortableListStore.items[this._maxLeftRailGroup - 1];
     return limitSortableModel
-      ? sortableModel.sortValue >= limitSortableModel.sortValue
+      ? sortableModel.sortValue <= limitSortableModel.sortValue
       : true;
   }
 
