@@ -196,11 +196,11 @@ export class GroupFetchDataController {
     return [];
   }
 
-  getMemberAndGuestIds(groupId: number, memberFetchCount: number, guestFetchCount: number, sortByPresence: boolean = true) {
+  async getMemberAndGuestIds(groupId: number, memberFetchCount: number, guestFetchCount: number, sortByPresence: boolean = true) {
     let realMemberIds: number[] = [];
     let guestIds: number[] = [];
     let optionalIds: number[] = [];
-    const group = this.groupService.getSynchronously(groupId);
+    const group = await this.entitySourceController.getEntityLocally(groupId);
     if (group) {
       const personService = ServiceLoader.getInstance<PersonService>(
         ServiceConfig.PERSON_SERVICE,
