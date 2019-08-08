@@ -147,13 +147,13 @@ class TelephonyCallController implements IRTCCallDelegate {
           call.record_state = RECORD_STATE.IDLE;
           call.connectTime = Date.now();
           call.session_id = this._rtcCall.getCallInfo().sessionId;
-          this._setSipData(call);
           break;
         case RTC_CALL_STATE.DISCONNECTED:
           call.call_state = CALL_STATE.DISCONNECTED;
           if (!call.disconnectTime) {
             call.disconnectTime = Date.now();
           }
+          this._setSipData(call);
           break;
         default:
           break;
