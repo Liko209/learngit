@@ -5,13 +5,13 @@ import { setupCase, teardownCase } from "../../../init";
 import { h, H } from "../../../v2/helpers";
 import { ITestMeta } from "../../../v2/models";
 import { AppRoot } from "../../../v2/page-models/AppRoot";
-import { addOneVoicemailFromAnotherUser, ensuredOneVoicemail } from "./utils";
+import { ensuredOneVoicemail } from "./utils";
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-
+// skip duo to <audio> id change format
 test.skip.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-2503'],
