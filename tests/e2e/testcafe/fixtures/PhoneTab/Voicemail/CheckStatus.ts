@@ -5,7 +5,7 @@ import { setupCase, teardownCase } from "../../../init";
 import { h, H } from "../../../v2/helpers";
 import { ITestMeta } from "../../../v2/models";
 import { AppRoot } from "../../../v2/page-models/AppRoot";
-import { addOneVoicemailFromAnotherUser } from "./utils";
+import { addOneVoicemailFromAnotherUser, ensuredOneVoicemail } from "./utils";
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -48,7 +48,7 @@ test.meta(<ITestMeta>{
     await voicemailPage.ensureLoaded();
   });
 
-  await addOneVoicemailFromAnotherUser(t, caller, callee, app);
+  await ensuredOneVoicemail(t, caller, callee, app);
 
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
   const itemId = await voicemailItem.id;
@@ -58,6 +58,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then the status is playing', async () => {
+    await t.hover(voicemailItem.self);
+    await t.expect(voicemailItem.playButton.exists).notOk();
+    await t.debug();
     await expectVoicemailItemInPlayStatus(t, voicemailItem);
     await expectVoicemailPlaying(t, itemId, app);
   });
