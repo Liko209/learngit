@@ -8,15 +8,26 @@ import { JuiDialogOpenTransition } from 'jui/components/Dialog';
 import { Dialog } from '@/containers/Dialog';
 import { IViewerService } from '../interface';
 import { FileViewerViewModel, FileViewerBuild } from '../FileViewerManager';
-import { ImageViewerOptions, VIEWER_ITEM_TYPE, ImageViewerViewModel } from '../ImageViewerManager';
+import {
+  ImageViewerOptions,
+  VIEWER_ITEM_TYPE,
+  ImageViewerViewModel,
+} from '../ImageViewerManager';
 import { ViewerView, LAYOUT } from '../container/ViewerView';
 import { ViewerTitleView } from '../common/Title.View';
 import { ViewerDocument } from '../FileViewerManager/ViewerContainer.View';
 
+import { ImageViewer } from '../ImageViewerManager/ViewerContainer';
+
 class ViewerService implements IViewerService {
   open = ({ itemId, groupId }: FileViewerBuild) => {
     const { dismiss } = Dialog.simple(
-      <ViewerView dataModule={new FileViewerViewModel(itemId, groupId, () => dismiss())} layout={LAYOUT['withSideBar']} TitleRenderer={ViewerTitleView} PageRenderer={ViewerDocument} />,
+      <ViewerView
+        dataModule={new FileViewerViewModel(itemId, groupId, () => dismiss())}
+        layout={LAYOUT['withSideBar']}
+        TitleRenderer={ViewerTitleView}
+        PageRenderer={ViewerDocument}
+      />,
       {
         fullScreen: true,
         hideBackdrop: true,
@@ -27,7 +38,13 @@ class ViewerService implements IViewerService {
     );
   };
 
-  showImageViewer = (groupId: number, imageId: number, initialOptions: ImageViewerOptions, mode?: string, postId?: number) => {
+  showImageViewer = (
+    groupId: number,
+    imageId: number,
+    initialOptions: ImageViewerOptions,
+    mode?: string,
+    postId?: number,
+  ) => {
     const { dismiss } = Dialog.simple(
       <ViewerView
         dataModule={
@@ -42,7 +59,7 @@ class ViewerService implements IViewerService {
         }
         layout={LAYOUT['withSideBar']}
         TitleRenderer={ViewerTitleView}
-        PageRenderer={ViewerDocument}
+        PageRenderer={ImageViewer}
       />,
       {
         fullScreen: true,

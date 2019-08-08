@@ -25,7 +25,7 @@ import {
 } from 'jui/components/Animation';
 import { JuiViewerSidebar, isSameScale } from 'jui/pattern/Viewer';
 import ViewerContext, { ViewerContextType } from './ViewerContext';
-import { IViewerView } from './interface';
+// import { IViewerView } from './interface';
 
 import { VIEWER_PERFORMANCE_KEYS } from '../../performanceKeys';
 import _ from 'lodash';
@@ -45,7 +45,7 @@ enum LAYOUT {
 }
 
 type ViewerViewType = {
-  dataModule: IViewerView;
+  dataModule: any;
   TitleRenderer: ComponentType<any>;
   PageRenderer: ComponentType<any>;
   layout?: LAYOUT;
