@@ -19,6 +19,7 @@ import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { notificationCenter, SERVICE } from 'sdk/service';
 import { SYNC_SOURCE } from '../../types';
 import { DaoGlobalConfig } from 'sdk/dao/config';
+import { progressManager } from 'sdk/utils/progress';
 
 jest.mock('../../config/SyncUserConfig');
 
@@ -30,6 +31,7 @@ jest.mock('../../../group');
 jest.mock('../../../post');
 jest.mock('../../../item/service');
 jest.mock('../../../../module/account/config/AccountGlobalConfig');
+jest.mock('sdk/utils/progress');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;
@@ -44,6 +46,14 @@ describe('SyncController ', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
+
+    progressManager.newProgressBar = jest.fn().mockImplementation(() => {
+      return {
+        start: () => {},
+        stop: () => {},
+      };
+    });
+
     syncController = new SyncController();
 
     groupConfigService = new GroupConfigService();

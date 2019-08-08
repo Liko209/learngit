@@ -21,7 +21,7 @@ import { RawPresence } from '../../presence/entity';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { progressManager } from '../../../utils/progress';
+import { progressManager } from 'sdk/utils/progress';
 import { CompanyService } from '../../company';
 import { Group, GroupService } from '../../group';
 import { ItemService } from '../../item/service';
@@ -631,23 +631,20 @@ class SyncController {
     }
   }
 
-  private async _traceLoginData(isSuccess: boolean){
+  private async _traceLoginData(isSuccess: boolean) {
     if (isSuccess) {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
 
-    dataCollectionHelper.traceLoginSuccess({
-      accountType:'glip',
-      userId: userConfig.getGlipUserId(),
-      companyId: userConfig.getCurrentCompanyId()
-    });
-  }else {
-    dataCollectionHelper.traceLoginFailed(
-      'glip',
-      'initial failed',
-    );
-  }
+      dataCollectionHelper.traceLoginSuccess({
+        accountType: 'glip',
+        userId: userConfig.getGlipUserId(),
+        companyId: userConfig.getCurrentCompanyId(),
+      });
+    } else {
+      dataCollectionHelper.traceLoginFailed('glip', 'initial failed');
+    }
   }
 
   /**
