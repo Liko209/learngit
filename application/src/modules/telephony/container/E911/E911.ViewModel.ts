@@ -197,7 +197,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   getFields(country: Country) {
     const { name, isoCode } = country;
     this.fields =
-      addressConfig[isoCode] || addressConfig[name] || addressConfig['default'];
+      addressConfig[name] || addressConfig[isoCode] || addressConfig['default'];
   }
 
   countryOnChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
