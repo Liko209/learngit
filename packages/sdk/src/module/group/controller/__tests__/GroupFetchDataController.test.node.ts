@@ -1405,7 +1405,7 @@ describe('GroupFetchDataController', () => {
           members: [123, 234, 345, 456, 567],
           guest_user_company_ids: [333, 444],
         });
-      personService.getPersonsByIds = jest.fn().mockResolvedValue([
+      personService.batchGetSynchronously = jest.fn().mockReturnValue([
         {
           id: 123,
           company_id: 666,

@@ -208,7 +208,7 @@ export class GroupFetchDataController {
       const personService = ServiceLoader.getInstance<PersonService>(
         ServiceConfig.PERSON_SERVICE,
       );
-      let members = await personService.getPersonsByIds(group.members);
+      let members = personService.batchGetSynchronously(group.members);
       const presenceService = ServiceLoader.getInstance<PresenceService>(
         ServiceConfig.PRESENCE_SERVICE,
       );
