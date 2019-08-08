@@ -66,6 +66,9 @@ function getErrorType(error: Error) {
   if (errorHelper.isNetworkConnectionError(error)) {
     return ERROR_TYPES.NETWORK;
   }
+  if (errorHelper.isLocalTimeoutError(error)) {
+    return ERROR_TYPES.NETWORK;
+  }
   if (errorHelper.isAuthenticationError(error)) {
     return ERROR_TYPES.NOT_AUTHORIZED;
   }

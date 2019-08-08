@@ -9,6 +9,10 @@ export const ERROR_CONDITIONS: {
     type: ERROR_TYPES.NETWORK,
     codes: [ERROR_CODES_NETWORK.NOT_NETWORK],
   },
+  LOCAL_TIMEOUT: {
+    type: ERROR_TYPES.NETWORK,
+    codes: [ERROR_CODES_NETWORK.LOCAL_TIMEOUT],
+  },
   NOT_AUTHORIZED: {
     type: ERROR_TYPES.SERVER,
     codes: [ERROR_CODES_SERVER.NOT_AUTHORIZED],
@@ -21,7 +25,10 @@ export const ERROR_CONDITIONS: {
     {
       type: ERROR_TYPES.NETWORK,
       codes: ['*'],
-      excludeCodes: [ERROR_CODES_NETWORK.NOT_NETWORK],
+      excludeCodes: [
+        ERROR_CODES_NETWORK.NOT_NETWORK,
+        ERROR_CODES_NETWORK.LOCAL_TIMEOUT,
+      ],
     },
   ],
 };
