@@ -7,7 +7,7 @@ import React from 'react';
 import {
   kDefaultPhoneTabPath,
   ROUTE_ROOT_PATH,
-} from '@/modules/phone/container/LeftRail';
+} from '@/modules/phone/container/LeftRail/constant';
 import { PhoneUMI } from '@/modules/phone/container/PhoneUMI';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { SubModuleConfig } from '../types';
