@@ -45,6 +45,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I click Phone entry of leftPanel,', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
   });
   const callHistoryEntry = app.homePage.phoneTab.callHistoryEntry;
   await h(t).withLog('Then I will see call history entry', async () => {
@@ -54,11 +59,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog('When I click call history entry', async () => {
     await callHistoryEntry.enter();
   });
-
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
 
   const callHistoryPage = app.homePage.phoneTab.callHistoryPage;
   await h(t).withLog('Then callHistory page should be open', async () => {
