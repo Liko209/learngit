@@ -84,6 +84,17 @@ class SortUtils {
 
     return 0;
   }
+
+  static heapSort<
+    T extends IdModel<IdType>,
+    IdType extends ModelIdType = number
+  >(data: T[], sortFunc: (lv: T, rv: T) => number, sortCount: number): T[] {
+    data;
+    sortFunc;
+    sortCount;
+    // todo: implement
+    return data;
+  }
 }
 
 export { SortUtils };
