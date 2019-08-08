@@ -9,30 +9,29 @@ import { Foundation, NetworkManager, mainLogger } from 'foundation';
 import Sdk from '../Sdk';
 import { Api, HandleByRingCentral, HandleByGlip } from '../api';
 import { daoManager } from '../dao';
-import { AccountManager, ServiceManager } from '../framework';
+import { ServiceManager, AccountManager } from '../framework';
 import notificationCenter from '../service/notificationCenter';
-import { SERVICE } from '../service';
-import { SyncService } from '../module/sync';
-import { AccountGlobalConfig } from '../module/account/config';
-import { AuthUserConfig } from '../module/account/config/AuthUserConfig';
-import { AccountUserConfig } from '../module/account/config/AccountUserConfig';
+import { SERVICE } from '../service/eventKey';
+import { SyncService } from '../module/sync/service/SyncService';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
-import { PermissionService } from 'sdk/module/permission';
+import { PermissionService } from 'sdk/module/permission/service/PermissionService';
 import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
-import { UserConfigService } from 'sdk/module/config/service/UserConfigService';
 
-jest.mock('../module/config');
-jest.mock('../module/account/config');
-jest.mock('../module/sync');
+import { UserConfigService } from 'sdk/module/config/service/UserConfigService';
+import { AccountGlobalConfig } from 'sdk/module/account/config/AccountGlobalConfig';
+
+jest.mock('../module/config/UserConfig');
+jest.mock('../module/config/GlobalConfig');
+jest.mock('../module/sync/service/SyncService');
 jest.mock('../dao');
 jest.mock('../api');
-jest.mock('../utils');
+jest.mock('../utils/phoneParser');
 jest.mock('../framework');
 jest.mock('../service/notificationCenter');
 jest.mock('foundation/src/analysis');
-
+jest.mock('foundation/network/NetworkManager');
 describe('Sdk', () => {
   let sdk: Sdk;
   let accountManager: AccountManager;
@@ -42,14 +41,20 @@ describe('Sdk', () => {
   let permissionService: PermissionService;
   const mockAccountService = {
     startLoginGlip: jest.fn(),
-    userConfig: AccountUserConfig.prototype,
-    authUserConfig: AuthUserConfig.prototype,
+    userConfig: {
+      getAccountType: jest.fn(),
+    },
+    authUserConfig: {
+      getRCToken: jest.fn(),
+      getGlipToken: jest.fn(),
+    },
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
+
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
     mainLogger.tags = jest.fn().mockReturnValue({ info: jest.fn() });
     accountManager = new AccountManager(null);
@@ -77,7 +82,6 @@ describe('Sdk', () => {
         success: true,
       });
       accountManager.on = jest.fn();
-
       await sdk.init({ api: {}, db: {} });
       expect(notificationCenter.on).toHaveBeenCalledTimes(1);
       expect(accountManager.on).toHaveBeenCalledTimes(4);
@@ -151,9 +155,9 @@ describe('Sdk', () => {
     });
     it('should notify rc login when account type is rc and isFirstLogin is false', async () => {
       syncService.syncData.mockImplementation(() => {});
-      AccountUserConfig.prototype.getAccountType = jest
-        .fn()
-        .mockReturnValue(ACCOUNT_TYPE_ENUM.RC);
+      mockAccountService.userConfig.getAccountType.mockReturnValue(
+        ACCOUNT_TYPE_ENUM.RC,
+      );
       await sdk.onAuthSuccess({
         isRCOnlyMode: false,
         isFirstLogin: false,
