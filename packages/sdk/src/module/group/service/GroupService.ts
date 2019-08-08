@@ -440,15 +440,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     );
   }
 
-  async getMembersAndGuestIds(
-    groupId: number,
-    onlineFirst: boolean = true,
-    sortFunc?: (lhs: Person, rhs: Person) => number,
-  ) {
+  async getMembersAndGuestIds(groupId: number, sortByPresence: boolean = true) {
     return this._groupFetchDataController.getMembersAndGuestIds(
       groupId,
-      onlineFirst,
-      sortFunc,
+      sortByPresence,
     );
   }
 }
