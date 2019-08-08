@@ -19,8 +19,8 @@ import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
 import { notificationCenter, SERVICE } from 'sdk/service';
 import {
-  RIGHT_SHELL_DEFAULT_WIDTH,
-  RIGHT_SHELL_MIN_WIDTH,
+  RIGHT_SHELF_DEFAULT_WIDTH,
+  RIGHT_SHELF_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 
 const GUEST_SECTION_HEIGHT = 95;
@@ -38,7 +38,7 @@ class RightShelfMemberListViewModel
   );
 
   @observable
-  private _wrapperWidth: number = RIGHT_SHELL_DEFAULT_WIDTH;
+  private _wrapperWidth: number = RIGHT_SHELF_DEFAULT_WIDTH;
 
   @observable
   isLoading: boolean = true;
@@ -230,7 +230,7 @@ class RightShelfMemberListViewModel
   @action
   setWrapperWidth = (width: number) => {
     this._wrapperWidth =
-      width < RIGHT_SHELL_MIN_WIDTH ? RIGHT_SHELL_MIN_WIDTH : width;
+      width < RIGHT_SHELF_MIN_WIDTH ? RIGHT_SHELF_MIN_WIDTH : width;
   };
 }
 
