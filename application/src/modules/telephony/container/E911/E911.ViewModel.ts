@@ -45,18 +45,6 @@ const ERROR_MAP = {
   [ERROR_CODES_RC.EME_205]: 'EME-205',
 };
 
-// if not network we should give a default country show text field
-const DEFAULT_COUNTRY = {
-  id: '1',
-  isoCode: 'US',
-  name: 'United States',
-  callingCode: '1',
-  emergencyCalling: false,
-  freeSoftphoneLine: true,
-  loginAllowed: true,
-  numberSelling: true,
-  signupAllowed: true,
-};
 
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
@@ -195,7 +183,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       this.saveStateOrCountry('country', currentCountry);
       this.getState(currentCountry);
     } else {
-      this.getFields(DEFAULT_COUNTRY);
+// if not network we should give a default country show text field
+      this.fields = addressConfig['default'];
     }
   }
 

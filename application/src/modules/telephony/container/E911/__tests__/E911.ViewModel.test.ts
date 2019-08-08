@@ -293,20 +293,35 @@ describe('E911ViewModel', () => {
     )
     async t3() {
       const vm = new E911ViewModel({});
-      const country = {
-        id: '1',
-        isoCode: 'US',
-        name: 'United States',
-        callingCode: '1',
-        emergencyCalling: false,
-        freeSoftphoneLine: true,
-        loginAllowed: true,
-        numberSelling: true,
-        signupAllowed: true,
-      };
+
       jest.spyOn(vm, 'getFields').mockImplementation();
       await vm.getCountryInfo();
-      expect(vm.getFields).toHaveBeenCalledWith(country);
+
+      expect(vm.fields).toEqual({
+        customerName: 'John Doe',
+        street: {
+          label: 'Street address',
+          ghostText: '120 1st St SW',
+        },
+        street2: {
+          label: 'Additional address',
+          ghostText: 'Suite 500 or Building A, Floor 3',
+          optional: true,
+        },
+        city: {
+          label: 'City',
+          ghostText: 'Alabaster',
+        },
+        state: {
+          label: 'State/Province',
+          ghostText: '',
+          optional: true,
+        },
+        zip: {
+          label: 'Zip code',
+          ghostText: '35007',
+        },
+      });
     }
   }
 
