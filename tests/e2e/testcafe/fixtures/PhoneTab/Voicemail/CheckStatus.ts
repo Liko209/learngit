@@ -12,7 +12,7 @@ fixture('Setting/EnterPoint')
   .afterEach(teardownCase());
 
 
-test.meta(<ITestMeta>{
+test.skip.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-2503'],
   maintainers: ['Travis.Xu'],
@@ -58,9 +58,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then the status is playing', async () => {
-    await t.hover(voicemailItem.self);
     await t.expect(voicemailItem.playButton.exists).notOk();
-    await t.debug();
     await expectVoicemailItemInPlayStatus(t, voicemailItem);
     await expectVoicemailPlaying(t, itemId, app);
   });
