@@ -50,6 +50,7 @@ const JuiEditPhotoImageCanNotEdit = styled.div`
 
 const JuiEditPhotoImageEditContent = styled.div`
   position: relative;
+  z-index: 2;
   && div {
     overflow: visible;
     border-radius: 50%;
@@ -67,7 +68,7 @@ const JuiEditPhotoContentMask = styled.div`
   width: ${spacing(70)};
   border-radius: 50%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 10;
 `;
 
 const JuiEditPhotoSliderContent = styled.div`
@@ -78,6 +79,7 @@ const JuiEditPhotoSliderContent = styled.div`
   justify-content: center;
   > span {
     width: ${spacing(80)};
+    z-index: 10;
   }
 `;
 

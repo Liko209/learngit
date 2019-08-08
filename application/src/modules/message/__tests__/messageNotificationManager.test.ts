@@ -433,7 +433,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.group',
         translationArgs,
@@ -454,7 +454,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.group',
         translationArgs,
@@ -475,7 +475,7 @@ sfdasfasd`);
         datum,
         type,
       );
-      expect(i18n.default).toHaveBeenCalledTimes(2);
+      expect(i18n.default).toHaveBeenCalledTimes(3);
       expect(i18n.default).toHaveBeenCalledWith(
         'notification.mentioned',
         translationArgs,

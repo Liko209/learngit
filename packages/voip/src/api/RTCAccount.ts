@@ -237,6 +237,12 @@ class RTCAccount implements IRTCAccount {
     this._regManager.on(REGISTRATION_EVENT.SWITCH_BACK_PROXY_ACTION, () => {
       this._switchBackProxy();
     });
+    this._provManager.on(
+      RTC_PROV_EVENT.PROV_ARRIVE,
+      (newSipProv, oldSipProv) => {
+        this._delegate.onReceiveSipProv(newSipProv, oldSipProv);
+      },
+    );
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
       this._delegate.onReceiveNewProvFlags(info.sipFlags);

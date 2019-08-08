@@ -5,18 +5,40 @@
  */
 
 import _ from 'lodash';
-import { IApiContract, IRequestResponse, IApiPath } from '../types';
-import { createResponse } from '../mocks/server/utils';
+import {
+  IApiContract,
+  IRequestResponse,
+  IApiPath,
+  ISocketInfo,
+} from '../types';
+import { IResponse } from 'foundation/network/network';
 
 import assert = require('assert');
 
-export function readJson<
+export function createResponse<T>(
+  partial: Partial<IResponse<T>>,
+): IResponse<T> {
+  return _.merge(
+    {
+      status: 200,
+      statusText: 'ok',
+      headers: {},
+      request: {},
+    } as IResponse<T>,
+    partial,
+  );
+}
+
+export function readApiJson<
   A extends IApiContract<any, any> = IApiContract<any, any>,
   ReqData = A extends IApiContract<infer B, any> ? B : any,
   ResData = A extends IApiContract<any, infer B> ? B : any
 >(json: IRequestResponse<ReqData, ResData>) {
   ['path', 'method', 'request', 'response'].forEach(k =>
-    assert(json[k], `json lack of property[${k}]`),
+    assert(
+      json && Object.prototype.hasOwnProperty.call(json, [k]),
+      `json lack of property[${k}]`,
+    ),
   );
   return json;
 }

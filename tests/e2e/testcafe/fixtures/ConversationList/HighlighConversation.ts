@@ -60,7 +60,6 @@ test.meta(<ITestMeta>{
   });
 });
 
-
 test.meta(<ITestMeta>{
   priority: ['p2'],
   caseIds: ['JPT-143'],
@@ -138,6 +137,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I Tap another app page (e.g. Tasks/Phone...) and then come back', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
+    await t.wait(2e3);
     await app.homePage.leftPanel.messagesEntry.enter();
   });
 

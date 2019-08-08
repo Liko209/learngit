@@ -7,11 +7,11 @@ import { test, testable } from 'shield';
 import { mockEntity, mockSingleEntity } from 'shield/application';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
-import { getHourMinuteSeconds } from '@/utils/date';
+import { getHourMinuteSeconds, DATE_FORMAT } from '@/utils/date';
 import { CallLogItemViewModel } from '../CallLogItem.ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { mockService } from 'shield/sdk';
-import { DATE_FORMAT } from '@/utils/date';
+import { container } from 'framework';
 
 jest.mock('@/utils/date');
 jest.mock('i18next', () => ({
@@ -26,6 +26,12 @@ jest.mock('i18next', () => ({
   isInitialized: true,
   t: (text: string) => text,
 }));
+
+beforeEach(() => {
+  const mockPhoneStore = {};
+
+  container.get = jest.fn().mockReturnValue(mockPhoneStore);
+});
 
 describe('CallLogItemViewModel', () => {
   @testable
@@ -275,28 +281,6 @@ describe('CallLogItemViewModel', () => {
         showCallInfo: false,
         dateFormat: DATE_FORMAT.short,
       });
-    }
-  }
-
-  @testable
-  class shouldShowCall {
-    @test('should be true if has call permission [JPT-2384]')
-    @mockService(RCInfoService, [
-      {
-        method: 'isRCFeaturePermissionEnabled',
-        data: true,
-      },
-      {
-        method: 'isVoipCallingAvailable',
-        data: false,
-      },
-    ])
-    @mockEntity({
-      attachments: [],
-    })
-    async t1() {
-      const vm = new CallLogItemViewModel({ id: 1 });
-      expect(await vm.shouldShowCall()).toBeFalsy();
     }
   }
 });

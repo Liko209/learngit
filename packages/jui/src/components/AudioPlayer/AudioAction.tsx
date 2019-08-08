@@ -3,8 +3,7 @@
  * @Date: 2019-07-22 16:30:00
  * Copyright © RingCentral. All rights reserved.
  */
-
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
 import { JuiIconButton } from '../Buttons';
@@ -51,10 +50,15 @@ const JuiAudioAction = ({
       />
     );
   }
+  const [deferRenderEffect, setDeferRenderEffect] = useState(true);
 
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onAction(status);
+  };
+
+  const onActiveRenderEffect = () => {
+    if (deferRenderEffect) setDeferRenderEffect(false);
   };
 
   return (
@@ -64,6 +68,10 @@ const JuiAudioAction = ({
       color={color}
       tooltipTitle={tooltip}
       ariaLabel={label}
+      onMouseEnter={onActiveRenderEffect}
+      onFocus={onActiveRenderEffect}
+      disableToolTip={deferRenderEffect}
+      disableTouchRipple={deferRenderEffect}
     >
       {iconTitle}
     </StyledIconButton>

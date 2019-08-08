@@ -16,8 +16,9 @@ import {
 import { ImageCard } from 'jui/pattern/ConversationCard/Files/style';
 import { config } from '@/modules/viewer/module.config';
 import * as Viewer from '@/modules/viewer/container/Viewer';
-import { ViewerService } from '@/modules/viewer/service';
 import { VIEWER_SERVICE } from '@/modules/viewer/interface';
+
+jest.mock('styled-components', () => require('./styled-components'));
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

@@ -14,7 +14,7 @@ exports[`Storyshots Forms/Slider Base slider: Forms/Slider Base slider 1`] = `
     }
   }
 >
-   
+
   <div
     className="c0"
   >
@@ -95,7 +95,7 @@ exports[`Storyshots Forms/Slider Discrete slider: Forms/Slider Discrete slider 1
     }
   }
 >
-   
+
   <div
     className="c0"
   >
@@ -185,7 +185,7 @@ exports[`Storyshots Forms/Slider With field: Forms/Slider With field 1`] = `
     }
   }
 >
-   
+
   <div
     className="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-4 MuiGrid-align-items-xs-center"
   >
@@ -273,29 +273,12 @@ exports[`Storyshots Forms/Slider With field: Forms/Slider With field 1`] = `
         className="MuiFormControl-root MuiTextField-root"
         style={
           Object {
-            "width": "2em",
+            "left": "10%",
           }
         }
-      >
-        <div
-          className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl"
-          onClick={[Function]}
-        >
-          <input
-            aria-invalid={false}
-            className="MuiInputBase-input MuiInput-input"
-            disabled={false}
-            onBlur={[Function]}
-            onChange={[Function]}
-            onFocus={[Function]}
-            readOnly={true}
-            required={false}
-            type="text"
-            value={10}
-          />
-        </div>
-      </div>
-    </div>
+        tabIndex={0}
+      />
+    </span>
   </div>
 </div>
 `;

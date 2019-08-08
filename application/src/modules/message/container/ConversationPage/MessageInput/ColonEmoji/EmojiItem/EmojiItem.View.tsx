@@ -14,7 +14,7 @@ import { JuiMentionPanelSectionItem } from 'jui/pattern/MessageInput/Mention/Men
 @observer
 class EmojiItemView extends Component<EmojiItemViewProps> {
   render() {
-    const { currentIndex, selectHandler, index, id } = this.props;
+    const { currentIndex, selectHandler, index, id, displayId } = this.props;
 
     return (
       <JuiMentionPanelSectionItem
@@ -26,7 +26,7 @@ class EmojiItemView extends Component<EmojiItemViewProps> {
             backgroundImageFn={backgroundImageFn}
           />
         }
-        displayName={` :${id}: ` || ''}
+        displayName={` :${displayId}: ` || ''}
         selected={currentIndex === index}
         selectHandler={selectHandler(index)}
       />

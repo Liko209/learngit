@@ -16,17 +16,19 @@ type JuiSizeDetectorProps = {
   handleSizeChanged: (size: Size) => void;
 };
 
+const DEFAULT_SOURCES = [document.body];
+
 const JuiSizeDetector = ({
-  sources,
+  sources = DEFAULT_SOURCES,
   handleSizeChanged,
 }: JuiSizeDetectorProps) => {
-  const targets = sources ? sources : [document.body];
   const updateSize = (entries: ResizeObserverEntry[]) => {
     const { width, height } = entries[0].contentRect;
     handleSizeChanged({ width, height });
   };
+
   useEffect(() => {
-    let disposers: ResizeObserver[] | undefined = targets.map(
+    let disposers: ResizeObserver[] | undefined = sources.map(
       (target: HTMLElement) => {
         const observer = new ResizeObserver(updateSize);
         observer.observe(target);
@@ -39,7 +41,7 @@ const JuiSizeDetector = ({
       );
       disposers = undefined;
     };
-  }, []);
+  }, [sources]);
   return <></>;
 };
 

@@ -327,7 +327,7 @@ class BaseJob {
     def stage(Map args, Closure block) {
         assert args.name, 'stage name is required'
         String  name     = args.name
-        int     time  = (null == args.timeout) ? 600: args.timeout
+        int     time  = (null == args.timeout) ? 1200 : args.timeout
         Boolean activity = (null == args.activity) ? true: args.activity
         jenkins.timeout(time: time, activity: activity, unit: 'SECONDS') {
             try {
@@ -356,7 +356,7 @@ class BaseJob {
     // ssh utils
     String ssh(URI remoteUri, String cmd) {
         String sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${remoteUri.getPort()?: 22} ${remoteUri.getUserInfo()}@${remoteUri.getHost()}".toString()
-        jenkins.sh(returnStdout: true, script: "${sshCmd} \"${cmd}\"").trim()
+        jenkins.sh(returnStdout: true, script: "${sshCmd} \"${cmd.replaceAll('"', '\\\\"')}\"").trim()
     }
 
     void scp(String source, URI targetUri, String target) {
@@ -377,6 +377,12 @@ class BaseJob {
 
     void copyRemoteDir(URI remoteUri, String sourceDir, String targetDir) {
         ssh(remoteUri, "mkdir -p ${targetDir} && cp -rf ${sourceDir}/* ${targetDir}/".toString())
+    }
+
+    void createGzFiles(URI remoteUri, String dir) {
+        String gzipCmd =
+            """find . -type f -size +150c \\( -name "*.wasm" -o -name "*.css" -o -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.map" -o -name "*.svg"  -o -name "*.xml" \\) | xargs -I{} bash -c 'gzip -1 < {} > {}.gz'"""
+        ssh(remoteUri, "cd ${dir} && ${gzipCmd}".toString())
     }
 
     void removeRemoteDir(URI remoteUri, String dir) {
@@ -544,7 +550,7 @@ class JupiterJob extends BaseJob {
     void checkout() {
         // keep node_modules to speed up build process
         // keep a lock file to help us decide if we need to upgrade dependencies
-        jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
+        jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK} || true"
         jenkins.checkout ([
             $class: 'GitSCM',
             branches: [[name: "${context.gitlabSourceNamespace}/${context.gitlabSourceBranch}"]],
@@ -612,7 +618,7 @@ class JupiterJob extends BaseJob {
         String dependencyLock = jenkins.sh(returnStdout: true, script: '''git ls-files | grep -e package.json -e package-lock.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
         if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
             jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
-            return
+            // return
         }
         jenkins.sh "npm config set registry ${context.npmRegistry}"
         jenkins.sh 'npm run fixed:version pre || true'  // suppress error
@@ -639,9 +645,9 @@ class JupiterJob extends BaseJob {
         if (isSkipUnitTest) return
 
         if (jenkins.sh(returnStatus: true, script: 'which xvfb-run') > 0) {
-            jenkins.sh 'npm run test -- --coverage -w 2'
+            jenkins.sh 'npm run test -- --coverage'
         } else {
-            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage -w 2'
+            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage'
         }
 
         String reportName = 'Coverage'
@@ -722,10 +728,12 @@ class JupiterJob extends BaseJob {
             // and create copy to branch name based folder
             removeRemoteDir(context.deployUri, context.appLinkDir)
             copyRemoteDir(context.deployUri, context.appHeadHashDir, context.appLinkDir)
+            createGzFiles(context.deployUri, context.appLinkDir)
             // and update version info
             updateRemoteVersionInfo()
             // for stage build, also create link to stage folder
             if (context.isStageBuild) {
+                removeRemoteDir(context.deployUri, context.appStageLinkDir)
                 copyRemoteDir(context.deployUri, context.appLinkDir, context.appStageLinkDir)
             }
         }

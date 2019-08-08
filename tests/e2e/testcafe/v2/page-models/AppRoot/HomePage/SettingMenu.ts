@@ -18,6 +18,14 @@ export class SettingMenu extends BaseWebComponent {
     return this.getSelectorByAutomationId('viewYourProfile', this.self);
   }
 
+  get dropMenuEditProfile() {
+    return this.getSelectorByAutomationId('dropMenuEditProfile');
+  }
+
+  async clickDropMenuEditProfile() {
+    await this.t.click(this.dropMenuEditProfile);
+  }
+
   async clickEditYourProfile() {
     await this.t.click(this.editProfileButton);
   }

@@ -10,11 +10,6 @@ import _ from 'lodash';
 import { mainLogger } from 'sdk';
 import { ModelIdType } from 'sdk/framework/model';
 
-// const defaultSortFunc: ISortFunc<ISortableModel> = (
-//   first: ISortableModel,
-//   second: ISortableModel,
-// ) => first.sortValue - second.sortValue;
-
 export class SortableListStore<
   IdType extends ModelIdType = number,
   SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
@@ -39,14 +34,15 @@ export class SortableListStore<
         _.isEqualWith(
           unionAndSortIds,
           this._items,
-          (objValue: ISortableModel, otherValue: ISortableModel) => objValue.id === otherValue.id,
+          (objValue: ISortableModel, otherValue: ISortableModel) =>
+            objValue.id === otherValue.id
         )
       ) {
         mainLogger.debug(
           'SortableListStore',
           `updated items.size=${
             unionAndSortIds.length
-          }, is same with original items`,
+          }, is same with original items`
         );
         return;
       }

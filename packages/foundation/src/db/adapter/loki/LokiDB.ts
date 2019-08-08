@@ -15,7 +15,7 @@ import {
 } from '../../db';
 
 class LokiDB implements IDatabase {
-  private db: Loki;
+  db: Loki;
   private opened: boolean;
   constructor(schema: ISchema) {
     this.db = new Loki(schema.name);

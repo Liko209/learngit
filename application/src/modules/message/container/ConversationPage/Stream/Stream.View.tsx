@@ -5,7 +5,6 @@
  */
 import _ from 'lodash';
 import React, { Component, RefObject, createRef, cloneElement } from 'react';
-import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
 import { mainLogger, PerformanceTracer, dataAnalysis } from 'sdk';
@@ -68,7 +67,6 @@ class StreamViewComponent extends Component<Props> {
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
   > = React.createRef();
-  private _globalStore = storeManager.getGlobalStore();
   @observable private _historyViewed: boolean | null = null;
   private _timeout: NodeJS.Timeout | null;
   private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
@@ -117,7 +115,7 @@ class StreamViewComponent extends Component<Props> {
 
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
-        storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+        this._updateIgnoredStatus(false);
       }
     }
     const newPostAddedAtEnd =
@@ -329,15 +327,14 @@ class StreamViewComponent extends Component<Props> {
   @action
   handleMostRecentViewed = () => {
     if (document.hasFocus()) {
-      this.props.markAsRead();
       this.props.disableNewMessageSeparatorHandler();
-      this._setUmiDisplay(false);
+      this._updateIgnoredStatus(true);
     }
   };
 
   handleMostRecentHidden = () => {
     this.props.enableNewMessageSeparatorHandler();
-    this._setUmiDisplay(true);
+    this._updateIgnoredStatus(false);
   };
 
   findPost = (i: StreamItem) => i.type === StreamItemType.POST;
@@ -350,11 +347,11 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead, updateHistoryHandler } = this.props;
+    const { loadInitialPosts, updateHistoryHandler } = this.props;
     await loadInitialPosts();
     runInAction(() => {
       updateHistoryHandler();
-      markAsRead();
+      this._updateIgnoredStatus(true);
     });
     this._loadMoreStrategy.updatePreloadCount(this.props.historyUnreadCount);
     requestAnimationFrame(() => {
@@ -373,19 +370,17 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _focusHandler = () => {
-    const { markAsRead } = this.props;
     const atBottom =
       this._listRef.current && this._listRef.current.isAtBottom();
     if (atBottom) {
-      markAsRead();
       this.props.disableNewMessageSeparatorHandler();
-      this._setUmiDisplay(false);
+      this._updateIgnoredStatus(true);
     }
   };
 
   private _blurHandler = () => {
     this.props.enableNewMessageSeparatorHandler();
-    this._setUmiDisplay(true);
+    this._updateIgnoredStatus(false);
   };
   private _renderNewMessagesDivider() {
     const { t } = this.props;
@@ -439,9 +434,8 @@ class StreamViewComponent extends Component<Props> {
       refresh();
     }
   }
-
-  private _setUmiDisplay(value: boolean) {
-    this._globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, value);
+  private _updateIgnoredStatus(isIgnored: boolean) {
+    this.props.updateIgnoredStatus(isIgnored);
   }
 
   render() {

@@ -147,6 +147,7 @@ class EditProfileViewComponent extends Component<
         cancelText={t('common.dialog.cancel')}
         modalProps={{
           'data-test-automation-id': 'EditProfile',
+          scroll: 'body',
         }}
       >
         <JuiEditProfileContent>

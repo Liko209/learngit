@@ -8,7 +8,7 @@ import {
   IZipItemProvider,
   ZipItem,
   ZipItemLevel,
-} from 'sdk/service/uploadLogControl/types';
+} from 'sdk/module/log/types';
 
 export class ElectronZipItemProvider implements IZipItemProvider {
   level: ZipItemLevel = ZipItemLevel.NORMAL;

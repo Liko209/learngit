@@ -26,7 +26,6 @@ import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation';
 import { PostDataController } from '../../PostDataController';
 import { GroupService } from 'sdk/module/group/service';
-
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
 
