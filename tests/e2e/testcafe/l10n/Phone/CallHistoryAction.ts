@@ -4,7 +4,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { ensuredOneCallLog } from '../../fixtures/PhoneTab/CallHistory/utils';
+import { ensuredOneMissCallLog } from '../../fixtures/PhoneTab/CallHistory/utils';
 
 fixture('Phone/CallHistoryAction')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -26,23 +26,27 @@ fixture('Phone/CallHistoryAction')
     const callHistoryPage = app.homePage.phoneTab.callHistoryPage;
     const telephoneDialog = app.homePage.telephonyDialog;
 
-    await h(t).withLog('When I click Phone entry of leftPanel and click call history entry', async () => {
+    await h(t).withLog('When I click Phone entry of leftPanel', async () => {
       await app.homePage.leftPanel.phoneEntry.enter();
-      await app.homePage.phoneTab.callHistoryEntry.enter();
     });
 
     await h(t).withLog('And minimize phone dialog',async()=>{
       if (await telephoneDialog.exists) {
-        await telephoneDialog.clickMinimizeButton()
+        await app.homePage.closeE911Prompt()
+        await telephoneDialog.clickMinimizeButton();
       }
     })
+
+    await h(t).withLog('And click call history entry', async () => {
+      await app.homePage.phoneTab.callHistoryEntry.enter();
+    });
 
     await h(t).withLog('Then call history page should be open', async () => {
       await callHistoryPage.ensureLoaded();
     });
 
     await h(t).withLog('When there\'s a call log' ,async()=>{
-      await ensuredOneCallLog(t, guestUser, loginUser, app);
+      await ensuredOneMissCallLog(t, guestUser, loginUser, app);
     })
 
     const callHistoryItem = callHistoryPage.callHistoryItemByNth(0);
