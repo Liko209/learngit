@@ -898,11 +898,11 @@ describe('RTCAccount', () => {
 
   describe('refreshProv', () => {
     const cause = 'connection error';
-    const response = { status_code: 401 };
+    const response = { statusCode: 401 };
     it('Should not call refreshProv api if error code is not 401/403/407 when register failed [JPT-1182]', done => {
       setupAccount();
       jest.spyOn(account, '_refreshProv');
-      ua.mockSignal(UA_EVENT.REG_FAILED, { status_code: 402 }, cause);
+      ua.mockSignal(UA_EVENT.REG_FAILED, { statusCode: 402 }, cause);
       setImmediate(() => {
         expect(account._refreshProv).not.toHaveBeenCalled();
         done();

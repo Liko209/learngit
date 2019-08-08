@@ -245,11 +245,11 @@ class RTCRegistrationManager extends EventEmitter2
   private _onUARegFailed(response?: any) {
     if (
       response &&
-      response.status_code &&
-      (REGISTRATION_ERROR_CODE.FORBIDDEN === response.status_code ||
-        REGISTRATION_ERROR_CODE.UNAUTHORIZED === response.status_code ||
+      response.statusCode &&
+      (REGISTRATION_ERROR_CODE.FORBIDDEN === response.statusCode ||
+        REGISTRATION_ERROR_CODE.UNAUTHORIZED === response.statusCode ||
         REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED ===
-          response.status_code)
+          response.statusCode)
     ) {
       this.emit(REGISTRATION_EVENT.REFRESH_PROV);
     }
