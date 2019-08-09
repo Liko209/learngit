@@ -2137,11 +2137,15 @@ describe('RTC call', () => {
       expect(call._hangupInvalidCallTimer).not.toEqual(null);
     });
 
-    it('should clear timer when session receive response 183 event [JPT-987]', done => {
+    it('should clear timer and set sip session info into callInfo when session receive response 183 event [JPT-987], [JPT-2711]', done => {
       setup();
       expect(call._hangupInvalidCallTimer).not.toBeNull();
-      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { status_code: 183 });
+      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { statusCode: 183 });
       setImmediate(() => {
+        const callInfo = call.getCallInfo()
+        expect(callInfo.callId).toBe('100');
+        expect(callInfo.fromTag).toBe('200');
+        expect(callInfo.toTag).toBe('300');
         expect(call._hangupInvalidCallTimer).toBeNull();
         done();
       });
@@ -2150,8 +2154,12 @@ describe('RTC call', () => {
     it('should not clear timer when session receive response is not 183 event', done => {
       setup();
       expect(call._hangupInvalidCallTimer).not.toBeNull();
-      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { status_code: 100 });
+      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { statusCode: 100 });
       setImmediate(() => {
+        const callInfo = call.getCallInfo()
+        expect(callInfo.callId).toBe(undefined);
+        expect(callInfo.fromTag).toBe(undefined);
+        expect(callInfo.toTag).toBe(undefined);
         expect(call._hangupInvalidCallTimer).not.toBeNull();
         done();
       });

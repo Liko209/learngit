@@ -72,11 +72,13 @@ describe('E911ViewModel', () => {
     };
   }
 
-  function mockRCInfoServiceMethods({
-    stateList = {},
-    countryList = [],
-    currentCountry = {},
-  } = {}) {
+  function mockRCInfoServiceMethods(
+    {
+      stateList = {} as any,
+      countryList = [] as any,
+      currentCountry = {} as any,
+    } = {} as any,
+  ) {
     return [
       {
         method: 'getStateList',
@@ -255,52 +257,26 @@ describe('E911ViewModel', () => {
         countryName: 'countryName',
       }),
     )
-    @mockService(
-      RCInfoService,
-      mockRCInfoServiceMethods({
-        countryList: [
-          {
-            id: 1,
-            name: 'countryName',
-          },
-        ],
-      }),
-    )
+    @mockService(RCInfoService, mockRCInfoServiceMethods({}))
     async t1() {
       const vm = new E911ViewModel({});
+      const country = {
+        id: 1,
+        name: 'countryName',
+      };
+      vm.countryList = [country];
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       jest.spyOn(vm, 'getState').mockImplementation();
       jest.spyOn(vm, 'getFields');
       await vm.getCountryInfo();
-      expect(vm.countryList).toEqual([
-        {
-          id: 1,
-          name: 'countryName',
-        },
-      ]);
       expect(vm.getFields).toHaveBeenCalled();
-      expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', {
-        id: 1,
-        name: 'countryName',
-      });
-      expect(vm.getState).toHaveBeenCalledWith({
-        id: 1,
-        name: 'countryName',
-      });
+      expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', country);
+      expect(vm.getState).toHaveBeenCalledWith(country);
     }
 
     @test('should be save with current country if not countryName in value')
     @mockEntity(createUserInfo())
     @mockService(RCInfoService, [
-      {
-        method: 'getAllCountryList',
-        data: [
-          {
-            id: 1,
-            name: 'countryName',
-          },
-        ],
-      },
       {
         method: 'getCurrentCountry',
         data: {
@@ -311,17 +287,105 @@ describe('E911ViewModel', () => {
     ])
     async t2() {
       const vm = new E911ViewModel({});
+      const country = {
+        id: 2,
+        name: 'currentCountry',
+      };
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       jest.spyOn(vm, 'getState').mockImplementation();
       await vm.getCountryInfo();
-      expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', {
-        id: 2,
-        name: 'currentCountry',
+      expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', country);
+      expect(vm.getState).toHaveBeenCalledWith(country);
+    }
+
+    @test('should be save with default country if not match country list')
+    @mockEntity(createUserInfo())
+    @mockService(
+      RCInfoService,
+      mockRCInfoServiceMethods({
+        currentCountry: false,
+      }),
+    )
+    async t3() {
+      const vm = new E911ViewModel({});
+
+      jest.spyOn(vm, 'getFields').mockImplementation();
+      await vm.getCountryInfo();
+
+      expect(vm.fields).toEqual({
+        customerName: 'John Doe',
+        street: {
+          label: 'Street address',
+          ghostText: '120 1st St SW',
+        },
+        street2: {
+          label: 'Additional address',
+          ghostText: 'Suite 500 or Building A, Floor 3',
+          optional: true,
+        },
+        city: {
+          label: 'City',
+          ghostText: 'Alabaster',
+        },
+        state: {
+          label: 'State/Province',
+          ghostText: '',
+          optional: true,
+        },
+        zip: {
+          label: 'Zip code',
+          ghostText: '35007',
+        },
       });
-      expect(vm.getState).toHaveBeenCalledWith({
-        id: 2,
-        name: 'currentCountry',
-      });
+    }
+  }
+
+  @testable
+  class getCountryList {
+    @test('should return undefined if country list length > 0')
+    @mockEntity(createUserInfo())
+    @mockService(
+      RCInfoService,
+      mockRCInfoServiceMethods({
+        countryList: [
+          {
+            id: 1,
+            name: 'countryList',
+          },
+        ],
+      }),
+    )
+    async t1() {
+      const vm = new E911ViewModel({});
+      vm.countryList = [1];
+      const ret = await vm.getCountryList();
+      expect(ret).toBeUndefined();
+    }
+
+    @test('should get country list if country list === 0')
+    @mockEntity(createUserInfo())
+    @mockService(
+      RCInfoService,
+      mockRCInfoServiceMethods({
+        countryList: [
+          {
+            id: 1,
+            name: 'countryList',
+          },
+        ],
+      }),
+    )
+    async t2() {
+      const vm = new E911ViewModel({});
+      jest.spyOn(vm, 'getCountryInfo').mockImplementation();
+      await vm.getCountryList();
+      expect(vm.countryList).toEqual([
+        {
+          id: 1,
+          name: 'countryList',
+        },
+      ]);
+      expect(vm.getCountryInfo).toHaveBeenCalled();
     }
   }
 

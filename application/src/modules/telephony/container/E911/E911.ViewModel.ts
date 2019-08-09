@@ -45,6 +45,7 @@ const ERROR_MAP = {
   [ERROR_CODES_RC.EME_205]: 'EME-205',
 };
 
+
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
 const DEFAULT_FIELDS = {
@@ -74,9 +75,9 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
 
   @observable value: E911SettingInfo = DEFAULT_FIELDS;
 
-  @observable fields: FieldsConfig = {
-    customerName: '',
-  };
+  // if not network we should give a default country show text field
+  // or waiting fetch data
+  @observable fields: FieldsConfig = addressConfig['default'];
 
   @observable loading: boolean = false;
 
@@ -84,10 +85,11 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     super(props);
     this.reaction(
       () => this.settingItemEntity.value,
-      (value: E911SettingInfo, reaction: IReactionPublic) => {
+      async (value: E911SettingInfo, reaction: IReactionPublic) => {
         if (value) {
           const cloneValue = { ...value };
           this.value = cloneValue;
+          await this.getCountryList();
           this.getCountryInfo();
           this.getRegion();
           reaction.dispose();
@@ -167,11 +169,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @action
   async getCountryInfo() {
     let currentCountry;
-    const countryList = await this.rcInfoService.getAllCountryList();
     const { countryName } = this.value;
-
-    this.countryList = countryList;
-
     // if enter setting page directly
     // countryName has exist in setting model
     if (countryName) {
@@ -189,6 +187,20 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     }
   }
 
+  @catchError.flash({
+    network: 'telephony.e911.prompt.networkError',
+    server: 'telephony.e911.prompt.backendError',
+  })
+  @action
+  getCountryList = async () => {
+    if (this.countryList.length > 0) {
+      return;
+    }
+    const countryList = await this.rcInfoService.getAllCountryList();
+    this.countryList = countryList;
+    await this.getCountryInfo();
+  };
+
   @computed
   get shouldShowSelectState() {
     const { country, countryName } = this.value;
@@ -199,7 +211,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   getFields(country: Country) {
     const { name, isoCode } = country;
     this.fields =
-      addressConfig[isoCode] || addressConfig[name] || addressConfig['default'];
+      addressConfig[name] || addressConfig[isoCode] || addressConfig['default'];
   }
 
   countryOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
