@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogUploadConsumer } from '../LogUploadConsumer';
-import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { logEntityFactory } from 'foundation/log/__tests__/factory';
 import { persistentLogFactory } from '../persistent/__tests__/LogPersistent.test.node';
 import { ILogUploader } from '../uploader/types';
 import { LogMemoryPersistent, ILogPersistent } from '../persistent';

@@ -31,6 +31,7 @@ type E911ViewProps = E911Props & {
   fields: FieldsConfig;
   shouldShowSelectState: boolean;
   closeE911: (status: boolean) => void;
+  loading: boolean;
 };
 
 type CheckBox = {
