@@ -13,13 +13,13 @@ enum ZIP_LEVEL {
   HEIGH = 9,
 }
 
-async function zip(zipItems: ZipItem[]) {
+export async function zip(zipItems: ZipItem[]) {
   const zip = new JSZip();
   const nameMap = new Map<string, number>();
   zipItems.forEach(zipItem => {
     if (nameMap.has(zipItem.name)) {
       nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
-      const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)! + 1}${
+      const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)!}${
         zipItem.type
       }`;
       zipItem.folder

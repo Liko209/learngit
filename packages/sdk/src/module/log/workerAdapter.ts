@@ -16,10 +16,6 @@ type EventMessage<T> = {
   type: MessageType;
 };
 
-export function createWorker(Worker: { new (): Worker }) {
-  return new Worker();
-}
-
 export function workerClientAdapter<T extends object>(worker: Worker): T {
   let index = 0;
   const proxy: any = new Proxy(

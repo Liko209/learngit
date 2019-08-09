@@ -32,8 +32,8 @@ describe('zip.worker', () => {
       expect(jsZip.file).toHaveBeenNthCalledWith(2, 'b.txt', 'content');
     });
     it('should add index when name duplicate', async () => {
-      const jsZip = new JSZip();
       jest.clearAllMocks();
+      const jsZip = new JSZip();
       jest.spyOn(jsZip, 'folder');
       const result = await zip([
         {
@@ -49,7 +49,7 @@ describe('zip.worker', () => {
           folder: 'zip',
         },
       ]);
-      expect(jsZip.folder).toBeCalledTimes(2);
+      expect(jsZip.folder).toHaveBeenCalledTimes(2);
       expect(jsZip.file).toHaveBeenNthCalledWith(1, 'a.txt', 'content');
       expect(jsZip.file).toHaveBeenNthCalledWith(2, 'a-2.txt', 'content');
     });
