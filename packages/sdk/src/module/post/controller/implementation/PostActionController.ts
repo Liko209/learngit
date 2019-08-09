@@ -176,14 +176,13 @@ class PostActionController implements IPostActionController {
 
   async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {
     const dao = daoManager.getDao(PostDao);
-    const promises = groupIds.map(id => dao.queryPostsByGroupId(id));
+    const promises = groupIds.map(id => dao.queryPostIdsByGroupId(id));
     const postsMap = await Promise.all(promises);
-    const posts = _.union(...postsMap);
-    const ids = posts.map(post => post.id);
-    mainLogger.tags(this.TAG).info(`deletePostsByGroupIds:${ids}`);
-    await dao.bulkDelete(ids);
+    const postIds = _.union(...postsMap);
+    mainLogger.tags(this.TAG).info(`deletePostsByGroupIds:${postIds}`);
+    await dao.bulkDelete(postIds);
     if (shouldNotify) {
-      notificationCenter.emitEntityDelete(ENTITY.POST, ids);
+      notificationCenter.emitEntityDelete(ENTITY.POST, postIds);
     }
   }
 

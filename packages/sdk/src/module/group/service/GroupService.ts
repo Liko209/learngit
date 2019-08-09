@@ -14,7 +14,6 @@ import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { ENTITY, SERVICE, SOCKET } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PERMISSION_ENUM } from '../constants';
-import { GroupConfigController } from '../controller/GroupConfigController';
 import { GroupController } from '../controller/GroupController';
 import {
   Group,
@@ -34,14 +33,14 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 import { Person } from 'sdk/module/person/entity';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
   groupController: GroupController;
-  groupConfigController: GroupConfigController;
   typingIndicatorController: TypingIndicatorController;
-  constructor() {
+  constructor(private _groupConfigService: IGroupConfigService) {
     super({ isSupportedCache: true }, daoManager.getDao(GroupDao), {
       basePath: '/team',
       networkClient: Api.glipNetworkClient,
@@ -86,13 +85,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       );
     }
     return this.groupController;
-  }
-
-  protected getGroupConfigController() {
-    if (!this.groupConfigController) {
-      this.groupConfigController = new GroupConfigController();
-    }
-    return this.groupConfigController;
   }
 
   protected getTypingIndicatorController() {
@@ -222,15 +214,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async hasMorePostInRemote(groupId: number) {
-    return this.getGroupConfigController().hasMorePostInRemote(groupId);
+    return this._groupConfigService.hasMorePostInRemote(groupId);
   }
 
   updateHasMore(groupId: number, direction: QUERY_DIRECTION, hasMore: boolean) {
-    return this.getGroupConfigController().updateHasMore(
-      groupId,
-      direction,
-      hasMore,
-    );
+    return this._groupConfigService.updateHasMore(groupId, direction, hasMore);
   }
 
   async archiveTeam(teamId: number) {
@@ -406,7 +394,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async deleteGroupsConfig(ids: number[]): Promise<void> {
-    await this.getGroupConfigController().deleteGroupsConfig(ids);
+    this._groupConfigService.deleteGroupsConfig(ids);
   }
 
   isIndividualGroup(group: Group) {

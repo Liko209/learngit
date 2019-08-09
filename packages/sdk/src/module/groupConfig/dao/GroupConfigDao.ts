@@ -14,25 +14,6 @@ class GroupConfigDao extends BaseDao<GroupConfig> {
     super(GroupConfigDao.COLLECTION_NAME, db);
   }
 
-  async hasMoreRemotePost(groupId: number) {
-    const result = await this.get(groupId);
-    let older = true;
-    let newer = true;
-    let both = true;
-    if (result) {
-      older =
-        result.has_more_older !== undefined ? result.has_more_older : true;
-      newer =
-        result.has_more_newer !== undefined ? result.has_more_newer : true;
-      both = older && older;
-    }
-    return {
-      older,
-      newer,
-      both,
-    };
-  }
-
   async isNewestSaved(groupId: number): Promise<boolean> {
     const result = await this.get(groupId);
     return !!(result && result.is_newest_saved);
