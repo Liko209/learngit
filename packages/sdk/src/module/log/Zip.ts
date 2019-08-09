@@ -1,4 +1,8 @@
-// import ZipWorker, { IZip } from './zip.worker';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-08-09 14:13:39
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { workerClientAdapter } from './workerAdapter';
 import { createWorker } from './utils';
 import { ZipItem, IZip } from './types';
