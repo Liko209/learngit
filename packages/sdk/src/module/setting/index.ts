@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { SettingModuleIds } from './constants';
 export { UserSettingEntity, ESettingValueType } from './entity';
 export { SettingService } from './service';
 export * from './moduleSetting';

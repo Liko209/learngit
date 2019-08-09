@@ -10,7 +10,7 @@ import { StateDao } from '../../dao';
 import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
-import { TASK_DATA_TYPE } from '../../constants';
+import { TASK_DATA_TYPE, GROUP_STATE_KEY, GROUP_KEY } from '../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
@@ -21,17 +21,50 @@ import { StateService } from '../../service';
 import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { StateActionController } from './StateActionController';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 const LOG_TAG = 'StateDataHandleController';
+const GROUP_STATE_KEYS = [
+  GROUP_STATE_KEY.deactivated_post_cursor,
+  GROUP_STATE_KEY.group_missed_calls_count,
+  GROUP_STATE_KEY.group_tasks_count,
+  GROUP_STATE_KEY.last_read_through,
+  GROUP_STATE_KEY.unread_mentions_count,
+  GROUP_STATE_KEY.read_through,
+  GROUP_STATE_KEY.marked_as_unread,
+  GROUP_STATE_KEY.post_cursor,
+  GROUP_STATE_KEY.previous_post_cursor,
+  GROUP_STATE_KEY.unread_deactivated_count,
+  GROUP_STATE_KEY.team_mention_cursor,
+  // 'unread_count', this field is generated in new UMI implementation
+];
+const STATE_REGEXP = new RegExp(`^(${GROUP_STATE_KEYS.join('|')}):(\\d+)`);
 
 class StateDataHandleController {
   private _taskArray: DataHandleTask[];
+  private _ignoredIdSet: Set<number>;
+
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
+    private _actionController: StateActionController,
   ) {
     this._taskArray = [];
+    this._ignoredIdSet = new Set<number>();
+  }
+
+  updateIgnoredStatus(ids: number[], isIgnored: boolean) {
+    if (isIgnored) {
+      ids.forEach((id: number) => {
+        if (!this._ignoredIdSet.has(id)) {
+          this._ignoredIdSet.add(id);
+          this._actionController.updateReadStatus(id, false, true);
+        }
+      });
+    } else {
+      ids.forEach(id => this._ignoredIdSet.delete(id));
+    }
   }
 
   async handleState(
@@ -113,7 +146,7 @@ class StateDataHandleController {
     }
 
     transformedState.groupStates = _.compact(
-      groups.map((group: Partial<State>) => {
+      groups.map((group: Partial<Group>) => {
         const groupId = group._id || group.id;
         if (!groupId) {
           return;
@@ -122,7 +155,7 @@ class StateDataHandleController {
         /* eslint-disable */
         Object.keys(group).forEach((key: string) => {
           switch (key) {
-            case '__trigger_ids': {
+            case GROUP_KEY['__trigger_ids']: {
               const triggerIds = group[key];
               const userConfig = ServiceLoader.getInstance<AccountService>(
                 ServiceConfig.ACCOUNT_SERVICE,
@@ -137,16 +170,28 @@ class StateDataHandleController {
               }
               break;
             }
-            case 'post_cursor': {
+            case GROUP_KEY.post_cursor: {
               groupState.group_post_cursor = group[key];
               break;
             }
-            case 'post_drp_cursor': {
+            case GROUP_KEY.post_drp_cursor: {
               groupState.group_post_drp_cursor = group[key];
               break;
             }
-            case 'last_author_id': {
+            case GROUP_KEY.last_author_id: {
               groupState.last_author_id = group[key];
+              break;
+            }
+            case GROUP_KEY.team_mention_cursor_offset: {
+              groupState.team_mention_cursor_offset = group[key];
+              break;
+            }
+            case GROUP_KEY.team_mention_cursor: {
+              groupState.group_team_mention_cursor = group[key];
+              break;
+            }
+            case GROUP_KEY.removed_cursors_team_mention: {
+              groupState.removed_cursors_team_mention = group[key];
               break;
             }
           }
@@ -174,20 +219,7 @@ class StateDataHandleController {
           myState.id = state[key];
           return;
         }
-        const keys = [
-          'deactivated_post_cursor',
-          'group_missed_calls_count',
-          'group_tasks_count',
-          'last_read_through',
-          'unread_mentions_count',
-          'read_through',
-          'marked_as_unread',
-          'post_cursor',
-          'previous_post_cursor',
-          'unread_deactivated_count',
-          // 'unread_count', this field is generated in new UMI implementation
-        ];
-        const matches = key.match(new RegExp(`(${keys.join('|')}):(\\d+)`));
+        const matches = key.match(STATE_REGEXP);
         if (matches) {
           const groupStateKey = matches[1];
           const groupId = matches[2];
@@ -265,6 +297,29 @@ class StateDataHandleController {
                 }`,
               );
             resultGroupState.unread_count = updateUnread;
+            stateChanged = true;
+          }
+          const updateTeamMentionUnread = this._calculateTeamMentionUnread(
+            resultGroupState,
+            transformedState.isSelf || false,
+            currentUserId,
+          );
+          if (
+            updateTeamMentionUnread !==
+            resultGroupState.unread_team_mentions_count
+          ) {
+            mainLogger
+              .tags(LOG_TAG)
+              .info(
+                `team mention umi:${
+                  resultGroupState.unread_team_mentions_count
+                }->${updateTeamMentionUnread}, id:${
+                  groupState.id
+                }, lastPoster:${resultGroupState.last_author_id}, mark:${
+                  resultGroupState.marked_as_unread
+                }`,
+              );
+            resultGroupState.unread_team_mentions_count = updateTeamMentionUnread;
             stateChanged = true;
           }
           return stateChanged ? resultGroupState : undefined;
@@ -398,35 +453,35 @@ class StateDataHandleController {
       return true;
     }
     if (
-      updateState.unread_deactivated_count !== undefined &&
-      updateState.unread_deactivated_count !==
-        localState.unread_deactivated_count
-    ) {
-      return true;
-    }
-    if (
-      updateState.unread_mentions_count !== undefined &&
-      updateState.unread_mentions_count !== localState.unread_mentions_count
-    ) {
-      return true;
-    }
-    if (
       updateState.read_through !== undefined &&
       updateState.read_through > (localState.read_through || 0)
     ) {
       return true;
     }
-    if (
-      updateState.marked_as_unread !== undefined &&
-      updateState.marked_as_unread !== localState.marked_as_unread
-    ) {
-      return true;
-    }
-    if (
-      updateState.last_author_id !== undefined &&
-      updateState.last_author_id !== localState.last_author_id
-    ) {
-      return true;
+    return this._containStateUpdate(updateState, localState, [
+      'unread_deactivated_count',
+      'unread_mentions_count',
+      'marked_as_unread',
+      'last_author_id',
+      'team_mention_cursor',
+      'team_mention_cursor_offset',
+      'group_team_mention_cursor',
+      'removed_cursors_team_mention',
+    ]);
+  }
+
+  private _containStateUpdate<T extends object, K extends keyof T>(
+    updateObj: T,
+    targetObj: T,
+    keys: K[],
+  ) {
+    for (const key of keys) {
+      if (
+        updateObj[key] !== undefined &&
+        !_.isEqual(updateObj[key], targetObj[key])
+      ) {
+        return true;
+      }
     }
     return false;
   }
@@ -443,6 +498,7 @@ class StateDataHandleController {
     ) {
       return 0;
     }
+
     const group_cursor =
       (finalState.group_post_cursor || 0) +
       (finalState.group_post_drp_cursor || 0);
@@ -450,6 +506,33 @@ class StateDataHandleController {
       (finalState.post_cursor || 0) +
       (finalState.unread_deactivated_count || 0);
     return Math.max(group_cursor - state_cursor, 0);
+  }
+
+  private _calculateTeamMentionUnread(
+    finalState: GroupState,
+    isSelf: boolean,
+    currentUserId: number,
+  ): number {
+    if (
+      isSelf ||
+      (finalState.last_author_id === currentUserId &&
+        finalState.marked_as_unread !== true)
+    ) {
+      return 0;
+    }
+    const {
+      team_mention_cursor = 0,
+      group_team_mention_cursor = 0,
+      team_mention_cursor_offset = 0,
+      removed_cursors_team_mention = [],
+    } = finalState;
+    const offset = Math.max(team_mention_cursor_offset, team_mention_cursor);
+    const removedUnreadCount = removed_cursors_team_mention.filter(index =>
+      index > offset ? 1 : 0,
+    ).length;
+    const unreadTeamMentionCount =
+      group_team_mention_cursor - offset - removedUnreadCount;
+    return unreadTeamMentionCount;
   }
 
   private async _updateEntitiesAndDoNotification(
@@ -468,7 +551,6 @@ class StateDataHandleController {
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);
       }
-      // if (Date.now() === 0) {
       if (changeMap) {
         changeMap.set(ENTITY.MY_STATE, {
           entities: [myState],
@@ -481,23 +563,34 @@ class StateDataHandleController {
           [myState],
         );
       }
-      // }
     }
     if (transformedState.groupStates.length > 0) {
       await this._entitySourceController.bulkUpdate(
         transformedState.groupStates,
       );
+
+      // should set umi = 0 when conversation is ignored
+      const GroupStatesForNotify = transformedState.groupStates.filter(
+        (groupState: GroupState) => {
+          if (this._ignoredIdSet.has(groupState.id)) {
+            this._actionController.updateReadStatus(groupState.id, false, true);
+            return false;
+          }
+          return true;
+        },
+      );
+
       if (shouldEmitNotification(source)) {
         if (changeMap) {
           changeMap.set(ENTITY.GROUP_STATE, {
-            entities: transformedState.groupStates,
-            partials: transformedState.groupStates,
+            entities: GroupStatesForNotify,
+            partials: GroupStatesForNotify,
           });
         } else {
           notificationCenter.emitEntityUpdate(
             ENTITY.GROUP_STATE,
-            transformedState.groupStates,
-            transformedState.groupStates,
+            GroupStatesForNotify,
+            GroupStatesForNotify,
           );
         }
       }

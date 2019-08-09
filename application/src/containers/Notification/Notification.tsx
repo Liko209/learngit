@@ -6,13 +6,14 @@
 import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
-import { observable, autorun } from 'mobx';
+import { observable, autorun, action } from 'mobx';
 import { ToastProps, ToastMessageAlign } from '../ToastWrapper/Toast/types';
 import { Omit } from 'jui/foundation/utils/typeHelper';
 
 type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
   dismissible?: boolean;
   autoHideDuration?: number;
+  onClose?: () => void;
 };
 
 const MAX_SHOW_COUNT = 3;
@@ -22,22 +23,25 @@ const notificationData = observable<ToastProps>([]);
 class Notification extends AbstractViewModel {
   static _buffer: NotificationProps[] = [];
 
+  @action
   private static _showNotification(props: NotificationProps) {
     if (notificationData.length === MAX_SHOW_COUNT) {
       Notification._buffer.push(props);
       return {};
     }
+    const { onClose, ...rest } = props;
     const duplicateIndex = notificationData.findIndex(
       ({ message }) => message === props.message,
     );
     const id = Date.now();
     const dismiss = () => {
-      _.remove(notificationData, item => item.id === id);
+      Notification._removeNotification(id);
+      onClose && onClose();
     };
     const toast = {
       id,
       dismiss,
-      ...props,
+      ...rest,
     };
     if (duplicateIndex >= 0) {
       notificationData.splice(duplicateIndex, 1, toast);
@@ -47,6 +51,11 @@ class Notification extends AbstractViewModel {
     return {
       dismiss,
     };
+  }
+
+  @action
+  private static _removeNotification(id: number) {
+    _.remove(notificationData, item => item.id === id);
   }
 
   static flashToast(props: NotificationProps) {

@@ -7,7 +7,7 @@ import * as Flatted from 'flatted';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
-import { h } from './v2/helpers';
+import { h, H } from './v2/helpers';
 import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
@@ -159,14 +159,17 @@ function writeTestLog(testLogFile: string, t: TestController) {
 export function setupCase(accountType: string, needDeleted: boolean = false) {
   return async (t: TestController) => {
     h(t).turnOnNetwork();
-    t['testRun']['startTime'] = new Date();
+    const testRun = t['testRun'];
+    accountType = testRun.test.meta.accountType || accountType;
+    testRun['startTime'] = new Date();
     t.ctx.runnerOpts = RUNNER_OPTS;
+
 
     h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
       accountPoolClient,
       accountType,
-      needDeleted
+      needDeleted,
     );
 
     await h(t).sdkHelper.setup(

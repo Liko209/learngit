@@ -5,9 +5,7 @@
  */
 import React from 'react';
 import { JuiDialog } from '../../components/Dialog/Dialog';
-import {
-  spacing, radius, width, height,
-} from '../../foundation/utils/styles';
+import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const StyledGlobalSearch = styled(JuiDialog)`
@@ -18,11 +16,13 @@ const StyledGlobalSearch = styled(JuiDialog)`
       margin: 0 auto;
       border-radius: ${radius('xl')};
       max-width: ${width(200)};
-      max-height: calc(100% - ${height(10)});
+      max-height: ${height(153)};
       /* should be <min-height in user story>, which is 400 */
       min-height: ${height(100)};
-      min-width: ${width(120)};
       overflow: hidden;
+      @media only screen and (max-width: 640px) {
+        height: auto;
+      }
     }
   }
   .container {
@@ -47,6 +47,7 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
       open={open}
       onClose={onClose}
       disablePortal
+      fixedAtTop
     >
       {children}
     </StyledGlobalSearch>

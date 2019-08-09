@@ -19,38 +19,59 @@ import {
   palette,
 } from '../../foundation/utils';
 
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = MuiMenuItemProps & { button?: any };
+
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
   avatar?: JSX.Element;
+  secondaryAction?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
-} & MuiMenuItemProps;
+  searchString?: string;
+  hasSecondaryAction?: boolean;
+} & MuiListItemPropsFixed;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   && {
+    min-width: unset;
     margin-right: ${spacing(2)};
     ${typography('subheading1')};
     color: ${grey('700')};
   }
 `;
+const FilteredMenuItem = React.forwardRef(
+  (
+    {
+      icon,
+      avatar,
+      maxWidth,
+      searchString,
+      hasSecondaryAction,
+      ...rest
+    }: JuiMenuItemProps,
+    ref,
+  ) => <MuiMenuItem ref={ref as any} {...rest} />,
+);
 
-const WrappedMenuItem = ({
-  icon,
-  avatar,
-  maxWidth,
-  ...rest
-}: JuiMenuItemProps) => <MuiMenuItem {...rest} />;
-
-const StyledMenuItem = styled(WrappedMenuItem)`
+const StyledMenuItem = styled(FilteredMenuItem)`
   && {
+    padding: ${({ hasSecondaryAction }) =>
+      spacing(1, hasSecondaryAction ? 0 : 4, 1, 4)};
     ${typography('caption1')};
     color: ${grey('700')};
     height: auto;
     min-height: ${height(8)};
     min-width: ${width(28)};
     max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
-    padding: ${spacing(1, 4)};
     box-sizing: border-box;
+    &[class*='MuiListItem-secondaryAction'][role='menuitem'] {
+      padding-right: ${spacing(12)};
+    }
+
+    &:focus {
+      background-color: ${palette('grey', '0', 0.12)};
+    }
 
     &:hover {
       background-color: ${palette('grey', '500', 1)};
@@ -58,46 +79,57 @@ const StyledMenuItem = styled(WrappedMenuItem)`
 
     &:active {
       background-color: ${palette('primary', 'main')};
-      color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+      color: ${({ theme }) =>
+        theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       ${StyledMuiListItemIcon} {
-        color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+        color: ${({ theme }) =>
+          theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       }
     }
   }
 `;
 
-class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
-  render() {
-    const {
-      icon,
-      children,
-      disabled,
-      avatar,
-      automationId,
-      maxWidth,
-      ...rest
-    } = this.props;
-    let iconElement: any;
-    if (typeof icon !== 'string') {
-      iconElement = icon;
-    } else {
-      iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
-    }
-    return (
-      <StyledMenuItem
-        tabIndex={0}
-        data-test-automation-id={automationId}
-        disabled={disabled}
-        data-disabled={disabled}
-        maxWidth={maxWidth}
-        {...rest}
-      >
-        {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
-        {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
-        {children}
-      </StyledMenuItem>
-    );
-  }
-}
+const JuiMenuItem = React.memo(
+  React.forwardRef(
+    (
+      {
+        icon,
+        children,
+        disabled,
+        avatar,
+        automationId,
+        maxWidth,
+        classes,
+        hasSecondaryAction,
+        ...rest
+      }: JuiMenuItemProps,
+      ref,
+    ) => {
+      let iconElement: any;
+      if (typeof icon !== 'string') {
+        iconElement = icon;
+      } else {
+        iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
+      }
 
-export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem };
+      return (
+        <StyledMenuItem
+          tabIndex={0}
+          data-test-automation-id={automationId}
+          disabled={disabled}
+          data-disabled={disabled}
+          maxWidth={maxWidth}
+          hasSecondaryAction={hasSecondaryAction}
+          ref={ref}
+          {...rest}
+        >
+          {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
+          {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
+          {children}
+        </StyledMenuItem>
+      );
+    },
+  ),
+);
+
+export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem, StyledMuiListItemIcon };

@@ -9,16 +9,9 @@ import { DEFAULT_TRACK_ID } from '@/interface/media';
 
 describe('TrackManager', () => {
   beforeEach(() => {
-    Object.defineProperty(HTMLMediaElement.prototype, 'load', {
-      get() {
-        return () => {};
-      },
-    });
-    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
-      get() {
-        return () => {};
-      },
-    });
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
   });
 
   afterEach(() => {
@@ -76,10 +69,12 @@ describe('TrackManager', () => {
       });
       expect(track1.volume).toEqual(1);
       expect(track2.volume).toEqual(1);
+      expect(trackManager.volume).toEqual(1);
 
       trackManager.setAllTrackVolume(newVolumeValue);
       expect(track1.masterVolume).toEqual(newVolumeValue);
       expect(track2.masterVolume).toEqual(newVolumeValue);
+      expect(trackManager.volume).toEqual(newVolumeValue);
     });
   });
   describe('setAllTrackOutputDevice()', () => {
@@ -100,6 +95,15 @@ describe('TrackManager', () => {
       expect(track2.outputDevices).toEqual(newDevices);
     });
   });
+  describe('updateAllOutputDevices()', () => {
+    it('should update all output devices', () => {
+      const newDevices = ['device1', 'device2'];
+      const trackManager = new TrackManager();
+
+      trackManager.updateAllOutputDevices(newDevices);
+      expect(trackManager.outputDevices).toEqual(newDevices);
+    })
+  })
   describe('dispose()', () => {
     it('should dispose all track and reset trackManager', () => {
       const trackManager = new TrackManager();

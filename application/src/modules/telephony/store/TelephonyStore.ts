@@ -5,9 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import {
-  observable, computed, action, reaction
-} from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
@@ -21,7 +19,8 @@ import {
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
 import {
-  ANONYMOUS,
+  ANONYMOUS_NAME,
+  ANONYMOUS_NUM,
   INCOMING_STATE,
   DIALING,
   INITIAL_REPLY_COUNTDOWN_TIME,
@@ -58,16 +57,10 @@ class TelephonyStore {
   uid?: number;
 
   @observable
-  phoneNumber?: string; // original phone number without parsed
-
-  @observable
   isContactMatched: boolean = false;
 
   @observable
-  id: number = 0;
-
-  @observable
-  callerName?: string;
+  id: number | undefined = undefined;
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -153,6 +146,10 @@ class TelephonyStore {
   @observable
   isExt: boolean = false;
 
+  // only exist one e911 dialog
+  @observable
+  hasShowE911: boolean = false;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -199,15 +196,6 @@ class TelephonyStore {
         }
       },
     );
-
-    reaction(
-      () => this.call && this.callState,
-      callState => {
-        if (callState === CALL_STATE.DISCONNECTED) {
-          this.end();
-        }
-      },
-    );
   }
 
   @computed
@@ -224,7 +212,7 @@ class TelephonyStore {
     if (this.person) {
       return this.person.userDisplayName;
     }
-    return this.callerName === ANONYMOUS || !this.callerName
+    return this.callerName === ANONYMOUS_NAME || !this.callerName
       ? ''
       : this.callerName;
   }
@@ -344,19 +332,23 @@ class TelephonyStore {
         this._history.delete(DIALING);
         break;
       default:
-        // this._history.delete(DIALING);
         break;
     }
 
     this.resetReply();
+    this.backIncoming();
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
-    this.callerName = undefined;
-    this.phoneNumber = undefined;
+
     this.isContactMatched = false;
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
+
+    // for TelephonyNotificationManger can get call disconnected state.
+    Promise.resolve().then(() => {
+      this.id = undefined;
+    });
   };
 
   @action
@@ -371,6 +363,7 @@ class TelephonyStore {
     this._openCallWindow();
   };
 
+  @action
   onDialerInputFocus = () => {
     this.dialerInputFocused = true;
   };
@@ -514,7 +507,8 @@ class TelephonyStore {
 
   @computed
   get call(): CallModel {
-    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, this.id);
+    const id = this.id || NaN;
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, id);
   }
 
   @computed
@@ -558,16 +552,18 @@ class TelephonyStore {
   }
 
   @computed
+  get activeCallDirection() {
+    return this.call && this.call.direction;
+  }
+
+  @computed
   get callDisconnected(): boolean {
     return this.callState === CALL_STATE.DISCONNECTED;
   }
 
   @computed
-  get callId() {
-    if (this.callDisconnected) {
-      return undefined;
-    }
-    return this.call.callId;
+  get uuid() {
+    return this.call.uuid;
   }
 
   // TODO: should change the prop's name since it's isomorphic to `CALL_DIRECTION`
@@ -614,6 +610,17 @@ class TelephonyStore {
     );
   }
 
+  @computed
+  get callerName() {
+    return this.isInbound ? this.call.fromName : this.call.toName;
+  }
+
+  @computed
+  get phoneNumber() {
+    const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
+    return phoneNumber !== ANONYMOUS_NUM ? phoneNumber : '';
+  }
+
   @action
   jumpToRecentCall = () => {
     this.isRecentCalls = true;
@@ -623,6 +630,11 @@ class TelephonyStore {
   backToDialer = () => {
     this.isRecentCalls = false;
   };
+
+  @action
+  switchE911Status = (status: boolean) => {
+    this.hasShowE911 = status;
+  }
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE };

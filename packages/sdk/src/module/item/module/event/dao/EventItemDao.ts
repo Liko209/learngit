@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import { SanitizedEventItem, EventItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
-import { IDatabase } from 'foundation/src/db';
+import { IDatabase } from 'foundation/db';
 
 class EventItemDao extends SubItemDao<SanitizedEventItem> {
   static COLLECTION_NAME = 'eventItem';

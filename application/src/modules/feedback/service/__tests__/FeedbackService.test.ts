@@ -6,19 +6,19 @@
 
 import * as filestack from 'filestack-js';
 import { FeedbackService } from '../FeedbackService';
-import { LogControlManager } from 'sdk/service/uploadLogControl/LogControlManager';
+import { LogControlManager } from 'sdk/module/log/LogControlManager';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../../FeedbackApi';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { DateFormatter, SessionManager } from 'sdk';
-import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import { ZipItemLevel } from 'sdk/module/log/types';
 
 jest.mock('@/utils/error');
 jest.mock('../../FeedbackApi');
 jest.mock('@sentry/browser');
-jest.mock('sdk/service/uploadLogControl/LogControlManager', () => {
+jest.mock('sdk/module/log/LogControlManager', () => {
   const mockLogMng = {
     getZipLog: jest.fn().mockReturnValue([]),
   };
@@ -49,6 +49,7 @@ jest.mock('jszip', () => {
 describe('FeedbackService', () => {
   beforeAll(() => {
     const mockAccountService = ({
+      isAccountReady: jest.fn().mockReturnValue(true),
       userConfig: {
         getGlipUserId: jest.fn().mockReturnValue(1),
       },
@@ -68,7 +69,7 @@ describe('FeedbackService', () => {
       const logControlManager = LogControlManager.instance();
       logControlManager.getZipLog.mockReturnValue(new Blob());
       await feedbackService.uploadRecentLogs();
-      expect(filestackClient.upload).toBeCalled();
+      expect(filestackClient.upload).toHaveBeenCalled();
     });
   });
   describe('sendFeedback()', () => {
@@ -83,7 +84,7 @@ describe('FeedbackService', () => {
         username: 'username',
       });
       await feedbackService.sendFeedback('message', 'comments');
-      expect(FeedbackApi.sendFeedback).toBeCalledWith({
+      expect(FeedbackApi.sendFeedback).toHaveBeenCalledWith({
         comments: 'comments',
         event_id: 'id',
         email: 'email',
@@ -100,7 +101,7 @@ describe('FeedbackService', () => {
         ZipItemLevel.DEBUG_ALL,
       );
       expect(zipBlob).toEqual(zipResult.zipBlob);
-      expect(LogControlManager.instance().getZipLog).toBeCalledWith(
+      expect(LogControlManager.instance().getZipLog).toHaveBeenCalledWith(
         ZipItemLevel.DEBUG_ALL,
       );
     });

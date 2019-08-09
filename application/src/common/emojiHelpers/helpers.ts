@@ -3,7 +3,6 @@
  * @Date: 2018-11-07 10:27:20
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import {
   mapEscape,
   mapUnescape,
@@ -23,10 +22,13 @@ type EmojiOne = {
 type MapData = {
   [index: string]: string | EmojiOne;
 };
-
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 const regExpEscape = new RegExp(Object.keys(mapEscape).join('|'), 'g');
 
-const regExpUnescape = new RegExp(Object.keys(mapUnescape).join('|'), 'g');
+const regExpUnescape = new RegExp(
+  `${Object.keys(mapUnescape).join('?|')}?`,
+  'g',
+);
 
 const regExpSpecial = new RegExp(
   Object.keys(mapSpecial)
@@ -35,15 +37,44 @@ const regExpSpecial = new RegExp(
   'g',
 );
 
+const isMatch = (
+  emojiUnified: string,
+  baseNativeString: string,
+  emojiNonQualified?: string,
+) => {
+  return (
+    emojiUnified.toLowerCase() === baseNativeString.toLowerCase() ||
+    (emojiNonQualified &&
+      emojiNonQualified.toLowerCase() === baseNativeString.toLowerCase())
+  );
+};
+const sanitize = (emoji: any, data: any) => {
+  let emojiData: any;
+  if (emoji.id) {
+    if (hasOwnProperty.call(data.aliases, emoji.id)) {
+      emoji.id = data.aliases[emoji.id];
+    }
+
+    if (hasOwnProperty.call(data.emojis, emoji.id)) {
+      emojiData = data.emojis[emoji.id];
+    }
+    if (emojiData) {
+      emojiData = emoji;
+    }
+  }
+  return emojiData;
+};
 const convertKeys = (mapData: MapData): MapData => {
   const map = {};
   for (const key in mapData) {
-    let _key = key;
-    // It is required after the Glipdown transformation, For example, < ' ...
-    // _key = _key.replace(regExpEscape, (match: string) => mapEscape[match]);
-    // Regular expressions need it, For example, / \ $ ( ) [ ] ^ ...
-    _key = _key.replace(regExpSpecial, (match: string) => mapSpecial[match]);
-    map[_key] = mapData[key];
+    if (hasOwnProperty.call(mapData, key)) {
+      let _key = key;
+      // It is required after the Glipdown transformation, For example, < ' ...
+      // _key = _key.replace(regExpEscape, (match: string) => mapEscape[match]);
+      // Regular expressions need it, For example, / \ $ ( ) [ ] ^ ...
+      _key = _key.replace(regExpSpecial, (match: string) => mapSpecial[match]);
+      map[_key] = mapData[key];
+    }
   }
   return map;
 };
@@ -88,10 +119,12 @@ const convertMapUnicode = convertKeys(mapUnicode);
 const mapUnicodeToShort = {};
 
 for (const key in mapEmojiOne) {
-  const arr = mapEmojiOne[key].unicode;
-  for (let i = 0, len = arr.length; i < len; i++) {
-    const unicode = arr[i];
-    mapUnicodeToShort[unicode] = key;
+  if (hasOwnProperty.call(mapEmojiOne, key)) {
+    const arr = mapEmojiOne[key].unicode;
+    for (let i = 0, len = arr.length; i < len; i++) {
+      const unicode = arr[i];
+      mapUnicodeToShort[unicode] = key;
+    }
   }
 }
 
@@ -112,22 +145,23 @@ const getEmojiDataFromUnicode = (nativeString: string, data: any) => {
 
   let emojiData;
   for (const id in data.emojis) {
-    const emoji = data.emojis[id];
+    if (hasOwnProperty.call(data.emojis, id)) {
+      const emoji = data.emojis[id];
 
-    let emojiUnified = emoji.unified;
+      let emojiUnified = emoji.unified;
+      const emojiNonQualified = emoji.non_qualified;
 
-    if (emoji.variations && emoji.variations.length) {
-      emojiUnified = emoji.variations.shift();
-    }
+      if (emoji.variations && emoji.variations.length) {
+        emojiUnified = emoji.variations.shift();
+      }
 
-    if (skin && emoji.skin_variations && emoji.skin_variations[skinCode]) {
-      emojiUnified = emoji.skin_variations[skinCode].unified;
-    }
+      if (skin && emoji.skin_variations && emoji.skin_variations[skinCode]) {
+        emojiUnified = emoji.skin_variations[skinCode].unified;
+      }
 
-    if (
-      emojiUnified.toLowerCase().indexOf(baseNativeString.toLowerCase()) > -1
-    ) {
-      emojiData = emoji;
+      if (isMatch(emojiUnified, baseNativeString, emojiNonQualified)) {
+        emojiData = emoji;
+      }
     }
   }
   if (!emojiData) {
@@ -137,23 +171,6 @@ const getEmojiDataFromUnicode = (nativeString: string, data: any) => {
 
   emojiData = sanitize(emojiData, data);
 
-  return emojiData;
-};
-
-const sanitize = (emoji: any, data: any) => {
-  let emojiData: any;
-  if (emoji.id) {
-    if (data.aliases.hasOwnProperty(emoji.id)) {
-      emoji.id = data.aliases[emoji.id];
-    }
-
-    if (data.emojis.hasOwnProperty(emoji.id)) {
-      emojiData = data.emojis[emoji.id];
-    }
-    if (emojiData) {
-      emojiData = emoji;
-    }
-  }
   return emojiData;
 };
 

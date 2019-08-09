@@ -37,11 +37,12 @@ class CallLogActionController {
       performanceTracer.trace({
         key: CALL_LOG_POST_PERFORMANCE_KEYS.DELETE_CALL_LOG_FROM_SERVER,
       });
+
+      await this._entitySourceController.bulkDelete(entityIds);
       notificationCenter.emitEntityUpdate<CallLog, string>(
         this._entitySourceController.getEntityNotificationKey(),
         callLogs,
       );
-      await this._entitySourceController.bulkDelete(entityIds);
     } catch (error) {
       mainLogger.tags(LOG_TAG).warn('failed to delete callLogs: ', entityIds);
       throw error;

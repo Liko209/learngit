@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-06-06 09:53:59
- * @Last Modified by: joy.zhang (joy.zhang@ringcentral.com)
- * @Last Modified time: 2019-07-05 16:03:24
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-07-17 13:02:55
  */
 
 import { BrandTire, SITE_URL } from '../../../../config';
@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../../../../init';
 import { h } from '../../../../v2/helpers';
 import { ITestMeta } from '../../../../v2/models';
 import { AppRoot } from '../../../../v2/page-models/AppRoot';
-import { ensuredOneCallLog } from '.././utils';
+import { ensuredOneMissCallLog } from '../utils';
 
 fixture('Phone/callHistory')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -40,6 +40,11 @@ test.meta(<ITestMeta>{
   const callHistoryPage = app.homePage.phoneTab.callHistoryPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click call log entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.callHistoryEntry.enter();
   });
 
@@ -47,12 +52,7 @@ test.meta(<ITestMeta>{
     await callHistoryPage.ensureLoaded();
   });
 
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
-
-  await ensuredOneCallLog(t, caller, callee, app);
+  await ensuredOneMissCallLog(t, caller, callee, app);
 
   const callHistoryItem = callHistoryPage.callHistoryItemByNth(0);
   const callHistoryId = await callHistoryItem.id;

@@ -6,6 +6,8 @@
 
 import { GlobalConfig } from '../../config';
 import { TELEPHONY_GLOBAL_KEYS } from './configKeys';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
+import { EmergencyServiceAddress, notificationCallback } from '../types';
 
 class TelephonyGlobalConfig extends GlobalConfig {
   static moduleName = 'telephony';
@@ -64,6 +66,32 @@ class TelephonyGlobalConfig extends GlobalConfig {
 
   static getUsedRingerHistory() {
     return this.get(TELEPHONY_GLOBAL_KEYS.USED_RINGER_HISTORY);
+  }
+
+  static setEmergencyAddress(value: EmergencyServiceAddress) {
+    this.put(
+      `${
+        TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS
+      }.${AccountGlobalConfig.getUserDictionary()}`,
+      value,
+    );
+  }
+
+  static getEmergencyAddress() {
+    return this.get(
+      `${
+        TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS
+      }.${AccountGlobalConfig.getUserDictionary()}`,
+    );
+  }
+
+  static onEmergencyAddressChange(listener: notificationCallback) {
+    this.on(
+      `${
+        TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS
+      }.${AccountGlobalConfig.getUserDictionary()}`,
+      listener,
+    );
   }
 }
 

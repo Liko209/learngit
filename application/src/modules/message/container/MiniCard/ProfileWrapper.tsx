@@ -4,47 +4,46 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, {
-  useEffect, useRef, SFC, memo,
-} from 'react';
+import React, { useEffect, useRef, SFC, memo } from 'react';
 import portalManager from '@/common/PortalManager';
-import { Profile, PROFILE_TYPE } from '../Profile';
+import { ProfileMiniCardPerson } from '../Profile/MiniCard/Person';
 
 type ProfileWrapperProps = {
   id: number;
   dismiss: () => void;
 };
 
-/* eslint-disable */
-const ProfileWrapper: SFC<ProfileWrapperProps> = memo(({ id, dismiss }) => {
-  const _ref = useRef<HTMLDivElement>(null);
+const ProfileWrapper: SFC<ProfileWrapperProps> = memo(
+  ({ id, dismiss }: ProfileWrapperProps) => {
+    const _ref = useRef<HTMLDivElement>(null);
 
-  const _clickEventHandler = (event: MouseEvent) => {
-    if (!_ref.current || !event.target) {
-      return;
-    }
+    const _clickEventHandler = (event: MouseEvent) => {
+      if (!_ref.current || !event.target) {
+        return;
+      }
 
-    const isClickOutSide =
-      !_ref.current.contains(event.target as HTMLElement) &&
-      _ref.current !== event.target;
+      const isClickOutSide =
+        !_ref.current.contains(event.target as HTMLElement) &&
+        _ref.current !== event.target;
 
-    if (isClickOutSide || portalManager.profilePortalShouldClose) {
-      dismiss();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('click', _clickEventHandler);
-    return () => {
-      document.removeEventListener('click', _clickEventHandler);
+      if (isClickOutSide || portalManager.profilePortalShouldClose) {
+        dismiss();
+      }
     };
-  }, []);
 
-  return (
-    <div ref={_ref}>
-      <Profile id={id} type={PROFILE_TYPE.MINI_CARD} />
-    </div>
-  );
-});
+    useEffect(() => {
+      document.addEventListener('click', _clickEventHandler);
+      return () => {
+        document.removeEventListener('click', _clickEventHandler);
+      };
+    }, []);
+
+    return (
+      <div ref={_ref}>
+        <ProfileMiniCardPerson id={id} />
+      </div>
+    );
+  },
+);
 
 export { ProfileWrapper };

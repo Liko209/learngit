@@ -28,11 +28,11 @@ class GroupConfigController {
       const partialModifyController = buildPartialModifyController<GroupConfig>(
         this.entitySourceController,
       );
-      await partialModifyController.updatePartially(
-        params.id,
-        () => params,
-        async (updatedModel: GroupConfig) => updatedModel,
-      );
+      await partialModifyController.updatePartially({
+        entityId: params.id,
+        preHandlePartialEntity: () => params,
+        doUpdateEntity: async (updatedModel: GroupConfig) => updatedModel,
+      });
       return true;
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
@@ -136,7 +136,9 @@ class GroupConfigController {
       );
 
       for (const post of posts) {
-        const groupConfig = groupConfigs.find(x => (x ? x.id === post.group_id : false));
+        const groupConfig = groupConfigs.find(x =>
+          x ? x.id === post.group_id : false,
+        );
         const lastPostTime =
           (groupConfig && groupConfig.my_last_post_time) || 0;
         if (post.created_at > lastPostTime) {

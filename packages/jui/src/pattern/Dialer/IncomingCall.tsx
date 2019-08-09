@@ -61,10 +61,13 @@ const StyledActionsContainer = styled('div')`
 `;
 
 class JuiIncomingCall extends PureComponent<Props> {
+  private _handleMouseDown(e: React.MouseEvent) {
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+  }
   render() {
-    const {
-      Ignore, Avatar, name, phone, Actions,
-    } = this.props;
+    const { Ignore, Avatar, name, phone, Actions } = this.props;
     return (
       <StyledIncomingCall>
         <StyledIgnoreContainer>
@@ -75,7 +78,7 @@ class JuiIncomingCall extends PureComponent<Props> {
           <StyledMarquee text={name} time={15} hoverToStop />
           {phone && <StyledPhone>{phone}</StyledPhone>}
         </StyledInfo>
-        <StyledActionsContainer>
+        <StyledActionsContainer onMouseDown={this._handleMouseDown}>
           {Actions &&
             Actions.map((Action: React.ComponentType) => (
               <Action key={Action.displayName} />

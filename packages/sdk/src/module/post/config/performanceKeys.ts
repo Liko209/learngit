@@ -12,4 +12,5 @@ export enum POST_PERFORMANCE_KEYS {
   CONVERSATION_FETCH_FROM_SERVER = 'conversation_fetch_from_server',
   CONVERSATION_FETCH_FROM_DB = 'conversation_fetch_from_db',
   CONVERSATION_FETCH_INTERVAL_POST = 'conversation_fetch_interval_post',
+  SEND_POST = 'send_post',
 }

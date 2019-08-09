@@ -10,7 +10,7 @@ import {
 } from './interface';
 import { AccountService } from '../../module/account/service';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
-/* eslint-disable */
+
 class FlagCalculator implements IFlagCalculator {
   featureConfig: IFeatureConfig;
   _flags: IFlag | {};
@@ -59,7 +59,7 @@ class FlagCalculator implements IFlagCalculator {
   getFlagValue(flags: IFlag, flagName: string): boolean {
     this._flags = flags;
     return !!this._pipeLiner(
-      props => true,
+      () => true,
       this._checkFeatureStatus.bind(this),
       this._isInBetaDomainList.bind(this),
       this._isInBetaEmailList.bind(this),
@@ -74,7 +74,7 @@ class FlagCalculator implements IFlagCalculator {
   }
 
   private _checkFeatureStatus(statusName: string, next: Next) {
-    if (this._flags.hasOwnProperty(statusName)) {
+    if (Object.prototype.hasOwnProperty.call(this._flags, statusName)) {
       return this._flags[statusName];
     }
     return next(statusName);

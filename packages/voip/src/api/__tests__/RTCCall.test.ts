@@ -15,7 +15,7 @@ import {
   RTCCallOptions,
   RTC_REPLY_MSG_PATTERN,
 } from '../types';
-import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
+import { WEBPHONE_SESSION_STATE, RC_REFER_EVENT} from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 import { RTCMediaStatsManager } from '../../signaling/RTCMediaStatsManager';
@@ -34,13 +34,23 @@ describe('RTC call', () => {
     public callAction: RTC_CALL_ACTION;
     public isReadyReturnValue: boolean = false;
     public toNum: string = '';
+    private _call: RTCCall | null = null;
 
     onCallStateChange(state: RTC_CALL_STATE): void {
       this.callState = state;
     }
 
+    setCall(call:RTCCall): void{
+      this._call = call;
+    }
+
+    getCallByUuid(uuid:string): RTCCall | null {
+      return this._call;
+    }
     onCallActionSuccess = jest.fn();
     onCallActionFailed = jest.fn();
+    notifyNoAudioDataEvent = jest.fn();
+    notifyNoAudioStateEvent = jest.fn();
 
     isReady(): boolean {
       return this.isReadyReturnValue;
@@ -66,6 +76,12 @@ describe('RTC call', () => {
         },
       ],
     };
+  }
+
+  class ReferClientContext extends EventEmitter2 {
+    constructor() {
+      super();
+    }
   }
 
   class SessionDescriptionHandler extends EventEmitter2 {
@@ -107,6 +123,7 @@ describe('RTC call', () => {
     public remoteIdentity: any;
     public mediaStreams: MediaStreams;
     public mediaStatsManager: RTCMediaStatsManager;
+    public _referClientContext:ReferClientContext;
     constructor() {
       super();
       this.remoteIdentity = {
@@ -116,6 +133,7 @@ describe('RTC call', () => {
       this.mediaStreams = new MediaStreams(this);
       this.sessionDescriptionHandler = new SessionDescriptionHandler();
       this.mediaStatsManager = new RTCMediaStatsManager();
+      this._referClientContext = new ReferClientContext();
     }
 
     emitSessionReinviteAccepted() {
@@ -124,6 +142,10 @@ describe('RTC call', () => {
 
     emitSessionReinviteFailed() {
       this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
+    }
+
+    getSession(){
+      return this;
     }
 
     request: MockRequest = new MockRequest();
@@ -145,6 +167,15 @@ describe('RTC call', () => {
     accept = jest.fn();
     reject = jest.fn();
     toVoicemail = jest.fn();
+    warmTransfer = jest.fn();
+
+    dialog = {
+      id: {
+        callId: '100',
+        remoteTag: '200',
+        localTag: '300',
+      }
+    }
 
     mockSignal(signal: string, response?: any): void {
       this.emit(signal, response);
@@ -847,6 +878,138 @@ describe('RTC call', () => {
           -1,
         );
         done();
+      });
+    });
+  });
+
+  describe('Warm Transfer call', () => {
+    it('should notify warm transfer failed when warm transfer but has not target call. [JPT-2542]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const sessionA = new MockSession();
+      const sessionB = new MockSession();
+      const callA = new RTCCall(false, '123', null, account, account);
+      const callB = new RTCCall(false, '123', null, account, account);
+      callA.setCallSession(sessionA);
+      callB.setCallSession(sessionB);
+      callA.onAccountReady();
+      sessionA.mockSignal('accepted');
+      callA.warmTransfer(callB.getCallInfo().uuid);
+      setImmediate(() => {
+        expect(callA.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        expect(account.getCallByUuid(callB.getCallInfo().uuid)).toBeNull();
+        expect(account.onCallActionFailed).toBeCalledWith(
+          RTC_CALL_ACTION.WARM_TRANSFER,
+          -1,
+        );
+        done();
+      });
+    });
+
+    it('should notify warm transfer failed when warm transfer but has not target session. [JPT-2542]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const sessionA = new MockSession();
+      const callA = new RTCCall(false, '123', null, account, account);
+      const callB = new RTCCall(false, '123', null, account, account);
+      callA.setCallSession(sessionA);
+      callA.onAccountReady();
+      sessionA.mockSignal('accepted');
+      account.setCall(callB);
+      callA.warmTransfer(callB.getCallInfo().uuid);
+      setImmediate(() => {
+        expect(callA.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        expect(callB.getCallSession()).toBeNull();
+        expect(account.onCallActionFailed).toBeCalledWith(
+          RTC_CALL_ACTION.WARM_TRANSFER,
+          -1,
+        );
+        done();
+      });
+    });
+
+    it('should notify warm transfer success when call webPhone warm transfer return success. [JPT-2548]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const sessionA = new MockSession();
+      const sessionB = new MockSession();
+      const callA = new RTCCall(false, '123', null, account, account);
+      const callB = new RTCCall(false, '123', null, account, account);
+      callA.setCallSession(sessionA);
+      callB.setCallSession(sessionB);
+      callA.onAccountReady();
+      sessionA.mockSignal('accepted');
+      account.setCall(callB);
+      jest.spyOn(sessionA, 'warmTransfer').mockResolvedValue(sessionA._referClientContext);
+      callA.warmTransfer(callB.getCallInfo().uuid);
+      setImmediate(() => {
+        setImmediate(() => {
+          sessionA._referClientContext.emit(RC_REFER_EVENT.REFER_REQUEST_ACCEPTED);
+          sessionA.mockSignal(WEBPHONE_SESSION_STATE.BYE);
+          setImmediate(() => {
+            expect(callA.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+            expect(sessionA.warmTransfer).toHaveBeenCalled();
+            expect(account.onCallActionSuccess).toBeCalledWith(
+              RTC_CALL_ACTION.WARM_TRANSFER,
+              {},
+            );
+            done();
+          });
+        });
+      });
+    });
+    it('should notify warm transfer failed when warm transfer receive rejected event. [JPT-2684]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const sessionA = new MockSession();
+      const sessionB = new MockSession();
+      const callA = new RTCCall(false, '123', null, account, account);
+      const callB = new RTCCall(false, '123', null, account, account);
+      callA.setCallSession(sessionA);
+      callB.setCallSession(sessionB);
+      callA.onAccountReady();
+      sessionA.mockSignal('accepted');
+      account.setCall(callB);
+      jest.spyOn(sessionA, 'warmTransfer').mockResolvedValue(sessionA._referClientContext);
+      callA.warmTransfer(callB.getCallInfo().uuid);
+      setImmediate(() => {
+        setImmediate(() => {
+          sessionA._referClientContext.emit(RC_REFER_EVENT.REFER_REQUEST_REJECTED);
+          sessionA.mockSignal(WEBPHONE_SESSION_STATE.BYE);
+          setImmediate(() => {
+            expect(callA.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+            expect(sessionA.warmTransfer).toHaveBeenCalled();
+            expect(account.onCallActionFailed).toBeCalledWith(
+              RTC_CALL_ACTION.WARM_TRANSFER,
+              -1,
+            );
+            done();
+          });
+        });
+      });
+    });
+    it('should notify warm transfer failed when warm transfer return failed. [JPT-2546]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const sessionA = new MockSession();
+      const sessionB = new MockSession();
+      const callA = new RTCCall(false, '123', null, account, account);
+      const callB = new RTCCall(false, '123', null, account, account);
+      callA.setCallSession(sessionA);
+      callB.setCallSession(sessionB);
+      callA.onAccountReady();
+      sessionA.mockSignal('accepted');
+      account.setCall(callB);
+      jest.spyOn(sessionA, 'warmTransfer').mockRejectedValue(null);
+      callA.warmTransfer(callB.getCallInfo().uuid);
+      setImmediate(() => {
+        setImmediate(() => {
+          sessionA.mockSignal(WEBPHONE_SESSION_STATE.BYE);
+          setImmediate(() => {
+            expect(callA.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+            expect(sessionA.warmTransfer).toHaveBeenCalled();
+            expect(account.onCallActionFailed).toBeCalledWith(
+              RTC_CALL_ACTION.WARM_TRANSFER,
+              -1,
+            );
+            done();
+          });
+        });
       });
     });
   });
@@ -2006,14 +2169,16 @@ describe('RTC call', () => {
       });
     });
 
-    it('should clear timer when enter connected state', done => {
+    it('should set call sip info into callInfo when call enter connected state [JPT-2555]', done => {
       setup();
-      expect(call._hangupInvalidCallTimer).not.toBeNull();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
-        expect(call._hangupInvalidCallTimer).toBeNull();
+        const callInfo = call.getCallInfo()
+        expect(callInfo.callId).toBe('100');
+        expect(callInfo.fromTag).toBe('200');
+        expect(callInfo.toTag).toBe('300');
         done();
       });
     });
@@ -2037,6 +2202,167 @@ describe('RTC call', () => {
           -1,
         );
         done();
+      });
+    });
+  });
+
+  describe('No Audio Report', () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      call.onAccountNotReady();
+      session = new MockSession();
+      call.setCallSession(session);
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+    }
+    it('should do nothing if call never enter connected state before call is terminated. [JPT-2507]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      setImmediate(() => {
+        call.hangup();
+        setImmediate(() => {
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('should do nothing if call connected less than 5 sec before call is terminated. [JPT-2508]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio with no-rtp-incoming if has sent but no received when call is terminated. [JPT-2509]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = true;
+        call._callSession._mediaStatsManager._hasReceivedPackages = false;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent.mock.calls[0][1]).toBe('no-rtp-incoming');
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio state success if has sent and has received when call is terminated. [JPT-2510]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = true;
+        call._callSession._mediaStatsManager._hasReceivedPackages = true;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio with no-rtp-outgoing if has no sent but has received when call is terminated. [JPT-2511]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = false;
+        call._callSession._mediaStatsManager._hasReceivedPackages = true;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent.mock.calls[0][1]).toBe('no-rtp-outgoing');
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio with no-rtp if has no sent and has no received when call is terminated. [JPT-2512]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = false;
+        call._callSession._mediaStatsManager._hasReceivedPackages = false;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent.mock.calls[0][1]).toBe('no-rtp');
+          done();
+        });
+      });
+    });
+
+    it('should do nothing if the value of connected time is not null when call connected. [JPT-2513]', done => {
+      setup();
+      call._connectedTimestamp = new Date() - 6000;
+      const connectedTime = call._connectedTimestamp;
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._connectedTimestamp).toBe(connectedTime);
+          done();
+        });
+      });
+    });
+    it('should set connected time to current time  if the value of connected time is null when call connected. [JPT-2514]', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._connectedTimestamp).toBeDefined();
+          done();
+        });
       });
     });
   });

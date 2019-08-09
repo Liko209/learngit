@@ -10,7 +10,7 @@ import { BrandTire, SITE_URL } from '../../../../config';
 import { ITestMeta } from '../../../../v2/models';
 import { h } from '../../../../v2/helpers';
 import { AppRoot } from '../../../../v2/page-models/AppRoot';
-import { ensuredOneCallLog } from '../utils';
+import { ensuredOneMissCallLog } from '../utils';
 
 fixture('PhoneTab/CallHistory/EmptyPage')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -45,6 +45,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I click Phone entry of leftPanel,', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
   });
   const callHistoryEntry = app.homePage.phoneTab.callHistoryEntry;
   await h(t).withLog('Then I will see call history entry', async () => {
@@ -75,11 +80,11 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When the other user call me`, async () => {
-    await ensuredOneCallLog(t, caller, callee, app);
+    await ensuredOneMissCallLog(t, caller, callee, app);
   });
 
   await h(t).withLog('Then we can not see the empty page', async () => {
     await t.expect(callHistoryPage.emptyPage.exists).notOk();
   });
-  
+
 });

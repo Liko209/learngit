@@ -3,9 +3,7 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, {
-  useState, memo, forwardRef, useRef, useCallback,
-} from 'react';
+import React, { useState, memo, forwardRef, useRef, useCallback } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {
@@ -13,21 +11,23 @@ import {
   JuiVirtualizedListHandles,
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
-import { IndexRange } from './types';
+import { IndexRange, ScrollInfo } from './types';
 import { useMountState } from './hooks';
+import { DIRECTION } from '../Lists';
 
 type JuiInfiniteListProps = {
   height?: number;
-  minRowHeight: number;
+  fixedRowHeight?: number;
+  minRowHeight?: number;
   overscan?: number;
   loadMoreStrategy?: ILoadMoreStrategy;
-  hasMore: (direction: 'up' | 'down') => boolean;
+  hasMore: (direction: DIRECTION) => boolean;
   loadInitialData: () => Promise<void>;
-  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
+  loadMore: (direction: DIRECTION, count: number) => Promise<void>;
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
-  onVisibleRangeChange?: (range: IndexRange) => void;
+  onVisibleRangeChange?: (range: IndexRange, info: ScrollInfo) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
   loadingRenderer?: (() => JSX.Element) | null;
@@ -44,6 +44,7 @@ const JuiInfiniteList = (
   {
     height,
     minRowHeight,
+    fixedRowHeight,
     overscan,
     loadMoreStrategy = new ThresholdStrategy({
       threshold: 15,
@@ -73,16 +74,18 @@ const JuiInfiniteList = (
   if (forwardRef) {
     ref = forwardRef;
   }
-  const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
+  const [isStickToBottomEnabled, setStickToBottom] = useState(true);
   const isMountedRef = useMountState();
 
   const _loadMore = useCallback(
-    async (direction: 'up' | 'down', count: number) => {
-      enableStickToBottom(false);
+    async (direction: DIRECTION, count: number) => {
+      if (direction === DIRECTION.DOWN) {
+        setStickToBottom(false);
+      }
       await loadMore(direction, count);
-      isMountedRef.current && enableStickToBottom(true);
+      isMountedRef.current && setStickToBottom(true);
     },
-    [loadMore, enableStickToBottom],
+    [loadMore, setStickToBottom],
   );
 
   if (!height) {
@@ -128,7 +131,7 @@ const JuiInfiniteList = (
         }
 
         if (children.length === 0) {
-          const isEmpty = !hasMore('up') && !hasMore('down');
+          const isEmpty = !hasMore(DIRECTION.UP) && !hasMore(DIRECTION.DOWN);
           if (isEmpty) {
             return noRowsRenderer;
           }
@@ -140,6 +143,7 @@ const JuiInfiniteList = (
             ref={ref}
             height={height}
             minRowHeight={minRowHeight}
+            fixedRowHeight={fixedRowHeight}
             initialScrollToIndex={initialScrollToIndex}
             overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}

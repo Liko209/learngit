@@ -13,6 +13,7 @@ interface IRTCMediaDeviceDelegate {
     audioOutputs: {
       devices: MediaDeviceInfo[];
       delta: {
+        hashChanged: boolean;
         added: MediaDeviceInfo[];
         deleted: MediaDeviceInfo[];
       };
@@ -20,6 +21,7 @@ interface IRTCMediaDeviceDelegate {
     audioInputs: {
       devices: MediaDeviceInfo[];
       delta: {
+        hashChanged: boolean;
         added: MediaDeviceInfo[];
         deleted: MediaDeviceInfo[];
       };

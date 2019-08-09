@@ -66,7 +66,9 @@ function dependencyHandlers() {
   const manifestPath = path.resolve(dllPath, 'boilerplateDeps.json');
 
   if (!fs.existsSync(manifestPath)) {
-    console.log(chalk.red('The DLL manifest is missing. Please run `npm run build:dll`'));
+    console.log(
+      chalk.red('The DLL manifest is missing. Please run `npm run build:dll`'),
+    );
     process.exit(0);
   }
 
@@ -122,7 +124,8 @@ module.exports = {
     // This is the URL that app is served from. We use "/" in development.
     publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
+    devtoolModuleFilenameTemplate: info =>
+      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
     globalObject: 'this',
   },
   optimization: {
@@ -165,8 +168,14 @@ module.exports = {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin([paths.appPublicEn], [paths.appSrc, paths.depPackages], [paths.appPackageJson]),
-      new TsconfigPathsPlugin({ configFile: paths.appTsConfig }),
+      new ModuleScopePlugin(
+        [paths.appPublicEn],
+        [paths.appSrc, paths.depPackages],
+        [paths.appPackageJson],
+      ),
+      new TsconfigPathsPlugin({
+        configFile: paths.appTsConfig
+      }),
     ],
   },
   resolveLoader: {
@@ -178,29 +187,32 @@ module.exports = {
   },
   module: {
     strictExportPresence: true,
-    rules: [
-      {
+    rules: [{
         test: /\.(ts|tsx)$/,
-        exclude: /\.test.(ts|tsx)$/,
+        exclude: /\.test[.\w]*.(ts|tsx)$/,
         enforce: 'pre',
-        include: [paths.appSrc, paths.foundationPkg, paths.frameworkPkg, paths.juiPkg, paths.sdkPkg, paths.voipPkg],
-        use: [
-          {
-            options: {
-              formatter: require.resolve('react-dev-utils/eslintFormatter'),
-              ignore: true,
-              failOnError: true,
-              cache: true,
-              emitError: true,
-              ...eslintRules,
-            },
-            loader: require.resolve('eslint-loader'),
-          },
+        include: [
+          paths.appSrc,
+          paths.foundationPkg,
+          paths.frameworkPkg,
+          paths.juiPkg,
+          paths.sdkPkg,
+          paths.voipPkg,
         ],
+        use: [{
+          options: {
+            formatter: require.resolve('react-dev-utils/eslintFormatter'),
+            ignore: true,
+            failOnError: true,
+            cache: true,
+            emitError: true,
+            ...eslintRules,
+          },
+          loader: require.resolve('eslint-loader'),
+        }],
       },
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
-
       {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
@@ -225,12 +237,17 @@ module.exports = {
           {
             test: /\.(js|jsx|ts|tsx)$/,
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-            use: {
-              loader: require.resolve('ts-loader'),
-              options: {
-                transpileOnly: true,
+            use: [{
+                loader: 'cache-loader'
               },
-            },
+              {
+                loader: 'ts-loader',
+                options: {
+                  transpileOnly: true,
+                  configFile: paths.appTsConfig,
+                },
+              },
+            ],
           },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -270,8 +287,7 @@ module.exports = {
           },
           {
             test: /jui\/src\/assets\/.*\.svg$/,
-            use: [
-              {
+            use: [{
                 loader: 'svg-sprite-loader',
                 options: {
                   symbolId: 'icon-[name]',
@@ -280,7 +296,21 @@ module.exports = {
               {
                 loader: 'svgo-loader',
                 options: {
-                  plugins: [{ removeTitle: true }, { convertColors: { shorthex: false } }, { convertPathData: true }, { reusePaths: true }],
+                  plugins: [{
+                      removeTitle: true
+                    },
+                    {
+                      convertColors: {
+                        shorthex: false
+                      }
+                    },
+                    {
+                      convertPathData: true
+                    },
+                    {
+                      reusePaths: true
+                    },
+                  ],
                 },
               },
             ],
@@ -303,20 +333,17 @@ module.exports = {
           },
         ],
       },
-      {
-        test: /\.worker\.ts$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [
-          { loader: 'workerize-loader', options: { inline: false } },
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              transpileOnly: true,
-            },
-          },
-        ],
-      },
 
+      {
+        test: /\.worker\.(ts|js)$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [{
+          loader: 'workerize-loader',
+          options: {
+            inline: false
+          }
+        }],
+      },
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
     ],
@@ -364,7 +391,8 @@ module.exports = {
     // solution that requires the user to opt into importing specific locales.
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /(de|en-au|en-gb|es-do|es|fr-ca|fr|it|ja|pt-br|zh-cn|zh-hk|zh-tw).js/),
     // Perform type checking and linting in a separate process to speed up compilation
     // Detect circular dependencies
     new CircularDependencyPlugin({
@@ -381,14 +409,14 @@ module.exports = {
       publicPath,
     }),
     // add dll.js to html
-    ...(dllPlugin
-      ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-        dllPath => new AddAssetHtmlPlugin({
+    ...(dllPlugin ?
+      glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
+        dllPath =>
+        new AddAssetHtmlPlugin({
           filepath: dllPath,
           includeSourcemap: false,
         }),
-      )
-      : [() => {}]),
+      ) : [() => {}]),
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

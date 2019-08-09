@@ -7,17 +7,18 @@ import { spacing } from '../../foundation/utils/styles';
 
 const JuiDialogActions = styled(
   memo(({ ...props }: DialogActionsProps) => (
-      <MuiDialogActions
-        {...props}
-        classes={{ root: 'root' }}
-        disableActionSpacing
-      />
+    <MuiDialogActions {...props} classes={{ root: 'root' }} disableSpacing />
   )),
 )`
   &.root {
     padding: ${spacing(2, 6, 6)};
     margin: 0;
     transform: translateZ(0);
+  }
+  & button,
+  & a {
+    display: inline-block;
+    margin-left: ${spacing(2)};
   }
 `;
 

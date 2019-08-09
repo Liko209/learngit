@@ -1,8 +1,8 @@
 /*
  * @Author:Andy.Hu
  * @Date: 2019-05-28 15:24:53
- * @Last Modified by: Paynter Chen
- * @Last Modified time: 2019-06-17 15:50:10
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-08-02 15:23:18
  */
 
 import { AppRoot } from '../../../v2/page-models/AppRoot/index';
@@ -10,9 +10,10 @@ import { h } from '../../../v2/helpers';
 import { IGroup, ITestMeta } from '../../../v2/models';
 import { SITE_URL, BrandTire } from '../../../config';
 import { teardownCase, setupCase } from '../../../init';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Settings/DefaultPhoneApp')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -22,40 +23,48 @@ test.meta(<ITestMeta>{
   keywords: ['telephony', 'default Phone app']
 })('Check the incoming and outbound calls when the user switch between "Use RingCentral Phone" and "Use RingCentral App".', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
-  const yetAnotherUser = users[6];
+  const loginUser = users[1]
+  const anotherUser = users[2];
+  const yetAnotherUser = users[3];
 
   const app = new AppRoot(t);
   const { company: { number } } = anotherUser;
-  await h(t).glip(loginUser).init();
-  await h(t).scenarioHelper.resetProfile(loginUser);
+
   let chat = <IGroup>{
     type: 'DirectMessage',
     owner: loginUser,
     members: [loginUser, anotherUser]
   }
 
-  await h(t).withLog('When I set default phone app to RC phone', async () => {
+  await h(t).withLog('Given I set default phone app to RC phone', async () => {
+    await h(t).glip(loginUser).init();
+    await h(t).scenarioHelper.resetProfile(loginUser);
     await h(t).glip(loginUser).setDefaultPhoneApp('ringcentral');
   });
 
-  await h(t).withLog('Given I have a 1:1 chat, another user send a post', async () => {
+  await h(t).withLog('And I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
   let conversationPage;
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-    const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
-    await chatEntry.enter();
   });
 
-  const callerWebPhone = await h(t).newWebphoneSession(anotherUser);
+  await h(t).withLog(`And I enter 1:1 chat`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  });
+
+  let callerWebPhone: WebphoneSession;
   // conversation page header
 
   await h(t).withLog('When I receive a call', async () => {
+    callerWebPhone = await h(t).newWebphoneSession(anotherUser);
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
 
@@ -66,6 +75,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I switch default phone app to Jupiter', async () => {
     await h(t).glip(loginUser).setDefaultPhoneApp('glip');
+    await t.wait(5e3); // need time to sync to front-end.
   });
 
   await h(t).withLog('When I click the call button', async () => {
@@ -87,6 +97,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When I type phone number in the input field`, async () => {
     await app.homePage.telephonyDialog.typeTextInDialer(number);
+    await t.wait(2e3);
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
@@ -133,7 +144,11 @@ test.meta(<ITestMeta>{
   const defaultRingCentralApp = 'Use RingCentral App (this app)';
   const defaultRingCentralPhone = 'Use RingCentral Phone';
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -184,10 +199,14 @@ test.meta(<ITestMeta>{
   const defaultRingCentralPhone = 'Use RingCentral Phone';
 
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  });;
 
   await h(t).withLog(`When I click Setting entry`, async () => {
     await settingsEntry.enter();
@@ -261,8 +280,8 @@ test.meta(<ITestMeta>{
   keywords: ['GeneralSettings']
 })('Check the settings changes when the user switch between "Use RingCentral Phone" and "Use RingCentral App"', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
 
   const app = new AppRoot(t);
   const { company: { number } } = anotherUser;
@@ -272,8 +291,13 @@ test.meta(<ITestMeta>{
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const phoneSettingPage = settingTab.phoneSettingPage;
+  const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -294,8 +318,20 @@ test.meta(<ITestMeta>{
     await t.expect(phoneSettingPage.callIdSetting.exists).notOk();
   });
 
+  await h(t).withLog(`And I click notificationAndSounds tab`, async () => {
+    await settingTab.notificationAndSoundsEntry.enter();
+  });
+
+  await h(t).withLog('Then the Missed Calls and New Voicemails is hidden', async () => {
+    await t.expect(notificationAndSoundsSettingPage.missedCallsAndVoicemailsItem.exists).notOk();
+  });
+
   await h(t).withLog('When I switch default phone app to Jupiter', async () => {
     await h(t).glip(loginUser).setDefaultPhoneApp('glip');
+  });
+
+  await h(t).withLog('Then the Missed Calls and New Voicemails is displayed', async () => {
+    await t.expect(notificationAndSoundsSettingPage.missedCallsAndVoicemailsItem.exists).ok();
   });
 
   await h(t).withLog(`And I click Phone tab`, async () => {
@@ -324,7 +360,11 @@ test.meta(<ITestMeta>{
   const phoneSettingPage = settingTab.phoneSettingPage;
   const changeRCPhoneDialog = settingTab.phoneSettingPage.changeRCPhoneDialog;
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });

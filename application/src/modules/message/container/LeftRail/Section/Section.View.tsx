@@ -14,9 +14,8 @@ import { ConversationListItem } from '../../ConversationList/ConversationListIte
 import { toTitleCase } from '@/utils/string';
 import { SectionViewProps, SECTION_TYPE } from './types';
 import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
-import { JuiDivider } from 'jui/components/Divider';
 import { observer } from 'mobx-react';
-// TODO remove Stubs here
+import { LazySection } from './LazySection.View';
 
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
@@ -27,6 +26,10 @@ type Props = SectionViewProps & WithTranslation;
 class SectionViewComponent extends React.Component<Props> {
   renderList() {
     const { sortable, onSortEnd } = this.props;
+
+    if (this.props.type === SECTION_TYPE.TEAM) {
+      return <LazySection ids={this.props.groupIds} />;
+    }
 
     if (sortable) {
       return (
@@ -59,9 +62,7 @@ class SectionViewComponent extends React.Component<Props> {
       type,
       dataNameForTest,
       title,
-      iconName,
       expanded,
-      isLast,
       handleCollapse,
       handleExpand,
     } = this.props;
@@ -80,8 +81,7 @@ class SectionViewComponent extends React.Component<Props> {
         data-test-automation-id={dataNameForTest}
       >
         <JuiConversationListSection
-          title={toTitleCase(t(title))}
-          icon={iconName}
+          title={toTitleCase(t(title)).toUpperCase()}
           umi={<Umi type={umiType} />}
           expanded={expanded}
           onCollapse={handleCollapse}
@@ -89,7 +89,6 @@ class SectionViewComponent extends React.Component<Props> {
         >
           {this.renderList()}
         </JuiConversationListSection>
-        {isLast && !expanded ? <JuiDivider key="divider" /> : null}
       </div>
     );
   }

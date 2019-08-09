@@ -11,7 +11,7 @@ import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
-import { addOneCallLogFromGuest } from './utils';
+import { addOneMissCallLogFromAnotherUser } from './utils';
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -20,7 +20,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2364'],
+  caseIds: ['JPT-2364'],
   maintainers: ['Allen.Lian'],
   keywords: ['voicemail']
 })('Call back from the call history', async (t) => {
@@ -44,6 +44,11 @@ test.meta(<ITestMeta>{
   const callhistoryPage = app.homePage.phoneTab.callHistoryPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click call history entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.callHistoryEntry.enter();
   });
 
@@ -51,12 +56,7 @@ test.meta(<ITestMeta>{
     await callhistoryPage.ensureLoaded();
   });
 
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
-
-  await addOneCallLogFromGuest(t, caller, callee, app);
+  await addOneMissCallLogFromAnotherUser(t, caller, callee, app);
 
 
   const callhistoryItem = callhistoryPage.callhistoryItemByNth(0);

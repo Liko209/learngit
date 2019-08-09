@@ -1,7 +1,6 @@
 import PostModel from '@/store/models/Post';
 import config from '../config';
 
-/* eslint-disable */
 export const getActivityData = (post: PostModel) => {
   const activity = {};
   const { itemTypeIds } = post;
@@ -32,6 +31,8 @@ export const getActivity = (post: PostModel, activityData: object) => {
       break;
     case !!parentId:
       activity = config.children();
+      break;
+    default:
       break;
   }
   return activity;

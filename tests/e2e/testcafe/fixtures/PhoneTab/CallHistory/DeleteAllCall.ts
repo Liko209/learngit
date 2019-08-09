@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { ensuredOneCallLog } from './utils';
+import { ensuredOneMissCallLog } from './utils';
 
 fixture('Phone/callHistory')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -42,6 +42,11 @@ test.meta(<ITestMeta>{
   const deleteAllCalllDialog = app.homePage.deleteAllCalllDialog;
   await h(t).withLog('When I click Phone entry of leftPanel and click call log entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.callHistoryEntry.enter();
   });
 
@@ -49,12 +54,7 @@ test.meta(<ITestMeta>{
     await callHistoryPage.ensureLoaded();
   });
 
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
-
-  await ensuredOneCallLog(t, caller, callee, app);
+  await ensuredOneMissCallLog(t, caller, callee, app);
 
 
   await h(t).withLog('When I click more icon in the page head', async (step) => {

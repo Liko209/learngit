@@ -10,9 +10,10 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
 import { MiscUtils } from '../v2/utils'
+import { E911Address } from './e911address';
 
 fixture('Telephony/Dialer')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -29,54 +30,61 @@ test.meta(<ITestMeta>{
   const searchStr = extension.replace('+', '');
 
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).glip(loginUser).resetProfileAndState();
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('When I click the to diapad button', async () => {
+  await h(t).withLog('When I click the to dialPad button', async () => {
     await app.homePage.openDialer();
   });
 
-  await h(t).withLog(`And I enter "${searchStr}" into input field via keyboard`, async () => {
-    await app.homePage.telephonyDialog.typeTextInDialer(searchStr);
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog(`And I enter "{searchStr}" into input field via keyboard`, async (step) => {
+    step.setMetadata('searchStr', searchStr);
+    await telephonyDialog.typeTextInDialer(searchStr);
   });
 
-  await MiscUtils.sleep(2000)
-
   await h(t).withLog(`Then should display the search results`, async () => {
-    await t.expect(app.homePage.telephonyDialog.contactSearchList.exists).ok();
+    await telephonyDialog.contactSearchList.ensureLoaded();
   });
 
   await h(t).withLog('Click the the first item via mouse', async () => {
-    await app.homePage.telephonyDialog.contactSearchList.selectNth(0)
+    await t.wait(2e3);
+    await telephonyDialog.contactSearchList.selectNth(0);
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
-    await t.expect(app.homePage.telephonyDialog.hangupButton.exists).ok();
-    await t.expect(app.homePage.telephonyDialog.extension.withText(extension).exists).ok();
+    await t.expect(telephonyDialog.hangupButton.exists).ok();
+    await t.expect(telephonyDialog.extension.withText(extension).exists).ok();
   });
-
-  await MiscUtils.sleep(2000)
 
   await h(t).withLog('When I end the call', async () => {
-    await app.homePage.telephonyDialog.clickHangupButton()
+    await telephonyDialog.clickHangupButton()
   });
 
-  await h(t).withLog(`And I enter "${searchStr}" into input field via keyboard again`, async () => {
-    await app.homePage.telephonyDialog.typeTextInDialer(searchStr);
+  await h(t).withLog(`And I enter "{searchStr}" into input field via keyboard again`, async (step) => {
+    step.setMetadata('searchStr', searchStr);
+    await telephonyDialog.typeTextInDialer(searchStr);
   });
-
-  await MiscUtils.sleep(2000)
 
   await h(t).withLog('Click the the 2nd item via mouse', async () => {
-    await app.homePage.telephonyDialog.contactSearchList.selectNth(1)
+    await telephonyDialog.contactSearchList.ensureLoaded();
+    await t.wait(1e3);
+    await telephonyDialog.contactSearchList.selectNth(1)
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
-    await t.expect(app.homePage.telephonyDialog.hangupButton.exists).ok();
-    await t.expect(app.homePage.telephonyDialog.extension.withText(extension).exists).ok();
+    await t.expect(telephonyDialog.hangupButton.exists).ok();
+    await t.expect(telephonyDialog.extension.withText(extension).exists).ok();
   });
 });
 
@@ -88,7 +96,8 @@ test.meta(<ITestMeta>{
 })('Can exit the search mode after cleared all content from input field', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const searchStr = '1';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -100,23 +109,22 @@ test.meta(<ITestMeta>{
     await app.homePage.openDialer();
   });
 
+  const telephonyDialog = app.homePage.telephonyDialog;
   await h(t).withLog(`And I enter "${searchStr}" into input field via keyboard`, async () => {
-    await app.homePage.telephonyDialog.typeTextInDialer(searchStr);
+    await telephonyDialog.typeTextInDialer(searchStr);
   });
 
-  await MiscUtils.sleep(2000)
-
   await h(t).withLog('Then can show the delete button and the search result', async () => {
-    await t.expect(app.homePage.telephonyDialog.contactSearchList.exists).ok();
-    await t.expect(app.homePage.telephonyDialog.deleteButton.exists).ok();
+    await telephonyDialog.contactSearchList.ensureLoaded();
+    await t.expect(telephonyDialog.deleteButton.exists).ok();
   });
 
   await h(t).withLog(`When I click the delete button`, async () => {
-    await app.homePage.telephonyDialog.clickDeleteButton();
+    await telephonyDialog.clickDeleteButton();
   });
 
   await h(t).withLog(`Then the input should be cleared and display the dialer`, async () => {
-    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql('');
-    await t.expect(app.homePage.telephonyDialog.dialButton.exists).ok();
+    await t.expect(telephonyDialog.dialerInput.value).eql('');
+    await t.expect(telephonyDialog.dialButton.exists).ok();
   });
 });

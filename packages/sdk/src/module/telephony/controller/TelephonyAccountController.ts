@@ -12,10 +12,20 @@ import {
   RTCSipFlags,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
+  RTCCallOptions,
+  RTCSipEmergencyServiceAddr,
+  RTCSipProvisionInfo,
 } from 'voip';
 import { TelephonyCallController } from './TelephonyCallController';
 import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
-import { MAKE_CALL_ERROR_CODE, LogoutCallback } from '../types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  LogoutCallback,
+  TelephonyDataCollectionInfoConfigType,
+  CallOptions,
+} from '../types';
 import { telephonyLogger } from 'foundation';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
@@ -31,6 +41,10 @@ import notificationCenter, {
   NotificationEntityPayload,
 } from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
+import { TelephonyDataCollectionController } from './TelephonyDataCollectionController';
+import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
+import { E911Controller } from './E911Controller';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
@@ -39,14 +53,15 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _isDisposing: boolean = false;
   private _logoutCallback: LogoutCallback;
   private _entityCacheController: IEntityCacheController<Call>;
-  private _accountState: RTC_ACCOUNT_STATE;
   private _callControllerList: Map<number, TelephonyCallController> = new Map();
+  private _telephonyDataCollectionController: TelephonyDataCollectionController;
+  private _e911Controller: E911Controller;
 
   constructor(rtcEngine: RTCEngine) {
     this._rtcAccount = rtcEngine.createAccount(this);
-    this._rtcAccount.handleProvisioning();
     this._makeCallController = new MakeCallController();
     this._subscribeNotifications();
+    this._e911Controller = new E911Controller(this._rtcAccount);
   }
 
   private _handleCallStateChanged = (
@@ -73,6 +88,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   setAccountDelegate(delegate: ITelephonyDelegate) {
     this._telephonyAccountDelegate = delegate;
+    this._rtcAccount.handleProvisioning();
   }
 
   setDependentController(entityCacheController: IEntityCacheController<Call>) {
@@ -106,18 +122,32 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return res;
   }
 
-  private _checkAccountState() {
-    if (this._accountState !== RTC_ACCOUNT_STATE.REGISTERED) {
-      telephonyLogger.warn(
-        `voip account is not registered. current state: ${this._accountState}`,
-      );
-      return MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
-    }
-    return MAKE_CALL_ERROR_CODE.NO_ERROR;
-  }
-
   getVoipState() {
     return this._rtcAccount.state();
+  }
+
+  setLocalEmergencyAddress(emergencyAddress: RTCSipEmergencyServiceAddr) {
+    this._e911Controller.setLocalEmergencyAddress(emergencyAddress);
+  }
+
+  updateLocalEmergencyAddress(emergencyAddress: RTCSipEmergencyServiceAddr) {
+    this._e911Controller.updateLocalEmergencyAddress(emergencyAddress);
+  }
+
+  getRemoteEmergencyAddress() {
+    return this._e911Controller.getRemoteEmergencyAddress();
+  }
+
+  getSipProv() {
+    return this._rtcAccount.getSipProv();
+  }
+
+  getWebPhoneId() {
+    const sipProv = this._rtcAccount.getSipProv();
+    if (sipProv && sipProv.device) {
+      return sipProv.device.id;
+    }
+    return undefined;
   }
 
   setLastCalledNumber(num: string) {
@@ -138,7 +168,29 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._callControllerList.delete(callId);
   }
 
-  async makeCall(toNumber: string, fromNum?: string) {
+  async switchCall(myNumber: string, switchCall: ActiveCall) {
+    const { to, toName, from, fromName, direction, sipData, id } = switchCall;
+    const { fromTag, toTag } = sipData;
+
+    const isOutbound = direction === CALL_DIRECTION.OUTBOUND;
+    const options: CallOptions = {
+      replacesCallId: id,
+      replacesFromTag: fromTag,
+      replacesToTag: toTag,
+      replaceName: isOutbound ? toName : fromName,
+      replaceNumber: isOutbound ? to : from,
+      callDirection: direction,
+    };
+
+    telephonyLogger.log('make switch call', options);
+    return await this._makeCallInternal(myNumber, true, options);
+  }
+
+  private async _makeCallInternal(
+    toNumber: string,
+    isSwitchCall: boolean,
+    options?: CallOptions,
+  ) {
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );
@@ -152,7 +204,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     if (!e164ToNumber) {
       return MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
     }
-    this.setLastCalledNumber(toNumber);
+
+    !isSwitchCall && this.setLastCalledNumber(toNumber);
 
     let result: MAKE_CALL_ERROR_CODE = MAKE_CALL_ERROR_CODE.NO_ERROR;
     /* eslint-disable no-await-in-loop */
@@ -162,10 +215,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         break;
       }
 
-      result = this._checkAccountState();
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
       result = await this._makeCallController.tryMakeCall(e164ToNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
@@ -177,28 +226,32 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       );
 
       let call: RTCCall | null;
-      if (fromNum) {
-        let e164FromNum = fromNum;
-        if (fromNum !== PhoneNumberType.PhoneNumberAnonymous) {
-          e164FromNum = await phoneNumberService.getE164PhoneNumber(fromNum);
+
+      let finalOptions: RTCCallOptions = { ...options };
+      if (options) {
+        let e164FromNum = options.fromNumber;
+        if (e164FromNum) {
+          if (e164FromNum !== PhoneNumberType.PhoneNumberAnonymous) {
+            e164FromNum = await phoneNumberService.getE164PhoneNumber(
+              e164FromNum,
+            );
+            finalOptions.fromNumber = e164FromNum;
+          }
         }
-        telephonyLogger.debug(
-          `Place a call voip toNum: ${e164ToNumber} fromNum: ${e164FromNum}`,
-        );
-        call = this._rtcAccount.makeCall(e164ToNumber, callController, {
-          fromNumber: e164FromNum,
-        });
-      } else {
-        telephonyLogger.debug(`Place a call to voip toNum: ${e164ToNumber}`);
-        call = this._rtcAccount.makeCall(e164ToNumber, callController);
       }
+      telephonyLogger.debug('Place a call', { finalOptions });
+      call = this._rtcAccount.makeCall(
+        e164ToNumber,
+        callController,
+        finalOptions,
+      );
 
       if (!call) {
         result = MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
         break;
       }
 
-      this._setCall(callController, call);
+      this._setCall(callController, call, isSwitchCall, options);
 
       if (this._telephonyAccountDelegate) {
         this._telephonyAccountDelegate.onMadeOutgoingCall(
@@ -212,6 +265,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     } while (false);
 
     return result;
+  }
+
+  async makeCall(toNumber: string, options?: CallOptions) {
+    return await this._makeCallInternal(toNumber, false, options);
   }
 
   private _getCallControllerById(callId: number) {
@@ -313,8 +370,17 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     callController && callController.replyWithPattern(pattern, time, timeUnit);
   }
 
-  onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
-    this._accountState = state;
+  onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
+
+  onNoAudioStateEvent(uuid: string, noAudioStateEvent: RTCNoAudioStateEvent) {
+    this.telephonyDataCollectionController.traceNoAudioStatus(
+      noAudioStateEvent,
+    );
+    // implement this to get no audio state event
+  }
+  onNoAudioDataEvent(uuid: string, noAudioDataEvent: RTCNoAudioDataEvent) {
+    this.telephonyDataCollectionController.traceNoAudioData(noAudioDataEvent);
+    // implement this to get no audio data event
   }
 
   private async _shouldShowIncomingCall() {
@@ -341,8 +407,13 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return showCall;
   }
 
-  private _setCall(callController: TelephonyCallController, call: RTCCall) {
-    callController.setRtcCall(call);
+  private _setCall(
+    callController: TelephonyCallController,
+    call: RTCCall,
+    isSwitchCall: boolean,
+    callOption?: CallOptions,
+  ) {
+    callController.setRtcCall(call, isSwitchCall, callOption);
     call.setCallDelegate(callController);
     this._addControllerToList(callController.getEntityId(), callController);
   }
@@ -361,7 +432,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._entityCacheController,
     );
 
-    this._setCall(callController, call);
+    this._setCall(callController, call, false);
 
     if (this._telephonyAccountDelegate) {
       this._telephonyAccountDelegate.onReceiveIncomingCall(
@@ -378,7 +449,33 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return this._rtcAccount.callCount();
   }
 
-  onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
+  onReceiveSipProv(
+    newSipProv: RTCSipProvisionInfo,
+    oldSipProv: RTCSipProvisionInfo,
+  ) {
+    telephonyLogger.debug('onReceiveSipProv');
+    this._e911Controller.onReceiveSipProv(newSipProv, oldSipProv);
+  }
+
+  getLocalEmergencyAddress() {
+    return this._e911Controller.getLocalEmergencyAddress();
+  }
+
+  isEmergencyAddrConfirmed() {
+    return this._e911Controller.isEmergencyAddrConfirmed();
+  }
+
+  isAddressEqual(
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) {
+    return this._e911Controller.isAddressEqual(objAddr, othAddr);
+  }
+
+  onReceiveNewProvFlags(sipFlags: RTCSipFlags) {
+    telephonyLogger.debug('onReceiveNewProvFlags');
+    this._e911Controller.onReceiveNewProvFlags(sipFlags);
+  }
 
   private _processLogoutIfNeeded() {
     if (this._isDisposing && this._rtcAccount.callCount() === 1) {
@@ -405,6 +502,19 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       }
       this._unSubscribeNotifications();
     }
+  }
+
+  setDataCollectionInfoConfig = (
+    info: TelephonyDataCollectionInfoConfigType,
+  ) => {
+    this.telephonyDataCollectionController.setDataCollectionInfoConfig(info);
+  };
+
+  protected get telephonyDataCollectionController() {
+    if (!this._telephonyDataCollectionController) {
+      this._telephonyDataCollectionController = new TelephonyDataCollectionController();
+    }
+    return this._telephonyDataCollectionController;
   }
 }
 

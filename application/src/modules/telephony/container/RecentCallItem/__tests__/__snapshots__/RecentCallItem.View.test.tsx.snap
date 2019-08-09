@@ -5,7 +5,7 @@ exports[`RecentCallItemView render should render each record item [JPT-2316, JPT
   tabIndex={0}
 >
   <styled.div>
-    <Container(ContactInfoViewComponent)
+    <Container(ContactInfoView)
       caller={
         Object {
           "location": "abc",
@@ -19,7 +19,7 @@ exports[`RecentCallItemView render should render each record item [JPT-2316, JPT
     />
   </styled.div>
   <styled.div>
-    <JuiIconography
+    <ForwardRef(JuiIconography)
       iconColor={
         Array [
           "accent",
@@ -29,7 +29,7 @@ exports[`RecentCallItemView render should render each record item [JPT-2316, JPT
       iconSize="medium"
     >
       missedcall
-    </JuiIconography>
+    </ForwardRef(JuiIconography)>
   </styled.div>
   <styled.div>
     2019-06-28T02:09:28.595Z

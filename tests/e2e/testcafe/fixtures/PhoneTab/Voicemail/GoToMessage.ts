@@ -11,10 +11,7 @@ import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
-
-import * as assert from 'assert'
-import { addOneVoicemailFromExt } from './utils';
-import { userInfo } from 'os';
+import { addOneVoicemailFromAnotherUser } from './utils';
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -23,7 +20,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2394'],
+  caseIds: ['JPT-2394'],
   maintainers: ['Allen.Lian'],
   keywords: ['voicemail']
 })('Go to conversation from the voicemail', async (t) => {
@@ -32,7 +29,6 @@ test.meta(<ITestMeta>{
   const caller = users[5];
 
   const app = new AppRoot(t);
-
 
   await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
@@ -46,6 +42,11 @@ test.meta(<ITestMeta>{
   const voicemailPage = app.homePage.phoneTab.voicemailPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click voicemail entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.voicemailEntry.enter();
   });
 
@@ -53,12 +54,7 @@ test.meta(<ITestMeta>{
     await voicemailPage.ensureLoaded();
   });
 
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
-
-  await addOneVoicemailFromExt(t, caller, callee, app);
+  await addOneVoicemailFromAnotherUser(t, caller, callee, app);
 
 
   const voicemailItem = voicemailPage.voicemailItemByNth(0);

@@ -133,6 +133,7 @@ const registerConfigs = {
         ServiceManager.name,
         NetworkManager.name,
         ServiceConfig.SYNC_SERVICE,
+        ServiceConfig.PERMISSION_SERVICE,
       ],
     },
   ],

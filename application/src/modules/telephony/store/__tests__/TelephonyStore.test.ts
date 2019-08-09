@@ -220,8 +220,6 @@ describe('Telephony store', () => {
 
   it('reset status when the call status is idle', () => {
     const store = createStore();
-    store.callerName = 'name';
-    store.phoneNumber = '112233';
     call.muteState = MUTE_STATE.MUTED;
     store.directCall();
     store.end();
@@ -292,5 +290,16 @@ describe('Telephony store', () => {
     const store = createStore();
     store.backToDialer();
     expect(store.isRecentCalls).toBeFalsy();
+  });
+
+  it('should return empty string when phoneNumber is anonymous', () => {
+    const call: any = {
+      direction: 'Inbound',
+      fromNum: 'anonymous',
+    };
+    (getEntity as jest.Mock).mockReturnValue(call);
+    const store = createStore();
+    store.id = 1;
+    expect(store.phoneNumber).toEqual('');
   });
 });

@@ -121,7 +121,6 @@ describe('StreamViewModel', () => {
   describe('loadInitialPosts()', () => {
     function setupMock({ props, getPostsByGroupIdData }: any) {
       const vm = new StreamViewModel(props);
-      jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
       postService.getPostsByGroupId.mockResolvedValue(getPostsByGroupIdData);
       return vm;
     }
@@ -215,6 +214,8 @@ describe('StreamViewModel', () => {
         { id: 4, created_at: 104, creator_id: 1 },
       ];
       const postsNewerThanAnchor = [
+        { id: 3, created_at: 103, creator_id: 1 },
+        { id: 4, created_at: 104, creator_id: 1 },
         { id: 5, created_at: 105, creator_id: 1 },
         { id: 6, created_at: 106, creator_id: 1 },
         { id: 7, created_at: 107, creator_id: 1 },
@@ -222,14 +223,13 @@ describe('StreamViewModel', () => {
       ];
       const { vm } = setupMock({
         postsNewerThanAnchor,
-        postsOlderThanAnchor,
         readThroughPost,
         groupState: { unreadCount: 4, readThrough: readThroughPost.id },
         currentPosts: [{ id: 9, created_at: 109, creator_id: 1 }],
       });
       const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
 
-      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      expect(vm.postIds).toEqual([3, 4, 5, 6, 7, 8, 9]);
       expect(firstUnreadPostId).toBe(5);
     });
 
@@ -331,14 +331,14 @@ describe('StreamViewModel', () => {
     });
   });
 
-  describe('markAsRead()', () => {
-    it('should call storeManager.getGlobalStore().set with arguments', () => {
-      const spy = jest.spyOn(stateService, 'updateReadStatus');
+  describe('updateIgnoredStatus()', () => {
+    it('should call stateService.updateIgnoredStatus with arguments', () => {
+      const spy = jest.spyOn(stateService, 'updateIgnoredStatus');
       const groupId = 123123;
       const vm = setup({ groupId });
-      vm.markAsRead();
+      vm.updateIgnoredStatus(true);
 
-      expect(spy).toBeCalledWith(groupId, false, true);
+      expect(spy).toBeCalledWith([groupId], true);
 
       spy.mockRestore();
     });
@@ -395,11 +395,7 @@ describe('StreamViewModel', () => {
         .spyOn(storeManager, 'getGlobalStore')
         .mockImplementation(() => globalStore);
       vm.initialize(12);
-
-      expect(globalStore.set).toBeCalledWith(
-        GLOBAL_KEYS.SHOULD_SHOW_UMI,
-        false,
-      );
+      
       expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
       spy.mockRestore();

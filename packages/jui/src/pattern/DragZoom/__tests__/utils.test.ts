@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Padding } from '../types';
-import { calculateFitWidthHeight, fixOffset, isDraggable } from '../utils';
+import {
+  calculateFitWidthHeight,
+  fixOffset,
+  isDraggable,
+  calculateFitWidthHeightByFixedContainer,
+} from '../utils';
 
 describe('utils', () => {
   const createPadding = (leftRight: number, topBottom: number): Padding => {
@@ -66,6 +71,17 @@ describe('utils', () => {
       expect(result).toEqual(2);
     });
   });
+  describe('calculateFitWidthHeightByFixedContainer()', () => {
+    it('should return [280, 400] when call with 140, 200', () => {
+      const result = calculateFitWidthHeightByFixedContainer(140, 200, 280);
+      expect(result).toEqual([280, 400]);
+    });
+    it('should return [500, 280] when call with 1000, 560', () => {
+      const result = calculateFitWidthHeightByFixedContainer(1000, 560, 280);
+      expect(result).toEqual([500, 280]);
+    });
+  });
+
   describe('isDraggable()', () => {
     it('should isDraggable == true', () => {
       const result = isDraggable(100, 200, 100, 100);

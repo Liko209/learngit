@@ -6,7 +6,7 @@ import { RuiIconography, ICON_NAME } from '../../Iconography';
 // import { Theme } from '../../../foundation/styles';
 import { palette } from '../../../foundation/shared/theme';
 // import { hoverStyle } from './utils/tools';
-import { Theme } from 'foundation/styles';
+import { Theme } from 'src/foundation/styles';
 
 const fabSizing = {
   small: '32px',
@@ -42,7 +42,9 @@ const RuiFabIcon = (props: FabProps) => {
 
 function hoverStyles(theme: Theme, color?: Color): string {
   if (!color || color === 'inherit') {
-    return tinycolor('#fff').darken(8).toRgbString();
+    return tinycolor('#fff')
+      .darken(8)
+      .toRgbString();
   }
   const c = palette(color, 'main')({ theme });
   return tinycolor(c)
@@ -52,12 +54,11 @@ function hoverStyles(theme: Theme, color?: Color): string {
 
 export default styled(RuiFabIcon)`
   && {
-    background-color: ${({ color, theme }) => (
-    color && color !== 'inherit'
-      ? palette(color, 'main')({ theme })
-      : 'inherit')
-  };
-    color:${({ theme }) => theme.palette.text.primary};
+    background-color: ${({ color, theme }) =>
+      color && color !== 'inherit'
+        ? palette(color, 'main')({ theme })
+        : 'inherit'};
+    color: ${({ theme }) => theme.palette.text.primary};
     width: ${({ size }) => fabSizing[size]};
     height: ${({ size }) => fabSizing[size]};
     min-height: ${fabSizing['small']};
@@ -69,7 +70,7 @@ export default styled(RuiFabIcon)`
     }
 
     &:hover {
-      background-color: ${({ color, theme }) => hoverStyles(theme, color)}
+      background-color: ${({ color, theme }) => hoverStyles(theme, color)};
     }
   }
 `;

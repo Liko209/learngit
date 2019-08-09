@@ -15,11 +15,11 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
   line-height: 16px;
   color: #0684bd;
   text-align: center;
+  box-shadow: unset;
 }
 
 .c11.c11.containedButtonStyle {
   color: #fff;
-  box-shadow: unset;
   background-color: #0684bd;
 }
 
@@ -32,8 +32,8 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
   color: #fff;
 }
 
-.c11.c11.containedButtonStyle:active {
-  box-shadow: unset;
+.c11.c11.textButtonStyle {
+  color: #0684bd;
 }
 
 .c11.c11.textButtonStyle.disabled {
@@ -230,10 +230,10 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
         className="c10"
       >
         <button
-          className="MuiButtonBase-root MuiButton-root MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge c11"
+          className="MuiButtonBase-root MuiButton-root c11 MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -243,7 +243,7 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          tabIndex="0"
+          tabIndex={0}
           type="button"
         >
           <span
@@ -251,19 +251,16 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
           >
             Share a file
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
       <div
         className="c10"
       >
         <button
-          className="MuiButtonBase-root MuiButton-root MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge c11"
+          className="MuiButtonBase-root MuiButton-root c11 MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -273,7 +270,7 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          tabIndex="0"
+          tabIndex={0}
           type="button"
         >
           <span
@@ -281,19 +278,16 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
           >
             Create a task
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
       <div
         className="c10"
       >
         <button
-          className="MuiButtonBase-root MuiButton-root MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge c11"
+          className="MuiButtonBase-root MuiButton-root c11 MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -303,7 +297,7 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          tabIndex="0"
+          tabIndex={0}
           type="button"
         >
           <span
@@ -311,9 +305,6 @@ exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitial
           >
             Integrate apps
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>

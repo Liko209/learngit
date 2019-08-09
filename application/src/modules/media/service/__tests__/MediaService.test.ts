@@ -10,13 +10,9 @@ import { Media } from '../../Media';
 
 describe('MediaService', () => {
   beforeEach(() => {
-    window.HTMLMediaElement.prototype.load = jest.fn();
-
-    window.HTMLMediaElement.prototype.play = jest.fn();
-
-    window.HTMLMediaElement.prototype.canPlayType = jest
-      .fn()
-      .mockReturnValue('');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
   });
   afterAll(() => {
     jest.clearAllMocks();
@@ -30,10 +26,26 @@ describe('MediaService', () => {
       expect(media).toBeInstanceOf(Media);
     });
   });
+  describe('getMedia()', () => {
+    it('should get exist media', () => {
+      const mediaId = 'testMediaId';
+      const mediaService = new MediaService();
+      const media = mediaService.createMedia({
+        src: [],
+        id: mediaId,
+      });
+      const checkMedia = mediaService.getMedia(mediaId);
+      expect(checkMedia).toEqual(media);
+    });
+  });
+
   describe('canPlayType()', () => {
     it('should return this mime type can play', () => {
+      const canPlayType = jest
+        .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'canPlayType')
+        .mockReturnValue('maybe');
       mediaManager.canPlayType('audio/mp3');
-      expect(window.HTMLMediaElement.prototype.canPlayType).toBeCalled();
+      expect(canPlayType).toHaveBeenCalled();
     });
   });
   describe('globalVolume', () => {
@@ -67,9 +79,9 @@ describe('MediaService', () => {
       ];
       jest
         .spyOn(utils, 'getEntity')
-        .mockReturnValue({ id: '', isMocked: true, value: devices });
+        .mockReturnValue({ id: '', isMocked: true, source: devices });
       const mediaService = new MediaService();
-      expect(mediaService.outputDevices).toEqual(['device1', 'device2']);
+      expect(mediaService.allOutputDevices).toEqual(['device1', 'device2']);
     });
   });
 });

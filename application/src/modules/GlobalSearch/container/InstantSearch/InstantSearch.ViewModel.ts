@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
-
 import { observable, action, comparer } from 'mobx';
 import { container } from 'framework';
 import storeManager from '@/store/base/StoreManager';
@@ -357,18 +355,20 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (!currentItemValue) {
       return;
     }
-
+    let cellIndex;
+    let scope;
     switch (currentItemType) {
       case SearchItemTypes.PEOPLE:
         this.goToConversation(currentItemValue as number);
         break;
       case SearchItemTypes.CONTENT:
-        const cellIndex = this.selectIndex[1];
-        const scope = this.getSearchScope(cellIndex);
+        cellIndex = this.selectIndex[1];
+        scope = this.getSearchScope(cellIndex);
         toSearchContent(scope === SEARCH_SCOPE.CONVERSATION);
         break;
       case SearchItemTypes.TEAM:
       case SearchItemTypes.GROUP:
+        /* eslint-disable no-case-declarations */
         const { canJoin, group } = this.canJoinTeam(currentItemValue as number);
         if (canJoin) {
           e.preventDefault();

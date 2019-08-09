@@ -3,8 +3,6 @@
  * @Date: 2019-03-13 09:52:08
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -32,7 +30,7 @@ class GroupSettingsComponent extends Component<Props> {
     this._handleClose();
   };
 
-  private _openConvertToTeam = (e: React.MouseEvent<HTMLInputElement>) => {
+  private _openConvertToTeam = () => {
     const { id } = this.props;
     this._handleClose();
     ConvertToTeam.show({ id });
@@ -43,8 +41,8 @@ class GroupSettingsComponent extends Component<Props> {
 
     return (
       <JuiModal
-        fillContent={true}
-        open={true}
+        fillContent
+        open
         size={'medium'}
         title={t('setting.teamSettings')}
         onCancel={this._handleClose}
@@ -55,11 +53,11 @@ class GroupSettingsComponent extends Component<Props> {
         <ButtonList>
           <JuiDivider />
           <ButtonListItem
-            data-test-automation-id='groupSettingsConvertToTeam'
-            color='primary'
+            data-test-automation-id="groupSettingsConvertToTeam"
+            color="primary"
             onClick={this._openConvertToTeam}
           >
-            <ButtonListItemText color='primary'>
+            <ButtonListItemText color="primary">
               {t('people.team.convertToTeam')}
             </ButtonListItemText>
           </ButtonListItem>

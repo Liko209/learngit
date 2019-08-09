@@ -11,7 +11,7 @@ type MessageInputProps = {
   id: number; // group id
   onPost?: () => void;
   viewRef: React.RefObject<any>;
-  onUpArrowPressed: () => void;
+  onUpArrowPressed: (content: string) => void;
 };
 
 type MessageInputViewProps = {
@@ -24,6 +24,7 @@ type MessageInputViewProps = {
   contentChange(draft: string): void;
   insertEmoji(emoji: any, cb?: Function): void;
   cellWillChange(newGroupId: number, oldGroupId: number): void;
+  hasFocused: boolean;
   keyboardEventHandler: {
     enter: {
       key: number;

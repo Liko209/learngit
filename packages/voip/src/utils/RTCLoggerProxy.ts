@@ -37,6 +37,10 @@ class RTCLoggerProxy {
     this._doLog(LOG_LEVEL.TRACE, tag, message);
   }
 
+  public ensureApiBeenCalledLog(tag: string, funcName: string): void {
+    this.info(tag, `the ${funcName} of VoIP is called`);
+  }
+
   private _loglevelString(level: LOG_LEVEL): string {
     switch (level) {
       case LOG_LEVEL.FATAL:

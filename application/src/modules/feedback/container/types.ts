@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import { ZipItemLevel } from 'sdk/module/log/types';
 
 export enum TaskStatus {
   IDLE,

@@ -314,7 +314,7 @@ describe('TotalUnreadController', () => {
   });
 
   describe('_updateTotalUnreadByStateChanges()', () => {
-    it('should update correctly', async () => {
+    it('should update correctly, JPT-1046, JPT-1047, JPT-1052', async () => {
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_singleGroupBadges'].set(1, {
         id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
@@ -464,7 +464,7 @@ describe('TotalUnreadController', () => {
   describe('_updateTotalUnreadByGroupChanges()', () => {
     beforeEach(() => {});
 
-    it('should update correctly when update groups', async () => {
+    it('should update correctly when update groups, JPT-1045, JPT-1048, JPT-1049, JPT-1052', async () => {
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
         .mockReturnValue(5683);
@@ -475,6 +475,16 @@ describe('TotalUnreadController', () => {
         unreadCount: 8,
         mentionCount: 2,
       });
+      totalUnreadController['_singleGroupBadges'].set(2, {
+        id: GROUP_BADGE_TYPE.TEAM,
+        unreadCount: 1,
+        mentionCount: 0,
+      });
+      totalUnreadController['_singleGroupBadges'].set(4, {
+        id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
+        unreadCount: 2,
+        mentionCount: 0,
+      });
       mockGroupService.isValid = jest
         .fn()
         .mockImplementation((group: Group) => {
@@ -484,7 +494,7 @@ describe('TotalUnreadController', () => {
         });
       mockEntitySourceController.batchGet = jest
         .fn()
-        .mockReturnValueOnce([{ id: 3, deactivated: false, members: [5683] }]);
+        .mockReturnValueOnce([{ id: 3, unreadCount: 1}]);
       const entityMap = new Map<number, Group>();
       entityMap.set(1, {
         id: 1,
@@ -502,20 +512,36 @@ describe('TotalUnreadController', () => {
         deactivated: false,
         members: [5683],
       } as Group);
+      entityMap.set(4, {
+        id: 4,
+        deactivated: false,
+        is_archived: true,
+        members: [5683],
+      } as Group);
       const payload: NotificationEntityPayload<Group> = {
         type: EVENT_TYPES.UPDATE,
         body: {
-          ids: [11223344, 1, 2, 3],
+          ids: [11223344, 1, 2, 3, 4],
           entities: entityMap,
         },
       };
       await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(3);
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         -8,
         -2,
+      );
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
+        GROUP_BADGE_TYPE.TEAM,
+        -1,
+        -0,
+      );
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
+        GROUP_BADGE_TYPE.FAVORITE_TEAM,
+        -2,
+        -0,
       );
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith(
@@ -526,8 +552,7 @@ describe('TotalUnreadController', () => {
         },
         {
           id: 3,
-          deactivated: false,
-          members: [5683],
+          unreadCount: 1,
         },
       );
       expect(totalUnreadController['_singleGroupBadges'].size).toEqual(0);
@@ -932,6 +957,16 @@ describe('TotalUnreadController', () => {
 
       totalUnreadController['_registerBadge']();
       expect(mockBadgeService.registerBadge).toBeCalledTimes(4);
+    });
+  });
+
+  describe('getMentionUnread() [JPT-81]', () => {
+    it('should include mention, team_mention', () => {
+      const result = totalUnreadController['_getMentionUnread']({
+        unread_mentions_count: 1,
+        unread_team_mentions_count: 3,
+      } as GroupState);
+      expect(result).toEqual(4);
     });
   });
 });

@@ -22,10 +22,27 @@ module.exports = {
 
         return "The name is required";
       }
+    },
+    {
+      type: "list",
+      name: "module",
+      message: "containers or modules?",
+      choices: ["containers", "modules"]
+    },
+    {
+      type: "input",
+      name: "moduleContainer",
+      message: "Please type a module to be placed",
+      default: "message",
+      when(answers) {
+        console.log(answers);
+        return answers.module === "modules";
+      }
     }
   ],
   actions: data => {
-    const basePath = "../../application/src/containers/{{properCase name}}";
+    const basePath =
+      "../../application/src/{{properCase module}}/{{properCase moduleContainer}}{{#if moduleContainer}}/container{{/if}}/{{properCase name}}";
     const actions = [
       {
         type: "add",
@@ -61,6 +78,12 @@ module.exports = {
         type: "add",
         path: `${basePath}/__tests__/{{properCase name}}.ViewModel.test.ts`,
         templateFile: "./MVVM/viewModel.test.ts.hbs",
+        abortOnFail: true
+      },
+      {
+        type: "add",
+        path: `${basePath}/__tests__/{{properCase name}}.View.test.tsx`,
+        templateFile: "./MVVM/view.test.tsx.hbs",
         abortOnFail: true
       }
     ];

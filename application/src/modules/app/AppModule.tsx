@@ -6,10 +6,12 @@
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { sdk, LogControlManager, service } from 'sdk';
+import {
+ sdk, LogControlManager, service, powerMonitor
+} from 'sdk';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import '@/i18n';
 
@@ -37,6 +39,7 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
+import { dataCollectionHelper } from 'sdk/framework'
 
 /**
  * The root module, we call it AppModule,
@@ -60,6 +63,7 @@ class AppModule extends AbstractModule {
 
   private async _init() {
     this._logControlManager.setDebugMode(!isProductionVersion);
+    dataCollectionHelper.setIsProductionAccount(config.isProductionAccount());
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
@@ -90,16 +94,12 @@ class AppModule extends AbstractModule {
     } as IApplicationInfo);
 
     const {
-      notificationCenter,
-      socketManager,
-      SOCKET,
-      SERVICE,
-      CONFIG,
-    } = service;
+ notificationCenter, SOCKET, SERVICE, CONFIG
+} = service;
 
     if (window.jupiterElectron) {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
-        socketManager.onPowerMonitorEvent(actionName);
+        powerMonitor.onPowerMonitorEvent(actionName);
       };
       window.jupiterElectron.handleNativeUpgrade = showUpgradeDialog;
     }
@@ -191,7 +191,7 @@ class AppModule extends AbstractModule {
     await sdk.init({
       api,
       db,
-    });
+    });    
   }
 }
 

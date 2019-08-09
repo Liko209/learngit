@@ -12,7 +12,7 @@ import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
 import * as assert from 'assert';
-import { addOneCallLogFromGuest } from './utils';
+import { addOneMissCallLogFromAnotherUser } from './utils';
 
 fixture('call history')
   .beforeEach(setupCase(BrandTire.RC_WITH_GUESS_DID))
@@ -57,6 +57,11 @@ test.meta(<ITestMeta>{
   const CallHistoryPage = app.homePage.phoneTab.callHistoryPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click Call history entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.callHistoryEntry.enter();
   });
 
@@ -64,12 +69,8 @@ test.meta(<ITestMeta>{
     await CallHistoryPage.ensureLoaded();
   });
 
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton();
-  }
 
-  await addOneCallLogFromGuest(t, caller, callee, app);
+  await addOneMissCallLogFromAnotherUser(t, caller, callee, app);
 
   const callhistoryItem = CallHistoryPage.callHistoryItemByNth(0);
   const callhistoryId = await callhistoryItem.id;

@@ -13,4 +13,9 @@ enum PRESENCE {
   INMEETING = 'InMeeting',
 }
 
-export { PRESENCE };
+enum PRESENCE_REQUEST_STATUS {
+  AWAY = 'away',
+  ONLINE = 'online',
+}
+
+export { PRESENCE, PRESENCE_REQUEST_STATUS };

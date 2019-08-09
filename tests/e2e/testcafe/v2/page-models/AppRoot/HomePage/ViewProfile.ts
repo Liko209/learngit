@@ -1,11 +1,16 @@
 import * as assert from 'assert';
 import { BaseWebComponent } from '../../BaseWebComponent';
 import { ClientFunction } from 'testcafe';
+import * as faker from 'faker/locale/en';
 
 
 export class MiniProfile extends BaseWebComponent {
   async shouldBePopUp() {
     await this.t.expect(this.self.exists).ok();
+  }
+
+  async shouldBeDismissed() {
+    await this.t.expect(this.self.exists).notOk();
   }
 
   get self() {
@@ -148,8 +153,24 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('favorite-icon', this.self);
   }
 
+  async clickFavoriteButton() {
+    await this.t.click(this.favoriteButton);
+  }
+
+  async hoverFavoriteButton() {
+    await this.t.hover(this.favoriteButton);
+  }
+
   get unFavoriteStatusIcon() {
     return this.getSelectorByIcon("star_border", this.favoriteButton);
+  }
+
+  async clickUnFavoriteButton() {
+    await this.t.click(this.unFavoriteStatusIcon);
+  }
+
+  async hoverUnFavoriteButton() {
+    await this.t.hover(this.unFavoriteStatusIcon);
   }
 
   get favoriteStatusIcon() {
@@ -166,6 +187,10 @@ export class ProfileDialog extends BaseWebComponent {
 
   async clickMembersAvatar() {
     await this.t.click(this.membersAvatar);
+  }
+
+  async clickEditProfile() {
+    await this.t.click(this.editProfileButton);
   }
 
   get status() {
@@ -198,6 +223,10 @@ export class ProfileDialog extends BaseWebComponent {
 
   async goToMessages() {
     await this.t.click(this.messageButton);
+  }
+
+  get editProfileButton() {
+    return this.getSelectorByAutomationId('editProfileIcon', this.self);
   }
 
   get closeButton() {

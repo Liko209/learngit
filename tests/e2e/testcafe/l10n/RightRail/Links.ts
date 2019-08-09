@@ -38,6 +38,9 @@ test(formalName('Links display on the right rail', ['P2', 'Messages', 'RightRail
 
   await h(t).withLog('When I open a team and click Links Tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
+    if (await rightRail.foldStatusButtonByClass.exists) {
+      await rightRail.clickFoldStatusButton();
+    }
     await rightRail.openMore();
     await rightRail.linksEntry.enter();
   });

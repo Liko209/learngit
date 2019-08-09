@@ -18,6 +18,11 @@ import {
   GetBlockNumberListParams,
   BlockNumberItem,
   BLOCK_STATUS,
+  IDeviceRequest,
+  DeviceInfo,
+  DeviceRecord,
+  IStateRequest,
+  CountryRecord,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
@@ -33,7 +38,11 @@ import {
 } from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
-import { IExtensionCallerId } from 'sdk/api/ringcentral/types/common';
+import {
+  IExtensionCallerId,
+  StateRecord,
+  ICountryRequest,
+} from 'sdk/api/ringcentral/types/common';
 import { Nullable } from 'sdk/types';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
@@ -81,6 +90,11 @@ class RCInfoFetchController {
         JOB_KEY.FETCH_ROLE_PERMISSIONS,
         this.requestRCRolePermissions,
         this._shouldIgnoreFirstTime,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_DEVICE_INFO,
+        this.requestDeviceInfo,
+        false,
       );
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
@@ -224,17 +238,75 @@ class RCInfoFetchController {
     await this.rcInfoUserConfig.setExtensionCallerId(extensionCallerId);
     notificationCenter.emit(RC_INFO.EXTENSION_CALLER_ID, extensionCallerId);
   };
+
   requestDialingPlan = async (): Promise<void> => {
     const dialingPlan = await RCInfoApi.getDialingPlan();
     await this.rcInfoUserConfig.setDialingPlan(dialingPlan);
     notificationCenter.emit(RC_INFO.DIALING_PLAN, dialingPlan);
   };
 
+  requestCountryState = async (
+    request: IStateRequest,
+  ): Promise<StateRecord[]> => {
+    const result: StateRecord[] = [];
+    await this._requestCountryStateByPage(request, result);
+    return result;
+  };
+
+  private async _requestCountryStateByPage(
+    request: IStateRequest,
+    result: StateRecord[],
+  ) {
+    const response = await RCInfoApi.getCountryState(request);
+    response.records && result.push(...response.records.map(data => data));
+    if (
+      response.paging &&
+      response.paging.page &&
+      response.paging.totalPages &&
+      response.paging.page < response.paging.totalPages
+    ) {
+      request.page += 1;
+      await this._requestCountryStateByPage(request, result);
+    }
+  }
+
   requestAccountServiceInfo = async (): Promise<void> => {
     const accountServiceInfo = await RCInfoApi.getAccountServiceInfo();
     await this.rcInfoUserConfig.setAccountServiceInfo(accountServiceInfo);
     notificationCenter.emit(RC_INFO.RC_SERVICE_INFO, accountServiceInfo);
   };
+
+  requestDeviceInfo = async (): Promise<void> => {
+    const request: IDeviceRequest = {
+      linePooling: 'Host',
+    };
+    const deviceInfo = await RCInfoApi.getDeviceInfo(request);
+    await this.rcInfoUserConfig.setDeviceInfo(deviceInfo);
+    notificationCenter.emit(RC_INFO.DEVICE_INFO, deviceInfo);
+  };
+
+  requestCountryList = async (
+    request: ICountryRequest,
+  ): Promise<CountryRecord[]> => {
+    const result: CountryRecord[] = [];
+    await this._requestCountryListByPage(request, result);
+    return result;
+  };
+
+  private async _requestCountryListByPage(
+    request: ICountryRequest,
+    result: CountryRecord[],
+  ) {
+    const response = await RCInfoApi.getCountryInfo(request);
+    response.records && result.push(...response.records.map(data => data));
+
+    const page = _.get(response, 'paging.page', 0);
+    const totalPages = _.get(response, 'paging.totalPages', 0);
+    if (page < totalPages) {
+      request.page += 1;
+      await this._requestCountryListByPage(request, result);
+    }
+  }
 
   requestBlockNumberList = async (): Promise<void> => {
     const params: GetBlockNumberListParams = {
@@ -254,7 +326,9 @@ class RCInfoFetchController {
     const response = await RCInfoApi.getBlockNumberList(params);
     response.records &&
       result.push(
-        ...response.records.filter(data => data.status === BLOCK_STATUS.BLOCKED),
+        ...response.records.filter(
+          data => data.status === BLOCK_STATUS.BLOCKED,
+        ),
       );
     if (
       response.paging &&
@@ -314,7 +388,7 @@ class RCInfoFetchController {
   }
 
   private async _getAllSpecialNumberRules(): Promise<
-  SpecialNumberRuleModel | ISpecialServiceNumber | undefined
+    SpecialNumberRuleModel | ISpecialServiceNumber | undefined
   > {
     return (await this.rcInfoUserConfig.getSpecialNumberRules()) || undefined;
   }
@@ -347,7 +421,7 @@ class RCInfoFetchController {
   }
 
   async getExtensionPhoneNumberList(): Promise<
-  IExtensionPhoneNumberList | undefined
+    IExtensionPhoneNumberList | undefined
   > {
     return (
       (await this.rcInfoUserConfig.getExtensionPhoneNumberList()) || undefined
@@ -368,6 +442,11 @@ class RCInfoFetchController {
 
   async getAccountServiceInfo(): Promise<AccountServiceInfo | undefined> {
     return (await this.rcInfoUserConfig.getAccountServiceInfo()) || undefined;
+  }
+
+  async getDigitalLines(): Promise<DeviceRecord[]> {
+    const deviceInfo: DeviceInfo = await this.rcInfoUserConfig.getDeviceInfo();
+    return deviceInfo && deviceInfo.records ? deviceInfo.records : [];
   }
 
   async getForwardingFlipNumbers(

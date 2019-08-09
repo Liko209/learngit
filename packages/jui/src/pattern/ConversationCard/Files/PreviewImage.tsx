@@ -16,6 +16,7 @@ import styled from '../../../foundation/styled-components';
 import { grey } from '../../../foundation/utils';
 import { withDelay } from '../../../hoc/withDelay';
 import { JuiButtonBar } from '../../../components/Buttons';
+import moize from 'moize';
 
 type SizeType = {
   width: number;
@@ -32,6 +33,7 @@ type JuiPreviewImageProps = {
   handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   didLoad?: Function;
   futureCallback?: Function;
+  fileID: number;
 } & SizeType;
 
 const Wrapper = styled.div`
@@ -64,37 +66,52 @@ const JuiDelayPlaceholder = (props: SizeType) => (
 );
 
 type State = {
+  postloadURL: string; // s3 url
   url: string;
+  imgLoaded: boolean;
   originURL: string;
   loaded: boolean;
   retryCount: number;
+  fileID: number;
+  imageInfo: ThumbnailInfo;
 };
 
 const MAX_RETRY_COUNT = 100;
 
+const kInvalidFileID = -1;
+
+const cache = moize((id: number, val: boolean) => val, {
+  transformArgs: id => id,
+  maxSize: 999,
+}) as any;
+
 class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
   static SQUARE_SIZE = 180;
-  private _imageInfo: ThumbnailInfo = {
-    width: 0,
-    height: 0,
-    imageWidth: 0,
-    imageHeight: 0,
-    left: 0,
-    top: 0,
-    justifyHeight: false,
-    justifyWidth: false,
-  };
   private _imageRef: RefObject<any> = createRef();
   private _mounted: boolean = false;
   state: State;
 
   constructor(props: JuiPreviewImageProps) {
     super(props);
+    const { url, fileID, width, height } = props;
     this.state = {
-      url: props.url,
-      originURL: props.url,
-      loaded: false,
+      postloadURL: '',
+      url,
+      originURL: url,
+      imgLoaded: false,
+      loaded: cache.get(fileID),
       retryCount: 0,
+      fileID: kInvalidFileID,
+      imageInfo: {
+        width,
+        height,
+        imageWidth: 0,
+        imageHeight: 0,
+        left: 0,
+        top: 0,
+        justifyHeight: false,
+        justifyWidth: false,
+      },
     };
   }
 
@@ -103,11 +120,31 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     prevState: State,
   ) {
     const newURL = nextProps.url;
-    if (newURL !== prevState.originURL) {
+    const newFileID = nextProps.fileID;
+    if (prevState.loaded) {
+      // this will happen after uploaded image and created thumbnail on S3 server
+      // thumbnail url will be updated, but we don't need to refresh UI, just
+      // download the image by an invisible <img />
+      if (newURL !== prevState.originURL) {
+        return { postloadURL: newURL, url: newURL };
+      }
+    } else if (
+      !prevState.loaded &&
+      newFileID !== kInvalidFileID &&
+      newFileID !== prevState.fileID &&
+      newURL !== prevState.originURL
+    ) {
+      // since there are lots of middle state change during the image upload
+      // we try to only change when needed
       return {
-        url: newURL, originURL: newURL, loaded: false, retryCount: 0,
+        url: newURL,
+        originURL: newURL,
+        loaded: cache.get(newFileID),
+        retryCount: 0,
+        fileID: newFileID,
       };
     }
+
     return null;
   }
 
@@ -115,17 +152,23 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     const { forceSize, squareSize, didLoad } = this.props;
     const { width, height } = this._imageRef.current!;
     if (forceSize) {
-      this._imageInfo = getThumbnailForSquareSize(
-        width,
-        height,
-        squareSize || JuiPreviewImage.SQUARE_SIZE,
-      );
+      this.setState({
+        imageInfo: getThumbnailForSquareSize(
+          width,
+          height,
+          squareSize || JuiPreviewImage.SQUARE_SIZE,
+        ),
+      });
     } else {
-      this._imageInfo = getThumbnailSize(width, height);
+      this.setState({
+        imageInfo: getThumbnailSize(width, height),
+      });
     }
     didLoad && didLoad(this.props.futureCallback);
     if (this._mounted) {
-      this.setState({ loaded: true });
+      const { fileID } = this.state;
+      cache.add(fileID, true);
+      this.setState({ imgLoaded: true, loaded: true });
     }
   };
 
@@ -149,7 +192,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
   private _getImageStyle = (squareWidth: number, squareHeight: number) => {
     if (!this.state.loaded) return { display: 'none' };
 
-    const { justifyHeight, justifyWidth } = this._imageInfo;
+    const { justifyHeight, justifyWidth } = this.state.imageInfo;
 
     const styleWidth = justifyWidth ? { width: squareWidth } : {};
     const styleHeight = justifyHeight ? { height: squareHeight } : {};
@@ -162,10 +205,6 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
       this.props.handleImageClick(ev, this.state.loaded);
   };
 
-  private _handleInfoClick(event: React.MouseEvent<HTMLElement>) {
-    event.stopPropagation();
-  }
-
   componentDidMount() {
     this._mounted = true;
   }
@@ -173,49 +212,51 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     this._mounted = false;
   }
   render() {
-    const {
-      Actions, fileName, forceSize, placeholder,
-    } = this.props;
-    const { loaded, url } = this.state;
-    const { width, height } =
-      loaded && !forceSize ? this._imageInfo : this.props;
+    const { Actions, fileName, forceSize, placeholder } = this.props;
+    const { loaded, imgLoaded, url, postloadURL, imageInfo } = this.state;
+    const { width, height } = !forceSize ? imageInfo : this.props;
     const imageStyle = this._getImageStyle(width, height);
+
     return (
-      <>
+      <React.Fragment>
         {!loaded && placeholder}
-        {!loaded && url && (
+        {postloadURL && !imgLoaded && (
+          <img alt="" src={postloadURL} style={{ display: 'none' }} />
+        )}
+        {url && !imgLoaded && (
           <StyledImg
             style={{ display: 'none' }}
             ref={this._imageRef}
             src={url}
             onLoad={this._handleImageLoad}
             onError={this._handleImageLoadError}
-            onClick={this._handleImageClick}
           />
         )}
-        {loaded && (
+        {loaded && url && (
           <Jui.ImageCard
             width={width}
+            data-test-automation-id="imageCard"
             height={height}
             onClick={this._handleImageClick}
           >
-            <StyledImg style={imageStyle} src={url} />
-            <Jui.ImageFileInfo
-              width={width}
-              height={height}
-              component="div"
-              onClick={this._handleInfoClick}
-            >
+            <StyledImg
+              data-test-automation-class="image"
+              style={imageStyle}
+              src={url}
+            />
+            <Jui.ImageFileInfo width={width} height={height} component="div">
               <FileName>{fileName}</FileName>
               {Actions && (
                 <Jui.FileActionsWrapper>
-                  <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>
+                  <JuiButtonBar isStopPropagation overlapSize={-2}>
+                    {Actions}
+                  </JuiButtonBar>
                 </Jui.FileActionsWrapper>
               )}
             </Jui.ImageFileInfo>
           </Jui.ImageCard>
         )}
-      </>
+      </React.Fragment>
     );
   }
 }

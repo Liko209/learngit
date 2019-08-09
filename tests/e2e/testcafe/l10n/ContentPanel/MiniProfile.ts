@@ -6,18 +6,19 @@ import { h } from "../../v2/helpers";
 import { v4 as uuid } from 'uuid';
 import { IGroup } from "../../v2/models";
 
-fixture('ContentPanelPanel/MemberProfile')
+fixture('ContentPanel/MiniProfile')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Files display on the right rail', ['P2', 'Messages', 'ContentPanelPanel', 'MemberProfile', 'V1.4', 'Lorna.Li']), async(t) => {
+test(formalName('Check mini profile is displayed correct', ['P2', 'Messages', 'ContentPanel', 'MiniProfile', 'V1.4', 'Lorna.Li']),
+async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
 
-  const team = <IGroup> {
+  let team = <IGroup>{
     name: uuid(),
-    type: "team",
+    type: "Team",
     owner: loginUser,
-    members: [loginUser]
+    members:[loginUser]
   }
 
   let textPostId;
@@ -42,10 +43,9 @@ test(formalName('Files display on the right rail', ['P2', 'Messages', 'ContentPa
   const miniProfile = app.homePage.miniProfile;
   await h(t).withLog('When I open a team and tap avatar', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
-    // await conversationPage.waitUntilPostsBeLoaded();
     await conversationPage.postItemById(textPostId).clickAvatar();
     await t.expect(miniProfile.profileButton).ok();
   });
 
-  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_ContentPanelPanel_MiniProfile'});
+  await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_ContentPanel_MiniProfile'});
 });

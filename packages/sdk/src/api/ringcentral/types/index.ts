@@ -15,6 +15,12 @@ export {
   IForwardingNumberRequest,
   IExtensionCallerId,
   IExtensionCallerIdRequest,
+  CountryState,
+  IStateRequest,
+  StateRecord,
+  CountryList,
+  CountryRecord,
+  ICountryRequest,
 } from './common';
 export { RCAccountInfo } from './RCAccountInfo';
 export { RCClientInfo } from './RCClientInfo';
@@ -35,3 +41,4 @@ export {
 } from './common';
 export * from './RCEventSubscription';
 export * from './BlockNumber';
+export * from './RCDeviceInfo';

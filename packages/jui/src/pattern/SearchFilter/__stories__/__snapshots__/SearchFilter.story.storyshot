@@ -63,9 +63,11 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
 }
 
 .c4.c4 .input {
-  -webkit-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  width: auto;
 }
 
 .c4.c4 .downshift-label {
@@ -125,7 +127,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
       role="combobox"
     >
       <div
-        className="MuiFormControl-root MuiFormControl-fullWidth c4 c5"
+        className="MuiFormControl-root MuiTextField-root c4 c5 MuiFormControl-fullWidth"
         onKeyDown={[Function]}
       >
         <label
@@ -173,7 +175,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
       role="combobox"
     >
       <div
-        className="MuiFormControl-root MuiFormControl-fullWidth c4 c5"
+        className="MuiFormControl-root MuiTextField-root c4 c5 MuiFormControl-fullWidth"
         onKeyDown={[Function]}
       >
         <label
