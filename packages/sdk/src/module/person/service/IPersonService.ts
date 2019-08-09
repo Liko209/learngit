@@ -62,7 +62,7 @@ interface IPersonService {
 
   getSoundexById(id: number): string[];
 
-  isCacheValid(person: Person): boolean;
+  isValidPerson(person: Person): boolean;
 
   getPhoneNumbers(
     person: Person,
