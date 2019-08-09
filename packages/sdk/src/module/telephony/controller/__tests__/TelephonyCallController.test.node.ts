@@ -491,7 +491,7 @@ describe('TelephonyCallController', () => {
       ]);
     });
 
-    it('should update correct call info to entity when is switch call', () => {
+    it('should update correct call info to entity when is outbound switch call', () => {
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
       callController['_getCallEntity'] = jest.fn().mockReturnValue({});
       const call = {
@@ -520,7 +520,7 @@ describe('TelephonyCallController', () => {
       ]);
     });
 
-    it('should update correct call info to entity when is switch call', () => {
+    it('should update correct call info to entity when is inbound switch call', () => {
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
       callController['_getCallEntity'] = jest.fn().mockReturnValue({});
       const call = {
@@ -541,9 +541,9 @@ describe('TelephonyCallController', () => {
       expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
         {
           connectingTime: expect.any(Number),
-          direction: 'Inbound',
-          from_name: 'rn',
-          from_num: '13',
+          direction: 'Outbound',
+          to_name: 'rn',
+          to_num: '13',
           uuid: '3',
         },
       ]);

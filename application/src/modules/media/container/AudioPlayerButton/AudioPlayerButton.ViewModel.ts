@@ -11,6 +11,8 @@ import { observable, action, computed } from 'mobx';
 import { JuiAudioStatus } from 'jui/components/AudioPlayer';
 import { Media } from '../../Media';
 
+const LOADING_TIME = 250;
+
 class AudioPlayerButtonViewModel extends StoreViewModel<
   AudioPlayerButtonProps
 > {
@@ -24,6 +26,8 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
   private _isPlaying: boolean = false;
 
   private _currentSrc: MediaOptions['src'] = '';
+
+  private _loadingTimer: NodeJS.Timeout;
 
   constructor(props: AudioPlayerButtonProps) {
     super(props);
@@ -59,6 +63,7 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
   dispose() {
     super.dispose();
     this._unbindMediaEvent();
+    this._media && this._media.dispose();
   }
 
   private _playMedia = () => {
@@ -69,6 +74,8 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
     if (!this._media) {
       return;
     }
+
+    this._loadingStatusTimer();
 
     this._media.play({
       startTime: 0,
@@ -83,6 +90,10 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
     this._media.on('pause', this._onPause);
     this._media.on('ended', this._onEnded);
     this._media.on('error', this._onError);
+    this._media.onReset(() => {
+      this._mediaStatus = JuiAudioStatus.PLAY;
+      this._isPlaying = false;
+    });
   };
 
   private _unbindMediaEvent = () => {
@@ -96,8 +107,24 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
   };
 
   @action
+  private _loadingStatusTimer = () => {
+    this._loadingTimer = setTimeout(() => {
+      if (this._media && this._media.playing) {
+        return;
+      }
+      this._mediaStatus = JuiAudioStatus.LOADING;
+    }, LOADING_TIME);
+  };
+
+  private _clearLoadingStatusTimer = () => {
+    clearTimeout(this._loadingTimer);
+  };
+
+  @action
   private _onPlay = () => {
     const { onPlay } = this.props;
+    this._clearLoadingStatusTimer();
+    this._mediaStatus = JuiAudioStatus.PLAY;
     this._isPlaying = true;
     onPlay && onPlay();
   };
@@ -105,6 +132,8 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
   @action
   private _onPause = () => {
     const { onPause } = this.props;
+    this._clearLoadingStatusTimer();
+    this._mediaStatus = JuiAudioStatus.PLAY;
     this._isPlaying = false;
     onPause && onPause();
   };
@@ -112,6 +141,7 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
   @action
   private _onEnded = () => {
     const { onEnded } = this.props;
+    this._mediaStatus = JuiAudioStatus.PLAY;
     this._isPlaying = false;
     onEnded && onEnded();
   };
@@ -119,6 +149,8 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
   @action
   private _onError = () => {
     const { onError } = this.props;
+    this._clearLoadingStatusTimer();
+    this._mediaStatus = JuiAudioStatus.PLAY;
     this._isPlaying = false;
     onError && onError();
   };

@@ -22,7 +22,7 @@ import GroupStateModel from '@/store/models/GroupState';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import _ from 'lodash';
-import { autorun, computed, reaction } from 'mobx';
+import { autorun, computed, reaction, action } from 'mobx';
 import { mainLogger, PerformanceTracer } from 'sdk';
 import { MAINTAIN_DIRECTION, QUERY_DIRECTION } from 'sdk/dao';
 import { AccountService } from 'sdk/module/account';
@@ -158,8 +158,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return this._instance;
   }
 
+  @action
   onReady(handler: (list: number[]) => any) {
-    this._dataLoader = this._dataLoader.then(() => handler(this.groupIds));
+    const ids = this.groupIds;
+    this._dataLoader = this._dataLoader.then(() => handler(ids));
   }
 
   private _initHandlerMap() {
@@ -461,6 +463,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
   }
 
+  @action
   private async _addGroupsToSection(ids: number[]) {
     const diffIds = _.difference(ids, this.groupIdsExcludeFavorites);
     if (diffIds.length) {

@@ -118,6 +118,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     return (
       <StyledPlayerWrapper>
         <JuiAudioAction
+          mode={mode}
           color={getActionColor(status, isHighlight)}
           status={status}
           tooltip={action && action.tooltip}
