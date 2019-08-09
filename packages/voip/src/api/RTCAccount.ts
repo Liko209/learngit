@@ -271,6 +271,7 @@ class RTCAccount implements IRTCAccount {
       clearTimeout(this._retryTimer);
     }
     this._retryTimer = setTimeout(() => {
+      rtcLogger.debug(LOG_TAG, 'retry timer is reached and do reRegister');
       this._reRegister();
     }, interval * 1000);
   }
@@ -358,6 +359,7 @@ class RTCAccount implements IRTCAccount {
 
   private _onNetworkChange(params: any) {
     if (RTC_NETWORK_STATE.ONLINE === params.state) {
+      rtcLogger.debug(LOG_TAG, 'network change to online and do reRegister');
       this._reRegister();
     }
   }
@@ -385,6 +387,7 @@ class RTCAccount implements IRTCAccount {
   }
 
   private _switchBackProxy() {
+    rtcLogger.debug(LOG_TAG, 'switch to back proxy and do reRegister');
     this._reRegister();
   }
 }
