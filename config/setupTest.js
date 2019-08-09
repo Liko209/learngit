@@ -11,9 +11,13 @@ import './jest/setup/media';
 import './jest/setup/selection';
 import './jest/setup/promise';
 import './jest/setup/thirdParty';
-
 import * as setupTimer from './jest/setup/timer';
-import { FakeStorage } from './utils';
+
+jest.mock('styled-components', () => require('./jest/setup/styled-components'));
+
+import {
+  FakeStorage
+} from './utils';
 /* eslint-disable */
 
 const log = reason => {
