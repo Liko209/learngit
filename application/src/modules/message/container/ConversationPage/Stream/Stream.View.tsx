@@ -356,11 +356,11 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, updateHistoryHandler } = this.props;
+    const { loadInitialPosts, markAsRead, updateHistoryHandler } = this.props;
     await loadInitialPosts();
     runInAction(() => {
       updateHistoryHandler();
-      this._updateIgnoredStatus(true);
+      markAsRead();
     });
     this._loadMoreStrategy.updatePreloadCount(this.props.historyUnreadCount);
     requestAnimationFrame(() => {
