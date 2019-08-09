@@ -11,7 +11,6 @@ class GlipAccount extends AbstractAccount {
     this.setSupportedServices([
       ServiceConfig.ACCOUNT_SERVICE,
       ServiceConfig.BADGE_SERVICE,
-      ServiceConfig.CALL_LOG_SERVICE,
       ServiceConfig.COMPANY_SERVICE,
       ServiceConfig.DB_CONFIG_SERVICE,
       ServiceConfig.GLOBAL_CONFIG_SERVICE,
@@ -25,15 +24,11 @@ class GlipAccount extends AbstractAccount {
       ServiceConfig.PRESENCE_SERVICE,
       ServiceConfig.PROFILE_SERVICE,
       ServiceConfig.PROGRESS_SERVICE,
-      ServiceConfig.RC_EVENT_SUBSCRIPTION_SERVICE,
-      ServiceConfig.RC_INFO_SERVICE,
+      ServiceConfig.USER_CONFIG_SERVICE,
       ServiceConfig.SEARCH_SERVICE,
       ServiceConfig.SETTING_SERVICE,
       ServiceConfig.STATE_SERVICE,
       ServiceConfig.SYNC_SERVICE,
-      ServiceConfig.TELEPHONY_SERVICE,
-      ServiceConfig.VOICEMAIL_SERVICE,
-      ServiceConfig.USER_CONFIG_SERVICE,
     ]);
   }
 }
