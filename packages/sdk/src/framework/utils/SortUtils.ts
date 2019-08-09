@@ -6,6 +6,9 @@
 
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { IdModel, ModelIdType, SortableModel } from '../model';
+import { randomInt } from 'sdk/utils';
+
+const DEFAULT_PARTIAL_SORT_MIN_COUNT = 100;
 
 class SortUtils {
   static sortModelByKey<
@@ -85,15 +88,45 @@ class SortUtils {
     return 0;
   }
 
-  static heapSort<
-    T extends IdModel<IdType>,
-    IdType extends ModelIdType = number
-  >(data: T[], sortFunc: (lv: T, rv: T) => number, sortCount: number): T[] {
-    data;
-    sortFunc;
-    sortCount;
-    // todo: implement
-    return data;
+  static partialSort<T>(
+    dataArray: T[],
+    sortFunc: (lv: T, rv: T) => number,
+    sortCount: number,
+  ): T[] {
+    if (dataArray.length < sortCount) {
+      return dataArray.sort(sortFunc);
+    }
+    return this._partition(dataArray, sortFunc, sortCount).sort(sortFunc);
+  }
+
+  private static _partition<T>(
+    dataArray: T[],
+    sortFunc: (lv: T, rv: T) => number,
+    sortCount: number,
+  ): T[] {
+    if (dataArray.length === sortCount) {
+      return dataArray;
+    }
+    if (dataArray.length < DEFAULT_PARTIAL_SORT_MIN_COUNT) {
+      return dataArray.sort(sortFunc).slice(0, sortCount);
+    }
+
+    const base = dataArray[randomInt() % dataArray.length];
+    const lArray: T[] = [];
+    const rArray: T[] = [];
+    dataArray.forEach((data: T) => {
+      if (sortFunc(data, base) === -1) {
+        lArray.push(data);
+      } else {
+        rArray.push(data);
+      }
+    });
+    if (lArray.length < sortCount) {
+      return lArray.concat(
+        this._partition(rArray, sortFunc, sortCount - lArray.length),
+      );
+    }
+    return this._partition(lArray, sortFunc, sortCount);
   }
 }
 

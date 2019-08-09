@@ -196,7 +196,12 @@ export class GroupFetchDataController {
     return [];
   }
 
-  async getMemberAndGuestIds(groupId: number, memberFetchCount: number, guestFetchCount: number, sortByPresence: boolean = true) {
+  async getMemberAndGuestIds(
+    groupId: number,
+    memberFetchCount: number,
+    guestFetchCount: number,
+    sortByPresence: boolean = true,
+  ) {
     let realMemberIds: number[] = [];
     let guestIds: number[] = [];
     let optionalIds: number[] = [];
@@ -206,7 +211,10 @@ export class GroupFetchDataController {
         ServiceConfig.PERSON_SERVICE,
       );
       const members = personService.batchGetSynchronously(group.members);
-      optionalIds = _.difference(group.members, members.map(person => person.id));
+      optionalIds = _.difference(
+        group.members,
+        members.map(person => person.id),
+      );
 
       // divide group members
       let realMembers: Person[] = [];
@@ -253,8 +261,12 @@ export class GroupFetchDataController {
         }
         return result;
       };
-      realMembers = SortUtils.heapSort(realMembers, sortFunc, memberFetchCount);
-      guests = SortUtils.heapSort(guests, sortFunc, guestFetchCount);
+      realMembers = SortUtils.partialSort(
+        realMembers,
+        sortFunc,
+        memberFetchCount,
+      );
+      guests = SortUtils.partialSort(guests, sortFunc, guestFetchCount);
 
       realMemberIds = realMembers.map(person => person.id);
       guestIds = guests.map(person => person.id);
