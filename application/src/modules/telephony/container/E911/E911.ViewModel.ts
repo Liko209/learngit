@@ -73,9 +73,9 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     outOfCountry: false,
   };
 
-  @observable fields: FieldsConfig = {
-    customerName: '',
-  };
+  // if not network we should give a default country show text field
+  // or waiting fetch data
+  @observable fields: FieldsConfig = addressConfig['default'];
 
   @observable loading: boolean = false;
 
@@ -182,9 +182,6 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       this.getFields(currentCountry);
       this.saveStateOrCountry('country', currentCountry);
       this.getState(currentCountry);
-    } else {
-// if not network we should give a default country show text field
-      this.fields = addressConfig['default'];
     }
   }
 
