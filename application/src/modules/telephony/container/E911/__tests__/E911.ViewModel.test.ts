@@ -14,7 +14,22 @@ import { E911ViewModel } from '../E911.ViewModel';
 import { OutOfCountryDisclaimer } from '../config';
 
 jest.mock('@/containers/Notification');
-
+const DEFAULT_FIELDS = {
+  street: '',
+  street2: '',
+  city: '',
+  state: '',
+  stateId: '',
+  stateIsoCode: '',
+  stateName: '',
+  country: '',
+  countryId: '',
+  countryIsoCode: '',
+  countryName: '',
+  zip: '',
+  customerName: '',
+  outOfCountry: false,
+};
 const checkNotification = (message: string) => ({
   message,
   dismissible: false,
@@ -342,6 +357,63 @@ describe('E911ViewModel', () => {
       expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', country);
       expect(vm.getState).toHaveBeenCalledWith(country);
       expect(vm.getDisclaimers).toHaveBeenCalledWith(country);
+    }
+
+    @test(
+      'should be reset field ghost text if country change and country !== setting',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryName: 'US',
+        customerName: 'customerName',
+      }),
+    )
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    async t2() {
+      const vm = new E911ViewModel({});
+      vm.countryList = [{
+        name: 'US',
+      }, {
+        name: 'CN',
+      }]
+      jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
+      jest.spyOn(vm, 'getState').mockImplementation();
+      jest.spyOn(vm, 'getDisclaimers').mockImplementation();
+      jest.spyOn(vm, 'getFields');
+      await vm.countryOnChange({ target: { value: 'CN' } } as any);
+      const { customerName, ...rest } = DEFAULT_FIELDS;
+      expect(vm.value).toEqual({
+        customerName: 'customerName',
+        ...rest,
+      })
+    }
+
+    @test(
+      'should be reset user setting if country change and country === user setting',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryName: 'US',
+        customerName: 'customerName',
+      }),
+    )
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    async t3() {
+      const vm = new E911ViewModel({});
+      vm.countryList = [{
+        name: 'US',
+      }, {
+        name: 'CN',
+      }]
+      jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
+      jest.spyOn(vm, 'getState').mockImplementation();
+      jest.spyOn(vm, 'getDisclaimers').mockImplementation();
+      jest.spyOn(vm, 'getFields');
+      await vm.countryOnChange({ target: { value: 'US' } } as any);
+      expect(vm.value).toEqual({
+        countryName: 'US',
+        customerName: 'customerName',
+      })
     }
   }
 

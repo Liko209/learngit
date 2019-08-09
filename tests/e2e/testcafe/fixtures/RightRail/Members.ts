@@ -417,10 +417,10 @@ test(formalName('Check the maximum rows of members/guests are displayed on the r
     await t.expect(rightRail.memberListSection.members.clientHeight).eql(AVATAR_HEIGHT * 4);
   })
 
-  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListAvatar"]');
-  const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListAvatar"]')
-  const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListAvatar"]');
+  const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListAvatar"]')
+  const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
   await h(t).withLog('And the count number should be the number of not displayed members', async () => {
     const showAllText = await rightRail.memberListSection.showAllLink.innerText;
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
@@ -472,8 +472,8 @@ test(formalName('Check the maximum rows of members/guests are displayed on the r
   const app = new AppRoot(t);
   const rightRail = app.homePage.messageTab.rightRail;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListAvatar"]');
-  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListAvatar"]')
+  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListAvatar"]');
+  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListAvatar"]')
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -579,8 +579,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
   const app = new AppRoot(t);
   const rightRail = app.homePage.messageTab.rightRail;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListAvatar"]');
-  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListAvatar"]')
+  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListAvatar"]');
+  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListAvatar"]')
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -657,8 +657,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
     const displayedMemberCount = await memberAvatars.count;
     const displayedGuestCount = await guestAvatars.count;
-    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
     const restMemberText = await memberMore.textContent;
     const restMemberCount = Number(restMemberText.substring(1));
     const restGuestText = await guestMore.textContent;
@@ -686,8 +686,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
     const displayedMemberCount = await memberAvatars.count;
     const displayedGuestCount = await guestAvatars.count;
-    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
     const restMemberText = await memberMore.textContent;
     const restMemberCount = Number(restMemberText.substring(1));
     const restGuestText = await guestMore.textContent;
@@ -709,8 +709,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
     const displayedMemberCount = await memberAvatars.count;
     const displayedGuestCount = await guestAvatars.count;
-    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
     const restMemberText = await memberMore.textContent;
     const restMemberCount = Number(restMemberText.substring(1));
     const restGuestText = await guestMore.textContent;

@@ -176,7 +176,13 @@ class Sound {
             this._hasSinkId = true;
             this._holdPlaying && this._soundPlay();
           })
-          .catch(() => {
+          .catch((e: any) => {
+            mainLogger.warn(
+              '[MediaModule] audio set sinkId error',
+              this._id,
+              e.code,
+              e.message,
+            );
             this._hasSinkId = false;
           });
       }, 0);
@@ -229,6 +235,7 @@ class Sound {
             .catch(e => {
               mainLogger.warn(
                 '[MediaModule] audio play catch error',
+                this._id,
                 e.code,
                 e.message,
               );
@@ -252,6 +259,7 @@ class Sound {
       } catch (e) {
         mainLogger.warn(
           '[MediaModule] html5AudioPlay catch error',
+          this._id,
           e.code,
           e.message,
         );
@@ -397,8 +405,13 @@ class Sound {
       typeof Promise !== 'undefined' &&
       (testPlay instanceof Promise || typeof testPlay.then === 'function')
     ) {
-      testPlay.catch(() => {
-        mainLogger.warn("[MediaModule] audio can't be play");
+      testPlay.catch((e: any) => {
+        mainLogger.warn(
+          "[MediaModule] audio can't be play",
+          this._id,
+          e.code,
+          e.message,
+        );
       });
     }
 

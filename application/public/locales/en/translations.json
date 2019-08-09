@@ -121,7 +121,7 @@
     "openDialer": "Open the dialer",
     "confirmAddressNow": "Confirm address now.",
     "confirmEmergencyAddress": "To enable outbound calls outside your organization, confirm your emergency address.",
-    "editProfile": "Edit profile"
+    "viewProfile": "View profile"
   },
   "globalSearch": {
     "search": "Search",

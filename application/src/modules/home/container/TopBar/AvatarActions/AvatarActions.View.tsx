@@ -75,10 +75,6 @@ class AvatarActionsComponent extends React.Component<Props> {
     OpenProfile.show(this.props.currentUserId);
   };
 
-  handleOpenEditProfile = () => {
-    this.props.handleOpen();
-  };
-
   handleDropdown = () => {
     dataAnalysis.page('Jup_Web/DT__appOptions');
   };
@@ -105,11 +101,10 @@ class AvatarActionsComponent extends React.Component<Props> {
       >
         <JuiStyledDropdown>
           <DropdownContactInfo
-            handleClick={this.openProfile}
             Avatar={this._DropdownAvatar()}
-            openEditProfile={this.handleOpenEditProfile}
+            openEditProfile={this.openProfile}
             name={person.displayName}
-            content={t('home.editProfile')}
+            content={t('home.viewProfile')}
           />
           <JuiMenuList data-test-automation-id="avatarMenu">
             <PresenceMenu presence={presence} title={this._tooltip} />

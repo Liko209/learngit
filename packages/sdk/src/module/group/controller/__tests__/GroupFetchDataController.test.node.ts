@@ -308,8 +308,7 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      console.info('result1', result1);
-      expect(result1).toEqual({data: mock, hasMore: false});
+      expect(result1).toEqual({ data: mock, hasMore: false });
 
       const result22 = await groupFetchDataController.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
@@ -331,7 +330,33 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(result3).toEqual({data: mock, hasMore: false});
+      expect(result3).toEqual({ data: mock, hasMore: false });
+    });
+
+    it('should return the correct has more for get groups by type', async () => {
+      const mock = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }];
+      testEntitySourceController.getEntities = jest
+        .fn()
+        .mockResolvedValue(mock);
+      groupFetchDataController.groupHandleDataController.filterGroups = jest
+        .fn().mockResolvedValue(
+        mock,
+      );
+      const result1 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.TEAM,
+        0,
+        2,
+        5,
+      );
+      expect(result1).toEqual({ data: mock, hasMore: true });
+
+      const result22 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        2,
+        5,
+      );
+      expect(result22).toEqual({ data: mock, hasMore: false });
     });
 
     it('getGroupsByIds()', async () => {
@@ -1416,8 +1441,14 @@ describe('GroupFetchDataController', () => {
           return person.name;
         });
 
-      const result = await groupFetchDataController.getMembersAndGuestIds(1235, true);
-      expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234, 567] });
+      const result = await groupFetchDataController.getMembersAndGuestIds(
+        1235,
+        true,
+      );
+      expect(result).toEqual({
+        guestIds: [456, 345],
+        memberIds: [123, 234, 567],
+      });
     });
   });
 });

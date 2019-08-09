@@ -91,6 +91,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I click Phone entry of leftPanel,', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
   });
   const callHistoryEntry = app.homePage.phoneTab.callHistoryEntry;
   await h(t).withLog('Then I will see call history entry', async () => {
@@ -108,7 +113,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I type random long text in the input', async () => {
-    await t.typeText(callHistoryPage.filterInput, filterKey, {replace: true});
+    await t.click(callHistoryPage.filterInput)
+      .wait(1e3)
+      .typeText(callHistoryPage.filterInput, filterKey, { replace: true });
   });
 
   await h(t).withLog('Then the value should only be 60 characters', async (step) => {
@@ -153,6 +160,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I click Phone entry of leftPanel,', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
   });
   const callHistoryEntry = app.homePage.phoneTab.callHistoryEntry;
   await h(t).withLog('Then I will see call history entry', async () => {
@@ -177,7 +189,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I type user2\'s last name ', async () => {
     const user2LastName = await h(t).glip(user).getPersonPartialData('last_name', user2.rcId);
-    await t.typeText(callHistoryPage.filterInput, user2LastName, {replace: true});
+    await t.typeText(callHistoryPage.filterInput, user2LastName, { replace: true });
   });
 
   await h(t).withLog('Then the call logs from user2 is filtered', async () => {
@@ -189,10 +201,10 @@ test.meta(<ITestMeta>{
   const user2FirstName = await h(t).glip(user).getPersonPartialData('first_name', user2.rcId);
   const user2LastName = await h(t).glip(user).getPersonPartialData('last_name', user2.rcId);
   const user2PhoneNumbers = await h(t).glip(user).getPersonPartialData('rc_phone_numbers', user2.rcId);
-  const user2PhoneDirectNumber = user2PhoneNumbers.find(({usageType}) => usageType === 'DirectNumber')['phoneNumber'];
+  const user2PhoneDirectNumber = user2PhoneNumbers.find(({ usageType }) => usageType === 'DirectNumber')['phoneNumber'];
   const user2PhoneDirectNumberLastPart = user2PhoneDirectNumber.substr(-4);
   await h(t).withLog('When I type first letters with space ', async () => {
-    await t.typeText(callHistoryPage.filterInput, `${user2FirstName[0]} ${user2LastName[0]}`, {replace: true});
+    await t.typeText(callHistoryPage.filterInput, `${user2FirstName[0]} ${user2LastName[0]}`, { replace: true });
   });
 
   await h(t).withLog('Then all call logs with the two letters can be searched out', async () => {
@@ -205,7 +217,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I type part of user2 phone number {user2PhoneDirectNumberLastPart}', async (step) => {
     step.setMetadata('user2PhoneDirectNumberLastPart', user2PhoneDirectNumberLastPart);
-    await t.typeText(callHistoryPage.filterInput, user2PhoneDirectNumberLastPart, {replace: true});
+    await t.typeText(callHistoryPage.filterInput, user2PhoneDirectNumberLastPart, { replace: true });
   });
 
   await h(t).withLog('Then the call logs from user2 is filtered', async () => {
@@ -229,7 +241,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I type user2 phone number {formatUser2PhoneNumber}', async (step) => {
     step.setMetadata('formatUser2PhoneNumber', formatUser2PhoneNumber);
-    await t.typeText(callHistoryPage.filterInput, formatUser2PhoneNumber, {replace: true});
+    await t.typeText(callHistoryPage.filterInput, formatUser2PhoneNumber, { replace: true });
   });
 
   await h(t).withLog('Then the call logs from user2 is filtered', async () => {
