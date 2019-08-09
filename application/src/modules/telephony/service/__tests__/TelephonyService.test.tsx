@@ -60,7 +60,7 @@ describe('TelephonyService', () => {
     }
 
     @test('should not needE911Prompt if account does not have DL [JPT-2703]')
-    @mockService(RCInfoService, 'getDigitalLines', [])
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -75,7 +75,7 @@ describe('TelephonyService', () => {
     @test(
       'should not needE911Prompt if account has DL but emergency has not been confirmed',
     )
-    @mockService(RCInfoService, 'getDigitalLines', [1])
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', false)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -98,7 +98,7 @@ describe('TelephonyService', () => {
     @mockEntity(mockVolumeEntity)
     beforeEach() {}
     @test('should show E911 if not have been show E911')
-    @mockService(RCInfoService, 'getDigitalLines')
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed')
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -117,7 +117,7 @@ describe('TelephonyService', () => {
     }
 
     @test('should not show E911 if have been show E911')
-    @mockService(RCInfoService, 'getDigitalLines')
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed')
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
