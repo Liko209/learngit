@@ -34,6 +34,7 @@ import { catchError, getErrorType, ERROR_TYPES } from '@/common/catchError';
 import { DIRECTION } from 'jui/components/Lists';
 
 const BLACKLISTED_PROPS = ['viewRef'];
+const LOAD_SIBLING_POST_LIMIT = 30;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
@@ -129,6 +130,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     super(props, BLACKLISTED_PROPS);
     this.updateIgnoredStatus = this.updateIgnoredStatus.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
+    this.markAsRead = this.markAsRead.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
     this._historyHandler = new HistoryHandler();
     this.initialize();
@@ -250,6 +252,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   updateIgnoredStatus(isIgnore: boolean) {
     this._stateService.updateIgnoredStatus([this.props.groupId], isIgnore);
   }
+  
+  @action
+  markAsRead() {
+      this._stateService.updateReadStatus(this.props.groupId, false, true);
+  }
 
   enableNewMessageSeparatorHandler = () => {
     this._streamController.enableNewMessageSep();
@@ -292,7 +299,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
       this._streamController.replacePostList([post]);
-      await this._loadPosts(QUERY_DIRECTION.BOTH);
+      await this._loadPosts(QUERY_DIRECTION.BOTH, LOAD_SIBLING_POST_LIMIT);
     } else {
       // TODO error handing
     }
@@ -324,7 +331,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();
     this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
-    this.updateIgnoredStatus(true);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   };
 

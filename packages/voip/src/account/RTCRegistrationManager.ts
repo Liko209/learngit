@@ -25,7 +25,9 @@ import {
 } from './types';
 import async, { AsyncQueue } from 'async';
 import _ from 'lodash';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 
+const LOG_TAG = 'RTCRegistrationManager';
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
   private _fsm: RTCRegistrationFSM;
@@ -34,6 +36,7 @@ class RTCRegistrationManager extends EventEmitter2
   private _userInfo: RTCUserInfo;
 
   onNetworkChangeToOnlineAction(): void {
+    rtcLogger.debug(LOG_TAG, 'network change and do reRegister');
     this.reRegister();
   }
 
@@ -47,6 +50,7 @@ class RTCRegistrationManager extends EventEmitter2
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ): void {
+    rtcLogger.debug(LOG_TAG, 'provision ready then restart user agent');
     this._restartUA(provisionData, options);
   }
 
@@ -245,13 +249,17 @@ class RTCRegistrationManager extends EventEmitter2
   private _onUARegFailed(response?: any) {
     if (
       response &&
-      response.status_code &&
-      (REGISTRATION_ERROR_CODE.FORBIDDEN === response.status_code ||
-        REGISTRATION_ERROR_CODE.UNAUTHORIZED === response.status_code ||
+      response.statusCode &&
+      (REGISTRATION_ERROR_CODE.FORBIDDEN === response.statusCode ||
+        REGISTRATION_ERROR_CODE.UNAUTHORIZED === response.statusCode ||
         REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED ===
-          response.status_code)
+          response.statusCode)
     ) {
-      this.emit(REGISTRATION_EVENT.REFRESH_PROV);
+      rtcLogger.info(
+        LOG_TAG,
+        `receive register error status code = ${response.statusCode}`,
+      );
+      this._onUAProvisionUpdate();
     }
     this._eventQueue.push(
       { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },

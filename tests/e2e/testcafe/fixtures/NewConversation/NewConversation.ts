@@ -60,7 +60,8 @@ test(formalName('The content of "New conversation" dialog is correct', ['P2', 'N
 
   await h(t).withLog('And the dialog should contain title, description and input', async () => {
     await t.expect(newConversationDialog.title.textContent).eql('New conversation');
-    await t.expect(newConversationDialog.description.textContent).eql("Adding people will start a new conversation without the current message history. If you'd like to keep the history, you can convert to a team instead.");
+    const description = "Adding people will start a new conversation without the current message history.\u00A0If you'd like to keep the history, you can convert to a team instead."
+    await t.expect(newConversationDialog.description.textContent).eql(description);
     await t.expect(newConversationDialog.getSelector('a', newConversationDialog.description).textContent).eql("convert to a team");
     await t.expect(newConversationDialog.memberInput.InputArea.focused).ok();
     await t.expect(newConversationDialog.selectedMembers.count).eql(2);
@@ -68,7 +69,7 @@ test(formalName('The content of "New conversation" dialog is correct', ['P2', 'N
     const member1Name = await selectedMembers.nth(0).find('.label').textContent;
     const member2Name = await selectedMembers.nth(1).find('.label').textContent;
     const members = [member1Name, member2Name];
-    await t.expect(_.isEqual(_.sortBy(members), _.sortBy([userBName, userCName]))).ok();
+    assert.equal(String(_.sortBy(members)), String(_.sortBy([userBName, userCName])));
   });
 })
 

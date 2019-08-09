@@ -3,7 +3,8 @@
  * @Date: 2019-05-29 09:15:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { TelephonyTabs, kDefaultPhoneTabPath } from './config';
+import { TelephonyTabs } from './config';
+import { kDefaultPhoneTabPath } from './constant';
 
 function isValidTab(tab: string) {
   return TelephonyTabs.find(({ path }) => path === tab);

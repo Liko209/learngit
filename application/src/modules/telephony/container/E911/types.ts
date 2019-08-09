@@ -22,7 +22,7 @@ type E911ViewProps = E911Props & {
   countryList: Country[];
   stateList: State[];
   countryOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onSubmit: () => Promise<void>;
+  onSubmit: () => Promise<boolean>;
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   setCheckBox: (index: number) => () => void;
   value: E911SettingInfo;
@@ -32,6 +32,7 @@ type E911ViewProps = E911Props & {
   shouldShowSelectState: boolean;
   closeE911: (status: boolean) => void;
   loading: boolean;
+  getCountryList: () => void;
 };
 
 type CheckBox = {

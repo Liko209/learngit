@@ -53,14 +53,11 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   private _presence = () => {
     const { groupType } = this.props;
     return this._requiredShownPresenceConversationTypes.includes(groupType) ? (
-      <Presence uid={this.props.personId} />
+      <Presence uid={this.props.personId} borderSize="small" />
     ) : null;
   };
   private get _indicator() {
-    if (this.props.selected) {
-      return null;
-    }
-    return <Indicator id={this.props.groupId} showUmi={this._showUmi} />;
+    return <Indicator selected={this.props.selected} id={this.props.groupId} showUmi={this._showUmi} />;
   }
 
   private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {

@@ -35,8 +35,8 @@ class LeftRailViewComponent extends Component<
     history.push(`/messages/${type}`);
   };
 
-  @observable
-  private _loading = false;
+  @observable private _loading = false;
+  @observable private _teamSectionCollapsed = false;
 
   componentDidMount() {
     SectionGroupHandler.getInstance().setLeftRailVisible(true);
@@ -46,7 +46,8 @@ class LeftRailViewComponent extends Component<
     SectionGroupHandler.getInstance().setLeftRailVisible(false);
   }
 
-  handleScroll = event => {
+  handleScroll = (event: React.UIEvent<HTMLElement>) => {
+    if (this._teamSectionCollapsed) return;
     const element = event.currentTarget;
     const hasMore = SectionGroupHandler.getInstance().hasMore(
       SECTION_TYPE.TEAM,
@@ -71,6 +72,18 @@ class LeftRailViewComponent extends Component<
           this._loading = false;
         });
     });
+  };
+
+  handleSectionCollapseChange = (arg: {
+    sectionType: SECTION_TYPE;
+    value: boolean;
+  }) => {
+    if (
+      arg.sectionType === SECTION_TYPE.TEAM &&
+      this._teamSectionCollapsed !== arg.value
+    ) {
+      this._teamSectionCollapsed = arg.value;
+    }
   };
 
   render() {
@@ -111,6 +124,7 @@ class LeftRailViewComponent extends Component<
             <Section
               key={type}
               type={type}
+              onCollapseChange={this.handleSectionCollapseChange}
               isLast={index === array.length - 1}
             />,
           ])}

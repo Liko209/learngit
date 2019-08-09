@@ -16,9 +16,9 @@ import {
   JuiResponsiveLayout,
   VISUAL_MODE,
   withResponsive,
-  RIGHT_SHELL_DEFAULT_WIDTH,
-  RIGHT_SHELL_MAX_WIDTH,
-  RIGHT_SHELL_MIN_WIDTH,
+  RIGHT_SHELF_DEFAULT_WIDTH,
+  RIGHT_SHELF_MAX_WIDTH,
+  RIGHT_SHELF_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
@@ -32,6 +32,7 @@ import { PostListPage } from '../PostListPage';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { RightRail, TriggerButton } from '../RightRail';
 import { MessageRouterChangeHelper } from './helper';
+import { IMessageService } from '../../interface';
 
 const LeftRailResponsive = withResponsive(LeftRail, {
   maxWidth: 360,
@@ -51,9 +52,9 @@ const SwitchResponsive = withResponsive(Switch, {
 
 const RightRailResponsive = withResponsive(RightRail, {
   TriggerButton,
-  maxWidth: RIGHT_SHELL_MAX_WIDTH,
-  minWidth: RIGHT_SHELL_MIN_WIDTH,
-  defaultWidth: RIGHT_SHELL_DEFAULT_WIDTH,
+  maxWidth: RIGHT_SHELF_MAX_WIDTH,
+  minWidth: RIGHT_SHELF_MIN_WIDTH,
+  defaultWidth: RIGHT_SHELF_DEFAULT_WIDTH,
   visualMode: VISUAL_MODE.BOTH,
   enable: {
     left: true,
@@ -73,11 +74,14 @@ type Props = MessagesWrapperPops & WithTranslation;
 
 @observer
 class MessageRouterComponent extends Component<Props, State> {
-  state = {
+  state: State = {
     messageError: false,
     retryParams: null,
     errorType: null,
   };
+
+  @IMessageService
+  private _messageService: IMessageService;
 
   componentDidMount() {
     const targetConversationId = this.props.match.params.subPath;
@@ -145,8 +149,18 @@ class MessageRouterComponent extends Component<Props, State> {
 
   retryMessage = async () => {
     const { retryParams } = this.state;
-    if (!retryParams) return;
-    return goToConversationWithLoading(retryParams);
+    if (retryParams) {
+      return goToConversationWithLoading(retryParams);
+    }
+    return;
+  };
+
+  private _renderRouteForMessageConversation = (
+    props: RouteComponentProps<{ id: string }>,
+  ) => {
+    const groupId = +props.match.params.id;
+    this._messageService.setLastGroutId(groupId);
+    return <ConversationPage {...props} groupId={groupId} />;
   };
 
   render() {
@@ -178,12 +192,7 @@ class MessageRouterComponent extends Component<Props, State> {
           />
           <Route
             path={'/messages/:id'}
-            render={(props: RouteComponentProps<{ id: string }>) => (
-              <ConversationPage
-                {...props}
-                groupId={Number(props.match.params.id)}
-              />
-            )}
+            render={this._renderRouteForMessageConversation}
           />
         </SwitchResponsive>
         {MessageRouterChangeHelper.isConversation(match.params.subPath) ? (

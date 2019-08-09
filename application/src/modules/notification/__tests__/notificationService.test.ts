@@ -84,7 +84,7 @@ describe('NotificationService', () => {
     container.restore();
   });
   describe('shouldShowUINotification', () => {
-    it('shouldShowUINotification should be false when DND is true [JPT-2572]', async () => {
+    it('shouldShowUINotification should be false when DND is true [JPT-2712]', async () => {
       Notification.permission = 'granted';
       jest.spyOn(utils, 'isCurrentUserDND').mockReturnValue(true);
       setUpMock(false, 'granted', true);

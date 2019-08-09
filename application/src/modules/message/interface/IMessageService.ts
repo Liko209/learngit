@@ -14,6 +14,8 @@ interface IMessageService {
   open(uid: number): void;
   blurEditInputFocus(): void;
   getCurrentInputFocus(): number | undefined;
+  getNavUrl(): string;
+  setLastGroutId(id: number): void;
 }
 
 export { IMessageService };
