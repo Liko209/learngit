@@ -5,6 +5,7 @@
  */
 import { GroupConfig } from '../entity';
 import { Post } from 'sdk/module/post/entity';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 interface IGroupConfigService {
   updateGroupConfigPartialData(params: GroupConfig): Promise<boolean>;
@@ -33,6 +34,18 @@ interface IGroupConfigService {
   addPostId(groupId: number, postId: number): Promise<void>;
 
   handleMyMostRecentPostChange(posts: Post[]): Promise<void>;
+
+  hasMorePostInRemote(
+    groupId: number,
+  ): Promise<{ older: boolean; newer: boolean; both: boolean }>;
+
+  updateHasMore(
+    groupId: number,
+    direction: QUERY_DIRECTION,
+    hasMore: boolean,
+  ): Promise<void>;
+
+  deleteGroupsConfig(ids: number[]): Promise<void>;
 }
 
 export { IGroupConfigService };

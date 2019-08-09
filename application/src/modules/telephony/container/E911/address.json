@@ -1,5 +1,5 @@
 {
-  "UK": {
+  "United Kingdom": {
     "customerName": "John Smith",
     "street": {
       "label": "Address",
@@ -159,7 +159,7 @@
       "ghostText": "Madrid"
     }
   },
-  "Ireland:": {
+  "Ireland": {
     "customerName": "Seán Ó Rudaí",
     "street": {
       "label": "Street address",
@@ -174,7 +174,7 @@
       "ghostText": "Dublin"
     }
   },
-  "Singapore:": {
+  "Singapore": {
     "customerName": "Ms. Tan Bee Soo",
     "street": {
       "label": "Street number and name",
@@ -189,7 +189,7 @@
       "ghostText": "308215"
     }
   },
-  "Philippines:": {
+  "Philippines": {
     "customerName": "Mr. Faye Capio",
     "street": {
       "label": "Unit number, house/building/street number + street name",

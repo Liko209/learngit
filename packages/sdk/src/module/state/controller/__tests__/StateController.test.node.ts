@@ -51,9 +51,6 @@ describe('StateController', () => {
   describe('getStateDataHandleController()', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getStateDataHandleController();
-      expect(StateFetchDataController).toHaveBeenCalledWith(
-        mockEntitySourceController,
-      );
       expect(StateActionController).toHaveBeenCalled();
       expect(StateDataHandleController).toHaveBeenCalled();
       expect(result instanceof StateDataHandleController).toBe(true);
