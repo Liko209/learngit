@@ -47,6 +47,7 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
       group,
       loading,
     } = this.props;
+    const { members } = group;
     return (
       <JuiModal
         modalProps={{
@@ -66,19 +67,23 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
       >
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiTopText data-test-automation-id="newConversationDescription">
-            <Trans
-              defaults={t('people.prompt.newConversationTip')}
-              components={[
-                <JuiLink handleOnClick={this._openConvertToTeam}>
-                  convert to a team
-                </JuiLink>,
-              ]}
-            />
+            {members.length > 2 ? (
+              <Trans
+                defaults={t('people.prompt.newConversationTip')}
+                components={[
+                  <JuiLink handleOnClick={this._openConvertToTeam}>
+                    convert to a team
+                  </JuiLink>,
+                ]}
+              />
+            ) : (
+              t('people.prompt.newConversationTipForOneOne')
+            )}
           </JuiTopText>
           <ContactSearch
             onSelectChange={handleSearchContactChange}
             label={t('people.team.Members')}
-            prefillMembers={group.members}
+            prefillMembers={members}
             error={false}
             helperText=""
             placeholder={t('people.team.SearchContactPlaceholder')}
