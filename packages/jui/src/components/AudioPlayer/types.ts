@@ -30,6 +30,7 @@ interface IJuiAudioAction {
 }
 
 type JuiAudioActionProps = {
+  mode: JuiAudioMode;
   color?: JuiAudioColor;
   status: JuiAudioStatus;
   tooltip: string;
