@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse, { CollapseProps } from '@material-ui/core/Collapse';
 import { noop } from '../../foundation/utils';
 import JuiSectionHeader, {
-  JuiSectionHeaderProps
+  JuiSectionHeaderProps,
 } from './ConversationListSectionHeader';
+import styled from '../../foundation/styled-components';
 
 type SectionProps = {
   expanded?: boolean;
@@ -22,20 +23,28 @@ type SectionStates = {
   expanded: boolean;
 };
 
+type JuiCollapseProps = Pick<CollapseProps, 'in'>;
+
+const StyledCollapse = styled<JuiCollapseProps>(Collapse)`
+  &.MuiCollapse-container.MuiCollapse-hidden {
+    visibility: initial;
+  }
+`;
+
 class JuiConversationListSection extends PureComponent<
   SectionProps,
   SectionStates
 > {
   static defaultProps = {
     onExpand: noop,
-    onCollapse: noop
+    onCollapse: noop,
   };
 
   constructor(props: SectionProps) {
     super(props);
 
     this.state = {
-      expanded: this.props.expanded || false
+      expanded: this.props.expanded || false,
     };
     this._handleClick = this._handleClick.bind(this);
   }
@@ -53,7 +62,7 @@ class JuiConversationListSection extends PureComponent<
           umi={umi}
           onClick={this._handleClick}
         />
-        <Collapse in={expanded}>{this.props.children}</Collapse>
+        <StyledCollapse in={expanded}>{this.props.children}</StyledCollapse>
       </div>
     );
   }
