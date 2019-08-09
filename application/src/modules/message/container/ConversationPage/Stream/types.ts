@@ -11,7 +11,7 @@ import { DIRECTION } from 'jui/components/Lists';
 
 enum SeparatorType {
   DATE = 'DATE',
-  NEW_MSG = 'NEW_MSG'
+  NEW_MSG = 'NEW_MSG',
 }
 
 type Separator = {
@@ -31,7 +31,7 @@ enum StreamItemType {
   POST = 'POST',
   DATE_SEPARATOR = 'DATE_SEPARATOR',
   NEW_MSG_SEPARATOR = 'NEW_MSG_SEPARATOR',
-  INITIAL_POST = 'INITIAL_POST'
+  INITIAL_POST = 'INITIAL_POST',
 }
 
 type BaseElement = {
@@ -66,6 +66,7 @@ type StreamViewProps = {
   items: StreamItem[];
   hasMore: (direction: DIRECTION) => boolean;
   notEmpty: boolean;
+  markAsRead: () => void;
   updateIgnoredStatus: (isIgnore: boolean) => void;
   loadInitialPosts: () => Promise<void>;
   enableNewMessageSeparatorHandler: () => void;
@@ -111,5 +112,5 @@ export {
   DateSeparator,
   NewSeparator,
   IStreamItemSortableModelData,
-  IStreamItemSortableModel
+  IStreamItemSortableModel,
 };
