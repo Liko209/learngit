@@ -7,7 +7,7 @@ import * as utils from '@/store/utils';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { RightShelfMemberListViewModel } from '../RightShelfMemberList.ViewModel';
 import { GroupService } from 'sdk/module/group/service';
-import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
+import { ENTITY_NAME } from '@/store/constants';
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -26,6 +26,7 @@ describe('RightShelfMemberListViewModel', () => {
       if (type === ENTITY_NAME.GROUP) {
         return {
           members: [123, 234, 456, 111, 999],
+          companyId: 101010,
         };
       }
 
@@ -34,11 +35,6 @@ describe('RightShelfMemberListViewModel', () => {
           userDisplayName: 'xxx',
           companyId: 101010,
         };
-      }
-    });
-    jest.spyOn(utils, 'getGlobalValue').mockImplementation(key => {
-      if (key === GLOBAL_KEYS.CURRENT_COMPANY_ID) {
-        return 101010;
       }
     });
     groupService.getMemberAndGuestIds = jest.fn().mockResolvedValue({
