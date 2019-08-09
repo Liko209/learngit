@@ -68,7 +68,7 @@ test(formalName('The content of "New conversation" dialog is correct', ['P2', 'N
     const member1Name = await selectedMembers.nth(0).find('.label').textContent;
     const member2Name = await selectedMembers.nth(1).find('.label').textContent;
     const members = [member1Name, member2Name];
-    await t.expect(_.isEqual(_.sortBy(members), _.sortBy([userBName, userCName]))).ok();
+    assert.equal(String(_.sortBy(members)), String(_.sortBy([userBName, userCName])));
   });
 })
 
