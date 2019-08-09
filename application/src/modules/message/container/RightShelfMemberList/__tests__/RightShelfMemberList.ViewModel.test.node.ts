@@ -27,6 +27,7 @@ describe('RightShelfMemberListViewModel', () => {
       if (type === ENTITY_NAME.GROUP) {
         return {
           members: [123, 234, 456, 111, 999],
+          companyId: 101010,
         };
       }
 
@@ -35,11 +36,6 @@ describe('RightShelfMemberListViewModel', () => {
           userDisplayName: 'xxx',
           companyId: 101010,
         };
-      }
-    });
-    jest.spyOn(utils, 'getGlobalValue').mockImplementation(key => {
-      if (key === GLOBAL_KEYS.CURRENT_COMPANY_ID) {
-        return 101010;
       }
     });
     groupService.getMembersAndGuestIds = jest.fn().mockResolvedValue({
