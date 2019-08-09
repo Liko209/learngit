@@ -261,12 +261,12 @@ export class GroupFetchDataController {
         }
         return result;
       };
-      realMembers = SortUtils.partialSort(
+      realMembers = SortUtils.heapSort(
         realMembers,
         sortFunc,
         memberFetchCount,
       );
-      guests = SortUtils.partialSort(guests, sortFunc, guestFetchCount);
+      guests = SortUtils.heapSort(guests, sortFunc, guestFetchCount);
 
       realMemberIds = realMembers.map(person => person.id);
       guestIds = guests.map(person => person.id);
