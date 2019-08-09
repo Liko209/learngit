@@ -103,7 +103,7 @@ class AvatarActionsComponent extends React.Component<Props> {
           <DropdownContactInfo
             Avatar={this._DropdownAvatar()}
             openEditProfile={this.openProfile}
-            name={person.displayName}
+            name={person.userDisplayName}
             content={t('home.viewProfile')}
           />
           <JuiMenuList data-test-automation-id="avatarMenu">
