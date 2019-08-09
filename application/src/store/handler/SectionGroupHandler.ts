@@ -432,7 +432,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       withoutUnreadIds,
       true,
     );
-    this._removeGroupsBySectionType(SECTION_TYPE.TEAM, withoutUnreadIds);
+    this._removeGroupsBySectionType(SECTION_TYPE.TEAM, withoutUnreadIds, true);
   }
 
   private _removeGroupsBySectionType(
