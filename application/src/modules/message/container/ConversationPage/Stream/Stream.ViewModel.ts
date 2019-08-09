@@ -34,6 +34,7 @@ import { catchError, getErrorType, ERROR_TYPES } from '@/common/catchError';
 import { DIRECTION } from 'jui/components/Lists';
 
 const BLACKLISTED_PROPS = ['viewRef'];
+const LOAD_SIBLING_POST_LIMIT = 30;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
@@ -292,7 +293,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
       this._streamController.replacePostList([post]);
-      await this._loadPosts(QUERY_DIRECTION.BOTH);
+      await this._loadPosts(QUERY_DIRECTION.BOTH, LOAD_SIBLING_POST_LIMIT);
     } else {
       // TODO error handing
     }
