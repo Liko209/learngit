@@ -68,6 +68,7 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiTopText data-test-automation-id="newConversationDescription">
             {t('people.prompt.newConversationBaseTip')}
+            &nbsp;
             {members.length > 2 ? (
               <Trans
                 defaults={t('people.prompt.newConversationGroupTip')}
