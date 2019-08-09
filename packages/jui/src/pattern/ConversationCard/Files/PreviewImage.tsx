@@ -190,7 +190,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
   };
 
   private _getImageStyle = (squareWidth: number, squareHeight: number) => {
-    if (!this.state.loaded) return { display: 'none' };
+    if (!this.state.imgLoaded) return { display: 'none' };
 
     const { justifyHeight, justifyWidth } = this.state.imageInfo;
 
