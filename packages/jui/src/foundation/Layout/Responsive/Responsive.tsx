@@ -238,7 +238,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             height: '100%',
           }}
           style={{
-            position: !visual ? 'absolute' : 'relative',
+            position: visual === false ? 'absolute' : 'relative',
           }}
           styled={{
             priority,
