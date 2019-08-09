@@ -10,8 +10,8 @@ import {
 } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { GroupService, Group } from 'sdk/module/group';
-import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { ENTITY_NAME } from '@/store/constants';
+import { getEntity } from '@/store/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupModel from '@/store/models/Group';
 import { Person } from 'sdk/module/person/entity';
@@ -141,7 +141,7 @@ class RightShelfMemberListViewModel
 
   @computed
   private get _currentCompanyId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+    return this.group.companyId;
   }
 
   @computed
