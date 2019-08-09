@@ -509,30 +509,30 @@ class RightShelfMemberList extends BaseWebComponent {
   }
 
   get header() {
-    return this.getSelectorByAutomationId('rightShellMemberListHeader');
+    return this.getSelectorByAutomationId('rightShelfMemberListHeader');
   }
 
   get showAllLink() {
-    return this.getSelectorByAutomationId('rightShellMemberListHeader').find('span[data-test-automation-id="rightShellMemberListHeaderShowAllLink"]')
+    return this.getSelectorByAutomationId('rightShelfMemberListHeader').find('span[data-test-automation-id="rightShelfMemberListHeaderShowAllLink"]')
   }
 
   get addMemberButton() {
-    return this.getSelectorByAutomationId('rightShellMemberListHeaderAddButton')
+    return this.getSelectorByAutomationId('rightShelfMemberListHeaderAddButton')
   }
 
   get body() {
-    return this.getSelectorByAutomationId('rightShellMemberListBody');
+    return this.getSelectorByAutomationId('rightShelfMemberListBody');
   }
 
   get members() {
-    return this.getSelectorByAutomationId('rightShellMemberListMembers')
+    return this.getSelectorByAutomationId('rightShelfMemberListMembers')
   }
 
   get guests() {
-    return this.getSelectorByAutomationId('rightShellMemberListGuests')
+    return this.getSelectorByAutomationId('rightShelfMemberListGuests')
   }
 
   getAvatarById(id: number) {
-    return this.getSelectorByAutomationId('rightShellMemberListAvatar').filter(`[uid='${id}']`)
+    return this.getSelectorByAutomationId('rightShelfMemberListAvatar').filter(`[uid='${id}']`)
   }
 }
