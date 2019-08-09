@@ -21,7 +21,8 @@ class RingtonePrefetcher {
       src,
       muted: true,
       autoplay: true,
-      trackId: 'trailer',
+      trackId: 'RingtonePrefetchTrailer',
+      outputDevices: [],
     });
     this.media.on('loadeddata', () => {
       this.media.dispose();

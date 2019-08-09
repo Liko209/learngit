@@ -50,29 +50,30 @@ describe('AudioPlayerButtonViewModel', () => {
 
   describe('actionHandler()', () => {
     describe('play', () => {
-      it('should play media when status is play', () => {
+      it('should play media when status is play', async () => {
+        jest.useFakeTimers();
         const playMockFn = jest.spyOn(HTMLMediaElement.prototype, 'play');
         const { vm, media } = setup();
 
-        vm.playHandler();
+        await vm.playHandler();
+        jest.advanceTimersByTime(300);
+        expect(vm.mediaStatus).toEqual(JuiAudioStatus.LOADING);
         expect(playMockFn).toHaveBeenCalled();
 
         emit(media, 'play');
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.PLAY);
-        expect(vm.isPlaying).toBeTruthy();
       });
-      it('should call onPlay when media played', () => {
-        const onPlay = jest.fn();
-        const { vm, media } = setup({
-          onPlay,
-        });
+      it('should not show loading status when media canplay inline 250ms', async () => {
+        jest.useFakeTimers();
+        const playMockFn = jest.spyOn(HTMLMediaElement.prototype, 'play');
+        const { vm, media } = setup();
 
-        vm.playHandler();
-        emit(media, 'play');
-
-        expect(onPlay).toHaveBeenCalled();
+        await vm.playHandler();
+        jest.advanceTimersByTime(100);
         expect(vm.mediaStatus).toEqual(JuiAudioStatus.PLAY);
-        expect(vm.isPlaying).toBeTruthy();
+        emit(media, 'play');
+        expect(vm.mediaStatus).toEqual(JuiAudioStatus.PLAY);
+        expect(playMockFn).toHaveBeenCalled();
       });
     });
   });
