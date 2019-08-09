@@ -66,6 +66,7 @@ function dependencyHandlers() {
   const manifestPath = path.resolve(dllPath, 'boilerplateDeps.json');
 
   if (!fs.existsSync(manifestPath)) {
+    // eslint-disable-next-line
     console.log(
       chalk.red('The DLL manifest is missing. Please run `npm run build:dll`'),
     );
@@ -407,9 +408,9 @@ module.exports = {
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,
-      // onDetected({ module: webpackModuleRecord, paths, compilation }) {
-      //   compilation.errors.push(new Error(paths.join(' -> ')));
-      // },
+      onDetected({ paths, compilation }) {
+        compilation.errors.push(new Error(paths.join(' -> ')));
+      },
     }),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without

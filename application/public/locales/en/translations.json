@@ -772,7 +772,8 @@
       },
       "prompt": {
         "backendError": "Sorry, something went wrong on our end, we weren't able to save the update. Try again later.",
-        "networkError": "Sorry, we weren't able to save the update. Check your network connection, then try again."
+        "networkError": "Sorry, we weren't able to save the update. Check your network connection, then try again.",
+        "errorCode201": "Validation errors occurred. Check the address and try again."
       },
       "fields": {
         "Address": "Address",
