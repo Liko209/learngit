@@ -1443,8 +1443,8 @@ describe('GroupFetchDataController', () => {
 
       const result = await groupFetchDataController.getMemberAndGuestIds(
         1235,
-        2,
-        2,
+        1,
+        1,
         true,
       );
       expect(result).toEqual({

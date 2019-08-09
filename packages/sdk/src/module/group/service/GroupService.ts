@@ -429,14 +429,14 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
 
   async getMemberAndGuestIds(
     groupId: number,
-    memberFetchCount: number,
-    guestFetchCount: number,
+    memberSortCount: number,
+    guestSortCount: number,
     sortByPresence: boolean = true,
   ) {
     return this._groupFetchDataController.getMemberAndGuestIds(
       groupId,
-      memberFetchCount,
-      guestFetchCount,
+      memberSortCount,
+      guestSortCount,
       sortByPresence,
     );
   }

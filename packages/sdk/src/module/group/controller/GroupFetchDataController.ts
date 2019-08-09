@@ -198,8 +198,8 @@ export class GroupFetchDataController {
 
   async getMemberAndGuestIds(
     groupId: number,
-    memberFetchCount: number,
-    guestFetchCount: number,
+    memberSortCount: number,
+    guestSortCount: number,
     sortByPresence: boolean = true,
   ) {
     let realMemberIds: number[] = [];
@@ -226,8 +226,10 @@ export class GroupFetchDataController {
         }
         if (guestCompanyIds.has(person.company_id)) {
           guests.push(person);
+          guestIds.push(person.id);
         } else {
           realMembers.push(person);
+          realMemberIds.push(person.id);
         }
       });
 
@@ -264,12 +266,11 @@ export class GroupFetchDataController {
       realMembers = SortUtils.heapSort(
         realMembers,
         sortFunc,
-        memberFetchCount,
+        memberSortCount,
       );
-      guests = SortUtils.heapSort(guests, sortFunc, guestFetchCount);
-
-      realMemberIds = realMembers.map(person => person.id);
-      guestIds = guests.map(person => person.id);
+      guests = SortUtils.heapSort(guests, sortFunc, guestSortCount);
+      realMemberIds = _.union(realMembers.map(person => person.id), realMemberIds);
+      guestIds = _.union(guests.map(person => person.id), guestIds);
       optionalIds = _.difference(optionalIds, realMemberIds, guestIds);
     }
     return { realMemberIds, guestIds, optionalIds };
