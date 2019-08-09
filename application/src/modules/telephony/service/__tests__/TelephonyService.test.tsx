@@ -37,12 +37,13 @@ describe('TelephonyService', () => {
 
   @testable
   class needE911Prompt {
-    @mockEntity(mockVolumeEntity)
-    beforeEach() {
+    beforeAll() {
       jupiter.registerService(IMediaService, MediaService);
       jupiter.registerModule(config);
     }
 
+    @mockEntity(mockVolumeEntity)
+    beforeEach() {}
     @test(
       'should needE911Prompt if account has DL and emergency has been confirmed',
     )
@@ -89,25 +90,23 @@ describe('TelephonyService', () => {
 
   @testable
   class openE911 {
-    @mockEntity(mockVolumeEntity)
-    beforeEach() {
-      jupiter.registerService(IMediaService, MediaService);
+    beforeAll() {
+      if (!jupiter.get(IMediaService)) {
+        jupiter.registerService(IMediaService, MediaService);
+      }
     }
-
+    @mockEntity(mockVolumeEntity)
+    beforeEach() {}
     @test('should show E911 if not have been show E911')
     @mockService(RCInfoService, 'getDigitalLines')
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed')
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
+    @mockService(TelephonyStore, [
+      { method: 'hasShowE911', data: false },
+      { method: 'switchE911Status', data: true },
+    ])
     t1() {
-      jest.mock('../../store', () => {
-        class TelephonyStore {
-          hasShowE911 = false;
-          switchE911Status = () => true;
-        }
-        return { TelephonyStore };
-      });
-      jupiter.registerClass(TelephonyStore);
       (OpenDialogE911 as jest.Mock) = jest.fn();
       let ts;
       runInAction(() => {

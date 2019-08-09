@@ -46,7 +46,8 @@ const window = {
 const document = {
   addEventListener: () => {},
   createElement: () => {},
-  querySelectorAll: () => []
+  querySelectorAll: () => [],
+  getElementById: () => null
 };
 
 window.navigator = {

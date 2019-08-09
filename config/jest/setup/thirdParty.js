@@ -1,7 +1,22 @@
-jest.mock('quill');
-jest.mock('react-quill');
 jest.mock('downshift');
 jest.mock('@/modules/telephony/HOC');
+
+jest.mock('event-source-polyfill');
+jest.mock('filestack-js');
+jest.mock('libphonenumber-js');
+jest.mock('react-resize-detector');
+jest.mock('ua-parser-js');
+
+jest.mock('moize', () => {
+  const moize = x => x;
+  moize.promise = (func) => func ? new Promise((resolve) => func() && resolve()) : Promise.resolve();
+  return moize;
+});
+
+jest.mock('react-quill');
+jest.mock('quill');
+jest.mock('jui/pattern/MessageInput/MessageInput');
+jest.mock('jui/pattern/MessageInput/Mention');
 
 jest.mock('pubnub', () => {
   const mock = {

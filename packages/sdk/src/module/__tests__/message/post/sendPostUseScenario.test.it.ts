@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { jit } from 'shield/sdk';
+import { jit } from 'shield/sdk/SdkItFramework';
 import { PostService } from 'sdk/module/post';
 import { Post as PostScenario } from './scenario';
 import { Post } from 'sdk/module/post/entity';
