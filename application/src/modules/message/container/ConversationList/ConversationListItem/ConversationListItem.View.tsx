@@ -57,10 +57,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     ) : null;
   };
   private get _indicator() {
-    if (this.props.selected) {
-      return null;
-    }
-    return <Indicator id={this.props.groupId} showUmi={this._showUmi} />;
+    return <Indicator selected={this.props.selected} id={this.props.groupId} showUmi={this._showUmi} />;
   }
 
   private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
