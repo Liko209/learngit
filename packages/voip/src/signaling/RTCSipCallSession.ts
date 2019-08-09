@@ -14,6 +14,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_MEDIA_ACTION,
+  RTC_CALL_ACTION_DIRECTION,
 } from '../api/types';
 import {
   WEBPHONE_SESSION_STATE,
@@ -424,15 +425,40 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       });
   }
 
-  mute() {
+  mute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      this._session.mute();
+      direction === RTC_CALL_ACTION_DIRECTION.LOCAL
+        ? this._session.mute()
+        : this.toggleRemoteMute(true);
     }
   }
 
-  unmute() {
+  unmute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      this._session.unmute();
+      direction === RTC_CALL_ACTION_DIRECTION.LOCAL
+        ? this._session.unmute()
+        : this.toggleRemoteMute(false);
+    }
+  }
+
+  toggleRemoteMute(mute: boolean): void {
+    if (
+      !this._session.sessionDescriptionHandler ||
+      !this._session.sessionDescriptionHandler.peerConnection
+    ) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'there is not peer connection so mute remote failed',
+      );
+      return;
+    }
+    const pc = this._session.sessionDescriptionHandler.peerConnection;
+    if (pc.getReceivers) {
+      pc.getReceivers().forEach((receivers: any) => {
+        if (receivers.track) {
+          receivers.track.enabled = !mute;
+        }
+      });
     }
   }
 

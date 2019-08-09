@@ -156,7 +156,6 @@ describe('RTC call', () => {
     mute = jest.fn();
     unmute = jest.fn();
     park = jest.fn();
-
     hold = jest.fn();
     unhold = jest.fn();
     dtmf = jest.fn();
@@ -2259,7 +2258,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should notify no audio with no-rtp-incoming if has sent but no received when call is terminated. [JPT-2509]', done => {
+    it.only('should notify no audio with no-rtp-incoming if has sent but no received when call is terminated. [JPT-2509]', done => {
       setup();
       jest.spyOn(call, '_notifyNoAudioStateEvent');
       jest.spyOn(call, '_notifyNoAudioDataEvent');
