@@ -8,7 +8,6 @@ import React, { Component } from 'react';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
 import { JuiConversationListTop } from 'jui/pattern/ConversationList/ConversationListTop';
-
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
 import {
@@ -19,7 +18,14 @@ import {
 import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
+import { observable } from 'mobx';
 import { POST_LIST_TYPE } from '../PostListPage/types';
+import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
+import { SECTION_TYPE } from './Section/types';
+import { QUERY_DIRECTION } from 'sdk/dao/constants';
+import { JuiConversationListItemLoader } from 'jui/pattern/ConversationList';
+
+const DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD = 300;
 
 @observer
 class LeftRailViewComponent extends Component<
@@ -29,8 +35,50 @@ class LeftRailViewComponent extends Component<
     history.push(`/messages/${type}`);
   };
 
+  @observable
+  private _loading = false;
+
+  componentDidMount() {
+    SectionGroupHandler.getInstance().setLeftRailVisible(true);
+  }
+
+  componentWillUnmount() {
+    SectionGroupHandler.getInstance().setLeftRailVisible(false);
+  }
+
+  handleScroll = event => {
+    const element = event.currentTarget;
+    const hasMore = SectionGroupHandler.getInstance().hasMore(
+      SECTION_TYPE.TEAM,
+      QUERY_DIRECTION.NEWER,
+    );
+    if (element) {
+      const scrollPassLoadPosition =
+        element.scrollHeight - element.scrollTop <=
+        element.clientHeight + DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD;
+      if (scrollPassLoadPosition && !this._loading && hasMore) {
+        this._loading = true;
+        this._loadGroups();
+      }
+    }
+  };
+
+  private _loadGroups = () => {
+    setTimeout(() => {
+      SectionGroupHandler.getInstance()
+        .fetchPagination(SECTION_TYPE.TEAM)
+        .finally(() => {
+          this._loading = false;
+        });
+    });
+  };
+
   render() {
     const { filters, entries, sections, currentPostListType, t } = this.props;
+    const hasMore = SectionGroupHandler.getInstance().hasMore(
+      SECTION_TYPE.TEAM,
+      QUERY_DIRECTION.NEWER,
+    );
     return (
       <JuiLeftRail data-test-automation-id="leftRail">
         <JuiLeftRailStickyTop>
@@ -58,7 +106,7 @@ class LeftRailViewComponent extends Component<
             onChange={filter.onChange}
           />,
         ])}
-        <JuiLeftRailMainSection>
+        <JuiLeftRailMainSection onScroll={this.handleScroll}>
           {sections.map((type, index, array) => [
             <Section
               key={type}
@@ -66,6 +114,7 @@ class LeftRailViewComponent extends Component<
               isLast={index === array.length - 1}
             />,
           ])}
+          {this._loading && hasMore && <JuiConversationListItemLoader />}
         </JuiLeftRailMainSection>
       </JuiLeftRail>
     );
