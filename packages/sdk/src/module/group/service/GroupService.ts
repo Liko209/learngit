@@ -451,6 +451,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       sortFunc,
     );
   }
+
+  removeCursorsFromGroup<T extends Raw<Group> | Group>(group: T) {
+    return this.getGroupController()
+      .getHandleDataController()
+      .removeCursorsFromGroup(group);
+  }
 }
 
 export { GroupService };

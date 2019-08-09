@@ -6,8 +6,9 @@
 
 enum TASK_DATA_TYPE {
   STATE,
-  GROUP_STATE,
   GROUP_CURSOR,
+  STATE_AND_GROUP_CURSOR,
+  GROUP_STATE,
   GROUP_ENTITY,
   PROFILE_ENTITY,
 }
@@ -22,27 +23,33 @@ const GROUP_BADGE_TYPE = {
 };
 
 enum GROUP_STATE_KEY {
-  'deactivated_post_cursor' = 'deactivated_post_cursor',
-  'group_missed_calls_count' = 'group_missed_calls_count',
-  'group_tasks_count' = 'group_tasks_count',
-  'last_read_through' = 'last_read_through',
-  'unread_mentions_count' = 'unread_mentions_count',
-  'read_through' = 'read_through',
-  'marked_as_unread' = 'marked_as_unread',
-  'post_cursor' = 'post_cursor',
-  'previous_post_cursor' = 'previous_post_cursor',
-  'unread_deactivated_count' = 'unread_deactivated_count',
-  'team_mention_cursor' = 'team_mention_cursor',
+  DEACTIVATED_POST_CURSOR = 'deactivated_post_cursor',
+  GROUP_MISSED_CALLS_COUNT = 'group_missed_calls_count',
+  GROUP_TASKS_COUNT = 'group_tasks_count',
+  LAST_READ_THROUGH = 'last_read_through',
+  UNREAD_MENTIONS_COUNT = 'unread_mentions_count',
+  READ_THROUGH = 'read_through',
+  MARKED_AS_UNREAD = 'marked_as_unread',
+  POST_CURSOR = 'post_cursor',
+  PREVIOUS_POST_CURSOR = 'previous_post_cursor',
+  UNREAD_DEACTIVATED_COUNT = 'unread_deactivated_count',
+  TEAM_MENTION_CURSOR = 'team_mention_cursor',
+  GROUP_POST_CURSOR = 'group_post_cursor',
+  GROUP_POST_DRP_CURSOR = 'group_post_drp_cursor',
+  LAST_AUTHOR_ID = 'last_author_id',
+  TEAM_MENTION_CURSOR_OFFSET = 'team_mention_cursor_offset',
+  GROUP_TEAM_MENTION_CURSOR = 'group_team_mention_cursor',
+  REMOVED_CURSORS_TEAM_MENTION = 'removed_cursors_team_mention',
 }
 
 enum GROUP_KEY {
-  '__trigger_ids' = '__trigger_ids',
-  'post_cursor' = 'post_cursor',
-  'post_drp_cursor' = 'post_drp_cursor',
-  'last_author_id' = 'last_author_id',
-  'team_mention_cursor_offset' = 'team_mention_cursor_offset',
-  'team_mention_cursor' = 'team_mention_cursor',
-  'removed_cursors_team_mention' = 'removed_cursors_team_mention',
+  __TRIGGER_IDS = '__trigger_ids',
+  POST_CURSOR = 'post_cursor',
+  POST_DRP_CURSOR = 'post_drp_cursor',
+  LAST_AUTHOR_ID = 'last_author_id',
+  TEAM_MENTION_CURSOR_OFFSET = 'team_mention_cursor_offset',
+  TEAM_MENTION_CURSOR = 'team_mention_cursor',
+  REMOVED_CURSORS_TEAM_MENTION = 'removed_cursors_team_mention',
 }
 
 export {
