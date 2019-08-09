@@ -173,6 +173,7 @@ class E911ViewComponent extends Component<Props> {
       disabled,
       fields,
       loading,
+      getCountryList,
     } = this.props;
 
     const { countryName, customerName } = value;
@@ -205,6 +206,7 @@ class E911ViewComponent extends Component<Props> {
             label={`${t('common.country')} *`}
             automationId="e911-country-select"
             value={countryName}
+            onClick={getCountryList}
           >
             {/* TODO: need use VL */}
             {countryList.map((item: Country) => (
