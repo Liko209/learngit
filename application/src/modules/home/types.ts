@@ -7,7 +7,7 @@ import { RouteProps } from 'react-router-dom';
 import { ModuleConfig } from 'framework';
 
 type NavConfig = {
-  url: string;
+  url: string | (() => string);
   Icon: React.ReactElement;
   IconSelected: React.ReactElement;
   title: string | Promise<string>;
