@@ -96,7 +96,7 @@ class SortUtils {
     if (!sortCount) {
       return [];
     }
-    if (dataArray.length < sortCount) {
+    if (dataArray.length <= sortCount) {
       return dataArray.sort(sortFunc);
     }
     return this._partition(dataArray, sortFunc, sortCount).sort(sortFunc);
@@ -141,7 +141,7 @@ class SortUtils {
     if (!sortCount) {
       return [];
     }
-    if (dataArray.length < sortCount) {
+    if (dataArray.length <= sortCount) {
       return dataArray.sort(sortFunc);
     }
 
