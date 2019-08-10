@@ -11,7 +11,7 @@ import Backend from 'i18next-xhr-backend';
 import i18next from 'i18next';
 import MeetingItemModel from '@/store/models/MeetingItem';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
-import { MEETING_STATUS } from '../types';
+import { MEETING_STATUS } from '@/store/utils/Meetings';
 import RCVideoMeetingItem from '@/store/models/RCVideoMeetingItem';
 import { mountWithTheme } from 'shield/utils';
 import { MeetingView } from '../Meeting.View';
