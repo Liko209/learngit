@@ -4,10 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { workerClientAdapter, workerServerAdapter } from '../workerAdapter';
-import { EventEmitter } from 'events';
-import { spyOnTarget } from 'sdk/__tests__/utils';
+import { EventEmitter2 } from 'eventemitter2';
 
-class MockWorkerClient extends EventEmitter {
+class MockWorkerClient extends EventEmitter2 {
   public server: MockWorkerServer;
 
   addEventListener(channel: string, cb: any) {
@@ -23,8 +22,8 @@ class MockWorkerClient extends EventEmitter {
   }
 }
 
-class MockWorkerServer extends EventEmitter {
-  public client: EventEmitter;
+class MockWorkerServer extends EventEmitter2 {
+  public client: EventEmitter2;
   addEventListener(channel: string, cb: (...args: any) => void) {
     super.on(channel, (message: any) => {
       cb(message);
@@ -55,8 +54,7 @@ describe('workerAdapter', () => {
         server,
         client,
       );
-      spyOnTarget(server);
-      spyOnTarget(client);
+      jest.spyOn(server, 'addEventListener');
       workerServerAdapter(server, {
         foo,
       });

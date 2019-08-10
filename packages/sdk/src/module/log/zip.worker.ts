@@ -5,7 +5,7 @@
  */
 import JSZip from 'jszip';
 import { ZipItem, IZip } from './types';
-import { workerServerAdapter } from './workerAdapter';
+import { workerServerAdapter } from 'foundation/utils/workerAdapter';
 
 enum ZIP_LEVEL {
   LOW = 3,
