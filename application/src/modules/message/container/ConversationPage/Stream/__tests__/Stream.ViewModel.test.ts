@@ -121,6 +121,7 @@ describe('StreamViewModel', () => {
   describe('loadInitialPosts()', () => {
     function setupMock({ props, getPostsByGroupIdData }: any) {
       const vm = new StreamViewModel(props);
+      jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
       postService.getPostsByGroupId.mockResolvedValue(getPostsByGroupIdData);
       return vm;
     }
@@ -339,6 +340,19 @@ describe('StreamViewModel', () => {
       vm.updateIgnoredStatus(true);
 
       expect(spy).toBeCalledWith([groupId], true);
+
+      spy.mockRestore();
+    });
+  });
+
+  describe('markAsRead()', () => {
+    it('should call storeManager.getGlobalStore().set with arguments', () => {
+      const spy = jest.spyOn(stateService, 'updateReadStatus');
+      const groupId = 123123;
+      const vm = setup({ groupId });
+      vm.markAsRead();
+
+      expect(spy).toBeCalledWith(groupId, false, true);
 
       spy.mockRestore();
     });
