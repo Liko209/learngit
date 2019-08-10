@@ -37,15 +37,6 @@ import {
   CheckBox,
 } from './types';
 
-const ERROR_MAP = {
-  [ERROR_CODES_RC.EME_201]: 'EME-201',
-  [ERROR_CODES_RC.EME_202]: 'EME-202',
-  [ERROR_CODES_RC.EME_203]: 'EME-203',
-  [ERROR_CODES_RC.EME_204]: 'EME-204',
-  [ERROR_CODES_RC.EME_205]: 'EME-205',
-};
-
-
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
 const DEFAULT_FIELDS = {
@@ -278,26 +269,45 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
         this.settingItemEntity.valueSetter(this.value));
       this.loading = false;
       successCallback && successCallback();
+      return true;
     } catch (e) {
+      this.loading = false;
       // need use different tip message according to backend error
       this.handleSubmitError(e);
-      this.loading = false;
+      return false;
     }
   };
 
   handleSubmitError(e: JError) {
-    if (ERROR_MAP[e.code]) {
+    const ERROR_MAP = {
+      [ERROR_CODES_RC.EME_201]: {
+        code: 'EME-201',
+        text: 'telephony.e911.prompt.errorCode201',
+      },
+      [ERROR_CODES_RC.EME_202]: {
+        code: 'EME-202',
+      },
+      [ERROR_CODES_RC.EME_203]: {
+        code: 'EME-203',
+      },
+      [ERROR_CODES_RC.EME_204]: {
+        code: 'EME-204',
+      },
+      [ERROR_CODES_RC.EME_205]: {
+        code: 'EME-205',
+      },
+    };
+    if (ERROR_MAP[e.code] && ERROR_MAP[e.code].code) {
       Notification.flashToast({
-        message: 'telephony.e911.prompt.backendError',
+        message: ERROR_MAP[e.code].text || 'telephony.e911.prompt.backendError',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       });
-      return;
+      return false;
     }
     throw e;
   }
-
   @action
   async getRegion() {
     this.region = await this.rcInfoService.getCurrentCountry();

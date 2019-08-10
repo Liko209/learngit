@@ -5,7 +5,6 @@
  */
 import 'reflect-metadata';
 import './polyfill';
-import './fixPassive';
 import { container } from 'framework';
 import { Application } from './Application';
 

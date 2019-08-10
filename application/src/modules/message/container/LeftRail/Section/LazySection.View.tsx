@@ -14,6 +14,7 @@ import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { SECTION_TYPE } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import 'intersection-observer';
+import { Observer } from 'mobx-react';
 
 type LazyListProps = { ids: number[] };
 
@@ -24,8 +25,8 @@ function hasMore() {
   );
 }
 
-const onScrollBottom = (entries: IntersectionObserverEntry[]) => {
-  if (entries[0].isIntersecting && hasMore()) {
+const onScrollBottom = async (entries: IntersectionObserverEntry[]) => {
+  if (hasMore() && entries[0].isIntersecting) {
     SectionGroupHandler.getInstance().fetchPagination(SECTION_TYPE.TEAM);
   }
 };
@@ -57,11 +58,15 @@ function LazySectionComponent({ ids }: LazyListProps) {
       {ids.map((id: number) => {
         return <ConversationListItem key={id} groupId={id} />;
       })}
-      {hasMore() && (
-        <div ref={ref} key="loader">
-          <JuiConversationListItemLoader />
-        </div>
-      )}
+      <Observer>
+        {() =>
+          hasMore() && (
+            <div ref={ref} key="loader">
+              <JuiConversationListItemLoader />
+            </div>
+          )
+        }
+      </Observer>
     </JuiConversationList>
   );
 }

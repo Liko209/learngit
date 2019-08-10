@@ -122,7 +122,9 @@ class RCInfoController {
 
   get rcPresenceController() {
     if (!this._rcPresenceController) {
-      this._rcPresenceController = new RCPresenceController();
+      this._rcPresenceController = new RCPresenceController(
+        this.getRCPermissionController(),
+      );
     }
     return this._rcPresenceController;
   }

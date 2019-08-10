@@ -21,6 +21,8 @@ import { Person } from 'sdk/module/person/entity';
 
 export default class GroupModel extends Base<Group> {
   @observable
+  companyId: number;
+  @observable
   isTeam?: boolean;
   @observable
   setAbbreviation: string;
@@ -73,8 +75,10 @@ export default class GroupModel extends Base<Group> {
       is_company_team,
       is_archived,
       converted_to_team,
+      company_id,
     } = data;
 
+    this.companyId = company_id;
     this.setAbbreviation = set_abbreviation;
     this.members = members;
     this.description = description;

@@ -36,6 +36,7 @@ class RTCRegistrationManager extends EventEmitter2
   private _userInfo: RTCUserInfo;
 
   onNetworkChangeToOnlineAction(): void {
+    rtcLogger.debug(LOG_TAG, 'network change and do reRegister');
     this.reRegister();
   }
 
@@ -49,6 +50,7 @@ class RTCRegistrationManager extends EventEmitter2
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ): void {
+    rtcLogger.debug(LOG_TAG, 'provision ready then restart user agent');
     this._restartUA(provisionData, options);
   }
 
