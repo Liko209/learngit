@@ -14,8 +14,8 @@ const ROUTE_ROOT_PATH = '/messages';
 class MessageService implements IMessageService {
   @IMessageStore private _messageStore: IMessageStore;
 
-  registerConversationHeaderExtension(extension: ReactNode) {
-    this._messageStore.addConversationHeaderExtension(extension);
+  registerConversationHeaderExtension(extensions: ReactNode[]) {
+    this._messageStore.addConversationHeaderExtension(extensions);
   }
 
   enterEditMode(id: number, draft: string) {

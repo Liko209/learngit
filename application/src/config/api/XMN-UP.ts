@@ -18,5 +18,8 @@ const config: DeepPartial<ApiConfig> = {
   upload: {
     server: 'https://xmnup.asialab.glip.net:8443',
   },
+  meetingsConfig: {
+    rcv: { baseUrl: 'https://xmnup-shr-1-v.lab.nordigy.ru' },
+  },
 };
 export default config;

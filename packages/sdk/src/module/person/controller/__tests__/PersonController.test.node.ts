@@ -104,6 +104,33 @@ describe('PersonService', () => {
     );
   }
 
+  function getPerson() {
+    const person: Person = {
+      id: 1,
+      created_at: 1,
+      modified_at: 1,
+      creator_id: 1,
+      is_new: false,
+      has_registered: true,
+      version: 1,
+      company_id: 1,
+      email: 'cat1@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'dora1',
+      last_name: 'bruce1',
+      display_name: 'dora1 bruce1',
+      sanitized_rc_extension: {
+        extensionNumber: '98494',
+        type: 'User',
+      },
+      rc_phone_numbers: [
+        { id: 1, phoneNumber: '650425743', usageType: 'DirectNumber' },
+      ],
+    };
+
+    return person;
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -891,34 +918,62 @@ describe('PersonService', () => {
     );
   });
 
-  describe('getPhoneNumbers', () => {
-    function getPerson() {
-      const person: Person = {
-        id: 1,
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        has_registered: true,
-        version: 1,
-        company_id: 1,
-        email: 'cat1@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'dora1',
-        last_name: 'bruce1',
-        display_name: 'dora1 bruce1',
-        sanitized_rc_extension: {
-          extensionNumber: '98494',
-          type: 'User',
-        },
-        rc_phone_numbers: [
-          { id: 1, phoneNumber: '650425743', usageType: 'DirectNumber' },
-        ],
-      };
+  describe('getCurrentPerson', ()=>{
+    it('should return current user depends on user id', async()=>{
+      setUp();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(2);
+      const person = getPerson();
+      entitySourceController.get = jest.fn().mockReturnValueOnce(person);
+      await personController.getCurrentPerson();
+      expect(entitySourceController.get).toHaveBeenCalledWith(2);
+    });
+  });
 
-      return person;
-    }
-    
+  describe('getFirstName', ()=>{
+    it.each`
+      rcExtensionId | firstName   | lastName    | sRcFirstName  | res
+      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'f_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'s_name'}
+      ${'1'}        | ${'f_name'} | ${''}       | ${''}         | ${'f_name'}
+    `(
+      'should return first name of the person $res ',
+      ({ rcExtensionId, firstName, lastName, sRcFirstName, res }) => {
+        const person: any = {
+          sanitized_rc_first_name:sRcFirstName,
+          first_name: firstName,
+          last_name: lastName,
+          rc_extension_id: rcExtensionId
+        };
+        expect(personController.getFirstName(person)).toEqual(res);
+      },
+    );
+  });
+
+  describe('getLastName', ()=>{
+    it.each`
+      rcExtensionId | firstName   | lastName    | sRcLastName   | res
+      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'l_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'s_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${''}         | ${'l_name'}
+    `(
+      'should return first name of the person $res ',
+      ({ rcExtensionId, firstName, lastName, sRcLastName, res }) => {
+        const person: any = {
+          sanitized_rc_last_name: sRcLastName,
+          first_name: firstName,
+          last_name: lastName,
+          rc_extension_id: rcExtensionId
+        };
+        expect(personController.getLastName(person)).toEqual(res);
+      },
+    );
+  })
+});
+
+  describe('getPhoneNumbers', () => {
     it('should return all phone numbers when is company contact, and extension is at first', () => {
       const person = getPerson();
       const userConfig = ServiceLoader.getInstance<AccountService>(

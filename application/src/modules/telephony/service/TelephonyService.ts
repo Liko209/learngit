@@ -832,7 +832,7 @@ class TelephonyService {
     return this._serverTelephonyService.dtmf(this._callEntityId, digits);
   };
 
-  callComponent = () => import('../container/Call');
+  getComponent = () => import('../container/Call');
 
   setCallerPhoneNumber = (phoneNumber?: string) => {
     if (

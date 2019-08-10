@@ -12,6 +12,7 @@ import i18next from 'i18next';
 import MeetingItemModel from '@/store/models/MeetingItem';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import { MEETING_STATUS } from '../types';
+import RCVideoMeetingItem from '@/store/models/RCVideoMeetingItem';
 import { mountWithTheme } from 'shield/utils';
 import { MeetingView } from '../Meeting.View';
 
@@ -33,7 +34,7 @@ describe('MeetingViewModel', () => {
     i18next.loadLanguages('en', () => {});
     jest.resetAllMocks();
     meetingVM = new MeetingViewModel({
-      ids: [123453],
+      ids: [570810475],
     });
   });
   function mountComponent(viewProps: {
@@ -42,13 +43,15 @@ describe('MeetingViewModel', () => {
     duration?: string;
     number?: string;
     subTitle?: string;
+    meetingId: number;
   }) {
-    const { title, status, duration = '' } = viewProps;
+    const { title, status, duration = '', meetingId } = viewProps;
     const props = {
       meetingTitle: title,
       meetingItem: {
         status,
-      } as MeetingItemModel,
+      } as MeetingItemModel | RCVideoMeetingItem,
+      meetingId,
       duration,
     };
     return mountWithTheme(<MeetingView {...props} />);
@@ -62,10 +65,14 @@ describe('MeetingViewModel', () => {
       status: MEETING_STATUS.NOT_STARTED,
     })
     t1() {
+      meetingVM = new MeetingViewModel({
+        ids: [570810475],
+      });
       const title = 'Starting Video Call...';
       const wrapper = mountComponent({
         title,
         status: MEETING_STATUS.NOT_STARTED,
+        meetingId: meetingVM.meetingId,
       });
       expect(i18next.t(meetingVM.meetingTitle)).toBe(title);
       expect(wrapper.find('svg')).toHaveLength(1);
@@ -93,6 +100,7 @@ describe('MeetingViewModel', () => {
         title,
         status: MEETING_STATUS.ENDED,
         duration: '02:30',
+        meetingId: meetingVM.meetingId,
       });
       expect(i18next.t(meetingVM.meetingTitle)).toBe('Video Call ended');
       expect(meetingVM.duration).toBe('01:00:01');
@@ -109,6 +117,7 @@ describe('MeetingViewModel', () => {
       const wrapper = mountComponent({
         title,
         status: MEETING_STATUS.EXPIRED,
+        meetingId: meetingVM.meetingId,
       });
       expect(i18next.t(meetingVM.meetingTitle)).toBe(title);
       expect(wrapper.find('div')).toHaveLength(2);
@@ -123,6 +132,21 @@ describe('MeetingViewModel', () => {
       const wrapper = mountComponent({
         title,
         status: MEETING_STATUS.CANCELLED,
+        meetingId: meetingVM.meetingId,
+      });
+      expect(wrapper.find('div')).toHaveLength(2);
+    }
+    @test('should displayed no answer when no answer for this video call')
+    @mockEntity({
+      status: MEETING_STATUS.NO_ANSWER,
+    })
+    t6() {
+      const title = 'No Answer for This Video Call';
+      expect(meetingVM.meetingTitle).toBe(title);
+      const wrapper = mountComponent({
+        title,
+        status: MEETING_STATUS.NO_ANSWER,
+        meetingId: meetingVM.meetingId,
       });
       expect(wrapper.find('div')).toHaveLength(2);
     }

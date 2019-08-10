@@ -23,7 +23,8 @@ import {
   InteractiveMessageItemAttachment,
   InteractiveMessageItemAttachmentField,
 } from '../module/interactiveMessage/entity';
-import { MeetingItem } from '../module/meeting/entity';
+import { ZoomMeetingItem } from '../module/zoomMeeting/entity';
+import { RCVideoMeetingItem } from '../module/rcVideoMeeting/entity';
 
 export * from '../module/conference/entity';
 
@@ -44,5 +45,6 @@ export {
   InteractiveMessageItem,
   InteractiveMessageItemAttachment,
   InteractiveMessageItemAttachmentField,
-  MeetingItem,
+  ZoomMeetingItem,
+  RCVideoMeetingItem,
 };

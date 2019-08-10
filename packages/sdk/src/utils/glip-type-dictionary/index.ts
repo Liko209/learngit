@@ -49,6 +49,7 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_PAGE]: socketKeyMap.ITEM,
   [TypeDictionary.TYPE_ID_CODE]: socketKeyMap.ITEM,
   [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_RC_VIDEO]: socketKeyMap.ITEM,
 };
 
 function getSocketMessageKey(id: number) {

@@ -4,15 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import MeetingItemModel, {
+import {
   MEETING_STATUS,
-  MEETING_DIAL_IN_NUMBER,
-} from '../MeetingItem';
+  ZOOM_MEETING_DIAL_IN_NUMBER,
+} from '../../utils/Meetings';
+import { MeetingItemModel } from '../MeetingItem';
 import _ from 'lodash';
 
 const meetingData = {
   _id: 12664578068,
-  created_at: 1558589662601,
+  created_at: new Date().getTime(),
   creator_id: 2826182659,
   version: 3140436453490688,
   model_size: 0,
@@ -81,11 +82,18 @@ describe('MeetingItemModel', () => {
       const model = MeetingItemModel.fromJS(data);
       expect(model.meetingStatus).toEqual(expected);
     });
+    it('status should be cancelled if original value is not_started and the created time has been expired', () => {
+      const data = _.cloneDeep(meetingData);
+      data['created_at'] = new Date().getTime() - 3600000 - 1;
+      data['status'] = 'not_started';
+      const model = MeetingItemModel.fromJS(data);
+      expect(model.meetingStatus).toEqual(MEETING_STATUS.CANCELLED);
+    });
   });
   describe('getDialInNumber', () => {
     it('should return RC number', () => {
       const model = MeetingItemModel.fromJS(meetingData);
-      expect(model.getDialInNumber()).toEqual(MEETING_DIAL_IN_NUMBER.RC);
+      expect(model.getDialInNumber()).toEqual(ZOOM_MEETING_DIAL_IN_NUMBER.RC);
     });
   });
   describe('duration', () => {
