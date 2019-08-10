@@ -54,7 +54,7 @@ interface IZipProducer {
 }
 
 interface IZip {
-  zip(zipItems: ZipItem[]): Promise<Blob>;
+  zip: (zipItems: ZipItem[]) => Promise<Blob>;
 }
 
 interface ILogChunkSplitStrategy {

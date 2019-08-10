@@ -42,6 +42,6 @@ export async function zip(zipItems: ZipItem[]) {
   });
 }
 
-export default workerServerAdapter<IZip>({
+export default workerServerAdapter<IZip>(global, {
   zip,
 });
