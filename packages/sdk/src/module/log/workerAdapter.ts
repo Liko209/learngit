@@ -18,35 +18,32 @@ type EventMessage<T> = {
 
 export function workerClientAdapter<T extends object>(worker: Worker): T {
   let index = 0;
-  const proxy: any = new Proxy(
-    {},
-    {
-      get: (target, key) => {
-        return (...args: any[]) =>
-          new Promise((resolve, reject) => {
-            index += 1;
-            const id = index;
-            const onMessage = (ev: any) => {
-              const eventMessage = ev.data as EventMessage<T>;
-              if (eventMessage.channel === key && eventMessage.id === id) {
-                worker.removeEventListener('message', onMessage);
-                if (eventMessage.type === MessageType.ERROR) {
-                  reject(eventMessage.data);
-                } else {
-                  resolve(eventMessage.data);
-                }
+  const proxy: any = new Proxy({}, {
+    get: (target, key) => {
+      return (...args: any[]) =>
+        new Promise((resolve, reject) => {
+          index += 1;
+          const id = index;
+          const onMessage = (ev: any) => {
+            const eventMessage = ev.data as EventMessage<T>;
+            if (eventMessage.channel === key && eventMessage.id === id) {
+              worker.removeEventListener('message', onMessage);
+              if (eventMessage.type === MessageType.ERROR) {
+                reject(eventMessage.data);
+              } else {
+                resolve(eventMessage.data);
               }
-            };
-            worker.addEventListener('message', onMessage);
-            worker.postMessage({
-              id,
-              channel: key,
-              data: args,
-            });
+            }
+          };
+          worker.addEventListener('message', onMessage);
+          worker.postMessage({
+            id,
+            channel: key,
+            data: args,
           });
-      },
+        });
     },
-  );
+  });
   return proxy;
 }
 

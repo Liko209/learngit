@@ -10,16 +10,16 @@ import { ZipItem, IZip } from './types';
 export class Zip implements IZip {
   zipWorker: IZip;
 
-  async getZipWorker() {
+  async ensureZipWorker() {
     if (!this.zipWorker) {
       this.zipWorker = workerClientAdapter(
-        createWorker((await import('./zip.worker')).default),
+        createWorker(await import('./zip.worker')),
       );
     }
-    return this.zipWorker;
   }
 
   zip = async (zipItems: ZipItem[]) => {
-    return (await this.getZipWorker()).zip(zipItems);
+    await this.ensureZipWorker();
+    return this.zipWorker.zip(zipItems);
   };
 }
