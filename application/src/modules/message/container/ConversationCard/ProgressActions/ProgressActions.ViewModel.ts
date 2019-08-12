@@ -42,7 +42,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
 
   constructor(props: ProgressActionsProps) {
     super(props);
-    if (this.props.id < 0) {
+    if (props.id < 0) {
       this.autorun(() => {
         if (this.postProgress === PROGRESS_STATUS.INPROGRESS) {
           clearTimeout(this._timer);

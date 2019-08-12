@@ -237,11 +237,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       id: oldGroupId,
     });
   }
-
-  forceSaveDraft = () => {
+  
+  @action
+  forceSaveDraft = async() => {
     const draft = isEmpty(this.draft) ? '' : this.draft;
     this._memoryDraftMap.set(this.props.id, draft);
-    this._groupConfigService.updateDraft({
+    await this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
     });
