@@ -29,7 +29,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('Event Item Dao', () => {
+describe.skip('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
 
   function setUp() {

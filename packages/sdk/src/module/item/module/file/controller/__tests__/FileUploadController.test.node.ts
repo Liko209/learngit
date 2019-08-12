@@ -50,6 +50,12 @@ jest.mock('../../../../../../service/notificationCenter');
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 
+global.FormData = () => {
+  return {
+    append: jest.fn()
+  }
+}
+
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
