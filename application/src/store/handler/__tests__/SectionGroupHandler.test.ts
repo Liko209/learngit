@@ -268,7 +268,7 @@ describe('SectionGroupHandler', () => {
         ).toEqual([19, 18, 16]);
         expect(
           sectionGroupHandler.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE),
-        ).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 2]);
+        ).toEqual([10, 9, 8, 6, 5, 4, 3, 2, 1]);
         expect(
           sectionGroupHandler.getGroupIdsByType(SECTION_TYPE.FAVORITE),
         ).toEqual([]);
@@ -709,7 +709,7 @@ describe('SectionGroupHandler', () => {
       ]);
       expect(
         sectionGroupHandler.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE),
-      ).toEqual([8, 6, 5]);
+      ).toEqual([8, 6, 5, 1]);
     });
 
     it('should not add to group section if without unread group remove from favorite and not in limitation', async () => {
@@ -743,7 +743,7 @@ describe('SectionGroupHandler', () => {
       ]);
       expect(
         sectionGroupHandler.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE),
-      ).toEqual([8, 6, 5]);
+      ).toEqual([8, 6, 5, 1]);
     });
   });
 
@@ -1342,7 +1342,7 @@ describe('SectionGroupHandler', () => {
     it('should get teams by pagination', done => {
       sectionGroupHandler.fetchPagination(SECTION_TYPE.TEAM);
       const ids: number[] = [];
-      for (let i = 39; i >= 0; i--) {
+      for (let i = 38; i >= 0; i--) {
         ids.push(i);
       }
 
@@ -1425,7 +1425,7 @@ describe('SectionGroupHandler', () => {
 
     it('should release cache when left rail invisible', done => {
       const ids: number[] = [];
-      for (let i = 39; i >= 0; i--) {
+      for (let i = 38; i >= 0; i--) {
         ids.push(i);
       }
       sectionGroupHandler.fetchPagination(SECTION_TYPE.TEAM);
@@ -1450,7 +1450,7 @@ describe('SectionGroupHandler', () => {
 
     it('should not release cache when left rail visible', done => {
       const ids: number[] = [];
-      for (let i = 39; i >= 0; i--) {
+      for (let i = 38; i >= 0; i--) {
         ids.push(i);
       }
       sectionGroupHandler.fetchPagination(SECTION_TYPE.TEAM);
@@ -1561,7 +1561,7 @@ describe('SectionGroupHandler', () => {
 
     it('should not release cache when left rail visible', done => {
       const ids: number[] = [];
-      for (let i = 39; i >= 0; i--) {
+      for (let i = 38; i >= 0; i--) {
         ids.push(i);
       }
       sectionGroupHandler.fetchPagination(SECTION_TYPE.TEAM);
