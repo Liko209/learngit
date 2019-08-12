@@ -3,7 +3,7 @@
  * @Date: 2019-07-26 13:51:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed } from 'mobx';
+import { observable, action, computed, runInAction } from 'mobx';
 import {
   RightShelfMemberListViewProps,
   RightShelfMemberListProps,
@@ -120,16 +120,19 @@ class RightShelfMemberListViewModel
 
   @action
   private async _getMemberAndGuestIds() {
+    
     const originalGroupId = this.props.groupId;
     const {
       memberIds,
       guestIds,
     } = await this._groupService.getMembersAndGuestIds(this.props.groupId);
-    if (originalGroupId !== this.props.groupId) return;
-    this._membersCache = { [this.props.groupId]: this.group.members };
-    this.isLoading = false;
-    this.fullMemberIds = memberIds;
-    this.fullGuestIds = guestIds;
+    runInAction(()=>{
+      if (originalGroupId !== this.props.groupId) return;
+      this._membersCache = { [this.props.groupId]: this.group.members };
+      this.isLoading = false;
+      this.fullMemberIds = memberIds;
+      this.fullGuestIds = guestIds;
+    });
   }
 
   private _isNewGuestCompanyId(companyId: number) {
