@@ -257,7 +257,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @computed
-  get _group() {
+  private get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
@@ -371,12 +371,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private _trackSendPost(containsTeamMention:boolean) {
     const type = this.items.length ? 'file' : 'text';
     const isAtTeam = containsTeamMention ? 'yes' : 'no'
-    analyticsCollector.sendPost(
-      'conversation thread',
-      type,
-      this._group.analysisType,
-      isAtTeam,
-    );
+    runInAction(() => {
+      analyticsCollector.sendPost(
+        'conversation thread',
+        type,
+        this._group.analysisType,
+        isAtTeam,
+      );
+    });
   }
 
   private _handleDraftSave = debounce(() => {
