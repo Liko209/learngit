@@ -47,7 +47,7 @@ describe('TelephonyService', () => {
     @test(
       'should needE911Prompt if account has DL and emergency has been confirmed',
     )
-    @mockService(RCInfoService, 'getDigitalLines', [1])
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
