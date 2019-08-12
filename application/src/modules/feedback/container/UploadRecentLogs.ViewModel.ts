@@ -5,15 +5,12 @@
  */
 import { container } from 'framework';
 import { AbstractViewModel } from '@/base';
-import { observable, computed } from 'mobx';
+import { observable, computed, runInAction } from 'mobx';
 import { logger } from '../utils';
 import { UploadRecentLogsViewModelProps, TaskStatus } from './types';
 import { UploadResult } from '../types';
 import { FeedbackService } from '../service/FeedbackService';
-import {
-  TaskQueueLoop,
-  Task,
-} from 'sdk/module/log/consumer/task';
+import { TaskQueueLoop, Task } from 'sdk/module/log/consumer/task';
 import { Nullable } from 'sdk/types';
 
 const TASK_NAME = {
@@ -104,16 +101,18 @@ export class UploadRecentLogsViewModel
     }
   };
 
-  private _uploadRecentLogs = async () => {
+  private _uploadRecentLogs = () => {
     const feedbackService: FeedbackService = container.get(FeedbackService);
     this._uploadLogResult = null;
-    this._uploadLogResult = await feedbackService.uploadRecentLogs({
-      level: this.props.level,
+    runInAction(async () => {
+      this._uploadLogResult = await feedbackService.uploadRecentLogs({
+        level: this.props.level,
+      });
+      if (!this._uploadLogResult) {
+        logger.debug('Upload recent logs failed.');
+        throw new Error('Upload recent logs failed.');
+      }
     });
-    if (!this._uploadLogResult) {
-      logger.debug('Upload recent logs failed.');
-      throw new Error('Upload recent logs failed.');
-    }
   };
 
   @computed get isLoading() {
