@@ -21,7 +21,7 @@
     "build:ui": "cd packages/jui && npm run build-storybook",
     "build:release": "cd application && JUPITER_ENV=production npm run build",
     "test": "npm run _test",
-    "_test": "node --expose-gc --max_old_space_size=1024 ./scripts/test.js --logHeapUsage --maxWorkers=4 --detectLeaks",
+    "_test": "node --expose-gc --max_old_space_size=1024 ./scripts/test.js --logHeapUsage --maxWorkers=4",
     "test:application": "jest-fixer-apply && npm run _test application && jest-fixer-restore",
     "test:foundation": "npm run _test foundation",
     "test:framework": "npm run _test framework",
@@ -117,8 +117,7 @@
     "cache-loader": "1.2.0",
     "btoa": "1.2.1",
     "form-data": "2.5.0",
-    "jest-leak-fixer": "0.0.5",
-    "weak": "1.0.1"
+    "jest-leak-fixer": "0.0.5"
   },
   "husky": {
     "hooks": {
