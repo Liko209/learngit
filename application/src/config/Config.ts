@@ -48,7 +48,7 @@ class Config {
 
   public defaultEnv() {
     const productionEnv = this.isProductionBuild() || this.isPublicBuild();
-    return productionEnv ? 'production' : 'GLP_DEV_XMN';
+    return productionEnv ? 'production' : 'GLP-DEV-XMN';
   }
 
   public isProductionAccount() {
@@ -61,7 +61,7 @@ class Config {
 
   getAllEnv() {
     return getEnvArray().filter(
-      (env: string) => !this.isProductionBuild() || env !== 'production',
+      (env: string) => this.isProductionBuild() || env !== 'production',
     );
   }
 
