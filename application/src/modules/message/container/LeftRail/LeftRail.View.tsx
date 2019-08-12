@@ -61,7 +61,10 @@ class LeftRailViewComponent extends Component<
             onChange={filter.onChange}
           />,
         ])}
-        <JuiLeftRailMainSection onWheel={this._fIJI7739Fixer.handleWheel}>
+        <JuiLeftRailMainSection
+          onWheel={this._fIJI7739Fixer.handleWheel}
+          onScroll={this._fIJI7739Fixer.handleScroll}
+        >
           {sections.map((type, index, array) => [
             <Section
               key={type}
