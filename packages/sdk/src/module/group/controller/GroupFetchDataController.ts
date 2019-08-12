@@ -196,25 +196,50 @@ export class GroupFetchDataController {
     return [];
   }
 
-  async getMembersAndGuestIds(
+  async getMemberAndGuestIds(
     groupId: number,
-    onlineFirst: boolean = true,
-    sortFunc?: (A: Person, B: Person) => number,
+    memberSortCount: number,
+    guestSortCount: number,
+    sortByPresence: boolean = true,
   ) {
-    let memberIds: number[] = [];
-    const guestIds: number[] = [];
+    let realMemberIds: number[] = [];
+    let guestIds: number[] = [];
+    let optionalIds: number[] = [];
     const group = await this.entitySourceController.getEntityLocally(groupId);
     if (group) {
       const personService = ServiceLoader.getInstance<PersonService>(
         ServiceConfig.PERSON_SERVICE,
       );
-      let members = await personService.getPersonsByIds(group.members);
+      const members = personService.batchGetSynchronously(group.members);
+      optionalIds = _.difference(
+        group.members,
+        members.map(person => person.id),
+      );
+
+      // divide group members
+      let realMembers: Person[] = [];
+      let guests: Person[] = [];
+      const guestCompanyIds = new Set(group.guest_user_company_ids);
+      members.forEach((person: Person) => {
+        if (person.deactivated) {
+          return;
+        }
+        if (guestCompanyIds.has(person.company_id)) {
+          guests.push(person);
+          guestIds.push(person.id);
+        } else {
+          realMembers.push(person);
+          realMemberIds.push(person.id);
+        }
+      });
+
+      // sort
       const presenceService = ServiceLoader.getInstance<PresenceService>(
         ServiceConfig.PRESENCE_SERVICE,
       );
-      members = members.sort((lPerson: Person, rPerson: Person) => {
+      const sortFunc = (lPerson: Person, rPerson: Person) => {
         let result = 0;
-        if (onlineFirst) {
+        if (sortByPresence) {
           const lPresence = presenceService.getSynchronously(lPerson.id);
           const rPresence = presenceService.getSynchronously(rPerson.id);
           if (
@@ -232,29 +257,23 @@ export class GroupFetchDataController {
           }
         }
         if (!result) {
-          if (sortFunc) {
-            result = sortFunc(lPerson, rPerson);
-          } else {
-            const lName = personService.getFullName(lPerson).toLowerCase();
-            const rName = personService.getFullName(rPerson).toLowerCase();
-            result = lName < rName ? -1 : lName > rName ? 1 : 0;
-          }
+          const lName = personService.getFullName(lPerson).toLowerCase();
+          const rName = personService.getFullName(rPerson).toLowerCase();
+          result = lName < rName ? -1 : lName > rName ? 1 : 0;
         }
         return result;
-      });
-      const memberSet = new Set(group.members);
-      const guestCompanyIds = new Set(group.guest_user_company_ids);
-      members.forEach((person: Person) => {
-        memberSet.delete(person.id);
-        if (guestCompanyIds.has(person.company_id)) {
-          guestIds.push(person.id);
-        } else {
-          memberIds.push(person.id);
-        }
-      });
-      memberIds = memberIds.concat(Array.from(memberSet));
+      };
+      realMembers = SortUtils.heapSort(
+        realMembers,
+        sortFunc,
+        memberSortCount,
+      );
+      guests = SortUtils.heapSort(guests, sortFunc, guestSortCount);
+      realMemberIds = _.union(realMembers.map(person => person.id), realMemberIds);
+      guestIds = _.union(guests.map(person => person.id), guestIds);
+      optionalIds = _.difference(optionalIds, realMemberIds, guestIds);
     }
-    return { memberIds, guestIds };
+    return { realMemberIds, guestIds, optionalIds };
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {

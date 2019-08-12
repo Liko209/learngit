@@ -34,7 +34,6 @@ import { GroupEntityCacheController } from '../controller/GroupEntityCacheContro
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
-import { Person } from 'sdk/module/person/entity';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -428,15 +427,17 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     );
   }
 
-  async getMembersAndGuestIds(
+  async getMemberAndGuestIds(
     groupId: number,
-    onlineFirst: boolean = true,
-    sortFunc?: (lhs: Person, rhs: Person) => number,
+    memberSortCount: number,
+    guestSortCount: number,
+    sortByPresence: boolean = true,
   ) {
-    return this._groupFetchDataController.getMembersAndGuestIds(
+    return this._groupFetchDataController.getMemberAndGuestIds(
       groupId,
-      onlineFirst,
-      sortFunc,
+      memberSortCount,
+      guestSortCount,
+      sortByPresence,
     );
   }
 
