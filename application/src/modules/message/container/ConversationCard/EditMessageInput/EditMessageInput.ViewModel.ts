@@ -5,7 +5,7 @@
  */
 import Quill from 'quill';
 import { IMessageService } from '@/modules/message/interface';
-import { action, observable, computed } from 'mobx';
+import { action, observable, computed, autorun } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
 import { PostService } from 'sdk/module/post';
 import { getEntity } from '@/store/utils';
@@ -90,15 +90,15 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   @computed
   get draft() {
-    return this._messageService.getDraft(this.props.id);
+    return this._messageService.getDraft(this.id);
   }
 
   saveDraft(draft: string) {
-    return this._messageService.enterEditMode(this.props.id, draft);
+    return this._messageService.enterEditMode(this.id, draft);
   }
 
   removeDraft() {
-    return this._messageService.leaveEditMode(this.props.id);
+    return this._messageService.leaveEditMode(this.id);
   }
 
   @action
@@ -144,13 +144,16 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
   private async _handleEditPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
-    await this._postService.editPost({
-      text: content,
-      groupId: this.gid,
-      postId: this.id,
-      mentionNonItemIds: ids,
-      isTeamMention: mentionIdsContainTeam
-    });
+    const disposer = autorun(async() => {
+      await this._postService.editPost({
+        text: content,
+        groupId: this.gid,
+        postId: this.id,
+        mentionNonItemIds: ids,
+        isTeamMention: mentionIdsContainTeam
+      });
+    })
+    disposer();
   }
 
   private _editPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {

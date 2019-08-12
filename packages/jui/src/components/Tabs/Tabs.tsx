@@ -3,7 +3,7 @@
  * @Date: 2019-01-02 10:54:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { difference } from 'lodash';
+import { difference, isEqual } from 'lodash';
 import React, {
   PureComponent,
   ReactElement,
@@ -188,6 +188,9 @@ class JuiTabs extends PureComponent<Props, States> {
       indexTabs.sort();
     }
     // console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
+    if(isEqual(this.state.indexMenus,indexMenus) && isEqual(this.state.indexTabs,indexTabs)) {
+      return;
+    }
     this.setState({
       indexMenus,
       indexTabs,
