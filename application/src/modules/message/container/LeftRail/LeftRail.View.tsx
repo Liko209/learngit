@@ -24,6 +24,7 @@ import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { SECTION_TYPE } from './Section/types';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { JuiConversationListItemLoader } from 'jui/pattern/ConversationList';
+import debounce from 'lodash/debounce';
 
 const DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD = 300;
 
@@ -64,7 +65,7 @@ class LeftRailViewComponent extends Component<
     }
   };
 
-  private _loadGroups = () => {
+  private _loadGroups = debounce(() => {
     setTimeout(() => {
       SectionGroupHandler.getInstance()
         .fetchPagination(SECTION_TYPE.TEAM)
@@ -72,7 +73,7 @@ class LeftRailViewComponent extends Component<
           this._loading = false;
         });
     });
-  };
+  }, 100);
 
   handleSectionCollapseChange = (arg: {
     sectionType: SECTION_TYPE;
