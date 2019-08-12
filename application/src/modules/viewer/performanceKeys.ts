@@ -6,4 +6,6 @@
 
 export enum VIEWER_PERFORMANCE_KEYS {
   UI_VIEWER_PAGE_RENDER = 'ui_viewer_page_render',
+  UI_IMAGE_VIEWER_PAGE_RENDER = 'ui_image_viewer_page_render',
+  UI_IMAGE_VIEWER_IMAGE_RENDER = 'ui_image_viewer_image_render',
 }
