@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import './jest/setup/console';
+import './jest/setup/emoji';
 import './jest/setup/timezone';
 import './jest/setup/mobx';
 import './jest/setup/styledTheme';

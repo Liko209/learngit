@@ -3,6 +3,10 @@
  * @Date: 2019-05-24 15:20:10
  * Copyright © RingCentral. All rights reserved.
  */
+jest.unmock('@/common/emojiHelpers/map/mapAscii');
+jest.unmock('@/common/emojiHelpers/map/mapEmojiOne');
+jest.unmock('@/common/emojiHelpers/map/mapUnicode');
+
 import React from 'react';
 import { postParser } from '..';
 import { JuiAtMention } from 'jui/components/AtMention';
