@@ -17,7 +17,7 @@ import {
   getActivityData,
 } from './container/ConversationCard/Activity/handler/getActivity';
 import { getEntity, getGlobalValue } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import {
   NotificationOpts,
@@ -38,7 +38,11 @@ import { Remove_Markdown } from 'glipdown';
 import { postParser } from '@/common/postParser';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
-import { ProfileService, DESKTOP_MESSAGE_NOTIFICATION_OPTIONS, AUDIO_SOUNDS_INFO } from 'sdk/module/profile';
+import {
+  ProfileService,
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  AUDIO_SOUNDS_INFO,
+} from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
@@ -54,12 +58,13 @@ enum MESSAGE_TYPE {
   TEAM,
 }
 type MessageTypeInfo = {
-isMention:boolean;
-isActivity: boolean;
-isOne2One:boolean;
-messageType:MESSAGE_TYPE
-}
-class MessageNotificationManager extends AbstractNotificationManager implements IMessageNotificationManager {
+  isMention: boolean;
+  isActivity: boolean;
+  isOne2One: boolean;
+  messageType: MESSAGE_TYPE;
+};
+class MessageNotificationManager extends AbstractNotificationManager
+  implements IMessageNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   private _profileService: ProfileService;
@@ -89,6 +94,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
   }
 
   handlePostEntityChanged = async (entities: Post[]) => {
+    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.POST, entities);
     const post = entities[0];
     const postId = post.id;
     logger.info(`prepare notification for ${postId}`);
@@ -108,9 +114,12 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     }
     const MAX_SIZE = 50;
     const vm = new MessageNotificationViewModel(id, {
-      onCreate: () => this.buildNotification(postModel, groupModel),
+      onCreate: () =>
+        this.buildNotification(postModel, groupModel),
+
       onUpdate: (id: number) => {
         const postModel = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
+
         this.buildNotification(postModel, groupModel, true);
       },
       onDispose: () => {
@@ -135,22 +144,28 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     this._vmQueue.unshift({ id, vm });
   }
 
-  async buildNotification(postModel: PostModel, groupModel: GroupModel, muteSounds?:boolean) {
+  async buildNotification(
+    postModel: PostModel,
+    groupModel: GroupModel,
+    muteSounds?: boolean,
+  ) {
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
       postModel.creatorId,
     );
     const type = this.getMessageType(postModel, groupModel);
-    const datum  = {person,post:postModel,group:groupModel}
+    const datum = { person, post: postModel, group: groupModel };
     const { title, body } = await this.buildNotificationBodyAndTitle(
       datum,
       type,
     );
-    const sound = !muteSounds && await this.getCurrentMessageSoundSetting(type.messageType)
+    const sound =
+      !muteSounds &&
+      (await this.getCurrentMessageSoundSetting(type.messageType));
     const opts = Object.assign(
       {
         body,
-        sound
+        sound,
       },
       await this.buildNotificationOption(postModel, groupModel, person),
     );
@@ -177,7 +192,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     return opts;
   }
   async getCurrentMessageSoundSetting(type: MESSAGE_TYPE) {
-    const {DIRECT_MESSAGE, TEAM,MENTION} = MESSAGE_TYPE
+    const { DIRECT_MESSAGE, TEAM, MENTION } = MESSAGE_TYPE;
     const soundSettingDict = {
       [DIRECT_MESSAGE]: MESSAGE_SETTING_ITEM.SOUND_DIRECT_MESSAGES,
       [MENTION]: MESSAGE_SETTING_ITEM.SOUND_MENTIONS,
@@ -207,7 +222,9 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
       logger.info(
-        `notification for ${post.id} is not permitted because post type is not message`,
+        `notification for ${
+          post.id
+        } is not permitted because post type is not message`,
       );
       return false;
     }
@@ -217,7 +234,9 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
 
     if (!group) {
       logger.info(
-        `notification for ${post.id} is not permitted because group of the post does not exist`,
+        `notification for ${
+          post.id
+        } is not permitted because group of the post does not exist`,
       );
       return false;
     }
@@ -225,15 +244,15 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     const postModel = new PostModel(post);
     const groupModel = new GroupModel(group);
 
-    const shouldMuteNotification = await this._profileService.isNotificationMute(post.group_id);
+    const shouldMuteNotification = await this._profileService.isNotificationMute(
+      post.group_id,
+    );
     const isMentioned = this.isMyselfAtMentioned(postModel);
     const setting: string = await this.getCurrentMessageNotificationSetting();
     if (
       !shouldMuteNotification ||
-      (
-        isMentioned &&
-        setting !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF)
-    ) {    
+      (isMentioned && setting !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF)
+    ) {
       const result = { postModel, groupModel };
       const strategy = {
         default: () => false,
@@ -273,13 +292,18 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     return { isActivity, isOne2One, isMention, messageType };
   }
 
-  async buildNotificationBodyAndTitle({
-    post,person,group
-  }: {
-    post: PostModel;
-    person: PersonModel;
-    group: GroupModel;
-  },{isOne2One,isActivity,isMention}:MessageTypeInfo) {
+  async buildNotificationBodyAndTitle(
+    {
+      post,
+      person,
+      group,
+    }: {
+      post: PostModel;
+      person: PersonModel;
+      group: GroupModel;
+    },
+    { isOne2One, isActivity, isMention }: MessageTypeInfo,
+  ) {
     const translationArgs = {
       person: person.userDisplayName,
       conversation: group.displayName,
@@ -329,8 +353,8 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isTeamMention = post.isTeamMention;
     return (
-      post.atMentionNonItemIds &&
-      post.atMentionNonItemIds.includes(currentUserId) ||
+      (post.atMentionNonItemIds &&
+        post.atMentionNonItemIds.includes(currentUserId)) ||
       isTeamMention
     );
   }
