@@ -126,7 +126,9 @@ class AccountManager extends EventEmitter2 {
   }
 
   getSupportedServices(): string[] {
-    const servicesArray = this._accounts.map(account => account.getSupportedServices());
+    const servicesArray = this._accounts.map(account =>
+      account.getSupportedServices(),
+    );
     return _.flatten(servicesArray);
   }
 
@@ -143,7 +145,8 @@ class AccountManager extends EventEmitter2 {
 
       account.on(
         AbstractAccount.EVENT_SUPPORTED_SERVICE_CHANGE,
-        (services: string[], isStart: boolean) => this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart),
+        (services: string[], isStart: boolean) =>
+          this.emit(EVENT_SUPPORTED_SERVICE_CHANGE, services, isStart),
       );
 
       return account;
@@ -156,7 +159,9 @@ class AccountManager extends EventEmitter2 {
     const whiteList = await fetchWhiteList();
     const allAccount = whiteList[env];
     if (allAccount !== undefined) {
-      const isLegalUser = allAccount.some((account: string) => account === mailboxID);
+      const isLegalUser = allAccount.some(
+        (account: string) => account === mailboxID,
+      );
       mainLogger.info(
         `[Auth]${mailboxID} ${
           isLegalUser ? '' : 'not '

@@ -172,7 +172,7 @@ const UmiWrapper = styled.div<{ expand: boolean }>`
 type JuiLeftNavProps = {
   expand: boolean;
   icons: {
-    url: string;
+    url: string | (() => string);
     Icon: React.ReactElement;
     IconSelected: React.ReactElement;
     title: string;
@@ -183,19 +183,21 @@ type JuiLeftNavProps = {
 };
 
 class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
-  onRouteChangeHandlers: {
-    [id: string]: (event: React.MouseEvent<HTMLAnchorElement>) => void;
-  } = {};
+  onRouteChangeHandlers: Map<
+    string | (() => string),
+    (event: React.MouseEvent<HTMLAnchorElement>) => void
+  > = new Map();
 
-  onRouteChange = (url: string) => {
-    if (this.onRouteChangeHandlers[url]) {
-      return this.onRouteChangeHandlers[url];
+  onRouteChange = (url: string | (() => string)) => {
+    if (this.onRouteChangeHandlers.has(url)) {
+      return this.onRouteChangeHandlers.get(url);
     }
-    this.onRouteChangeHandlers[url] = () => {
+    this.onRouteChangeHandlers.set(url, () => {
       const { onRouteChange } = this.props;
-      onRouteChange(url);
-    };
-    return this.onRouteChangeHandlers[url];
+      const path = typeof url === 'string' ? url : url();
+      onRouteChange(path);
+    });
+    return this.onRouteChangeHandlers.get(url);
   };
 
   renderNavItems = () => {
@@ -205,7 +207,10 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
         <MuiList component="nav" disablePadding key={idx}>
           {arr.map((item, index) => {
             const navUrl = item.url;
-            const navPath = navUrl.split('/')[1];
+            const navPath = (typeof navUrl === 'string'
+              ? navUrl
+              : navUrl()
+            ).split('/')[1];
             const selected =
               selectedPath.toLowerCase() === navPath.toLowerCase();
             const NavItem = (

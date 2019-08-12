@@ -13,12 +13,12 @@ import {
   JuiTaskSectionOrDescription,
   JuiTaskAvatarNames,
   JuiTimeMessage,
-  JuiSectionDivider
+  JuiSectionDivider,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
   JuiFileWithExpand,
   JuiExpandImage,
-  JuiFileWrapper
+  JuiFileWrapper,
 } from 'jui/pattern/ConversationCard/Files';
 import { showImageViewer } from '@/modules/viewer/container/Viewer';
 
@@ -29,7 +29,7 @@ import { Download } from '@/containers/common/Download';
 import {
   postParser,
   HighlightContextInfo,
-  SearchHighlightContext
+  SearchHighlightContext,
 } from '@/common/postParser';
 
 type taskViewProps = WithTranslation & ViewProps;
@@ -44,10 +44,10 @@ const FILE_COMPS = {
       id: number,
       url: string,
       origWidth: number,
-      origHeight: number
+      origHeight: number,
     ) => (ev: React.MouseEvent, loaded: boolean) => void,
     initialExpansionStatus: boolean,
-    switchExpandHandler: (isExpanded: boolean) => void
+    switchExpandHandler: (isExpanded: boolean) => void,
   ) => {
     const { item, previewUrl } = file;
     const { groupId, t } = props;
@@ -58,7 +58,7 @@ const FILE_COMPS = {
       name,
       downloadUrl,
       deactivated,
-      type
+      type,
     } = item;
 
     return (
@@ -70,7 +70,7 @@ const FILE_COMPS = {
           previewUrl={previewUrl}
           fileName={postParser(name, {
             keyword,
-            fileName: true
+            fileName: true,
           })}
           i18UnfoldLess={t('common.collapse')}
           i18UnfoldMore={t('common.expand')}
@@ -80,7 +80,7 @@ const FILE_COMPS = {
             id,
             previewUrl,
             origWidth,
-            origHeight
+            origHeight,
           )}
           Actions={<Download url={downloadUrl} />}
           ImageActions={<Download url={downloadUrl} key="downloadAction" />}
@@ -92,7 +92,7 @@ const FILE_COMPS = {
   [FileType.others]: (
     file: ExtendFileItem,
     props: taskViewProps,
-    keyword: string
+    keyword: string,
   ) => {
     const { item } = file;
     const { name, downloadUrl, id, deactivated, type } = item;
@@ -103,13 +103,13 @@ const FILE_COMPS = {
           key={id}
           fileName={postParser(name, {
             keyword,
-            fileName: true
+            fileName: true,
           })}
           Actions={<Download url={downloadUrl} />}
         />
       )
     );
-  }
+  },
 };
 
 @observer
@@ -131,7 +131,7 @@ class Task extends React.Component<taskViewProps> {
     id: number,
     url: string,
     origWidth: number,
-    origHeight: number
+    origHeight: number,
   ) => async (ev: React.MouseEvent) => {
     const target = ev.currentTarget as HTMLElement;
 
@@ -139,7 +139,7 @@ class Task extends React.Component<taskViewProps> {
       originElement: target,
       thumbnailSrc: url,
       initialWidth: origWidth,
-      initialHeight: origHeight
+      initialHeight: origHeight,
     });
   };
 
@@ -173,7 +173,7 @@ class Task extends React.Component<taskViewProps> {
       effectiveIds,
       timeText,
       initialExpansionStatus,
-      switchExpandHandler
+      switchExpandHandler,
     } = this.props;
     const { text, complete } = task;
     const hasContent =
@@ -182,13 +182,15 @@ class Task extends React.Component<taskViewProps> {
       section ||
       notes ||
       (files && files.length > 0);
+
     return (
       <JuiConversationItemCard
         complete={complete}
         title={postParser(this._getTitleText(text), {
-          keyword: this.context.keyword
+          keyword: this.context.keyword,
         })}
         contentHasPadding={!!hasContent}
+        customColor={color}
         Icon={
           <JuiTaskCheckbox customColor={color} checked={complete || false} />
         }
@@ -209,7 +211,7 @@ class Task extends React.Component<taskViewProps> {
               <JuiTaskAvatarNames
                 count={effectiveIds && effectiveIds.length}
                 otherText={t('item.avatarNamesWithOthers', {
-                  count: effectiveIds.length - 2
+                  count: effectiveIds.length - 2,
                 })}
               >
                 {this._taskAvatarNames}
@@ -220,7 +222,7 @@ class Task extends React.Component<taskViewProps> {
             <JuiLabelWithContent label={t('item.section')}>
               <JuiTaskSectionOrDescription data-test-automation-id="task-section">
                 {postParser(section, {
-                  keyword: this.context.keyword
+                  keyword: this.context.keyword,
                 })}
               </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
@@ -231,7 +233,7 @@ class Task extends React.Component<taskViewProps> {
                 {postParser(notes, {
                   keyword: this.context.keyword,
                   phoneNumber: true,
-                  url: true
+                  url: true,
                 })}
               </JuiTaskSectionOrDescription>
             </JuiLabelWithContent>
@@ -247,9 +249,9 @@ class Task extends React.Component<taskViewProps> {
                         this.context.keyword,
                         this._handleImageClick,
                         initialExpansionStatus,
-                        switchExpandHandler
+                        switchExpandHandler,
                       )
-                    : null
+                    : null,
                 )}
               </JuiFileWrapper>
             </JuiLabelWithContent>

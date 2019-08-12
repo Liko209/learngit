@@ -20,7 +20,7 @@ class DndBannerViewComponent extends Component<Props> {
     return isShow && (
       <JuiSnackbarContent
         data-test-automation-id="dnd-top-banner"
-        type={ToastType.WARN}
+        type={ToastType.ERROR}
         message={t('presence.prompt.topBannerInfoWhenDnd')}
         messageAlign="center"
         fullWidth
@@ -30,7 +30,7 @@ class DndBannerViewComponent extends Component<Props> {
             onClick={handleUnblock}
             data-test-automation-id="dnd-top-banner-unblock"
           >
-            {t('common.button.unblock')}
+            {t('common.button.turnOff')}
           </JuiSnackbarAction>,
           <JuiSnackbarAction
             key="close"

@@ -78,7 +78,26 @@ describe('DiscontinuousPostController', () => {
       ]);
       expect(
         discontinuousPostController.entitySourceController.getEntitiesLocally,
-      ).toBeCalledWith([1, 2], true);
+      ).toHaveBeenCalledWith([1, 2], true);
+    });
+
+    it('should not filter deactivated posts', async () => {
+      itemService.getByPosts.mockResolvedValueOnce([]);
+      discontinuousPostController.entitySourceController.getEntitiesLocally.mockResolvedValueOnce(
+        [
+          { id: 1, deactivated: false },
+          { id: 2, deactivated: true },
+          { id: 3, deactivated: false },
+          { id: 4, deactivated: true },
+        ],
+      );
+      const result = await discontinuousPostController.getPostsByIds([
+        1,
+        2,
+        3,
+        4,
+      ]);
+      expect(result.posts.length).toEqual(4);
     });
 
     it('should return all posts if there are all exist in discontinuous post table', async () => {
@@ -220,6 +239,7 @@ describe('DiscontinuousPostController', () => {
         { id: 1, deactivated: false },
         { id: 2, deactivated: false },
         { id: 4, deactivated: false },
+        { id: 5, deactivated: true },
         { id: 7, deactivated: false },
       ]);
     });

@@ -103,7 +103,9 @@ class EditProfileViewComponent extends Component<
             label={t(`people.profile.edit.${key}`)}
             InputProps={{
               endAdornment:
-                currentFocusItem === key ? this._renderDeleteButton(key) : null,
+                currentFocusItem === key && this.props[key]
+                  ? this._renderDeleteButton(key)
+                  : null,
               inputProps: {
                 maxLength,
               },

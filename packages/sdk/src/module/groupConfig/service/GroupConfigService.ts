@@ -6,7 +6,7 @@
 
 import { GroupConfig } from '../entity';
 import { EntityBaseService } from '../../../framework/service';
-import { daoManager } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { GroupConfigDao } from '../dao/GroupConfigDao';
 import { GroupConfigController } from '../controller/GroupConfigController';
 import { Post } from 'sdk/module/post/entity';
@@ -72,6 +72,26 @@ class GroupConfigService extends EntityBaseService<GroupConfig> {
 
   async handleMyMostRecentPostChange(posts: Post[]) {
     await this.getGroupConfigController().updateMyLastPostTime(posts);
+  }
+
+  async hasMorePostInRemote(groupId: number) {
+    return await this.getGroupConfigController().hasMorePostInRemote(groupId);
+  }
+
+  async updateHasMore(
+    groupId: number,
+    direction: QUERY_DIRECTION,
+    hasMore: boolean,
+  ) {
+    await this.getGroupConfigController().updateHasMore(
+      groupId,
+      direction,
+      hasMore,
+    );
+  }
+
+  async deleteGroupsConfig(ids: number[]) {
+    await this.getGroupConfigController().deleteGroupsConfig(ids);
   }
 
   protected getGroupConfigController() {

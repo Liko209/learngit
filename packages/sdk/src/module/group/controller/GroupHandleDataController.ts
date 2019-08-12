@@ -214,10 +214,7 @@ class GroupHandleDataController {
     }
   };
 
-  extractGroupCursor(
-    groups: Group[],
-    changeMap?: Map<string, ChangeModel>,
-  ) {
+  extractGroupCursor(groups: Group[], changeMap?: Map<string, ChangeModel>) {
     const groupCursors = _.cloneDeep(groups);
     if (groupCursors.length) {
       if (changeMap) {
@@ -229,15 +226,19 @@ class GroupHandleDataController {
       }
     }
     return groups.map((group: Group) => {
-      return _.omit(group, [
-        'post_cursor',
-        'post_drp_cursor',
-        'last_author_id',
-        'team_mention_cursor',
-        'team_mention_cursor_offset',
-        'removed_cursors_team_mention',
-      ]);
+      return this.removeCursorsFromGroup(group);
     });
+  }
+
+  removeCursorsFromGroup<T extends Raw<Group> | Group>(group: T) {
+    return _.omit(group, [
+      'post_cursor',
+      'post_drp_cursor',
+      'last_author_id',
+      'team_mention_cursor',
+      'team_mention_cursor_offset',
+      'removed_cursors_team_mention',
+    ]);
   }
 
   saveDataAndDoNotification = async (

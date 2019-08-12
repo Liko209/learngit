@@ -13,7 +13,7 @@ export class HealthStatusItemProvider implements IZipItemProvider {
   getZipItems = async () => {
     const modules = HealthModuleManager.getInstance().getAll();
     const results = await Promise.all(
-      modules.flatMap(_module => [
+      _.flatMap(modules, _module => [
         `=========== ${_module.name} ==========\n`,
         ..._module.getAll().map(item => {
           const result = item.getStatus();

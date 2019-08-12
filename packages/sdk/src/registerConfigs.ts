@@ -65,7 +65,6 @@ const registerConfigs = {
     { name: GlipAccount.name, value: GlipAccount },
 
     // Services
-    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
     { name: ServiceConfig.COMPANY_SERVICE, value: CompanyService },
     { name: ServiceConfig.ITEM_SERVICE, value: ItemService },
     { name: ServiceConfig.PERSON_SERVICE, value: PersonService },
@@ -86,7 +85,11 @@ const registerConfigs = {
       ],
     },
     { name: ServiceConfig.PERMISSION_SERVICE, value: PermissionService },
-    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
+    {
+      name: ServiceConfig.GROUP_SERVICE,
+      value: GroupService,
+      injects: [ServiceConfig.GROUP_CONFIG_SERVICE],
+    },
     { name: ServiceConfig.RC_INFO_SERVICE, value: RCInfoService },
     {
       name: ServiceConfig.ACCOUNT_SERVICE,

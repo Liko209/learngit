@@ -5,13 +5,7 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-import { sleepModeDetector } from 'foundation';
-import {
-  RTC_NETWORK_EVENT,
-  RTC_NETWORK_STATE,
-  RTC_SLEEP_MODE_EVENT,
-} from './types';
-import { kSleepModeDetectorKey } from './constants';
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from './types';
 
 class RTCNetworkNotificationCenter extends EventEmitter2 {
   private static _singleton: RTCNetworkNotificationCenter | null = null;
@@ -25,7 +19,6 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
   }
 
   public destroy() {
-    sleepModeDetector.unSubscribe(kSleepModeDetectorKey);
     RTCNetworkNotificationCenter._singleton = null;
   }
 
@@ -55,13 +48,6 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
     window.addEventListener('offline', () => {
       this._onOffline();
     });
-    sleepModeDetector.subScribe(kSleepModeDetectorKey, () => {
-      this._onWakeUpFromSleepMode();
-    });
-  }
-
-  private _onWakeUpFromSleepMode() {
-    this.emit(RTC_SLEEP_MODE_EVENT.WAKE_UP_FROM_SLEEP_MODE);
   }
 
   public isOnline() {
