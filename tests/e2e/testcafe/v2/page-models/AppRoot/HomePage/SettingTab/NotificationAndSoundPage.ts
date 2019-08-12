@@ -10,7 +10,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingPageHeader-notificationAndSounds');
   }
   get headerTitle() {
-    return this.getSelectorByAutomationId("conversation-page-header-title");
+    return this.getSelectorByAutomationId("conversation-page-header-title", this.header);
   }
 
   /** audio sources */
