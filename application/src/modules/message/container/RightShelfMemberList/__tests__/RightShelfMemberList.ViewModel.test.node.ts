@@ -8,8 +8,9 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { RightShelfMemberListViewModel } from '../RightShelfMemberList.ViewModel';
 import { GroupService } from 'sdk/module/group/service';
 import { ENTITY_NAME } from '@/store/constants';
+import { CONVERSATION_TYPES } from '@/constants';
 
-function getRandomInt(min, max) {
+function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -54,6 +55,32 @@ describe('RightShelfMemberListViewModel', () => {
     expect(vm.isLoading).toBe(false);
     expect(vm.fullMemberIds).toEqual([123, 234, 456]);
     expect(vm.fullGuestIds).toEqual([111, 999]);
+  });
+
+  it('shouldHide should be true when the group is not acquired or it is a me conversation', () => {
+    jest.spyOn(utils, 'getEntity').mockImplementation(type => {
+      if (type === ENTITY_NAME.GROUP) {
+        return {
+          members: [123, 234, 456, 111, 999],
+          companyId: 101010,
+          isMocked: true,
+        };
+      }
+    });
+    let vm = new RightShelfMemberListViewModel({ groupId: 1 });
+    expect(vm.shouldHide).toBe(true);
+
+    jest.spyOn(utils, 'getEntity').mockImplementation(type => {
+      if (type === ENTITY_NAME.GROUP) {
+        return {
+          members: [123, 234, 456, 111, 999],
+          companyId: 101010,
+          type: CONVERSATION_TYPES.ME,
+        };
+      }
+    });
+    vm = new RightShelfMemberListViewModel({ groupId: 1 });
+    expect(vm.shouldHide).toBe(true);
   });
 
   describe('setWrapperWidth & countPerRow', () => {
