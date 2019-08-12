@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/RightRail/*.ts"],
+    "fixtures": ["./fixtures/RightRail/Members.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
