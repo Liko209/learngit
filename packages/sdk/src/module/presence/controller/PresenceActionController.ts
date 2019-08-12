@@ -48,7 +48,7 @@ class PresenceActionController {
       partialModel.presence = status;
       return partialModel;
     };
-    this._partialModifyController.updatePartially({
+    await this._partialModifyController.updatePartially({
       entityId: currentId,
       preHandlePartialEntity: preHandlePartial,
       doUpdateEntity: async (newData: Presence) => {

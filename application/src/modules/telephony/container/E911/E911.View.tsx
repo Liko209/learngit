@@ -152,7 +152,12 @@ class E911ViewComponent extends Component<Props> {
 
   onSubmit = async () => {
     const { onSubmit, closeE911 } = this.props;
-    await onSubmit();
+    const success = await onSubmit();
+
+    if (!success) {
+      return;
+    }
+    
     this.context();
     // we should ensure only have one E911 dialog
     closeE911(false);
@@ -173,6 +178,7 @@ class E911ViewComponent extends Component<Props> {
       disabled,
       fields,
       loading,
+      getCountryList,
     } = this.props;
 
     const { countryName, customerName } = value;
@@ -205,6 +211,7 @@ class E911ViewComponent extends Component<Props> {
             label={`${t('common.country')} *`}
             automationId="e911-country-select"
             value={countryName}
+            onClick={getCountryList}
           >
             {/* TODO: need use VL */}
             {countryList.map((item: Country) => (

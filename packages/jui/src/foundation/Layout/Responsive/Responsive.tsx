@@ -50,9 +50,9 @@ type ResponsiveState = {
   prevVisual?: boolean;
 };
 
-const RIGHT_SHELL_DEFAULT_WIDTH = 268;
-const RIGHT_SHELL_MIN_WIDTH = 200;
-const RIGHT_SHELL_MAX_WIDTH = 360;
+const RIGHT_SHELF_DEFAULT_WIDTH = 268;
+const RIGHT_SHELF_MIN_WIDTH = 200;
+const RIGHT_SHELF_MAX_WIDTH = 360;
 
 const StyledResizable = styled<ResizableProps & any>(Resizable)`
   overflow: hidden;
@@ -238,7 +238,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             height: '100%',
           }}
           style={{
-            position: !visual ? 'absolute' : 'relative',
+            position: visual === false ? 'absolute' : 'relative',
           }}
           styled={{
             priority,
@@ -312,7 +312,7 @@ export {
   VISUAL_MODE,
   ResponsiveProps,
   ResponsiveInfo,
-  RIGHT_SHELL_DEFAULT_WIDTH,
-  RIGHT_SHELL_MIN_WIDTH,
-  RIGHT_SHELL_MAX_WIDTH,
+  RIGHT_SHELF_DEFAULT_WIDTH,
+  RIGHT_SHELF_MIN_WIDTH,
+  RIGHT_SHELF_MAX_WIDTH,
 };

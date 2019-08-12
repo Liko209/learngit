@@ -66,6 +66,7 @@ function dependencyHandlers() {
   const manifestPath = path.resolve(dllPath, 'boilerplateDeps.json');
 
   if (!fs.existsSync(manifestPath)) {
+    // eslint-disable-next-line
     console.log(
       chalk.red('The DLL manifest is missing. Please run `npm run build:dll`'),
     );
@@ -174,7 +175,7 @@ module.exports = {
         [paths.appPackageJson],
       ),
       new TsconfigPathsPlugin({
-        configFile: paths.appTsConfig
+        configFile: paths.appTsConfig,
       }),
     ],
   },
@@ -187,7 +188,20 @@ module.exports = {
   },
   module: {
     strictExportPresence: true,
-    rules: [{
+    rules: [
+      {
+        test: /\.worker\.(ts|js)$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          {
+            loader: 'worker-loader',
+            options: {
+              inline: false,
+            },
+          },
+        ],
+      },
+      {
         test: /\.(ts|tsx)$/,
         exclude: /\.test[.\w]*.(ts|tsx)$/,
         enforce: 'pre',
@@ -199,17 +213,19 @@ module.exports = {
           paths.sdkPkg,
           paths.voipPkg,
         ],
-        use: [{
-          options: {
-            formatter: require.resolve('react-dev-utils/eslintFormatter'),
-            ignore: true,
-            failOnError: true,
-            cache: true,
-            emitError: true,
-            ...eslintRules,
+        use: [
+          {
+            options: {
+              formatter: require.resolve('react-dev-utils/eslintFormatter'),
+              ignore: true,
+              failOnError: true,
+              cache: true,
+              emitError: true,
+              ...eslintRules,
+            },
+            loader: require.resolve('eslint-loader'),
           },
-          loader: require.resolve('eslint-loader'),
-        }],
+        ],
       },
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
@@ -237,8 +253,9 @@ module.exports = {
           {
             test: /\.(js|jsx|ts|tsx)$/,
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-            use: [{
-                loader: 'cache-loader'
+            use: [
+              {
+                loader: 'cache-loader',
               },
               {
                 loader: 'ts-loader',
@@ -287,7 +304,8 @@ module.exports = {
           },
           {
             test: /jui\/src\/assets\/.*\.svg$/,
-            use: [{
+            use: [
+              {
                 loader: 'svg-sprite-loader',
                 options: {
                   symbolId: 'icon-[name]',
@@ -296,19 +314,20 @@ module.exports = {
               {
                 loader: 'svgo-loader',
                 options: {
-                  plugins: [{
-                      removeTitle: true
+                  plugins: [
+                    {
+                      removeTitle: true,
                     },
                     {
                       convertColors: {
-                        shorthex: false
-                      }
+                        shorthex: false,
+                      },
                     },
                     {
-                      convertPathData: true
+                      convertPathData: true,
                     },
                     {
-                      reusePaths: true
+                      reusePaths: true,
                     },
                   ],
                 },
@@ -332,17 +351,6 @@ module.exports = {
             },
           },
         ],
-      },
-
-      {
-        test: /\.worker\.(ts|js)$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [{
-          loader: 'workerize-loader',
-          options: {
-            inline: false
-          }
-        }],
       },
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
@@ -392,14 +400,17 @@ module.exports = {
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /(de|en-au|en-gb|es-do|es|fr-ca|fr|it|ja|pt-br|zh-cn|zh-hk|zh-tw).js/),
+    new webpack.ContextReplacementPlugin(
+      /moment[/\\]locale$/,
+      /(de|en-au|en-gb|es-do|es|fr-ca|fr|it|ja|pt-br|zh-cn|zh-hk|zh-tw).js/,
+    ),
     // Perform type checking and linting in a separate process to speed up compilation
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,
-      // onDetected({ module: webpackModuleRecord, paths, compilation }) {
-      //   compilation.errors.push(new Error(paths.join(' -> ')));
-      // },
+      onDetected({ paths, compilation }) {
+        compilation.errors.push(new Error(paths.join(' -> ')));
+      },
     }),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
@@ -409,14 +420,15 @@ module.exports = {
       publicPath,
     }),
     // add dll.js to html
-    ...(dllPlugin ?
-      glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-        dllPath =>
-        new AddAssetHtmlPlugin({
-          filepath: dllPath,
-          includeSourcemap: false,
-        }),
-      ) : [() => {}]),
+    ...(dllPlugin
+      ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
+          dllPath =>
+            new AddAssetHtmlPlugin({
+              filepath: dllPath,
+              includeSourcemap: false,
+            }),
+        )
+      : [() => {}]),
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

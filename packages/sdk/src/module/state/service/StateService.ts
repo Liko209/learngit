@@ -33,9 +33,7 @@ class StateService extends EntityBaseService<GroupState>
         [SOCKET.STATE]: this.handleState,
         [SOCKET.PARTIAL_STATE]: this.handleState,
         [SOCKET.PARTIAL_GROUP]: this.handleGroupCursor,
-        [SERVICE.GROUP_CURSOR]: (data: Partial<Group>[]) => {
-          this.handleGroupCursor(data, true);
-        },
+        [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
         [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
         [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
         [ENTITY.GROUP_STATE]: this.handleStateChangeForTotalUnread,
@@ -125,7 +123,7 @@ class StateService extends EntityBaseService<GroupState>
 
   handleState = async (
     states: Partial<State>[],
-    source: SYNC_SOURCE,
+    source?: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
     await this.stateController
@@ -135,11 +133,23 @@ class StateService extends EntityBaseService<GroupState>
 
   handleGroupCursor = async (
     groups: Partial<Group>[],
-    ignoreCursorValidate?: boolean,
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
     await this.stateController
       .getStateDataHandleController()
-      .handleGroupCursor(groups, ignoreCursorValidate);
+      .handleGroupCursor(groups, source, changeMap);
+  };
+
+  handleStateAndGroupCursor = async (
+    states: Partial<State>[],
+    groups: Partial<Group>[],
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ): Promise<void> => {
+    await this.stateController
+      .getStateDataHandleController()
+      .handleStateAndGroupCursor(states, groups, source, changeMap);
   };
 
   handleStateChangeForTotalUnread = (
