@@ -60,7 +60,6 @@ describe('TelephonyService', () => {
     }
 
     @test('should not needE911Prompt if account does not have DL [JPT-2703]')
-    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -68,6 +67,7 @@ describe('TelephonyService', () => {
       let ts;
       runInAction(() => {
         ts = jupiter.get(TELEPHONY_SERVICE);
+        ts['_rcInfoService'] = { getDigitalLines: () => [] };
       });
       expect(await ts.needE911Prompt()).toBe(false);
     }
