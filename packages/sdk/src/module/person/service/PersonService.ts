@@ -100,6 +100,10 @@ class PersonService extends EntityBaseService<Person>
     return await this.getPersonController().getPersonsByIds(ids);
   }
 
+  getCurrentPerson(): Promise<Person | null> {
+    return this.getPersonController().getCurrentPerson();
+  }
+
   async getAllCount() {
     return await this.getPersonController().getAllCount();
   }
@@ -126,6 +130,14 @@ class PersonService extends EntityBaseService<Person>
 
   getName(person: Person) {
     return this.getPersonController().getName(person);
+  }
+
+  getFirstName(person: Person): string {
+    return this.getPersonController().getFirstName(person);
+  }
+
+  getLastName(person: Person): string {
+    return this.getPersonController().getLastName(person);
   }
 
   isVisiblePerson(person: Person): boolean {

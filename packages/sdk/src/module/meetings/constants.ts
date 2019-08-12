@@ -1,8 +1,9 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
- * @Date: 2019-05-23 14:00:27
+ * @Date: 2019-08-05 13:50:41
  * Copyright © RingCentral. All rights reserved.
  */
-import { MeetingItem } from './MeetingItem';
 
-export { MeetingItem };
+const MEETING_TAG = '[MEETINGS]';
+
+export { MEETING_TAG };

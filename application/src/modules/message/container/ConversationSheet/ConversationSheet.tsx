@@ -73,10 +73,12 @@ class ConversationSheet {
   private _register(options: RegisterOptions) {
     const { component: Component, type } = options;
     const middleware = (next: Function) => (payload: PayLoad) => {
-      if (payload.type === type) {
-        return <Component key={type} {...payload.props} />;
+      const isMatchByArray =
+        Array.isArray(type) && (type as Array<number>).includes(payload.type);
+      const isMatchByNumber = payload.type === type;
+      if (isMatchByArray || isMatchByNumber) {
+        return <Component key={payload.type} {...payload.props} />;
       }
-
       return next(payload);
     };
     this._middleware.push(middleware);

@@ -30,6 +30,12 @@ const defaultConfig: ApiConfig = {
     server: 'sumologic',
     uniqueHttpCollectorCode: '',
   },
+  meetingsConfig: {
+    rcv: {
+      baseUrl: '',
+      dialInNumber: '',
+    },
+  },
   data_collection: '',
 };
 
