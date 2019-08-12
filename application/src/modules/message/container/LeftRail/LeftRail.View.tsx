@@ -36,7 +36,7 @@ class LeftRailViewComponent extends Component<
     history.push(`/messages/${type}`);
   };
 
-  @observable private _loading = false;
+  private _loading = false;
   @observable private _teamSectionCollapsed = false;
 
   componentDidMount() {
@@ -65,15 +65,17 @@ class LeftRailViewComponent extends Component<
     }
   };
 
-  private _loadGroups = debounce(() => {
-    setTimeout(() => {
+  private _loadGroups = debounce(
+    () => {
       SectionGroupHandler.getInstance()
         .fetchPagination(SECTION_TYPE.TEAM)
         .finally(() => {
           this._loading = false;
         });
-    });
-  }, 100);
+    },
+    100,
+    { leading: true, trailing: true },
+  );
 
   handleSectionCollapseChange = (arg: {
     sectionType: SECTION_TYPE;
@@ -129,7 +131,9 @@ class LeftRailViewComponent extends Component<
               isLast={index === array.length - 1}
             />,
           ])}
-          {this._loading && hasMore && <JuiConversationListItemLoader />}
+          {!this._teamSectionCollapsed && hasMore && (
+            <JuiConversationListItemLoader />
+          )}
         </JuiLeftRailMainSection>
       </JuiLeftRail>
     );
