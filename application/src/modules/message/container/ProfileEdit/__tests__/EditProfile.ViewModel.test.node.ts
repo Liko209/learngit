@@ -3,7 +3,6 @@
  * @Date: 2019-05-30 09:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { EditProfileViewModel } from '../EditProfile.ViewModel';
 import { getEntity } from '@/store/utils';
 import * as utils from '@/utils/error';
@@ -21,6 +20,10 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+
+jest.unmock('@/common/emojiHelpers/map/mapAscii');
+jest.unmock('@/common/emojiHelpers/map/mapEmojiOne');
+jest.unmock('@/common/emojiHelpers/map/mapUnicode');
 
 jest.mock('sdk/module/person', () => ({
   PersonService: jest.fn(),
