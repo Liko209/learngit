@@ -33,7 +33,7 @@ const ChipComponent = (props: any) => {
       />
     );
   }
-  return <JuiChip {...props} />;
+  return <JuiChip {...props} deleteTooltip={t('common.remove')} />;
 };
 
 const Chip = (props: any) => (

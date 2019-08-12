@@ -47,6 +47,23 @@ const ERROR_MAP = {
 
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
+const DEFAULT_FIELDS = {
+  street: '',
+  street2: '',
+  city: '',
+  state: '',
+  stateId: '',
+  stateIsoCode: '',
+  stateName: '',
+  country: '',
+  countryId: '',
+  countryIsoCode: '',
+  countryName: '',
+  zip: '',
+  customerName: '',
+  outOfCountry: false,
+}
+
 class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @observable countryList: Country[] = [];
   @observable stateList: State[] = [];
@@ -55,26 +72,13 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
 
   @observable region: Country;
 
-  @observable value: E911SettingInfo = {
-    street: '',
-    street2: '',
-    city: '',
-    state: '',
-    stateId: '',
-    stateIsoCode: '',
-    stateName: '',
-    country: '',
-    countryId: '',
-    countryIsoCode: '',
-    countryName: '',
-    zip: '',
-    customerName: '',
-    outOfCountry: false,
-  };
+  @observable value: E911SettingInfo = DEFAULT_FIELDS;
 
   @observable fields: FieldsConfig = {
     customerName: '',
   };
+
+  @observable loading: boolean = false;
 
   constructor(props: E911Props) {
     super(props);
@@ -195,14 +199,24 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   getFields(country: Country) {
     const { name, isoCode } = country;
     this.fields =
-      addressConfig[isoCode] || addressConfig[name] || addressConfig['default'];
+      addressConfig[name] || addressConfig[isoCode] || addressConfig['default'];
   }
 
-  countryOnChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+  countryOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const userSetting = this.settingItemEntity.value!;
+    const { countryName } = userSetting;
     const { value } = e.target;
     const country = this.countryList.find(
       (item: Country) => item.name === value,
     );
+
+    if (countryName !== country!.name) {
+      const { customerName, ...rest } = DEFAULT_FIELDS;
+      this.value = { customerName: this.value.customerName, ...rest };
+    } else {
+      const cloneValue = { ...userSetting };
+      this.value = cloneValue;
+    }
 
     this.getFields(country!);
     this.saveStateOrCountry('country', country!);
@@ -246,14 +260,16 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     }
 
     this.value.outOfCountry = this.checkboxList.length > 0;
-
+    this.loading = true;
     try {
       await (this.settingItemEntity.valueSetter &&
         this.settingItemEntity.valueSetter(this.value));
+      this.loading = false;
       successCallback && successCallback();
     } catch (e) {
       // need use different tip message according to backend error
       this.handleSubmitError(e);
+      this.loading = false;
     }
   };
 

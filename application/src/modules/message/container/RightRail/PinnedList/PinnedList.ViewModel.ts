@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, action, observable } from 'mobx';
+import { computed, action, observable, autorun } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PinnedListProps, PinnedListViewProps } from './types';
 import { Group } from 'sdk/module/group/entity';
@@ -22,7 +22,10 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   constructor(props: PinnedListProps) {
     super(props);
     // url change need build first
-    this.build(this.pinnedPostIds);
+    const dispose = autorun(() => {
+      this.build(this.pinnedPostIds);
+    });
+    dispose();
     this.reaction(
       () => this._groupId,
       (id: number) => {
@@ -71,7 +74,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
         15,
       );
     }
-  }
+  };
 
   @action
   loadMore = async (direction: 'up' | 'down', count: number) => {
@@ -81,7 +84,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
         count,
       );
     }
-  }
+  };
 
   @computed
   private get _groupId() {

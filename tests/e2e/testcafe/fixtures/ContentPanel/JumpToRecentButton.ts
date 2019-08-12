@@ -85,7 +85,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  }, true);
 
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -133,7 +133,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And conversationA has unread messages', async () => {
-    const msgList = _.range(5).map(i => H.multilineString(Math.round(80/(i+1)), `No. ${i}`, uuid()));
+    const msgList = _.range(5).map(i => H.multilineString(Math.round(80 / (i + 1)), `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
     }
@@ -142,7 +142,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  }, true);
 
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -169,7 +169,7 @@ test.meta(<ITestMeta>{
     await conversationPage.clickJumpToMostRecentButton();
   });
 
-  await h(t).withLog('And I jump to bottom',async () =>{
+  await h(t).withLog('And I jump to bottom', async () => {
     await conversationPage.expectStreamScrollToBottom();
   });
 });
@@ -208,7 +208,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
+  }, true);
 
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -252,7 +252,3 @@ test.meta(<ITestMeta>{
     await t.expect(conversationPage.jumpToMostRecentButtonWrapper.exists).notOk()
   });
 });
-
-
-
-

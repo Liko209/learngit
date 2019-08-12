@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react';
+/*
+ * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
+ * @Date: 2019-08-07 15:46:54
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import React, { useEffect, useRef, MutableRefObject } from 'react';
 import {
   JuiConversationList,
   JuiConversationListItemLoader,
@@ -7,6 +13,7 @@ import { ConversationListItem } from '../../ConversationList/ConversationListIte
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { SECTION_TYPE } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
+import 'intersection-observer';
 
 type LazyListProps = { ids: number[] };
 
@@ -17,29 +24,20 @@ function hasMore() {
   );
 }
 
-function LazySectionComponent({ ids }: LazyListProps) {
-  const [isLoading, setLoading] = useState(false);
-
-  const renderIds = ids;
-
-  const ref: MutableRefObject<HTMLLIElement | null> = useRef(null);
-
-  function onScrollBottom(entries: IntersectionObserverEntry[]) {
-    if (hasMore()) {
-      if (entries[0].isIntersecting && !isLoading) {
-        setLoading(true);
-        SectionGroupHandler.getInstance().fetchPagination(SECTION_TYPE.TEAM);
-      }
-    } else {
-      setLoading(false);
-    }
+const onScrollBottom = (entries: IntersectionObserverEntry[]) => {
+  if (entries[0].isIntersecting && hasMore()) {
+    SectionGroupHandler.getInstance().fetchPagination(SECTION_TYPE.TEAM);
   }
+};
+
+function LazySectionComponent({ ids }: LazyListProps) {
+  const ref: MutableRefObject<HTMLDivElement | null> = useRef(null);
 
   useEffect(function hookUpIntersectionObserver() {
     let observer: IntersectionObserver;
     if (ref.current) {
       observer = new IntersectionObserver(onScrollBottom, {
-        threshold: 1,
+        threshold: [0.1],
       });
       observer.observe(ref.current);
     }
@@ -48,16 +46,7 @@ function LazySectionComponent({ ids }: LazyListProps) {
     };
   });
 
-  useEffect(
-    function updateLoadingState() {
-      if (isLoading) {
-        setLoading(false);
-      }
-    },
-    [ids],
-  );
-
-  useEffect(function cleanUp() {
+  useEffect(function lifeCycleHook() {
     SectionGroupHandler.getInstance().setLeftRailVisible(true);
 
     return () => SectionGroupHandler.getInstance().setLeftRailVisible(false);
@@ -65,17 +54,14 @@ function LazySectionComponent({ ids }: LazyListProps) {
 
   return (
     <JuiConversationList className="conversation-list-section-collapse">
-      {renderIds.map((id: number, index: number) => {
-        if (index === renderIds.length - 1) {
-          return (
-            <li ref={ref} key={id}>
-              <ConversationListItem groupId={id} />
-            </li>
-          );
-        }
+      {ids.map((id: number) => {
         return <ConversationListItem key={id} groupId={id} />;
       })}
-      {hasMore() && <JuiConversationListItemLoader />}
+      {hasMore() && (
+        <div ref={ref} key="loader">
+          <JuiConversationListItemLoader />
+        </div>
+      )}
     </JuiConversationList>
   );
 }

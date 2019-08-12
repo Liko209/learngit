@@ -130,8 +130,6 @@ describe('PostCacheController', () => {
     it('should remove groupId from cache when groupId is currentGroupId', () => {
       postCacheController['_currentGroupId'] = 2;
       postCacheController.releaseCurrentConversation(2);
-      expect(fetchSortableDataListHandler2.dispose).toBeCalled();
-      expect(postCacheController.hasCache(2)).toBeFalsy();
       expect(postCacheController['_currentGroupId']).toBe(0);
     });
 
@@ -179,7 +177,7 @@ describe('PostCacheController', () => {
     it('should remove groupId from cache when groupId in cacheMap and not current groupId', () => {
       expect(postCacheController.hasCache(2)).toBeTruthy();
       postCacheController.remove(2);
-      expect(fetchSortableDataListHandler2.dispose).toBeCalled();
+      expect(fetchSortableDataListHandler2.dispose).toHaveBeenCalled();
       expect(postCacheController.hasCache(2)).toBeFalsy();
     });
 

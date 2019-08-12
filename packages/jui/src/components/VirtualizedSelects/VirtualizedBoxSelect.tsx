@@ -3,6 +3,7 @@
  * @Date: 2019-07-26 18:33:10
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import React from 'react';
 import {
   JuiVirtualizedSelect,
@@ -27,22 +28,36 @@ type JuiVirtualizedBoxSelectProps = Exclude<
 
 const CLASSES = { focused: 'focused', input: 'select-input' };
 const LIST_CLASS_NAME = 'virtualized_select-list-container';
-const defaultMenuProps = { classes: { paper: LIST_CLASS_NAME } };
+const defaultMenuProps = {
+  classes: { paper: LIST_CLASS_NAME },
+};
 
 const JuiVirtualizedBoxSelect = React.memo(
   (props: JuiVirtualizedBoxSelectProps) => {
-    const { label, className, isFullWidth, MenuProps, ...rest } = props;
+    const {
+      label,
+      className,
+      isFullWidth,
+      MenuProps,
+      automationId,
+      ...rest
+    } = props;
     return (
       <StyledSelectBoxContainer className={className}>
         {label && <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>}
         <JuiVirtualizedSelect
-          MenuProps={MenuProps ? MenuProps : defaultMenuProps}
+          MenuProps={_.merge(
+            defaultMenuProps,
+            { 'data-test-automation-id': `${automationId}-list` },
+            MenuProps ? MenuProps : {},
+          )}
           input={
             <StyledSelect
               classes={CLASSES}
               style={isFullWidth ? { width: '100%' } : {}}
             />
           }
+          automationId={automationId}
           {...rest}
         />
       </StyledSelectBoxContainer>
