@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IMeetingController } from '../controller/IMeetingController';
+import { IMeetingController } from '../controller/IMeetingAdaptorController';
 import { StartMeetingResultType, MEETING_ACTION } from '../../types';
 import { Api } from 'sdk/api';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';

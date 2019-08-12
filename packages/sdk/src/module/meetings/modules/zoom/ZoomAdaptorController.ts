@@ -6,15 +6,19 @@
 
 import { ZoomDeepLinkController } from './ZoomDeepLinkController';
 import { StartMeetingResultType } from '../../types';
-import { IMeetingController } from '../controller/IMeetingController';
+import { IMeetingAdaptorController } from '../controller/IMeetingAdaptorController';
 
-class ZoomAdaptorController implements IMeetingController {
+class ZoomAdaptorController implements IMeetingAdaptorController {
   private _zoomDeepLinkController: ZoomDeepLinkController;
   constructor() {}
 
   startMeeting(groupIds: number[]): Promise<StartMeetingResultType> {
     const controller = this.getSuitableController();
     return controller.startMeeting(groupIds);
+  }
+
+  isRCVideo() {
+    return false;
   }
 
   private getSuitableController() {

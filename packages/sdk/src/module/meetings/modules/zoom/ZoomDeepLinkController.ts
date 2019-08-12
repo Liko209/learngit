@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IMeetingController } from '../controller/IMeetingController';
+import { IMeetingController } from '../controller/IMeetingAdaptorController';
 import { StartMeetingResultType, MEETING_ACTION } from '../../types';
 import { ZoomMeetingItem } from 'sdk/module/item/entity';
 import { mainLogger } from 'foundation';

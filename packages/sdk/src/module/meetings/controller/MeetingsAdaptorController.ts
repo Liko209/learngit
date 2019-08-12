@@ -13,10 +13,10 @@ import { AccountService, isInBeta, EBETA_FLAG } from 'sdk/module/account';
 import { ProfileService, VIDEO_SERVICE_OPTIONS } from 'sdk/module/profile';
 import { mainLogger } from 'foundation';
 import { MEETING_TAG } from '../constants';
+import { IMeetingAdaptorController } from '../modules/controller/IMeetingAdaptorController';
 
 class MeetingsAdaptorController {
-  private _rcvController: RCVAdaptorController;
-  private _zoomController: ZoomAdaptorController;
+  private _meetingController: IMeetingAdaptorController;
   constructor() {}
   async startMeeting(groupIds: number[]): Promise<StartMeetingResultType> {
     const controller = await this._getSuitableMeetingController();
@@ -65,23 +65,19 @@ class MeetingsAdaptorController {
   private async _getSuitableMeetingController() {
     const type = await this.getMeetingServiceType();
     if (type === MEETING_SERVICE_TYPE.RCV) {
-      return this._getRCVController();
+      // rc video
+      if (!this._meetingController || !this._meetingController.isRCVideo()) {
+        this._meetingController = new RCVAdaptorController();
+      }
+    } else if (
+      !this._meetingController ||
+      this._meetingController.isRCVideo()
+    ) {
+      // for zoom
+      this._meetingController = new ZoomAdaptorController();
     }
-    return this._getZoomController();
-  }
 
-  private _getRCVController() {
-    if (!this._rcvController) {
-      this._rcvController = new RCVAdaptorController();
-    }
-    return this._rcvController;
-  }
-
-  private _getZoomController() {
-    if (!this._zoomController) {
-      this._zoomController = new ZoomAdaptorController();
-    }
-    return this._zoomController;
+    return this._meetingController;
   }
 }
 

@@ -5,16 +5,20 @@
  */
 
 import { RCVDeepLinkController } from './RCVDeepLinkController';
-import { IMeetingController } from '../controller/IMeetingController';
+import { IMeetingAdaptorController } from '../controller/IMeetingAdaptorController';
 import { StartMeetingResultType } from '../../types';
 
-class RCVAdaptorController implements IMeetingController {
+class RCVAdaptorController implements IMeetingAdaptorController {
   private _rcvDeepLinkController: RCVDeepLinkController;
   constructor() {}
 
   startMeeting(groupIds: number[]): Promise<StartMeetingResultType> {
     const controller = this.getSuitableController();
     return controller.startMeeting(groupIds);
+  }
+
+  isRCVideo() {
+    return true;
   }
 
   private getSuitableController() {
