@@ -5,6 +5,7 @@
  */
 
 import { computed, observable, action, transaction } from 'mobx';
+import moment from 'moment';
 import { PreloadController } from '@/modules/viewer/container/Viewer/Preload';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ItemNotification } from 'sdk/module/item';
@@ -35,14 +36,21 @@ import { getEntity, getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
+import FileItemModel from '@/store/models/FileItem';
+import { Item } from 'sdk/module/item/entity';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { getLargeRawImageURL } from '@/common/getThumbnailURL';
+import { dateFormatter } from '@/utils/date';
 import { isExpectedItemOfThisGroup, getNextItemToDisplay } from './utils';
-import { ViewerProps } from './type'
+import { ViewerProps } from './type';
 
 const PAGE_SIZE = 20;
 
 class ImageViewerViewModel extends AbstractViewModel<any> {
   @observable _sender: PersonModel | null;
   @observable _createdAt: number | null;
+  @observable private _largeRawImageURL?: string;
+  @observable thumbnailSrc: string
   @observable
   isLoadingMore: boolean = false;
   @observable
@@ -68,7 +76,9 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
 
   constructor(props: ViewerProps) {
     super(props);
-    const { groupId, type, itemId, postId, isNavigation } = props;
+    const { groupId, type, itemId, postId, isNavigation, initialOptions } = props;
+
+    this.thumbnailSrc = initialOptions.thumbnailSrc;
     this.currentItemId = itemId;
     this._itemListDataSource = isNavigation
       ? new ItemListDataSourceByPost({ groupId, type, postId })
@@ -138,6 +148,16 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
           this.historyIds = ids;
         }
       },
+    );
+    this.reaction(
+      () => {
+        const item = this._item;
+        return item ? item.id : 0;
+      },
+      async () => {
+        this._largeRawImageURL = await getLargeRawImageURL(this._item);
+      },
+      { fireImmediately: true },
     );
   }
 
@@ -220,6 +240,10 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
   @computed
   get hasNext() {
     return this.currentIndex < this.total - 1;
+  }
+
+  viewerDestroyer() {
+    this.props.dismiss();
   }
 
   @action
@@ -398,38 +422,29 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
 
   @computed
   private get _item() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this._itemId);
-  }
-
-  viewerDestroyer() {
-    this._dismiss();
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this.props.itemId);
   }
 
   @computed
   get pages() {
     const { origHeight, origWidth } = this._item;
-    const { pages } = this._currentVersion;
-    return pages
-      ? pages.map(({ url }: ItemVersionPage) => ({
-          url,
-          viewport: {
-            origHeight,
-            origWidth,
-          },
-        }))
-      : undefined;
+    if (FileItemUtils.isSupportPreview(this._item)) {
+      return {
+        url: this._largeRawImageURL,
+        viewport: {
+          origHeight,
+          origWidth,
+        },
+      };
+    }
+    return {
+      url: undefined,
+      viewport: {
+        origHeight: 0,
+        origWidth: 0,
+      },
+    };
   }
-
-  @action
-  handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { pages = [] } = this._currentVersion;
-    let value = parseInt(e.target.value, 10);
-    if (Number.isNaN(value)) return;
-    value = value > pages.length ? pages.length : value;
-    value = value < 1 ? 1 : value;
-    this._textFieldValue = value;
-    this._currentPageIdx = value - 1;
-  };
 
   @computed
   get title() {
@@ -446,42 +461,31 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
       );
     }
     const { name, downloadUrl, id } = this._item;
-    const { pages = [] } = this._currentVersion;
     return {
       uid,
       userDisplayName,
       name,
       downloadUrl,
       createdAt,
-      handleTextFieldChange: this.handleTextFieldChange,
-      textFieldValue: this._textFieldValue,
-      currentPageIdx: this._currentPageIdx + 1,
-      pageTotal: pages.length,
+      currentPageIdx: this.currentIndex,
+      pageTotal: this.total,
       fileId: id,
-      groupId: this._groupId,
+      groupId: this.props.groupId,
     };
   }
 
   @computed
   get currentPageIdx() {
-    return this._currentPageIdx;
+    return 0;
   }
 
   @computed
   get currentScale() {
-    return this._currentScale;
+    return 0;
   }
 
   @action
-  onUpdate = (opts: UpdateParamsType) => {
-    const { scale, pageIdx } = opts;
-    if (scale && scale !== this._currentScale) {
-      this._currentScale = scale;
-    }
-    if (pageIdx !== undefined && pageIdx !== this._currentPageIdx) {
-      this._currentPageIdx = pageIdx;
-    }
-  }
+  onUpdate = () => {};
 }
 
 export { ImageViewerViewModel };

@@ -18,7 +18,6 @@ import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
-import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
@@ -103,7 +102,7 @@ class FilesView extends React.Component<FilesViewProps> {
     if (postId < 0) return;
     const target = this._getImageEl(ev);
 
-    showImageViewer(
+    this._viewerService.showImageViewer(
       groupId,
       id,
       {

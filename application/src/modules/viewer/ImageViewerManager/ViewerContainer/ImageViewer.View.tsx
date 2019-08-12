@@ -37,7 +37,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   static contextType = DialogContext;
   constructor(props: ImageViewerProps) {
     super(props);
-    props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
+    props.setOnCurrentItemDeletedCb &&
+      props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
     this.state = {
       switched: false,
       imageInited: false,
@@ -146,7 +147,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
 
   render() {
     const {
-      imageUrl,
+      pages,
       t,
       thumbnailSrc,
       imageWidth,
@@ -201,7 +202,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         data-test-automation-id={'previewerCanvas'}
                         key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
-                        src={accelerateURL(imageUrl)}
+                        src={accelerateURL(pages && pages.url)}
                         width={fitWidth || imageWidth}
                         height={fitHeight || imageHeight}
                         style={imageStyle}

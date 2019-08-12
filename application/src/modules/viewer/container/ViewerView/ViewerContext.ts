@@ -8,13 +8,19 @@ import React from 'react';
 
 type ViewerContextType = {
   show: boolean;
-  closeViewer?: () => void;
-  onTransitionExited?: () => void;
-  onTransitionEntered?: () => void;
+  closeViewer?: () => {};
+  onTransitionExited?: () => {};
+  onTransitionEntered?: () => {};
+  onContentLoad?: () => {};
+  onContentError?: () => {};
   isAnimating: boolean;
+  setDeleteItem: (value: boolean) => void;
+  deleteItem?: boolean;
+  setLoading: (value: boolean) => void;
 };
 export default React.createContext<ViewerContextType>({
   show: true,
   isAnimating: false,
+  setDeleteItem: () => {},
+  setLoading: () => {},
 });
-export { ViewerContextType };

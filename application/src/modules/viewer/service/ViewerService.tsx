@@ -17,7 +17,7 @@ import { ViewerView, LAYOUT } from '../container/ViewerView';
 import { ViewerTitleView } from '../common/Title.View';
 import { ViewerDocument } from '../FileViewerManager/ViewerContainer.View';
 
-import { ImageViewer } from '../ImageViewerManager/ViewerContainer';
+import { ImageViewerView } from '../ImageViewerManager/ViewerContainer/ImageViewer.View';
 
 class ViewerService implements IViewerService {
   open = ({ itemId, groupId }: FileViewerBuild) => {
@@ -31,7 +31,7 @@ class ViewerService implements IViewerService {
       {
         fullScreen: true,
         hideBackdrop: true,
-        TransitionComponent: JuiDialogOpenTransition,
+        TransitionComponent: JuiDialogOpenTransition as any,
         enableEscapeClose: true,
         onClose: () => dismiss(),
       },
@@ -51,15 +51,15 @@ class ViewerService implements IViewerService {
           new ImageViewerViewModel({
             groupId,
             postId,
+            initialOptions,
+            dismiss: () => dismiss(),
             itemId: imageId,
             type: VIEWER_ITEM_TYPE.IMAGE_FILES,
             isNavigation: mode === 'navigation',
-            viewerDestroyer: () => dismiss(),
           })
         }
-        layout={LAYOUT['withSideBar']}
         TitleRenderer={ViewerTitleView}
-        PageRenderer={ImageViewer}
+        PageRenderer={ImageViewerView}
       />,
       {
         fullScreen: true,
