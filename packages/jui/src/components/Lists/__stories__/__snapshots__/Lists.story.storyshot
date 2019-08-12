@@ -1,5 +1,150 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Storyshots Components/Lists List Button Items: Components/Lists List Button Items 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #757575;
+}
+
+.c5.c5 {
+  padding: 0px 0px 0px 8px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c0.c0 {
+  padding: 12px 16px;
+  height: 36px;
+  width: 240px;
+  border: 1px solid #eee;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.c0.c0:hover {
+  background-color: rgba(97,97,97,0.05);
+}
+
+.c0.c0:last-child {
+  margin-bottom: 0;
+}
+
+.c0.c0.c0:focus,
+.c0.c0.c0.selected {
+  background-color: #4475fd;
+  border: none;
+}
+
+.c0.c0.c0:focus > .c4,
+.c0.c0.c0.selected > .c4 {
+  color: #fff;
+}
+
+.c0.c0.c0:focus > .c1 svg,
+.c0.c0.c0.selected > .c1 svg {
+  fill: #fff;
+}
+
+<div>
+  <ul
+    className="MuiList-root MuiList-padding"
+  >
+    <div
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiListItem-root c0 MuiListItem-gutters MuiListItem-button Mui-selected selected"
+      onBlur={[Function]}
+      onDragLeave={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      role="button"
+      tabIndex={0}
+    >
+      <span
+        className="c1 mention icon c2"
+      >
+        <svg
+          className="c3"
+          role="img"
+          size="medium"
+        >
+          <use
+            href="#icon-mention"
+            xlinkHref="#icon-mention"
+          />
+        </svg>
+      </span>
+      <p
+        className="MuiTypography-root c4 c5 MuiTypography-body1"
+      >
+        Mentions
+      </p>
+    </div>
+    <div
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiListItem-root c0 MuiListItem-gutters MuiListItem-button"
+      onBlur={[Function]}
+      onDragLeave={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      role="button"
+      tabIndex={0}
+    >
+      <span
+        className="c1 bookmark icon c2"
+      >
+        <svg
+          className="c3"
+          role="img"
+          size="medium"
+        >
+          <use
+            href="#icon-bookmark"
+            xlinkHref="#icon-bookmark"
+          />
+        </svg>
+      </span>
+      <p
+        className="MuiTypography-root c4 c5 MuiTypography-body1"
+      >
+        Bookmarks
+      </p>
+    </div>
+  </ul>
+</div>
+`;
+
 exports[`Storyshots Components/Lists List Controls: Components/Lists List Controls 1`] = `
 .c5 {
   display: -webkit-inline-box;
@@ -175,6 +320,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 }
 
 .c1.c1 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -187,6 +333,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 }
 
 .c1.c1 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -236,7 +383,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -247,13 +393,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -275,14 +419,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
     <div
       aria-disabled={false}
@@ -314,7 +452,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -325,13 +462,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -353,14 +488,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
     <div
       aria-disabled={false}
@@ -392,7 +521,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -403,13 +531,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -431,14 +557,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
     <div
       aria-disabled={false}
@@ -470,7 +590,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -481,13 +600,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -509,14 +626,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
   </ul>
 </div>
@@ -539,10 +650,6 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c5.c5 {
-  background-color: #e0e0e0;
 }
 
 .c0.c0 {
@@ -588,6 +695,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 }
 
 .c4.c4 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -600,6 +708,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 }
 
 .c4.c4 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -613,6 +722,10 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
 
 .c4.c4.multiline {
   margin: 0;
+}
+
+.c5.c5 {
+  background-color: #e0e0e0;
 }
 
 <div>

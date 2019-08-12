@@ -8,11 +8,14 @@ import { Group } from '../../../../group/entity';
 import { StateDataHandleController } from '../StateDataHandleController';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { DeactivatedDao, daoManager } from '../../../../../dao';
-import { StateFetchDataController } from '../StateFetchDataController';
-import { State, GroupState } from '../../../entity';
+import { State, GroupState, TransformedState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { TASK_DATA_TYPE } from '../../../constants';
-import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
+import {
+  StateHandleTask,
+  GroupCursorHandleTask,
+  StateAndGroupCursorHandleTask,
+} from '../../../types';
 import { SYNC_SOURCE } from '../../../../sync';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { notificationCenter } from 'sdk/service';
@@ -25,14 +28,19 @@ jest.mock('../../../../../module/account/config/AccountGlobalConfig');
 jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 
-type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
+type DataHandleTask =
+  | StateHandleTask
+  | GroupCursorHandleTask
+  | StateAndGroupCursorHandleTask;
 
 describe('StateDataHandleController', () => {
   let stateDataHandleController: StateDataHandleController;
   let mockEntitySourceController: EntitySourceController<GroupState>;
-  let mockStateFetchDataController: StateFetchDataController;
   const mockAccountService = { userConfig: { getGlipUserId: jest.fn() } };
   const mockStateService = { myStateConfig: { setMyStateId: jest.fn() } };
+  const mockActionController = {
+    updateReadStatus: jest.fn(),
+  } as any;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -41,12 +49,9 @@ describe('StateDataHandleController', () => {
       {} as IEntityPersistentController<GroupState>,
       {} as DeactivatedDao,
     );
-    mockStateFetchDataController = new StateFetchDataController(
-      mockEntitySourceController,
-    );
     stateDataHandleController = new StateDataHandleController(
       mockEntitySourceController,
-      mockStateFetchDataController,
+      mockActionController,
     );
 
     ServiceLoader.getInstance = jest
@@ -62,12 +67,29 @@ describe('StateDataHandleController', () => {
       });
   });
 
+  describe('updateIgnoredStatus', () => {
+    it('should update correctly when isIgnored = true', () => {
+      stateDataHandleController['_ignoredIdSet'].add(2);
+      stateDataHandleController.updateIgnoredStatus([1, 2, 3], true);
+      expect(stateDataHandleController['_ignoredIdSet'].size).toEqual(3);
+      expect(mockActionController.updateReadStatus).toHaveBeenCalledTimes(2);
+    });
+
+    it('should update correctly when isIgnored = false', () => {
+      stateDataHandleController['_ignoredIdSet'].add(2);
+      stateDataHandleController['_ignoredIdSet'].add(3);
+      stateDataHandleController['_ignoredIdSet'].add(4);
+      stateDataHandleController.updateIgnoredStatus([1, 2, 4], false);
+      expect(stateDataHandleController['_ignoredIdSet'].size).toEqual(1);
+    });
+  });
+
   describe('handleState()', () => {
-    it('should start handle task when array only has one task', async () => {
+    it('should call _appendTask', async () => {
       const states: Partial<State>[] = [{ id: 123 }];
-      stateDataHandleController['_startDataHandleTask'] = jest.fn();
+      stateDataHandleController['_appendTask'] = jest.fn();
       await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith(
+      expect(stateDataHandleController['_appendTask']).toHaveBeenCalledWith(
         {
           type: TASK_DATA_TYPE.STATE,
           data: states,
@@ -77,42 +99,61 @@ describe('StateDataHandleController', () => {
         undefined,
       );
     });
+  });
 
-    it('should only add task to array when array has more than one task', async () => {
-      const states: Partial<State>[] = [{ id: 123 }];
-      stateDataHandleController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.STATE, data: states },
-      ];
-      stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
-        0,
+  describe('handleGroupCursor()', () => {
+    it('should call _appendTask', async () => {
+      const groups: Partial<Group>[] = [{ id: 123 }];
+      stateDataHandleController['_appendTask'] = jest.fn();
+      await stateDataHandleController.handleGroupCursor(
+        groups,
+        SYNC_SOURCE.INITIAL,
+      );
+      expect(stateDataHandleController['_appendTask']).toHaveBeenCalledWith(
+        {
+          type: TASK_DATA_TYPE.GROUP_CURSOR,
+          data: groups,
+          ignoreCursorValidate: true,
+        },
+        SYNC_SOURCE.INITIAL,
+        undefined,
       );
     });
   });
 
-  describe('handleGroupCursor()', () => {
-    it('should start handle task when array only has one task', async () => {
+  describe('handleStateAndGroupCursor()', () => {
+    it('should call _appendTask', async () => {
+      const states: Partial<State>[] = [{ id: 123 }];
       const groups: Partial<Group>[] = [{ id: 123 }];
-      stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleGroupCursor(groups, true);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.GROUP_CURSOR,
-        data: groups,
-        ignoreCursorValidate: true,
-      });
-    });
-
-    it('should only add task to array when array has more than one task', async () => {
-      const groups: Partial<Group>[] = [{ id: 123 }];
-      stateDataHandleController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_CURSOR, data: groups },
-      ];
-      stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleGroupCursor(groups);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
-        0,
+      stateDataHandleController['_appendTask'] = jest.fn();
+      await stateDataHandleController.handleStateAndGroupCursor(
+        states,
+        groups,
+        SYNC_SOURCE.INITIAL,
       );
+      expect(stateDataHandleController['_appendTask']).toHaveBeenCalledWith(
+        {
+          type: TASK_DATA_TYPE.STATE_AND_GROUP_CURSOR,
+          data: {
+            states,
+            groups,
+          },
+          ignoreCursorValidate: true,
+        },
+        SYNC_SOURCE.INITIAL,
+        undefined,
+      );
+    });
+  });
+
+  describe('_appendTask()', () => {
+    it('should handle task when queue is empty', async () => {
+      const task = { mock: 'task' } as any;
+      stateDataHandleController['_startDataHandleTask'] = jest.fn();
+      await stateDataHandleController['_appendTask'](task, SYNC_SOURCE.INITIAL);
+      expect(
+        stateDataHandleController['_startDataHandleTask'],
+      ).toHaveBeenCalledWith(task, SYNC_SOURCE.INITIAL, undefined);
     });
   });
 
@@ -125,23 +166,25 @@ describe('StateDataHandleController', () => {
       stateDataHandleController['_transformGroupData'] = jest.fn();
       // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
-        groupStates: [],
+        groupStates: {},
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
-      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
-        task.data,
-      );
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledTimes(
-        0,
-      );
+      expect(
+        stateDataHandleController['_transformStateData'],
+      ).toHaveBeenCalledWith(task.data, {
+        groupStates: {},
+      });
+      expect(
+        stateDataHandleController['_transformGroupData'],
+      ).toHaveBeenCalledTimes(0);
       expect(
         stateDataHandleController['_generateUpdatedState'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('should handle group task and stop the queue', async () => {
@@ -155,34 +198,67 @@ describe('StateDataHandleController', () => {
       ] = jest.fn().mockReturnValue({});
       // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
-        groupStates: [],
+        groupStates: {},
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
-      expect(stateDataHandleController['_transformStateData']).toBeCalledTimes(
-        0,
-      );
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
-        task.data,
-      );
+      expect(
+        stateDataHandleController['_transformStateData'],
+      ).toHaveBeenCalledTimes(0);
+      expect(
+        stateDataHandleController['_transformGroupData'],
+      ).toHaveBeenCalledWith(task.data, {
+        groupStates: {},
+      });
       expect(
         stateDataHandleController['_generateUpdatedState'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
-      ).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle state and group task and stop the queue', async () => {
+      const task: DataHandleTask = {
+        type: TASK_DATA_TYPE.STATE_AND_GROUP_CURSOR,
+        data: {
+          states: [{ mock: 'state' } as any],
+          groups: [{ mock: 'group' } as any],
+        },
+      };
+      stateDataHandleController['_transformStateData'] = jest.fn();
+      stateDataHandleController[
+        '_transformGroupData'
+      ] = jest.fn().mockReturnValue({});
+      // prettier-ignore
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: {},
+      });
+      stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+
+      await stateDataHandleController['_startDataHandleTask'](task);
+      expect(
+        stateDataHandleController['_transformStateData'],
+      ).toHaveBeenCalledWith(task.data.states, {
+        groupStates: {},
+      });
+      expect(
+        stateDataHandleController['_transformGroupData'],
+      ).toHaveBeenCalledWith(task.data.groups, {
+        groupStates: {},
+      });
+      expect(
+        stateDataHandleController['_generateUpdatedState'],
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        stateDataHandleController['_updateEntitiesAndDoNotification'],
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('should handle next task when crashing', async () => {
-      const task: DataHandleTask = {
-        type: TASK_DATA_TYPE.GROUP_CURSOR,
-        data: 'data' as any,
-      };
-      const task2: DataHandleTask = {
-        type: TASK_DATA_TYPE.STATE,
-        data: 'data2' as any,
-      };
+      const task = jest.fn();
+      const task2 = jest.fn();
       stateDataHandleController['_taskArray'] = [task, task2];
       stateDataHandleController['_transformStateData'] = jest.fn();
       // prettier-ignore
@@ -193,17 +269,22 @@ describe('StateDataHandleController', () => {
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
 
-      await stateDataHandleController['_startDataHandleTask'](task);
-      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
-        task2.data,
-      );
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
-        task.data,
-      );
-      expect(stateDataHandleController['_generateUpdatedState']).toBeCalled();
+      await stateDataHandleController['_startDataHandleTask']({
+        type: TASK_DATA_TYPE.GROUP_CURSOR,
+        data: 'data' as any,
+      });
+      expect(task2).toHaveBeenCalled();
+      expect(
+        stateDataHandleController['_transformGroupData'],
+      ).toHaveBeenCalledWith('data', {
+        groupStates: {},
+      });
+      expect(
+        stateDataHandleController['_generateUpdatedState'],
+      ).toHaveBeenCalled();
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -227,22 +308,29 @@ describe('StateDataHandleController', () => {
       ];
 
       mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
+      const transformedState: TransformedState = {
+        groupStates: {},
+      };
 
-      expect(stateDataHandleController['_transformGroupData'](groups)).toEqual({
-        groupStates: [
-          {
+      stateDataHandleController['_transformGroupData'](
+        groups,
+        transformedState,
+      );
+      expect(transformedState).toEqual({
+        groupStates: {
+          55668833: {
             group_post_cursor: 456,
             group_post_drp_cursor: 789,
             last_author_id: 2222333,
             id: 55668833,
           },
-          {
+          11223344: {
             group_post_cursor: 654,
             group_post_drp_cursor: 321,
             last_author_id: 2223333,
             id: 11223344,
           },
-        ],
+        },
         isSelf: true,
       });
     });
@@ -265,9 +353,17 @@ describe('StateDataHandleController', () => {
           'unread_deactivated_count:55668833': 10,
         },
       ];
-      expect(stateDataHandleController['_transformStateData'](states)).toEqual({
-        groupStates: [
-          {
+      const transformedState: TransformedState = {
+        groupStates: {},
+      };
+
+      stateDataHandleController['_transformStateData'](
+        states,
+        transformedState,
+      );
+      expect(transformedState).toEqual({
+        groupStates: {
+          55668833: {
             deactivated_post_cursor: 1,
             group_missed_calls_count: 2,
             group_tasks_count: 3,
@@ -280,13 +376,14 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 10,
             unread_mentions_count: 5,
           },
-        ],
+        },
         myState: {
           id: 5683,
         },
       });
     });
   });
+
   describe('_generateUpdatedState()', () => {
     it('should return updatedState', async () => {
       const transformedState = {
@@ -326,7 +423,7 @@ describe('StateDataHandleController', () => {
         isSelf: false,
       };
 
-      mockStateFetchDataController.getAllGroupStatesFromLocal = jest
+      mockEntitySourceController.getEntitiesLocally = jest
         .fn()
         .mockReturnValue([
           {
@@ -367,8 +464,8 @@ describe('StateDataHandleController', () => {
           transformedState,
         ),
       ).toEqual({
-        groupStates: [
-          {
+        groupStates: {
+          1: {
             id: 1,
             marked_as_unread: true,
             post_cursor: 18,
@@ -379,8 +476,9 @@ describe('StateDataHandleController', () => {
             group_post_drp_cursor: 9,
             unread_count: 5,
             last_author_id: 56,
+            unread_team_mentions_count: 0,
           },
-          {
+          2: {
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
             id: 2,
@@ -390,8 +488,9 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 10,
             unread_mentions_count: 0,
             unread_count: 1,
+            unread_team_mentions_count: 0,
           },
-          {
+          3: {
             id: 3,
             marked_as_unread: true,
             post_cursor: 8,
@@ -399,8 +498,9 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 10,
             unread_mentions_count: 5,
             unread_count: 0,
+            unread_team_mentions_count: 0,
           },
-        ],
+        },
         myState: undefined,
       });
     });
@@ -417,7 +517,7 @@ describe('StateDataHandleController', () => {
         isSelf: true,
       };
 
-      mockStateFetchDataController.getAllGroupStatesFromLocal = jest
+      mockEntitySourceController.getEntitiesLocally = jest
         .fn()
         .mockReturnValue([
           {
@@ -429,6 +529,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 0,
             unread_mentions_count: 0,
             unread_count: 1,
+            unread_team_mentions_count: 0,
           },
         ]);
 
@@ -439,8 +540,8 @@ describe('StateDataHandleController', () => {
           transformedState,
         ),
       ).toEqual({
-        groupStates: [
-          {
+        groupStates: {
+          1: {
             id: 1,
             marked_as_unread: true,
             group_post_cursor: 18,
@@ -449,8 +550,9 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 0,
             unread_mentions_count: 0,
             unread_count: 0,
+            unread_team_mentions_count: 0,
           },
-        ],
+        },
         myState: undefined,
       });
     });
@@ -467,7 +569,7 @@ describe('StateDataHandleController', () => {
         isSelf: false,
       };
 
-      mockStateFetchDataController.getAllGroupStatesFromLocal = jest
+      mockEntitySourceController.getEntitiesLocally = jest
         .fn()
         .mockReturnValue([
           {
@@ -479,6 +581,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 0,
             unread_mentions_count: 0,
             unread_count: 1,
+            unread_team_mentions_count: 0,
           },
         ]);
 
@@ -489,8 +592,8 @@ describe('StateDataHandleController', () => {
           transformedState,
         ),
       ).toEqual({
-        groupStates: [
-          {
+        groupStates: {
+          1: {
             id: 1,
             marked_as_unread: false,
             group_post_cursor: 17,
@@ -500,8 +603,9 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 0,
             unread_count: 0,
             last_author_id: 5683,
+            unread_team_mentions_count: 0,
           },
-        ],
+        },
         myState: undefined,
       });
     });
@@ -696,6 +800,51 @@ describe('StateDataHandleController', () => {
         stateDataHandleController['_isStateChanged'](updateState, localState),
       ).toBeFalsy();
     });
+
+    it('should return true when team_mention_cursor changed', () => {
+      const updateState = {
+        team_mention_cursor: 8444,
+      } as any;
+      const localState = {
+        team_mention_cursor: 51111,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+    it('should return true when team_mention_cursor_offset changed', () => {
+      const updateState = {
+        team_mention_cursor_offset: 8444,
+      } as any;
+      const localState = {
+        team_mention_cursor_offset: 51111,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+    it('should return true when group_team_mention_cursor changed', () => {
+      const updateState = {
+        group_team_mention_cursor: 8444,
+      } as any;
+      const localState = {
+        group_team_mention_cursor: 51111,
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
+    it('should return true when removed_cursors_team_mention changed', () => {
+      const updateState = {
+        removed_cursors_team_mention: [1],
+      } as any;
+      const localState = {
+        removed_cursors_team_mention: [1, 3],
+      } as any;
+      expect(
+        stateDataHandleController['_isStateChanged'](updateState, localState),
+      ).toBeTruthy();
+    });
   });
 
   describe('_calculateUnread', () => {
@@ -734,7 +883,7 @@ describe('StateDataHandleController', () => {
   });
 
   describe('_updateEntitiesAndDoNotification', () => {
-    it('should update and notify', async () => {
+    it('should update and notify non-ignore conversation correctly', async () => {
       const mockUpdate = jest.fn();
       daoManager.getDao = jest.fn().mockReturnValueOnce({
         update: mockUpdate,
@@ -745,15 +894,104 @@ describe('StateDataHandleController', () => {
           {
             id: 3444,
           },
+          {
+            id: 3456,
+          },
         ],
       } as any;
+      stateDataHandleController['_ignoredIdSet'].add(3456);
       await stateDataHandleController['_updateEntitiesAndDoNotification'](
         transformedState,
       );
-      expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockStateService.myStateConfig.setMyStateId).toBeCalledTimes(1);
-      expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
-      expect(mockEntitySourceController.bulkUpdate).toBeCalledTimes(1);
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
+      expect(mockActionController.updateReadStatus).toHaveBeenCalledTimes(1);
+      expect(mockStateService.myStateConfig.setMyStateId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(2);
+      expect(mockEntitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('_calculateTeamMentionUnread()', () => {
+    it('should not calculate self groupState change', () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ]({} as GroupState, true, 1233);
+      expect(unreadTeamMentionCount).toEqual(0);
+    });
+
+    it('should unread count equal (total count - read count)', () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(78);
+    });
+
+    it('should minus removed mention posts [JPT-2642]', () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          removed_cursors_team_mention: [1, 26],
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(77);
+    });
+
+    it('should minus removed mention posts(only in unread list)', async () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          removed_cursors_team_mention: [1, 22],
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(78);
+    });
+
+    it('should consider team_mention_cursor_offset', async () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          team_mention_cursor_offset: 33,
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(67);
+    });
+    it('should consider team_mention_cursor_offset', async () => {
+      const unreadTeamMentionCount = stateDataHandleController[
+        '_calculateTeamMentionUnread'
+      ](
+        {
+          group_team_mention_cursor: 100,
+          team_mention_cursor: 22,
+          team_mention_cursor_offset: 11,
+        } as GroupState,
+        false,
+        1233,
+      );
+      expect(unreadTeamMentionCount).toEqual(78);
     });
   });
 });

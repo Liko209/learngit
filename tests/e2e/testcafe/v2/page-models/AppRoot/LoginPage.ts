@@ -43,21 +43,21 @@ export class LoginPage extends BaseWebComponent {
   }
 
   async setCredential(credential: string) {
-    await this.t.typeText(this.credentialField, credential, { replace: true });
+    await this.t.typeText(this.credentialField, credential, { replace: true, paste: true });
   }
 
   async setUsername(username: string) {
-    await this.t.typeText(this.usernameField, username, { replace: true });
+    await this.t.typeText(this.usernameField, username, { replace: true, paste: true });
   }
 
   async setPassword(password: string) {
-    await this.t.typeText(this.passwordField, password, { replace: true });
+    await this.t.typeText(this.passwordField, password, { replace: true, paste: true });
   }
 
   async setExtension(extension: string) {
     // Testcafe typeText throws error when text is empty: The "text" argument is expected to be a non-empty string, but it was "".
-    if(!!extension)
-      await this.t.typeText(this.extensionField, extension, { replace: true });
+    if (!!extension)
+      await this.t.typeText(this.extensionField, extension, { replace: true, paste: true });
   }
 
   async confirmSignIn() {

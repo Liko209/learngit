@@ -15,7 +15,20 @@ const entitySourceController = {
   update: jest.fn(),
   bulkUpdate: jest.fn(),
   getEntityNotificationKey: jest.fn(),
+  getEntityLocally: jest.fn(),
 };
+
+function getMockHasMore({
+  older = true,
+  newer = true,
+  both = true,
+}: {
+  older?: boolean;
+  newer?: boolean;
+  both?: boolean;
+}) {
+  return { older, newer, both };
+}
 
 describe('GroupConfigService', () => {
   let groupConfigController: GroupConfigController;
@@ -301,6 +314,53 @@ describe('GroupConfigService', () => {
       expect(
         groupConfigController.updateGroupSendFailurePostIds,
       ).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('hasMoreRemotePost', () => {
+    it('has more because of this object does not exit', async () => {
+      entitySourceController.getEntityLocally.mockResolvedValueOnce(undefined);
+      const hasMoreRemotePost = await groupConfigController.hasMorePostInRemote(
+        123,
+      );
+      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
+    });
+
+    it('has more because of has_more does not exit', async () => {
+      const mock = {
+        id: 123,
+      };
+      entitySourceController.getEntityLocally.mockResolvedValueOnce(mock);
+      const hasMoreRemotePost = await groupConfigController.hasMorePostInRemote(
+        123,
+      );
+      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
+    });
+
+    it('has more because of has_more is true', async () => {
+      const mock = {
+        id: 123,
+        has_more_older: true,
+      };
+      entitySourceController.getEntityLocally.mockResolvedValueOnce(mock);
+      const hasMoreRemotePost = await groupConfigController.hasMorePostInRemote(
+        123,
+      );
+      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
+    });
+
+    it('does not has more because of has_more is false', async () => {
+      const mock = {
+        id: 123,
+        has_more_older: false,
+      };
+      entitySourceController.getEntityLocally.mockResolvedValueOnce(mock);
+      const hasMoreRemotePost = await groupConfigController.hasMorePostInRemote(
+        123,
+      );
+      expect(hasMoreRemotePost).toEqual(
+        getMockHasMore({ older: false, both: false }),
+      );
     });
   });
 });

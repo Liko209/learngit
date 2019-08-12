@@ -3,6 +3,7 @@
 exports[`render() render correctly 1`] = `
 <JuiConversationItemCard
   Icon="event"
+  customColor="color"
   iconColor="color"
   title="text"
 >

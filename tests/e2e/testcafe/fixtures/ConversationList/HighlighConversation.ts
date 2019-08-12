@@ -52,14 +52,13 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('And the group is highlighted', async () => {
     const textStyle = await directMessageSection.conversationEntryById(group.glipId).self.find('p').style;
-    await t.expect(textStyle.color).eql('rgb(6, 132, 189)');
+    await t.expect(textStyle.color).eql('rgb(255, 255, 255)');
   });
 
   await h(t).withLog('And the content is shown on the conversation page', async () => {
     await app.homePage.messageTab.conversationPage.groupIdShouldBe(group.glipId);
   });
 });
-
 
 test.meta(<ITestMeta>{
   priority: ['p2'],
@@ -77,7 +76,7 @@ test.meta(<ITestMeta>{
     owner: loginUser,
     members: [loginUser, users[0]]
   }
-  const highLightColor = 'rgb(6, 132, 189)';
+  const highLightColor = 'rgb(255, 255, 255)';
 
   async function checkHighLight() {
     const textStyle = await firstConversation.self.find('p').style;
@@ -138,10 +137,12 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I Tap another app page (e.g. Tasks/Phone...) and then come back', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
+    await t.wait(2e3);
     await app.homePage.leftPanel.messagesEntry.enter();
   });
 
   await h(t).withLog('And the group is highlighted', async () => {
+    await t.wait(1e3);
     await checkHighLight();
   });
 });

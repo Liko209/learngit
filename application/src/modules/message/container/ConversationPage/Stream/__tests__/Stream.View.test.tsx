@@ -11,7 +11,6 @@ import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType, StreamViewProps, STATUS } from '../types';
-
 import { PostService } from 'sdk/module/post';
 
 PostService.getInstance = jest.fn();
@@ -20,7 +19,6 @@ jest.mock('jui/components/AutoSizer/AutoSizer');
 jest.mock('jui/components/VirtualizedList/InfiniteList');
 jest.mock('sdk/module/post');
 jest.mock('../../../ConversationSheet', () => ({}));
-
 const hasMore = jest.fn().mockName('loadMore');
 
 const baseProps = {
@@ -34,6 +32,7 @@ const baseProps = {
   viewRef: React.createRef(),
   setRowVisible: jest.fn().mockName('setRowVisible'),
   markAsRead: jest.fn().mockName('markAsRead'),
+  updateIgnoredStatus: jest.fn().mockName('updateIgnoredStatus'),
   atBottom: jest.fn().mockName('atBottom'),
   atTop: jest.fn().mockName('atTop'),
   enableNewMessageSeparatorHandler: jest
@@ -83,7 +82,7 @@ function mountStreamWithUnreadButton({
   wrapper.instance().forceUpdate();
   rootWrapper.update();
   const jumpToFirstUnreadButtonWrapper = rootWrapper.find(
-    'JumpToFirstUnreadButtonWrapper',
+    'AnchorButtonWrapper',
   );
   const hasJumpToFirstUnreadButton =
     jumpToFirstUnreadButtonWrapper.length === 1;

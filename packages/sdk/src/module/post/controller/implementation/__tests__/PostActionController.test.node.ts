@@ -10,11 +10,9 @@ import { Post } from '../../../entity';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { daoManager } from '../../../../../dao';
 import { PostDao } from '../../../dao';
-import { ProgressService, PROGRESS_STATUS } from '../../../../progress';
+import { ProgressService } from '../../../../progress';
 import { GroupConfigService } from '../../../../groupConfig';
-import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
 import _ from 'lodash';
-import { ExtendedBaseModel } from '../../../../models';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { ItemService } from '../../../../item/service';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
@@ -43,7 +41,7 @@ class TestRequestController implements IRequestController<Post> {
   post = jest.fn();
 }
 
-describe('PostController', () => {
+describe('PostActionController', () => {
   let postActionController: PostActionController;
   let testPartialModifyController: TestPartialModifyController;
   let testRequestController: TestRequestController;
@@ -179,15 +177,15 @@ describe('PostController', () => {
       testPartialModifyController.updatePartially = jest
         .fn()
         .mockImplementation(
-          async (
-            entityId: number,
-            preHandlePartialEntity: any,
-            doUpdateEntity: any,
-          ) => {
-            expect(entityId).toBe(postId);
-            const resPartialPost = preHandlePartialEntity();
+          async (params: {
+            entityId: number;
+            preHandlePartialEntity: any;
+            doUpdateEntity: any;
+          }) => {
+            expect(params.entityId).toBe(postId);
+            const resPartialPost = params.preHandlePartialEntity();
             expect(resPartialPost).toEqual(partialPost);
-            await doUpdateEntity(newPost);
+            await params.doUpdateEntity(newPost);
           },
         );
     }
@@ -252,6 +250,17 @@ describe('PostController', () => {
       await postActionController.removeItemFromPost(validLocalPost.id, 1);
       expect(testRequestController.put).toHaveBeenCalled();
       expect(itemService.deleteItem).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('deletePostsByGroupIds', () => {
+    it('should called bulkDelete to delete all posts', async () => {
+      daoManager.getDao.mockReturnValueOnce(postDao);
+      postDao.queryPostIdsByGroupId.mockResolvedValueOnce([1, 2]);
+      postDao.queryPostIdsByGroupId.mockResolvedValueOnce([3, 4]);
+
+      await postActionController.deletePostsByGroupIds([9, 10], true);
+      expect(postDao.bulkDelete).toHaveBeenCalledWith([1, 2, 3, 4]);
     });
   });
 });

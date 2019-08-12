@@ -13,13 +13,20 @@ import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
 import i18nT from '@/utils/i18nT';
-import { TeamPermission, GroupService, PERMISSION_ENUM, Group } from 'sdk/module/group';
+import {
+  TeamPermission,
+  GroupService,
+  PERMISSION_ENUM,
+  Group,
+} from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
 import { Person } from 'sdk/module/person/entity';
 
 export default class GroupModel extends Base<Group> {
+  @observable
+  companyId: number;
   @observable
   isTeam?: boolean;
   @observable
@@ -73,8 +80,10 @@ export default class GroupModel extends Base<Group> {
       is_company_team,
       is_archived,
       converted_to_team,
+      company_id,
     } = data;
 
+    this.companyId = company_id;
     this.setAbbreviation = set_abbreviation;
     this.members = members;
     this.description = description;

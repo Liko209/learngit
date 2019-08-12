@@ -6,7 +6,7 @@
 
 import { init } from 'filestack-js';
 import { logger } from '../utils';
-import { LogControlManager } from 'sdk/service/uploadLogControl/LogControlManager';
+import { LogControlManager } from 'sdk/module/log/LogControlManager';
 import { FILE_STACK_API_KEY } from '../constants';
 import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
@@ -15,7 +15,7 @@ import { FeedbackApi } from '../FeedbackApi';
 import { SessionManager, DateFormatter, mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
-import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import { ZipItemLevel } from 'sdk/module/log/types';
 import { saveBlob } from '@/common/blobUtils';
 
 type UploadOption = { timeout: number; retry: number; level: ZipItemLevel };

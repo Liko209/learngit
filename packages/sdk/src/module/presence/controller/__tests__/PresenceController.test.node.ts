@@ -139,7 +139,7 @@ describe('Presence Controller', () => {
       const result = await presenceController.handlePresenceIncomingData([]);
       expect(result).toBeUndefined();
     });
-    it('should call save and notify when passing an array', async () => {
+    it('should call save and notify when passing an array [JPT-2657]', async () => {
       presenceController.reset();
       presenceController.saveToMemory = jest.fn();
       await presenceController.handlePresenceIncomingData([
@@ -171,9 +171,11 @@ describe('Presence Controller', () => {
       expect(notificationCenter.emitEntityReload).toHaveBeenCalled();
     });
 
-    it('should call resetPresence() when state changed to connected', () => {
+    it('should call resetPresence() when state changed to disconnected [JPT-2585]', () => {
       presenceController.resetPresence = jest.fn();
+      presenceController.reset = jest.fn();
       presenceController.handleSocketStateChange('disconnected');
+      expect(presenceController.reset).toHaveBeenCalled();
       expect(presenceController.resetPresence).toHaveBeenCalled();
     });
   });

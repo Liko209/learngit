@@ -16,10 +16,12 @@ import { SyncService } from '../module/sync';
 import { AccountGlobalConfig } from '../module/account/config';
 import { AuthUserConfig } from '../module/account/config/AuthUserConfig';
 import { AccountUserConfig } from '../module/account/config/AccountUserConfig';
-import { ServiceLoader } from '../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { PermissionService } from 'sdk/module/permission';
+import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
+import { UserConfigService } from 'sdk/module/config/service/UserConfigService';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
@@ -55,6 +57,7 @@ describe('Sdk', () => {
     networkManager = new NetworkManager();
     jest.spyOn(networkManager, 'clearToken');
     syncService = new SyncService();
+    syncService.userConfig = { clearSyncConfigsForDBUpgrade: jest.fn() } as any;
     permissionService = new PermissionService();
 
     sdk = new Sdk(
@@ -191,6 +194,12 @@ describe('Sdk', () => {
       await sdk.onLogout();
     });
 
+    it('should clear UserConfig', () => {
+      const userConfigService = ServiceLoader.getInstance<UserConfigService>(
+        ServiceConfig.USER_CONFIG_SERVICE,
+      );
+      expect(userConfigService.clear).toHaveBeenCalled();
+    });
     it('should clear networkManager token', () => {
       expect(networkManager.clearToken).toHaveBeenCalled();
     });
@@ -211,6 +220,38 @@ describe('Sdk', () => {
     it('should call stop services', () => {
       sdk.updateServiceStatus(['AService'], false);
       expect(serviceManager.stopServices).toHaveBeenCalledWith(['AService']);
+    });
+  });
+
+  describe('clearAllData()', () => {
+    it('should delete Database and config', async () => {
+      sdk.daoManager.deleteDatabase = jest.fn();
+      AccountGlobalConfig.getUserDictionary.mockReturnValue('test');
+      sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade = jest.fn();
+      jobScheduler.userConfig.clearFetchDataConfigs = jest.fn();
+      await sdk.clearAllData();
+      expect(sdk.daoManager.deleteDatabase).toHaveBeenCalled();
+      expect(AccountGlobalConfig.getUserDictionary).toHaveBeenCalled();
+      expect(
+        sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade,
+      ).toHaveBeenCalled();
+      expect(jobScheduler.userConfig.clearFetchDataConfigs).toHaveBeenCalled();
+    });
+
+    it('should not delete config when UD is invalid', async () => {
+      sdk.daoManager.deleteDatabase = jest.fn();
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(undefined);
+      sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade = jest.fn();
+      jobScheduler.userConfig.clearFetchDataConfigs = jest.fn();
+      await sdk.clearAllData();
+      expect(sdk.daoManager.deleteDatabase).toHaveBeenCalled();
+      expect(AccountGlobalConfig.getUserDictionary).toHaveBeenCalled();
+      expect(
+        sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade,
+      ).not.toHaveBeenCalled();
+      expect(
+        jobScheduler.userConfig.clearFetchDataConfigs,
+      ).not.toHaveBeenCalled();
     });
   });
 });

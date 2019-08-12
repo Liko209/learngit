@@ -25,13 +25,15 @@ export const showImageViewer = (
       type={VIEWER_ITEM_TYPE.IMAGE_FILES}
       isNavigation={mode === 'navigation'}
       postId={postId}
-      contentLeftRender={(props: ViewerViewProps) => <ImageViewer {...props} initialOptions={initialOptions} />}
+      contentLeftRender={(props: ViewerViewProps) => (
+        <ImageViewer {...props} initialOptions={initialOptions} />
+      )}
       viewerDestroyer={() => dismiss()}
     />,
     {
       fullScreen: true,
       hideBackdrop: true,
-      TransitionComponent: JuiDialogOpenTransition,
+      TransitionComponent: JuiDialogOpenTransition as any,
       enableEscapeClose: true,
       onClose: () => dismiss(),
     },

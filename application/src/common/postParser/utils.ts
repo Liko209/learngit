@@ -68,7 +68,10 @@ const getComplementRanges = (ranges: TextRange[], fullLength: number) => {
 // };
 
 const HTMLUnescape = (str: string) =>
-  str.replace(regExpUnescape, (match: string) => mapUnescape[match]);
+  str.replace(
+    regExpUnescape,
+    (match: string) => mapUnescape[match] || mapUnescape[`${match};`],
+  );
 const getStylesObject = moize(
   (styles: string) =>
     styles
@@ -119,6 +122,8 @@ const getTopLevelChildNodesFromHTML = (_html: string) => {
         val = /^(['|"]).+\1$/.test(val) ? val.slice(1, -1) : val;
         if (key === 'style') {
           val = getStylesObject(val);
+        } else {
+          val = HTMLUnescape(val);
         }
         return val;
       };
@@ -182,7 +187,7 @@ const EMOJI_ASCII_REGEX = `(^|\\s)${Object.keys(convertMapAscii).join(
   '(?=\\s|$|[!,.?])|(^|\\s)',
 )}(?=\\s|$|[!,.?])`;
 const EMOJI_ASCII_REGEX_SIMPLE =
-  "(^|\\s)([<3\\/:'\\)\\-=\\]>;\\*\\^\\(xp\\[@\\.\\$#%O08_LÞþbdo]{2,})(?=\\s|$)";
+  "(^|\\s)([<3/:')\\-D=\\]>;*\\^(PXxp[@.$#%\\\0BO8_LÞþbdo]{2,})(?=\\s|$)";
 
 // const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
 const EMOJI_ONE_REGEX_SIMPLE = '(^|\\s)?(:[a-z0-9\\+\\-\\_]+:)';

@@ -114,13 +114,25 @@ describe('SyncController ', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
+    it('should set correct syncing state when call syncData()', async () => {
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
+        .fn()
+        .mockImplementation(() => {
+          expect(syncController.isDataSyncing()).toBeTruthy();
+          return null;
+        });
+      expect(syncController.isDataSyncing()).toBeFalsy();
+      await syncController.syncData();
+      expect(syncController.isDataSyncing()).toBeFalsy();
+    });
+
     it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
       SyncUserConfig.prototype.getLastIndexTimestamp = jest
         .fn()
         .mockReturnValue(null);
       const spy = jest.spyOn(syncController, '_firstLogin');
       await syncController.syncData();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
     it('should call _syncIndexData if LAST_INDEX_TIMESTAMP is not null', async () => {
       AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
@@ -132,8 +144,8 @@ describe('SyncController ', () => {
       const spy1 = jest.spyOn(syncController, '_syncIndexData');
       const spy2 = jest.spyOn(syncController, '_fetchRemaining');
       await syncController.syncData();
-      expect(spy1).toBeCalled();
-      expect(spy2).toBeCalledTimes(1);
+      expect(spy1).toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalledTimes(1);
     });
     it('should not call _fetchRemaining when sync index data and remaining had ever called', async () => {
       AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
@@ -147,7 +159,7 @@ describe('SyncController ', () => {
         .mockReturnValue(true);
       const spy2 = jest.spyOn(syncController, '_fetchRemaining');
       await syncController.syncData();
-      expect(spy2).toBeCalledTimes(0);
+      expect(spy2).toHaveBeenCalledTimes(0);
     });
 
     it('should call fetchRemainingData when sync index data and remaining had ever called', async () => {
@@ -162,7 +174,7 @@ describe('SyncController ', () => {
         .mockReturnValue(false);
       const spy2 = jest.spyOn(syncController, 'fetchRemainingData');
       await syncController.syncData();
-      expect(spy2).toBeCalledTimes(1);
+      expect(spy2).toHaveBeenCalledTimes(1);
     });
 
     it('should not call fetchRemainingData when is doing fetchRemainingData', async () => {
@@ -178,7 +190,7 @@ describe('SyncController ', () => {
       Object.assign(syncController, { _isFetchingRemaining: true });
       const spy2 = jest.spyOn(syncController, 'fetchRemainingData');
       await syncController.syncData();
-      expect(spy2).toBeCalledTimes(0);
+      expect(spy2).toHaveBeenCalledTimes(0);
     });
   });
   describe('updateIndexTimestamp', () => {
@@ -351,7 +363,7 @@ describe('SyncController ', () => {
       it('should clear data when call _handle504GateWayError', async () => {
         DaoGlobalConfig.removeDBSchemaVersion = jest.fn();
         await syncController._handle504GateWayError();
-        expect(DaoGlobalConfig.removeDBSchemaVersion).toBeCalled();
+        expect(DaoGlobalConfig.removeDBSchemaVersion).toHaveBeenCalled();
       });
     });
   });
@@ -373,7 +385,7 @@ describe('SyncController ', () => {
         expect(
           SyncUserConfig.prototype.setSocketConnectedLocalTime,
         ).toHaveBeenCalled();
-        expect(syncController.syncData).toBeCalled();
+        expect(syncController.syncData).toHaveBeenCalled();
       });
     });
     describe('disconnected', () => {
@@ -410,14 +422,14 @@ describe('SyncController ', () => {
         syncController.handleSocketConnectionStateChanged({
           state: 'refresh',
         });
-        expect(syncController.syncData).toBeCalled();
+        expect(syncController.syncData).toHaveBeenCalled();
       });
       it('should start progressBar when state is connecting', () => {
         syncController['_progressBar'].start = jest.fn();
         syncController.handleSocketConnectionStateChanged({
           state: 'connecting',
         });
-        expect(syncController['_progressBar'].start).toBeCalled();
+        expect(syncController['_progressBar'].start).toHaveBeenCalled();
       });
     });
   });
@@ -454,7 +466,9 @@ describe('SyncController ', () => {
     it('should call _resetSocketConnectedLocalTime', () => {
       syncController['_resetSocketConnectedLocalTime'] = jest.fn();
       syncController.handleWakeUpFromSleep();
-      expect(syncController['_resetSocketConnectedLocalTime']).toBeCalled();
+      expect(
+        syncController['_resetSocketConnectedLocalTime'],
+      ).toHaveBeenCalled();
     });
   });
 
@@ -466,10 +480,10 @@ describe('SyncController ', () => {
       syncController['_checkFetchedRemaining'] = jest.fn();
       notificationCenter.emitKVChange = jest.fn();
       await syncController['_firstLogin']();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.DO_SIGN_OUT,
       );
-      expect(syncController['_checkFetchedRemaining']).toBeCalled();
+      expect(syncController['_checkFetchedRemaining']).toHaveBeenCalled();
     });
   });
 
@@ -482,8 +496,12 @@ describe('SyncController ', () => {
       syncController.fetchInitialData = jest.fn();
       syncController['_handleIncomingData'] = jest.fn();
       await syncController['_fetchInitial'](1);
-      expect(syncController['_syncListener'].onInitialLoaded).toBeCalled();
-      expect(syncController['_syncListener'].onInitialHandled).toBeCalled();
+      expect(
+        syncController['_syncListener'].onInitialLoaded,
+      ).toHaveBeenCalled();
+      expect(
+        syncController['_syncListener'].onInitialHandled,
+      ).toHaveBeenCalled();
     });
   });
 
@@ -495,7 +513,7 @@ describe('SyncController ', () => {
         throw 'error';
       });
       await syncController['_checkFetchedRemaining'](1);
-      expect(syncController['_fetchRemaining']).toBeCalled();
+      expect(syncController['_fetchRemaining']).toHaveBeenCalled();
       expect(syncController['_isFetchingRemaining']).toBeFalsy();
     });
   });
@@ -509,8 +527,12 @@ describe('SyncController ', () => {
       syncController.fetchRemainingData = jest.fn();
       syncController['_handleIncomingData'] = jest.fn();
       await syncController['_fetchRemaining'](1);
-      expect(syncController['_syncListener'].onRemainingLoaded).toBeCalled();
-      expect(syncController['_syncListener'].onRemainingHandled).toBeCalled();
+      expect(
+        syncController['_syncListener'].onRemainingLoaded,
+      ).toHaveBeenCalled();
+      expect(
+        syncController['_syncListener'].onRemainingHandled,
+      ).toHaveBeenCalled();
     });
   });
 
@@ -529,14 +551,14 @@ describe('SyncController ', () => {
         { user_id: 123, company_id: 456 } as any,
         SYNC_SOURCE.INDEX,
       );
-      expect(syncController['_handleIncomingCompany']).toBeCalled();
-      expect(syncController['_handleIncomingItem']).toBeCalled();
-      expect(syncController['_handleIncomingPresence']).toBeCalled();
-      expect(syncController['_handleIncomingState']).toBeCalled();
-      expect(syncController['_handleIncomingProfile']).toBeCalled();
-      expect(syncController['_handleIncomingPerson']).toBeCalled();
-      expect(syncController['_handleIncomingGroup']).toBeCalled();
-      expect(syncController['_handleIncomingPost']).toBeCalled();
+      expect(syncController['_handleIncomingCompany']).toHaveBeenCalled();
+      expect(syncController['_handleIncomingItem']).toHaveBeenCalled();
+      expect(syncController['_handleIncomingPresence']).toHaveBeenCalled();
+      expect(syncController['_handleIncomingState']).toHaveBeenCalled();
+      expect(syncController['_handleIncomingProfile']).toHaveBeenCalled();
+      expect(syncController['_handleIncomingPerson']).toHaveBeenCalled();
+      expect(syncController['_handleIncomingGroup']).toHaveBeenCalled();
+      expect(syncController['_handleIncomingPost']).toHaveBeenCalled();
     });
   });
 });

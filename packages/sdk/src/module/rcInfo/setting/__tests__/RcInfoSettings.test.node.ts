@@ -8,8 +8,7 @@ import { SettingEntityIds } from '../../../setting';
 import { ExtensionSettingHandler } from '../ExtensionSettingHandler';
 import { RegionSettingHandler } from '../RegionSettingHandler';
 import { CallerIdSettingHandler } from '../CallerIdSettingHandler';
-import { RCInfoService } from '../../service';
-import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../CallerIdSettingHandler');
 function clearMocks() {
@@ -26,6 +25,8 @@ describe('RcInfoSetting ', () => {
         return {
           subscribeEmergencyAddressChange: jest.fn(),
           subscribeSipProvChange: jest.fn(),
+          subscribeSipProvEAUpdated: jest.fn(),
+          subscribeSipProvReceived: jest.fn(),
         };
       });
   }

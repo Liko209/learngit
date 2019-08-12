@@ -15,10 +15,10 @@ import {
 } from '../../db';
 
 class LokiDB implements IDatabase {
-  private db: Loki;
+  db: Loki;
   private opened: boolean;
   constructor(schema: ISchema) {
-    this.db = new Loki('memory.db');
+    this.db = new Loki(schema.name);
     this._initSchema(schema);
     this.opened = false;
   }

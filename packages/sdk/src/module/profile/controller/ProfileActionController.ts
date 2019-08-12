@@ -47,11 +47,12 @@ class ProfileActionController {
       return partialModel;
     };
 
-    return this.partialModifyController.updatePartially(
-      profileId,
-      preHandlePartial,
-      async (newProfile: Profile) => this.requestController.put(newProfile),
-    );
+    return this.partialModifyController.updatePartially({
+      entityId: profileId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newProfile: Profile) =>
+        this.requestController.put(newProfile),
+    });
   }
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
@@ -73,11 +74,12 @@ class ProfileActionController {
       return partialModel;
     };
 
-    return this.partialModifyController.updatePartially(
-      profileId,
-      preHandlePartial,
-      async (newProfile: Profile) => this.requestController.put(newProfile),
-    );
+    return this.partialModifyController.updatePartially({
+      entityId: profileId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newProfile: Profile) =>
+        this.requestController.put(newProfile),
+    });
   }
 
   async markMeConversationAsFav(): Promise<Profile | null> {
@@ -113,11 +115,12 @@ class ProfileActionController {
         return partialModel;
       };
 
-      return this.partialModifyController.updatePartially(
-        profileId,
-        preHandlePartial,
-        async (newProfile: Profile) => this.requestController.put(newProfile),
-      );
+      return this.partialModifyController.updatePartially({
+        entityId: profileId,
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: async (newProfile: Profile) =>
+          this.requestController.put(newProfile),
+      });
     }
     return null;
   }
@@ -157,11 +160,12 @@ class ProfileActionController {
         return partialModel;
       };
 
-      return await this.partialModifyController.updatePartially(
-        this.profileDataController.getCurrentProfileId(),
-        preHandlePartial,
-        async (newProfile: Profile) => this.requestController.put(newProfile),
-      );
+      return await this.partialModifyController.updatePartially({
+        entityId: this.profileDataController.getCurrentProfileId(),
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: async (newProfile: Profile) =>
+          this.requestController.put(newProfile),
+      });
     }
     return null;
   }
@@ -178,11 +182,12 @@ class ProfileActionController {
       return partialProfile;
     };
 
-    return this.partialModifyController.updatePartially(
-      this.profileDataController.getCurrentProfileId(),
-      preHandlePartial,
-      async (newProfile: Profile) => this.requestController.put(newProfile),
-    );
+    return this.partialModifyController.updatePartially({
+      entityId: this.profileDataController.getCurrentProfileId(),
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newProfile: Profile) =>
+        this.requestController.put(newProfile),
+    });
   }
 
   async hideConversation(
@@ -220,11 +225,12 @@ class ProfileActionController {
       return partialProfile;
     };
 
-    return this.partialModifyController.updatePartially(
-      this.profileDataController.getCurrentProfileId(),
-      preHandlePartial,
-      async (newProfile: Profile) => this.requestController.put(newProfile),
-    );
+    return this.partialModifyController.updatePartially({
+      entityId: this.profileDataController.getCurrentProfileId(),
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newProfile: Profile) =>
+        this.requestController.put(newProfile),
+    });
   }
 
   async handleGroupIncomesNewPost(groupIds: number[]) {
@@ -248,11 +254,12 @@ class ProfileActionController {
       return partialProfile;
     };
 
-    return this.partialModifyController.updatePartially(
-      this.profileDataController.getCurrentProfileId(),
-      preHandlePartial,
-      async (newProfile: Profile) => this.requestController.put(newProfile),
-    );
+    return this.partialModifyController.updatePartially({
+      entityId: this.profileDataController.getCurrentProfileId(),
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newProfile: Profile) =>
+        this.requestController.put(newProfile),
+    });
   }
 
   private _reorderFavoriteGroupIds(

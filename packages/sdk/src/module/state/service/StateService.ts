@@ -33,19 +33,18 @@ class StateService extends EntityBaseService<GroupState>
         [SOCKET.STATE]: this.handleState,
         [SOCKET.PARTIAL_STATE]: this.handleState,
         [SOCKET.PARTIAL_GROUP]: this.handleGroupCursor,
-        [SERVICE.GROUP_CURSOR]: (data: Partial<Group>[]) => {
-          this.handleGroupCursor(data, true);
-        },
+        [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
         [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
         [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
         [ENTITY.GROUP_STATE]: this.handleStateChangeForTotalUnread,
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => (
-      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
-        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP)
-    ));
+    this.setCheckTypeFunc(
+      (id: number) =>
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP),
+    );
   }
 
   onGlipLogin(success: boolean) {
@@ -54,12 +53,12 @@ class StateService extends EntityBaseService<GroupState>
   }
 
   private _initBadge = async () => {
-    await this.getStateController()
+    await this.stateController
       .getTotalUnreadController()
       .initializeTotalUnread();
   };
 
-  protected getStateController(): StateController {
+  protected get stateController(): StateController {
     if (!this._stateController) {
       this._stateController = new StateController(
         this._groupService,
@@ -76,24 +75,30 @@ class StateService extends EntityBaseService<GroupState>
     return this._myStateConfig;
   }
 
+  updateIgnoredStatus(ids: number[], isIgnored: boolean) {
+    this.stateController
+      .getStateDataHandleController()
+      .updateIgnoredStatus(ids, isIgnored);
+  }
+
   async updateReadStatus(
     groupId: number,
     isUnread: boolean,
     ignoreError: boolean,
   ): Promise<void> {
-    await this.getStateController()
+    await this.stateController
       .getStateActionController()
       .updateReadStatus(groupId, isUnread, ignoreError);
   }
 
   async updateLastGroup(groupId: number): Promise<void> {
-    await this.getStateController()
+    await this.stateController
       .getStateActionController()
       .updateLastGroup(groupId);
   }
 
   async getAllGroupStatesFromLocal(ids: number[]): Promise<GroupState[]> {
-    return await this.getStateController()
+    return await this.stateController
       .getStateFetchDataController()
       .getAllGroupStatesFromLocal(ids);
   }
@@ -101,68 +106,72 @@ class StateService extends EntityBaseService<GroupState>
   async getGroupStatesFromLocalWithUnread(
     ids: number[],
   ): Promise<GroupState[]> {
-    return await this.getStateController()
+    return await this.stateController
       .getStateFetchDataController()
       .getGroupStatesFromLocalWithUnread(ids);
   }
 
   async getMyState(): Promise<MyState | null> {
-    return await this.getStateController()
+    return await this.stateController
       .getStateFetchDataController()
       .getMyState();
   }
 
   getMyStateId(): number {
-    return this.getStateController()
-      .getStateFetchDataController()
-      .getMyStateId();
+    return this.stateController.getStateFetchDataController().getMyStateId();
   }
 
   handleState = async (
     states: Partial<State>[],
-    source: SYNC_SOURCE,
+    source?: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
-    await this.getStateController()
+    await this.stateController
       .getStateDataHandleController()
       .handleState(states, source, changeMap);
   };
 
   handleGroupCursor = async (
     groups: Partial<Group>[],
-    ignoreCursorValidate?: boolean,
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> => {
-    await this.getStateController()
+    await this.stateController
       .getStateDataHandleController()
-      .handleGroupCursor(groups, ignoreCursorValidate);
+      .handleGroupCursor(groups, source, changeMap);
+  };
+
+  handleStateAndGroupCursor = async (
+    states: Partial<State>[],
+    groups: Partial<Group>[],
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ): Promise<void> => {
+    await this.stateController
+      .getStateDataHandleController()
+      .handleStateAndGroupCursor(states, groups, source, changeMap);
   };
 
   handleStateChangeForTotalUnread = (
     payload: NotificationEntityPayload<GroupState>,
   ): void => {
-    this.getStateController()
-      .getTotalUnreadController()
-      .handleGroupState(payload);
+    this.stateController.getTotalUnreadController().handleGroupState(payload);
   };
 
   handleGroupChangeForTotalUnread = (
     payload: NotificationEntityPayload<Group>,
   ): void => {
-    this.getStateController()
-      .getTotalUnreadController()
-      .handleGroup(payload);
+    this.stateController.getTotalUnreadController().handleGroup(payload);
   };
 
   handleProfileChangeForTotalUnread = (
     payload: NotificationEntityPayload<Profile>,
   ): void => {
-    this.getStateController()
-      .getTotalUnreadController()
-      .handleProfile(payload);
+    this.stateController.getTotalUnreadController().handleProfile(payload);
   };
 
   getSingleGroupBadge(id: number): UndefinedAble<GroupBadge> {
-    return this.getStateController()
+    return this.stateController
       .getTotalUnreadController()
       .getSingleGroupBadge(id);
   }

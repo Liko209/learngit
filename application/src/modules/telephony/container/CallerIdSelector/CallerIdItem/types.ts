@@ -10,6 +10,8 @@ export type CallerIdItemProps = {
   usageType: string;
   label?: string;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onBlur?: () => void;
   selected?: boolean;
 };
 

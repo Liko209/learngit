@@ -3,7 +3,6 @@
  * @Date: 2019-04-01 17:15:58
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -122,7 +121,7 @@ class InstantSearchViewComponent extends Component<Props> {
           enter: onEnter,
         }}
       >
-        <JuiInstantSearch data-test-automation-id='search-results'>
+        <JuiInstantSearch data-test-automation-id="search-results">
           {this.searchResultList}
         </JuiInstantSearch>
       </HotKeys>

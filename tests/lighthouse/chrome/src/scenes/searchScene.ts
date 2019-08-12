@@ -13,7 +13,7 @@ class SearchScene extends Scene {
   private keywords: Array<string> = Config.searchKeywords;
 
   tags(): Array<string> {
-    return ["Search", "Post", "People", "Group", "Team", "Memory","Trace", "API"];
+    return ["SearchScene", "Search", "Post", "People", "Group", "Team", "Memory", "Trace", "API"];
   }
 
   async preHandle() {

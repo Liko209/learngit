@@ -4,10 +4,11 @@
       "ariaToggleOn": "On, click to turn off",
       "ariaToggleOff": "Off, click to turn on",
       "tryAgain": "Try again",
-      "unblock": "Unblock"
+      "turnOff": "Turn off"
     },
     "dialog": {
       "OK": "OK",
+      "Alert": "Alert",
       "cancel": "Cancel",
       "update": "Update",
       "create": "Create",
@@ -16,7 +17,9 @@
       "send": "Send",
       "delete": "Delete",
       "close": "Close",
-      "deleteAll": "Delete all"
+      "confirm": "Confirm",
+      "deleteAll": "Delete all",
+      "edit": "Edit"
     },
     "prompt": {
       "NoInternetConnection": "No Internet Connection",
@@ -24,7 +27,9 @@
       "tryAgain": "Try again.",
       "tryAgainLater": "Try again later.",
       "thenTryAgain": "then try again.",
-      "loadError": "Oops! Something went wrong, please try again."
+      "loadError": "Oops! Something went wrong, please try again.",
+      "switchCall": "You're currently on an active call on another device.",
+      "switchCallAction": " Switch call to this device"
     },
     "preposition": {
       "in": "in"
@@ -75,7 +80,9 @@
     "play": "Play",
     "pause": "Pause",
     "reload": "Reload",
-    "goToConversation": "Go to conversation"
+    "goToConversation": "Go to conversation",
+    "country": "Country",
+    "eg": "e.g."
   },
   "presence": {
     "available": "Available",
@@ -85,7 +92,7 @@
     "offline": "Offline",
     "invisible": "Invisible",
     "prompt": {
-      "topBannerInfoWhenDnd": "All incoming calls and notifications are blocked.",
+      "topBannerInfoWhenDnd": "Do Not Disturb is ON.",
       "updatePresenceFailedForServerIssue": "Sorry, something went wrong on our end, we weren't able to update your presence. Try again later.",
       "updatePresenceFailedForNetworkIssue": "Sorry, we weren't able to update your presence. Check your network connection, then try again."
     }
@@ -111,7 +118,10 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
-    "openDialer": "Open the dialer"
+    "openDialer": "Open the dialer",
+    "confirmAddressNow": "Confirm address now.",
+    "confirmEmergencyAddress": "To enable outbound calls outside your organization, confirm your emergency address.",
+    "viewProfile": "View profile"
   },
   "globalSearch": {
     "search": "Search",
@@ -157,6 +167,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
+    "guests": "Guests",
     "showUnreads": "Show unread",
     "meGroup": "me",
     "mentionPosts": "Mentions",
@@ -220,6 +231,7 @@
       "unlike": "Unlike",
       "bookmark": "Bookmark",
       "removeBookmark": "Remove bookmark",
+      "wrote": "wrote",
       "quote": "Quote",
       "pin": "Pin",
       "unpin": "Unpin",
@@ -244,7 +256,8 @@
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
       "newMessages": "new messages",
-      "newMessagesDivider": "New messages"
+      "newMessagesDivider": "New messages",
+      "jumpToLatest": "Jump to latest"
     },
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",
@@ -295,7 +308,9 @@
       "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
       "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again.",
       "deleteFileBackendError": "Sorry, something went wrong on our end and we weren't able to delete this file. Try again later.",
-      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again."
+      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again.",
+      "editProfileTitle": "Edit profile",
+      "editPhotoFileTypeError": "You can only choose an image file. Please try again."
     },
     "fileAction": {
       "deleteFile": "Delete file",
@@ -306,6 +321,7 @@
     "message": "Message",
     "atMentionAllTeam": "Team",
     "atMentionAllAdmin": "admin",
+    "atMentionTeamSuffix": "(notify everyone)",
     "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
     "typingIndicator": {
       "oneTyping": "<0>{{personA}}</0> is typing...",
@@ -461,12 +477,28 @@
       "webpage": "Webpage",
       "ariaWebpage": "web page",
       "ariaGoToMe": "Go to the workstation of yourself",
-      "ariaGoToOther": "Go to the conversation with {{name}}"
+      "ariaGoToOther": "Go to the conversation with {{name}}",
+      "edit": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "jobTitle": "Title",
+        "location": "Location",
+        "department": "Department",
+        "homepage": "Webpage",
+        "phone": "Phone",
+        "homepageError": "Invalid webpage address",
+        "editProfileNetworkError": "We weren't able to save the edit. Check your network connection, then try again.",
+        "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later.",
+        "editProfilePhotoTitle": "Edit profile photo",
+        "editProfilePhotoUploadPhoto": "Upload photo",
+        "editProfilePhotoZoomText": "Zoom"
+      }
     },
     "group": {
       "addPeople": "Add people"
     },
     "team": {
+      "showAllCount": "Show all {{count}}",
       "Members": "Members",
       "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",
@@ -584,7 +616,8 @@
       "conversationArchived": "This team was archived. To know more, contact the team administrator.",
       "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator.",
       "newConversationTitle": "New conversation",
-      "newConversationTip": "Adding people will start a new conversation without the current message history. If you'd like to keep the history, you can <0>convert to a team</0> instead.",
+      "newConversationBaseTip": "Adding people will start a new conversation without the current message history.",
+      "newConversationGroupTip": "If you'd like to keep the history, you can <0>convert to a team</0> instead.",
       "newConversationBackendError": "Sorry, something went wrong on our end and we weren't able to add people. Try again later.",
       "newConversationNetworkError": "Sorry, we weren't able to add people. Check your network connection, then try again."
     }
@@ -645,6 +678,9 @@
     "unknownCaller": "Unknown Caller",
     "unknownCallee": "Unknown",
     "prompt": {
+      "emergencyAddressIsUnknown": "You emergency address is unknown. You are limited to making outbound calls to extensions in your organization only.",
+      "e911ServiceMayBeLimitedOrUnavailable": "E911 Service may be limited or unavailable. Your specific location may not be automatically communicated to the dispatcher.",
+      "e911ExtensionNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
       "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
       "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
@@ -676,7 +712,12 @@
       "CountryBlock": "VoIP is not available in your country.",
       "VoipUnavailable": "VoIP is currently not available.",
       "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
-      "AutoRecording": "Cannot start call recording."
+      "AutoRecording": "Cannot start call recording.",
+      "switchCall": {
+        "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
+        "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
+        "callEnded": "Your call with {{displayName}} is ended."
+      }
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -696,12 +737,11 @@
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {
-      "directNumber": "Direct Number",
-      "mainCompanyNumber": "Main Company Number",
+      "directNumber": "Direct number",
+      "mainCompanyNumber": "Main company number",
       "blocked": "Blocked",
-      "nickName": "Nick Name",
-      "companyNumber": "Company Number",
-      "companyFaxNumber": "Company Fax Number"
+      "companyNumber": "Company number",
+      "companyFaxNumber": "Company fax number"
     },
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
@@ -717,7 +757,98 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "e911": {
+      "title": "Confirm address for emergency calls",
+      "customerName": "Customer Name",
+      "dialogDescription": "Emergency Service dispatchers will send emergency first responders to this exact location. Where will you be using this phone?",
+      "outOfCountryDisclaimers": "If you don't provide an emergency address, you will be limited to making calls to extensions in your organization only.",
+      "confirmEmergencyAddress": "Confirm emergency address",
+      "outOfCountryTitle": "Emergency address out of country",
+      "disclaimer": {
+        "US/CA1": "You will use this app at a physical location that is outside the United States or Canada. You are responsible for complying with all laws and regulations applicable to your use of the Services.",
+        "US/CA2": "By choosing this option, you agree that you will make available another phone to reach emergency services. You will update your Emergency Address immediately if and when you use this app from within the United States.",
+        "UK": "I am using the service from a physical location that is outside the United Kingdom. I understand that if I use the service from within the United Kingdom, I must provide a Registered Location to ensure that my 999/112 calls are properly routed to the appropriate Public Safety Answering Point.",
+        "default": "You will use this app at a physical location that is outside {{region}}. You are responsible for complying with all laws and regulations applicable to your use of the Services."
+      },
+      "prompt": {
+        "backendError": "Sorry, something went wrong on our end, we weren't able to save the update. Try again later.",
+        "networkError": "Sorry, we weren't able to save the update. Check your network connection, then try again.",
+        "errorCode201": "Validation errors occurred. Check the address and try again."
+      },
+      "fields": {
+        "Address": "Address",
+        "City": "City",
+        "County": "County",
+        "Road/Street": "Road/Street",
+        "State/Province": "State/Province",
+        "Additional address": "Additional address",
+        "Zip Code": "Zip Code",
+        "Postal code": "Postal code",
+        "City / Town / Locality": "City / Town / Locality",
+        "Post code": "Post code",
+        "Town / County": "Town / County",
+        "Post code / EIR code": "Post code / EIR code",
+        "Street number and name": "Street number and name",
+        "Name of town": "Name of town",
+        "Unit number, house/building/street number + street name": "Unit number, house/building/street number + street name",
+        "City/District": "City/District",
+        "Province": "Province",
+        "Street name, number, Apt": "Street name, number, Apt.",
+        "Village/Name of quarter": "Village/Name of quarter",
+        "Locality / Province": "Locality / Province",
+        "Postcode": "Postcode",
+        "Street name + number": "Street name + number",
+        "City/Town": "City/Town",
+        "Town": "Town",
+        "Unit/lot number, building/area name": "Unit/lot number, building/area name",
+        "Lot number (for building), street name": "Lot number (for building), street name",
+        "State": "State",
+        "Street name and number": "Street name and number",
+        "Postcode Post office/Mail centre": "Postcode Post office/Mail centre",
+        "Flat number, Floor number, Name/number of house/building": "Flat number, Floor number, Name/number of house/building",
+        "Street number and street name": "Street number and street name",
+        "Name of district": "Name of district",
+        "Number, Alley, Lane, Road/Street Name": "Number, Alley, Lane, Road/Street Name",
+        "Township and District, County and City": "Township and District, County and City",
+        "ZIP codes": "ZIP codes",
+        "Street name + Street number + door": "Street name + Street number + door",
+        "Town Country": "Town Country",
+        "Street (Subunit Number Name)": "Street (Subunit Number Name)",
+        "Locality State": "Locality State",
+        "City/Village, County/Sector": "City/Village, County/Sector",
+        "Street address (street name + house/building number)": "Street address (street name + house/building number)",
+        "District and street address": "District and street address",
+        "Neighbourhood": "Neighbourhood",
+        "Municipality - State": "Municipality - State",
+        "CEP (Postal Code)": "CEP (Postal Code)",
+        "Street and number, apartment number": "Street and number, apartment number",
+        "Comuna/Town/City/Municipality": "Comuna/Town/City/Municipality",
+        "Flat number/house number, street address or PO box number": "Flat number/house number, street address or PO box number",
+        "Town/City": "Town/City",
+        "Suburb or RD number or PO box lobby name": "Suburb or RD number or PO box lobby name",
+        "Street name, number": "Street name, number",
+        "Street address": "Street address",
+        "Street address (street)": "Street address (street)",
+        "Prefecture (Province)": "Prefecture (Province)",
+        "Street address (house/building number, street name)": "Street address (house/building number, street name)",
+        "District, County, or City": "District, County, or City",
+        "Street address (street name, number)": "Street address (street name, number)",
+        "Sub-locality": "Sub-locality",
+        "City/Suburb": "City/Suburb",
+        "Street address, apartment number": "Street address, apartment number",
+        "Building name": "Building name",
+        "Building name and room number": "Building name and room number",
+        "Zip code": "Zip code"
+      }
+    },
+    "switchCall": {
+      "cancel": "Cancel",
+      "switch": "Switch",
+      "title": "Call Switch",
+      "content": "You're currently on an active call with {{displayName}}. Would you like to continue the call on this device?",
+      "unknownCaller": "an unknown caller"
+    }
   },
   "phone": {
     "tab": {
@@ -960,6 +1091,11 @@
           "areaCodeErrorText": "Invalid area code",
           "saveSuccessText": "Your region is updated successfully.",
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
+        },
+        "e911Setting": {
+          "e911Address": "Emergency address",
+          "e911AddressDesc": "Update or edit your e911 address on record with RingCentral for emergency situations.",
+          "yourSavedAddressIs": "Your saved address is: "
         }
       }
     },

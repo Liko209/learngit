@@ -40,17 +40,17 @@ test.meta(<ITestMeta>{
   const voicemailPage = app.homePage.phoneTab.voicemailPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click voicemail entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.voicemailEntry.enter();
   });
 
   await h(t).withLog('Then voicemail page should be open', async () => {
     await voicemailPage.ensureLoaded();
   });
-
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton();
-  }
 
   await ensuredOneVoicemail(t, caller, callee, app);
 
@@ -72,6 +72,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then The slider current time will return back to 00:00', async () => {
+    await t.hover(voicemailItem.self);
     await t.expect(voicemailItem.currentTimeSpan.textContent).eql('00:00');
   });
 });
@@ -100,17 +101,17 @@ test.meta(<ITestMeta>{
   const voicemailPage = app.homePage.phoneTab.voicemailPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click voicemail entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.voicemailEntry.enter();
   });
 
   await h(t).withLog('Then voicemail page should be open', async () => {
     await voicemailPage.ensureLoaded();
   });
-
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
 
   await ensuredOneVoicemail(t, caller, callee, app);
 
@@ -167,17 +168,17 @@ test.meta(<ITestMeta>{
   const voicemailPage = app.homePage.phoneTab.voicemailPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click voicemail entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.voicemailEntry.enter();
   });
 
   await h(t).withLog('Then voicemail page should be open', async () => {
     await voicemailPage.ensureLoaded();
   });
-
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
 
   let voicemailCount = await voicemailPage.items.count;
   if (voicemailCount < 2) {
@@ -186,7 +187,7 @@ test.meta(<ITestMeta>{
   }
 
   const firstVoicemail = voicemailPage.voicemailItemByNth(0);
-  const secondVoicemail = voicemailPage.voicemailItemByNth(0);
+  const secondVoicemail = voicemailPage.voicemailItemByNth(1);
 
 
   await h(t).withLog('When I play the first voicemail record', async () => {
@@ -203,12 +204,13 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I play the second voicemail', async () => {
-    await secondVoicemail.clickPauseButton();
+    await secondVoicemail.clickPlayButton();
   });
 
 
   await h(t).withLog('Then The first voicemail pauses', async () => {
-    await t.expect(firstVoicemail.currentTimeSpan.textContent).notEql('00:00');
     await t.expect(firstVoicemail.playButton.exists).ok();
+    await t.hover(firstVoicemail.self);
+    await t.expect(firstVoicemail.currentTimeSpan.textContent).notEql('00:00');
   });
 });

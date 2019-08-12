@@ -12,6 +12,7 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { buildPartialModifyController } from '../../../framework/controller';
 import { mainLogger } from 'foundation';
 import { Post } from 'sdk/module/post/entity';
+import { QUERY_DIRECTION } from 'sdk/dao/constants';
 
 const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
@@ -27,11 +28,11 @@ class GroupConfigController {
       const partialModifyController = buildPartialModifyController<GroupConfig>(
         this.entitySourceController,
       );
-      await partialModifyController.updatePartially(
-        params.id,
-        () => params,
-        async (updatedModel: GroupConfig) => updatedModel,
-      );
+      await partialModifyController.updatePartially({
+        entityId: params.id,
+        preHandlePartialEntity: () => params,
+        doUpdateEntity: async (updatedModel: GroupConfig) => updatedModel,
+      });
       return true;
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
@@ -135,7 +136,9 @@ class GroupConfigController {
       );
 
       for (const post of posts) {
-        const groupConfig = groupConfigs.find(x => (x ? x.id === post.group_id : false));
+        const groupConfig = groupConfigs.find(x =>
+          x ? x.id === post.group_id : false,
+        );
         const lastPostTime =
           (groupConfig && groupConfig.my_last_post_time) || 0;
         if (post.created_at > lastPostTime) {
@@ -151,6 +154,40 @@ class GroupConfigController {
     } catch (error) {
       mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', error);
     }
+  }
+
+  async hasMorePostInRemote(groupId: number) {
+    const result = await this.entitySourceController.getEntityLocally(groupId);
+    let older = true;
+    let newer = true;
+    let both = true;
+    if (result) {
+      older =
+        result.has_more_older !== undefined ? result.has_more_older : true;
+      newer =
+        result.has_more_newer !== undefined ? result.has_more_newer : true;
+      both = older && older;
+    }
+    return {
+      older,
+      newer,
+      both,
+    };
+  }
+
+  async updateHasMore(
+    groupId: number,
+    direction: QUERY_DIRECTION,
+    hasMore: boolean,
+  ) {
+    this.saveAndDoNotify({
+      id: groupId,
+      [`has_more_${direction}`]: hasMore,
+    });
+  }
+
+  async deleteGroupsConfig(ids: number[]) {
+    this.entitySourceController.bulkDelete(ids);
   }
 }
 

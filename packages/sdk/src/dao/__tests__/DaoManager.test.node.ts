@@ -2,22 +2,25 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-28 00:26:24
  */
-/// <reference path="../../__tests__/types.d.ts" />
+// / <reference path="../../__tests__/types.d.ts" />
 import {
   KVStorage,
   DBManager,
   DexieDB,
   IDatabase,
   mainLogger,
+  LokiDB,
+  DatabaseType,
 } from 'foundation';
 import DaoManager from '../DaoManager';
 import { BaseDao, BaseKVDao } from '../../framework/dao';
-import Dexie from 'dexie';
+import Loki from 'lokijs';
 import { IdModel } from '../../framework/model';
 import { DaoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from '../../module/account/config';
 import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import Dexie from 'dexie';
 
 jest.mock('../../module/env/index');
 
@@ -83,45 +86,58 @@ describe('DaoManager', () => {
 
   describe('initDataBase()', () => {
     it('should init database', async () => {
+      const clearFunc = jest.fn();
       DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
-      await daoManager.initDatabase();
+      await daoManager.initDatabase(clearFunc);
       expect(DBManager.mock.instances[0].initDatabase).toHaveBeenCalled();
+      expect(clearFunc).not.toHaveBeenCalled();
     });
 
     describe('db upgrade', () => {
       it('should not delete old db if version is same', async () => {
+        const clearFunc = jest.fn();
         DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
-        await daoManager.initDatabase();
-        expect(
-          DBManager.mock.instances[0].deleteDatabase,
-        ).not.toHaveBeenCalled();
-        expect(
-          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
-        ).not.toHaveBeenCalled();
+        await daoManager.initDatabase(clearFunc);
+        expect(clearFunc).not.toHaveBeenCalled();
       });
 
       it('should delete old db if version is deprecated', async () => {
+        const clearFunc = jest.fn();
         DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(0);
         AccountGlobalConfig.getUserDictionary.mockReturnValue('123');
-        await daoManager.initDatabase();
-        expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
-        expect(
-          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
-        ).toHaveBeenCalled();
+        await daoManager.initDatabase(clearFunc);
+        expect(clearFunc).toHaveBeenCalled();
       });
 
       it('should delete old db if local version is not found', async () => {
+        const clearFunc = jest.fn();
         DaoGlobalConfig.getDBSchemaVersion = jest
           .fn()
           .mockReturnValueOnce(null);
-        await daoManager.initDatabase();
-        expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
-        expect(
-          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
-        ).toHaveBeenCalled();
+        await daoManager.initDatabase(clearFunc);
+        expect(clearFunc).toHaveBeenCalled();
       });
 
-      it('should set callback for when db is open', async () => {
+      it('should not call db.on when db type is lokiDB', async () => {
+        const clearFunc = jest.fn();
+        const db = new LokiDB({
+          name: 'db',
+          version: 1,
+          schema: {},
+        });
+        db.db = new Loki('');
+        jest.spyOn(db.db, 'on');
+        DBManager.mock.instances[0].getDatabaseType = jest
+          .fn()
+          .mockReturnValue(DatabaseType.LokiDB);
+        DBManager.mock.instances[0].getDatabase.mockReturnValue(db);
+        await daoManager.initDatabase(clearFunc);
+        expect(db.db.on).not.toHaveBeenCalled();
+        expect(clearFunc).toHaveBeenCalled();
+      });
+
+      it('should set callback and call db.on when db dexiDB', async () => {
+        const clearFunc = jest.fn();
         const db = new DexieDB({
           name: 'db',
           version: 1,
@@ -130,8 +146,9 @@ describe('DaoManager', () => {
         db.db = new Dexie('');
         jest.spyOn(db.db, 'on');
         DBManager.mock.instances[0].getDatabase.mockReturnValue(db);
-        await daoManager.initDatabase();
+        await daoManager.initDatabase(clearFunc);
         expect(db.db.on).toHaveBeenCalled();
+        expect(clearFunc).toHaveBeenCalled();
       });
     });
   });

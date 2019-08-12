@@ -25,7 +25,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { DesktopNotificationsSettingModel as DNSM } from './NotificationsSettingHandler';
 
 class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
-NOTIFICATION_OPTIONS
+  NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_MissCallAndNewVoiceMails;
   constructor(
@@ -38,8 +38,12 @@ NOTIFICATION_OPTIONS
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
+      this.onProfileEntityUpdate(payload),
+    );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
   }
 
   async updateValue(value: NOTIFICATION_OPTIONS) {
@@ -69,9 +73,6 @@ NOTIFICATION_OPTIONS
 
   async fetchUserSettingEntity() {
     const settingItem: UserSettingEntity<NOTIFICATION_OPTIONS> = {
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
       value: await this._getVoiceMail(),
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
       id: SettingEntityIds.Notification_MissCallAndNewVoiceMails,

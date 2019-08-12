@@ -182,9 +182,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   });
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
-    const text = team.self.find('p');
     await team.umi.shouldBeNumber(0);
-    await team.shouldBeNormalStyle();
   });
 
 });
@@ -195,7 +193,6 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -231,7 +228,8 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   });
 
   await h(t).withLog('When I receive a new message from other user in the private chat ', async () => {
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', pvtChatId)
+    const postId = await h(t).platform(otherUser).sentAndGetTextPostId('TestGroupUMI', pvtChatId);
+    await app.homePage.messageTab.conversationPage.postItemById(postId).ensureLoaded();
   });
 
   await h(t).withLog('Then I should not have UMI in the private chat', async () => {
@@ -305,7 +303,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Given I have an extension and reset its profile and state', async () => {
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).platform(otherUser).init();
     meChatId = await h(t).glip(loginUser).getMeChatId();
   });
@@ -686,7 +683,6 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
 
     let pvtChatId;
     await h(t).withLog('Given I have an extension with at least one conversation', async () => {
-      await h(t).glip(loginUser).resetProfileAndState();
       pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
         members: [loginUser.rcId, users[5].rcId]
@@ -792,7 +788,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given closed one DirectMessage conversation', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
     await h(t).glip(loginUser).hideGroups(chat.glipId);
   });

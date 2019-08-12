@@ -41,10 +41,13 @@ import { SYNC_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 import { IndexTaskController } from './IndexTaskController';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
+import { dataCollectionHelper } from 'sdk/framework';
+import { transform } from 'sdk/service/utils';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
   private _isFetchingRemaining: boolean;
+  private _isDataSyncing: boolean = false;
   private _syncListener: SyncListener;
   private _progressBar: {
     start: () => void;
@@ -88,7 +91,12 @@ class SyncController {
     return null;
   }
 
+  isDataSyncing() {
+    return this._isDataSyncing;
+  }
+
   async syncData(syncListener?: SyncListener) {
+    this._isDataSyncing = true;
     this._syncListener = syncListener || {};
     const lastIndexTimestamp = this.getIndexTimestamp();
     mainLogger.log(LOG_TAG, `start syncData time: ${lastIndexTimestamp}`);
@@ -102,6 +110,7 @@ class SyncController {
     } catch (e) {
       mainLogger.log(LOG_TAG, 'syncData fail', e);
     }
+    this._isDataSyncing = false;
   }
 
   handleStoppingSocketEvent() {
@@ -122,9 +131,11 @@ class SyncController {
     try {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
+      this._traceLoginData(true);
       notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
     } catch (e) {
       mainLogger.error(LOG_TAG, 'fetch initial data error');
+      this._traceLoginData(false);
       const accountType = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig.getAccountType();
@@ -166,6 +177,7 @@ class SyncController {
         }
         this._isFetchingRemaining = true;
         await this._fetchRemaining(time);
+        notificationCenter.emitKVChange(SERVICE.FETCH_REMAINING_DONE);
         mainLogger.info(LOG_TAG, 'fetch remaining data success');
       } catch (e) {
         this._isFetchingRemaining = false;
@@ -306,6 +318,13 @@ class SyncController {
 
     const mergedGroups = groups.concat(teams, public_teams);
 
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    const pureGroups = mergedGroups.map((group: Raw<Group>) => {
+      return groupService.removeCursorsFromGroup(group);
+    });
+
     const arrState: any[] = [];
     if (state && Object.keys(state).length > 0) {
       arrState.push(state);
@@ -332,12 +351,14 @@ class SyncController {
       this._handleIncomingCompany(companies, source, changeMap),
       this._handleIncomingItem(items, source, changeMap),
       this._handleIncomingPresence(presences, source, changeMap),
-      this._handleIncomingState(arrState, source),
+      this._handleIncomingState(arrState, mergedGroups, source, changeMap),
     ])
       .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
       .then(() => this._handleIncomingPerson(people, source, changeMap))
-      .then(() => this._handleIncomingGroup(mergedGroups, source, changeMap))
-      .then(() => this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap))
+      .then(() => this._handleIncomingGroup(pureGroups, source, changeMap))
+      .then(() =>
+        this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap),
+      )
       .then(() => {
         mainLogger.debug(
           LOG_INDEX_DATA,
@@ -428,6 +449,7 @@ class SyncController {
 
   private async _handleIncomingState(
     states: any[],
+    groups: Raw<Group>[],
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
@@ -437,9 +459,16 @@ class SyncController {
         states.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
+
     await ServiceLoader.getInstance<StateService>(
       ServiceConfig.STATE_SERVICE,
-    ).handleState(states, source, changeMap);
+    ).handleStateAndGroupCursor(
+      states,
+      groups.map(group => transform<Group>(group)),
+      source,
+      changeMap,
+    );
+
     performanceTracer.end({
       key: this._getPerformanceKey(source, 'state'),
       count: states && states.length,
@@ -615,6 +644,22 @@ class SyncController {
         mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
         await this.syncData();
       }
+    }
+  }
+
+  private async _traceLoginData(isSuccess: boolean) {
+    if (isSuccess) {
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+
+      dataCollectionHelper.traceLoginSuccess({
+        accountType: 'glip',
+        userId: userConfig.getGlipUserId(),
+        companyId: userConfig.getCurrentCompanyId(),
+      });
+    } else {
+      dataCollectionHelper.traceLoginFailed('glip', 'initial failed');
     }
   }
 

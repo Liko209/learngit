@@ -71,6 +71,11 @@ describe('Presence Controller', () => {
     expect(presenceController.getById).toHaveBeenCalledWith(1);
   });
 
+  it('should call getById() with correct parameter', async () => {
+    await presenceService.getSynchronously(1);
+    expect(presenceController.getById).toHaveBeenCalledWith(1);
+  });
+
   describe('getPresenceActionController', () => {
     it('should not create PresenceActionController when have presenceActionController', () => {
       const result = presenceService.getPresenceActionController();
@@ -83,6 +88,13 @@ describe('Presence Controller', () => {
       await presenceService.setPresence(PRESENCE.DND);
       expect(presenceActionController.setPresence).toHaveBeenCalledWith(
         PRESENCE.DND,
+      );
+    });
+
+    it('should call autoSetPresence with correct parameter', async () => {
+      await presenceService.setAutoPresence(PRESENCE.UNAVAILABLE);
+      expect(presenceActionController.setAutoPresence).toHaveBeenCalledWith(
+        PRESENCE.UNAVAILABLE,
       );
     });
   });

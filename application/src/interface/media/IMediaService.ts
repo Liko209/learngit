@@ -23,11 +23,6 @@ interface IMediaService {
    */
   getMedia(mediaId: string): IMedia | null;
 
-  /**
-   * @param trackId
-   */
-  pauseTrack(trackId: string): void;
-
   canPlayType(mimeType: string): boolean;
 }
 

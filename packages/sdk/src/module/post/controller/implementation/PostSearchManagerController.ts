@@ -6,7 +6,7 @@
 
 import { PostSearchHandler } from './PostSearchHandler';
 import { SearchedResultData } from './types';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 import { ContentSearchParams } from 'sdk/api/glip/search';
 import { EmptySearchRes } from './constants';
 

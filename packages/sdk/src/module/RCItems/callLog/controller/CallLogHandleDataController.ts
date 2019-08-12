@@ -204,7 +204,7 @@ class CallLogHandleDataController {
     call: MissedCallEventPayload,
     pseudoId: string,
   ): CallLog {
-    return this._parseCallLog(
+    const callLog = this._parseCallLog(
       pseudoId,
       call.sessionId,
       call.from,
@@ -215,6 +215,10 @@ class CallLogHandleDataController {
       call.timestamp,
       CALL_RESULT.MISSED,
     );
+    if (callLog.from.phoneNumber === PhoneNumberType.PhoneNumberAnonymous) {
+      delete callLog.from;
+    }
+    return callLog;
   }
 
   private _parseCallLog(

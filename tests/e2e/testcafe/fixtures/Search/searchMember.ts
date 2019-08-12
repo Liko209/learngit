@@ -26,7 +26,6 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[0];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   const teamAndGroup: IGroup[] = [{
     type: "Team",
     name: uuid(),
@@ -106,7 +105,6 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[0];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   const teamAndGroup: IGroup[] = [{
     type: "Team",
     name: uuid(),
@@ -185,7 +183,6 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[0];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   const teamAndGroup: IGroup[] = [{
     type: "Team",
     name: uuid(),

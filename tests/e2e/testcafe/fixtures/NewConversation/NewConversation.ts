@@ -5,6 +5,7 @@
  */
 
 import * as _ from "lodash";
+import * as assert from "assert";
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
@@ -54,13 +55,13 @@ test(formalName('The content of "New conversation" dialog is correct', ['P2', 'N
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
   await h(t).withLog('And the dialog should contain title, description and input', async () => {
     await t.expect(newConversationDialog.title.textContent).eql('New conversation');
-    await t.expect(newConversationDialog.description.textContent).eql("Adding people will start a new conversation without the current message history. If you'd like to keep the history, you can convert to a team instead.");
+    const description = "Adding people will start a new conversation without the current message history.\u00A0If you'd like to keep the history, you can convert to a team instead."
+    await t.expect(newConversationDialog.description.textContent).eql(description);
     await t.expect(newConversationDialog.getSelector('a', newConversationDialog.description).textContent).eql("convert to a team");
     await t.expect(newConversationDialog.memberInput.InputArea.focused).ok();
     await t.expect(newConversationDialog.selectedMembers.count).eql(2);
@@ -68,7 +69,7 @@ test(formalName('The content of "New conversation" dialog is correct', ['P2', 'N
     const member1Name = await selectedMembers.nth(0).find('.label').textContent;
     const member2Name = await selectedMembers.nth(1).find('.label').textContent;
     const members = [member1Name, member2Name];
-    await t.expect(_.isEqual(_.sortBy(members), _.sortBy([userBName, userCName]))).ok();
+    assert.equal(String(_.sortBy(members)), String(_.sortBy([userBName, userCName])));
   });
 })
 
@@ -107,7 +108,6 @@ test(formalName('Group/1:1 conversation can convert to team successfully', ['P2'
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -157,7 +157,6 @@ test(formalName('Cancel the creation of a new group', ['P2', 'NewConversation', 
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -170,7 +169,7 @@ test(formalName('Cancel the creation of a new group', ['P2', 'NewConversation', 
   });
 })
 
-test(formalName("Shouldn't create new group when the conversation existed", ['P2', 'NewConversation', 'alessia.li', 'JPT-2607']), async t => {
+test(formalName("Shouldn't create new group when the conversation existed", ['P1', 'NewConversation', 'alessia.li', 'JPT-2607']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[2];
   await h(t).resetGlipAccount(loginUser);
@@ -210,7 +209,6 @@ test(formalName("Shouldn't create new group when the conversation existed", ['P2
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -228,7 +226,7 @@ test(formalName("Shouldn't create new group when the conversation existed", ['P2
   });
 })
 
-test(formalName('Create new group successfully', ['P2', 'NewConversation', 'alessia.li', 'JPT-2604']), async t => {
+test(formalName('Create new group successfully', ['P0', 'NewConversation', 'alessia.li', 'JPT-2604']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[2];
   await h(t).resetGlipAccount(loginUser);
@@ -268,7 +266,6 @@ test(formalName('Create new group successfully', ['P2', 'NewConversation', 'ales
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -288,7 +285,7 @@ test(formalName('Create new group successfully', ['P2', 'NewConversation', 'ales
     const currentGroupId = await conversationPage.currentGroupId;
     const userGlipIDs = await h(t).glip(loginUser).toPersonId([loginUser.rcId, userB.rcId, userC.rcId, userD.rcId, userF.rcId])
     const groupData = await h(t).glip(loginUser).getGroup(currentGroupId).then(res => res.data)
-    await t.expect(_.isEqual(_.sortBy(groupData.members), _.sortBy(userGlipIDs))).ok();
+    assert.equal(String(_.sortBy(groupData.members)), String(_.sortBy(userGlipIDs)));
     await t.expect(conversationPage.posts.count).eql(0);
   });
 

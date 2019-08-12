@@ -7,6 +7,7 @@ import { ISortableModelWithData } from '@/store/base/fetch/types';
 import { ERROR_TYPES } from '@/common/catchError';
 import PostModel from '@/store/models/Post';
 import { STATUS } from '../types';
+import { DIRECTION } from 'jui/components/Lists';
 
 enum SeparatorType {
   DATE = 'DATE',
@@ -63,9 +64,10 @@ type StreamViewProps = {
   postIds: number[];
   jumpToPostId: number;
   items: StreamItem[];
-  hasMore: (direction: 'up' | 'down') => boolean;
+  hasMore: (direction: DIRECTION) => boolean;
   notEmpty: boolean;
   markAsRead: () => void;
+  updateIgnoredStatus: (isIgnore: boolean) => void;
   loadInitialPosts: () => Promise<void>;
   enableNewMessageSeparatorHandler: () => void;
   disableNewMessageSeparatorHandler: () => void;

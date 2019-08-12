@@ -2,18 +2,23 @@ import { ApiConfig } from '../types';
 
 const defaultConfig: ApiConfig = {
   rc: {
-    server: '',
+    server: 'rc',
+    pathPrefix: '/restapi',
     clientId: '',
     redirectUri: '',
   },
   glip: {
-    server: '',
+    server: 'glip',
     apiServer: '',
+    pathPrefix: '/api',
     presenceServer: '',
   },
-  glip_desktop: {},
+  glip_desktop: {
+    pathPrefix: '/v1.0/desktop',
+    server: 'glip',
+  },
   upload: {
-    server: '',
+    server: 'glip',
   },
   splitio: {
     clientSecret: '',
@@ -22,9 +27,10 @@ const defaultConfig: ApiConfig = {
     clientId: '',
   },
   sumologic: {
-    server: '',
+    server: 'sumologic',
     uniqueHttpCollectorCode: '',
   },
+  data_collection: '',
 };
 
 export { defaultConfig };

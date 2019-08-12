@@ -1,0 +1,114 @@
+{
+  "host": "glip",
+  "path": "/api/group/44171270",
+  "method": "put",
+  "type": "request-response",
+  "via": "socket",
+  "request": {
+    "host": "glip",
+    "path": "/api/group/44171270",
+    "method": "put",
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU2MjY1NjIyODQ1MywidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NjI2NTYyMjgsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.Bb40wNWwPrWI-kCVCplawLHbK0rlgvkUmeO2-3UH72Lm_xFpmqsSQFxT4wd_96dssC1s-KZ6cFs5yBwkKGkwFw"
+    },
+    "data": {
+      "created_at": 1561604567113,
+      "creator_id": 187875331,
+      "version": 2748728796512256,
+      "model_size": 0,
+      "is_new": false,
+      "members": [
+        187875331
+      ],
+      "is_team": true,
+      "is_public": true,
+      "privacy": "private",
+      "description": "ddd",
+      "set_abbreviation": "Just test 2",
+      "permissions": {
+        "admin": {
+          "uids": [
+            187875331
+          ],
+          "level": 63
+        },
+        "user": {
+          "uids": [],
+          "level": 3
+        }
+      },
+      "function_id": "team",
+      "company_id": 401409,
+      "email_friendly_abbreviation": "just_test_2",
+      "guest_user_company_ids": [],
+      "most_recent_content_modified_at": 1562684057006,
+      "modified_at": 1562684057006,
+      "deactivated": false,
+      "most_recent_post_id": 2825109508,
+      "most_recent_post_created_at": 1562684051485,
+      "team_mention_cursor": 0,
+      "admin_mention_cursor": 0,
+      "model_id": "44171270",
+      "pinned_post_ids": [
+        2825109508
+      ],
+      "_id": 44171270,
+      "request_id": "10"
+    }
+  },
+  "response": {
+    "headers": {
+      "set_cookie": [],
+      "Content-Type": "application/json; charset=utf-8",
+      "x-original-content-length": "767",
+      "X-Request-Id": "user_id:187875331;id:f571214c-2e5d-41ce-a84f-c07913496105",
+      "X-Frame-Options": "DENY"
+    },
+    "status": 200,
+    "data": {
+      "_id": 44171270,
+      "created_at": 1561604567113,
+      "creator_id": 187875331,
+      "version": 7606515923943424,
+      "model_size": 0,
+      "is_new": false,
+      "members": [
+        187875331
+      ],
+      "is_team": true,
+      "is_public": true,
+      "privacy": "private",
+      "description": "ddd",
+      "set_abbreviation": "Just test 2",
+      "permissions": {
+        "admin": {
+          "uids": [
+            187875331
+          ],
+          "level": 63
+        },
+        "user": {
+          "uids": [],
+          "level": 3
+        }
+      },
+      "function_id": "team",
+      "company_id": 401409,
+      "email_friendly_abbreviation": "just_test_2",
+      "guest_user_company_ids": [],
+      "most_recent_content_modified_at": 1562684063587,
+      "modified_at": 1562684063587,
+      "deactivated": false,
+      "most_recent_post_id": 2825109508,
+      "most_recent_post_created_at": 1562684051485,
+      "team_mention_cursor": 0,
+      "admin_mention_cursor": 0,
+      "post_cursor": 39,
+      "model_id": "44171270",
+      "last_author_id": 187875331,
+      "pinned_post_ids": [
+        2825109508
+      ]
+    }
+  }
+}

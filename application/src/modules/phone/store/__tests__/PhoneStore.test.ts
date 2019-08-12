@@ -56,4 +56,44 @@ describe('PhoneStore', () => {
       });
     }
   }
+
+  @testable
+  class addMediaUpdateListener {
+    @test('should be update audio startTime zero when media ended')
+    t1() {
+      const phoneStore = new PhoneStore();
+      class Media {
+        events: any[] = [];
+        on(eventName: string, handler: () => {}) {
+          this.events.push({
+            eventName,
+            handler,
+          });
+          handler();
+        }
+        off(eventName: string, handler: () => {}) {}
+      }
+      const media = new Media();
+      const audio = {
+        media,
+        startTime: 20,
+      };
+      const emit = (media: any, eventName: string, returnValue?: any) => {
+        const event = media.events.filter(event => {
+          return event.name === eventName;
+        })[0];
+        event && event.handler && event.handler(returnValue);
+      };
+
+      phoneStore.addAudio(1, audio);
+      phoneStore.addMediaUpdateListener(1);
+      expect(media.events.length).toEqual(1);
+
+      emit(media, 'ended');
+      expect(phoneStore.audioCache.get(1)).toEqual({
+        media,
+        startTime: 0,
+      });
+    }
+  }
 });

@@ -74,9 +74,7 @@ class AttachmentView extends Component<Props> {
   };
   /* eslint-disable react/no-array-index-key */
   render() {
-    const {
-      onFileChanged, tooltip, menus, fileMenu, title,
-    } = this.props;
+    const { onFileChanged, tooltip, menus, fileMenu, title } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
 

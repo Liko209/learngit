@@ -27,14 +27,11 @@ const FilterMuiTabs = ({ forceFlex, ...rest }: StyledTabsProps) => (
 );
 
 const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
-  ${({ position }) => {
-    if (position === 'center') {
-      return `
-      justify-content:${PositionMap[position]};
-      `;
-    }
-    return null;
-  }}
+  .flexContainer {
+    ${({ position }) => {
+      return position && `justify-content:${PositionMap[position]};`;
+    }}}
+  }
   &.root {
     display: ${({ forceFlex }) => (forceFlex ? 'flex' : null)};
     padding: ${spacing(0, 2)};
@@ -47,13 +44,16 @@ const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
 
 const StyledTabs = React.forwardRef(
   (
-    {
-      children, position, forceFlex, ...rest
-    }: StyledTabsProps,
+    { children, position, forceFlex, ...rest }: StyledTabsProps,
     ref: React.RefObject<any>,
   ) => {
     const Tabs = (
-      <StyledMuiTabs position={position} forceFlex={forceFlex} {...rest}>
+      <StyledMuiTabs
+        {...rest}
+        position={position}
+        forceFlex={forceFlex}
+        classes={{ flexContainer: 'flexContainer', root: 'root' }}
+      >
         {children}
       </StyledMuiTabs>
     );

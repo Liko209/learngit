@@ -3,7 +3,7 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from 'testcafe';
 import { H } from '../../../helpers';
 import * as assert from 'assert';
-
+import { Selector } from 'testcafe';
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
@@ -233,6 +233,31 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get forwardActionButton() {
     return this.getSelectorByAutomationId('telephony-forward-btn');
+  }
+
+  //call switch
+  get SwitchToptap(){
+    return this.getSelector('.MuiSnackbarContent-action.action').find('button').withText('Switch call to this device');
+  }
+  async clickSwitchToptap() {
+   await this.t.click(this.SwitchToptap);
+  }
+  get callSwitchDialog() {
+    return this.getSelectorByAutomationId('callSwitchDialog');
+  }
+
+  get SwitchOKButton() {
+    return  this.getSelectorByAutomationId('callSwitchOkButton');
+  }
+  async clickSwitchOKButton() {
+    await this.t.click(this.SwitchOKButton);
+  }
+  get CancelSwitchButton(){
+    return this.getSelectorByAutomationId('callSwitchCancelButton');
+  }
+
+  async clickCancelSwitchButton() {
+    await this.t.click(this.CancelSwitchButton);
   }
 
   // inbound call
@@ -486,7 +511,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
 class CallerIdList extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="listbox"]')
+    return this.getSelectorByAutomationId('caller-id-selector-list');
   }
 
   get callerIds() {
@@ -616,3 +641,4 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
     await this.t.hover(this.unMuteButton);
   }
 }
+

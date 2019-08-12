@@ -85,11 +85,17 @@ class AnalyticsCollector {
   }
 
   // [FIJI-3202] Segment - Add event - Send post
-  sendPost(source: string, postType: string, destination: string) {
+  sendPost(
+    source: string,
+    postType: string,
+    destination: string,
+    atTeam='no',
+  ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
       source,
       postType,
       destination,
+      atTeam,
     });
   }
 
@@ -187,8 +193,25 @@ class AnalyticsCollector {
     conversationType: ConversationType,
     source: NewConversationSource,
   ) {
-    dataAnalysis.track('Jup_Web/DT_conversation_addPerson', {
+    dataAnalysis.track('Jup_Web/DT_msg_addPerson', {
       conversationType,
+      source,
+    });
+  }
+
+  e911Setting() {
+    dataAnalysis.track('Jup_Web/DT_settings_updateE911Address');
+  }
+
+  // [FIJI-7325]
+  openCallSwitch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_clickCallSwitch', {
+      source,
+    });
+  }
+
+  confirmCallSwitch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_confirmCallSwitch', {
       source,
     });
   }

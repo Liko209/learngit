@@ -1,11 +1,16 @@
 import * as assert from 'assert';
 import { BaseWebComponent } from '../../BaseWebComponent';
 import { ClientFunction } from 'testcafe';
+import * as faker from 'faker/locale/en';
 
 
 export class MiniProfile extends BaseWebComponent {
   async shouldBePopUp() {
     await this.t.expect(this.self.exists).ok();
+  }
+
+  async shouldBeDismissed() {
+    await this.t.expect(this.self.exists).notOk();
   }
 
   get self() {
@@ -184,6 +189,10 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.click(this.membersAvatar);
   }
 
+  async clickEditProfile() {
+    await this.t.click(this.editProfileButton);
+  }
+
   get status() {
     return this.getSelectorByAutomationId('profileDialogSummaryStatus');
   }
@@ -214,6 +223,10 @@ export class ProfileDialog extends BaseWebComponent {
 
   async goToMessages() {
     await this.t.click(this.messageButton);
+  }
+
+  get editProfileButton() {
+    return this.getSelectorByAutomationId('editProfileIcon', this.self);
   }
 
   get closeButton() {

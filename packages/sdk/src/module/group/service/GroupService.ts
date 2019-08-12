@@ -14,7 +14,6 @@ import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { ENTITY, SERVICE, SOCKET } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PERMISSION_ENUM } from '../constants';
-import { GroupConfigController } from '../controller/GroupConfigController';
 import { GroupController } from '../controller/GroupController';
 import {
   Group,
@@ -34,14 +33,14 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 import { Person } from 'sdk/module/person/entity';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
   groupController: GroupController;
-  groupConfigController: GroupConfigController;
   typingIndicatorController: TypingIndicatorController;
-  constructor() {
+  constructor(private _groupConfigService: IGroupConfigService) {
     super({ isSupportedCache: true }, daoManager.getDao(GroupDao), {
       basePath: '/team',
       networkClient: Api.glipNetworkClient,
@@ -57,10 +56,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => (
-      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
-        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM)
-    ));
+    this.setCheckTypeFunc(
+      (id: number) =>
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM),
+    );
   }
   protected buildEntityCacheController() {
     return GroupEntityCacheController.buildGroupEntityCacheController(this);
@@ -85,13 +85,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       );
     }
     return this.groupController;
-  }
-
-  protected getGroupConfigController() {
-    if (!this.groupConfigController) {
-      this.groupConfigController = new GroupConfigController();
-    }
-    return this.groupConfigController;
   }
 
   protected getTypingIndicatorController() {
@@ -221,15 +214,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async hasMorePostInRemote(groupId: number) {
-    return this.getGroupConfigController().hasMorePostInRemote(groupId);
+    return this._groupConfigService.hasMorePostInRemote(groupId);
   }
 
   updateHasMore(groupId: number, direction: QUERY_DIRECTION, hasMore: boolean) {
-    return this.getGroupConfigController().updateHasMore(
-      groupId,
-      direction,
-      hasMore,
-    );
+    return this._groupConfigService.updateHasMore(groupId, direction, hasMore);
   }
 
   async archiveTeam(teamId: number) {
@@ -254,11 +243,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     groupType: GROUP_QUERY_TYPE,
     offset: number = 0,
     limit: number,
-  ): Promise<Group[]> {
+    pageSize?: number,
+  ): Promise<{ data: Group[]; hasMore: boolean }> {
     return await this._groupFetchDataController.getGroupsByType(
       groupType,
       offset,
       limit,
+      pageSize,
     );
   }
 
@@ -328,9 +319,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-      terms: string[];
-      sortableModels: SortableModel<Group>[];
-    }> {
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  }> {
     return await this._groupFetchDataController.doFuzzySearchGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -344,9 +335,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     includeUserSelf?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-      terms: string[];
-      sortableModels: SortableModel<Group>[];
-    }> {
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  }> {
     return await this._groupFetchDataController.doFuzzySearchAllGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -360,9 +351,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-      terms: string[];
-      sortableModels: SortableModel<Group>[];
-    }> {
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  }> {
     return await this._groupFetchDataController.doFuzzySearchTeams(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -377,9 +368,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   setAsTrue4HasMoreConfigByDirection = async (
     ids: number[],
     direction: QUERY_DIRECTION,
-  ): Promise<void> => await this.getGroupController()
-    .getGroupActionController()
-    .setAsTrue4HasMoreConfigByDirection(ids, direction);
+  ): Promise<void> =>
+    await this.getGroupController()
+      .getGroupActionController()
+      .setAsTrue4HasMoreConfigByDirection(ids, direction);
 
   handleIncomingTyingEvent = (groupTyping: GroupTyping) => {
     this.getTypingIndicatorController().handleIncomingTyingEvent(groupTyping);
@@ -402,7 +394,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async deleteGroupsConfig(ids: number[]): Promise<void> {
-    await this.getGroupConfigController().deleteGroupsConfig(ids);
+    this._groupConfigService.deleteGroupsConfig(ids);
   }
 
   isIndividualGroup(group: Group) {
@@ -446,6 +438,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       onlineFirst,
       sortFunc,
     );
+  }
+
+  removeCursorsFromGroup<T extends Raw<Group> | Group>(group: T) {
+    return this.getGroupController()
+      .getHandleDataController()
+      .removeCursorsFromGroup(group);
   }
 }
 

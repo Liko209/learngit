@@ -29,6 +29,9 @@ import { PersonEntityCacheController } from './PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { mainLogger } from 'foundation';
+import { PersonActionController } from './PersonActionController';
+import { buildPartialModifyController } from 'sdk/framework/controller';
 
 const PersonFlags = {
   is_webmail: 1,
@@ -53,11 +56,23 @@ const HEADSHOT_THUMB_HEIGHT = 'height';
 
 const SIZE = 'size';
 
+const LOG_TAG = 'PersonController';
+
 class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
   private _entityCacheController: IEntityCacheController<Person>;
 
   constructor() {}
+
+  get personActionController() {
+    return new PersonActionController(this.partialModifyController, this._entitySourceController);
+  }
+
+  get partialModifyController() {
+    return buildPartialModifyController<Person>(
+      this._entitySourceController
+    );
+  }
 
   setDependentController(
     entitySourceController: IEntitySourceController<Person>,
@@ -96,7 +111,7 @@ class PersonController {
 
   private _getHeadShotByVersion(
     uid: number,
-    headShotVersion: string,
+    headShotVersion: number,
     size: number,
   ) {
     const auth = ServiceLoader.getInstance<AccountService>(
@@ -152,9 +167,9 @@ class PersonController {
 
   getHeadShotWithSize(
     uid: number,
-    headshot_version: string,
     headshot: HeadShotModel,
     size: number,
+    headshot_version?: number,
   ) {
     if (typeof headshot !== 'string') {
       let url: string | null = null;
@@ -165,7 +180,7 @@ class PersonController {
         url = this._getHighestResolutionHeadshotUrlFromThumbs(
           headshot.thumbs,
           size,
-          headshot.stored_file_id,
+          headshot.stored_file_id ? headshot.stored_file_id.toString() : undefined,
         );
       }
       if (!url) {
@@ -266,16 +281,15 @@ class PersonController {
     );
   }
 
-  isCacheValid = (person: Person) => (
+  isValidPerson = (person: Person) => !person.is_pseudo_user &&
     !this._isUnregistered(person) &&
-      this._isServicePerson(person) &&
-      !person.is_pseudo_user &&
-      !this._hasBogusEmail(person)
-  );
+    this._isServicePerson(person) &&
+    !this._hasBogusEmail(person) &&
+    !this._isDeactivated(person);
 
   isVisible(person: Person): boolean {
     return (
-      this.isCacheValid(person) &&
+      this.isValidPerson(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
       !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
       !this._isDeactivated(person)
@@ -312,9 +326,7 @@ class PersonController {
     return availNumbers;
   }
 
-  async matchContactByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<Person | null> {
+  async matchContactByPhoneNumber(phoneNumber: string): Promise<Person | null> {
     if (!phoneNumber) {
       return null;
     }
@@ -361,6 +373,11 @@ class PersonController {
       });
     }
 
+    result.length === 0 &&
+      mainLogger
+        .tags(LOG_TAG)
+        .debug(`Cannot match person by phone number: ${phoneNumber}`);
+
     return result.length ? result[0] : null;
   }
 
@@ -380,6 +397,7 @@ class PersonController {
     person: Person,
     eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
   ): void {
+    // extension should at fist
     if (person.sanitized_rc_extension) {
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,

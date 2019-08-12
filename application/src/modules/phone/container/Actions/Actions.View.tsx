@@ -12,7 +12,6 @@ import { ENTITY_TYPE, BUTTON_BUFFER_COUNT } from '../constants';
 import { Message } from './Message';
 import { Call } from './Call';
 
-/* eslint-disable */
 class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   get tabName() {
     const { entity } = this.props;
@@ -27,10 +26,10 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   }
 
   get _actions() {
-    const { entity, shouldShowBlock, person, showCall, isBlock, isPseudo } = this.props;
+    const { entity, shouldShowBlock, person, isBlock, isPseudo } = this.props;
 
     return [
-      showCall && !isBlock && Call,
+      !isBlock && Call,
       person !== null && Message,
       entity === ENTITY_TYPE.VOICEMAIL && Read,
       entity === ENTITY_TYPE.VOICEMAIL && Download,
@@ -41,6 +40,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
 
   getButtons = (buttons: (false | ComponentType<any>)[], type: BUTTON_TYPE) => {
     const { id, entity, caller, person, phoneNumber } = this.props;
+    /* eslint-disable react/no-array-index-key */
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
         <ButtonComponent
@@ -84,7 +84,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
 
     if (dropdownItems) {
       buttons.push(
-        <More key='more' automationId={`${entity}-more-button`}>
+        <More key="more" automationId={`${entity}-more-button`}>
           {dropdownItems}
         </More>,
       );

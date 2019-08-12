@@ -8,9 +8,9 @@ import styled from '../../foundation/styled-components';
 import { spacing, grey, typography } from '../../foundation/utils/styles';
 
 const StyledText = styled('div')`
-  ${typography('caption1')};
+  ${typography('body1')};
   * {
-    ${typography('caption1')};
+    ${typography('body1')};
   }
 `;
 

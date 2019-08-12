@@ -15,8 +15,12 @@ export interface ISortableModelWithData<T> extends ISortableModel {
   data?: T;
 }
 
-export interface IMatchFunc<Model> {
-  (model: Model): Boolean;
+export interface IMatchFunc<
+  Model,
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
+> {
+  (model: Model, sortableModel?: SortableModel): Boolean;
 }
 
 export interface ITransformFunc<

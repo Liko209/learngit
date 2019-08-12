@@ -19,13 +19,12 @@ import { Action } from 'history';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/module/group/constants';
-import i18nT from '@/utils/i18nT';
 import { getGlobalValue } from '@/store/utils/entities';
 import { getErrorType } from '@/common/catchError';
 import _ from 'lodash';
 
 const logger = mainLogger.tags('messageRouter Helper');
-/* eslint-disable */
+
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
@@ -84,7 +83,7 @@ export class MessageRouterChangeHelper {
         logger.log(`getLastGroupId, group ${state.last_group_id} is Hidden`);
         return '';
       }
-      return this.verifyGroup(state.last_group_id);
+      return this.verifyGroup(state.last_group_id, false);
     }
     logger.log('getLastGroupId, lastGroup in state is undefined');
     return '';
@@ -147,9 +146,9 @@ export class MessageRouterChangeHelper {
     }
   }
 
-  static async verifyGroup(id: number) {
+  static async verifyGroup(id: number, showToaster = true) {
     const groupService = ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
+      ServiceConfig.GROUP_SERVICE
     );
     const { canBeShown, reason } = await groupService.isGroupCanBeShown(id);
     logger.log(`Verifying group ${id}`);
@@ -157,32 +156,25 @@ export class MessageRouterChangeHelper {
       return String(id);
     }
     logger.log(`Group ${id} cannot be shown for ${reason}`);
-    const toastOpts = {
+
+    if (!reason || !showToaster) {
+      return '';
+    }
+
+    const messageMap = {
+      [GROUP_CAN_NOT_SHOWN_REASON.NOT_AUTHORIZED]: 'people.prompt.conversationPrivate',
+      [GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED]: 'people.prompt.conversationArchived',
+      [GROUP_CAN_NOT_SHOWN_REASON.DEACTIVATED]: 'people.prompt.conversationDeleted',
+    };
+
+    Notification.flashToast({
+      message: messageMap[reason],
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
-    };
-    switch (reason) {
-      case GROUP_CAN_NOT_SHOWN_REASON.NOT_AUTHORIZED:
-        Notification.flashToast({
-          message: 'people.prompt.conversationPrivate',
-          ...toastOpts,
-        });
-        break;
-      case GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED:
-        Notification.flashToast({
-          message: await i18nT('people.prompt.conversationArchived'),
-          ...toastOpts,
-        });
-        break;
-      case GROUP_CAN_NOT_SHOWN_REASON.DEACTIVATED:
-        Notification.flashToast({
-          message: await i18nT('people.prompt.conversationDeleted'),
-          ...toastOpts,
-        });
-        break;
-    }
+    });
+
     return '';
   }
 

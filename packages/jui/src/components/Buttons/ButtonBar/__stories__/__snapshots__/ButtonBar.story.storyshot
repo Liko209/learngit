@@ -425,6 +425,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
     >
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -465,6 +466,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
       </button>
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -505,6 +507,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
       </button>
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -545,6 +548,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
       </button>
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -706,6 +710,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
     >
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -749,6 +754,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
       </button>
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -792,6 +798,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
       </button>
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -835,6 +842,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
       </button>
       <button
         aria-describedby={null}
+        aria-label="like"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}

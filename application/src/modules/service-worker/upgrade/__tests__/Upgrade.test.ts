@@ -26,10 +26,18 @@ ServiceLoader.getInstance = jest
       };
     }
 
+    if (ServiceConfig.SYNC_SERVICE === serviceName) {
+      return {
+        isDataSyncing: () => {
+          return false;
+        },
+      };
+    }
+
     return null;
   });
 
-describe('Upgrade', () => {
+describe('Upgrade trigger', () => {
   let upgradeHandler: Upgrade | undefined;
 
   afterEach(() => {
@@ -38,34 +46,43 @@ describe('Upgrade', () => {
 
   it('should reload when new update event by installing worker event', () => {
     upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
     upgradeHandler.setServiceWorkerURL('/service-worker.js', false);
     const mockFn = jest.fn();
     jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(false);
     jest
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
-    jest.spyOn(upgradeHandler, '_getRegistration').mockImplementation(mockFn);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, false);
+    expect(upgradeHandler._hasSkippedWaiting).toBeTruthy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
-    expect(mockFn).toBeCalled();
+    expect(mockFn).toHaveBeenCalled();
   });
 
   it('should reload when new update event by waiting worker state', () => {
     upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
     upgradeHandler.setServiceWorkerURL('/service-worker.js', false);
     const mockFn = jest.fn();
     jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(false);
     jest
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
-    jest.spyOn(upgradeHandler, '_getRegistration').mockImplementation(mockFn);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, true);
+    expect(upgradeHandler._hasSkippedWaiting).toBeTruthy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
-    expect(mockFn).toBeCalled();
+    expect(mockFn).toHaveBeenCalled();
   });
 
   it('should not run into infinite reload when new update event by waiting worker', () => {
     upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
     upgradeHandler._removeWorkingWorkerFlag();
 
     upgradeHandler.setServiceWorkerURL('/service-worker.js', true);
@@ -74,16 +91,33 @@ describe('Upgrade', () => {
     jest
       .spyOn(upgradeHandler, '_hasServiceWorkerController')
       .mockReturnValue(false);
-    jest.spyOn(upgradeHandler, '_getRegistration').mockImplementation(mockFn);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
 
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, true);
+    expect(upgradeHandler._hasSkippedWaiting).toBeTruthy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
-    expect(mockFn).toBeCalled();
+    expect(mockFn).toHaveBeenCalled();
     mockFn.mockReset();
 
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+
+    upgradeHandler.setServiceWorkerURL('/service-worker.js', true);
+    jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(false);
+    jest
+      .spyOn(upgradeHandler, '_hasServiceWorkerController')
+      .mockReturnValue(false);
+    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
+
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
     upgradeHandler.onNewContentAvailable(true, true);
+    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
+    upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
-    expect(mockFn).not.toBeCalled();
+    expect(mockFn).not.toHaveBeenCalled();
+    mockFn.mockReset();
   });
 
   it('manual update', () => {
@@ -92,6 +126,47 @@ describe('Upgrade', () => {
     const mockFn = jest.fn();
     jest.spyOn(upgradeHandler, 'logInfo').mockImplementation(mockFn);
     upgradeHandler._queryIfHasNewVersion();
-    expect(upgradeHandler.logInfo).toBeCalled();
+    expect(upgradeHandler.logInfo).toHaveBeenCalled();
+  });
+});
+
+describe('Upgrade limitation', () => {
+  let upgradeHandler: Upgrade | undefined;
+
+  afterEach(() => {
+    upgradeHandler = undefined;
+  });
+  it('Should allow to reload when in idle', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+  });
+  it('Should not allow to reload when app is not focused', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
+  });
+  it('Should not allow to reload when syncing index', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_isInDataSyncing').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
+  });
+  it('Should not allow to reload when uploading file', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_isInFileUploading').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
+  });
+  it('Should not allow to reload when has call in progress', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_hasInProgressCall').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
   });
 });

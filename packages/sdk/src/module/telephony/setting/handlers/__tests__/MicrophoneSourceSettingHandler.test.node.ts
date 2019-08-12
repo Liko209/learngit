@@ -13,7 +13,6 @@ import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
 import { isChrome } from '../utils';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
 import { CONFIG_EVENT_TYPE } from 'sdk/module/config/constants';
 
@@ -59,9 +58,6 @@ describe('MicrophoneSourceSettingHandler', () => {
     } as any;
     const mockSource = [{ deviceId: 1 }, { deviceId: 2 }];
     mockDefaultSettingItem = {
-      parentModelId: 0,
-      weight: 0,
-      valueType: 0,
       id: SettingEntityIds.Phone_MicrophoneSource,
       source: mockSource,
       state: 0,
@@ -259,9 +255,6 @@ describe('MicrophoneSourceSettingHandler', () => {
       mockRtcEngine.getAudioInputs.mockReturnValue(devices);
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
-        valueType: 0,
-        weight: 0,
-        parentModelId: 0,
         id: SettingEntityIds.Phone_MicrophoneSource,
         source: devices,
         state: expect.any(Number),

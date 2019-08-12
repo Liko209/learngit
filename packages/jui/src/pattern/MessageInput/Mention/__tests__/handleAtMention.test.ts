@@ -1,9 +1,14 @@
-import { UN_ESCAPE_HTML_AT_MENTION_REGEXP, decode, handleAtMention, atMentionTemplate } from '../handleAtMention';
+import {
+  UN_ESCAPE_HTML_AT_MENTION_REGEXP,
+  decode,
+  handleAtMention,
+  atMentionTemplate,
+} from '../handleAtMention';
 
 describe('RegExp UN_ESCAPE_HTML_AT_MENTION_REGEXP', () => {
   it('at-mention', () => {
-    const mentionTagOne = `<a class="at_mention_compose other class name" rel='{"id": 614403}'>@User One</a>`;
-    const mentionTagTwo = `<a class='at_mention_compose other class name' rel='{"id": 614403}'>@User One</a>`;
+    const mentionTagOne = `<a class="at_mention_compose other class name" rel='{"id":614403}'>@User One</a>`;
+    const mentionTagTwo = `<a class='at_mention_compose other class name' rel='{"id":614403}'>@User One</a>`;
     const otherATag = `<a rel='{"id": 614403}'>@Invalid</a>`;
     const richText = `
       dkdkdkadfoajlkadlkf
@@ -35,8 +40,23 @@ describe('handleAtMention', () => {
   it('rich text format - mention', () => {
     const userId = '6144403';
     const userName = 'User One';
-    const mentionTagOne = `<a class="at_mention_compose other class name" rel='{"id": ${userId}}'>@${userName}</a>`;
+    const mentionTagOne = `<a class="at_mention_compose other class name" rel='{"id":${userId}}'>@${userName}</a>`;
     const otherATag = `<a rel='{"id": 614403}'>@Invalid</a>`;
+    const richText = `
+      dkdkdkadfoajlkadlkf
+      ${mentionTagOne}
+      dkdkdkadfoajlkadlkfdkdkdkadfoajlkadlkf
+      ${otherATag}
+    `;
+    const decodeString = handleAtMention(richText);
+    const mentionTag = atMentionTemplate(userId, userName);
+    expect(decodeString.match(mentionTag)).toHaveLength(1);
+  });
+  it('rich text format - teamMention', () => {
+    const userId = '-1';
+    const userName = 'Team';
+    const mentionTagOne = `<a class="at_mention_compose other class name" rel='{"id":${userId}}'>@${userName}</a>`;
+    const otherATag = `<a rel='{"id":-1}'>@Team</a>`;
     const richText = `
       dkdkdkadfoajlkadlkf
       ${mentionTagOne}

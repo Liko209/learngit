@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { i18nP } from '@/utils/i18nT';
 import { AudioPlayerButton } from '@/modules/media/container/AudioPlayerButton';
 import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
-import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { JuiAudioStatus } from 'jui/components/AudioPlayer';
 import { container } from 'framework/src';
 import { ISoundNotification, Sounds } from '@/modules/notification/interface';
 import { IMedia } from '@/interface/media';
@@ -25,8 +25,14 @@ function useSound(soundName: Sounds) {
     const soundNotification: ISoundNotification = container.get(
       'SOUND_NOTIFICATION',
     );
-    const media = soundNotification.create(soundName, 'setting');
+    const media = soundNotification.create(soundName, {
+      trackId: 'setting',
+      outputDevices: [],
+    });
     setState(media);
+    return () => {
+      media && media.stop();
+    };
   }, []);
   return state;
 }

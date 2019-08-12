@@ -25,18 +25,18 @@ describe('DndBanner', () => {
   class View {
     @test('should not show banner when presence is not dnd')
     @mockGlobalValue(1)
-    @mockPresence(PRESENCE.AVALIABLE)
+    @mockPresence(PRESENCE.AVAILABLE)
     t1() {
       const wrapper = mountWithTheme(<DndBanner />);
       expect(wrapper.find(JuiSnackbarContent)).toHaveLength(0);
     }
-    @test('should be warn type when render the banner')
+    @test('should be error type when render the banner')
     @mockGlobalValue(1)
     @mockPresence(PRESENCE.DND)
     t2() {
       const wrapper = mountWithTheme(<DndBanner />);
       expect(wrapper.find(JuiSnackbarContent)).toHaveLength(1);
-      expect(wrapper.find(JuiSnackbarContent).props().type).toBe('warn');
+      expect(wrapper.find(JuiSnackbarContent).props().type).toBe('error');
       expect(wrapper.find(JuiSnackbarContent).props().message).toBe('presence.prompt.topBannerInfoWhenDnd');
     }
   }

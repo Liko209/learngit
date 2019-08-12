@@ -7,7 +7,7 @@
 import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
 import { Raw } from 'sdk/framework/model';
 import { Presence } from '../entity';
-import { PRESENCE } from '../constant';
+import { PRESENCE, PRESENCE_REQUEST_STATUS } from '../constant';
 import PresenceAPI from 'sdk/api/glip/presence';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
@@ -48,11 +48,22 @@ class PresenceActionController {
       partialModel.presence = status;
       return partialModel;
     };
-    await this._partialModifyController.updatePartially(
-      currentId,
-      preHandlePartial,
-      async (newData: Presence) => PresenceAPI.setPresence(newData),
-    );
+    await this._partialModifyController.updatePartially({
+      entityId: currentId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newData: Presence) => {
+        return PresenceAPI.setPresence(newData);
+      },
+    });
+  }
+
+  async setAutoPresence(presence: PRESENCE) {
+    const status =
+      presence === PRESENCE.UNAVAILABLE
+        ? PRESENCE_REQUEST_STATUS.AWAY
+        : PRESENCE_REQUEST_STATUS.ONLINE;
+    // response of this api doesn't have status_code
+    await PresenceAPI.setAutoPresence(status).catch(() => {});
   }
 }
 export { PresenceActionController };

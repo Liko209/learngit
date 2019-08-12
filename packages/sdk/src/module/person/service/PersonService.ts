@@ -30,6 +30,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { PerformanceTracer } from 'foundation';
+import { EditablePersonInfo, HeadShotInfo } from '../types';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -45,7 +46,9 @@ class PersonService extends EntityBaseService<Person>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON));
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON),
+    );
   }
 
   protected buildEntityCacheController() {
@@ -103,15 +106,15 @@ class PersonService extends EntityBaseService<Person>
 
   getHeadShotWithSize(
     uid: number,
-    headshot_version: string,
     headshot: HeadShotModel,
     size: number,
+    headshotVersion?: number,
   ): string | null {
     return this.getPersonController().getHeadShotWithSize(
       uid,
-      headshot_version,
       headshot,
       size,
+      headshotVersion,
     );
   }
 
@@ -149,9 +152,7 @@ class PersonService extends EntityBaseService<Person>
     );
   }
 
-  async matchContactByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<Person | null> {
+  async matchContactByPhoneNumber(phoneNumber: string): Promise<Person | null> {
     return await this.getPersonController().matchContactByPhoneNumber(
       phoneNumber,
     );
@@ -166,8 +167,8 @@ class PersonService extends EntityBaseService<Person>
     return cache.getSoundexById(id);
   }
 
-  isCacheValid(person: Person): boolean {
-    return this.getPersonController().isCacheValid(person);
+  isValidPerson(person: Person): boolean {
+    return this.getPersonController().isValidPerson(person);
   }
 
   getPhoneNumbers(
@@ -181,7 +182,18 @@ class PersonService extends EntityBaseService<Person>
     const syncConfig = ServiceLoader.getInstance<EntityBaseService<IdModel>>(
       ServiceConfig.SYNC_SERVICE,
     ).getUserConfig() as SyncUserConfig;
+
     return syncConfig && syncConfig.getFetchedRemaining();
+  }
+
+  async editPersonalInfo(
+    basicInfo?: EditablePersonInfo,
+    headshotInfo?: HeadShotInfo,
+  ) {
+    await this.getPersonController().personActionController.editPersonalInfo(
+      basicInfo,
+      headshotInfo,
+    );
   }
 }
 

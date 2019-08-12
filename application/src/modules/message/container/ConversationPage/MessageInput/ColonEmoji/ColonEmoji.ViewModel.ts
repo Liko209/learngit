@@ -21,7 +21,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   open: boolean = false;
 
   @observable
-  searchTerm?: string;
+  searchTerm: string;
   @observable
   members: any = [];
   private _denotationChar?: string;
@@ -98,8 +98,10 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
         let emojiId = id;
         if (
           emojiId &&
-          !(ExcludeList.indexOf(id as string) > -1) &&
-          emojiId.indexOf(this.searchTerm as string) > -1
+          !ExcludeList.includes(id as string) &&
+          this._doUnderscoreTransfer(emojiId)
+            .toLowerCase()
+            .includes(this._doUnderscoreTransfer(this.searchTerm.toLowerCase()))
         ) {
           if (id && ConvertList.indexOf(id.split(':').join('')) > -1) {
             emojiId = this._doUnderscoreTransfer(id);

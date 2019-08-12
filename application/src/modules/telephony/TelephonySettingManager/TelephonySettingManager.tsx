@@ -19,6 +19,7 @@ import {
   CallerIdSelectValue,
 } from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
+import { E911SettingItem } from './E911SettingItem';
 import {
   DefaultPhoneAppSelectItem,
   beforeDefaultPhoneAppSettingSave,
@@ -34,16 +35,17 @@ import {
   SoundSourcePlayerRenderer,
 } from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
+import { ringOptionTransformer } from './dataTransformer';
 
 const DefaultPhoneAppDataTrackingOption: {
-  [key in CALLING_OPTIONS]: string;
+  [key in CALLING_OPTIONS]: string
 } = {
   glip: 'Use RingCentral App (this app)',
   ringcentral: 'Use RingCentral Phone',
 };
 
 const CallerIDDataTrackingOption: {
-  [key in IPhoneNumberRecord['usageType']]: string;
+  [key in IPhoneNumberRecord['usageType']]: string
 } = {
   DirectNumber: '"DID", personal direct number',
   MainCompanyNumber: '"companyMain", company main number',
@@ -92,7 +94,7 @@ class TelephonySettingManager {
               automationId: 'callerID',
               title: 'setting.phone.general.callerID.label',
               description: 'setting.phone.general.callerID.description',
-              type: SETTING_ITEM_TYPE.SELECT,
+              type: SETTING_ITEM_TYPE.VIRTUALIZED_SELECT,
               weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
               valueRenderer: CallerIdSelectValue,
@@ -103,7 +105,7 @@ class TelephonySettingManager {
                   CallerIDDataTrackingOption[value.usageType] ||
                   CallerIDDataTrackingOption.CompanyOther,
               },
-            } as SelectSettingItem<IPhoneNumberRecord>,
+            } as SelectSettingItem<Partial<IPhoneNumberRecord>>,
             {
               id: PHONE_SETTING_ITEM.PHONE_REGION,
               automationId: 'regionSetting',
@@ -111,12 +113,18 @@ class TelephonySettingManager {
               weight: 300,
             },
             {
+              id: PHONE_SETTING_ITEM.PHONE_E911,
+              automationId: 'e911Setting',
+              type: E911SettingItem,
+              weight: 400,
+            },
+            {
               id: PHONE_SETTING_ITEM.PHONE_EXTENSIONS,
               automationId: 'extensions',
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
-              weight: 400,
+              weight: 500,
               dataTracking: {
                 name: 'extensionSettings',
                 type: 'phoneGeneral',
@@ -174,6 +182,11 @@ class TelephonySettingManager {
       sourceRenderer: SoundSourceItem,
       secondaryActionRenderer: SoundSourcePlayerRenderer,
       ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'incomingCall'),
+      dataTracking: {
+        name: 'incomingVoiceCall',
+        type: 'desktopNotificationSettings',
+        optionTransform: ({ id }) => ringOptionTransformer[id],
+      },
     } as SelectSettingItem<AUDIO_SOUNDS_INFO>);
   }
 

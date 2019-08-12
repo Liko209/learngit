@@ -11,3 +11,5 @@ export * from './DialogContentWithFill';
 export * from './DialogOpenTransition';
 export * from './DraggableDialog';
 export * from './DialogHeader';
+export * from './DialogContent';
+export * from './DialogActions';

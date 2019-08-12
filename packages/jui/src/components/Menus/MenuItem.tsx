@@ -40,16 +40,21 @@ const StyledMuiListItemIcon = styled(MuiListItemIcon)`
     color: ${grey('700')};
   }
 `;
-const WrappedMenuItem = ({
-  icon,
-  avatar,
-  maxWidth,
-  searchString,
-  hasSecondaryAction,
-  ...rest
-}: JuiMenuItemProps) => <MuiMenuItem {...rest} />;
+const FilteredMenuItem = React.forwardRef(
+  (
+    {
+      icon,
+      avatar,
+      maxWidth,
+      searchString,
+      hasSecondaryAction,
+      ...rest
+    }: JuiMenuItemProps,
+    ref,
+  ) => <MuiMenuItem ref={ref as any} {...rest} />,
+);
 
-const StyledMenuItem = styled(WrappedMenuItem)`
+const StyledMenuItem = styled(FilteredMenuItem)`
   && {
     padding: ${({ hasSecondaryAction }) =>
       spacing(1, hasSecondaryAction ? 0 : 4, 1, 4)};
@@ -85,40 +90,46 @@ const StyledMenuItem = styled(WrappedMenuItem)`
 `;
 
 const JuiMenuItem = React.memo(
-  ({
-    icon,
-    children,
-    disabled,
-    avatar,
-    automationId,
-    maxWidth,
-    classes,
-    hasSecondaryAction,
-    ...rest
-  }: JuiMenuItemProps) => {
-    let iconElement: any;
-    if (typeof icon !== 'string') {
-      iconElement = icon;
-    } else {
-      iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
-    }
+  React.forwardRef(
+    (
+      {
+        icon,
+        children,
+        disabled,
+        avatar,
+        automationId,
+        maxWidth,
+        classes,
+        hasSecondaryAction,
+        ...rest
+      }: JuiMenuItemProps,
+      ref,
+    ) => {
+      let iconElement: any;
+      if (typeof icon !== 'string') {
+        iconElement = icon;
+      } else {
+        iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
+      }
 
-    return (
-      <StyledMenuItem
-        tabIndex={0}
-        data-test-automation-id={automationId}
-        disabled={disabled}
-        data-disabled={disabled}
-        maxWidth={maxWidth}
-        hasSecondaryAction={hasSecondaryAction}
-        {...rest}
-      >
-        {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
-        {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
-        {children}
-      </StyledMenuItem>
-    );
-  },
+      return (
+        <StyledMenuItem
+          tabIndex={0}
+          data-test-automation-id={automationId}
+          disabled={disabled}
+          data-disabled={disabled}
+          maxWidth={maxWidth}
+          hasSecondaryAction={hasSecondaryAction}
+          ref={ref}
+          {...rest}
+        >
+          {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
+          {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
+          {children}
+        </StyledMenuItem>
+      );
+    },
+  ),
 );
 
 export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem, StyledMuiListItemIcon };

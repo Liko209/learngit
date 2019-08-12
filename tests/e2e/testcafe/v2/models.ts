@@ -87,6 +87,7 @@ export interface ITestMeta {
   caseIds: string[];
   maintainers: string[];
   keywords: string[];
+  accountType?: any;
 }
 
 

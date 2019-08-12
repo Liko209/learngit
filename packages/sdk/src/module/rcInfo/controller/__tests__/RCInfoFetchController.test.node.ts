@@ -11,6 +11,7 @@ import {
   RCExtensionInfo,
   BLOCK_STATUS,
   IStateRequest,
+  ICountryRequest,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import notificationCenter from 'sdk/service/notificationCenter';
@@ -338,6 +339,20 @@ describe('RCInfoFetchController', () => {
       expect(
         RCInfoUserConfig.prototype.setAccountServiceInfo,
       ).toHaveBeenCalledWith('AccountServiceInfo');
+    });
+  });
+
+  describe('requestCountryList', () => {
+    it('should send request to get country info', async () => {
+      RCInfoApi.getCountryInfo = jest.fn().mockReturnValue({ records: [] });
+      const spy = jest.spyOn(
+        rcInfoFetchController,
+        '_requestCountryListByPage',
+      );
+      const request: ICountryRequest = { page: 1, perPage: 500 };
+      await rcInfoFetchController.requestCountryList(request);
+      expect(RCInfoApi.getCountryInfo).toHaveBeenCalledWith(request);
+      expect(spy).toHaveBeenCalled();
     });
   });
 

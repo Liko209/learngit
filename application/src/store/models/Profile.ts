@@ -5,7 +5,7 @@ import {
   EMAIL_NOTIFICATION_OPTIONS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
-  CALLING_OPTIONS,
+  CALLING_OPTIONS
 } from 'sdk/module/profile';
 import Base from './Base';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
@@ -82,7 +82,7 @@ export default class ProfileModel extends Base<Profile> {
     const {
       favorite_post_ids: favoritePostIds = [],
       favorite_group_ids: favoriteGroupIds = [],
-      skip_close_conversation_confirmation: skipCloseConversationConfirmation = false,
+      skip_close_conversation_confirmation: skipCloseConversationConfirmation = false
     } = data;
 
     this.favoritePostIds = favoritePostIds;
@@ -98,6 +98,7 @@ export default class ProfileModel extends Base<Profile> {
     });
 
     this.hiddenGroupIds = hiddenGroupIds;
+    this.maxLeftRailGroup = Number(data.max_leftrail_group_tabs2) || 0;
 
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;

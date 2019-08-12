@@ -48,7 +48,7 @@ test.meta(<ITestMeta>{
     const displayedTabs = tabs.slice(0, displayedButtonsCount - 1);
     for (const i in displayedTabs) {
       await step.withSubStep(`nth=${i} displayed tab should be ${displayedTabs[i]}`, async () => {
-        await t.expect(rightRail.displayedTabButtons.nth(Number(i)).find('.label').textContent).eql(displayedTabs[i]);
+        await t.expect(rightRail.displayedTabButtons.nth(Number(i)).textContent).eql(displayedTabs[i]);
       })
     }
     await rightRail.openMore();

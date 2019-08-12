@@ -24,10 +24,16 @@ const useItems = (defaultItems: DemoItemModel[] | (() => DemoItemModel[])) => {
   return { items, appendItem, prependItem, removeItem };
 };
 
-const useDemoHelper = ({ initialDataCount }: { initialDataCount: number }) => {
+const useDemoHelper = ({
+  initialDataCount,
+  itemType = 'image',
+}: {
+  initialDataCount: number;
+  itemType?: 'image' | 'text';
+}) => {
   const { items, appendItem, prependItem, removeItem } = useItems(() => {
     const startId = 1000000;
-    return itemFactory.buildItems(startId, initialDataCount, 'image');
+    return itemFactory.buildItems(startId, initialDataCount, itemType);
   });
   const [visibleRange, setVisibleRange] = useState({
     startIndex: 0,
@@ -59,12 +65,18 @@ const useDemoHelper = ({ initialDataCount }: { initialDataCount: number }) => {
 
   const appendItems = (count: number) => {
     appendItem(
-      ...itemFactory.buildItems(items[items.length - 1].id + 1, count),
+      ...itemFactory.buildItems(
+        items[items.length - 1].id + 1,
+        count,
+        itemType,
+      ),
     );
   };
 
   const prependItems = (count: number) => {
-    prependItem(...itemFactory.buildItems(items[0].id - count, count));
+    prependItem(
+      ...itemFactory.buildItems(items[0].id - count, count, itemType),
+    );
   };
 
   return {

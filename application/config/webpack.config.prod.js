@@ -187,7 +187,9 @@ module.exports = {
         [paths.appSrc, paths.depPackages],
         [paths.appPackageJson],
       ),
-      new TsconfigPathsPlugin({ configFile: paths.appTsConfig }),
+      new TsconfigPathsPlugin({
+        configFile: paths.appTsConfig,
+      }),
     ],
   },
   resolveLoader: {
@@ -201,10 +203,26 @@ module.exports = {
     strictExportPresence: true,
     rules: [
       // Disable require.ensure as it's not a standard language feature.
-      { parser: { requireEnsure: false } },
+      {
+        parser: {
+          requireEnsure: false,
+        },
+      },
+      {
+        test: /\.worker\.(ts|js)$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          {
+            loader: 'worker-loader',
+            options: {
+              inline: false,
+            },
+          },
+        ],
+      },
       {
         test: /\.(ts|tsx)$/,
-        exclude: /\.test.(ts|tsx)$/,
+        exclude: /\.test[.\w]*.(ts|tsx)$/,
         include: [
           paths.appSrc,
           paths.foundationPkg,
@@ -281,7 +299,9 @@ module.exports = {
                 options: Object.assign(
                   {},
                   shouldUseRelativeAssetPaths
-                    ? { publicPath: '../../' }
+                    ? {
+                        publicPath: '../../',
+                      }
                     : undefined,
                 ),
               },
@@ -335,10 +355,20 @@ module.exports = {
                 loader: 'svgo-loader',
                 options: {
                   plugins: [
-                    { removeTitle: true },
-                    { convertColors: { shorthex: false } },
-                    { convertPathData: true },
-                    { reusePaths: true },
+                    {
+                      removeTitle: true,
+                    },
+                    {
+                      convertColors: {
+                        shorthex: false,
+                      },
+                    },
+                    {
+                      convertPathData: true,
+                    },
+                    {
+                      reusePaths: true,
+                    },
                   ],
                 },
               },
@@ -363,11 +393,6 @@ module.exports = {
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.
         ],
-      },
-      {
-        test: /\.worker\.(ts|js)$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [{ loader: 'workerize-loader', options: { inline: false } }],
       },
     ],
   },
@@ -433,7 +458,11 @@ module.exports = {
     // solution that requires the user to opt into importing specific locales.
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.ContextReplacementPlugin(
+      /moment[/\\]locale$/,
+      /(de|en-au|en-gb|es-do|es|fr-ca|fr|it|ja|pt-br|zh-cn|zh-hk|zh-tw).js/,
+    ),
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],
@@ -450,7 +479,7 @@ module.exports = {
         '': '/',
       },
       cleanupOutdatedCaches: true,
-      importScripts: ['sw-notification.js'],
+      importScripts: ['sw-notification.js', 'sw-upgrade.js'],
       runtimeCaching,
     }),
     new SentryWebpackPluginWrapper({

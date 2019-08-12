@@ -332,6 +332,19 @@ describe('StreamViewModel', () => {
     });
   });
 
+  describe('updateIgnoredStatus()', () => {
+    it('should call stateService.updateIgnoredStatus with arguments', () => {
+      const spy = jest.spyOn(stateService, 'updateIgnoredStatus');
+      const groupId = 123123;
+      const vm = setup({ groupId });
+      vm.updateIgnoredStatus(true);
+
+      expect(spy).toBeCalledWith([groupId], true);
+
+      spy.mockRestore();
+    });
+  });
+
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
       const spy = jest.spyOn(stateService, 'updateReadStatus');
@@ -396,11 +409,7 @@ describe('StreamViewModel', () => {
         .spyOn(storeManager, 'getGlobalStore')
         .mockImplementation(() => globalStore);
       vm.initialize(12);
-
-      expect(globalStore.set).toBeCalledWith(
-        GLOBAL_KEYS.SHOULD_SHOW_UMI,
-        false,
-      );
+      
       expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
       spy.mockRestore();

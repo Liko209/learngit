@@ -53,10 +53,7 @@ class TeamPermissionController {
 
     const {
       permissions: {
-        admin: {
-          uids: adminUids = [],
-          level: adminLevel = DEFAULT_ADMIN_PERMISSION_LEVEL,
-        } = {},
+        admin: { uids: adminUids = [] } = {},
         user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
       } = {},
     } = teamPermissionParams;
@@ -89,7 +86,7 @@ class TeamPermissionController {
     }
 
     if (adminUids.length === 0 || adminUids.includes(userId)) {
-      return adminLevel;
+      return DEFAULT_ADMIN_PERMISSION_LEVEL;
     }
     return userLevel;
   }

@@ -6,12 +6,7 @@
 import _ from 'lodash';
 import { RC_INFO } from 'sdk/service';
 import notificationCenter from '../../../../service/notificationCenter';
-import {
-  ESettingValueType,
-  SettingEntityIds,
-  UserSettingEntity,
-} from '../../../setting';
-import { SettingModuleIds } from '../../../setting/constants';
+import { SettingEntityIds, UserSettingEntity } from '../../../setting';
 import { IRCInfoService } from '../../service/IRCInfoService';
 import { ERCWebUris } from '../../types';
 import { ExtensionSettingHandler } from '../ExtensionSettingHandler';
@@ -41,10 +36,7 @@ describe('ExtensionSettingHandler', () => {
     } as any;
     mockDefaultSettingItem = {
       id: SettingEntityIds.Phone_Extension,
-      parentModelId: SettingModuleIds.PhoneSetting_General.id,
       valueGetter: expect.anything(),
-      valueType: 3,
-      weight: SettingModuleIds.ExtensionSetting.weight,
       state: 0,
     };
     settingHandler = new ExtensionSettingHandler(rcInfoService);
@@ -96,7 +88,7 @@ describe('ExtensionSettingHandler', () => {
 
       notificationCenter.emit(RC_INFO.CLIENT_INFO);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
 
         done();
       });
@@ -107,7 +99,7 @@ describe('ExtensionSettingHandler', () => {
 
       notificationCenter.emit(RC_INFO.CLIENT_INFO);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });
@@ -131,14 +123,11 @@ describe('ExtensionSettingHandler', () => {
       // expect(settingHandler.updateUserSettingEntityCache).toBeCalledWith(res);
       expect(res).toEqual({
         id: SettingEntityIds.Phone_Extension,
-        parentModelId: SettingModuleIds.PhoneSetting_General.id,
         valueGetter: expect.anything(),
-        valueType: ESettingValueType.LINK,
-        weight: SettingModuleIds.ExtensionSetting.weight,
         state: 0,
       });
       expect(res.valueGetter()).resolves.toEqual('glip.com');
-      expect(rcInfoService.generateWebSettingUri).toBeCalledWith(
+      expect(rcInfoService.generateWebSettingUri).toHaveBeenCalledWith(
         ERCWebUris.EXTENSION_URI,
       );
     });

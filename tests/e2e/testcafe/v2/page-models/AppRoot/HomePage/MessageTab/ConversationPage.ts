@@ -42,6 +42,24 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 }
 
+class ProgressActions extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('cardHeaderRightSection');
+  }
+
+  get resendPost() {
+    return this.getSelectorByIcon('reload', this.self);
+  }
+
+  get editPost() {
+    return this.getSelectorByIcon('edit', this.self);
+  }
+
+  get deletePost() {
+    return this.getSelectorByIcon('delete', this.self);
+  }
+}
+
 class HeaderMoreMenu extends BaseWebComponent {
   get self() {
     return this.getSelector('*[role="menu"]');
@@ -375,6 +393,10 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
 
+  get jumpToMostRecentButtonWrapper() {
+    return this.getSelectorByAutomationId('jump-to-most-recent-button')
+  }
+
   async countOnUnreadButtonShouldBe(n: string | number) {
     const reg = new RegExp(`^\\D*${n}\\D+$`)
     await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
@@ -383,6 +405,11 @@ export class ConversationPage extends BaseConversationPage {
   async clickJumpToFirstUnreadButton() {
     await this.t.click(this.jumpToFirstUnreadButtonWrapper);
   }
+
+  async clickJumpToMostRecentButton() {
+    await this.t.click(this.jumpToMostRecentButtonWrapper);
+  }
+
   get headerStatus() {
     return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
   }
@@ -446,7 +473,7 @@ export class ConversationPage extends BaseConversationPage {
       const containerTop = await this.self.getBoundingClientRectProperty('top');
       const headerHeight = await this.header.getBoundingClientRectProperty('height');
       const targetTop = await sel.getBoundingClientRectProperty('top');
-      assert.strictEqual(containerTop + headerHeight, targetTop, 'this post card is not on the top of conversation page')
+      assert.ok(Math.abs( containerTop + headerHeight - targetTop) < 5, 'element is not on the top of conversation page');
     });
   }
 
@@ -704,6 +731,10 @@ export class PostItem extends BaseWebComponent {
 
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
+  }
+
+  get progressActions() {
+    return this.getComponent(ProgressActions);
   }
 
   get avatar() {
@@ -1227,8 +1258,7 @@ class MentionUsers extends BaseWebComponent {
   }
 
   get members() {
-    this.warnFlakySelector();
-    return this.self.find('div').withAttribute('uid');
+    return this.getSelector('[data-test-automation-class="match-item"]');
   }
 
   async selectMemberByNth(n: number) {

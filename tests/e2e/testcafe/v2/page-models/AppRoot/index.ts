@@ -1,6 +1,8 @@
 import 'testcafe';
+import { ClientFunction } from 'testcafe';
 import * as assert from 'assert';
 
+import { H } from '../../helpers';
 import { BaseWebComponent } from '../BaseWebComponent';
 import { HomePage } from './HomePage';
 import { LoginPage } from './LoginPage';
@@ -38,6 +40,19 @@ export class AppRoot extends BaseWebComponent {
 
   get upgradeDialog() {
     return this.getComponent(UpgradeDialog);
+  }
+
+
+  async waitForPhoneState(state: string) {
+    const getSipState = ClientFunction(() => window['sipState']);
+    await H.retryUntilPass(async () => {
+      const sipState = await getSipState();
+      assert.equal(sipState, state);
+    })
+  }
+
+  async waitForPhoneReady() {
+    await this.waitForPhoneState('Registered');
   }
 
 }

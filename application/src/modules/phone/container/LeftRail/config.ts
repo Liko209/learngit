@@ -7,8 +7,7 @@ import { TabConfig } from './types';
 import { CallHistory } from '../CallHistory';
 import { PhoneUMIType } from '../PhoneUMI/types';
 import { Voicemail } from '../Voicemail';
-
-const kDefaultPhoneTabPath = '/phone/callhistory';
+import { kDefaultPhoneTabPath } from './constant';
 
 const TelephonyTabs: TabConfig[] = [
   {
@@ -39,4 +38,4 @@ const TelephonyTabs: TabConfig[] = [
   // },
 ];
 
-export { TabConfig, TelephonyTabs, kDefaultPhoneTabPath };
+export { TabConfig, TelephonyTabs };

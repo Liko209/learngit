@@ -9,9 +9,9 @@ import {
   IResponse,
   NETWORK_VIA,
   NETWORK_METHOD,
-} from 'foundation/src/network/network';
-import { HttpRequest } from 'foundation/src/network/client/http';
-import NetworkRequestBuilder from 'foundation/src/network/client/NetworkRequestBuilder';
+} from 'foundation/network/network';
+import { HttpRequest } from 'foundation/network/client/http';
+import NetworkRequestBuilder from 'foundation/network/client/NetworkRequestBuilder';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCRestApiManager } from '../utils/RTCRestApiManager';
 import { RTC_PROV_EVENT } from './types';
@@ -138,7 +138,10 @@ class RTCProvManager extends EventEmitter2 {
       rtcLogger.error(LOG_TAG, `the request error is: ${error}`);
     }
 
-    rtcLogger.info(LOG_TAG, `the response is: ${JSON.stringify(response)}`);
+    rtcLogger.info(
+      LOG_TAG,
+      `the response is: ${JSON.stringify(_.omit(response, 'request'))}`,
+    );
 
     if (!response) {
       rtcLogger.error(LOG_TAG, 'the response is null');
@@ -170,6 +173,8 @@ class RTCProvManager extends EventEmitter2 {
         this._requestErrorRetryInterval
       }`,
     );
+
+    this.emit(RTC_PROV_EVENT.PROV_ARRIVE, responseData, this._sipProvisionInfo);
 
     if (
       !this._sipProvisionInfo ||

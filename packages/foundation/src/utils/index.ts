@@ -5,7 +5,7 @@
  */
 
 export { BuildUtils } from './BuildUtils';
-export { uniqueArray, getCurrentTime } from './jsUtils/jsUtils';
+export { uniqueArray, getCurrentTime, bytes } from './jsUtils/jsUtils';
 export { HeartBeatCheck } from './checker/HeartBeatCheck';
 export { sleepModeDetector } from './checker/SleepModeDetector';
 export { powerMonitor, PowerMonitor } from './checker/PowerMonitor';
@@ -14,3 +14,4 @@ export {
   SPARTA_TIME_RANGE,
   getSpartaRandomTime,
 } from './algorithm/SpartaRandomTime';
+export { workerClientAdapter, workerServerAdapter } from './workerAdapter';
