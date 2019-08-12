@@ -9,7 +9,6 @@ import {
   runInAction,
   observable,
   computed,
-  autorun,
 } from 'mobx';
 import {
   MessageInputProps,
@@ -258,7 +257,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @computed
-  get _group() {
+  private get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
@@ -372,15 +371,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private _trackSendPost(containsTeamMention:boolean) {
     const type = this.items.length ? 'file' : 'text';
     const isAtTeam = containsTeamMention ? 'yes' : 'no'
-    const disposer = autorun(() => {
+    runInAction(() => {
       analyticsCollector.sendPost(
         'conversation thread',
         type,
         this._group.analysisType,
         isAtTeam,
       );
-    })
-    disposer();
+    });
   }
 
   private _handleDraftSave = debounce(() => {
