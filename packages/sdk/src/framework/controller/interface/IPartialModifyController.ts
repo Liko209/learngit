@@ -18,7 +18,7 @@ type PreHandlePartialEntityFunc<T> = (
   originalEntity: T,
 ) => Partial<Raw<T>>;
 
-type GetRollbackEntityFunc<T> = (
+type HandleRollbackPartialEntityFunc<T> = (
   updatedEntity: T,
   rollbackPartialEntity: Partial<Raw<T>>,
 ) => Nullable<Partial<Raw<T>>>;
@@ -35,7 +35,7 @@ type PartialUpdateParams<
   doPartialNotify?: PartialNotifyFunc<T>;
   saveLocalFirst?: boolean;
   forceDoUpdateEntity?: boolean;
-  getRollbackEntity?: GetRollbackEntityFunc<T>;
+  handleRollbackPartialEntity?: HandleRollbackPartialEntityFunc<T>;
 };
 
 interface IPartialModifyController<
@@ -57,6 +57,6 @@ export {
   PartialUpdateParams,
   PartialNotifyFunc,
   PreHandlePartialEntityFunc,
-  GetRollbackEntityFunc,
+  HandleRollbackPartialEntityFunc,
   UpdateEntityFunc,
 };
