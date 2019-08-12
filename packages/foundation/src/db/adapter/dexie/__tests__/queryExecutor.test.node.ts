@@ -15,7 +15,7 @@ Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 // Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
 // Make IDBKeyRange global so your code can create key ranges.
 
-describe.skip('execQuery<IPerson>()', () => {
+describe('execQuery<IPerson>()', () => {
   let table: Dexie.Table<IPerson>;
 
   beforeAll(async () => {
