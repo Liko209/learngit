@@ -83,10 +83,13 @@ describe('RightShelfMemberList.View', () => {
   });
 
   it('should call observer.disconnect if shouldHide change from false to true', () => {
+    // jest.spyOn()
     const mountedWrapper = mountWithTheme(
       <RightShelfMemberListView {...props} shouldHide={false} />,
     );
+
     const instance = mountedWrapper.find(RightShelfMemberListView).instance();
+    expect(instance._resizeObserver.observe).toHaveBeenCalled();
     instance._resizeObserver.disconnect = jest.fn();
     mountedWrapper.setProps({
       children: <RightShelfMemberListView {...props} shouldHide />,

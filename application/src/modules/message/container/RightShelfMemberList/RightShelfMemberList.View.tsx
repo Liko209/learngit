@@ -57,19 +57,22 @@ class RightShelfMemberListViewComponent extends Component<Props> {
 
   componentDidMount() {
     this.props.init();
+    this._header.current &&
+      !this.props.shouldHide &&
+      this._resizeObserver &&
+      this._resizeObserver.observe(this._header.current);
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (this._resizeObserver) {
-      if (
-        this._header.current &&
-        prevProps.shouldHide &&
-        !this.props.shouldHide
-      ) {
+    if (
+      this._header.current &&
+      prevProps.shouldHide &&
+      !this.props.shouldHide
+    ) {
+      this._resizeObserver &&
         this._resizeObserver.observe(this._header.current);
-      } else if (!prevProps.shouldHide && this.props.shouldHide) {
-        this._resizeObserver.disconnect();
-      }
+    } else if (!prevProps.shouldHide && this.props.shouldHide) {
+      this._resizeObserver && this._resizeObserver.disconnect();
     }
   }
 
