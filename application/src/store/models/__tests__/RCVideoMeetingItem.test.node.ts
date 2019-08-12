@@ -6,7 +6,7 @@
 
 import { RCVideoMeetingItemModel } from '../RCVideoMeetingItem';
 
-import { MEETING_STATUS } from '../../utils/Meetings';
+import { MEETING_STATUS } from '../MeetingsUtils';
 
 import _ from 'lodash';
 

@@ -19,12 +19,6 @@ const MEETING_STATUS_MAP = {
   no_answer: MEETING_STATUS.NO_ANSWER,
 };
 
-const ZOOM_MEETING_DIAL_IN_NUMBER = {
-  RC: '+1773-231-9226',
-  ATT: '+1773-231-9324',
-  TELUS: '+1855-959-9009',
-};
-
 const ONE_HOUR = 3600000;
 
 function getMeetingStatus(status: string, createdAt: number) {
@@ -38,9 +32,27 @@ function getMeetingStatus(status: string, createdAt: number) {
   return MEETING_STATUS.UN_KNOWN;
 }
 
+const ZOOM_MEETING_DIAL_IN_NUMBER = {
+  RC: '+1773-231-9226',
+  ATT: '+1773-231-9324',
+  TELUS: '+1855-959-9009',
+};
+
+const RCVIDEO_DIAL_IN_NUMBER_MAP = {
+  production: '+16504191505',
+};
+
+function getRCVideoDialInNumber(key: string) {
+  if (Object.prototype.hasOwnProperty.call(RCVIDEO_DIAL_IN_NUMBER_MAP, key)) {
+    return MEETING_STATUS_MAP[key];
+  }
+  return RCVIDEO_DIAL_IN_NUMBER_MAP.production;
+}
+
 export {
   MEETING_STATUS,
   MEETING_STATUS_MAP,
-  ZOOM_MEETING_DIAL_IN_NUMBER,
   getMeetingStatus,
+  getRCVideoDialInNumber,
+  ZOOM_MEETING_DIAL_IN_NUMBER,
 };

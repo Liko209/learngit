@@ -9,7 +9,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MEETING_TITLE } from './types';
-import { MEETING_STATUS } from '@/store/utils/Meetings';
+import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
 import { Item } from 'sdk/module/item/module/base/entity';
 import MeetingItemModel from '@/store/models/MeetingItem';
 import { formatDuration } from '@/utils/date/';

@@ -7,7 +7,7 @@
 import {
   MEETING_STATUS,
   ZOOM_MEETING_DIAL_IN_NUMBER,
-} from '../../utils/Meetings';
+} from '../MeetingsUtils';
 import { MeetingItemModel } from '../MeetingItem';
 import _ from 'lodash';
 

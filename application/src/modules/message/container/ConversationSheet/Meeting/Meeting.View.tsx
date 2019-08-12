@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
-import { MEETING_STATUS } from '@/store/utils/Meetings';
+import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';

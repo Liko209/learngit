@@ -7,10 +7,7 @@ import { ZoomMeetingItem } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 
-import {
-  ZOOM_MEETING_DIAL_IN_NUMBER,
-  getMeetingStatus,
-} from '../utils/Meetings';
+import { getMeetingStatus, ZOOM_MEETING_DIAL_IN_NUMBER } from './MeetingsUtils';
 
 export default class MeetingItemModel extends ItemModel {
   @observable
