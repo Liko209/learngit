@@ -27,6 +27,7 @@ const location = {
 };
 
 const window = {
+  URL,
   Promise,
   btoa,
   FormData,
