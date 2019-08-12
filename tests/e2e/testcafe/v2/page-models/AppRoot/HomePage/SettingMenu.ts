@@ -26,7 +26,7 @@ export class SettingMenu extends BaseWebComponent {
     return this.getSelectorByAutomationId('aboutPage', this.self);
   }
 
-  get sendFeedBackButton() {
+  get sendFeedbackButton() {
     return this.getSelectorByAutomationId('sendFeedback', this.self);
   }
 
