@@ -6,9 +6,9 @@
 import { RCVideoMeetingItem } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
-import config from '@/config';
+import Config from '@/config';
 
-import { getMeetingStatus } from './MeetingsUtils';
+import { getMeetingStatus, getRCVideoDialInNumber } from './MeetingsUtils';
 
 export default class RCVideoMeetingItemModel extends ItemModel {
   @observable
@@ -70,7 +70,7 @@ export default class RCVideoMeetingItemModel extends ItemModel {
   }
 
   getDialInNumber() {
-    return config.getEnv();
+    return getRCVideoDialInNumber(Config.getEnv());
   }
 
   @computed

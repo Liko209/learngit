@@ -7,9 +7,7 @@
 // Replace ${deployHost} with real deployHost
 import { AppEnvSetting } from 'sdk/module/env';
 import { ConfigMap } from './types';
-import {
-  loadFileConfigs, getEnvArray, get, set,
-} from './utils';
+import { loadFileConfigs, getEnvArray, get, set } from './utils';
 
 const { protocol, hostname, port } = window.location;
 const deployHost = `${protocol}//${hostname}${port && `:${port}`}`;
@@ -50,7 +48,7 @@ class Config {
 
   public defaultEnv() {
     const productionEnv = this.isProductionBuild() || this.isPublicBuild();
-    return productionEnv ? 'production' : 'GLP-DEV-XMN';
+    return productionEnv ? 'production' : 'GLP_DEV_XMN';
   }
 
   public isProductionAccount() {
@@ -62,7 +60,9 @@ class Config {
   }
 
   getAllEnv() {
-    return getEnvArray().filter((env: string) => this.isProductionBuild() || env !== 'production');
+    return getEnvArray().filter(
+      (env: string) => this.isProductionBuild() || env !== 'production',
+    );
   }
 
   get<T1 extends ConfigMap, K1 extends keyof T1>(k1: K1): T1[K1];

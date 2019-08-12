@@ -40,13 +40,15 @@ const ZOOM_MEETING_DIAL_IN_NUMBER = {
 
 const RCVIDEO_DIAL_IN_NUMBER_MAP = {
   production: '+16504191505',
+  XMN_UP: '+18582073116',
+  GLP_DEV_XMN: '+18582073116',
 };
 
 function getRCVideoDialInNumber(key: string) {
   if (Object.prototype.hasOwnProperty.call(RCVIDEO_DIAL_IN_NUMBER_MAP, key)) {
-    return MEETING_STATUS_MAP[key];
+    return RCVIDEO_DIAL_IN_NUMBER_MAP[key];
   }
-  return RCVIDEO_DIAL_IN_NUMBER_MAP.production;
+  return RCVIDEO_DIAL_IN_NUMBER_MAP.GLP_DEV_XMN;
 }
 
 export {
