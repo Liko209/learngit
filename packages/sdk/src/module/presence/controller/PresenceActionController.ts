@@ -54,7 +54,7 @@ class PresenceActionController {
       doUpdateEntity: async (newData: Presence) => {
         return PresenceAPI.setPresence(newData);
       },
-      getRollbackEntity: (newData: Presence) => {
+      handleRollbackPartialEntity: (newData: Presence) => {
         if (socketManager.isConnected()) {
           return null;
         }
