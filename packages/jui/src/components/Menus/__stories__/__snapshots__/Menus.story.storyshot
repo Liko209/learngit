@@ -296,6 +296,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
         aria-disabled={false}
         className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
+        onClick={[Function]}
         onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}

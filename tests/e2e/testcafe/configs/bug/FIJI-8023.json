@@ -1,0 +1,9 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ActionBar/Edit.ts",
+      "./fixtures/MessageInput/Send.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

@@ -31,6 +31,7 @@ describe('StateService', () => {
   const mockGetMyStateId = jest.fn();
   const mockHandleState = jest.fn();
   const mockHandleGroupCursor = jest.fn();
+  const mockHandleStateAndGroupCursor = jest.fn();
   const mockHandleGroup = jest.fn();
   const mockHandleGroupState = jest.fn();
   const mockHandleProfile = jest.fn();
@@ -44,6 +45,7 @@ describe('StateService', () => {
     updateIgnoredStatus: mockUpdateIgnoredStatus,
     handleState: mockHandleState,
     handleGroupCursor: mockHandleGroupCursor,
+    handleStateAndGroupCursor: mockHandleStateAndGroupCursor,
   });
   const mockStateFetchDataController = jest.fn().mockReturnValue({
     getAllGroupStatesFromLocal: mockGetAllGroupStatesFromLocal,
@@ -156,8 +158,30 @@ describe('StateService', () => {
   describe('handleGroupCursor()', () => {
     it('should call with correct params', async () => {
       const groups: Partial<Group>[] = [];
-      await stateService.handleGroupCursor(groups);
-      expect(mockHandleGroupCursor).toHaveBeenCalledWith(groups, undefined);
+      await stateService.handleGroupCursor(groups, SYNC_SOURCE.INDEX);
+      expect(mockHandleGroupCursor).toHaveBeenCalledWith(
+        groups,
+        SYNC_SOURCE.INDEX,
+        undefined,
+      );
+    });
+  });
+
+  describe('handleStateAndGroupCursor()', () => {
+    it('should call with correct params', async () => {
+      const states: Partial<State>[] = [];
+      const groups: Partial<Group>[] = [];
+      await stateService.handleStateAndGroupCursor(
+        states,
+        groups,
+        SYNC_SOURCE.INDEX,
+      );
+      expect(mockHandleStateAndGroupCursor).toHaveBeenCalledWith(
+        states,
+        groups,
+        SYNC_SOURCE.INDEX,
+        undefined,
+      );
     });
   });
 

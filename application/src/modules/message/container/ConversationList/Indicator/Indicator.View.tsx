@@ -16,16 +16,18 @@ import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
 
 const IndicatorView = observer((props: IndicatorViewProps) => {
   const tags = [];
-  if (props.canPost) {
-    if (props.sendFailurePostIds.length > 0) {
-      tags.push(<JuiIndicatorFailure key="Failure" />); // '[Failure]'; // show all
+  const { selected, canPost, sendFailurePostIds, hasDraft, showUmi } = props;
+
+  if (canPost && !selected) { // when selected don't show draft and failure
+    if (sendFailurePostIds.length > 0) {
+      tags.push(<JuiIndicatorFailure key="Failure" />); // '[Failure]'
     }
-    if (props.hasDraft) {
+    if (hasDraft) {
       tags.push(<JuiIndicatorDraft key="Draft" />); // '[Draft]'
     }
   }
 
-  if (props.showUmi) {
+  if (showUmi) {
     tags.push(<Umi key="Umi" type={UMI_SECTION_TYPE.SINGLE} id={props.id} />); // '[Umi]'
   }
 

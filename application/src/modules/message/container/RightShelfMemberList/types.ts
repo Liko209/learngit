@@ -10,6 +10,7 @@ type RightShelfMemberListProps = {
 };
 
 type RightShelfMemberListViewProps = RightShelfMemberListProps & {
+  shouldHide: boolean;
   group: GroupModel;
   isLoading: boolean;
   loadingH: number;

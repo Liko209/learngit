@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
+import { mountWithTheme } from 'shield/utils';
 import { RightShelfMemberListView } from '../RightShelfMemberList.View';
 import { OpenProfile } from '@/common/OpenProfile';
 import JuiLink from 'jui/components/Link';
@@ -12,6 +13,7 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import { NewConversation } from '@/containers/NewConversation';
 import { Dialog } from '@/containers/Dialog';
 import { CONVERSATION_TYPES } from '@/constants';
+import GroupModel from '@/store/models/Group';
 
 jest.mock('resize-observer-polyfill');
 jest.mock('@/containers/NewConversation', () => ({
@@ -46,7 +48,7 @@ const props = {
   groupId: 123,
   group: {
     type: CONVERSATION_TYPES.TEAM,
-  },
+  } as GroupModel,
   isLoading: false,
   fullMemberIds: [],
   fullGuestIds: [],
@@ -57,13 +59,42 @@ const props = {
   personNameMap: {},
   setWrapperWidth: jest.fn(),
   t: (str: string) => str,
+  shouldHide: false,
+  loadingH: 100,
+  dispose: jest.fn(),
 };
 let wrapper;
 describe('RightShelfMemberList.View', () => {
-  it('should return null if it is a me conversation', () => {
-    props.group.type = CONVERSATION_TYPES.ME;
-    wrapper = shallow(<RightShelfMemberListView {...props} />);
+  it('should return null if shouldHide is true', () => {
+    wrapper = shallow(<RightShelfMemberListView {...props} shouldHide />);
     expect(wrapper.type()).toBe(null);
+  });
+
+  it('should call observer.observe if shouldHide change from true to false', () => {
+    const mountedWrapper = mountWithTheme(
+      <RightShelfMemberListView {...props} shouldHide />,
+    );
+    const instance = mountedWrapper.find(RightShelfMemberListView).instance();
+    instance._resizeObserver.observe = jest.fn();
+    mountedWrapper.setProps({
+      children: <RightShelfMemberListView {...props} shouldHide={false} />,
+    });
+    expect(instance._resizeObserver.observe).toHaveBeenCalled();
+  });
+
+  it('should call observer.disconnect if shouldHide change from false to true', () => {
+    // jest.spyOn()
+    const mountedWrapper = mountWithTheme(
+      <RightShelfMemberListView {...props} shouldHide={false} />,
+    );
+
+    const instance = mountedWrapper.find(RightShelfMemberListView).instance();
+    expect(instance._resizeObserver.observe).toHaveBeenCalled();
+    instance._resizeObserver.disconnect = jest.fn();
+    mountedWrapper.setProps({
+      children: <RightShelfMemberListView {...props} shouldHide />,
+    });
+    expect(instance._resizeObserver.disconnect).toHaveBeenCalled();
   });
 
   it('should NOT render link for 1:1 conversations', () => {

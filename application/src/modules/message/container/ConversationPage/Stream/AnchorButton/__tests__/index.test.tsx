@@ -1,7 +1,6 @@
 import { AnchorButton } from '..';
 import { DIRECTION } from 'jui/components/Lists';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { JuiLozengeButton } from 'jui/components/Buttons';
 import * as buttonWrapper from '../../AnchorButtonWrapper';
 import { mountWithTheme } from 'shield/utils';
@@ -16,7 +15,8 @@ describe('AnchorButton', () => {
     jumpToFirstUnread: jest.fn(),
     jumpToLatest: jest.fn(),
     isAboveScrollToLatestCheckPoint: true,
-    hasMore: jest.fn().mockReturnValue(false),
+    hasMoreDown: false,
+    isAtBottom: false,
   };
   beforeAll(() => {
     document.getElementById = i => new Image();
@@ -27,13 +27,12 @@ describe('AnchorButton', () => {
   describe('render', () => {
     it('Unread button priority over recent button when there is unread message [JPT-2565]', () => {
       const wrapper = mountWithTheme(<AnchorButton {...basicProps} />);
-      console.log(wrapper.html());
       const button: JuiLozengeButton = wrapper.find(JuiLozengeButton);
       expect(button.prop('arrowDirection')).toEqual(DIRECTION.UP);
     });
     it('Unread button priority over recent button when hasMoreDown is true [JPT-2617]', () => {
       const overridedProps = {
-        hasMore: jest.fn().mockReturnValue(true),
+        hasMoreDown: true,
       };
       const wrapper = mountWithTheme(
         <AnchorButton {...basicProps} {...overridedProps} />,
@@ -42,17 +41,21 @@ describe('AnchorButton', () => {
       expect(button.prop('arrowDirection')).toEqual(DIRECTION.UP);
     });
 
-    it('Unread button priority over recent button when hasMoreDown is false and no new message button [JPT-2617]', () => {
+    it('Unread button priority over recent button when hasMoreDown is false and no new message button [JPT-2617]', async done => {
       const overridedProps = {
-        hasMore: jest.fn().mockReturnValue(false),
+        hasMoreDown: false,
         firstHistoryUnreadInPage: true,
         hasHistoryUnread: false,
       };
       const wrapper = mountWithTheme(
         <AnchorButton {...basicProps} {...overridedProps} />,
       );
-      const button: JuiLozengeButton = wrapper.find(JuiLozengeButton);
-      expect(button.prop('arrowDirection')).toEqual(DIRECTION.DOWN);
+      setTimeout(() => {
+        wrapper.update();
+        const button: JuiLozengeButton = wrapper.find(JuiLozengeButton);
+        expect(button.prop('arrowDirection')).toEqual(DIRECTION.DOWN);
+        done();
+      });
     });
   });
 });

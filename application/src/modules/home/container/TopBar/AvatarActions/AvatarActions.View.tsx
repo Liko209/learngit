@@ -42,6 +42,18 @@ class AvatarActionsComponent extends React.Component<Props> {
     return <Presence uid={currentUserId} size="large" borderSize="large" />;
   }
 
+  private get title() {
+    const { t, presence } = this.props;
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
+      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
+    };
+    return t(i18nMap[presence] || 'presence.offline');
+  }
+
   private get _tooltip() {
     const { t, presence } = this.props;
     const i18nMap = {
@@ -103,11 +115,11 @@ class AvatarActionsComponent extends React.Component<Props> {
           <DropdownContactInfo
             Avatar={this._DropdownAvatar()}
             openEditProfile={this.openProfile}
-            name={person.displayName}
+            name={person.userDisplayName}
             content={t('home.viewProfile')}
           />
           <JuiMenuList data-test-automation-id="avatarMenu">
-            <PresenceMenu presence={presence} title={this._tooltip} />
+            <PresenceMenu presence={presence} title={this.title} />
             <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}
               aria-label={t('home.aboutRingCentral')}
