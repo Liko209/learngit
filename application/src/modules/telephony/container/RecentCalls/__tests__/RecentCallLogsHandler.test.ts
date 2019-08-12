@@ -18,6 +18,13 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDa
 import { EVENT_TYPES } from 'sdk/service';
 import { CallLog } from 'sdk/module/RCItems/callLog/entity';
 import _ from 'lodash';
+import Config from '@/config';
+
+jest.mock('@/config', () => ({
+  getEnv: jest.fn(() => {
+    return 'production';
+  }),
+}));
 
 jest.mock('sdk/service/notificationCenter');
 jest.mock('sdk/module/RCItems/callLog');
@@ -144,7 +151,7 @@ describe('RecentCallLogsHandler', () => {
 
     it('should redo init when a call become unknown from known', (done: any) => {
       recentCallLogsHandler['_recentCallIds'] = ['1-update', '2-update'];
-      const cpCallLog = {..._.cloneDeep(callLog), to: { name: 'good' }}
+      const cpCallLog = { ..._.cloneDeep(callLog), to: { name: 'good' } };
       const payload: NotificationEntityUpdatePayload<CallLog, string> = {
         type: EVENT_TYPES.UPDATE,
         body: {
@@ -154,24 +161,19 @@ describe('RecentCallLogsHandler', () => {
       };
       recentCallLogsHandler['_initRecentCallInfo'] = jest.fn();
       recentCallLogsHandler.handleCallLogChanges(payload);
-      
+
       setTimeout(() => {
-      
-        expect(
-          recentCallLogsHandler['_initRecentCallInfo']
-        ).toHaveBeenCalled();
+        expect(recentCallLogsHandler['_initRecentCallInfo']).toHaveBeenCalled();
         expect(
           recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
-        ).toHaveBeenCalled()
+        ).toHaveBeenCalled();
         done();
       }, 10);
-      
     });
-
 
     it('should redo init when a call become deactivated', (done: any) => {
       recentCallLogsHandler['_recentCallIds'] = ['1-update', '2-update'];
-      const cpCallLog = {..._.cloneDeep(callLog), __deactivated: true}
+      const cpCallLog = { ..._.cloneDeep(callLog), __deactivated: true };
       const payload: NotificationEntityUpdatePayload<CallLog, string> = {
         type: EVENT_TYPES.UPDATE,
         body: {
@@ -181,20 +183,15 @@ describe('RecentCallLogsHandler', () => {
       };
       recentCallLogsHandler['_initRecentCallInfo'] = jest.fn();
       recentCallLogsHandler.handleCallLogChanges(payload);
-      
+
       setTimeout(() => {
-      
-        expect(
-          recentCallLogsHandler['_initRecentCallInfo']
-        ).toHaveBeenCalled();
+        expect(recentCallLogsHandler['_initRecentCallInfo']).toHaveBeenCalled();
         expect(
           recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
-        ).toHaveBeenCalled()
+        ).toHaveBeenCalled();
         done();
       }, 10);
-      
     });
-
 
     it('should replace existing data when receive replace', (done: any) => {
       const payload: NotificationEntityReplacePayload<CallLog, string> = {
@@ -213,9 +210,8 @@ describe('RecentCallLogsHandler', () => {
           recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
         ).toHaveBeenCalledWith(newIds);
         expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
-        done();  
+        done();
       }, 10);
-      
     });
 
     it('should update source ids when receive update', (done: any) => {
@@ -232,10 +228,9 @@ describe('RecentCallLogsHandler', () => {
         expect(
           recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
         ).toHaveBeenCalledWith(newIds);
-        expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);  
+        expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
         done();
       }, 10);
-      
     });
 
     it('should re-fetch from DB when delete a id in recent call list', async (done: any) => {
