@@ -65,7 +65,7 @@ class AvatarActionsComponent extends React.Component<Props> {
     return t(i18nMap[presence] || 'presence.offline');
   }
 
-  private _Anchor() {
+  private _Anchor = observer(() => {
     const { currentUserId } = this.props;
     return (
       <Avatar
@@ -76,7 +76,7 @@ class AvatarActionsComponent extends React.Component<Props> {
         tooltip={this._tooltip}
       />
     );
-  }
+  });
 
   private _DropdownAvatar() {
     const { currentUserId } = this.props;
