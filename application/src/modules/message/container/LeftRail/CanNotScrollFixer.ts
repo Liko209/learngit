@@ -15,7 +15,7 @@ const INTERACTION_FILTER_TIME = 3000;
 // If there is a wheel event but not scroll event, the user might be stuck in the issue.
 // When this happened, we try to modify scrollTop to make the scroll bar work again.
 //
-class FIJI7739Fixer {
+class CanNotScrollFixer {
   private _timeout: number;
   //
   // The prev up/down time is to skip the case
@@ -85,4 +85,4 @@ class FIJI7739Fixer {
   }
 }
 
-export { FIJI7739Fixer };
+export { CanNotScrollFixer };

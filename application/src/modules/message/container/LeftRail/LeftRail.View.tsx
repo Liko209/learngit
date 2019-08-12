@@ -20,13 +20,13 @@ import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { POST_LIST_TYPE } from '../PostListPage/types';
-import { FIJI7739Fixer } from './FIJI7739Fixer';
+import { CanNotScrollFixer } from './CanNotScrollFixer';
 
 @observer
 class LeftRailViewComponent extends Component<
   LeftRailViewProps & WithTranslation
 > {
-  private _fIJI7739Fixer = new FIJI7739Fixer();
+  private _canNotScrollFixer = new CanNotScrollFixer();
 
   onEntryClick = (type: POST_LIST_TYPE) => {
     history.push(`/messages/${type}`);
@@ -62,8 +62,8 @@ class LeftRailViewComponent extends Component<
           />,
         ])}
         <JuiLeftRailMainSection
-          onWheel={this._fIJI7739Fixer.handleWheel}
-          onScroll={this._fIJI7739Fixer.handleScroll}
+          onWheel={this._canNotScrollFixer.handleWheel}
+          onScroll={this._canNotScrollFixer.handleScroll}
         >
           {sections.map((type, index, array) => [
             <Section
