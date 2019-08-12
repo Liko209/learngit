@@ -351,6 +351,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c1.c1 .c2,
@@ -636,6 +637,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c1.c1 .c2,

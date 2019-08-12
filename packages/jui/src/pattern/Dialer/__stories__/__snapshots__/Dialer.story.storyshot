@@ -192,6 +192,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c7.c7 .c8,
@@ -233,6 +234,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c20.c20 .c8,
