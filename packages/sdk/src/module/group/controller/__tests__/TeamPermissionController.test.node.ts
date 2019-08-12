@@ -7,6 +7,7 @@
 import {
   DEFAULT_USER_PERMISSION_LEVEL,
   PERMISSION_ENUM,
+  DEFAULT_ADMIN_PERMISSION_LEVEL,
 } from '../../constants';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamPermissionController } from '../TeamPermissionController';
@@ -161,6 +162,23 @@ describe('TeamPermissionController', () => {
           teamPermissionParams,
         ),
       ).toEqual(63);
+    });
+    it('should return default team admin permission level even there exist permissions info', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        members: [],
+        is_team: true,
+        permissions: {
+          admin: {
+            level: 0,
+            uids: [mockCurrentUserId],
+          },
+        },
+      };
+      expect(
+        teamPermissionController.getCurrentUserPermissionLevel(
+          teamPermissionParams,
+        ),
+      ).toEqual(DEFAULT_ADMIN_PERMISSION_LEVEL);
     });
     it('should return team permission level when permissions is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
