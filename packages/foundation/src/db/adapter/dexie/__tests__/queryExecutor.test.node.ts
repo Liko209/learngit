@@ -9,6 +9,9 @@ import {
   IPerson,
 } from '../../__tests__/utils';
 
+Dexie.dependencies.indexedDB = require('fake-indexeddb');
+Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+
 // Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
 // Make IDBKeyRange global so your code can create key ranges.
 
@@ -20,7 +23,7 @@ describe.skip('execQuery<IPerson>()', () => {
   });
 
   describe('without criteria', () => {
-    it.skip('should return all data', async () => {
+    it('should return all data', async () => {
       const collections = await execQuery<IPerson>(table);
 
       const result = await extractCollectionsToIds(collections);
