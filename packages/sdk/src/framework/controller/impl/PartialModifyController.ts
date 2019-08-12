@@ -167,18 +167,18 @@ class PartialModifyController<
         result = await doUpdateEntity(mergedEntity);
       } catch (e) {
         mainLogger.error('handlePartialUpdate: doUpdateEntity failed');
-        const rollbackEntity =
+        const handledRollbackEntity =
           (handleRollbackPartialEntity &&
             handleRollbackPartialEntity(mergedEntity, rollbackPartialEntity)) ||
           rollbackPartialEntity;
         const fullRollbackEntity = this.getMergedEntity(
-          rollbackEntity,
+          handledRollbackEntity,
           mergedEntity,
         );
         await this._doPartialSaveAndNotify(
           mergedEntity,
           fullRollbackEntity,
-          rollbackEntity,
+          handledRollbackEntity,
           doPartialNotify,
         );
 
