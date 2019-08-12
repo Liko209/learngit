@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // dynamic change at mention name if username changed
-const UN_ESCAPE_HTML_AT_MENTION_REGEXP = /&lt;a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)((?!&gt;).)+&gt;@((((?!&lt;).))+)&lt;&sol;a&gt;/g;
+const UN_ESCAPE_HTML_AT_MENTION_REGEXP = /&lt;a class=['"]at_mention_compose[\S\s.]*?rel='{"id":(-?\d+)((?!&gt;).)+&gt;@((((?!&lt;).))+)&lt;&sol;a&gt;/g;
 const TEAM_MENTION_ID = 1;
 
 function decode(text: string) {
