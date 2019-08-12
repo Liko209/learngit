@@ -59,7 +59,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
       return <StyledMenuItem disabled>{titleItem}</StyledMenuItem>;
     }
     return (
-      <StyledSubMenuItem {...rest}>
+      <StyledSubMenuItem {...rest} onClick={closePopper}>
         {titleItem}
         <JuiIconography iconSize="medium" iconColor={['grey', '600']}>
           arrow_right

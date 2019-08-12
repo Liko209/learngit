@@ -16,6 +16,7 @@ import { PostDao } from '../dao';
 import { mainLogger } from 'foundation';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
+const LOG_TAG = '[DiscontinuousPostController]';
 class DiscontinuousPostController {
   constructor(public entitySourceController: IEntitySourceController<Post>) {}
 
@@ -29,6 +30,7 @@ class DiscontinuousPostController {
   async getPostsByIds(
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
+    mainLogger.tags(LOG_TAG).info('getPostsByIds()');
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
@@ -37,14 +39,17 @@ class DiscontinuousPostController {
     );
     const localPosts = await this._getPostFromLocal(validIds);
     const result = {
-      posts: localPosts.filter((post: Post) => !post.deactivated),
+      posts: localPosts,
       items: await itemService.getByPosts(localPosts),
     };
 
     const restIds = _.difference(validIds, localPosts.map(({ id }) => id));
     if (restIds.length) {
+      mainLogger.tags(LOG_TAG).info('getPostsByIds() get from server');
       const remoteData = await PostAPI.requestByIds(restIds);
-      let remotePosts: Post[] = remoteData.posts.map((item: Raw<Post>) => transform<Post>(item));
+      let remotePosts: Post[] = remoteData.posts.map((item: Raw<Post>) =>
+        transform<Post>(item),
+      );
 
       const notAchievedIds = _.difference(
         restIds,
@@ -64,6 +69,14 @@ class DiscontinuousPostController {
       result.posts.push(...remotePosts);
       result.items.push(...items);
     }
+    mainLogger
+      .tags(LOG_TAG)
+      .info(
+        'getPostsByIds() done, ids size:',
+        ids.length,
+        'result size:',
+        result.posts && result.posts.length,
+      );
     return result;
   }
 

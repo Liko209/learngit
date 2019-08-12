@@ -38,6 +38,6 @@
     "factory.ts": "0.5.0",
     "faker": "4.1.0",
     "typescript": "3.4.2",
-    "workerize-loader": "1.0.4"
+    "worker-loader": "2.0.0"
   }
 }

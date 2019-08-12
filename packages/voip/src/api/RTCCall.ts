@@ -734,10 +734,15 @@ class RTCCall {
   }
 
   private _onSessionProgress(response: any) {
-    if (response.status_code === 183) {
+    if (response.statusCode === 183) {
+      rtcLogger.info(
+        LOG_TAG,
+        `receive call ${response.statusCode} status code`,
+      );
       CallReport.instance().updateEstablishment(
         CALL_REPORT_PROPS.RECEIVED_183_TIME,
       );
+      this._setSipInfoIntoCallInfo();
       this._clearHangupTimer();
     }
   }

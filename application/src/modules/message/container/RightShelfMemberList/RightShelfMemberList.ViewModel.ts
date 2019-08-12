@@ -10,17 +10,18 @@ import {
 } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { GroupService, Group } from 'sdk/module/group';
-import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { ENTITY_NAME } from '@/store/constants';
+import { getEntity } from '@/store/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupModel from '@/store/models/Group';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import { CONVERSATION_TYPES } from '@/constants';
 import {
-  RIGHT_SHELL_DEFAULT_WIDTH,
-  RIGHT_SHELL_MIN_WIDTH,
+  RIGHT_SHELF_DEFAULT_WIDTH,
+  RIGHT_SHELF_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 
 const GUEST_SECTION_HEIGHT = 95;
@@ -38,7 +39,7 @@ class RightShelfMemberListViewModel
   );
 
   @observable
-  private _wrapperWidth: number = RIGHT_SHELL_DEFAULT_WIDTH;
+  private _wrapperWidth: number = RIGHT_SHELF_DEFAULT_WIDTH;
 
   @observable
   isLoading: boolean = true;
@@ -140,8 +141,14 @@ class RightShelfMemberListViewModel
   }
 
   @computed
+  get shouldHide() {
+    const { group } = this;
+    return !group || group.isMocked || group.type === CONVERSATION_TYPES.ME;
+  }
+
+  @computed
   private get _currentCompanyId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+    return this.group.companyId;
   }
 
   @computed
@@ -230,7 +237,7 @@ class RightShelfMemberListViewModel
   @action
   setWrapperWidth = (width: number) => {
     this._wrapperWidth =
-      width < RIGHT_SHELL_MIN_WIDTH ? RIGHT_SHELL_MIN_WIDTH : width;
+      width < RIGHT_SHELF_MIN_WIDTH ? RIGHT_SHELF_MIN_WIDTH : width;
   };
 }
 

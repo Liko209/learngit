@@ -228,7 +228,8 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   });
 
   await h(t).withLog('When I receive a new message from other user in the private chat ', async () => {
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', pvtChatId)
+    const postId = await h(t).platform(otherUser).sentAndGetTextPostId('TestGroupUMI', pvtChatId);
+    await app.homePage.messageTab.conversationPage.postItemById(postId).ensureLoaded();
   });
 
   await h(t).withLog('Then I should not have UMI in the private chat', async () => {

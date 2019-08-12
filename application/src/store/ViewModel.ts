@@ -22,6 +22,7 @@ import {
 import { IViewModel } from '@/base/IViewModel';
 import _ from 'lodash';
 import BaseNotificationSubscribable from './base/BaseNotificationSubscribable';
+import isEqual from 'react-fast-compare';
 
 abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   implements IViewModel<P> {
@@ -37,9 +38,10 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
     return this._props;
   }
 
-  private _getAttributes = (props?: Partial<P>) => (props && this._BLACKLISTED_PROPS
-    ? _.omit<{}>(props, this._BLACKLISTED_PROPS)
-    : props);
+  private _getAttributes = (props?: Partial<P>) =>
+    props && this._BLACKLISTED_PROPS
+      ? _.omit<{}>(props, this._BLACKLISTED_PROPS)
+      : props;
 
   constructor(props?: P, BLACKLISTED_PROPS?: string[]) {
     super();
@@ -62,10 +64,10 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
         }
       } else if (Array.isArray(props[key])) {
         const arr: any = this._props[key] || [];
-        if (!_.isEqual([...arr], props[key])) {
+        if (!isEqual([...arr], props[key])) {
           set(this._props, { [key]: props[key] });
         }
-      } else if (!_.isEqual(this.props[key], props[key])) {
+      } else if (!isEqual(this.props[key], props[key])) {
         set(this._props, { [key]: props[key] });
       }
     });

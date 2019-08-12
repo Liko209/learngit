@@ -27,6 +27,7 @@ import { IdModel } from '../../../framework/model';
 import { RCInfoUserConfig } from '../config';
 import { RC_INFO_HISTORY } from '../config/constants';
 import { SettingService } from 'sdk/module/setting';
+import { CountryRecord } from 'sdk/api';
 
 class RCInfoService extends EntityBaseService<IdModel>
   implements IRCInfoService {
@@ -38,7 +39,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.RC_LOGIN]: this.requestRCInfo,
+        [SERVICE.RC_LOGIN]: this.onRCLogin,
       }),
     );
   }
@@ -53,7 +54,6 @@ class RCInfoService extends EntityBaseService<IdModel>
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.rcInfoSettings);
     this.getRCInfoController().blockNumberController.init();
-    this.getRCInfoController().rcPresenceController.start();
   }
 
   protected onStopped() {
@@ -92,6 +92,11 @@ class RCInfoService extends EntityBaseService<IdModel>
     }
     return this._DBConfig;
   }
+
+  onRCLogin = () => {
+    this.requestRCInfo();
+    this.getRCInfoController().rcPresenceController.start();
+  };
 
   requestRCInfo = () => {
     this.getRCInfoController()
@@ -293,6 +298,10 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async getStateList(countryId: string): Promise<StateRecord[]> {
     return this.regionInfoController.getStateList(countryId);
+  }
+
+  async getAllCountryList(): Promise<CountryRecord[]> {
+    return this.regionInfoController.getAllCountryList();
   }
 
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {

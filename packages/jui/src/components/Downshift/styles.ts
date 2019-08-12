@@ -29,7 +29,8 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
       flex-wrap: wrap;
     }
     .input {
-      flex: 1;
+      flex-grow: 1;
+      width: auto;
     }
     .downshift-label {
       width: 100%;

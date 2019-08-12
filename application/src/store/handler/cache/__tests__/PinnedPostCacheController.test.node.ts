@@ -100,7 +100,7 @@ describe('PinnedPostCacheController', () => {
         });
 
       await pinnedPostCacheController.doPreFetch(2);
-      expect(fetchSortableDataListHandler2.fetchData).not.toBeCalled();
+      expect(fetchSortableDataListHandler2.fetchData).not.toHaveBeenCalled();
     });
 
     it('should not do pre fetch when has data in store', async () => {
@@ -108,7 +108,7 @@ describe('PinnedPostCacheController', () => {
       fetchSortableDataListHandler2.hasMore = jest.fn().mockReturnValue(false);
 
       await pinnedPostCacheController.doPreFetch(2);
-      expect(fetchSortableDataListHandler2.fetchData).not.toBeCalled();
+      expect(fetchSortableDataListHandler2.fetchData).not.toHaveBeenCalled();
     });
 
     it('should do pre fetch when has more is true and has not fetched data before', async () => {
@@ -116,7 +116,7 @@ describe('PinnedPostCacheController', () => {
       fetchSortableDataListHandler2.hasMore = jest.fn().mockReturnValue(true);
 
       await pinnedPostCacheController.doPreFetch(2);
-      expect(fetchSortableDataListHandler2.fetchData).toBeCalled();
+      expect(fetchSortableDataListHandler2.fetchData).toHaveBeenCalled();
     });
   });
 
@@ -134,8 +134,8 @@ describe('PinnedPostCacheController', () => {
       ]);
       pinnedPostCacheController['_currentGroupId'] = 3;
       pinnedPostCacheController.remove(2);
-      expect(fetchSortableDataListHandler2.dispose).toBeCalled();
-      expect(pinnedPostHandler.dispose).toBeCalled();
+      expect(fetchSortableDataListHandler2.dispose).toHaveBeenCalled();
+      expect(pinnedPostHandler.dispose).toHaveBeenCalled();
     });
 
     it('should not remove data when input group id is same as current group id', () => {
@@ -146,7 +146,7 @@ describe('PinnedPostCacheController', () => {
       ]);
       pinnedPostCacheController['_currentGroupId'] = 2;
       pinnedPostCacheController.remove(2);
-      expect(pinnedPostHandler.dispose).not.toBeCalled();
+      expect(pinnedPostHandler.dispose).not.toHaveBeenCalled();
     });
   });
 });

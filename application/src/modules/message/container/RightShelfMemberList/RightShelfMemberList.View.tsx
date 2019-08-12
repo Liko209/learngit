@@ -57,8 +57,22 @@ class RightShelfMemberListViewComponent extends Component<Props> {
 
   componentDidMount() {
     this.props.init();
-    if (this._resizeObserver && this._header.current) {
+    this._header.current &&
+      !this.props.shouldHide &&
+      this._resizeObserver &&
       this._resizeObserver.observe(this._header.current);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (
+      this._header.current &&
+      prevProps.shouldHide &&
+      !this.props.shouldHide
+    ) {
+      this._resizeObserver &&
+        this._resizeObserver.observe(this._header.current);
+    } else if (!prevProps.shouldHide && this.props.shouldHide) {
+      this._resizeObserver && this._resizeObserver.disconnect();
     }
   }
 
@@ -110,7 +124,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     const { personNameMap } = this.props;
     return (
       <Avatar
-        data-test-automation-id="rightShellMemberListAvatar"
+        data-test-automation-id="rightShelfMemberListAvatar"
         key={id}
         size="medium"
         tooltip={personNameMap[id]}
@@ -134,6 +148,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       shownGuestIds,
       allMemberLength,
       isTeam,
+      shouldHide,
     } = this.props;
     const addButtonTip = isTeam
       ? t('people.team.addTeamMembers')
@@ -143,11 +158,11 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       CONVERSATION_TYPES.ME,
       CONVERSATION_TYPES.SMS,
     ].includes(group.type);
-    return group.type === CONVERSATION_TYPES.ME ? null : (
+    return shouldHide ? null : (
       <>
         <MemberListHeader
           ref={this._header}
-          data-test-automation-id="rightShellMemberListHeader"
+          data-test-automation-id="rightShelfMemberListHeader"
         >
           <div>
             <MemberListTitle>{t('people.team.Members')}</MemberListTitle>
@@ -155,7 +170,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
               <JuiLink
                 size="small"
                 handleOnClick={this.openProfile}
-                data-test-automation-id="rightShellMemberListHeaderShowAllLink"
+                data-test-automation-id="rightShelfMemberListHeaderShowAllLink"
               >
                 {t('people.team.showAllCount', { count: allMemberLength })}
               </JuiLink>
@@ -168,7 +183,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
             tooltipTitle={addButtonTip}
             aria-label={addButtonTip}
             onClick={this.onAddMemberButtonClick}
-            data-test-automation-id="rightShellMemberListHeaderAddButton"
+            data-test-automation-id="rightShelfMemberListHeaderAddButton"
           >
             addmember_border
           </JuiIconButton>
@@ -176,13 +191,13 @@ class RightShelfMemberListViewComponent extends Component<Props> {
         <MemberListBody
           loading={isLoading}
           height={isLoading ? loadingH : 'auto'}
-          data-test-automation-id="rightShellMemberListBody"
+          data-test-automation-id="rightShelfMemberListBody"
         >
-          <MemberListAvatarWrapper data-test-automation-id="rightShellMemberListMembers">
+          <MemberListAvatarWrapper data-test-automation-id="rightShelfMemberListMembers">
             {shownMemberIds.map(id => this.renderAvatar(id))}
             {fullMemberIds.length > shownMemberIds.length ? (
               <MemberListMoreCount
-                data-test-automation-id="rightShellMemberListMore"
+                data-test-automation-id="rightShelfMemberListMore"
                 count={
                   (allMemberLength
                     ? allMemberLength - fullGuestIds.length
@@ -194,12 +209,12 @@ class RightShelfMemberListViewComponent extends Component<Props> {
           {fullGuestIds.length > 0 ? (
             <>
               <MemberListSubTitle>{t('message.guests')}</MemberListSubTitle>
-              <MemberListAvatarWrapper data-test-automation-id="rightShellMemberListGuests">
+              <MemberListAvatarWrapper data-test-automation-id="rightShelfMemberListGuests">
                 {shownGuestIds.map(id => this.renderAvatar(id))}
                 {fullGuestIds.length > shownGuestIds.length ? (
                   <MemberListMoreCount
                     count={fullGuestIds.length - shownGuestIds.length}
-                    data-test-automation-id="rightShellMemberListMore"
+                    data-test-automation-id="rightShelfMemberListMore"
                   />
                 ) : null}
               </MemberListAvatarWrapper>

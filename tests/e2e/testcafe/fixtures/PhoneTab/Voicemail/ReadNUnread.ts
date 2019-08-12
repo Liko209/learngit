@@ -59,17 +59,17 @@ test.meta(<ITestMeta>{
   const voicemailPage = app.homePage.phoneTab.voicemailPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click voicemail entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await voicemailEntry.enter();
   });
 
   await h(t).withLog('Then voicemail page should be open', async () => {
     await voicemailPage.ensureLoaded();
   });
-
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton();
-  }
 
   await ensuredOneVoicemail(t, caller, callee, app);
 

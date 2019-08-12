@@ -10,9 +10,10 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
 import { MiscUtils } from '../v2/utils'
+import { E911Address } from './e911address';
 
 fixture('Telephony/Dialer')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -29,6 +30,9 @@ test.meta(<ITestMeta>{
   const searchStr = extension.replace('+', '');
 
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
+  await h(t).glip(loginUser).resetProfileAndState();
 
   await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
@@ -54,7 +58,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Click the the first item via mouse', async () => {
-    await telephonyDialog.contactSearchList.selectNth(0)
+    await t.wait(2e3);
+    await telephonyDialog.contactSearchList.selectNth(0);
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
@@ -73,6 +78,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Click the the 2nd item via mouse', async () => {
     await telephonyDialog.contactSearchList.ensureLoaded();
+    await t.wait(1e3);
     await telephonyDialog.contactSearchList.selectNth(1)
   });
 
@@ -90,7 +96,8 @@ test.meta(<ITestMeta>{
 })('Can exit the search mode after cleared all content from input field', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const searchStr = '1';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {

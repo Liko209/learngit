@@ -26,4 +26,8 @@ function asyncTest(func: TestFunc, timeout = 0): Promise<void> {
   });
 }
 
-export { asyncTest, wait, waitDone };
+function delay(func: Function, delay: number = 0) {
+  return wait(delay).then(() => func());
+}
+
+export { asyncTest, wait, waitDone, delay };

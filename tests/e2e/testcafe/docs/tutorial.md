@@ -1,4 +1,4 @@
-# E2E Guideline#
+# E2E Guideline
 
 ## Sample ##
 
@@ -47,7 +47,7 @@ test(formalName('Send message', ['P0', 'JPT-77']), async (t) => {
 });
 ```
 
-## How to Write Automation Script##
+## How to Write Automation Script
 
 ### Template ###
 
@@ -131,6 +131,86 @@ An ideal report looks like this:
 
 ![Report Sample](./res/report-sample.png)
 
+##  Execution
+
+### Select cases to execute
+
+You can use following environment variables to select cases you want to execute
+
+`INCLUDE_TAGS` `EXCLUDE_TAGS` Filter cases by tag.
+
+`CASE_FILTER` Filter cases by filtrex query language. For more detail, please check: <https://github.com/link89/filtrex/blob/master/README.md>
+
+### Local execution without selenium
+
+In most case you can working with testcafe without selenium. You can provide a `.env` file to setup exectuion option. Here is an example
+
+```bash
+RC_PLATFORM_APP_KEY=
+RC_PLATFORM_APP_SECRET=
+
+# select cases you want to execute
+CASE_FILTER='tags in ("P0")'
+FIXTURES=./fixtures/
+
+TESTS_LOG=debug-test.log
+
+SITE_URL=https://develop.fiji.gliprc.com
+SITE_ENV=GLP-CI1-XMN
+BROWSERS=chrome
+```
+
+and run `npm run e2e` to start execution.
+
+### Local execution with selenium-grid
+
+Some cases (telephony for example) may need special previllege to execute, for cases of this kind you have to execute them via selenium-grid with specific setting items.
+
+To execute on selenium-grid, you have to provide a file named `capabilities.json`
+
+```json
+{
+    "chrome": {
+        "chromeOptions": {
+            "args": [
+                "--use-fake-ui-for-media-stream",
+                "--use-fake-device-for-media-stream",
+                "--allow-http-screen-capture",
+                "--disable-web-security",
+                "--ignore-certificate-errors",
+                "--no-user-gesture-required",
+                "--autoplay-policy=no-user-gesture-required",
+                "--ignore-autoplay-restrictions"
+            ],
+            "prefs": {
+                "profile.managed_default_content_settings.notifications": 1,
+                "intl.accept_languages": "en"
+            }
+        }
+    }
+}
+```
+
+and config to using selenium-grid in  `.env` file
+
+```bash
+RC_PLATFORM_APP_KEY=
+RC_PLATFORM_APP_SECRET=
+
+CASE_FILTER='tags in ("JPT-1747")'
+FIXTURES=./telephony
+
+SITE_URL=https://develop.fiji.gliprc.com
+SITE_ENV=GLP-CI1-XMN
+
+ENABLE_SSL=true
+BROWSERS=selenium:chrome
+SELENIUM_SERVER=
+```
+
+and run `npm run e2e` to start execution.
+
+### 
 
 ## Tips ##
 
@@ -138,10 +218,10 @@ An ideal report looks like this:
 
 For some common operations, like fetch href, reload page, that cannot be found in testcafe, try h(t)
 
-#### use withText to assert existence of an element ####
+#### use textContent to assert existence of an element ####
 
 ```typescript
-await t.expect(titleText.withText('john').exists).ok()
+await t.expect(titleText.textContent).eql('Jupiter')
 ```
 
 #### use uuid and faker to generate random content ####
@@ -178,3 +258,17 @@ await t.hover('html').click(button);
       });
     });
 ```
+
+#### Don't use testcafe's `expect` API as gerneral purpose assertion library
+
+testcafe's `expect` API is designed for expect web element, don't use it as gerneral purpose assertion library. There is a chance that testcafe will get stucked when the assertion is failed.
+
+```typescript
+// Don't do this
+await t.expect(list1.length === list2.length).ok();
+// Do this
+import * as assert from "assert";
+assert.equal(list1.length, list2.length);
+
+```
+

@@ -21,6 +21,8 @@ const RINGCENTRAL_API = {
   API_SERVICE_INFO: `/${API_VERSION}/account/~/service-info`,
   API_DIALING_PLAN: `/${API_VERSION}/account/~/dialing-plan`,
   API_STATE_INFO: `/${API_VERSION}/dictionary/state`,
+  API_COUNTRY_INFO: `/${API_VERSION}/dictionary/country`,
+
   API_FORWARDING_NUMBERS: `/${API_VERSION}/account/~/extension/~/forwarding-number`,
   BLOCKED_NUMBER: `/${API_VERSION}/account/~/extension/~/caller-blocking/phone-numbers`,
   API_DEVICE_INFO: `/${API_VERSION}/account/~/extension/~/device`,

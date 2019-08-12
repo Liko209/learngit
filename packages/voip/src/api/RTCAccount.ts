@@ -28,11 +28,7 @@ import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
-import {
-  RTC_NETWORK_EVENT,
-  RTC_NETWORK_STATE,
-  RTC_SLEEP_MODE_EVENT,
-} from '../utils/types';
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
 import { randomBetween } from '../utils/utils';
 
 const LOG_TAG = 'RTCAccount';
@@ -47,7 +43,6 @@ class RTCAccount implements IRTCAccount {
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
   private _userInfo: RTCUserInfo;
-  private _sleepModeListener: Listener;
   private _retryTimer: NodeJS.Timeout | null = null;
   private _failedTimes: number = 0;
 
@@ -61,9 +56,6 @@ class RTCAccount implements IRTCAccount {
     this._networkListener = (params: any) => {
       this._onNetworkChange(params);
     };
-    this._sleepModeListener = () => {
-      this._onWakeUpFromSleepMode();
-    };
     this._initListener();
   }
 
@@ -71,10 +63,6 @@ class RTCAccount implements IRTCAccount {
     RTCNetworkNotificationCenter.instance().removeListener(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
-    );
-    RTCNetworkNotificationCenter.instance().removeListener(
-      RTC_SLEEP_MODE_EVENT.WAKE_UP_FROM_SLEEP_MODE,
-      this._sleepModeListener,
     );
   }
 
@@ -237,6 +225,12 @@ class RTCAccount implements IRTCAccount {
     this._regManager.on(REGISTRATION_EVENT.SWITCH_BACK_PROXY_ACTION, () => {
       this._switchBackProxy();
     });
+    this._provManager.on(
+      RTC_PROV_EVENT.PROV_ARRIVE,
+      (newSipProv, oldSipProv) => {
+        this._delegate.onReceiveSipProv(newSipProv, oldSipProv);
+      },
+    );
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
       this._delegate.onReceiveNewProvFlags(info.sipFlags);
@@ -244,10 +238,6 @@ class RTCAccount implements IRTCAccount {
     RTCNetworkNotificationCenter.instance().on(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
-    );
-    RTCNetworkNotificationCenter.instance().on(
-      RTC_SLEEP_MODE_EVENT.WAKE_UP_FROM_SLEEP_MODE,
-      this._sleepModeListener,
     );
   }
 
@@ -281,6 +271,7 @@ class RTCAccount implements IRTCAccount {
       clearTimeout(this._retryTimer);
     }
     this._retryTimer = setTimeout(() => {
+      rtcLogger.debug(LOG_TAG, 'retry timer is reached and do reRegister');
       this._reRegister();
     }, interval * 1000);
   }
@@ -368,13 +359,9 @@ class RTCAccount implements IRTCAccount {
 
   private _onNetworkChange(params: any) {
     if (RTC_NETWORK_STATE.ONLINE === params.state) {
+      rtcLogger.debug(LOG_TAG, 'network change to online and do reRegister');
       this._reRegister();
     }
-  }
-
-  private _onWakeUpFromSleepMode() {
-    rtcLogger.debug(LOG_TAG, 'wake up from sleep mode');
-    this._reRegister();
   }
 
   getSipProvFlags(): RTCSipFlags | null {
@@ -400,6 +387,7 @@ class RTCAccount implements IRTCAccount {
   }
 
   private _switchBackProxy() {
+    rtcLogger.debug(LOG_TAG, 'switch to back proxy and do reRegister');
     this._reRegister();
   }
 }

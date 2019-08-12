@@ -15,9 +15,10 @@ describe('PostUsedItemCache.getUsedId()', () => {
     postUsedItemCache = new PostUsedItemCache();
   });
   it('should return item ids when getUsedId', () => {
-    const storeData: { [id: number]: PostModel } = {};
+    const storeData: Map<string, PostModel> = new Map();
     const post = { id: 1, item_ids: [2, 3, 4] };
-    storeData[1] = new PostModel(post as Post);
+    const postModel = new PostModel(post as Post);
+    storeData.set('1', postModel);
     const postStore = {
       getData: jest.fn(() => storeData),
     };
@@ -27,11 +28,13 @@ describe('PostUsedItemCache.getUsedId()', () => {
   });
 
   it('should return item ids when items referenced by many posts', () => {
-    const storeData: { [id: number]: PostModel } = {};
+    const storeData: Map<string, PostModel> = new Map();
     const post1 = { id: 1, item_ids: [2, 3, 4] };
     const post2 = { id: 2, item_ids: [2, 5, 6] };
-    storeData[1] = new PostModel(post1 as Post);
-    storeData[2] = new PostModel(post2 as Post);
+    const postModel1 = new PostModel(post1 as Post);
+    const postModel2 = new PostModel(post2 as Post);
+    storeData.set('1', postModel1);
+    storeData.set('2', postModel2);
     const postStore = {
       getData: jest.fn(() => storeData),
     };

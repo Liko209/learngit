@@ -36,7 +36,11 @@ type ResponsiveProps = ResponsiveInfo & {
   visual?: boolean;
   TriggerButton?: React.ComponentType<any>;
   addResponsiveInfo?: (info: ResponsiveInfo) => {};
-  children: (width: number, height: number) => ReactNode | ReactNode;
+  children: (
+    width: number,
+    height: number,
+    isShow?: boolean,
+  ) => ReactNode | ReactNode;
 };
 
 type ResponsiveState = {
@@ -46,9 +50,9 @@ type ResponsiveState = {
   prevVisual?: boolean;
 };
 
-const RIGHT_SHELL_DEFAULT_WIDTH = 268;
-const RIGHT_SHELL_MIN_WIDTH = 200;
-const RIGHT_SHELL_MAX_WIDTH = 360;
+const RIGHT_SHELF_DEFAULT_WIDTH = 268;
+const RIGHT_SHELF_MIN_WIDTH = 200;
+const RIGHT_SHELF_MAX_WIDTH = 360;
 
 const StyledResizable = styled<ResizableProps & any>(Resizable)`
   overflow: hidden;
@@ -205,9 +209,16 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   }
 
   private _renderChildren = () => {
-    const { children } = this.props;
-    const { width, height } = this.state;
-    return typeof children === 'function' ? children(width, height) : children;
+    const { children, visual } = this.props;
+    const { width, height, isShow } = this.state;
+    let isOpen = visual !== false || isShow;
+    if (this.isManualMode) {
+      const localShowState = this.localShowState;
+      isOpen = !!localShowState && isOpen;
+    }
+    return typeof children === 'function'
+      ? children(width, height, isOpen)
+      : children;
   };
 
   renderMode = () => {
@@ -227,7 +238,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             height: '100%',
           }}
           style={{
-            position: !visual ? 'absolute' : 'relative',
+            position: visual === false ? 'absolute' : 'relative',
           }}
           styled={{
             priority,
@@ -281,8 +292,13 @@ const withResponsive = (
     render() {
       return (
         <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>
-          {(width: number, height: number) => (
-            <WrappedComponent {...this.props} width={width} height={height} />
+          {(width: number, height: number, isShow?: boolean) => (
+            <WrappedComponent
+              {...this.props}
+              width={width}
+              height={height}
+              isShow={isShow}
+            />
           )}
         </Responsive>
       );
@@ -296,7 +312,7 @@ export {
   VISUAL_MODE,
   ResponsiveProps,
   ResponsiveInfo,
-  RIGHT_SHELL_DEFAULT_WIDTH,
-  RIGHT_SHELL_MIN_WIDTH,
-  RIGHT_SHELL_MAX_WIDTH,
+  RIGHT_SHELF_DEFAULT_WIDTH,
+  RIGHT_SHELF_MIN_WIDTH,
+  RIGHT_SHELF_MAX_WIDTH,
 };

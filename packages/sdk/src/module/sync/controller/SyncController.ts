@@ -42,6 +42,7 @@ import { SYNC_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { IndexTaskController } from './IndexTaskController';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework';
+import { transform } from 'sdk/service/utils';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -317,6 +318,13 @@ class SyncController {
 
     const mergedGroups = groups.concat(teams, public_teams);
 
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    const pureGroups = mergedGroups.map((group: Raw<Group>) => {
+      return groupService.removeCursorsFromGroup(group);
+    });
+
     const arrState: any[] = [];
     if (state && Object.keys(state).length > 0) {
       arrState.push(state);
@@ -343,11 +351,11 @@ class SyncController {
       this._handleIncomingCompany(companies, source, changeMap),
       this._handleIncomingItem(items, source, changeMap),
       this._handleIncomingPresence(presences, source, changeMap),
-      this._handleIncomingState(arrState, source),
+      this._handleIncomingState(arrState, mergedGroups, source, changeMap),
     ])
       .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
       .then(() => this._handleIncomingPerson(people, source, changeMap))
-      .then(() => this._handleIncomingGroup(mergedGroups, source, changeMap))
+      .then(() => this._handleIncomingGroup(pureGroups, source, changeMap))
       .then(() =>
         this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap),
       )
@@ -441,6 +449,7 @@ class SyncController {
 
   private async _handleIncomingState(
     states: any[],
+    groups: Raw<Group>[],
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
@@ -450,9 +459,16 @@ class SyncController {
         states.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
+
     await ServiceLoader.getInstance<StateService>(
       ServiceConfig.STATE_SERVICE,
-    ).handleState(states, source, changeMap);
+    ).handleStateAndGroupCursor(
+      states,
+      groups.map(group => transform<Group>(group)),
+      source,
+      changeMap,
+    );
+
     performanceTracer.end({
       key: this._getPerformanceKey(source, 'state'),
       count: states && states.length,
@@ -631,23 +647,20 @@ class SyncController {
     }
   }
 
-  private async _traceLoginData(isSuccess: boolean){
+  private async _traceLoginData(isSuccess: boolean) {
     if (isSuccess) {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
 
-    dataCollectionHelper.traceLoginSuccess({
-      accountType:'glip',
-      userId: userConfig.getGlipUserId(),
-      companyId: userConfig.getCurrentCompanyId()
-    });
-  }else {
-    dataCollectionHelper.traceLoginFailed(
-      'glip',
-      'initial failed',
-    );
-  }
+      dataCollectionHelper.traceLoginSuccess({
+        accountType: 'glip',
+        userId: userConfig.getGlipUserId(),
+        companyId: userConfig.getCurrentCompanyId(),
+      });
+    } else {
+      dataCollectionHelper.traceLoginFailed('glip', 'initial failed');
+    }
   }
 
   /**

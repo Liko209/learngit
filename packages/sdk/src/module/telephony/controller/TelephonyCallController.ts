@@ -122,10 +122,11 @@ class TelephonyCallController implements IRTCCallDelegate {
       callEntity.to_num = callOption.replaceNumber || '';
       callEntity.to_name = callOption.replaceName || '';
     } else {
-      callEntity.from_num = callOption.replaceNumber || '';
-      callEntity.from_name = callOption.replaceName || '';
+      callEntity.to_num = callOption.replaceNumber || '';
+      callEntity.to_name = callOption.replaceName || '';
     }
-    callEntity.direction = callOption.callDirection!;
+    // a switch call is a outbound call
+    callEntity.direction = CALL_DIRECTION.OUTBOUND;
   }
 
   private _getCallEntity() {
@@ -147,13 +148,13 @@ class TelephonyCallController implements IRTCCallDelegate {
           call.record_state = RECORD_STATE.IDLE;
           call.connectTime = Date.now();
           call.session_id = this._rtcCall.getCallInfo().sessionId;
-          this._setSipData(call);
           break;
         case RTC_CALL_STATE.DISCONNECTED:
           call.call_state = CALL_STATE.DISCONNECTED;
           if (!call.disconnectTime) {
             call.disconnectTime = Date.now();
           }
+          this._setSipData(call);
           break;
         default:
           break;

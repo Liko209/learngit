@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { isValidTab, getValidPath } from '../helper';
-import { TelephonyTabs, kDefaultPhoneTabPath } from '../config';
+import { TelephonyTabs } from '../config';
+import { kDefaultPhoneTabPath } from '../constant';
 import { test, testable } from 'shield';
 
 describe('isValidTab', () => {

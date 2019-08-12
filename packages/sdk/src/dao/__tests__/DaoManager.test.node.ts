@@ -9,15 +9,18 @@ import {
   DexieDB,
   IDatabase,
   mainLogger,
+  LokiDB,
+  DatabaseType,
 } from 'foundation';
 import DaoManager from '../DaoManager';
 import { BaseDao, BaseKVDao } from '../../framework/dao';
-import Dexie from 'dexie';
+import Loki from 'lokijs';
 import { IdModel } from '../../framework/model';
 import { DaoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from '../../module/account/config';
 import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import Dexie from 'dexie';
 
 jest.mock('../../module/env/index');
 
@@ -115,7 +118,25 @@ describe('DaoManager', () => {
         expect(clearFunc).toHaveBeenCalled();
       });
 
-      it('should set callback for when db is open', async () => {
+      it('should not call db.on when db type is lokiDB', async () => {
+        const clearFunc = jest.fn();
+        const db = new LokiDB({
+          name: 'db',
+          version: 1,
+          schema: {},
+        });
+        db.db = new Loki('');
+        jest.spyOn(db.db, 'on');
+        DBManager.mock.instances[0].getDatabaseType = jest
+          .fn()
+          .mockReturnValue(DatabaseType.LokiDB);
+        DBManager.mock.instances[0].getDatabase.mockReturnValue(db);
+        await daoManager.initDatabase(clearFunc);
+        expect(db.db.on).not.toHaveBeenCalled();
+        expect(clearFunc).toHaveBeenCalled();
+      });
+
+      it('should set callback and call db.on when db dexiDB', async () => {
         const clearFunc = jest.fn();
         const db = new DexieDB({
           name: 'db',

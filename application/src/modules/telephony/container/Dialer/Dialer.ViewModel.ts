@@ -6,17 +6,30 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { container } from 'framework';
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
+import { i18nP } from '@/utils/i18nT';
 import { DialerProps, DialerViewProps } from './types';
+import { CALL_WINDOW_STATUS } from '../../FSM';
 import { TelephonyStore } from '../../store';
+import { TelephonyService } from '../../service';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { simpleE911Dialog, alertE911Dialog } from '../E911Dialog';
+import { DialerUIConfig } from '../../Dialer.config';
 
 class DialerViewModel extends StoreViewModel<DialerProps>
   implements DialerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
+  private _DialerUIConfig: DialerUIConfig = container.get(DialerUIConfig);
 
   dialerId = this._telephonyStore.dialerId;
+
+  shouldShowConfirm = true;
+  shouldShowPrompt = true;
 
   constructor(props: DialerProps) {
     super(props);
@@ -28,6 +41,59 @@ class DialerViewModel extends StoreViewModel<DialerProps>
         }
       },
     );
+    this.reaction(
+      () => this.callWindowState,
+      async (callWindowState: CALL_WINDOW_STATUS) => {
+        if (
+          !this.shouldDisplayDialer ||
+          callWindowState === CALL_WINDOW_STATUS.MINIMIZED
+        ) {
+          return;
+        }
+        const needConfirmE911 = await this._telephonyService.needConfirmE911();
+        const needE911Prompt = await this._telephonyService.needE911Prompt();
+        if (needE911Prompt && this.shouldShowPrompt) {
+          return this.showPromptDialog();
+        }
+        // getDialerMarked()
+        // if user open e911 dialog and click cancel.
+        // Next time open dialer not show confirm dialog
+        if (
+          needConfirmE911 &&
+          this.shouldShowConfirm &&
+          !this._DialerUIConfig.getDialerMarked()
+        ) {
+          return this.showConfirmDialog();
+        }
+      },
+    );
+  }
+
+  @action
+  showConfirmDialog() {
+    alertE911Dialog({
+      id: 'emergencyConfirm',
+      content: i18nP('telephony.prompt.emergencyAddressIsUnknown'),
+      onOK: () => {
+        this._telephonyService.openE911();
+        this._DialerUIConfig.setDialerMarked(true);
+      },
+      onCancel: () => {
+        this.shouldShowConfirm = false;
+      },
+      okText: i18nP('telephony.e911.confirmEmergencyAddress'),
+    });
+  }
+
+  @action
+  showPromptDialog() {
+    simpleE911Dialog({
+      id: 'emergencyPrompt',
+      content: i18nP('telephony.prompt.e911ServiceMayBeLimitedOrUnavailable'),
+      onCancel: () => {
+        this.shouldShowPrompt = false;
+      },
+    });
   }
 
   @computed

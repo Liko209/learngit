@@ -25,9 +25,12 @@ module.exports = {
     'import/named': 'off',
     'import/export': 'off',
     'import/prefer-default-export': 'off',
-    'import/no-unresolved': [0, {
-      caseSensitive: false
-    }],
+    'import/no-unresolved': [
+      0,
+      {
+        caseSensitive: false,
+      },
+    ],
     'import/no-extraneous-dependencies': 'off',
     'import/order': 'off',
     'import/first': 'error',
@@ -43,20 +46,19 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'no-return-await': 'off',
     'no-useless-constructor': 'off',
-    'no-debugger': 'error',
-    'no-alert': 'error',
+    'no-debugger': process.env.NODE_ENV === 'development' ? 'off' : 'error',
+    'no-alert': process.env.NODE_ENV === 'development' ? 'off' : 'error',
+    'no-console': process.env.NODE_ENV === 'development' ? 'off' : 'error',
     'no-useless-return': 'off',
     'no-bitwise': 'off',
     'no-return-assign': 'off',
     'no-empty-function': 'off',
-    'no-console': 'error',
     'no-nested-ternary': 'off',
     'no-unused-expressions': 'off',
     'lines-between-class-members': 'off',
     'dot-notation': 'off',
     'prefer-destructuring': 'off',
     'prefer-spread': 'off',
-    'func-names': ['error', 'never'],
     'consistent-return': 'off',
     'array-callback-return': 'off',
     'react/no-unescaped-entities': 'off',
@@ -71,12 +73,16 @@ module.exports = {
     'class-methods-use-this': 'off',
     'operator-assignment': 'off',
     'operator-linebreak': 'off',
-    "comma-dangle": ["error", "only-multiline"],
+    'comma-dangle': ['error', 'only-multiline'],
     'no-unexpected-multiline': 'off',
-    'max-len': ['off', {
-      code: 80
-    }],
+    'max-len': [
+      'off',
+      {
+        code: 80,
+      },
+    ],
     'implicit-arrow-linebreak': 'off',
+    'func-names': 'off',
   },
   settings: {
     react: {

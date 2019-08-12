@@ -53,8 +53,8 @@ interface IZipProducer {
   produce(): Nullable<LocalZip>;
 }
 
-interface IZipWorker {
-  zip(zipItems: ZipItem[]): Promise<Blob>;
+interface IZip {
+  zip: (zipItems: ZipItem[]) => Promise<Blob>;
 }
 
 interface ILogChunkSplitStrategy {
@@ -62,7 +62,7 @@ interface ILogChunkSplitStrategy {
 }
 
 export {
-  IZipWorker,
+  IZip,
   ZipItemLevel,
   IZipItemProvider,
   ZipItem,

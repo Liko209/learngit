@@ -8,6 +8,7 @@ import {
   RTCSipFlags,
   RTCNoAudioStateEvent,
   RTCNoAudioDataEvent,
+  RTCSipProvisionInfo,
 } from './types';
 import { RTCCall } from './RTCCall';
 
@@ -15,6 +16,10 @@ interface IRTCAccountDelegate {
   onAccountStateChanged(accountState: RTC_ACCOUNT_STATE): void;
   onReceiveIncomingCall(call: RTCCall): void;
   onReceiveNewProvFlags(sipFlags: RTCSipFlags): void;
+  onReceiveSipProv(
+    newSipProv: RTCSipProvisionInfo,
+    oldSipProv: RTCSipProvisionInfo,
+  ): void;
   onNoAudioStateEvent(
     uuid: string,
     noAudioStateEvent: RTCNoAudioStateEvent,

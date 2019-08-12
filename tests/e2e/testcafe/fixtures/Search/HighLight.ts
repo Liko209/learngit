@@ -546,10 +546,11 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1965'],
   maintainers: ['potar.he'],
   keywords: ['search', 'HighLight', 'phoneNumber'],
+  accountType: BrandTire.RC_WITH_PHONE_DL,
 })('Phone number from searched list should be hyperlinked and successful ring out', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  const otherUser = users[5];
+  const loginUser = users[2];
+  const otherUser = users[3];
 
   const phoneNumber = "+1(650)399-0766";
   const phoneNumberChunks = phoneNumber.split(/\+|\(|\)|\ |\-/).filter(_.identity);

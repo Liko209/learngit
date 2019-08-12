@@ -129,6 +129,20 @@ describe('TelephonyService', () => {
     });
   });
 
+  describe('isAddressEqual', () => {
+    it('should call with correct parameters', () => {
+      const addr1 = { a: 'a' };
+      const addr2 = { b: 'b' };
+      engineController.isAddressEqual = jest.fn().mockReturnValue(true);
+      const res = telephonyService.isAddressEqual(addr1, addr2);
+      expect(res).toBeTruthy();
+      expect(engineController.isAddressEqual).toHaveBeenCalledWith(
+        addr1,
+        addr2,
+      );
+    });
+  });
+
   describe('switchCall', () => {
     const fromNumber = '1880191';
     it('should call account controller to switch call', async () => {

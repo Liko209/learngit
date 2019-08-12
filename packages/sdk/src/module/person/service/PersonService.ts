@@ -167,8 +167,8 @@ class PersonService extends EntityBaseService<Person>
     return cache.getSoundexById(id);
   }
 
-  isCacheValid(person: Person): boolean {
-    return this.getPersonController().isCacheValid(person);
+  isValidPerson(person: Person): boolean {
+    return this.getPersonController().isValidPerson(person);
   }
 
   getPhoneNumbers(
