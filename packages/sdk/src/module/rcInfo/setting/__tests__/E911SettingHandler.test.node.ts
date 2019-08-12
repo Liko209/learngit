@@ -10,6 +10,7 @@ import { ESettingItemState } from 'sdk/framework/model/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { RCInfoService } from '../../service';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
+import { notificationCenter } from 'sdk/service';
 
 describe('E911SettingHandler', () => {
   let settingHandler: E911SettingHandler;
@@ -140,6 +141,49 @@ describe('E911SettingHandler', () => {
         .mockReturnValue([{ emergencyServiceAddress: emergencyAddr }, {}]);
       const res = await settingHandler._getDefaultEmergencyAddress();
       expect(res).toBe(emergencyAddr);
+    });
+  });
+
+  describe('_e911Updated', () => {
+    beforeEach(() => {
+      Object.assign(settingHandler, {
+        _isSipReady: true,
+      });
+    });
+    it('should emit when condition met', async () => {
+      const spy = jest.spyOn(notificationCenter, 'emit');
+      telephonyService.isEmergencyAddrConfirmed = jest
+        .fn()
+        .mockReturnValue(false);
+      rcInfoService.getDigitalLines = jest.fn().mockReturnValue([1]);
+      await settingHandler._e911Updated();
+      expect(spy).toHaveBeenCalled();
+    });
+    it('should not emit when no dl', async () => {
+      const spy = jest.spyOn(notificationCenter, 'emit');
+      telephonyService.isEmergencyAddrConfirmed = jest
+        .fn()
+        .mockReturnValue(false);
+      rcInfoService.getDigitalLines = jest.fn().mockReturnValue([]);
+      await settingHandler._e911Updated();
+      expect(spy).not.toHaveBeenCalled();
+    });
+    it('should not emit when it is confirmed', async () => {
+      const spy = jest.spyOn(notificationCenter, 'emit');
+      telephonyService.isEmergencyAddrConfirmed = jest
+        .fn()
+        .mockReturnValue(true);
+      rcInfoService.getDigitalLines = jest.fn().mockReturnValue([1]);
+      await settingHandler._e911Updated();
+      expect(spy).not.toHaveBeenCalled();
+    });
+    it('should not emit when sip is not ready', async () => {
+      Object.assign(settingHandler, {
+        _isSipReady: false,
+      });
+      rcInfoService.getDigitalLines = jest.fn();
+      await settingHandler._e911Updated();
+      expect(rcInfoService.getDigitalLines).not.toHaveBeenCalled();
     });
   });
 

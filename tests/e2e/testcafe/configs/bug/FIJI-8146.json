@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/*.ts",
+      "./fixtures/TeamSetting/ArchiveTeam.ts",
+      "./fixtures/TeamSetting/DeleteTeam.ts",
+      "./fixtures/TeamSetting/LeaveTeam.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

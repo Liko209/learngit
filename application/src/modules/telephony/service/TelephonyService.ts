@@ -118,7 +118,7 @@ class TelephonyService {
   };
 
   private _onReceiveIncomingCall = async (id: number) => {
-    const shouldIgnore = !(await this._isJupiterDefaultApp());
+    const shouldIgnore = !(await this._isJupiterDefaultApp()) || isCurrentUserDND();
     if (shouldIgnore) {
       return;
     }

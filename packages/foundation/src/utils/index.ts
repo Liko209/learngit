@@ -14,3 +14,4 @@ export {
   SPARTA_TIME_RANGE,
   getSpartaRandomTime,
 } from './algorithm/SpartaRandomTime';
+export { workerClientAdapter, workerServerAdapter } from './workerAdapter';

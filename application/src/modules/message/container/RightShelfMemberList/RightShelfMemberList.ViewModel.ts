@@ -18,6 +18,7 @@ import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import { CONVERSATION_TYPES } from '@/constants';
 import {
   RIGHT_SHELF_DEFAULT_WIDTH,
   RIGHT_SHELF_MIN_WIDTH,
@@ -137,6 +138,12 @@ class RightShelfMemberListViewModel
       companyId !== this._currentCompanyId &&
       !(this.group.guestUserCompanyIds || []).includes(companyId)
     );
+  }
+
+  @computed
+  get shouldHide() {
+    const { group } = this;
+    return !group || group.isMocked || group.type === CONVERSATION_TYPES.ME;
   }
 
   @computed
