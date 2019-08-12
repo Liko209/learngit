@@ -984,13 +984,12 @@ test.meta(<ITestMeta>{
   });
 });
 
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-1438'],
   maintainers: ['Potar'],
   keywords: ['UploadFiles'],
 })('Can update image size in the duplicate prompt when the same name image is sent', async (t) => {
-
   const loginUser = h(t).rcData.mainCompany.users[0];
 
   let team = <IGroup>{
@@ -999,23 +998,32 @@ test.skip.meta(<ITestMeta>{
     owner: loginUser,
     members: [loginUser]
   }
-  await h(t).withLog(`Given I create one new team named "${team.name}"`, async () => {
+
+  const filesPaths = ['../../sources/files/xy.jpg', '../../sources/files1/xy.jpg'];
+  const filename = 'xy'
+  const x = 180;
+  const y = 240;
+
+  await h(t).withLog(`Given I prepare 2 same name {filename} image files size: {x}*{y}, {y}*{x}`, async (step) => {
+    step.initMetadata({
+      filename,
+      x: x.toString(),
+      y: y.toString()
+    })
+  });
+
+
+  await h(t).withLog(`And I create one new team named "{teamName}"`, async (step) => {
+    step.setMetadata('teamName', team.name);
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  const fileName = '1.jpg';
-  const initWidth = 360;
-  const initHeight = 240;
-  // as we just get image url with arguments(1000x200) like dThor, so here are the expected size.
-  const expectedWidth = 300;
-  const expectedHeight = 200;
-  const finalWidth = 180;
-  const finalHeight = 120;
-  const filesPaths = ['../../sources/files/1.jpg', '../../sources/files1/1.jpg'];
-  await h(t).log(`and prepare same name "${fileName}" image files, their size: ${initWidth}x${initHeight} and ${finalWidth}x${finalHeight}`);
-
   const app = new AppRoot(t);
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -1026,19 +1034,28 @@ test.skip.meta(<ITestMeta>{
     await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
-  await h(t).withLog(`When I send the big size image file named: "${fileName}"`, async () => {
+  await h(t).withLog(`When I send the big size image file named: "{filename}"`, async (step) => {
+    step.setMetadata("filename", filename);
     await conversationPage.uploadFilesToMessageAttachment(filesPaths[0]);
     await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitForPostToSend();
     await conversationPage.nthPostItem(-1).waitImageVisible(20e3);
   });
 
-  await h(t).withLog(`Then the image file size should be ${expectedWidth}x${expectedHeight}`, async () => {
-    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('width')).eql(expectedWidth);
-    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('height')).eql(expectedHeight);
+  await h(t).withLog(`Then the image file size should be {x}x{y}`, async (step) => {
+    step.initMetadata({
+      x: x.toString(),
+      y: y.toString()
+    });
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('width')).eql(x);
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('height')).eql(y);
   }, true);
 
-  await h(t).withLog(`When I upload the same name file to the conversation whose size is ${finalWidth}x${finalHeight}`, async () => {
+  await h(t).withLog(`When I upload the same name file to the conversation whose size is {y}x{x}`, async (step) => {
+    step.initMetadata({
+      x: x.toString(),
+      y: y.toString()
+    });
     await conversationPage.uploadFilesToMessageAttachment(filesPaths[1]);
   });
 
@@ -1051,13 +1068,21 @@ test.skip.meta(<ITestMeta>{
     await conversationPage.nthPostItem(-1).waitImageVisible(20e3);
   });
 
-  await h(t).withLog(`Then the last image size should be ${finalWidth}x${finalHeight}`, async () => {
-    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('width')).eql(finalWidth);
-    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('height')).eql(finalHeight);
+  await h(t).withLog(`Then the last image size should be {y}x{x}`, async (step) => {
+    step.initMetadata({
+      x: x.toString(),
+      y: y.toString()
+    });
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('width')).eql(y);
+    await t.expect(conversationPage.nthPostItem(-1).images.getBoundingClientRectProperty('height')).eql(x);
   }, true);
 
-  await h(t).withLog(`Then the first image size should be ${finalWidth}x${finalHeight}`, async () => {
-    await t.expect(conversationPage.nthPostItem(0).images.getBoundingClientRectProperty('width')).eql(finalWidth);
-    await t.expect(conversationPage.nthPostItem(0).images.getBoundingClientRectProperty('height')).eql(finalHeight);
+  await h(t).withLog(`Then the first image size should be {y}x{x}`, async (step) => {
+    step.initMetadata({
+      x: x.toString(),
+      y: y.toString()
+    });
+    await t.expect(conversationPage.nthPostItem(0).images.getBoundingClientRectProperty('width')).eql(y);
+    await t.expect(conversationPage.nthPostItem(0).images.getBoundingClientRectProperty('height')).eql(x);
   });
 });
