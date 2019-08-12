@@ -18,13 +18,6 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDa
 import { EVENT_TYPES } from 'sdk/service';
 import { CallLog } from 'sdk/module/RCItems/callLog/entity';
 import _ from 'lodash';
-import Config from '@/config';
-
-jest.mock('@/config', () => ({
-  getEnv: jest.fn(() => {
-    return 'production';
-  }),
-}));
 
 jest.mock('sdk/service/notificationCenter');
 jest.mock('sdk/module/RCItems/callLog');

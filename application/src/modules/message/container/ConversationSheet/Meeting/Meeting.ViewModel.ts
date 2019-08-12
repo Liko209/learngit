@@ -15,6 +15,8 @@ import MeetingItemModel from '@/store/models/MeetingItem';
 import { formatDuration } from '@/utils/date/';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import RCVideoMeetingItemModel from '@/store/models/RCVideoMeetingItem';
+import { MeetingsService } from 'sdk/module/meetings';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -68,6 +70,13 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   get meetingId() {
     return this.meetingDTO.meetingId;
   }
+
+  getDialInNumber = () => {
+    const a = ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).getDialInNumber(this.meetingType === TypeDictionary.TYPE_ID_RC_VIDEO);
+    return a;
+  };
 
   @computed
   get meetingTitle() {

@@ -32,29 +32,4 @@ function getMeetingStatus(status: string, createdAt: number) {
   return MEETING_STATUS.UN_KNOWN;
 }
 
-const ZOOM_MEETING_DIAL_IN_NUMBER = {
-  RC: '+1773-231-9226',
-  ATT: '+1773-231-9324',
-  TELUS: '+1855-959-9009',
-};
-
-const RCVIDEO_DIAL_IN_NUMBER_MAP = {
-  production: '+16504191505',
-  XMN_UP: '+18582073116',
-  GLP_DEV_XMN: '+18582073116',
-};
-
-function getRCVideoDialInNumber(key: string) {
-  if (Object.prototype.hasOwnProperty.call(RCVIDEO_DIAL_IN_NUMBER_MAP, key)) {
-    return RCVIDEO_DIAL_IN_NUMBER_MAP[key];
-  }
-  return RCVIDEO_DIAL_IN_NUMBER_MAP.GLP_DEV_XMN;
-}
-
-export {
-  MEETING_STATUS,
-  MEETING_STATUS_MAP,
-  getMeetingStatus,
-  getRCVideoDialInNumber,
-  ZOOM_MEETING_DIAL_IN_NUMBER,
-};
+export { MEETING_STATUS, MEETING_STATUS_MAP, getMeetingStatus };

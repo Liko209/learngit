@@ -61,7 +61,7 @@ class Config {
 
   getAllEnv() {
     return getEnvArray().filter(
-      (env: string) => this.isProductionBuild() || env !== 'production',
+      (env: string) => !this.isProductionBuild() || env !== 'production',
     );
   }
 

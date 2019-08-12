@@ -15,6 +15,7 @@ type ViewProps = {
   meetingTitle: string;
   duration: string;
   meetingId: number;
+  getDialInNumber(): string;
 };
 
 enum MEETING_TITLE {

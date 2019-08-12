@@ -7,14 +7,7 @@
 import { RCVideoMeetingItemModel } from '../RCVideoMeetingItem';
 
 import { MEETING_STATUS } from '../MeetingsUtils';
-import Config from '@/config';
 import _ from 'lodash';
-
-jest.mock('@/config', () => ({
-  getEnv: jest.fn(() => {
-    return 'production';
-  }),
-}));
 
 const meetingData = {
   _id: 564093035,
@@ -74,7 +67,6 @@ const meetingData = {
 };
 
 describe('RCVideoMeetingItem', () => {
-  Config.getEnv.mockReturnValue('production');
   describe('constructor', () => {
     it('should have correct properties', () => {
       const model = RCVideoMeetingItemModel.fromJS(meetingData);
@@ -97,12 +89,6 @@ describe('RCVideoMeetingItem', () => {
       data['status'] = status;
       const model = RCVideoMeetingItemModel.fromJS(data);
       expect(model.meetingStatus).toEqual(expected);
-    });
-  });
-  describe('getDialInNumber', () => {
-    it('should return RC number', () => {
-      const model = RCVideoMeetingItemModel.fromJS(meetingData);
-      expect(model.getDialInNumber()).toEqual('+16504191505');
     });
   });
   describe('duration', () => {

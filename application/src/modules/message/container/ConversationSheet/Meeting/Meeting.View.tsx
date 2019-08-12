@@ -31,9 +31,9 @@ class Meeting extends React.Component<meetingProps> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   private _renderMeetingContent = () => {
-    const { t, meetingItem, meetingId } = this.props;
+    const { t, meetingItem, meetingId, getDialInNumber } = this.props;
     const { joinUrl } = meetingItem;
-    const dialNumber = meetingItem.getDialInNumber();
+    const dialNumber = getDialInNumber();
     return (
       <>
         <JuiItemContent title={t('item.meeting.meetingUrl')}>

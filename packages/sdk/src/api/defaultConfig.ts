@@ -33,6 +33,7 @@ const defaultConfig: ApiConfig = {
   meetingsConfig: {
     rcv: {
       baseUrl: '',
+      dialInNumber: '',
     },
   },
   data_collection: '',

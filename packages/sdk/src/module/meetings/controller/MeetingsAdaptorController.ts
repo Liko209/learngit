@@ -14,6 +14,9 @@ import { ProfileService, VIDEO_SERVICE_OPTIONS } from 'sdk/module/profile';
 import { mainLogger } from 'foundation';
 import { MEETING_TAG } from '../constants';
 import { IMeetingAdaptorController } from '../modules/controller/IMeetingAdaptorController';
+import { ZOOM_MEETING_DIAL_IN_NUMBER } from './MeetingsUtils';
+import { Api } from 'sdk/api';
+import _ from 'lodash';
 
 class MeetingsAdaptorController {
   private _meetingController: IMeetingAdaptorController;
@@ -21,6 +24,13 @@ class MeetingsAdaptorController {
   async startMeeting(groupIds: number[]): Promise<StartMeetingResultType> {
     const controller = await this._getSuitableMeetingController();
     return controller.startMeeting(groupIds);
+  }
+
+  getDialInNumber(isRCV: boolean): string {
+    if (isRCV) {
+      return _.get(Api, 'httpConfig.meetingsConfig.rcv.dialInNumber');
+    }
+    return ZOOM_MEETING_DIAL_IN_NUMBER.RC;
   }
 
   async getMeetingServiceType(): Promise<MEETING_SERVICE_TYPE> {

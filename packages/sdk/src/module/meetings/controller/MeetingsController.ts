@@ -14,6 +14,10 @@ class MeetingsController {
     return this.meetingsAdaptorController.startMeeting(groupIds);
   }
 
+  getDialInNumber(isRCV: boolean): string {
+    return this.meetingsAdaptorController.getDialInNumber(isRCV);
+  }
+
   getMeetingServiceType(): Promise<MEETING_SERVICE_TYPE> {
     return this.meetingsAdaptorController.getMeetingServiceType();
   }

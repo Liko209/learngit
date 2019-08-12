@@ -16,13 +16,6 @@ import {
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { Trans } from 'react-i18next';
 import { i18nP } from '@/utils/i18nT';
-import Config from '@/config';
-
-jest.mock('@/config', () => ({
-  getEnv: jest.fn(() => {
-    return 'production';
-  }),
-}));
 
 jest.mock('react-i18next', () => ({
   Trans: 'Trans',

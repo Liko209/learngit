@@ -9,6 +9,7 @@ import { StartMeetingResultType, MEETING_SERVICE_TYPE } from '../types';
 interface IMeetingsService {
   startMeeting(groupIds: number[]): Promise<StartMeetingResultType>;
   getMeetingServiceType(): Promise<MEETING_SERVICE_TYPE>;
+  getDialInNumber(isRCV: boolean): string;
 }
 
 export { IMeetingsService };

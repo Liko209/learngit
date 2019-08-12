@@ -7,7 +7,7 @@ import { ZoomMeetingItem } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 
-import { getMeetingStatus, ZOOM_MEETING_DIAL_IN_NUMBER } from './MeetingsUtils';
+import { getMeetingStatus } from './MeetingsUtils';
 
 export default class MeetingItemModel extends ItemModel {
   @observable
@@ -59,11 +59,6 @@ export default class MeetingItemModel extends ItemModel {
   @computed
   get meetingStatus() {
     return getMeetingStatus(this.status, this.createdAt);
-  }
-
-  getDialInNumber() {
-    // TODO: different brands and types should have different numbers
-    return ZOOM_MEETING_DIAL_IN_NUMBER.RC;
   }
 
   static fromJS(data: ZoomMeetingItem) {

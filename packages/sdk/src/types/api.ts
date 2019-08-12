@@ -39,6 +39,7 @@ type SumologicConfig = {
 
 type MeetingsRCV = {
   baseUrl: string;
+  dialInNumber: string;
 };
 
 type ApiConfig = {

@@ -19,7 +19,10 @@ const config: DeepPartial<ApiConfig> = {
     server: 'https://xmnup.asialab.glip.net:8443',
   },
   meetingsConfig: {
-    rcv: { baseUrl: 'https://xmnup-shr-1-v.lab.nordigy.ru' },
+    rcv: {
+      baseUrl: 'https://xmnup-shr-1-v.lab.nordigy.ru',
+      dialInNumber: '+18582073116',
+    },
   },
 };
 export default config;

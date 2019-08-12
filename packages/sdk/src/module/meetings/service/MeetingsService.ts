@@ -21,6 +21,10 @@ class MeetingsService extends EntityBaseService<{ id: number }>
     return this.meetingsController.startMeeting(groupIds);
   }
 
+  getDialInNumber(isRCV: boolean): string {
+    return this.meetingsController.getDialInNumber(isRCV);
+  }
+
   getMeetingServiceType(): Promise<MEETING_SERVICE_TYPE> {
     return this.meetingsController.getMeetingServiceType();
   }

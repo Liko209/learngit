@@ -4,10 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  MEETING_STATUS,
-  ZOOM_MEETING_DIAL_IN_NUMBER,
-} from '../MeetingsUtils';
+import { MEETING_STATUS } from '../MeetingsUtils';
 import { MeetingItemModel } from '../MeetingItem';
 import _ from 'lodash';
 
@@ -88,12 +85,6 @@ describe('MeetingItemModel', () => {
       data['status'] = 'not_started';
       const model = MeetingItemModel.fromJS(data);
       expect(model.meetingStatus).toEqual(MEETING_STATUS.CANCELLED);
-    });
-  });
-  describe('getDialInNumber', () => {
-    it('should return RC number', () => {
-      const model = MeetingItemModel.fromJS(meetingData);
-      expect(model.getDialInNumber()).toEqual(ZOOM_MEETING_DIAL_IN_NUMBER.RC);
     });
   });
   describe('duration', () => {

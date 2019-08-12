@@ -17,13 +17,6 @@ import ConferenceItemModel from '@/store/models/ConferenceItem';
 import ItemModel from '@/store/models/Item';
 
 export { ModelCreator } from '../ModelCreator';
-import Config from '@/config';
-
-jest.mock('@/config', () => ({
-  getEnv: jest.fn(() => {
-    return 'production';
-  }),
-}));
 
 describe('ModelCreator', () => {
   describe('createItemModel', () => {
