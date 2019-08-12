@@ -20,11 +20,14 @@ import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { POST_LIST_TYPE } from '../PostListPage/types';
+import { FIJI7739Fixer } from './FIJI7739Fixer';
 
 @observer
 class LeftRailViewComponent extends Component<
   LeftRailViewProps & WithTranslation
 > {
+  private _fIJI7739Fixer = new FIJI7739Fixer();
+
   onEntryClick = (type: POST_LIST_TYPE) => {
     history.push(`/messages/${type}`);
   };
@@ -58,7 +61,7 @@ class LeftRailViewComponent extends Component<
             onChange={filter.onChange}
           />,
         ])}
-        <JuiLeftRailMainSection>
+        <JuiLeftRailMainSection onWheel={this._fIJI7739Fixer.handleWheel}>
           {sections.map((type, index, array) => [
             <Section
               key={type}
