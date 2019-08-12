@@ -11,8 +11,7 @@ fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// skip duo to <audio> id change format
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-2503'],
   maintainers: ['Travis.Xu'],

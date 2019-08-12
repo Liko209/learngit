@@ -5,7 +5,6 @@
  */
 
 import * as _ from 'lodash';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
@@ -16,8 +15,7 @@ fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// TODO skipped because user story updated
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-1585'],
   maintainers: ['Potar.He'],
@@ -59,8 +57,9 @@ test.skip.meta(<ITestMeta>{
     await settingsEntry.enter();
   });
 
-  for (const i in subSettingEntries) {
+  for (let i = 0; i < subSettingEntries.length; i++) {
     await h(t).withLog(`When I click sub-setting ${entryNames[i]} entry`, async () => {
+      await settingTab.nthSubSetting(i).shouldBeNamed(entryNames[i])
       await subSettingEntries[i].enter();
     });
 
@@ -76,8 +75,7 @@ test.skip.meta(<ITestMeta>{
 });
 
 
-// TODO skipped because user story updated
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1586'],
   maintainers: ['Potar.He'],
@@ -142,8 +140,7 @@ test.skip.meta(<ITestMeta>{
   }
 });
 
-// TODO skipped because user story updated
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1587'],
   maintainers: ['Potar.He'],
