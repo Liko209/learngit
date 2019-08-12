@@ -177,25 +177,23 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         const keys = Object.keys(this._handlersMap);
         let ids: number[] = [];
         let removeFromCurrentTeam = false;
+        let isCurrentTeamNotValid = false;
         if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
           const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
           const currentGroupId = getGlobalValue(
             GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
           );
-          ids = ids.filter((id: number) => {
+          ids.forEach((id: number) => {
             const group = payload.body.entities.get(id);
+            const isCurrentGroup = id === currentGroupId;
             const includeCurrentUser =
               group && group.members.includes(currentUserId);
             removeFromCurrentTeam =
-              id === currentGroupId && (!group || !includeCurrentUser);
-
-            return (
-              !group ||
-              group.deactivated ||
-              !includeCurrentUser ||
-              group.is_archived
-            );
+              isCurrentGroup && (!group || !includeCurrentUser);
+            isCurrentTeamNotValid =
+              isCurrentGroup &&
+              (!group || group.deactivated || !!group.is_archived);
           });
         }
         if (removeFromCurrentTeam) {
@@ -210,7 +208,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             );
         }
         // update url
-        removeFromCurrentTeam && this._updateUrl();
+        (removeFromCurrentTeam || isCurrentTeamNotValid) && this._updateUrl();
         keys.forEach((key: string) => {
           this._handlersMap[key].onDataChanged(payload);
         });

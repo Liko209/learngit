@@ -41,6 +41,7 @@ class Event extends React.Component<Props, {}> {
       <JuiConversationItemCard
         title={postParser(text, { keyword: this.context.keyword })}
         iconColor={color}
+        customColor={color}
         Icon="event"
       >
         <JuiSectionDivider gap={2}>

@@ -4,20 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import JSZip from 'jszip';
+import { ZipItem, IZip } from './types';
+import { workerServerAdapter } from 'foundation/utils/workerAdapter';
 
-let ZIP_LEVEL;
-(function (ZIP_LEVEL) {
-  ZIP_LEVEL[(ZIP_LEVEL['LOW'] = 3)] = 'LOW';
-  ZIP_LEVEL[(ZIP_LEVEL['MIDDLE'] = 6)] = 'MIDDLE';
-  ZIP_LEVEL[(ZIP_LEVEL['HEIGH'] = 9)] = 'HEIGH';
-}(ZIP_LEVEL || (ZIP_LEVEL = {})));
-export function zip(zipItems) {
+enum ZIP_LEVEL {
+  LOW = 3,
+  MIDDLE = 6,
+  HEIGH = 9,
+}
+
+export async function zip(zipItems: ZipItem[]) {
   const zip = new JSZip();
-  const nameMap = new Map();
+  const nameMap = new Map<string, number>();
   zipItems.forEach(zipItem => {
     if (nameMap.has(zipItem.name)) {
-      nameMap.set(zipItem.name, nameMap.get(zipItem.name) + 1);
-      const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)}${
+      nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
+      const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)!}${
         zipItem.type
       }`;
       zipItem.folder
@@ -31,7 +33,7 @@ export function zip(zipItems) {
         : zip.file(fileName, zipItem.content);
     }
   });
-  return zip.generateAsync({
+  return await zip.generateAsync({
     type: 'blob',
     compression: 'DEFLATE',
     compressionOptions: {
@@ -39,3 +41,7 @@ export function zip(zipItems) {
     },
   });
 }
+
+export default workerServerAdapter<IZip>(global, {
+  zip,
+});

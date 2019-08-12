@@ -47,7 +47,9 @@ import { MediaService } from '@/modules/media/service';
 
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { isCurrentUserDND } from '@/modules/notification/utils';
 
+jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
 const mockedDelay = 10;
 const testProcedureWaitingTime = 100;
@@ -877,12 +879,24 @@ describe('TelephonyService', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       defaultPhoneApp = CALLING_OPTIONS.GLIP;
+      isCurrentUserDND = jest.fn().mockReturnValue(false);
       jest
         .spyOn(telephonyService._telephonyStore, 'incomingCall')
         .mockImplementation();
     });
     it("should not response when there's incoming call and default phone setting is RC phone", async () => {
       defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
+      mockedSettingService.getById = jest
+        .fn()
+        .mockResolvedValue({ value: defaultPhoneApp });
+      await telephonyService._onReceiveIncomingCall(params);
+      expect(
+        telephonyService._telephonyStore.incomingCall,
+      ).not.toHaveBeenCalled();
+    });
+    it("should not response when there's incoming call and current presence is DND", async () => {
+      defaultPhoneApp = CALLING_OPTIONS.GLIP;
+      isCurrentUserDND = jest.fn().mockReturnValue(true);
       mockedSettingService.getById = jest
         .fn()
         .mockResolvedValue({ value: defaultPhoneApp });

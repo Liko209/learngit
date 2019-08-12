@@ -18,6 +18,7 @@ import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import { CONVERSATION_TYPES } from '@/constants';
 import {
   RIGHT_SHELF_DEFAULT_WIDTH,
   RIGHT_SHELF_MIN_WIDTH,
@@ -28,6 +29,8 @@ const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
 const AVATAR_MARGIN_BOTTOM = 8;
 const WRAPPER_PADDING = 24;
+const DEFAULT_MEMBER_FETCH_COUNT = 40;
+const DEFAULT_GUEST_FETCH_COUNT = 10;
 class RightShelfMemberListViewModel
   extends StoreViewModel<RightShelfMemberListProps>
   implements RightShelfMemberListViewProps {
@@ -122,13 +125,18 @@ class RightShelfMemberListViewModel
   private async _getMemberAndGuestIds() {
     const originalGroupId = this.props.groupId;
     const {
-      memberIds,
+      realMemberIds,
       guestIds,
-    } = await this._groupService.getMembersAndGuestIds(this.props.groupId);
+      optionalIds,
+    } = await this._groupService.getMemberAndGuestIds(
+      this.props.groupId,
+      DEFAULT_MEMBER_FETCH_COUNT,
+      DEFAULT_GUEST_FETCH_COUNT,
+    );
     if (originalGroupId !== this.props.groupId) return;
     this._membersCache = { [this.props.groupId]: this.group.members };
     this.isLoading = false;
-    this.fullMemberIds = memberIds;
+    this.fullMemberIds = realMemberIds.concat(optionalIds);
     this.fullGuestIds = guestIds;
   }
 
@@ -137,6 +145,12 @@ class RightShelfMemberListViewModel
       companyId !== this._currentCompanyId &&
       !(this.group.guestUserCompanyIds || []).includes(companyId)
     );
+  }
+
+  @computed
+  get shouldHide() {
+    const { group } = this;
+    return !group || group.isMocked || group.type === CONVERSATION_TYPES.ME;
   }
 
   @computed

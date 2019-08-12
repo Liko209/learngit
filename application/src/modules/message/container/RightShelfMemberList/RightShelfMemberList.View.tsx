@@ -57,8 +57,22 @@ class RightShelfMemberListViewComponent extends Component<Props> {
 
   componentDidMount() {
     this.props.init();
-    if (this._resizeObserver && this._header.current) {
+    this._header.current &&
+      !this.props.shouldHide &&
+      this._resizeObserver &&
       this._resizeObserver.observe(this._header.current);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (
+      this._header.current &&
+      prevProps.shouldHide &&
+      !this.props.shouldHide
+    ) {
+      this._resizeObserver &&
+        this._resizeObserver.observe(this._header.current);
+    } else if (!prevProps.shouldHide && this.props.shouldHide) {
+      this._resizeObserver && this._resizeObserver.disconnect();
     }
   }
 
@@ -134,6 +148,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       shownGuestIds,
       allMemberLength,
       isTeam,
+      shouldHide,
     } = this.props;
     const addButtonTip = isTeam
       ? t('people.team.addTeamMembers')
@@ -143,8 +158,6 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       CONVERSATION_TYPES.ME,
       CONVERSATION_TYPES.SMS,
     ].includes(group.type);
-    const shouldHide =
-      !group || group.isMocked || group.type === CONVERSATION_TYPES.ME;
     return shouldHide ? null : (
       <>
         <MemberListHeader
@@ -185,11 +198,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
             {fullMemberIds.length > shownMemberIds.length ? (
               <MemberListMoreCount
                 data-test-automation-id="rightShelfMemberListMore"
-                count={
-                  (allMemberLength
-                    ? allMemberLength - fullGuestIds.length
-                    : fullMemberIds.length) - shownMemberIds.length
-                }
+                count={fullMemberIds.length - shownMemberIds.length}
               />
             ) : null}
           </MemberListAvatarWrapper>
