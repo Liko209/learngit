@@ -4,15 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MeetingItemController } from '../controller/MeetingItemController';
-import { MeetingItem } from '../entity';
-import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
-import { EntityBaseService } from '../../../../../framework/service';
+import { ZoomMeetingItem } from '../entity';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { EntityBaseService } from 'sdk/framework/service';
 
-class MeetingItemService extends EntityBaseService<MeetingItem> {
+class MeetingItemService extends EntityBaseService<ZoomMeetingItem> {
   private _meetingItemController: MeetingItemController;
   constructor() {
     super({ isSupportedCache: false });
-    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_MEETING));
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_MEETING),
+    );
   }
 
   protected get meetingItemController() {

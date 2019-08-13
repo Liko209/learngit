@@ -27,6 +27,8 @@ interface IPersonService {
 
   getPersonsByIds(ids: number[]): Promise<Person[]>;
 
+  getCurrentPerson(): Promise<Person | null>;
+
   getAllCount(): Promise<number>;
 
   getHeadShotWithSize(
@@ -41,6 +43,10 @@ interface IPersonService {
   ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>>;
 
   getName(person: Person): string;
+
+  getFirstName(person: Person): string;
+
+  getLastName(person: Person): string;
 
   getEmailAsName(person: Person): string;
 

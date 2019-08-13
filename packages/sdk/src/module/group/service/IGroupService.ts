@@ -135,6 +135,8 @@ interface IGroupService {
   handleGroupFetchedPosts(groupId: number, posts: Post[]): void;
 
   sendTypingEvent(groupId: number, isClear: boolean): void;
+
+  getSynchronously(id: number): Group | null;
 }
 
 export { IGroupService };

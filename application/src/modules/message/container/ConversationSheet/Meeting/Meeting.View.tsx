@@ -5,7 +5,8 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { ViewProps, MEETING_STATUS } from './types';
+import { ViewProps } from './types';
+import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
@@ -30,9 +31,9 @@ class Meeting extends React.Component<meetingProps> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   private _renderMeetingContent = () => {
-    const { t, meetingItem } = this.props;
-    const { zoomMeetingId, joinUrl } = meetingItem;
-    const dialNumber = meetingItem.getDialInNumber();
+    const { t, meetingItem, meetingId, getDialInNumber } = this.props;
+    const { joinUrl } = meetingItem;
+    const dialNumber = getDialInNumber();
     return (
       <>
         <JuiItemContent title={t('item.meeting.meetingUrl')}>
@@ -44,7 +45,7 @@ class Meeting extends React.Component<meetingProps> {
         </JuiItemContent>
         <JuiItemContent title={t('item.meeting.meetingId')}>
           <JuiItemTextValue
-            description={postParser(String(zoomMeetingId), {
+            description={postParser(String(meetingId), {
               keyword: this.context.keyword,
             })}
           />
@@ -69,7 +70,7 @@ class Meeting extends React.Component<meetingProps> {
   }
   private _handleRenderSequence() {
     const { meetingItem } = this.props;
-    const { status } = meetingItem;
+    const status = meetingItem.meetingStatus;
     switch (status) {
       case MEETING_STATUS.LIVE:
         return this._renderMeetingContent();
@@ -80,10 +81,8 @@ class Meeting extends React.Component<meetingProps> {
     }
   }
   render() {
-    const {
-      t, meetingTitle, meetingItem, duration,
-    } = this.props;
-    const { status } = meetingItem;
+    const { t, meetingTitle, meetingItem, duration } = this.props;
+    const status = meetingItem.meetingStatus;
     const isEnded = status === MEETING_STATUS.ENDED;
     return (
       <JuiConversationItemCard

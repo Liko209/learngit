@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/TeamSetting/DeleteTeam.ts",
+      "./fixtures/TeamSetting/ArchiveTeam.ts",
+      "./telephony/Forward.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

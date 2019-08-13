@@ -21,6 +21,9 @@ export class SentryErrorReporter implements IErrorReporter {
       dsn: ENV_DSN_MAP[JUPITER_ENV] || ENV_DSN_MAP['development'],
       debug: false,
       release: deployedVersion,
+      ignoreErrors: [
+        "Failed to execute 'transaction' on 'IDBDatabase': The database connection is closing.",
+      ],
     });
     if (
       window.jupiterElectron &&
@@ -35,11 +38,11 @@ export class SentryErrorReporter implements IErrorReporter {
           );
         });
     }
-  }
+  };
 
   report = (error: Error) => {
     Sentry.captureException(error);
-  }
+  };
 
   setUserContextInfo = (contextInfo: UserContextInfo) => {
     Sentry.configureScope((scope: Sentry.Scope) => {
@@ -50,5 +53,5 @@ export class SentryErrorReporter implements IErrorReporter {
       });
       scope.setTag('env', contextInfo.env);
     });
-  }
+  };
 }

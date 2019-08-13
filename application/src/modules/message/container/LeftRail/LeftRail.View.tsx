@@ -25,6 +25,7 @@ import { SECTION_TYPE } from './Section/types';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { JuiConversationListItemLoader } from 'jui/pattern/ConversationList';
 import debounce from 'lodash/debounce';
+import { CanNotScrollFixer } from './CanNotScrollFixer';
 
 const DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD = 300;
 
@@ -32,6 +33,8 @@ const DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD = 300;
 class LeftRailViewComponent extends Component<
   LeftRailViewProps & WithTranslation
 > {
+  private _canNotScrollFixer = new CanNotScrollFixer();
+
   onEntryClick = (type: POST_LIST_TYPE) => {
     history.push(`/messages/${type}`);
   };
@@ -63,6 +66,7 @@ class LeftRailViewComponent extends Component<
   }
 
   handleScroll = (event: React.UIEvent<HTMLElement>) => {
+    this._canNotScrollFixer.handleScroll();
     if (this._teamSectionCollapsed) return;
     const element = event.currentTarget;
     const hasMore = SectionGroupHandler.getInstance().hasMore(
@@ -145,6 +149,7 @@ class LeftRailViewComponent extends Component<
         <JuiLeftRailMainSection
           ref={this._mainSectionRef}
           onScroll={this.handleScroll}
+          onWheel={this._canNotScrollFixer.handleWheel}
         >
           {sections.map((type, index, array) => [
             <Section

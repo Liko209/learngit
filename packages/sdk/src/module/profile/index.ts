@@ -29,6 +29,7 @@ export {
   SOUNDS_TYPE,
   RingsList,
   SoundsList,
+  VIDEO_SERVICE_OPTIONS,
 } from './constants';
 
 export { SettingValue, SettingOption } from './types';

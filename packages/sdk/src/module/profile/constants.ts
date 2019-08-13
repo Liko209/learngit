@@ -36,6 +36,13 @@ enum DESKTOP_MESSAGE_NOTIFICATION_OPTIONS {
   OFF = 'never',
 }
 
+enum VIDEO_SERVICE_OPTIONS {
+  RINGCENTRAL_MEETINGS = 'ringcentral_meetings',
+  RINGCENTRAL_MEETINGS_EMBEDDED = 'ringcentral_meetings_embedded',
+  RINGCENTRAL_VIDEO = 'ringcentral_video',
+  RINGCENTRAL_VIDEO_EMBEDDED = 'ringcentral_video_embedded',
+}
+
 enum RINGS_TYPE {
   Phone_Ring = 'PhoneRing.wav',
   Air_Raid = 'air-raid-ring.wav',
@@ -186,4 +193,5 @@ export {
   SOUNDS_TYPE,
   RingsList,
   SoundsList,
+  VIDEO_SERVICE_OPTIONS,
 };

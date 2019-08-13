@@ -190,6 +190,18 @@ module.exports = {
     strictExportPresence: true,
     rules: [
       {
+        test: /\.worker\.(ts|js)$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          {
+            loader: 'worker-loader',
+            options: {
+              inline: false,
+            },
+          },
+        ],
+      },
+      {
         test: /\.(ts|tsx)$/,
         exclude: /\.test[.\w]*.(ts|tsx)$/,
         enforce: 'pre',
@@ -336,19 +348,6 @@ module.exports = {
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
-            },
-          },
-        ],
-      },
-
-      {
-        test: /\.worker\.(ts|js)$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [
-          {
-            loader: 'workerize-loader',
-            options: {
-              inline: false,
             },
           },
         ],

@@ -186,12 +186,12 @@ class JuiTabs extends PureComponent<Props, States> {
       // 5. change original array
       indexTabs.sort();
     }
-    console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
     if (
       isEqual(this.state.indexMenus, indexMenus) &&
       isEqual(this.state.indexTabs, indexTabs)
-    )
+    ) {
       return;
+    }
     this.setState({
       indexMenus,
       indexTabs,

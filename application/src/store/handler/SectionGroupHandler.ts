@@ -177,25 +177,20 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         const keys = Object.keys(this._handlersMap);
         let ids: number[] = [];
         let removeFromCurrentTeam = false;
+        let isCurrentTeamNotValid = false;
         if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
           const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-          const currentGroupId = getGlobalValue(
-            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-          );
-          ids = ids.filter((id: number) => {
+          ids.forEach((id: number) => {
             const group = payload.body.entities.get(id);
+            const isCurrentGroup = this._isCurrentConversation(id);
             const includeCurrentUser =
               group && group.members.includes(currentUserId);
             removeFromCurrentTeam =
-              id === currentGroupId && (!group || !includeCurrentUser);
-
-            return (
-              !group ||
-              group.deactivated ||
-              !includeCurrentUser ||
-              group.is_archived
-            );
+              isCurrentGroup && (!group || !includeCurrentUser);
+            isCurrentTeamNotValid =
+              isCurrentGroup &&
+              (!group || group.deactivated || !!group.is_archived);
           });
         }
         if (removeFromCurrentTeam) {
@@ -210,7 +205,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             );
         }
         // update url
-        removeFromCurrentTeam && this._updateUrl();
+        (removeFromCurrentTeam || isCurrentTeamNotValid) && this._updateUrl();
         keys.forEach((key: string) => {
           this._handlersMap[key].onDataChanged(payload);
         });
@@ -619,10 +614,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           ? groupState.unreadCount > 0
           : false;
       const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const currentConversationId = getGlobalValue(
-        GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-      );
-      const isCurrentConversation = currentConversationId === model.id;
+      const isCurrentConversation = this._isCurrentConversation(model.id);
       const createdByMeOrHasPostTime: boolean =
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;
@@ -637,6 +629,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         (isCurrentConversation || createdByMeOrHasPostTime) &&
         groupService.isValid(model) &&
         (hasUnread ||
+          isCurrentConversation ||
           this._isInLimitation(SECTION_TYPE.DIRECT_MESSAGE, sortableModel))
       );
     };
@@ -676,7 +669,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         includesMe() &&
-        (hasUnread || this._isInLimitation(SECTION_TYPE.TEAM, sortableModel))
+        (hasUnread ||
+          this._isCurrentConversation(model.id) ||
+          this._isInLimitation(SECTION_TYPE.TEAM, sortableModel))
       );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
@@ -687,6 +682,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       offset: 0,
       maintainDirection: MAINTAIN_DIRECTION.UP,
     });
+  }
+
+  private _isCurrentConversation(id: number) {
+    const currentConversationId = getGlobalValue(
+      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+    );
+    return currentConversationId === id;
   }
 
   private _isInLimitation(
@@ -712,14 +714,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   async fetchPagination(sectionType: SECTION_TYPE) {
-    const offset = this._handlersMap[SECTION_TYPE.TEAM].size;
+    const offset = this._handlersMap[SECTION_TYPE.TEAM].size - 1;
     mainLogger
       .tags(LOG_TAG)
       .info('fetchPagination() offset:', offset, sectionType);
     this._handlersMap[sectionType].fetchData(
       QUERY_DIRECTION.NEWER,
       DEFAULT_LEFT_RAIL_GROUP,
-      offset,
+      offset > 0 ? offset : 0,
     );
   }
 
