@@ -626,7 +626,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         !model.is_team &&
-        (isCurrentConversation || createdByMeOrHasPostTime) &&
+        createdByMeOrHasPostTime &&
         groupService.isValid(model) &&
         (hasUnread ||
           isCurrentConversation ||

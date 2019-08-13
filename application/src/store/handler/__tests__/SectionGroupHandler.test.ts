@@ -291,13 +291,14 @@ describe('SectionGroupHandler', () => {
 
     it('should not add this group in because it has not post and did not created by current user', done => {
       SectionGroupHandler.getInstance();
+      getEntity.mockReturnValue({ unreadCount: 0 });
       const fakeData = [
         {
           id: 0,
           is_team: false,
           created_at: 0,
           creator_id: 2,
-          members: [1],
+          members: [3],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
