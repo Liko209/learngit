@@ -18,7 +18,7 @@ import {
 import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { SECTION_TYPE } from './Section/types';
@@ -37,10 +37,25 @@ class LeftRailViewComponent extends Component<
   };
 
   private _loading = false;
+  private _mainSectionRef: React.RefObject<any> = React.createRef();
+
   @observable private _teamSectionCollapsed = false;
 
   componentDidMount() {
     SectionGroupHandler.getInstance().setLeftRailVisible(true);
+  }
+
+  componentDidUpdate() {
+    if (this._mainSectionRef.current) {
+      const element = this._mainSectionRef.current;
+      const hasMore = SectionGroupHandler.getInstance().hasMore(
+        SECTION_TYPE.TEAM,
+        QUERY_DIRECTION.NEWER,
+      );
+      if (element.scrollHeight === element.clientHeight && hasMore) {
+        this._loadGroups();
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -59,19 +74,24 @@ class LeftRailViewComponent extends Component<
         element.scrollHeight - element.scrollTop <=
         element.clientHeight + DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD;
       if (scrollPassLoadPosition && !this._loading && hasMore) {
-        this._loading = true;
         this._loadGroups();
       }
     }
   };
 
-  private _loadGroups = debounce(
-    () => {
-      SectionGroupHandler.getInstance()
-        .fetchPagination(SECTION_TYPE.TEAM)
-        .finally(() => {
-          this._loading = false;
-        });
+  @action
+  private _loadGroups = () => {
+    this._loading = true;
+    this._loadGroupDebounce().finally(() => {
+      this._loading = false;
+    });
+  };
+
+  private _loadGroupDebounce = debounce(
+    async () => {
+      return SectionGroupHandler.getInstance().fetchPagination(
+        SECTION_TYPE.TEAM,
+      );
     },
     100,
     { leading: true, trailing: true },
@@ -122,7 +142,10 @@ class LeftRailViewComponent extends Component<
             onChange={filter.onChange}
           />,
         ])}
-        <JuiLeftRailMainSection onScroll={this.handleScroll}>
+        <JuiLeftRailMainSection
+          ref={this._mainSectionRef}
+          onScroll={this.handleScroll}
+        >
           {sections.map((type, index, array) => [
             <Section
               key={type}
