@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTC_CALL_STATE } from '../api/types';
+import { RTC_CALL_STATE, ALLOW_CALL_FLAG } from '../api/types';
 import { RTCCall } from '../api/RTCCall';
 import { kRTCMaxCallCount } from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -29,11 +29,22 @@ class RTCCallManager {
     });
     rtcLogger.debug(
       LOG_TAG,
-      `Call ${callUuid} removed from call manager. Calls: ${this._calls.length}`,
+      `Call ${callUuid} removed from call manager. Calls: ${
+        this._calls.length
+      }`,
     );
   }
 
-  allowCall(): boolean {
+  allowCall(flag: ALLOW_CALL_FLAG = ALLOW_CALL_FLAG.OUTBOUND_CALL): boolean {
+    if (kRTCMaxCallCount === this._calls.length) {
+      if (ALLOW_CALL_FLAG.OUTBOUND_CALL === flag) {
+        return false;
+      }
+      if (ALLOW_CALL_FLAG.EXTRA_OUTBOUND_CALL === flag) {
+        return true;
+      }
+      return this.connectedCallCount() > 0;
+    }
     return this._calls.length < kRTCMaxCallCount;
   }
 

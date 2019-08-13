@@ -23,6 +23,7 @@ import {
   RTCSipProvisionInfo,
   RTCNoAudioStateEvent,
   RTCNoAudioDataEvent,
+  ALLOW_CALL_FLAG,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -84,7 +85,11 @@ class RTCAccount implements IRTCAccount {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
       return null;
     }
-    if (!this._callManager.allowCall()) {
+    const allowCallFlag: boolean =
+      options && options.extraCall
+        ? this._callManager.allowCall(ALLOW_CALL_FLAG.EXTRA_OUTBOUND_CALL)
+        : this._callManager.allowCall();
+    if (!allowCallFlag) {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
       return null;
     }
@@ -318,7 +323,7 @@ class RTCAccount implements IRTCAccount {
       );
       return;
     }
-    if (!this._callManager.allowCall()) {
+    if (!this._callManager.allowCall(ALLOW_CALL_FLAG.INBOUND_CALL)) {
       rtcLogger.warn(
         LOG_TAG,
         'Failed to receive incoming call. Max call count is reached',
