@@ -7,6 +7,8 @@
 import Api from '../api';
 import { RawPresence } from '../../module/presence/entity';
 import { NETWORK_VIA } from 'foundation';
+import { Presence } from 'sdk/module/presence/entity/Presence';
+import { PRESENCE_REQUEST_STATUS } from 'sdk/module/presence/constant';
 
 class PresenceAPI extends Api {
   /**
@@ -21,6 +23,29 @@ class PresenceAPI extends Api {
       retryCount: 3,
       host: Api.httpConfig.glip.presenceServer,
       pathPrefix: '',
+    });
+  }
+
+  static setPresence(presence: Presence) {
+    return this.glipNetworkClient.post<Presence>({
+      path: `/glip-presence/v1/person/${presence.id}/set-status`,
+      via: NETWORK_VIA.SOCKET,
+      host: Api.httpConfig.glip.presenceServer,
+      pathPrefix: '',
+      data: {
+        status: presence.presence,
+      },
+    });
+  }
+
+  static setAutoPresence(presence: PRESENCE_REQUEST_STATUS) {
+    return this.glipNetworkClient.post<Presence>({
+      path: '/set_presence',
+      via: NETWORK_VIA.SOCKET,
+      host: Api.httpConfig.glip.presenceServer,
+      data: {
+        presence,
+      },
     });
   }
 }

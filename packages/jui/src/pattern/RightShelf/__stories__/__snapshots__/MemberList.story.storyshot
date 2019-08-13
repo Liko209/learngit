@@ -1,0 +1,879 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/ConversationRightShelf MemberList 1`] = `
+.c6 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c7 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c16.c16 .c5,
+.c16.c16 .c5 svg {
+  font-size: 20px;
+}
+
+.c16.c16:hover .c5 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c16.c16:active .c5 {
+  color: #9e9e9e;
+}
+
+.c16.c16.c16.c16.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c17.c17 .c5,
+.c17.c17 .c5 svg {
+  font-size: 20px;
+}
+
+.c17.c17:hover .c5 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c17.c17:active .c5 {
+  color: #9e9e9e;
+}
+
+.c17.c17.c17.c17.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c18.c18 .c5,
+.c18.c18 .c5 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c5 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c18.c18:active .c5 {
+  color: #0684bd;
+}
+
+.c18.c18.c18.c18.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c19.c19 .c5,
+.c19.c19 .c5 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c5 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c19.c19:active .c5 {
+  color: #0684bd;
+}
+
+.c19.c19.c19.c19.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c5,
+.c20.c20 .c5 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c5 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c20.c20:active .c5 {
+  color: #edb63c;
+}
+
+.c20.c20.c20.c20.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c5,
+.c21.c21 .c5 svg {
+  font-size: 16px;
+}
+
+.c21.c21:hover .c5 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c21.c21:active .c5 {
+  color: #9e9e9e;
+}
+
+.c21.c21.c21.c21.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c5,
+.c22.c22 .c5 svg {
+  font-size: 16px;
+}
+
+.c22.c22:hover .c5 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c22.c22:active .c5 {
+  color: #0684bd;
+}
+
+.c22.c22.c22.c22.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c5,
+.c23.c23 .c5 svg {
+  font-size: 16px;
+}
+
+.c23.c23:hover .c5 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c23.c23:active .c5 {
+  color: #fff;
+}
+
+.c23.c23.c23.c23.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c5,
+.c24.c24 .c5 svg {
+  font-size: 32px;
+}
+
+.c24.c24:hover .c5 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c24.c24:active .c5 {
+  color: #212121;
+}
+
+.c24.c24.c24.c24.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c25.c25 .c5,
+.c25.c25 .c5 svg {
+  font-size: 20px;
+}
+
+.c25.c25:hover .c5 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c25.c25:active .c5 {
+  color: #fff;
+}
+
+.c25.c25.c25.c25.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c4.c4 {
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+  border-radius: 0;
+}
+
+.c4.c4 .c5,
+.c4.c4 .c5 svg {
+  font-size: 16px;
+}
+
+.c4.c4:hover {
+  background-color: transparent;
+}
+
+.c4.c4:hover .c5 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c4.c4:active .c5 {
+  color: #9e9e9e;
+}
+
+.c4.c4.c4.c4.disabled .c5 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c4.c4 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c10 {
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+.c11.c11 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c11.c11:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c11.c11:active {
+  opacity: 0.76;
+}
+
+.c11 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c12 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.c13 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #fff;
+  background: #26a304;
+  border-radius: 50%;
+}
+
+.c3 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #0684bd;
+}
+
+.c3:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.c3:active {
+  color: rgba(6,132,189,0.76);
+}
+
+.c1 {
+  padding: 0px 16px;
+  height: 32px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0;
+}
+
+.c1 a span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+}
+
+.c2 {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #000;
+  padding-right: 12px;
+  position: relative;
+}
+
+.c15 {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #757575;
+  padding-bottom: 8px;
+  margin-left: 4px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.c8 {
+  height: auto;
+  padding: 16px 12px 8px;
+  position: relative;
+}
+
+.c9 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+}
+
+.c9 > * {
+  margin-left: 4px;
+  margin-bottom: 8px;
+}
+
+.c14 {
+  width: 32px;
+  height: 32px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #757575;
+  line-height: 32px;
+  text-align: center;
+}
+
+.c0 {
+  width: 268px;
+  background: white;
+}
+
+<div
+  className="c0"
+>
+  <div
+    className="c1"
+  >
+    <div>
+      <span
+        className="c2"
+      >
+        Members
+      </span>
+      <a
+        color="primary"
+        disabled={false}
+      >
+        <span
+          className="c3"
+          color="primary"
+          disabled={false}
+          size="small"
+        >
+          Show all 
+          14
+        </span>
+      </a>
+    </div>
+    <button
+      aria-describedby={null}
+      aria-label="add member"
+      className="MuiButtonBase-root MuiIconButton-root c4"
+      disabled={false}
+      onBlur={[Function]}
+      onDragLeave={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex={0}
+      title={null}
+      type="button"
+      variant="plain"
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <span
+          className="c5 addmember_border icon c6"
+          size="small"
+        >
+          <svg
+            className="c7"
+            role="img"
+          >
+            <use
+              href="#icon-add-member_border"
+              xlinkHref="#icon-add-member_border"
+            />
+          </svg>
+        </span>
+      </span>
+    </button>
+  </div>
+  <div
+    className="c8"
+  >
+    <div
+      className="c9"
+    >
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        className="c14"
+      >
+        <div>
+          +
+          15
+        </div>
+      </div>
+    </div>
+    <div
+      className="c15"
+    >
+      Guests
+    </div>
+    <div
+      className="c9"
+    >
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        aria-describedby={null}
+        className="c10"
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        title={null}
+      >
+        <div
+          className="MuiAvatar-root c11 MuiAvatar-colorDefault"
+          color="lake"
+          size="medium"
+        >
+          SH
+        </div>
+        <div
+          className="c12"
+        >
+          <div
+            className="c13"
+            size="medium"
+          />
+        </div>
+      </div>
+      <div
+        className="c14"
+      >
+        <div>
+          +
+          15
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

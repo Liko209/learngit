@@ -20,7 +20,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2394'],
+  caseIds: ['JPT-2394'],
   maintainers: ['Allen.Lian'],
   keywords: ['call history']
 })('Go to conversation from the call history', async (t) => {
@@ -44,6 +44,11 @@ test.meta(<ITestMeta>{
   const callhistoryPage = app.homePage.phoneTab.callHistoryPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click call history entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.callHistoryEntry.enter();
   });
 
@@ -51,10 +56,6 @@ test.meta(<ITestMeta>{
     await callhistoryPage.ensureLoaded();
   });
 
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
 
   await addOneMissCallLogFromAnotherUser(t, caller, callee, app);
 

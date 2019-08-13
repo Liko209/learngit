@@ -53,7 +53,9 @@ describe('backNForward ViewModel', () => {
       expect(newCursor).toBe(oldCursor);
     }
 
-    @test('should make history stack cursor + 1 or - 1 when execute back or forward')
+    @test(
+      'should make history stack cursor + 1 or - 1 when execute back or forward',
+    )
     t2() {
       historyStack.push('/messages/text');
       historyStack.push('/messages/text1');
@@ -77,7 +79,7 @@ describe('backNForward ViewModel', () => {
       times(22, (value: number) => {
         historyStack.push(`/messages/${value}`);
       });
-      const backRecord = backNForwardViewModel.backRecord;
+      const backRecord = backNForwardViewModel.backRecord.reverse();
       expect(backRecord).toEqual([
         {
           pathname: '/messages/11',
@@ -131,7 +133,7 @@ describe('backNForward ViewModel', () => {
       times(8, (value: number) => {
         historyStack.push(`/messages/${value + 13}`);
       });
-      const backRecord = backNForwardViewModel.backRecord;
+      const backRecord = backNForwardViewModel.backRecord.reverse();
       expect(backRecord).toEqual([
         {
           pathname: '/messages/11',

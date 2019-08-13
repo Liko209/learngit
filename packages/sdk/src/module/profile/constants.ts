@@ -36,6 +36,106 @@ enum DESKTOP_MESSAGE_NOTIFICATION_OPTIONS {
   OFF = 'never',
 }
 
+enum VIDEO_SERVICE_OPTIONS {
+  RINGCENTRAL_MEETINGS = 'ringcentral_meetings',
+  RINGCENTRAL_MEETINGS_EMBEDDED = 'ringcentral_meetings_embedded',
+  RINGCENTRAL_VIDEO = 'ringcentral_video',
+  RINGCENTRAL_VIDEO_EMBEDDED = 'ringcentral_video_embedded',
+}
+
+enum RINGS_TYPE {
+  Phone_Ring = 'PhoneRing.wav',
+  Air_Raid = 'air-raid-ring.wav',
+  Allusive = 'allusive-ring.wav',
+  Attention = 'attention-ring.wav',
+  Blub_Blub = 'blub-blub-ring.wav',
+  Buzzy = 'buzzy-ring.wav',
+  Channel_Open = 'communication-channel-ring.wav',
+  Disco = 'disco-ring.wav',
+  Door_Bell = 'door-bell-ring.wav',
+  Fairy = 'fab-ring.wav',
+  Fast_Bells = 'fast-bells-ring.wav',
+  High_Gong = 'high-gong-ring.wav',
+  Indeed = 'indeed-ring.wav',
+  Nice = 'nice-ring.wav',
+  Ringing_Bells = 'ringing-bells-ring.wav',
+  Ring = 'ring-ring.wav',
+  Simple = 'simple-ring.wav',
+  Soothing = 'soothing-ring.wav',
+  Off = '0',
+}
+
+enum SOUNDS_TYPE {
+  Double_Beeps = '2Beep.wav',
+  Triple_Beeps = '3Beep.wav',
+  Alert = 'Alert1.wav',
+  Alert_Double = 'Alert2.wav',
+  Alert_Triple = 'Alert3.wav',
+  Bing_Bong = 'BingBong.wav',
+  Ching = 'Ching.wav',
+  Log_Drum = 'LogDrum2.wav',
+  Snap = 'Snap.wav',
+  Squirt = 'Button9.wav',
+  Whoosh = 'Whoosh.wav',
+  Whoosh_Double = 'Whoosh2.wav',
+  Default = 'default',
+  Off = '0',
+}
+
+const AudioSourceUrl = 'https://d2rbro28ib85bu.cloudfront.net/audio/alerts/v1/';
+type AUDIO_SOUNDS_INFO = {
+  id: RINGS_TYPE | SOUNDS_TYPE;
+  url: string;
+};
+
+const ringsTypeList: RINGS_TYPE[] = [
+  RINGS_TYPE.Phone_Ring,
+  RINGS_TYPE.Air_Raid,
+  RINGS_TYPE.Allusive,
+  RINGS_TYPE.Attention,
+  RINGS_TYPE.Blub_Blub,
+  RINGS_TYPE.Buzzy,
+  RINGS_TYPE.Channel_Open,
+  RINGS_TYPE.Disco,
+  RINGS_TYPE.Door_Bell,
+  RINGS_TYPE.Fairy,
+  RINGS_TYPE.Fast_Bells,
+  RINGS_TYPE.High_Gong,
+  RINGS_TYPE.Indeed,
+  RINGS_TYPE.Nice,
+  RINGS_TYPE.Ringing_Bells,
+  RINGS_TYPE.Ring,
+  RINGS_TYPE.Simple,
+  RINGS_TYPE.Soothing,
+  RINGS_TYPE.Off,
+];
+
+const soundsTypeList = [
+  SOUNDS_TYPE.Double_Beeps,
+  SOUNDS_TYPE.Triple_Beeps,
+  SOUNDS_TYPE.Alert,
+  SOUNDS_TYPE.Alert_Double,
+  SOUNDS_TYPE.Alert_Triple,
+  SOUNDS_TYPE.Bing_Bong,
+  SOUNDS_TYPE.Ching,
+  SOUNDS_TYPE.Log_Drum,
+  SOUNDS_TYPE.Snap,
+  SOUNDS_TYPE.Squirt,
+  SOUNDS_TYPE.Whoosh,
+  SOUNDS_TYPE.Whoosh_Double,
+  SOUNDS_TYPE.Off,
+];
+
+const SoundsList = soundsTypeList.map(id => ({
+  id,
+  url: `${AudioSourceUrl}${id}`,
+}));
+
+const RingsList = ringsTypeList.map(id => ({
+  id,
+  url: `${AudioSourceUrl}${id}`,
+}));
+
 enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
@@ -64,6 +164,13 @@ enum SETTING_KEYS {
   // conversation settings
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
   NEW_MESSAGE_BADGES = 'new_message_badges',
+
+  // sound settings
+  AUDIO_TEAM_MESSAGES = 'want_audio_notifications',
+  AUDIO_DIRECT_MESSAGES = 'one_on_one_audio_notifications',
+  AUDIO_MENTIONS = 'at_mention_audio_notifications',
+  AUDIO_INCOMING_CALLS = 'phone_audio_notifications',
+  AUDIO_NEW_VOICEMAIL = 'meeting_audio_notifications',
 }
 type DesktopNotificationsSettingModel = {
   browserPermission: NotificationPermission;
@@ -80,4 +187,11 @@ export {
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
   DesktopNotificationsSettingModel,
+  AUDIO_SOUNDS_INFO,
+  AudioSourceUrl,
+  RINGS_TYPE,
+  SOUNDS_TYPE,
+  RingsList,
+  SoundsList,
+  VIDEO_SERVICE_OPTIONS,
 };

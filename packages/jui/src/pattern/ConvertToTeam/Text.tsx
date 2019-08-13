@@ -8,17 +8,20 @@ import styled from '../../foundation/styled-components';
 import { spacing, grey, typography } from '../../foundation/utils/styles';
 
 const StyledText = styled('div')`
-  ${typography('caption1')};
+  ${typography('body1')};
+  * {
+    ${typography('body1')};
+  }
 `;
 
 const JuiTopText = styled(StyledText)`
-  color: ${grey('900')};
+  color: ${grey('700')};
   padding-bottom: ${spacing(4)};
 `;
 
 const JuiBottomText = styled(StyledText)`
   color: ${grey('700')};
-  padding: ${spacing(4, 0, 1)};
+  padding-top: ${spacing(4)};
 `;
 
 export { JuiTopText, JuiBottomText };

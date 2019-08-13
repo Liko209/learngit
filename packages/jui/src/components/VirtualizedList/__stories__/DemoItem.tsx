@@ -27,13 +27,13 @@ const DemoItem = ({ item }: { item: DemoItemModel }) => {
         } else {
           setCrazyHeight(50);
         }
-      },                           1000);
+      }, 1000);
       return () => {
         clearInterval(interval);
       };
     }
     return () => {};
-  },              [crazyHeight]);
+  }, [crazyHeight]);
 
   if (item.crazy) {
     return (
@@ -51,7 +51,13 @@ const DemoItem = ({ item }: { item: DemoItemModel }) => {
 
   if (item.imageUrl) {
     return (
-      <div style={{ padding: '10px 0', borderBottom: '1px dashed #ddd' }}>
+      <div
+        style={{
+          padding: '10px 0',
+          background: '#fdd',
+          borderBottom: '1px dashed #ddd',
+        }}
+      >
         {item.text} <br />
         <img src={item.imageUrl} />
         <ItemFooter />
@@ -61,7 +67,11 @@ const DemoItem = ({ item }: { item: DemoItemModel }) => {
 
   return (
     <div
-      style={{ padding: '10px 0', height: 19, borderBottom: '1px dashed #ddd' }}
+      style={{
+        padding: '10px 0',
+        height: 100,
+        borderBottom: '1px solid #ddd',
+      }}
     >
       {item.text}
       <ItemFooter />

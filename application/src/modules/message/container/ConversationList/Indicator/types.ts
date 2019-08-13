@@ -6,6 +6,8 @@
 
 type IndicatorProps = {
   id: number; // group id
+  showUmi: boolean;
+  selected: boolean;
 };
 
 type IndicatorViewProps = {
@@ -13,6 +15,8 @@ type IndicatorViewProps = {
   hasDraft: boolean;
   sendFailurePostIds: number[];
   canPost: boolean;
+  showUmi: boolean;
+  selected: boolean;
 };
 
 export { IndicatorProps, IndicatorViewProps };

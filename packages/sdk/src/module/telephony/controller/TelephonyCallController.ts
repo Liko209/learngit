@@ -29,7 +29,7 @@ import { telephonyLogger } from 'foundation';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
-import { CALL_ACTION_ERROR_CODE } from '../types';
+import { CALL_ACTION_ERROR_CODE, CallOptions } from '../types';
 
 type CallActionResult = string | CALL_ACTION_ERROR_CODE;
 
@@ -48,8 +48,8 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _entityId: number;
   private _entityCacheController: IEntityCacheController<Call>;
   private _callActionCallbackMap: Map<
-  string,
-  { resolve: IResultResolveFn; reject: IResultRejectFn }
+    string,
+    { resolve: IResultResolveFn; reject: IResultRejectFn }
   >;
   private _holdToggle: ToggleController;
   private _recordToggle: ToggleController;
@@ -71,7 +71,7 @@ class TelephonyCallController implements IRTCCallDelegate {
       id: this._entityId,
       to_num: '',
       from_num: '',
-      call_id: '',
+      uuid: '',
       call_state: CALL_STATE.IDLE,
       hold_state: HOLD_STATE.DISABLED,
       record_state: RECORD_STATE.DISABLED,
@@ -92,22 +92,41 @@ class TelephonyCallController implements IRTCCallDelegate {
     return this._entityId;
   }
 
-  setRtcCall(call: RTCCall) {
+  setRtcCall(call: RTCCall, isSwitchCall: boolean, callOption?: CallOptions) {
     this._rtcCall = call;
     const callEntity = this._getCallEntity();
     if (callEntity) {
-      callEntity.to_num = call.getCallInfo().toNum;
-      callEntity.from_num = call.getCallInfo().fromNum;
-      callEntity.call_id = call.getCallInfo().uuid;
-      callEntity.from_name = call.getCallInfo().fromName;
-      callEntity.to_name = call.getCallInfo().toName;
-      if (call.isIncomingCall()) {
-        callEntity.direction = CALL_DIRECTION.INBOUND;
+      callEntity.uuid = call.getCallInfo().uuid;
+      callEntity.connectingTime = Date.now();
+
+      if (isSwitchCall && callOption) {
+        this._setSwitchCallInfo(callEntity, callOption);
       } else {
-        callEntity.connectingTime = Date.now();
+        callEntity.to_num = call.getCallInfo().toNum;
+        callEntity.to_name = call.getCallInfo().toName;
+        callEntity.from_num = call.getCallInfo().fromNum;
+        callEntity.from_name = call.getCallInfo().fromName;
+
+        if (call.isIncomingCall()) {
+          callEntity.direction = CALL_DIRECTION.INBOUND;
+        }
       }
       notificationCenter.emitEntityUpdate(ENTITY.CALL, [callEntity]);
     }
+  }
+
+  private _setSwitchCallInfo(callEntity: Call, callOption: CallOptions) {
+
+    const isOutbound = callOption.callDirection === CALL_DIRECTION.OUTBOUND;
+    if (isOutbound) {
+      callEntity.to_num = callOption.replaceNumber || '';
+      callEntity.to_name = callOption.replaceName || '';
+    } else {
+      callEntity.to_num = callOption.replaceNumber || '';
+      callEntity.to_name = callOption.replaceName || '';
+    }
+    // a switch call is a outbound call
+    callEntity.direction = CALL_DIRECTION.OUTBOUND;
   }
 
   private _getCallEntity() {
@@ -116,7 +135,6 @@ class TelephonyCallController implements IRTCCallDelegate {
     );
     return originalCall ? _.cloneDeep(originalCall) : null;
   }
-  /* eslint-disable */
   private _handleCallStateChanged(state: RTC_CALL_STATE) {
     const call = this._getCallEntity();
     if (call) {
@@ -136,12 +154,23 @@ class TelephonyCallController implements IRTCCallDelegate {
           if (!call.disconnectTime) {
             call.disconnectTime = Date.now();
           }
+          this._setSipData(call);
+          break;
+        default:
           break;
       }
       notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
     } else {
       telephonyLogger.warn(`No entity is found for call: ${this._entityId}`);
     }
+  }
+
+  private _setSipData(callEntity: Call) {
+    callEntity.call_id =
+      this._rtcCall.getCallInfo().callId || callEntity.call_id;
+    callEntity.from_tag =
+      this._rtcCall.getCallInfo().fromTag || callEntity.from_tag;
+    callEntity.to_tag = this._rtcCall.getCallInfo().toTag || callEntity.to_tag;
   }
 
   async onCallStateChange(state: RTC_CALL_STATE) {
@@ -178,6 +207,8 @@ class TelephonyCallController implements IRTCCallDelegate {
         break;
       case ACR_ON:
         res = CALL_ACTION_ERROR_CODE.ACR_ON;
+        break;
+      default:
         break;
     }
     return res;
@@ -227,6 +258,8 @@ class TelephonyCallController implements IRTCCallDelegate {
       case RTC_CALL_ACTION.STOP_RECORD:
         toggleController = this._recordToggle;
         break;
+      default:
+        break;
     }
     if (toggleController) {
       isSuccess ? toggleController.onSuccess() : toggleController.onFailure();
@@ -267,6 +300,8 @@ class TelephonyCallController implements IRTCCallDelegate {
         break;
       case RTC_CALL_ACTION.PARK:
         res = this._handleParkAction(isSuccess, options);
+        break;
+      default:
         break;
     }
 

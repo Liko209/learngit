@@ -285,7 +285,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have an DirectMessage conversation and clear all Umi', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
@@ -359,7 +358,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     type: "DirectMessage",
@@ -704,7 +702,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then I can see this post instead of empty page in the bookmark page', async () => {
     await bookmarkEntry.enter();
-    await t.expect(emptyPage.exists).notOk();
+    await t.expect(emptyPage.exists).notOk({ timeout: 20e3 });
     const bookmarkPostCard = bookmarkPage.postItemById(bookmarkPostId);
     await t.expect(bookmarkPostCard.exists).ok();
   }, true);

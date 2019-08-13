@@ -9,9 +9,10 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta, IGroup } from '../v2/models';
 import { WebphoneSession } from 'webphone-client';
+import { E911Address } from './e911address';
 
 fixture('Telephony/Dialer')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -21,6 +22,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the tooltip when hovering on the [Dialpad] button', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const tooltipText = 'Dialer'
 
@@ -61,6 +64,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the tooltip when hovering on the to minimize button of the dialer', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const tooltipText = 'Minimize';
 
@@ -91,6 +96,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the ghost text when dialer is empty', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const ghostText = 'Enter a name or number';
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -116,6 +123,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the delete button when click the keypad on the dialer', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const tooltipText = 'Delete';
   const character = 'a';
@@ -168,6 +177,10 @@ test.meta(<ITestMeta>{
 
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
+  await h(t).platform(callee).init();
+  await h(t).platform(callee).updateDevices(() => E911Address);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -188,6 +201,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
+    await app.homePage.confirmE911Form();
     await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
@@ -223,6 +237,8 @@ test.meta(<ITestMeta>{
 
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).platform(callee).init();
 
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
@@ -259,7 +275,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
-    await telephonyDialog.hitEnterToMakeCall();
+    await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
 
@@ -282,7 +298,9 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const callee = h(t).rcData.guestCompany.users[0];
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).platform(callee).init();
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
   const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)
@@ -313,7 +331,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
-    await telephonyDialog.hitEnterToMakeCall();
+    await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
@@ -343,6 +361,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can display the default caller ID in "Caller ID" selection', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
@@ -385,17 +405,9 @@ test.meta(<ITestMeta>{
     await phoneTab.selectCallerIdByText(callerIdNumber);
   });
 
-  await h(t).withLog('When I refresh page', async () => {
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('And I click the to diapad button', async () => {
-    await app.homePage.openDialer();
-  });
-
   await h(t).withLog(`Then should display ${callerIdNumber} in caller ID seclection of the dialer page`, async () => {
-    await t.expect(app.homePage.telephonyDialog.callerIdSelector.textContent).eql(callerIdNumber);
+    const txt = await app.homePage.telephonyDialog.callerIdSelector.textContent;
+    await t.expect(callerIdNumber).contains(txt);
   });
 });
 
@@ -411,7 +423,9 @@ test.meta(<ITestMeta>{
   const anotherUser = users[1];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const telephonyDialog = app.homePage.telephonyDialog;
 
   let chat = <IGroup>{
@@ -516,6 +530,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can enter the search contact mode after edited the content of the custom forward ', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;

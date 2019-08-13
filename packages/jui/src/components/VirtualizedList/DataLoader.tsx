@@ -4,21 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import {
-  useRef, useState, useEffect, memo, useCallback,
-} from 'react';
+import { useRef, useState, useEffect, memo, useCallback } from 'react';
 import { useMountState } from './hooks';
 import { noop } from '../../foundation/utils';
 import { ILoadMoreStrategy } from './LoadMoreStrategy/ILoadMoreStrategy';
-import {
-  IndexRange, Direction, IndexConstraint, Delta,
-} from './types';
+import { IndexRange, IndexConstraint, Delta } from './types';
+import { DIRECTION } from '../Lists';
 
 type JuiDataLoaderProps = {
   threshold?: number;
-  loadMore: (direction: Direction, count: number) => Promise<void>;
+  loadMore: (direction: DIRECTION, count: number) => Promise<void>;
   loadInitialData: () => Promise<void>;
-  hasMore: (direction: Direction) => boolean;
+  hasMore: (direction: DIRECTION) => boolean;
   loadMoreStrategy: ILoadMoreStrategy;
   children: (params: {
     loadingInitial: boolean;
@@ -44,28 +41,31 @@ const JuiDataLoader = ({
   const prevVisibleRangeTimeRef = useRef(Date.now());
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
-  const [loadingInitial, setLoadingInitial] = useState(false);
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
   const isMountedRef = useMountState();
 
-  const getMap = useCallback(() => ({
-    up: {
-      setLoading: setLoadingUp,
-      load: (count: number) => loadMore('up', count),
-      onFailed: noop,
-    },
-    down: {
-      setLoading: setLoadingDown,
-      load: (count: number) => loadMore('down', count),
-      onFailed: noop,
-    },
-    initial: {
-      setLoading: setLoadingInitial,
-      load: () => loadInitialData(),
-      onFailed: setLoadingInitialFailed,
-    },
-  }), [loadMore, loadMore, loadInitialData]);
+  const getMap = useCallback(
+    () => ({
+      up: {
+        setLoading: setLoadingUp,
+        load: (count: number) => loadMore(DIRECTION.UP, count),
+        onFailed: noop,
+      },
+      down: {
+        setLoading: setLoadingDown,
+        load: (count: number) => loadMore(DIRECTION.DOWN, count),
+        onFailed: noop,
+      },
+      initial: {
+        setLoading: setLoadingInitial,
+        load: () => loadInitialData(),
+        onFailed: setLoadingInitialFailed,
+      },
+    }),
+    [loadMore, loadMore, loadInitialData],
+  );
 
   const loadData = useCallback(
     _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {

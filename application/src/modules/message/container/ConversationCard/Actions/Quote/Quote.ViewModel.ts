@@ -10,7 +10,6 @@ import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps } from './types';
 import PostModel from '@/store/models/Post';
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
@@ -18,6 +17,8 @@ import { UI_NOTIFICATION_KEY } from '@/constants';
 import PersonModel from '@/store/models/Person';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { i18nP } from '@/utils/i18nT';
+import { Props, ViewProps } from './types';
 
 class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -56,21 +57,20 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     if (!quoteText.endsWith('\n')) {
       quoteText += '\n';
     }
-    quoteText = quoteText.replace(
-      /^(>\s)?(.*?)\r?\n/gim,
-      ($0: string, $1: string, $2: string) => `> ${$2}<br/>`,
-    );
+    quoteText = quoteText.replace(/^(>\s)?(.*?)\r?\n/gim, ($0: string, $1: string, $2: string) => `> ${$2}<br/>`);
 
     return `${quoteText}<br/><br/><br/>`;
-  }
+  };
 
   @action
   getQuoteHead = () => {
     const { userDisplayName: name, id } = this._creator;
     /* eslint-disable max-len */
-    const quoteHead = `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span> wrote:<br />`;
+    const quoteHead = `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span> ${i18nP(
+      'message.action.wrote',
+    )}:<br />`;
     return quoteHead;
-  }
+  };
 
   private get _renderedText() {
     return `${this.getQuoteHead()}${this.getQuoteText()}`;
@@ -79,7 +79,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   quote = () => {
     this._groupId && this.updateDraft(this._renderedText);
-  }
+  };
 
   @action
   updateDraft = async (draft: string) => {
@@ -88,9 +88,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
       groupId: this._groupId,
     });
 
-    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    );
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(ServiceConfig.GROUP_CONFIG_SERVICE);
     try {
       await groupConfigService.updateDraft({
         draft,
@@ -99,7 +97,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     } catch (error) {
       mainLogger.error(error);
     }
-  }
+  };
 }
 
 export { QuoteViewModel };

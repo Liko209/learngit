@@ -7,6 +7,18 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { QuoteViewModel } from '../Quote.ViewModel';
 
+jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
+}));
 jest.mock('@/store/utils');
 
 let ViewModel: QuoteViewModel;

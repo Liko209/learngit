@@ -13,6 +13,7 @@ import {
   IToken,
 } from './network';
 import { networkLogger } from '../log';
+import { ERROR_CODES_NETWORK, JNetworkError } from '../error';
 
 const LOG_TAG = 'OAuthTokenHandler';
 
@@ -125,43 +126,59 @@ class OAuthTokenHandler implements ITokenHandler {
     return this.type.tokenExpirable;
   }
 
-  refreshOAuthToken() {
-    if (!this.isOAuthTokenRefreshing) {
-      this.isOAuthTokenRefreshing = true;
-      if (this.isAccessTokenRefreshable()) {
-        if (this.isRefreshTokenExpired()) {
-          networkLogger.tags(LOG_TAG).info('The refresh token expired.');
-          this._notifyRefreshTokenFailure(true);
-          return;
-        }
-        if (this.token) {
-          this.doRefreshToken(this.token)
-            .then((token: Token) => {
-              if (token) {
-                networkLogger
-                  .tags(LOG_TAG)
-                  .info('Refreshing Token successfully! Token:', token);
-                this.token = token;
-                this._notifyRefreshTokenSuccess(token);
-              } else {
-                networkLogger
-                  .tags(LOG_TAG)
-                  .info('Can not get token from server.');
-                this._notifyRefreshTokenFailure();
-              }
-            })
-            .catch((forceLogout: boolean) => {
+  async getOAuthToken() {
+    if (this.isAccessTokenExpired()) {
+      return this.refreshOAuthToken();
+    }
+    return this.token;
+  }
+
+  async refreshOAuthToken(): Promise<IToken | undefined> {
+    if (this.isOAuthTokenRefreshing || !this.token) {
+      return;
+    }
+
+    this.isOAuthTokenRefreshing = true;
+    let refreshedToken: IToken | undefined;
+    if (this.isAccessTokenRefreshable()) {
+      if (this.isRefreshTokenExpired()) {
+        networkLogger.tags(LOG_TAG).info('The refresh token expired.');
+        this._notifyRefreshTokenFailure(true);
+      } else {
+        refreshedToken = await this.doRefreshToken(this.token)
+          .then((token: Token) => {
+            if (token) {
               networkLogger
                 .tags(LOG_TAG)
-                .info('Refreshing token error, forceLogout:', forceLogout);
-              this._notifyRefreshTokenFailure(forceLogout);
-            });
-        }
-      } else {
-        networkLogger.tags(LOG_TAG).info('Token is not refreshable.');
-        this._notifyRefreshTokenFailure(true);
+                .info('Refreshing Token successfully! Token:', token);
+              this.token = token;
+              this._notifyRefreshTokenSuccess(token);
+            } else {
+              networkLogger
+                .tags(LOG_TAG)
+                .info('Can not get token from server.');
+              this._notifyRefreshTokenFailure();
+            }
+            return token;
+          })
+          .catch((reason?: JNetworkError) => {
+            const forceLogout =
+              reason &&
+              (reason.code === ERROR_CODES_NETWORK.BAD_REQUEST ||
+                reason.code === ERROR_CODES_NETWORK.UNAUTHORIZED);
+
+            networkLogger
+              .tags(LOG_TAG)
+              .info('Refreshing token error, forceLogout:', forceLogout);
+            this._notifyRefreshTokenFailure(forceLogout);
+            return undefined;
+          });
       }
+    } else {
+      networkLogger.tags(LOG_TAG).info('Token is not refreshable.');
+      this._notifyRefreshTokenFailure(true);
     }
+    return refreshedToken;
   }
 
   private _resetOAuthTokenRefreshingFlag() {

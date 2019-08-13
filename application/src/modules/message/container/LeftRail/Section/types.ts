@@ -11,9 +11,15 @@ enum SECTION_TYPE {
   TEAM = 'teams',
 }
 
+type OnCollapseChange = (arg: {
+  sectionType: SECTION_TYPE;
+  value: boolean;
+}) => void;
+
 type SectionProps = {
   type: SECTION_TYPE;
   isLast: boolean;
+  onCollapseChange?: OnCollapseChange;
 };
 
 type SectionViewProps = {
@@ -31,7 +37,6 @@ type SectionViewProps = {
 type SectionConfig = {
   dataNameForTest: string;
   title: string;
-  iconName: string;
   sortable?: boolean;
 };
 
@@ -43,4 +48,5 @@ export {
   SectionConfig,
   SectionConfigs,
   SECTION_TYPE,
+  OnCollapseChange,
 };

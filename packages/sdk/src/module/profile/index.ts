@@ -24,6 +24,12 @@ export {
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
   DesktopNotificationsSettingModel,
+  AUDIO_SOUNDS_INFO,
+  RINGS_TYPE,
+  SOUNDS_TYPE,
+  RingsList,
+  SoundsList,
+  VIDEO_SERVICE_OPTIONS,
 } from './constants';
 
 export { SettingValue, SettingOption } from './types';

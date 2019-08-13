@@ -13,13 +13,18 @@ import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PRESENCE } from '../constant/Presence';
 import { ChangeModel } from '../../sync/types';
+import { PresenceActionController } from '../controller/PresenceActionController';
 
 class PresenceService extends EntityBaseService<Presence> {
   private _presenceController: PresenceController;
-
+  private _presenceActionController: PresenceActionController;
   constructor(threshold: number = 29, interval: number = 200) {
-    super({ isSupportedCache: false });
-    this._presenceController = new PresenceController(threshold, interval);
+    super({ isSupportedCache: true });
+    this._presenceController = new PresenceController(
+      this.getEntityCacheController(),
+      threshold,
+      interval,
+    );
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.PRESENCE]: this.presenceHandleData,
@@ -29,12 +34,25 @@ class PresenceService extends EntityBaseService<Presence> {
     );
   }
 
+  getPresenceActionController(): PresenceActionController {
+    if (!this._presenceActionController) {
+      this._presenceActionController = new PresenceActionController(
+        this._presenceController,
+      );
+    }
+    return this._presenceActionController;
+  }
+
   saveToMemory(presences: Presence[]): void {
     this._presenceController.saveToMemory(presences);
   }
 
   async getById(id: number): Promise<Presence> {
     return await this._presenceController.getById(id);
+  }
+
+  getSynchronously(id: number) {
+    return this._presenceController.getById(id);
   }
 
   async getCurrentUserPresence(): Promise<PRESENCE | undefined> {
@@ -62,14 +80,22 @@ class PresenceService extends EntityBaseService<Presence> {
       presences,
       changeMap,
     );
-  }
+  };
 
   handleSocketStateChange = ({ state }: { state: string }) => {
     this._presenceController.handleSocketStateChange(state);
-  }
+  };
 
   resetPresence = () => {
     this._presenceController.resetPresence();
+  };
+
+  async setPresence(status: PRESENCE) {
+    await this.getPresenceActionController().setPresence(status);
+  }
+
+  async setAutoPresence(presence: PRESENCE) {
+    await this.getPresenceActionController().setAutoPresence(presence);
   }
 }
 

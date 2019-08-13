@@ -6,7 +6,7 @@
 import { SettingItem, SETTING_ITEM_TYPE } from './SettingItem';
 
 type SelectSettingItem<T> = SettingItem & {
-  type: SETTING_ITEM_TYPE.SELECT;
+  type: SETTING_ITEM_TYPE.SELECT | SETTING_ITEM_TYPE.VIRTUALIZED_SELECT;
 
   /**
    * Decide how the select renders value
@@ -17,6 +17,14 @@ type SelectSettingItem<T> = SettingItem & {
    * Decide how the select renders source
    */
   sourceRenderer?: (args: { value: T; source?: T[] }) => React.ReactNode;
+
+  /**
+   * Secondary action Renderer
+   */
+  secondaryActionRenderer?: (args: {
+    value: T;
+    source?: T[];
+  }) => React.ReactNode;
 
   /**
    * Default source when source not given by sdk

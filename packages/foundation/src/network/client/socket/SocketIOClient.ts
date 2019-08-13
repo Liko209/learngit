@@ -29,7 +29,6 @@ class SocketClient implements ISocketRequestDelegate {
       forceNew: true,
       query: { tk: token },
     });
-
     this.socket.on('response', (response: any) => {
       this.socketRequestHelper.newResponse(response);
     });

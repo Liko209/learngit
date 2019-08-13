@@ -18,13 +18,16 @@ export type SanitizedExtensionModel = {
   type: string;
 };
 
-export type HeadShotModel =
-  | string
-  | {
-    url: string;
-    stored_file_id?: string;
-    thumbs?: { key: string; value: string }[];
-  };
+export type HeadShotData = {
+  url: string;
+  crop?: string;
+  offset?: string;
+  creator_id?: number;
+  stored_file_id?: number;
+  thumbs?: { key: string; value: string }[];
+};
+
+export type HeadShotModel = string | HeadShotData;
 
 export type Person = ExtendedBaseModel & {
   company_id: number;
@@ -39,7 +42,7 @@ export type Person = ExtendedBaseModel & {
   last_name?: string;
   display_name?: string;
   headshot?: HeadShotModel;
-  headshot_version?: string;
+  headshot_version?: number;
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: PhoneNumberModel[];
@@ -56,4 +59,7 @@ export type Person = ExtendedBaseModel & {
   flags?: number;
   has_registered?: boolean;
   has_bogus_email?: boolean;
+  rc_extension_id?: number;
+  sanitized_rc_first_name?: string;
+  sanitized_rc_last_name?: string;
 };

@@ -19,18 +19,15 @@ const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     dataNameForTest: 'Favorites',
     title: 'message.favoriteGroups',
-    iconName: 'star',
     sortable: true,
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     dataNameForTest: 'Direct Messages',
     title: 'message.directGroups',
-    iconName: 'direct_message',
   },
   [SECTION_TYPE.TEAM]: {
     dataNameForTest: 'Teams',
     title: 'message.teamGroups',
-    iconName: 'team',
   },
 };
 
@@ -68,11 +65,6 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
   }
 
   @computed
-  get iconName() {
-    return this._config.iconName;
-  }
-
-  @computed
   get title() {
     return this._config.title;
   }
@@ -90,7 +82,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
     newIndex: number;
   }) => {
     this.handleSortEnd(oldIndex, newIndex);
-  }
+  };
 
   @action
   async fetchGroups() {
@@ -114,7 +106,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
     }
     newOrder[newIndex] = id;
     return newOrder;
-  }
+  };
 
   @action
   handleSortEnd = async (oldIndex: number, newIndex: number) => {
@@ -131,17 +123,21 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
         .tags('Section.ViewModel')
         .info('reorderFavoriteGroups fail:', error);
     }
-  }
+  };
 
   @action
   handleCollapse = () => {
+    const { type, onCollapseChange } = this.props;
+    onCollapseChange && onCollapseChange({ sectionType: type, value: true });
     this.expanded = false;
-  }
+  };
 
   @action
   handleExpand = () => {
+    const { type, onCollapseChange } = this.props;
+    onCollapseChange && onCollapseChange({ sectionType: type, value: false });
     this.expanded = true;
-  }
+  };
 }
 
 export default SectionViewModel;

@@ -10,12 +10,16 @@ import { PRESENCE } from '../constant';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { ChangeModel } from '../../sync/types';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 
 class PresenceController {
-  private _caches: Map<number, Presence> = new Map(); // <id, RawPresence['calculatedStatus']>
   private _subscribeController: SubscribeController;
 
-  constructor(threshold: number, interval: number) {
+  constructor(
+    private _cacheController: IEntityCacheController<Presence>,
+    threshold: number,
+    interval: number,
+  ) {
     this._subscribeController = new SubscribeController(
       threshold,
       this.subscribeSuccess.bind(this),
@@ -23,21 +27,21 @@ class PresenceController {
     );
   }
 
-  getCaches(): Map<number, Presence> {
-    return this._caches;
-  }
-
   getSubscribeController(): SubscribeController {
     return this._subscribeController;
   }
 
+  updatePresence(presence: Presence): void {
+    this._cacheController.put(presence);
+  }
+
   saveToMemory(presences: Presence[]): void {
     presences.forEach((presence: Presence) => {
-      this._caches.set(presence.id, presence);
+      this._cacheController.put(presence);
     });
   }
 
-  async getById(id: number): Promise<Presence> {
+  getById(id: number): Presence {
     const presence = this._getPresenceFromCache(id);
     if (presence) {
       return presence;
@@ -81,6 +85,7 @@ class PresenceController {
       this.reset();
       notificationCenter.emitEntityReload(ENTITY.PRESENCE, [], true);
     } else if (state === 'disconnected') {
+      this.reset();
       this.resetPresence();
     }
   }
@@ -97,23 +102,24 @@ class PresenceController {
    */
   subscribeSuccess(successPresences: RawPresence[]) {
     const needUpdatePresences = successPresences.filter(
-      (presence: RawPresence) => !this._caches.has(presence.personId),
+      (presence: RawPresence) =>
+        !this._cacheController.getSynchronously(presence.personId),
     );
     this.handlePresenceIncomingData(needUpdatePresences);
   }
 
   unsubscribe(id: number) {
-    this._caches.delete(id);
+    this._cacheController.delete(id);
     this._subscribeController.removeId(id);
   }
 
   reset() {
-    this._caches.clear();
+    this._cacheController.clear();
     this._subscribeController.reset();
   }
 
   private _getPresenceFromCache(id: number) {
-    return this._caches.get(id);
+    return this._cacheController.getSynchronously(id);
   }
 }
 

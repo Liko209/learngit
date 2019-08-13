@@ -28,6 +28,7 @@ export default function register(
     byWaitingWorker: boolean,
   ) => void,
   controllerChangedHandler: () => void,
+  onMessageHandler: (data: string) => void,
   logInfo: (text: string) => void,
 ) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
@@ -60,6 +61,7 @@ export default function register(
           registeredHandler,
           updateInstalledHandler,
           controllerChangedHandler,
+          onMessageHandler,
           logInfo,
         );
 
@@ -78,6 +80,7 @@ export default function register(
           registeredHandler,
           updateInstalledHandler,
           controllerChangedHandler,
+          onMessageHandler,
           logInfo,
         );
       }
@@ -112,6 +115,7 @@ function registerValidSW(
     byWaitingWorker: boolean,
   ) => void,
   controllerChangedHandler: () => void,
+  onMessageHandler: (data: string) => void,
   logInfo: (text: string) => void,
 ) {
   console.log(`${logTag}registerValidSW: ${swUrl}`);
@@ -123,6 +127,9 @@ function registerValidSW(
           .controller}`,
       );
 
+      navigator.serviceWorker.addEventListener('message', event => {
+        onMessageHandler(event.data);
+      });
       navigator.serviceWorker.addEventListener('controllerchange', event => {
         controllerChangedHandler();
       });
@@ -235,6 +242,7 @@ function checkValidServiceWorker(
     byWaitingWorker: boolean,
   ) => void,
   controllerChangedHandler: () => void,
+  onMessageHandler: (data: string) => void,
   logInfo: (text: string) => void,
 ) {
   // Check if the service worker can be found. If it can't reload the page.
@@ -260,6 +268,7 @@ function checkValidServiceWorker(
           registeredHandler,
           updateInstalledHandler,
           controllerChangedHandler,
+          onMessageHandler,
           logInfo,
         );
       }

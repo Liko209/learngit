@@ -8,11 +8,14 @@ import { JuiAvatarProps } from 'jui/components/Avatar';
 type AvatarProps = JuiAvatarProps & {
   icon?: string;
   uid?: number;
+  displayName?: string;
   showDefaultAvatar?: boolean;
   automationId?: string;
+  tooltip?: string;
 };
 
 type AvatarViewProps = JuiAvatarProps & {
+  tooltip?: string;
   shortName?: string;
   headShotUrl?: string;
   bgColor?: string;

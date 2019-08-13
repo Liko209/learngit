@@ -4,18 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse, { CollapseProps } from '@material-ui/core/Collapse';
 import { noop } from '../../foundation/utils';
 import JuiSectionHeader, {
   JuiSectionHeaderProps,
 } from './ConversationListSectionHeader';
+import styled from '../../foundation/styled-components';
 
 type SectionProps = {
   expanded?: boolean;
   onExpand?: Function;
   onCollapse?: Function;
   umi?: JSX.Element;
-  icon?: string;
   title: string;
 } & JuiSectionHeaderProps;
 
@@ -23,9 +23,17 @@ type SectionStates = {
   expanded: boolean;
 };
 
+type JuiCollapseProps = Pick<CollapseProps, 'in'>;
+
+const StyledCollapse = styled<JuiCollapseProps>(Collapse)`
+  &.MuiCollapse-container.MuiCollapse-hidden {
+    visibility: initial;
+  }
+`;
+
 class JuiConversationListSection extends PureComponent<
-SectionProps,
-SectionStates
+  SectionProps,
+  SectionStates
 > {
   static defaultProps = {
     onExpand: noop,
@@ -42,9 +50,7 @@ SectionStates
   }
 
   render() {
-    const {
-      umi, onExpand, onCollapse, ...restProps
-    } = this.props;
+    const { umi, onExpand, onCollapse, ...restProps } = this.props;
     const { expanded } = this.state;
 
     return (
@@ -56,7 +62,7 @@ SectionStates
           umi={umi}
           onClick={this._handleClick}
         />
-        <Collapse in={expanded}>{this.props.children}</Collapse>
+        <StyledCollapse in={expanded}>{this.props.children}</StyledCollapse>
       </div>
     );
   }

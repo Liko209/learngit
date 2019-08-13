@@ -5,7 +5,7 @@
  */
 import { Caller } from 'sdk/module/RCItems/types';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
-import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { JuiAudioMode, JuiAudioStatus } from 'jui/components/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
 import { HoverControllerBaseViewProps } from '../HoverController';
 import { Audio, Checker } from '../../types';
@@ -13,20 +13,20 @@ import { ActiveVoicemailId } from '../Voicemail/types';
 
 type VoicemailViewProps = {
   selected: boolean;
-  onChange: (event: React.ChangeEvent, expanded: boolean) => void;
   caller?: Caller;
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
-  canEditBlockNumbers: boolean;
   audio?: Audio;
+  onPlay: () => void;
+  onPaused: () => void;
+  canEditBlockNumbers: boolean;
   onError: () => void;
-  onBeforePlay: () => void;
-  onBeforeAction: (status: JuiAudioStatus) => void;
+  onEnded: () => void;
+  onBeforePlay: () => Promise<boolean> | boolean;
   updateStartTime: (timestamp: number) => void;
-  isAudioActive: boolean | Audio | undefined;
+  showFullAudioPlayer: boolean;
   createTime: string;
   direction: RCMessage['direction'];
-  shouldShowCall: () => Promise<boolean>;
 };
 
 type VoicemailProps = HoverControllerBaseViewProps & {

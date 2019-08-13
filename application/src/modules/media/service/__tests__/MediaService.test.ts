@@ -26,6 +26,19 @@ describe('MediaService', () => {
       expect(media).toBeInstanceOf(Media);
     });
   });
+  describe('getMedia()', () => {
+    it('should get exist media', () => {
+      const mediaId = 'testMediaId';
+      const mediaService = new MediaService();
+      const media = mediaService.createMedia({
+        src: [],
+        id: mediaId,
+      });
+      const checkMedia = mediaService.getMedia(mediaId);
+      expect(checkMedia).toEqual(media);
+    });
+  });
+
   describe('canPlayType()', () => {
     it('should return this mime type can play', () => {
       const canPlayType = jest
@@ -66,9 +79,9 @@ describe('MediaService', () => {
       ];
       jest
         .spyOn(utils, 'getEntity')
-        .mockReturnValue({ id: '', isMocked: true, value: devices });
+        .mockReturnValue({ id: '', isMocked: true, source: devices });
       const mediaService = new MediaService();
-      expect(mediaService.outputDevices).toEqual(['device1', 'device2']);
+      expect(mediaService.allOutputDevices).toEqual(['device1', 'device2']);
     });
   });
 });

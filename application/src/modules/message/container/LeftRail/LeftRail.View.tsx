@@ -3,12 +3,11 @@
  * @Date: 2018-10-02 15:46:28
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
-import { JuiConversationListSectionHeader } from 'jui/pattern/ConversationList/ConversationListSectionHeader';
-
+import { JuiConversationListTop } from 'jui/pattern/ConversationList/ConversationListTop';
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
 import {
@@ -19,56 +18,150 @@ import {
 import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 import { POST_LIST_TYPE } from '../PostListPage/types';
+import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
+import { SECTION_TYPE } from './Section/types';
+import { QUERY_DIRECTION } from 'sdk/dao/constants';
+import { JuiConversationListItemLoader } from 'jui/pattern/ConversationList';
+import debounce from 'lodash/debounce';
+import { CanNotScrollFixer } from './CanNotScrollFixer';
+
+const DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD = 300;
 
 @observer
 class LeftRailViewComponent extends Component<
   LeftRailViewProps & WithTranslation
 > {
+  private _canNotScrollFixer = new CanNotScrollFixer();
+
   onEntryClick = (type: POST_LIST_TYPE) => {
     history.push(`/messages/${type}`);
   };
 
+  private _loading = false;
+  private _mainSectionRef: React.RefObject<any> = React.createRef();
+
+  @observable private _teamSectionCollapsed = false;
+
+  componentDidMount() {
+    SectionGroupHandler.getInstance().setLeftRailVisible(true);
+  }
+
+  componentDidUpdate() {
+    if (this._mainSectionRef.current) {
+      const element = this._mainSectionRef.current;
+      const hasMore = SectionGroupHandler.getInstance().hasMore(
+        SECTION_TYPE.TEAM,
+        QUERY_DIRECTION.NEWER,
+      );
+      if (element.scrollHeight === element.clientHeight && hasMore) {
+        this._loadGroups();
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    SectionGroupHandler.getInstance().setLeftRailVisible(false);
+  }
+
+  handleScroll = (event: React.UIEvent<HTMLElement>) => {
+    this._canNotScrollFixer.handleScroll();
+    if (this._teamSectionCollapsed) return;
+    const element = event.currentTarget;
+    const hasMore = SectionGroupHandler.getInstance().hasMore(
+      SECTION_TYPE.TEAM,
+      QUERY_DIRECTION.NEWER,
+    );
+    if (element) {
+      const scrollPassLoadPosition =
+        element.scrollHeight - element.scrollTop <=
+        element.clientHeight + DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD;
+      if (scrollPassLoadPosition && !this._loading && hasMore) {
+        this._loadGroups();
+      }
+    }
+  };
+
+  @action
+  private _loadGroups = () => {
+    this._loading = true;
+    this._loadGroupDebounce().finally(() => {
+      this._loading = false;
+    });
+  };
+
+  private _loadGroupDebounce = debounce(
+    async () => {
+      return SectionGroupHandler.getInstance().fetchPagination(
+        SECTION_TYPE.TEAM,
+      );
+    },
+    100,
+    { leading: true, trailing: true },
+  );
+
+  handleSectionCollapseChange = (arg: {
+    sectionType: SECTION_TYPE;
+    value: boolean;
+  }) => {
+    if (
+      arg.sectionType === SECTION_TYPE.TEAM &&
+      this._teamSectionCollapsed !== arg.value
+    ) {
+      this._teamSectionCollapsed = arg.value;
+    }
+  };
+
   render() {
     const { filters, entries, sections, currentPostListType, t } = this.props;
+    const hasMore = SectionGroupHandler.getInstance().hasMore(
+      SECTION_TYPE.TEAM,
+      QUERY_DIRECTION.NEWER,
+    );
     return (
-      <JuiLeftRail data-test-automation-id='leftRail'>
+      <JuiLeftRail data-test-automation-id="leftRail">
         <JuiLeftRailStickyTop>
-          {filters.map((filter, index) => [
-            index ? <JuiDivider key={`divider${index}`} /> : null,
-            <JuiConversationListFilter
-              data-test-automation-id='unreadOnlyToggler'
-              checked={filter.value}
-              key={filter.label}
-              label={t(filter.label)}
-              onChange={filter.onChange}
-            />,
-          ])}
-        </JuiLeftRailStickyTop>
-        <JuiDivider key='divider-filters' />
-        <JuiLeftRailMainSection>
-          {entries.map((entry, index) => (
-            <JuiConversationListSectionHeader
+          {entries.map(entry => (
+            <JuiConversationListTop
               data-test-automation-id={entry.testId}
               key={entry.title}
               title={t(entry.title)}
               icon={entry.icon}
-              hideArrow={true}
+              iconColor={entry.iconColor}
               selected={entry.type === currentPostListType}
               onClick={() => {
                 this.onEntryClick(entry.type);
               }}
             />
           ))}
-          <JuiDivider key='divider-entries' />
+          <JuiDivider key="divider-filters" />
+        </JuiLeftRailStickyTop>
+        {filters.map(filter => [
+          <JuiConversationListFilter
+            data-test-automation-id="unreadOnlyToggler"
+            checked={filter.value}
+            key={filter.label}
+            label={t(filter.label).toUpperCase()}
+            onChange={filter.onChange}
+          />,
+        ])}
+        <JuiLeftRailMainSection
+          ref={this._mainSectionRef}
+          onScroll={this.handleScroll}
+          onWheel={this._canNotScrollFixer.handleWheel}
+        >
           {sections.map((type, index, array) => [
-            index ? <JuiDivider key={`divider${index}`} /> : null,
             <Section
               key={type}
               type={type}
+              onCollapseChange={this.handleSectionCollapseChange}
               isLast={index === array.length - 1}
             />,
           ])}
+          {!this._teamSectionCollapsed && hasMore && (
+            <JuiConversationListItemLoader />
+          )}
         </JuiLeftRailMainSection>
       </JuiLeftRail>
     );

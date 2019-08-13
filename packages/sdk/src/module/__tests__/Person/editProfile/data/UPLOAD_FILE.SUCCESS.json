@@ -1,0 +1,24 @@
+{
+  "host": "glipasialabnet-glpdevxmn.s3-accelerate.amazonaws.com/",
+  "path": "",
+  "method": "POST",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "glipasialabnet-glpdevxmn.s3-accelerate.amazonaws.com/",
+    "path": "",
+    "method": "POST",
+    "headers": {
+      "Accept": "application/json, text/plain, */*"
+    }
+  },
+  "response": {
+    "status": 201,
+    "statusText": "Created",
+    "data": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PostResponse><Location>https://glipasialabnet-glpdevxmn.s3-accelerate.amazonaws.com/web%2Fcustomer_files%2F12075020%2Fstar-wars-wallpaper-3--.jpg</Location><Bucket>glipasialabnet-glpdevxmn</Bucket><Key>web/customer_files/12075020/star-wars-wallpaper-3--.jpg</Key><ETag>\"ed6973fd175c8c963522a6ae34074547\"</ETag></PostResponse>",
+    "headers": {
+      "content-length": "365",
+      "content-type": "application/xml"
+    }
+  }
+}

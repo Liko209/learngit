@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-05-09 10:51:18
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-06-27 16:41:33
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-08-09 11:05:24
  */
 
 
@@ -494,6 +494,7 @@ test.meta(<ITestMeta>{
   const emojiText = ':sm:'
   const prefix = ':fla';
   const mixPrefix = 'gr :gr'
+  const silPrefix = ':sil'
   const wrongPrefix = ':huhuhu';
   let currentInputAreaText = '';
 
@@ -578,6 +579,15 @@ test.meta(<ITestMeta>{
     await t.expect(conversationPage.messageInputArea.textContent).eql(currentInputAreaText);
   });
 
+  await h(t).withLog('When  I type text: {silPrefix}', async (step) => {
+    step.setMetadata('silPrefix', silPrefix);
+    await t.typeText(conversationPage.messageInputArea, silPrefix, { paste: false, replace: false });
+  });
+
+  await h(t).withLog('Then the Emojis that only matches search term can be shown, others should NOT show', async (step) => {
+    await emojiMatchList.itemFullMatch(silPrefix);
+  });
+
   await h(t).withLog('When I type text: {mixPrefix}', async (step) => {
     step.setMetadata('mixPrefix', mixPrefix);
     await t.typeText(conversationPage.messageInputArea, mixPrefix, { paste: true });
@@ -634,7 +644,7 @@ test.meta(<ITestMeta>{
   });
 });
 
-
+// skip due to click outside cannot close emoji match list.
 test.skip.meta(<ITestMeta>{
   priority: ['P2'], caseIds: ['JPT-2115'], keywords: ['emoji'], maintainers: ['Potar.he']
 })('Check can close the matching emoji list', async (t) => {

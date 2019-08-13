@@ -53,19 +53,25 @@ class TeamPermissionController {
 
     const {
       permissions: {
-        admin: {
-          uids: adminUids = [],
-          level: adminLevel = DEFAULT_ADMIN_PERMISSION_LEVEL,
-        } = {},
+        admin: { uids: adminUids = [] } = {},
         user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
       } = {},
     } = teamPermissionParams;
 
     if (!teamPermissionParams.is_team) {
       if (this.isSelfGroup(teamPermissionParams, userId)) {
-        return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADD_MEMBER;
+        return (
+          MAX_PERMISSION_LEVEL -
+          PERMISSION_ENUM.TEAM_ADD_MEMBER -
+          PERMISSION_ENUM.TEAM_MENTION
+        );
       }
-      return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
+      return (
+        MAX_PERMISSION_LEVEL -
+        PERMISSION_ENUM.TEAM_ADMIN -
+        PERMISSION_ENUM.TEAM_ADD_MEMBER -
+        PERMISSION_ENUM.TEAM_MENTION
+      );
     }
 
     const guestPermissionLevel = this.mergePermissionFlagsWithLevel(
@@ -80,7 +86,7 @@ class TeamPermissionController {
     }
 
     if (adminUids.length === 0 || adminUids.includes(userId)) {
-      return adminLevel;
+      return DEFAULT_ADMIN_PERMISSION_LEVEL;
     }
     return userLevel;
   }
@@ -98,6 +104,7 @@ class TeamPermissionController {
     type: PERMISSION_ENUM,
     teamPermissionParams: TeamPermissionParams,
   ): boolean {
+    // handle default permission
     if (
       !teamPermissionParams.members &&
       !teamPermissionParams.guest_user_company_ids &&
@@ -164,6 +171,7 @@ class TeamPermissionController {
       // in dthor, when disabled TEAM_POST, disabled TEAM_ADD_INTEGRATIONS, TEAM_PIN_POST too
       result.permissionFlags!.TEAM_ADD_INTEGRATIONS = false;
       result.permissionFlags!.TEAM_PIN_POST = false;
+      result.permissionFlags!.TEAM_MENTION = false;
     }
     return result;
   }

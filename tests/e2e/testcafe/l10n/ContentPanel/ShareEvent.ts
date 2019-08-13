@@ -10,7 +10,7 @@ fixture('ContentPanel/ShareEvent')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open team conversation and shared event', ['P2', 'Messages', 'ContentPanel', 'ShareEvent', 'V1.4', 'hanny.han']), async (t) => {
+test(formalName('Open team conversation and shared event', ['P2', 'Messages', 'ContentPanel', 'ShareEvent', 'V1.4', 'Hanny.Han']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();

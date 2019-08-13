@@ -42,8 +42,8 @@ const HiddenImage = styled.img`
 const DelayLoadingPage = withDelay(StyledLoadingPage);
 
 type JuiImageProps = React.DetailedHTMLProps<
-React.ImgHTMLAttributes<HTMLImageElement>,
-HTMLImageElement
+  React.ImgHTMLAttributes<HTMLImageElement>,
+  HTMLImageElement
 > & {
   imageRef?: RefObject<HTMLImageElement>;
   loadingPlaceHolder?: ComponentType<any>;
@@ -51,6 +51,8 @@ HTMLImageElement
   onSizeLoad?: (naturalWidth: number, naturalHeight: number) => void;
   onLoad?: () => void;
   onError?: () => void;
+  performanceTracerStart?: () => void;
+  performanceTracerEnd?: () => void;
 };
 
 type JuiImageState = {
@@ -97,6 +99,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
 
   constructor(props: JuiImageProps) {
     super(props);
+    const { performanceTracerStart } = this.props;
+    performanceTracerStart && performanceTracerStart();
     this.state = this.getInitState(props);
     const { width, height, onSizeLoad } = this.props;
     width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
@@ -107,7 +111,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     }
     return _.cloneDeep(JuiImageView.initState);
   }
-  getImageRef = (): RefObject<HTMLImageElement> => this.props.imageRef || this._imageRef;
+  getImageRef = (): RefObject<HTMLImageElement> =>
+    this.props.imageRef || this._imageRef;
 
   private _loadingView() {
     return (
@@ -154,6 +159,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
               const { naturalWidth, naturalHeight } = event.currentTarget;
               onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
               onLoad && onLoad();
+              const { performanceTracerEnd } = this.props;
+              performanceTracerEnd && performanceTracerEnd();
             }
             this.setState({
               loadings: {

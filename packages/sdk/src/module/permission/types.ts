@@ -17,6 +17,8 @@ enum UserPermissionType {
   LEFT_RAIL_MAX_COUNT = 'LEFT_RAIL_MAX_COUNT',
   CAN_MENTION_TEAM = 'CAN_MENTION_TEAM',
   CAN_SHOW_ALL_GROUP = 'CAN_SHOW_ALL_GROUP',
+  CAN_USE_VIDEO_CALL = 'CAN_USE_VIDEO_CALL',
 }
 
+export type FeatureFlagType = string | number;
 export default UserPermissionType;

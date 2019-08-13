@@ -29,10 +29,15 @@ export type GroupState = {
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
   last_author_id?: number;
+  team_mention_cursor_offset?: number;
+  team_mention_cursor?: number;
+  group_team_mention_cursor?: number;
+  removed_cursors_team_mention?: number[];
+  unread_team_mentions_count?: number;
 };
 
 export type TransformedState = {
-  groupStates: GroupState[];
+  groupStates: { [id: number]: GroupState };
   myState?: State;
   isSelf?: boolean;
   ignoreCursorValidate?: boolean;

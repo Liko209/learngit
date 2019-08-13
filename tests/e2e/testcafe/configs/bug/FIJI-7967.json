@@ -1,0 +1,16 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Logout.ts",
+      "./fixtures/ConversationList/OpenConversation.ts",
+      "./fixtures/LeftNav/LeftNavState.ts"
+    ],
+    "includes_tags": [
+      "JPT-2055",
+      "JPT-1214"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -85,7 +85,7 @@ def checkoutStage(Context context) {
             ],
         ]
     ])
-    sh 'git clean -xdf -e node_modules'
+    sh 'git clean -xdf'
     context.gitHead = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 }
 
@@ -94,10 +94,7 @@ def installDependencyStage(Context context) {
     sh "echo 'registry=${context.npmRegistry}' > .npmrc"
     sshagent (credentials: [context.gitCredentialId]) {
         sh 'npm install @sentry/cli@1.40.0 --unsafe-perm'
-        sh 'npm install @babel/parser@7.3.4 --ignore-scripts --unsafe-perm'
-        sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
-        sh 'npm install --ignore-scripts --unsafe-perm'
-        sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
+        sh 'npm install --unsafe-perm'
     }
 }
 
@@ -108,16 +105,16 @@ def buildStage(Context context) {
     sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
     // build with public build command
     sh 'npm run build:public'
-    // write white list file
-    writeFile file: context.whiteListFile, text: context.whiteList, encoding: 'utf-8'
-    // download electron clients
-    sh "mkdir -p ${context.electronBuildDirectory}"
-    context.electronBuildUrls.each { url ->
-        sh "wget --no-check-certificate -P ${context.electronBuildDirectory} ${url}"
-    }
+
     // update version info
-    sh "sed -i 's/{{deployedCommit}}/${context.gitHead.substring(0,9)}/;s/{{deployedTime}}/${context.timestamp}/' ${context.buildDirectory}/static/js/versionInfo.*.chunk.js || true"
-    sh "sed -i 's/{{buildCommit}}/${context.gitHead.substring(0,9)}/;s/{{buildTime}}/${context.timestamp}/' ${context.buildDirectory}/static/js/versionInfo.*.chunk.js || true"
+    dir(context.buildDirectory) {
+        sh "rm whiteListedId.json"
+        sh "sed -i 's/{{deployedCommit}}/${context.gitHead.substring(0,9)}/;s/{{deployedTime}}/${context.timestamp}/' static/js/versionInfo.*.chunk.js || true"
+        sh "sed -i 's/{{buildCommit}}/${context.gitHead.substring(0,9)}/;s/{{buildTime}}/${context.timestamp}/' static/js/versionInfo.*.chunk.js || true"
+        sh """rm -f precache-manifest.js.bak || true && cp -f precache-manifest.*.js precache-manifest.js.bak &&  awk -v rev="    \\"revision\\": \\"${context.timestamp}\\"," '/versionInfo/{sub(/.+/,rev,last)} NR>1{print last} {last=\$0} END {print last}' precache-manifest.js.bak > precache-manifest.*.js"""
+        // in order to support gzip_static, we should create gz file after build, detail: FIJI-7895
+        sh """find . -type f -size +150c -name "*.css" -o -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.map" -o -name "*.svg"  -o -name "*.xml" | xargs -I{} bash -c 'gzip -9 < {} > {}.gz'"""
+    }
     // make package
     context.buildPackageName = "${context.gitBranch}-${context.gitHead}-${context.timeLabel}.tar.gz".toString()
     sh "tar -czvf ${context.buildPackageName} -C ${context.buildDirectory} ."
@@ -142,19 +139,21 @@ def deployStage(Context context) {
     // step 2: clean old version and unpack new one
     parallel context.deployTargets.collectEntries { deployTarget -> [deployTarget.toString(), {
         // clean old deployment
-        sshCmd(deployTarget, context.deployCredentialId,
-            "find ${context.deployDirectory} -type f -not -name '*.tar.gz' | xargs rm".toString())
+        // sshCmd(deployTarget, context.deployCredentialId,
+        //    "find ${context.deployDirectory} -type f -not -name '*.tar.gz' | xargs rm".toString())
         // unpack package
         sshCmd(deployTarget, context.deployCredentialId,
-            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString())
+            "tar -xvmf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString())
     }]}
 }
 
 node(context.buildNode) {
     env.SENTRYCLI_CDNURL='https://cdn.npm.taobao.org/dist/sentry-cli'
+    env.CI='false'
     stage('prepare') {prepareStage(context)}
     stage('checkout') {checkoutStage(context)}
     stage('install dependencies') {installDependencyStage(context)}
     stage('build') {buildStage(context)}
     stage('deploy') {deployStage(context)}
+    sh "npm run releaseToSentry || true"
 }

@@ -27,14 +27,10 @@ type JuiThumbnailProps = JuiThumbnailWithUrlProps | JuiThumbnailWithIconProps;
 
 const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>(
   'span',
-).attrs({
-  style: ({
-    size,
-    theme,
-    url,
-  }: JuiThumbnailWithUrlProps & { theme: Theme }) => {
-    const { width, height } = theme.size;
-    return {
+).attrs(({ size, theme, url }: JuiThumbnailWithUrlProps & { theme: Theme }) => {
+  const { width, height } = theme.size;
+  return {
+    style: {
       width: size === 'small' ? 5 * width : 9 * width,
       height: size === 'small' ? 5 * height : 9 * height,
       backgroundImage: `url(${url})`,
@@ -43,14 +39,13 @@ const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>(
         size === 'small'
           ? 0.5 * theme.shape['borderRadius']
           : theme.shape['borderRadius'],
-    };
-  },
+    },
+  };
 })`
   background-color: ${grey('100')};
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'auto')};
 `;
 
 class JuiThumbnail extends React.PureComponent<JuiThumbnailProps> {

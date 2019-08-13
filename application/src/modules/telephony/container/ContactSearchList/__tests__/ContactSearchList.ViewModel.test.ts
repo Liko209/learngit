@@ -1,13 +1,18 @@
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ContactSearchListViewModel } from '../ContactSearchList.ViewModel';
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable, Jupiter } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
 import { getEntity } from '@/store/utils';
+import * as media from '@/modules/media/module.config';
 
+jest.mock('@/modules/media/service');
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(media.config);
 jest.mock('@/store/utils');
 
 const searchService = {

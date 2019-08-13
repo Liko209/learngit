@@ -1,7 +1,5 @@
 import _ from 'lodash';
-import {
-  onBecomeObserved, onBecomeUnobserved, action, observable,
-} from 'mobx';
+import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
 import { service, mainLogger } from 'sdk';
 import { IdModel, ModelIdType, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
@@ -21,9 +19,7 @@ export default class MultiEntityMapStore<
   K extends Entity<IdType>,
   IdType extends ModelIdType = number
 > extends BaseStore {
-  @observable.shallow
-  private _data: { [id: string]: K } = {};
-  private _dataIds: Set<IdType> = new Set(); // for faster query
+  private _data: Map<string, K> = observable.map();
   private _usedIds: Set<IdType> = new Set();
 
   private _getService: Function | [Function, string];
@@ -54,7 +50,7 @@ export default class MultiEntityMapStore<
   }
 
   private _getDataKeys(): IdType[] {
-    return Object.values(this._data).map((value: K) => {
+    return Array.from(this._data.values()).map((value: K) => {
       return value.id;
     });
   }
@@ -171,7 +167,7 @@ export default class MultiEntityMapStore<
   }
 
   private _replace(oldId: IdType, entity: T) {
-    if (entity && this.has(oldId)) {
+    if (entity && this._data.has(this._transformId(oldId))) {
       this._setOrUpdate(entity);
     }
   }
@@ -208,13 +204,14 @@ export default class MultiEntityMapStore<
 
   get(id: IdType) {
     let model = this._getById(id);
+    const transformedId = this._transformId(id);
     if (!model) {
       this.set({ id, isMocked: true } as T);
-      model = this._data[id] as K;
+      model = this._data.get(transformedId);
       const found = this.getByServiceSynchronously(id);
       if (found) {
         this.partialUpdate(found, id);
-        model = this._data[id] as K;
+        model = this._data.get(transformedId);
       } else {
         const res = this.getByService(id);
         if (res instanceof Promise) {
@@ -230,17 +227,13 @@ export default class MultiEntityMapStore<
         } else {
           if (res) {
             this.partialUpdate(res as T, id);
-            model = this._data[id] as K;
+            model = this._data.get(transformedId);
           }
         }
       }
     }
 
     return model;
-  }
-
-  has(id: IdType): boolean {
-    return this._dataIds.has(id);
   }
 
   hasValid(id: IdType): boolean {
@@ -254,7 +247,7 @@ export default class MultiEntityMapStore<
   }
 
   getSize() {
-    return Object.keys(this._data).length;
+    return this._data.size;
   }
 
   getData() {
@@ -287,10 +280,6 @@ export default class MultiEntityMapStore<
   createModel(model: T | K): K {
     const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(model);
-  }
-
-  getUsedIds() {
-    return this._usedIds;
   }
 
   @action
@@ -337,21 +326,17 @@ export default class MultiEntityMapStore<
   }
 
   private _registerHook(id: IdType) {
-    onBecomeObserved(this._data, `${id}`, this._addUsedIds(id));
-    onBecomeUnobserved(this._data, `${id}`, this._delUsedIds(id));
+    onBecomeObserved(this._data, this._transformId(id), this._addUsedIds(id));
+    onBecomeUnobserved(this._data, this._transformId(id), this._delUsedIds(id));
   }
 
-  private _addUsedIds(id: IdType) {
-    return () => {
-      this._usedIds.add(id);
-    };
-  }
+  private _addUsedIds = (id: IdType) => () => {
+    this._usedIds.add(id);
+  };
 
-  private _delUsedIds(id: IdType) {
-    return () => {
-      this._usedIds.delete(id);
-    };
-  }
+  private _delUsedIds = (id: IdType) => () => {
+    this._usedIds.delete(id);
+  };
 
   private _refreshCache() {
     if (this.getSize() < this._maxCacheCount || !this._getIsHidden()) {
@@ -377,24 +362,32 @@ export default class MultiEntityMapStore<
     );
   }
 
-  private _addData(data: K){
+  private _addData(data: K) {
     const { id } = data;
-    this._data[id] = data;
-    this._dataIds.add(id);
+    this._data.set(this._transformId(id), data);
   }
 
-  private _deleteData(id: IdType){
-    delete this._data[id];
-    this._dataIds.add(id);
+  private _deleteData(id: IdType) {
+    this._data.delete(this._transformId(id));
   }
 
-  private _clearAllData(){
-    this._data = {};
-    this._dataIds.clear();
+  private _clearAllData() {
+    this._data.clear();
   }
 
-  private _getById(id: IdType){
-    return this.has(id) ? this._data[id] : undefined;
+  private _transformId(id: IdType) {
+    if (!id) {
+      // in bookmarks page, id might be undefined, FIJI-8040
+      return id as string;
+    }
+    // this will constrain idType to primitive type, need a solution not to transform id
+    if (typeof id !== 'string') {
+      return id.toString();
+    }
+    return id;
   }
 
+  private _getById(id: IdType) {
+    return this._data.get(this._transformId(id));
+  }
 }

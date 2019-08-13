@@ -61,6 +61,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c1.c1 .c2,
@@ -110,10 +111,11 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   >
     <button
       aria-describedby={null}
+      aria-label="add"
       className="MuiButtonBase-root MuiIconButton-root iconButtonWrapper c1"
       disabled={false}
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -124,8 +126,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="medium"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="plain"
@@ -232,6 +233,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c1.c1 .c2,
@@ -281,10 +283,11 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
   >
     <button
       aria-describedby={null}
+      aria-label="I'm a star"
       className="MuiButtonBase-root MuiIconButton-root iconButtonWrapper c1"
       disabled={false}
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -295,8 +298,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="medium"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="round"

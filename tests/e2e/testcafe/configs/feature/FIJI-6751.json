@@ -1,7 +1,0 @@
-{
-  "on_merge": {
-  "fixtures": ["./fixtures/MessageInput/*.ts", "./fixtures/ConversationStream/*.ts","./fixtures/ContentPanel/*.ts"],
-  "include_tags": ["P0","P1","JPT-1702","JPT-1789","JPT-1795","JPT-1757","JPT-2034","JPT-2040","JPT-1747","JPT-2115","JPT-2249"],
-  "browsers": ["selenium:chrome"]
-  }
-}

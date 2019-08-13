@@ -65,7 +65,8 @@ interface IGroupService {
     groupType: GROUP_QUERY_TYPE,
     offset: number,
     _limit?: number,
-  ): Promise<Group[]>;
+    pageSize?: number,
+  ): Promise<{ data: Group[]; hasMore: boolean }>;
 
   getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]>;
 
@@ -134,6 +135,8 @@ interface IGroupService {
   handleGroupFetchedPosts(groupId: number, posts: Post[]): void;
 
   sendTypingEvent(groupId: number, isClear: boolean): void;
+
+  getSynchronously(id: number): Group | null;
 }
 
 export { IGroupService };

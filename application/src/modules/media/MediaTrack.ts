@@ -8,14 +8,18 @@ import {
   MediaOptions,
   MediaDeviceType,
   MediaTrackOptions,
+  MediaEventName,
 } from '@/interface/media';
 import { Sound } from './Sound';
 import { Utils } from './Utils';
+import { mainLogger } from 'sdk';
 
 class MediaTrack {
   private _src: string[] = [];
   private _muted: boolean = false;
-  private _volume: number = 1;
+  private _loop: boolean = false;
+  private _autoplay: boolean = false;
+  private _mediaVolume: number = 1;
   private _currentTime: number = 0;
 
   private _id: string;
@@ -27,8 +31,7 @@ class MediaTrack {
 
   private _mediaId: string;
   private _mediaEvents: MediaEvents[] = [];
-
-  private _playing: boolean = false;
+  private _preMediaRester: (() => void) | null;
 
   constructor(options: MediaTrackOptions) {
     this._setup(options);
@@ -40,20 +43,17 @@ class MediaTrack {
     }
 
     this._action('play', null);
-    this._playing = true;
-
     return this;
   }
 
   pause() {
     this._action('pause', null);
-    this._playing = false;
     return this;
   }
 
   stop() {
     this._action('stop', null);
-    this._playing = false;
+    this._currentTime = 0;
     return this;
   }
 
@@ -69,7 +69,13 @@ class MediaTrack {
     }
     const volume = vol * this._masterVolume;
     this._action('setVolume', volume);
-    this._volume = vol;
+    this._mediaVolume = vol;
+    return this;
+  }
+
+  setLoop(loop: boolean) {
+    this._action('setLoop', loop);
+    this._loop = loop;
     return this;
   }
 
@@ -84,12 +90,11 @@ class MediaTrack {
     });
 
     this._currentTime = time;
-    this._playing = _continuePlay;
     return this;
   }
 
   setOutputDevices(devices: MediaDeviceType[]) {
-    const playing = this._playing;
+    const playing = this._isSoundPlaying();
     if (this._outputDevices.length === 0) {
       const currentTime = (this._sounds[0] && this._sounds[0].currentTime) || 0;
 
@@ -117,22 +122,42 @@ class MediaTrack {
     return this;
   }
 
-  dispose() {
-    this._resetTrack();
-  }
-
   setMasterVolume(value: number) {
     if (!Utils.isValidVolume(value)) {
       return;
     }
 
     this._masterVolume = value;
-    this.setVolume(this._volume);
+    this.setVolume(this._mediaVolume);
   }
 
   setOptions(options: MediaTrackOptions) {
+    this._preMediaRester && this._preMediaRester();
     this._resetTrack();
     this._setup(options);
+  }
+
+  dispose() {
+    this._resetTrack();
+  }
+
+  bindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
+    if (this._originSound) {
+      this._originSound.bindEvent(eventName, handler);
+    } else if (this._sounds[0]) {
+      this._sounds[0].bindEvent(eventName, handler);
+    }
+  }
+
+  unbindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
+    const hasEvent = this._mediaEvents.some(evt => evt.name === eventName);
+    if (hasEvent) {
+      if (this._originSound) {
+        this._originSound.unbindEvent(eventName, handler);
+      } else if (this._sounds[0]) {
+        this._sounds[0].unbindEvent(eventName, handler);
+      }
+    }
   }
 
   private _setup(options: MediaTrackOptions) {
@@ -142,18 +167,23 @@ class MediaTrack {
       typeof options.src !== 'string'
         ? options.src || []
         : options.src
-          ? [options.src]
-          : [];
-    this._muted = options.muted || false;
-    this._volume =
+        ? [options.src]
+        : [];
+    this._mediaVolume =
       options.volume !== undefined && Utils.isValidVolume(options.volume)
         ? options.volume
         : 1;
+    this._muted = options.muted || false;
+    this._loop = options.loop || false;
+    this._autoplay = options.autoplay || false;
     this._currentTime = options.currentTime || 0;
     this._outputDevices = options.outputDevices || [];
     this._masterVolume =
-      options.masterVolume !== undefined ? options.masterVolume : 1;
+      options.masterVolume !== undefined
+        ? options.masterVolume
+        : this._masterVolume;
     this._mediaEvents = options.mediaEvents || [];
+    this._preMediaRester = options.onReset || null;
 
     this._load();
   }
@@ -175,7 +205,7 @@ class MediaTrack {
   }
 
   private _getUrlFromSrcArray(src: MediaOptions['src']) {
-    if (src.length === 0) {
+    if (!src || (src && src.length === 0)) {
       return '';
     }
     let url: string = '';
@@ -192,9 +222,8 @@ class MediaTrack {
       if (ext) {
         ext = ext[1].toLowerCase();
       }
-      /* eslint-disable no-console */
       if (!ext) {
-        console.warn('No file extension was found!');
+        mainLogger.warn('[MediaModule] No file extension was found!');
       }
 
       if (ext) {
@@ -211,7 +240,12 @@ class MediaTrack {
       url: this._url,
       muted:
         options && options.muted !== undefined ? options.muted : this._muted,
-      volume: this._volume * this._masterVolume,
+      volume: this._mediaVolume * this._masterVolume,
+      loop: options && options.loop !== undefined ? options.loop : this._loop,
+      autoplay:
+        options && options.autoplay !== undefined
+          ? options.autoplay
+          : this._autoplay,
       seek: (options && options.seek) || this._currentTime,
       outputDevice: options && options.outputDevice,
       isDeviceSound: options && options.isDeviceSound,
@@ -221,7 +255,7 @@ class MediaTrack {
 
   private _createOriginSound(options?: { currentTime: number }): Sound {
     return this._createSound({
-      id: `${this._id}_originSound`,
+      id: `${this._mediaId}-[originSound]`,
       seek: (options && options.currentTime) || 0,
       muted: true,
       volume: 0,
@@ -232,12 +266,14 @@ class MediaTrack {
     devices: MediaDeviceType[],
     options?: { currentTime: number },
   ): Sound[] {
-    return devices.map(device => this._createSound({
-      id: `${this._id}_${device}`,
-      outputDevice: device,
-      seek: (options && options.currentTime) || 0,
-      isDeviceSound: true,
-    }));
+    return devices.map(device =>
+      this._createSound({
+        id: `${this._mediaId}-[${device}]`,
+        outputDevice: device,
+        seek: (options && options.currentTime) || 0,
+        isDeviceSound: true,
+      }),
+    );
   }
 
   private _initDeviceSounds(
@@ -257,14 +293,9 @@ class MediaTrack {
     },
   ) {
     const currentUsedDevices = this._outputDevices;
-    const diffDevices = Utils.difference(devices, currentUsedDevices);
+    this._removeDeviceSounds(currentUsedDevices);
 
-    const removeDevices = currentUsedDevices.filter(device => diffDevices.includes(device));
-    const addDevices = devices.filter(device => !!diffDevices.includes(device));
-
-    this._removeDeviceSounds(removeDevices);
-
-    const newDeviceSounds = this._createDeviceSound(addDevices, options);
+    const newDeviceSounds = this._createDeviceSound(devices, options);
     newDeviceSounds.forEach(sound => {
       this._sounds.push(sound);
     });
@@ -322,10 +353,18 @@ class MediaTrack {
     this._src = [];
     this._url = '';
     this._muted = false;
-    this._volume = 1;
+    this._mediaVolume = 1;
     this._currentTime = 0;
     this._outputDevices = [];
     this._mediaEvents = [];
+  }
+
+  private _isSoundPlaying() {
+    return (
+      (this._originSound && !this._originSound.paused) ||
+      (this._sounds[0] && !this._sounds[0].paused) ||
+      false
+    );
   }
 
   get masterVolume() {
@@ -349,7 +388,15 @@ class MediaTrack {
   }
 
   get volume() {
-    return this._volume;
+    return this._mediaVolume;
+  }
+
+  get loop() {
+    return this._loop;
+  }
+
+  get autoplay() {
+    return this._autoplay;
   }
 
   get outputDevices() {
@@ -357,7 +404,7 @@ class MediaTrack {
   }
 
   get playing() {
-    return this._playing;
+    return this._isSoundPlaying();
   }
 
   get currentTime() {
@@ -379,6 +426,14 @@ class MediaTrack {
 
   get currentMediaUrl() {
     return this._url;
+  }
+
+  get currentMediaDuration() {
+    return (
+      (this._originSound && this._originSound.duration) ||
+      (this._sounds[0] && this._sounds[0].duration) ||
+      0
+    );
   }
 }
 

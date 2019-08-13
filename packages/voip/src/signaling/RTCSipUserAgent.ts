@@ -5,10 +5,14 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
-import { UA_EVENT, ProvisionDataOptions, WEBPHONE_LOG_LEVEL } from './types';
-import { RTCCallOptions } from '../api/types';
+import {
+  UA_EVENT,
+  ProvisionDataOptions,
+  WEBPHONE_LOG_LEVEL,
+  InviteOptions,
+} from './types';
+import { RTCCallOptions, RTCSipProvisionInfo } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { RTCSipProvisionInfo } from '../account/types';
 import {
   opusModifier,
   isFireFox,
@@ -117,14 +121,36 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     if (!this._webphone) {
       return null;
     }
-    if (!options.homeCountryId) {
-      options.homeCountryId = '1';
+
+    const inviteOptions: InviteOptions = {};
+    options.homeCountryId
+      ? (inviteOptions.homeCountryId = options.homeCountryId)
+      : (inviteOptions.homeCountryId = '1');
+    if (options.fromNumber) {
+      inviteOptions.fromNumber = options.fromNumber;
+    }
+
+    if (
+      options.replacesCallId &&
+      options.replacesFromTag &&
+      options.replacesToTag
+    ) {
+      inviteOptions.extraHeaders = [
+        `Replaces: ${options.replacesCallId};to-tag=${
+          options.replacesFromTag
+        };from-tag=${options.replacesToTag}`,
+        'RC-call-type: replace',
+      ];
+      rtcLogger.info(
+        LOG_TAG,
+        `switch over call to ${inviteOptions.extraHeaders}`,
+      );
     }
 
     CallReport.instance().updateEstablishment(
       CALL_REPORT_PROPS.INVITE_SENT_TIME
     );
-    return this._webphone.userAgent.invite(phoneNumber, options);
+    return this._webphone.userAgent.invite(phoneNumber, inviteOptions);
   }
 
   public reRegister() {

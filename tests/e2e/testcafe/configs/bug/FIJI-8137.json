@@ -1,0 +1,12 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/MessageInput/Send.ts",
+      "./fixtures/TeamSetting/AtTeamMention.ts",
+      "./fixtures/TeamSetting/AddTeamMembersPermission.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -5,7 +5,11 @@
  */
 import { DBConfig } from 'sdk/module/config';
 import { daoManager } from 'sdk/dao';
-import { MODULE_NAME, RC_INFO_KEYS, DEFAULT_PHONE_DATA_VERSION } from './constants';
+import {
+  MODULE_NAME,
+  RC_INFO_KEYS,
+  DEFAULT_PHONE_DATA_VERSION,
+} from './constants';
 import { BlockNumberItem } from 'sdk/api';
 import { UndefinedAble } from 'sdk/types';
 
@@ -66,7 +70,10 @@ class RCInfoUserConfig extends DBConfig {
   }
 
   async getPhoneDataVersion() {
-    return (await this.get(RC_INFO_KEYS.PHONE_DATA_VERSION)) || DEFAULT_PHONE_DATA_VERSION;
+    return (
+      (await this.get(RC_INFO_KEYS.PHONE_DATA_VERSION)) ||
+      DEFAULT_PHONE_DATA_VERSION
+    );
   }
 
   async getExtensionPhoneNumberList() {
@@ -99,6 +106,14 @@ class RCInfoUserConfig extends DBConfig {
 
   async setAccountServiceInfo(value: any) {
     return await this.put(RC_INFO_KEYS.ACCOUNT_SERVICE_INFO, value);
+  }
+
+  async setDeviceInfo(value: any) {
+    await this.put(RC_INFO_KEYS.DEVICE_INFO, value);
+  }
+
+  async getDeviceInfo() {
+    return await this.get(RC_INFO_KEYS.DEVICE_INFO);
   }
 
   async setForwardingNumbers(value: any) {

@@ -11,6 +11,20 @@ export class SearchDialog extends BaseWebComponent {
     return this.getSelector('[role="document"]');
   }
 
+  async ensureDismiss() {
+    await H.retryUntilPass(async ()=>{
+      if (!await this.exists) {
+        return
+      }
+      await this.t.expect(this.visible).notOk()
+    })
+  }
+
+  async ensureLoaded() {
+    await this.t.expect(this.exists).ok();
+    await this.t.expect(this.visible).ok();
+  }
+
   get searchIcon() {
     return this.getSelectorByIcon('search', this.self);
   }
@@ -255,11 +269,11 @@ class RecentSearch extends BaseSearchResultPage {
   }
 
   get conversationItems() {
-    return this.getSelector('.search-items:not([data-test-automation-id="search-message-item"])'); // todo
+    return this.getSelector('.search-items:not([data-test-automation-id="search-message-item"])');
   }
 
   conversationByName(name: string) {
-    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items:not([data-test-automation-id="search-message-item"]'));
+    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items:not([data-test-automation-id="search-message-item"])'));
   }
 }
 
@@ -468,7 +482,7 @@ class SearchItem extends BaseWebComponent {
   }
 
   get privateLabel() {
-    return this.getSelectorByAutomationId('search-item-private', this.self);
+    return this.findSelector('.lock.icon');
   }
 
   async shouldHavePrivateLabel() {
@@ -556,8 +570,16 @@ export class JoinTeamDialog extends BaseWebComponent {
     return this.buttonOfText('Join');
   }
 
+  get joinButtonByClass() {
+    return this.getSelector('.containedButtonStyle');
+  }
+
   get cancelButton() {
     return this.buttonOfText('Cancel');
+  }
+
+  get cancelButtonByClass() {
+    return this.getSelector('.textButtonStyle')
   }
 
   async clickJoinButton() {
@@ -565,7 +587,6 @@ export class JoinTeamDialog extends BaseWebComponent {
   }
 
   async clickCancelButton() {
-    await this.t.click(this.cancelButton);
+    await this.t.click(this.cancelButtonByClass);
   }
 }
-

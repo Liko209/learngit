@@ -5,9 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import {
- observable, computed, action, reaction
-} from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
@@ -21,7 +19,8 @@ import {
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
 import {
-  ANONYMOUS,
+  ANONYMOUS_NAME,
+  ANONYMOUS_NUM,
   INCOMING_STATE,
   DIALING,
   INITIAL_REPLY_COUNTDOWN_TIME,
@@ -147,6 +146,10 @@ class TelephonyStore {
   @observable
   isExt: boolean = false;
 
+  // only exist one e911 dialog
+  @observable
+  hasShowE911: boolean = false;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -209,7 +212,7 @@ class TelephonyStore {
     if (this.person) {
       return this.person.userDisplayName;
     }
-    return this.callerName === ANONYMOUS || !this.callerName
+    return this.callerName === ANONYMOUS_NAME || !this.callerName
       ? ''
       : this.callerName;
   }
@@ -360,6 +363,7 @@ class TelephonyStore {
     this._openCallWindow();
   };
 
+  @action
   onDialerInputFocus = () => {
     this.dialerInputFocused = true;
   };
@@ -558,8 +562,8 @@ class TelephonyStore {
   }
 
   @computed
-  get callId() {
-    return this.call.callId;
+  get uuid() {
+    return this.call.uuid;
   }
 
   // TODO: should change the prop's name since it's isomorphic to `CALL_DIRECTION`
@@ -608,13 +612,13 @@ class TelephonyStore {
 
   @computed
   get callerName() {
-    return this.call.fromName;
+    return this.isInbound ? this.call.fromName : this.call.toName;
   }
 
   @computed
   get phoneNumber() {
     const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
-    return phoneNumber !== ANONYMOUS ? phoneNumber : '';
+    return phoneNumber !== ANONYMOUS_NUM ? phoneNumber : '';
   }
 
   @action
@@ -626,6 +630,11 @@ class TelephonyStore {
   backToDialer = () => {
     this.isRecentCalls = false;
   };
+
+  @action
+  switchE911Status = (status: boolean) => {
+    this.hasShowE911 = status;
+  }
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE };

@@ -5,18 +5,23 @@
  */
 
 import { ReactNode } from 'react';
-import { inject } from 'framework';
-import { MessageStore } from '../store';
+import portalManager from '@/common/PortalManager';
+import { EditProfile } from '../container/ProfileEdit';
+import { IMessageService, IMessageStore } from '../interface';
 
-class MessageService {
-  @inject(MessageStore) private _messageStore: MessageStore;
+const ROUTE_ROOT_PATH = '/messages';
 
-  registerConversationHeaderExtension(extension: ReactNode) {
-    this._messageStore.addConversationHeaderExtension(extension);
+class MessageService implements IMessageService {
+  @IMessageStore private _messageStore: IMessageStore;
+
+  registerConversationHeaderExtension(extensions: ReactNode[]) {
+    this._messageStore.addConversationHeaderExtension(extensions);
   }
+
   enterEditMode(id: number, draft: string) {
     this._messageStore.savePostDraft(id, draft);
   }
+
   leaveEditMode(id: number) {
     this._messageStore.removePostDraft(id);
   }
@@ -29,13 +34,29 @@ class MessageService {
     window.requestAnimationFrame(
       () => (this._messageStore.currentFocusedInput = id),
     );
-  }
+  };
+
+  open = (uid: number) => {
+    portalManager.dismissLast();
+    EditProfile.show({ id: uid });
+  };
 
   blurEditInputFocus() {
     this._messageStore.currentFocusedInput = undefined;
   }
+
   getCurrentInputFocus() {
     return this._messageStore.currentFocusedInput;
+  }
+
+  setLastGroutId(id: number) {
+    this._messageStore.setLastGroutId(id);
+  }
+
+  getNavUrl() {
+    return this._messageStore.lastGroupId
+      ? `${ROUTE_ROOT_PATH}/${this._messageStore.lastGroupId}`
+      : ROUTE_ROOT_PATH;
   }
 }
 

@@ -3,11 +3,11 @@
  * @Date: 2018-06-14 23:06:34
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import TypeDictionary from './types';
-import GlipTypeUtil from './util';
+import GlipTypeUtil, { TYPE_ID_MASK } from './util';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
+import { UndefinedAble } from 'sdk/types';
 
 interface IMessage<V> {
   [key: number]: V;
@@ -49,14 +49,7 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_PAGE]: socketKeyMap.ITEM,
   [TypeDictionary.TYPE_ID_CODE]: socketKeyMap.ITEM,
   [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: socketKeyMap.ITEM,
-};
-
-const socketMessageParser = {
-  presence_unified: parsePresence,
-  message: parseSocketMessage,
-  partial: parseSocketMessage,
-  typing: parseTyping,
-  system_message: parseSocketMessage,
+  [TypeDictionary.TYPE_ID_RC_VIDEO]: socketKeyMap.ITEM,
 };
 
 function getSocketMessageKey(id: number) {
@@ -87,7 +80,7 @@ function parseSocketMessage(message: string | ISystemMessage) {
   const objects = parsedMsg.body.objects;
   const hint = parsedMsg.body.hint;
 
-  let post_creator_ids: number[] | undefined;
+  let post_creator_ids: UndefinedAble<number[]>;
   if (hint && hint.post_creator_ids) {
     post_creator_ids = _.values(hint.post_creator_ids);
   }
@@ -130,17 +123,24 @@ function parseTyping(message: string) {
   };
 }
 
+const socketMessageParser = {
+  presence_unified: parsePresence,
+  message: parseSocketMessage,
+  partial: parseSocketMessage,
+  typing: parseTyping,
+  system_message: parseSocketMessage,
+};
 function parseSocketData(channel: string, message: string | ISystemMessage) {
   if (socketMessageParser[channel]) {
     return socketMessageParser[channel](message);
   }
   mainLogger.log(`Jupiter has not support ${channel} channel yet`);
 }
-
 export {
   TypeDictionary,
   GlipTypeUtil,
   parseSocketMessage,
   getSocketMessageKey,
+  TYPE_ID_MASK,
   parseSocketData,
 };

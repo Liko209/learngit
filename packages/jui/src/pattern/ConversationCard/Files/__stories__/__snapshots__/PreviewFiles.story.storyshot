@@ -30,31 +30,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   font-size: 20px;
 }
 
-.c12 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c12.c12 > *:nth-child(n + 2) {
-  margin-left: 8px;
-}
-
 .c13.c13 {
   padding: 0;
   width: 20px;
@@ -63,6 +38,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c13.c13 .c14,
@@ -183,7 +159,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 .c25.c25 .c14,
 .c25.c25 .c14 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c25.c25:hover .c14 {
@@ -204,11 +180,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 }
 
 .c26.c26:hover .c14 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c26.c26:active .c14 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c26.c26.c26.c26.disabled .c14 {
@@ -217,15 +193,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 .c27.c27 .c14,
 .c27.c27 .c14 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c27.c27:hover .c14 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c27.c27:active .c14 {
-  color: #fff;
+  color: #212121;
 }
 
 .c27.c27.c27.c27.disabled .c14 {
@@ -234,36 +210,44 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 .c28.c28 .c14,
 .c28.c28 .c14 svg {
-  font-size: 32px;
+  font-size: 20px;
 }
 
 .c28.c28:hover .c14 {
-  color: rgba(33,33,33,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c28.c28:active .c14 {
-  color: #212121;
+  color: #fff;
 }
 
 .c28.c28.c28.c28.disabled .c14 {
   color: rgba(0,0,0,0.12);
 }
 
-.c29.c29 .c14,
-.c29.c29 .c14 svg {
-  font-size: 20px;
+.c12 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
-.c29.c29:hover .c14 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c29.c29:active .c14 {
-  color: #fff;
-}
-
-.c29.c29.c29.c29.disabled .c14 {
-  color: rgba(0,0,0,0.12);
+.c12.c12 > *:nth-child(n + 2) {
+  margin-left: 8px;
 }
 
 .c8.c8 {
@@ -275,11 +259,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   width: 336px;
   height: 272px;
   margin: 0px 12px 12px 0px;
+  cursor: default;
 }
 
 .c2 {
   height: 200px;
-  cursor: default;
   background-color: #bfbfbf;
   opacity: 0.36;
 }
@@ -432,7 +416,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   </div>
   <div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -457,7 +442,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </div>
         </div>
         <div
-          className="MuiTypography-root MuiTypography-body2 c6"
+          className="MuiTypography-root c6 MuiTypography-body1"
         >
           <div
             className="c7"
@@ -480,18 +465,20 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             2.3Mb
           </div>
           <div
-            className="MuiCardActions-root c11"
+            className="MuiCardActions-root c11 MuiCardActions-spacing"
           >
             <div
-              className="MuiCardActions-action c12"
+              className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}
+                aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
-                onContextMenu={[Function]}
+                onDragLeave={[Function]}
                 onFocus={[Function]}
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
@@ -502,8 +489,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
-                size="medium"
-                tabIndex="0"
+                tabIndex={0}
                 title={null}
                 type="button"
                 variant="plain"
@@ -533,7 +519,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -558,7 +545,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </div>
         </div>
         <div
-          className="MuiTypography-root MuiTypography-body2 c6"
+          className="MuiTypography-root c6 MuiTypography-body1"
         >
           <div
             className="c7"
@@ -581,18 +568,20 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             2.3Mb
           </div>
           <div
-            className="MuiCardActions-root c11"
+            className="MuiCardActions-root c11 MuiCardActions-spacing"
           >
             <div
-              className="MuiCardActions-action c12"
+              className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}
+                aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
-                onContextMenu={[Function]}
+                onDragLeave={[Function]}
                 onFocus={[Function]}
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
@@ -603,8 +592,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
-                size="medium"
-                tabIndex="0"
+                tabIndex={0}
                 title={null}
                 type="button"
                 variant="plain"
@@ -634,7 +622,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -659,7 +648,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </div>
         </div>
         <div
-          className="MuiTypography-root MuiTypography-body2 c6"
+          className="MuiTypography-root c6 MuiTypography-body1"
         >
           <div
             className="c7"
@@ -682,18 +671,20 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             2.3Mb
           </div>
           <div
-            className="MuiCardActions-root c11"
+            className="MuiCardActions-root c11 MuiCardActions-spacing"
           >
             <div
-              className="MuiCardActions-action c12"
+              className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}
+                aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
-                onContextMenu={[Function]}
+                onDragLeave={[Function]}
                 onFocus={[Function]}
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
@@ -704,8 +695,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
-                size="medium"
-                tabIndex="0"
+                tabIndex={0}
                 title={null}
                 type="button"
                 variant="plain"
@@ -735,7 +725,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -760,7 +751,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </div>
         </div>
         <div
-          className="MuiTypography-root MuiTypography-body2 c6"
+          className="MuiTypography-root c6 MuiTypography-body1"
         >
           <div
             className="c7"
@@ -783,18 +774,20 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             2.3Mb
           </div>
           <div
-            className="MuiCardActions-root c11"
+            className="MuiCardActions-root c11 MuiCardActions-spacing"
           >
             <div
-              className="MuiCardActions-action c12"
+              className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}
+                aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
-                onContextMenu={[Function]}
+                onDragLeave={[Function]}
                 onFocus={[Function]}
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
@@ -805,8 +798,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
-                size="medium"
-                tabIndex="0"
+                tabIndex={0}
                 title={null}
                 type="button"
                 variant="plain"
@@ -841,7 +833,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -872,10 +864,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -886,8 +879,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -919,7 +911,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -950,10 +942,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -964,8 +957,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -997,7 +989,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1028,10 +1020,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1042,8 +1035,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1075,7 +1067,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1106,10 +1098,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1120,8 +1113,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1155,7 +1147,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1186,10 +1178,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1200,8 +1193,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1227,12 +1219,13 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             </button>
             <button
               aria-describedby={null}
+              aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1243,8 +1236,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1272,7 +1264,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         </div>
       </li>
       <div
-        className="MuiCollapse-container"
+        className="MuiCollapse-container MuiCollapse-hidden"
         style={
           Object {
             "minHeight": "0px",
@@ -1305,7 +1297,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1336,10 +1328,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1350,8 +1343,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1377,12 +1369,13 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             </button>
             <button
               aria-describedby={null}
+              aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1393,8 +1386,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1422,7 +1414,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         </div>
       </li>
       <div
-        className="MuiCollapse-container"
+        className="MuiCollapse-container MuiCollapse-hidden"
         style={
           Object {
             "minHeight": "0px",
@@ -1455,7 +1447,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1486,10 +1478,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1500,8 +1493,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1527,12 +1519,13 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             </button>
             <button
               aria-describedby={null}
+              aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1543,8 +1536,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1572,7 +1564,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         </div>
       </li>
       <div
-        className="MuiCollapse-container"
+        className="MuiCollapse-container MuiCollapse-hidden"
         style={
           Object {
             "minHeight": "0px",
@@ -1605,7 +1597,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       className="c16"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c17"
+        className="MuiListItem-root c17 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1636,10 +1628,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1650,8 +1643,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1677,12 +1669,13 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             </button>
             <button
               aria-describedby={null}
+              aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -1693,8 +1686,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -1722,7 +1714,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         </div>
       </li>
       <div
-        className="MuiCollapse-container"
+        className="MuiCollapse-container MuiCollapse-hidden"
         style={
           Object {
             "minHeight": "0px",

@@ -20,7 +20,6 @@ import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPo
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { HasMore } from '@/store/base/fetch/types';
 
 const BEFORE_ANCHOR_POSTS_COUNT = 20;
 
@@ -186,33 +185,30 @@ class StreamController {
   async fetchAllUnreadData() {
     this.enableNewMessageSep();
     await this._orderListHandler.fetchDataBy(
-      QUERY_DIRECTION.NEWER,
+      QUERY_DIRECTION.OLDER,
       this._unreadPostsLoader,
     );
     return this._orderListHandler.listStore.items;
   }
 
   private _unreadPostsLoader = async () => {
-    let hasMore: HasMore = { older: true, newer: true, both: true };
-    let postsNewerThanAnchor: Post[] = [];
-
     // (1)
     // Fetch all posts between readThrough and firstPost
-    ({
-      hasMore,
-      posts: postsNewerThanAnchor,
+   const {
+     hasMore,
+      posts,
     } = await this._postService.getUnreadPostsByGroupId({
       groupId: this._groupId,
       unreadCount: this.historyUnreadCount,
       startPostId: this.historyReadThrough || 0,
       endPostId: this._orderListHandler.listStore.items[0].id,
-    }));
+    });
 
     // (2)
     // Return all the posts from (1)
     return {
       hasMore,
-      data: postsNewerThanAnchor,
+      data: posts,
     };
   }
 }

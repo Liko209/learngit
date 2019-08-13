@@ -10,13 +10,22 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Action, Location, UnregisterCallback } from 'history';
 import { action, observable, computed } from 'mobx';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
+import { E911UIConfig } from '@/modules/telephony/E911.config';
+import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 class HomeViewModel extends StoreViewModel {
   @observable
   openCreateTeam: boolean = false;
   private _globalSearchStore: GlobalSearchStore = container.get(
-    GlobalSearchStore
+    GlobalSearchStore,
   );
+
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
+
+  private _E911UIConfig: E911UIConfig = container.get(E911UIConfig);
 
   private _unListen: UnregisterCallback;
 
@@ -48,11 +57,27 @@ class HomeViewModel extends StoreViewModel {
 
   @computed
   get showGlobalSearch() {
-    return this._globalSearchStore.open;
+    return this._globalSearchStore.alive;
   }
 
   dispose() {
     this._unListen();
   }
+
+  openE911 = () => {
+    this._telephonyService.openE911();
+  };
+
+  needConfirmE911 = async () => {
+    return await this._telephonyService.needConfirmE911();
+  };
+
+  shouldShowE911 = () => {
+    return this._E911UIConfig.getE911Marked();
+  };
+
+  markE911 = () => {
+    this._E911UIConfig.setE911Marked(true);
+  };
 }
 export { HomeViewModel };

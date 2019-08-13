@@ -1,21 +1,21 @@
 {
   "name": "jui",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "main": "src",
   "scripts": {
     "storybook": "STORYBOOK_DISPLAY_WARNING=true DISPLAY_WARNING=true start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@material-ui/core": "3.9.3",
-    "@material-ui/icons": "3.0.2",
+    "@material-ui/core": "4.2.1",
+    "@material-ui/styles": "4.2.1",
     "codemirror": "5.42.2",
     "downshift": "3.1.4",
     "emoji-mart": "2.11.0",
     "eventemitter2": "5.0.1",
     "mousetrap": "1.6.2",
     "object-path": "0.11.4",
-    "rcui": "1.6.2",
+    "rcui": "1.7.0",
     "re-resizable": "4.11.0",
     "react": "16.8.6",
     "react-content-loader": "3.2.0",
@@ -27,7 +27,7 @@
     "react-resize-detector": "4.0.5",
     "react-select": "2.1.1",
     "react-virtualized": "9.21.0",
-    "styled-components": "4.0.3",
+    "styled-components": "4.3.2",
     "tinycolor2": "1.4.1",
     "typeface-roboto": "0.0.54"
   },
@@ -75,7 +75,7 @@
     "react-sortable-hoc": "0.8.3",
     "react-test-renderer": "16.8.3",
     "require-context.macro": "1.0.4",
-    "shield": "1.6.2",
+    "shield": "1.7.0",
     "svg-sprite-loader": "4.1.6",
     "svgo-loader": "2.2.0",
     "ts-jest": "24.0.2",

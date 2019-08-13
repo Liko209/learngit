@@ -9,6 +9,11 @@ import { CallLogGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
 class CallLogScene extends Scene {
+
+  tags(): Array<string> {
+    return ["CallLogScene", "Phone", "Call", "Log", "Memory", "Trace", "API"];
+  }
+
   async preHandle() {
     this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 

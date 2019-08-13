@@ -16,14 +16,14 @@ import {
   JuiProfileMiniCardHeaderRight,
   JuiProfileMiniCardPersonName,
   JuiProfileMiniCardPersonStatus,
-  JuiProfileMiniCardPersonTitle,
+  JuiProfileMiniCardPersonTitle
 } from 'jui/pattern/Profile/MiniCard';
-import { Favorite } from '@/containers/common';
+import { Favorite } from '@/containers/common/Favorite';
 
 @observer
 class ProfileMiniCardPersonHeaderView extends Component<
   ProfileMiniCardPersonHeaderViewProps
-  > {
+> {
   render() {
     const { id, person } = this.props;
     const { userDisplayName, awayStatus, jobTitle } = person;

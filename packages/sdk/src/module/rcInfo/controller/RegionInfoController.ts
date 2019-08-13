@@ -8,6 +8,8 @@ import { UndefinedAble } from 'sdk/types';
 import {
   DialingPlanCountryRecord,
   DialingCountryInfo,
+  StateRecord,
+  IStateRequest,
 } from 'sdk/api/ringcentral/types';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { RCInfoFetchController } from './RCInfoFetchController';
@@ -30,6 +32,10 @@ import { mainLogger } from 'foundation';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
+import {
+  ICountryRequest,
+  CountryRecord,
+} from 'sdk/api/ringcentral/types/common';
 
 type StationSetting = {
   newCountryInfo: DialingCountryInfo;
@@ -46,10 +52,14 @@ const DefaultCountryInfo = {
   callingCode: '1',
 };
 const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
+const COUNTRY_PAGE_SIZE = 500;
+const STATE_PAGE_SIZE = 400;
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
   private _notificationKeys: string[];
+  private _stateListMap: Map<string, StateRecord[]> = new Map();
+  private _countryList: CountryRecord[] = [];
 
   constructor(
     private _rcInfoFetchController: RCInfoFetchController,
@@ -78,7 +88,7 @@ class RegionInfoController {
 
   updateStationLocation = () => {
     this.loadRegionInfo();
-  }
+  };
 
   async loadRegionInfo() {
     const stationSetting = this._getStationLocation();
@@ -105,6 +115,33 @@ class RegionInfoController {
       }
     }
     return list;
+  }
+
+  async getStateList(countryId: string): Promise<StateRecord[]> {
+    const list = this._stateListMap.get(countryId);
+    if (list) {
+      return list;
+    }
+    const request: IStateRequest = {
+      countryId,
+      page: 1,
+      perPage: STATE_PAGE_SIZE,
+    };
+    const result = await this._rcInfoFetchController.requestCountryState(
+      request,
+    );
+    result.length && this._stateListMap.set(countryId, result);
+    return result;
+  }
+
+  async getAllCountryList(): Promise<CountryRecord[]> {
+    if (!this._countryList.length) {
+      const request: ICountryRequest = { page: 1, perPage: COUNTRY_PAGE_SIZE };
+      this._countryList = await this._rcInfoFetchController.requestCountryList(
+        request,
+      );
+    }
+    return this._countryList;
   }
 
   async getCurrentCountry(): Promise<DialingCountryInfo> {
@@ -203,18 +240,24 @@ class RegionInfoController {
     isoCode: string,
   ): Promise<UndefinedAble<DialingCountryInfo>> {
     const recordsInDialing = await this._getDialingPlanCountryRecords();
-    const record = recordsInDialing.find((x: DialingPlanCountryRecord) => x.isoCode === isoCode);
+    const record = recordsInDialing.find(
+      (x: DialingPlanCountryRecord) => x.isoCode === isoCode,
+    );
     return record;
   }
 
   private _getDefaultCountryInfoByISOCode(isoCode: string) {
-    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => info.isoCode === isoCode);
+    const index = SELLING_COUNTRY_LIST.findIndex(
+      (info: DialingCountryInfo) => info.isoCode === isoCode,
+    );
 
     return index !== -1 ? SELLING_COUNTRY_LIST[index] : undefined;
   }
 
   private _getDefaultCountryInfoByCallingCode(callingCode: string) {
-    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => info.callingCode === callingCode);
+    const index = SELLING_COUNTRY_LIST.findIndex(
+      (info: DialingCountryInfo) => info.callingCode === callingCode,
+    );
 
     return index !== -1 ? SELLING_COUNTRY_LIST[index] : undefined;
   }

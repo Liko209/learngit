@@ -27,6 +27,13 @@ type MissedCallEventPayload = {
   ownerId: string;
 };
 
+type SipData = {
+  toTag: string;
+  fromTag: string;
+  remoteUri?: string;
+  localUri?: string;
+};
+
 type ActiveCall = {
   id: string;
   direction: CALL_DIRECTION;
@@ -41,6 +48,7 @@ type ActiveCall = {
   onBehalfOf: string;
   partyId: string;
   telephonySessionId: string;
+  sipData: SipData;
 };
 
 type RCPresenceEventPayload = {

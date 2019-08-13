@@ -25,6 +25,7 @@ const MuiListItemIconWrapper = styled(MuiListItemIcon)`
     background-color: ${grey('100')};
     border-radius: ${shape('borderRadius')};
     overflow: hidden;
+    min-width: unset;
   }
 `;
 

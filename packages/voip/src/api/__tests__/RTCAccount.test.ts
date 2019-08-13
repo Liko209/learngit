@@ -12,6 +12,7 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallOptions,
+  RTCSipProvisionInfo,
 } from '../types';
 import {
   kRTCAnonymous,
@@ -19,15 +20,11 @@ import {
   kRTCProvRefreshByRegFailedInterval,
   kRetryIntervalList,
 } from '../../account/constants';
-import {
-  REGISTRATION_FSM_STATE,
-  RTCSipProvisionInfo,
-  RTC_PROV_EVENT,
-} from '../../account/types';
+import { REGISTRATION_FSM_STATE, RTC_PROV_EVENT } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 import { kProvisioningInfoKey } from '../../utils/constants';
-import { ITelephonyDaoDelegate } from 'foundation/src';
+import { ITelephonyDaoDelegate } from 'foundation';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { RTCCall } from '../RTCCall';
 
@@ -137,6 +134,14 @@ class MockSession extends EventEmitter2 {
   mute = jest.fn();
   unmute = jest.fn();
   terminate = jest.fn();
+
+  dialog = {
+    id: {
+      callId: '100',
+      remoteTag: '200',
+      localTag: '300',
+    },
+  };
 }
 
 class MockLocalStorage implements ITelephonyDaoDelegate {
@@ -223,7 +228,7 @@ describe('Telephony HA', () => {
     jest.spyOn(account._regManager, 'reRegister');
     ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
     setImmediate(() => {
-      expect(account._regManager.reRegister).toBeCalled();
+      expect(account._regManager.reRegister).toHaveBeenCalled();
       done();
     });
   });
@@ -233,7 +238,7 @@ describe('Telephony HA', () => {
     jest.spyOn(account._provManager, 'refreshSipProv');
     ua.mockSignal(UA_EVENT.PROVISION_UPDATE);
     setImmediate(() => {
-      expect(account._provManager.refreshSipProv).toBeCalled();
+      expect(account._provManager.refreshSipProv).toHaveBeenCalled();
       done();
     });
   });
@@ -262,7 +267,7 @@ describe('Telephony HA', () => {
       call.hangup();
       setImmediate(() => {
         expect(account.callCount()).toBe(0);
-        expect(account._regManager.reRegister).toBeCalled();
+        expect(account._regManager.reRegister).toHaveBeenCalled();
         done();
       });
     });
@@ -279,7 +284,7 @@ describe('Telephony HA', () => {
       call.hangup();
       setImmediate(() => {
         expect(account.callCount()).toBe(0);
-        expect(account._regManager.reRegister).not.toBeCalled();
+        expect(account._regManager.reRegister).not.toHaveBeenCalled();
         expect(account._postponeReregister).toBe(false);
         done();
       });
@@ -368,92 +373,8 @@ describe('RTCAccount', () => {
     ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
     setImmediate(() => {
       expect(call).not.toBe(null);
-      expect(mockListener.onReceiveIncomingCall).not.toBeCalled();
+      expect(mockListener.onReceiveIncomingCall).not.toHaveBeenCalled();
       done();
-    });
-  });
-
-  it("should do nothing when receive wake up from sleep mode and there's active call. [JPT-1765]", done => {
-    setupAccount();
-    jest.spyOn(account._regManager, 'reRegister');
-    const listener = new MockCallListener();
-    account.makeCall('123', listener);
-    account._onWakeUpFromSleepMode();
-    setImmediate(() => {
-      expect(account._regManager.reRegister).not.toBeCalled();
-      done();
-    });
-  });
-
-  it('should transition from ready state to in progress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1767]', done => {
-    setupAccount();
-    jest.spyOn(account._regManager, 'reRegister');
-    jest.spyOn(account._regManager._userAgent, 'reRegister');
-    setImmediate(() => {
-      expect(account._regManager._fsm.state).toBe(
-        REGISTRATION_FSM_STATE.IN_PROGRESS,
-      );
-      ua.mockSignal(UA_EVENT.REG_SUCCESS);
-      setImmediate(() => {
-        expect(account._regManager._fsm.state).toBe(
-          REGISTRATION_FSM_STATE.READY,
-        );
-        account._onWakeUpFromSleepMode();
-        setImmediate(() => {
-          expect(account._regManager.reRegister).toBeCalled();
-          expect(account._regManager._fsm.state).toBe(
-            REGISTRATION_FSM_STATE.IN_PROGRESS,
-          );
-          expect(account._regManager._userAgent.reRegister).toBeCalled();
-          done();
-        });
-      });
-    });
-  });
-
-  it('should transition from inprogress state to inprogress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1766]', done => {
-    setupAccount();
-    jest.spyOn(account._regManager, 'reRegister');
-    jest.spyOn(account._regManager._userAgent, 'reRegister');
-    setImmediate(() => {
-      expect(account._regManager._fsm.state).toBe(
-        REGISTRATION_FSM_STATE.IN_PROGRESS,
-      );
-      account._onWakeUpFromSleepMode();
-      setImmediate(() => {
-        expect(account._regManager.reRegister).toBeCalled();
-        expect(account._regManager._fsm.state).toBe(
-          REGISTRATION_FSM_STATE.IN_PROGRESS,
-        );
-        expect(account._regManager._userAgent.reRegister).toBeCalled();
-        done();
-      });
-    });
-  });
-
-  it('should transition from failed state to in progress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1768]', done => {
-    setupAccount();
-    jest.spyOn(account._regManager._userAgent, 'reRegister');
-    jest.spyOn(account._regManager, 'reRegister');
-    setImmediate(() => {
-      expect(account._regManager._fsm.state).toBe(
-        REGISTRATION_FSM_STATE.IN_PROGRESS,
-      );
-      ua.mockSignal(UA_EVENT.REG_FAILED);
-      setImmediate(() => {
-        expect(account._regManager._fsm.state).toBe(
-          REGISTRATION_FSM_STATE.FAILURE,
-        );
-        account._onWakeUpFromSleepMode();
-        setImmediate(() => {
-          expect(account._regManager.reRegister).toBeCalled();
-          expect(account._regManager._fsm.state).toBe(
-            REGISTRATION_FSM_STATE.IN_PROGRESS,
-          );
-          expect(account._regManager._userAgent.reRegister).toBeCalled();
-          done();
-        });
-      });
     });
   });
 
@@ -474,7 +395,7 @@ describe('RTCAccount', () => {
     setImmediate(() => {
       ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
       expect(account.callCount()).toBe(1);
-      expect(mockListener.onReceiveIncomingCall).toBeCalled();
+      expect(mockListener.onReceiveIncomingCall).toHaveBeenCalled();
       done();
     });
   });
@@ -530,7 +451,7 @@ describe('RTCAccount', () => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
-      expect(account._callManager.endAllCalls).toBeCalled();
+      expect(account._callManager.endAllCalls).toHaveBeenCalled();
       done();
     });
   });
@@ -545,7 +466,7 @@ describe('RTCAccount', () => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
-      expect(account._provManager.clearProvInfo).toBeCalled();
+      expect(account._provManager.clearProvInfo).toHaveBeenCalled();
       expect(account._provManager._sipProvisionInfo).toBe(null);
       expect(localStorage.get(kProvisioningInfoKey)).toBe(null);
       done();
@@ -560,7 +481,7 @@ describe('RTCAccount', () => {
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
       setImmediate(() => {
-        expect(ua.unregister).toBeCalled();
+        expect(ua.unregister).toHaveBeenCalled();
         done();
       });
     });
@@ -644,7 +565,7 @@ describe('RTCAccount', () => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.FAILED);
       account.makeCall('123', listener);
       setImmediate(() => {
-        expect(ua.reRegister).toBeCalled();
+        expect(ua.reRegister).toHaveBeenCalled();
         expect(account.state()).toBe(RTC_ACCOUNT_STATE.IN_PROGRESS);
         done();
       });
@@ -727,7 +648,7 @@ describe('RTCAccount', () => {
       expect(account.callCount()).toBe(0);
       account._onNewProv(mockProvisionData2);
       setImmediate(() => {
-        expect(account._regManager._fsm.provisionReady).toBeCalledWith(
+        expect(account._regManager._fsm.provisionReady).toHaveBeenCalledWith(
           mockProvisionData2,
           kRTCProvisioningOptions,
         );
@@ -742,7 +663,7 @@ describe('RTCAccount', () => {
     const listener = new MockCallListener();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
-      expect(account._regManager._fsm.provisionReady).toBeCalledWith(
+      expect(account._regManager._fsm.provisionReady).toHaveBeenCalledWith(
         mockProvisionData,
         kRTCProvisioningOptions,
       );
@@ -758,10 +679,9 @@ describe('RTCAccount', () => {
         setImmediate(() => {
           expect(account.callCount()).toBe(0);
           setImmediate(() => {
-            expect(account._regManager._fsm.provisionReady).toBeCalledWith(
-              mockProvisionData2,
-              kRTCProvisioningOptions,
-            );
+            expect(
+              account._regManager._fsm.provisionReady,
+            ).toHaveBeenCalledWith(mockProvisionData2, kRTCProvisioningOptions);
             done();
           });
         });
@@ -773,7 +693,7 @@ describe('RTCAccount', () => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
-      expect(ua.restartUA).toBeCalledTimes(1);
+      expect(ua.restartUA).toHaveBeenCalledTimes(1);
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
       account.logout();
       setImmediate(() => {
@@ -781,7 +701,7 @@ describe('RTCAccount', () => {
         account._onNewProv(mockProvisionData2);
         setImmediate(() => {
           expect(account.state()).toBe(RTC_ACCOUNT_STATE.UNREGISTERED);
-          expect(ua.restartUA).toBeCalledTimes(1);
+          expect(ua.restartUA).toHaveBeenCalledTimes(1);
           done();
         });
       });
@@ -793,7 +713,7 @@ describe('RTCAccount', () => {
     account._onNewProv({});
     setImmediate(() => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.IN_PROGRESS);
-      expect(ua.restartUA).toBeCalledTimes(2);
+      expect(ua.restartUA).toHaveBeenCalledTimes(2);
       done();
     });
   });
@@ -864,7 +784,7 @@ describe('RTCAccount', () => {
       account._provManager.emit(RTC_PROV_EVENT.NEW_PROV, {
         info: mockProvisionData,
       });
-      expect(mockListener.onReceiveNewProvFlags).toBeCalledWith(
+      expect(mockListener.onReceiveNewProvFlags).toHaveBeenCalledWith(
         mockProvisionData.sipFlags,
       );
     });
@@ -883,13 +803,22 @@ describe('RTCAccount', () => {
     });
   });
 
+  describe('get sip prov', () => {
+    it('should return sip prov', () => {
+      setupAccount();
+      account._provManager._sipProvisionInfo = mockProvisionData;
+      const expectSipFlags = account.getSipProv();
+      expect(expectSipFlags).toEqual(mockProvisionData);
+    });
+  });
+
   describe('refreshProv', () => {
     const cause = 'connection error';
-    const response = { status_code: 401 };
+    const response = { statusCode: 401 };
     it('Should not call refreshProv api if error code is not 401/403/407 when register failed [JPT-1182]', done => {
       setupAccount();
       jest.spyOn(account, '_refreshProv');
-      ua.mockSignal(UA_EVENT.REG_FAILED, { status_code: 402 }, cause);
+      ua.mockSignal(UA_EVENT.REG_FAILED, { statusCode: 402 }, cause);
       setImmediate(() => {
         expect(account._refreshProv).not.toHaveBeenCalled();
         done();

@@ -15,7 +15,7 @@ import {
   HeadShotModel,
 } from '../entity';
 
-import { ContactType } from '../types';
+import { ContactType, EditablePersonInfo, HeadShotInfo } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 
@@ -27,13 +27,15 @@ interface IPersonService {
 
   getPersonsByIds(ids: number[]): Promise<Person[]>;
 
+  getCurrentPerson(): Promise<Person | null>;
+
   getAllCount(): Promise<number>;
 
   getHeadShotWithSize(
     uid: number,
-    headshot_version: string,
     headshot: HeadShotModel,
     size: number,
+    headshotVersion?: number,
   ): string | null;
 
   buildPersonFeatureMap(
@@ -41,6 +43,10 @@ interface IPersonService {
   ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>>;
 
   getName(person: Person): string;
+
+  getFirstName(person: Person): string;
+
+  getLastName(person: Person): string;
 
   getEmailAsName(person: Person): string;
 
@@ -62,12 +68,17 @@ interface IPersonService {
 
   getSoundexById(id: number): string[];
 
-  isCacheValid(person: Person): boolean;
+  isValidPerson(person: Person): boolean;
 
   getPhoneNumbers(
     person: Person,
     eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
   ): void;
+
+  editPersonalInfo(
+    basicInfo?: EditablePersonInfo,
+    headshotInfo?: HeadShotInfo,
+  ): Promise<void>;
 }
 
 export { IPersonService };

@@ -9,12 +9,7 @@ import {
   PhoneNumberInfo,
 } from 'sdk/module/person/entity';
 import Base from './Base';
-import {
-  isOnlyLetterOrNumbers,
-  handleOnlyLetterOrNumbers,
-  handleOneOfName,
-  phoneNumberDefaultFormat,
-} from '../helper';
+import { phoneNumberDefaultFormat, getShortName } from '../helper';
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
@@ -28,7 +23,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   headshot?: HeadShotModel;
   @observable
-  headshotVersion?: string;
+  headshotVersion?: number;
   @observable
   email: string;
   @observable
@@ -57,6 +52,8 @@ export default class PersonModel extends Base<Person> {
   deactivated: boolean;
   @observable
   flags?: number;
+  @observable
+  rcExtensionId: number;
 
   constructor(data: Person) {
     super(data);
@@ -102,6 +99,7 @@ export default class PersonModel extends Base<Person> {
     this.sanitizedRcExtension = sanitized_rc_extension;
     this.deactivated = deactivated;
     this.flags = flags;
+    this.rcExtensionId = data.rc_extension_id || 0;
   }
 
   static fromJS(data: Person) {
@@ -182,21 +180,7 @@ export default class PersonModel extends Base<Person> {
 
   @computed
   get shortName() {
-    if (
-      this.firstName &&
-      isOnlyLetterOrNumbers(this.firstName) &&
-      this.lastName &&
-      isOnlyLetterOrNumbers(this.lastName)
-    ) {
-      return handleOnlyLetterOrNumbers(this.firstName, this.lastName);
-    }
-    if (
-      (!this.firstName && this.lastName) ||
-      (this.firstName && !this.lastName)
-    ) {
-      return handleOneOfName(this.firstName, this.lastName);
-    }
-    return handleOnlyLetterOrNumbers(this.email, '');
+    return getShortName(this.firstName, this.lastName, this.email);
   }
   @computed
   get hasHeadShot() {

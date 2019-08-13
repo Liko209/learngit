@@ -2,13 +2,13 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 15:43:47
  */
-/* eslint-disable */
 import { BETA_CONFIG_KEYS } from '../constant';
 import { AccountService } from '.';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 enum EBETA_FLAG {
   BETA_LOG,
+  ENABLE_RCV,
   //   BETA_TELEPHONY_EMAIL,
   //   BETA_TELEPHONY_DOMAIN,
   //   BETA_SMS_EMAIL,
@@ -24,10 +24,72 @@ enum EBETA_FLAG {
   //   BETA_LAB_EVENT_REMINDER
 }
 
+function getFlagValue(flagName: string): string {
+  const userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
+  const clientConfig = userConfig.getClientConfig();
+  if (clientConfig && clientConfig[flagName]) {
+    return clientConfig[flagName];
+  }
+  return '';
+}
+
+function isSupported(list: string, id: string) {
+  if (list === 'all') {
+    return true;
+  }
+  const idList: string[] = list.split(',');
+  return idList.indexOf(id.toString()) !== -1;
+}
+
+function isInBetaEmailList(flagName: string): boolean {
+  const list: string = getFlagValue(flagName);
+  if (list !== '') {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const userId: number = userConfig.getGlipUserId();
+    if (userId) {
+      return isSupported(list, userId.toString());
+    }
+  }
+  return false;
+}
+
+function isInBetaDomainList(flagName: string): boolean {
+  const list: string = getFlagValue(flagName);
+  if (list !== '') {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const companyId: number = userConfig.getCurrentCompanyId();
+    if (companyId) {
+      return isSupported(list, companyId.toString());
+    }
+  }
+  return false;
+}
+
+function isInBetaList(flagName: string): boolean {
+  return (
+    isInBetaEmailList(`${flagName}_emails`) ||
+    isInBetaDomainList(`${flagName}_domains`) ||
+    isInBetaEmailList(`${flagName}_email`) ||
+    isInBetaDomainList(`${flagName}_domain`)
+  );
+}
+
 function isInBeta(flag: EBETA_FLAG): boolean {
   switch (flag) {
     case EBETA_FLAG.BETA_LOG:
       return isInBetaList(BETA_CONFIG_KEYS.BETA_ENABLE_LOG);
+    case EBETA_FLAG.ENABLE_RCV:
+      return (
+        isInBetaList(BETA_CONFIG_KEYS.BETA_RCV) ||
+        isInBetaList(BETA_CONFIG_KEYS.BETA_RCV_EMBEDDED)
+      );
+
     // case EBETA_FLAG.BETA_TELEPHONY_EMAIL:
     //   return isInBetaEmailList('');
     // case EBETA_FLAG.BETA_TELEPHONY_DOMAIN:
@@ -54,57 +116,11 @@ function isInBeta(flag: EBETA_FLAG): boolean {
     //   return isInBetaDomainList('');
     // case EBETA_FLAG.BETA_LAB_EVENT_REMINDER:
     //   return isInBetaEmailList('') || isInBetaDomainList('');
+    default:
+      break;
   }
 
   return false;
-}
-
-function isInBetaList(flagName: string): boolean {
-  return (
-    isInBetaEmailList(`${flagName}_emails`) ||
-    isInBetaDomainList(`${flagName}_domains`)
-  );
-}
-
-function isInBetaEmailList(flagName: string): boolean {
-  const list: string = getFlagValue(flagName);
-  if (list !== '') {
-    const emailsList: string[] = list.split(',');
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const userId: number = userConfig.getGlipUserId();
-    if (userId) {
-      return emailsList.indexOf(userId.toString()) !== -1;
-    }
-  }
-  return false;
-}
-
-function isInBetaDomainList(flagName: string): boolean {
-  const list: string = getFlagValue(flagName);
-  if (list !== '') {
-    const emailsList: string[] = list.split(',');
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const companyId: number = userConfig.getCurrentCompanyId();
-    if (companyId) {
-      return emailsList.indexOf(companyId.toString()) !== -1;
-    }
-  }
-  return false;
-}
-
-function getFlagValue(flagName: string): string {
-  const userConfig = ServiceLoader.getInstance<AccountService>(
-    ServiceConfig.ACCOUNT_SERVICE,
-  ).userConfig;
-  const clientConfig = userConfig.getClientConfig();
-  if (clientConfig && clientConfig[flagName]) {
-    return clientConfig[flagName];
-  }
-  return '';
 }
 
 export { EBETA_FLAG, isInBeta };

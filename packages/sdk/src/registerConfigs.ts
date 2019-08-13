@@ -46,6 +46,7 @@ import { RCEventSubscriptionService } from './module/rcEventSubscription';
 import { CallLogService } from './module/RCItems/callLog';
 import { VoicemailService } from './module/RCItems/voicemail';
 import { BadgeService } from './module/badge';
+import { MeetingsService } from './module/meetings';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -65,7 +66,6 @@ const registerConfigs = {
     { name: GlipAccount.name, value: GlipAccount },
 
     // Services
-    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
     { name: ServiceConfig.COMPANY_SERVICE, value: CompanyService },
     { name: ServiceConfig.ITEM_SERVICE, value: ItemService },
     { name: ServiceConfig.PERSON_SERVICE, value: PersonService },
@@ -86,7 +86,11 @@ const registerConfigs = {
       ],
     },
     { name: ServiceConfig.PERMISSION_SERVICE, value: PermissionService },
-    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
+    {
+      name: ServiceConfig.GROUP_SERVICE,
+      value: GroupService,
+      injects: [ServiceConfig.GROUP_CONFIG_SERVICE],
+    },
     { name: ServiceConfig.RC_INFO_SERVICE, value: RCInfoService },
     {
       name: ServiceConfig.ACCOUNT_SERVICE,
@@ -107,6 +111,7 @@ const registerConfigs = {
     { name: ServiceConfig.CALL_LOG_SERVICE, value: CallLogService },
     { name: ServiceConfig.VOICEMAIL_SERVICE, value: VoicemailService },
     { name: ServiceConfig.BADGE_SERVICE, value: BadgeService },
+    { name: ServiceConfig.MEETINGS_SERVICE, value: MeetingsService },
 
     // Manager
     {
@@ -130,6 +135,7 @@ const registerConfigs = {
         ServiceManager.name,
         NetworkManager.name,
         ServiceConfig.SYNC_SERVICE,
+        ServiceConfig.PERMISSION_SERVICE,
       ],
     },
   ],

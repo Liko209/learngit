@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import 'reflect-metadata';
+import './polyfill';
 import { container } from 'framework';
 import { Application } from './Application';
 

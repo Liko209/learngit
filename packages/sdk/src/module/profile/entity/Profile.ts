@@ -21,6 +21,7 @@ type Profile = ExtendedBaseModel & {
   favorite_post_ids: number[];
   skip_close_conversation_confirmation?: boolean;
   me_tab: boolean;
+  conversation_level_notifications?: object;
 
   // call settings
   [SETTING_KEYS.CALL_OPTION]?: CALLING_OPTIONS;
@@ -46,8 +47,12 @@ type Profile = ExtendedBaseModel & {
   [SETTING_KEYS.DESKTOP_CALL]?: NOTIFICATION_OPTIONS;
   [SETTING_KEYS.DESKTOP_VOICEMAIL]?: NOTIFICATION_OPTIONS;
   [SETTING_KEYS.NEW_MESSAGE_BADGES]?: NEW_MESSAGE_BADGES_OPTIONS;
+
   // conversation settings
   [SETTING_KEYS.MAX_LEFTRAIL_GROUP]?: string;
+  // meetings
+  video_service?: string;
+  rcv_beta?: boolean;
 };
 
 export { Profile };

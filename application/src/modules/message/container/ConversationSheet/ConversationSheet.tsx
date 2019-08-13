@@ -31,10 +31,10 @@ class ConversationSheet {
   dispatch: Function;
 
   constructor() {
-    const requireContext = require.context('./', true, /register.tsx?$/);
-    const keys = requireContext.keys();
+    const ctx = require.context('./', true, /register.tsx?$/);
+    const keys = ctx.keys();
     const modules = keys
-      .map(requireContext)
+      .map(ctx)
       .map((module: { default: RegisterOptions }) => module.default)
       .sort((a, b) => b.priority - a.priority);
     modules.forEach((module: RegisterOptions) => {
@@ -73,10 +73,12 @@ class ConversationSheet {
   private _register(options: RegisterOptions) {
     const { component: Component, type } = options;
     const middleware = (next: Function) => (payload: PayLoad) => {
-      if (payload.type === type) {
-        return <Component key={type} {...payload.props} />;
+      const isMatchByArray =
+        Array.isArray(type) && (type as Array<number>).includes(payload.type);
+      const isMatchByNumber = payload.type === type;
+      if (isMatchByArray || isMatchByNumber) {
+        return <Component key={payload.type} {...payload.props} />;
       }
-
       return next(payload);
     };
     this._middleware.push(middleware);

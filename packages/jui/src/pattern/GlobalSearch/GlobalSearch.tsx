@@ -5,14 +5,17 @@
  */
 import React from 'react';
 import { JuiDialog } from '../../components/Dialog/Dialog';
-import {
- spacing, radius, width, height
-} from '../../foundation/utils/styles';
+import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
+
+const StyledGlobalSearchWrapper = styled.div<{ show: boolean }>`
+  display: ${({ show }) => (show ? 'block' : 'none')};
+`;
 
 const StyledGlobalSearch = styled(JuiDialog)`
   /* <height> - <margin> */
   height: calc(100% - 16px);
+
   && {
     .paper {
       margin: 0 auto;
@@ -27,6 +30,7 @@ const StyledGlobalSearch = styled(JuiDialog)`
       }
     }
   }
+
   .container {
     margin: ${spacing(2)};
     align-items: flex-start;
@@ -42,16 +46,20 @@ type JuiGlobalSearchProps = {
 
 const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
   const { open, onClose, children } = props;
+
   return (
-    <StyledGlobalSearch
-      classes={{ container: 'container' }}
-      scroll="body"
-      open={open}
-      onClose={onClose}
-      disablePortal
-    >
-      {children}
-    </StyledGlobalSearch>
+    <StyledGlobalSearchWrapper show={open}>
+      <StyledGlobalSearch
+        classes={{ container: 'container' }}
+        scroll="body"
+        open
+        onClose={onClose}
+        disablePortal
+        fixedAtTop
+      >
+        {children}
+      </StyledGlobalSearch>
+    </StyledGlobalSearchWrapper>
   );
 };
 

@@ -6,7 +6,11 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import { JuiHeaderContainer, JuiHeader, JuiContainer } from 'jui/pattern/Dialer';
+import {
+  JuiHeaderContainer,
+  JuiHeader,
+  JuiContainer,
+} from 'jui/pattern/Dialer';
 import { End } from '../End';
 import { Mute } from '../Mute';
 import { Keypad } from '../Keypad';
@@ -24,11 +28,17 @@ type Props = WithTranslation & CallCtrlPanelViewProps;
 
 @observer
 class CallCtrlViewComponent extends React.Component<Props> {
-  /* eslint-disable */
-  private _Avatar = () => {
+  private _Avatar = observer(() => {
     const { uid } = this.props;
-    return <Avatar uid={uid} showDefaultAvatar={!uid} imgProps={{ draggable: false }} size='large' />;
-  };
+    return (
+      <Avatar
+        uid={uid}
+        showDefaultAvatar={!uid}
+        imgProps={{ draggable: false }}
+        size="large"
+      />
+    );
+  });
 
   private callActions = [Mute, Keypad, Hold, Add, Record, CallActions];
 
@@ -39,7 +49,12 @@ class CallCtrlViewComponent extends React.Component<Props> {
         <>
           <JuiHeaderContainer>
             <DialerTitleBar />
-            <JuiHeader Avatar={this._Avatar} name={getDisplayName(t, direction, name)} phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone} showDialerInputField={false} />
+            <JuiHeader
+              Avatar={this._Avatar}
+              name={getDisplayName(t, direction, name)}
+              phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
+              showDialerInputField={false}
+            />
           </JuiHeaderContainer>
           <JuiContainer CallAction={End} KeypadActions={this.callActions} />
         </>
@@ -49,4 +64,6 @@ class CallCtrlViewComponent extends React.Component<Props> {
   }
 }
 
-export const CallCtrlPanelView = withTranslation('translations')(CallCtrlViewComponent);
+export const CallCtrlPanelView = withTranslation('translations')(
+  CallCtrlViewComponent,
+);

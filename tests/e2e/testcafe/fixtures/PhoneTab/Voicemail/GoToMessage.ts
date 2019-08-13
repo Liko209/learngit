@@ -20,7 +20,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2394'],
+  caseIds: ['JPT-2394'],
   maintainers: ['Allen.Lian'],
   keywords: ['voicemail']
 })('Go to conversation from the voicemail', async (t) => {
@@ -42,17 +42,17 @@ test.meta(<ITestMeta>{
   const voicemailPage = app.homePage.phoneTab.voicemailPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click voicemail entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.voicemailEntry.enter();
   });
 
   await h(t).withLog('Then voicemail page should be open', async () => {
     await voicemailPage.ensureLoaded();
   });
-
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
 
   await addOneVoicemailFromAnotherUser(t, caller, callee, app);
 

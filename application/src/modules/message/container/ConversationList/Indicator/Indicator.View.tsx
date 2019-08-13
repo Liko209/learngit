@@ -7,25 +7,34 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { IndicatorViewProps } from './types';
+import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import {
   JuiIndicatorDraft,
   JuiIndicatorFailure,
 } from 'jui/pattern/ConversationList/Indicator';
+import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
 
 const IndicatorView = observer((props: IndicatorViewProps) => {
-  let tag;
-  if (props.canPost) {
-    if (props.hasDraft) {
-      tag = <JuiIndicatorDraft />; // '[Draft]'
+  const tags = [];
+  const { selected, canPost, sendFailurePostIds, hasDraft, showUmi } = props;
+
+  if (canPost && !selected) { // when selected don't show draft and failure
+    if (sendFailurePostIds.length > 0) {
+      tags.push(<JuiIndicatorFailure key="Failure" />); // '[Failure]'
     }
-    if (props.sendFailurePostIds.length > 0) {
-      tag = <JuiIndicatorFailure />; // '[Failure]'; // only show one
+    if (hasDraft) {
+      tags.push(<JuiIndicatorDraft key="Draft" />); // '[Draft]'
     }
   }
-  if (!tag) {
+
+  if (showUmi) {
+    tags.push(<Umi key="Umi" type={UMI_SECTION_TYPE.SINGLE} id={props.id} />); // '[Umi]'
+  }
+
+  if (!tags.length) {
     return null;
   }
-  return tag;
+  return <JuiButtonBar overlapSize={-2}>{...tags}</JuiButtonBar>;
 });
 
 export { IndicatorView };

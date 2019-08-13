@@ -9,17 +9,20 @@ import * as i18nT from '@/utils/i18nT';
 import * as telephony from '@/modules/telephony/module.config';
 import * as notification from '@/modules/notification/module.config';
 import * as common from '@/modules/common/module.config';
-
+import * as media from '@/modules/media/module.config';
 import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import { TelephonyStore } from '../store';
 import { getEntity } from '@/store/utils';
-import { ANONYMOUS } from '../interface/constant';
+import { ANONYMOUS_NAME } from '../interface/constant';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { ENTITY_NAME } from '@/store/constants';
 import { NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import { CALL_STATE, CALL_DIRECTION } from 'sdk/module/telephony/entity';
 import { observable } from 'mobx';
+import * as media from '@/modules/media/module.config';
+
+jest.mock('@/modules/media/service');
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');
@@ -32,6 +35,7 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
+jupiter.registerModule(media.config);
 
 global.Notification = {
   permission: 'defalut',
@@ -46,7 +50,7 @@ let call: any;
 
 function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
   call = observable({
-    callId: '1',
+    uuid: '1',
     callState: CALL_STATE.IDLE,
     direction: null,
     fromName: 'alex',
@@ -207,7 +211,7 @@ describe('TelephonyNotificationManager', () => {
     it('should call show() with body contains "Unknown Caller" when the call is from a caller which does not have a match in contacts and number was blocked', async () => {
       telephonyStore.uid = null;
       call.direction = CALL_DIRECTION.INBOUND;
-      call.fromName = ANONYMOUS;
+      call.fromName = ANONYMOUS_NAME;
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       await telephonyNotificationManager._showNotification();
 

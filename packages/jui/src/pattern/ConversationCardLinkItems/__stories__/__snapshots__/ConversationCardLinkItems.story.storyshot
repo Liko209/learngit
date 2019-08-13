@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardLinkItems 1`] = `
-.c11 {
+.c3 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c12 {
+.c4 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -19,7 +19,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   font-size: 24px;
 }
 
-.c9.c9 {
+.c1.c1 {
   padding: 0;
   width: 20px;
   height: 20px;
@@ -27,30 +27,31 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
-.c9.c9 .c10,
-.c9.c9 .c10 svg {
+.c1.c1 .c2,
+.c1.c1 .c2 svg {
   font-size: 20px;
 }
 
-.c9.c9:hover {
+.c1.c1:hover {
   background-color: transparent;
 }
 
-.c9.c9:hover .c10 {
+.c1.c1:hover .c2 {
   color: rgba(158,158,158,0.88);
 }
 
-.c9.c9:active .c10 {
+.c1.c1:active .c2 {
   color: #9e9e9e;
 }
 
-.c9.c9.c9.c9.disabled .c10 {
+.c1.c1.c1.c1.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
-.c9.c9 .rippleVisible {
+.c1.c1 .rippleVisible {
   color: #9e9e9e;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -60,126 +61,110 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   animation-name: cBKRfH;
 }
 
-.c13.c13 .c10,
-.c13.c13 .c10 svg {
+.c13.c13 .c2,
+.c13.c13 .c2 svg {
   font-size: 20px;
 }
 
-.c13.c13:hover .c10 {
+.c13.c13:hover .c2 {
   color: rgba(158,158,158,0.88);
 }
 
-.c13.c13:active .c10 {
+.c13.c13:active .c2 {
   color: #9e9e9e;
 }
 
-.c13.c13.c13.c13.disabled .c10 {
+.c13.c13.c13.c13.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
-.c14.c14 .c10,
-.c14.c14 .c10 svg {
+.c14.c14 .c2,
+.c14.c14 .c2 svg {
   font-size: 20px;
 }
 
-.c14.c14:hover .c10 {
+.c14.c14:hover .c2 {
   color: rgba(6,132,189,0.88);
 }
 
-.c14.c14:active .c10 {
+.c14.c14:active .c2 {
   color: #0684bd;
 }
 
-.c14.c14.c14.c14.disabled .c10 {
+.c14.c14.c14.c14.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
-.c15.c15 .c10,
-.c15.c15 .c10 svg {
+.c15.c15 .c2,
+.c15.c15 .c2 svg {
   font-size: 20px;
 }
 
-.c15.c15:hover .c10 {
+.c15.c15:hover .c2 {
   color: rgba(6,132,189,0.88);
 }
 
-.c15.c15:active .c10 {
+.c15.c15:active .c2 {
   color: #0684bd;
 }
 
-.c15.c15.c15.c15.disabled .c10 {
+.c15.c15.c15.c15.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
-.c16.c16 .c10,
-.c16.c16 .c10 svg {
+.c16.c16 .c2,
+.c16.c16 .c2 svg {
   font-size: 20px;
 }
 
-.c16.c16:hover .c10 {
+.c16.c16:hover .c2 {
   color: rgba(237,182,60,0.88);
 }
 
-.c16.c16:active .c10 {
+.c16.c16:active .c2 {
   color: #edb63c;
 }
 
-.c16.c16.c16.c16.disabled .c10 {
+.c16.c16.c16.c16.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
-.c17.c17 .c10,
-.c17.c17 .c10 svg {
+.c17.c17 .c2,
+.c17.c17 .c2 svg {
   font-size: 16px;
 }
 
-.c17.c17:hover .c10 {
+.c17.c17:hover .c2 {
   color: rgba(158,158,158,0.88);
 }
 
-.c17.c17:active .c10 {
+.c17.c17:active .c2 {
   color: #9e9e9e;
 }
 
-.c17.c17.c17.c17.disabled .c10 {
+.c17.c17.c17.c17.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
-.c18.c18 .c10,
-.c18.c18 .c10 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c10 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c18.c18:active .c10 {
-  color: #0684bd;
-}
-
-.c18.c18.c18.c18.disabled .c10 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c10,
-.c19.c19 .c10 svg {
+.c18.c18 .c2,
+.c18.c18 .c2 svg {
   font-size: 16px;
 }
 
-.c19.c19:hover .c10 {
+.c18.c18:hover .c2 {
   color: rgba(6,132,189,0.88);
 }
 
-.c19.c19:active .c10 {
+.c18.c18:active .c2 {
   color: #0684bd;
 }
 
-.c19.c19.c19.c19.disabled .c10 {
+.c18.c18.c18.c18.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
 .c0 {
+  position: relative;
   margin-top: 12px;
   background-color: #fff;
   width: 100%;
@@ -193,14 +178,22 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   background-color: #f5f6fb;
 }
 
-.c1 {
+.c0 button {
+  position: absolute;
+  right: 8px;
+  top: 12px;
+  -webkit-transition: none;
+  transition: none;
+}
+
+.c5 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
 }
 
-.c1 > span {
+.c5 > span {
   color: #bfbfbf;
   width: 20px;
   height: 20px;
@@ -208,7 +201,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   margin-top: -4px;
 }
 
-.c2 {
+.c6 {
   width: 120px;
   height: 120px;
   background: no-repeat center url(test-file-stub);
@@ -216,7 +209,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   background-color: #e0e0e0;
 }
 
-.c3 {
+.c7 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -234,12 +227,12 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   justify-content: space-between;
 }
 
-.c4 {
+.c8 {
   font-size: 1rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
-  margin: 0px 0px 8px 0px;
+  margin: 0px 16px 8px 0px;
   word-break: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -248,21 +241,21 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   -webkit-line-clamp: 2;
 }
 
-.c4 a {
+.c8 a {
   color: #212121;
 }
 
-.c4 a:hover {
+.c8 a:hover {
   -webkit-text-decoration: underline;
   text-decoration: underline;
 }
 
-.c5 {
-  color: rgba(0,0,0,0.87);
+.c9 {
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   font-weight: 400;
   font-size: 0.875rem;
   line-height: 20px;
+  color: rgba(0,0,0,0.87);
   color: #9e9e9e;
   word-break: break-word;
   overflow: hidden;
@@ -274,7 +267,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   max-height: 40px;
 }
 
-.c6 {
+.c10 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -285,7 +278,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   align-items: center;
 }
 
-.c7 {
+.c11 {
   width: 20px;
   height: 20px;
   margin: 0px 8px 0px 0px;
@@ -294,28 +287,71 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   background-image: url(https://i.embed.ly/1/image?url=https%3A%2F%2Fstatic.zhihu.com%2Fstatic%2Ffavicon.ico&key=4527f263d6e64d7a8251b007b1ba9972);
 }
 
-.c8 {
+.c12 {
   font-size: 0.875rem;
   color: #9e9e9e;
 }
 
 <div
-  className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+  className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
+  data-test-automation-id="linkItemsWrapper"
 >
+  <button
+    aria-label=""
+    className="MuiButtonBase-root MuiIconButton-root c1"
+    data-id="closeBtn"
+    data-test-automation-id="linkPreviewCloseBtn"
+    disabled={false}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onDragLeave={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    tabIndex={0}
+    type="button"
+    variant="plain"
+  >
+    <span
+      className="MuiIconButton-label"
+    >
+      <span
+        className="c2 close icon c3"
+        size="medium"
+      >
+        <svg
+          className="c4"
+          role="img"
+        >
+          <use
+            href="#icon-close"
+            xlinkHref="#icon-close"
+          />
+        </svg>
+      </span>
+    </span>
+  </button>
   <div
-    className="c1"
+    className="c5"
   >
     <div
-      className="c2"
+      className="c6"
     />
     <div
-      className="c3"
+      className="c7"
     >
       <div
         className=""
       >
         <p
-          className="c4"
+          className="c8"
+          data-test-automation-id="linkItemTitle"
         >
           <a
             href="http://www.zhihu.com"
@@ -326,63 +362,25 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
           </a>
         </p>
         <p
-          className="c5"
+          className="c9"
+          data-test-automation-id="linkItemSummary"
         >
           Find new ideas and classic advice on strategy, innovation and leadership, for global leaders from the world's best businessssss asdasdsasda Find new ideas and classic advice on strategy, innovation and leadership,Find new ideas and classic advice on strategy, innovation and leadership,Find new ideas and classic advice on strategy, innovation and leadership,Find new ideas and classic advice on strategy, innovation and leadership
         </p>
       </div>
       <div
-        className="c6"
+        className="c10"
       >
         <span
-          className="c7"
+          className="c11"
         />
         <span
-          className="c8"
+          className="c12"
         >
           Zhihu
         </span>
       </div>
     </div>
-    <button
-      className="MuiButtonBase-root MuiIconButton-root c9"
-      disabled={false}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onContextMenu={[Function]}
-      onFocus={[Function]}
-      onKeyDown={[Function]}
-      onKeyUp={[Function]}
-      onMouseDown={[Function]}
-      onMouseLeave={[Function]}
-      onMouseUp={[Function]}
-      onTouchEnd={[Function]}
-      onTouchMove={[Function]}
-      onTouchStart={[Function]}
-      size="medium"
-      tabIndex="0"
-      type="button"
-      variant="plain"
-    >
-      <span
-        className="MuiIconButton-label"
-      >
-        <span
-          className="c10 close icon c11"
-          size="medium"
-        >
-          <svg
-            className="c12"
-            role="img"
-          >
-            <use
-              href="#icon-close"
-              xlinkHref="#icon-close"
-            />
-          </svg>
-        </span>
-      </span>
-    </button>
   </div>
 </div>
 `;

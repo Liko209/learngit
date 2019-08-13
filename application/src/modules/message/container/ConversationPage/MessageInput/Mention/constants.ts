@@ -5,15 +5,9 @@
  */
 const ITEM_HEIGHT = 40; // jui/pattern/MessageInput/Mention/MentionPanelSectionItem
 const MAX_ITEM_NUMBER = 6;
+const TEAM_TEXT = 'Team';
+const TEAM_MENTION_ID = -1;
 
-const INIT_CURRENT_INDEX = 1; // because of title will within VL
-const TITLE_HEIGHT = 32;
-const ITEM_DIFF = ITEM_HEIGHT - TITLE_HEIGHT;
+const ITEM_DIFF = ITEM_HEIGHT;
 
-export {
-  ITEM_HEIGHT,
-  MAX_ITEM_NUMBER,
-  INIT_CURRENT_INDEX,
-  TITLE_HEIGHT,
-  ITEM_DIFF,
-};
+export { ITEM_HEIGHT, MAX_ITEM_NUMBER, ITEM_DIFF, TEAM_TEXT, TEAM_MENTION_ID };

@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Setting",
+      "./fixtures/Profile/ProfileScreen.ts",
+      "./fixtures/Search"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

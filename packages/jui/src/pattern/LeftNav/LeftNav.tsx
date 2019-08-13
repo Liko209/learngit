@@ -108,6 +108,7 @@ const StyledListItem = styled(MuiListItem)`
 
 const StyledListItemIcon = styled(MuiListItemIcon)`
   width: ${width(16)};
+  min-width: unset;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -171,7 +172,7 @@ const UmiWrapper = styled.div<{ expand: boolean }>`
 type JuiLeftNavProps = {
   expand: boolean;
   icons: {
-    url: string;
+    url: string | (() => string);
     Icon: React.ReactElement;
     IconSelected: React.ReactElement;
     title: string;
@@ -182,29 +183,34 @@ type JuiLeftNavProps = {
 };
 
 class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
-  onRouteChangeHandlers: {
-    [id: string]: (event: React.MouseEvent<HTMLAnchorElement>) => void;
-  } = {};
+  onRouteChangeHandlers: Map<
+    string | (() => string),
+    (event: React.MouseEvent<HTMLAnchorElement>) => void
+  > = new Map();
 
-  onRouteChange = (url: string) => {
-    if (this.onRouteChangeHandlers[url]) {
-      return this.onRouteChangeHandlers[url];
+  onRouteChange = (url: string | (() => string)) => {
+    if (this.onRouteChangeHandlers.has(url)) {
+      return this.onRouteChangeHandlers.get(url);
     }
-    this.onRouteChangeHandlers[url] = () => {
+    this.onRouteChangeHandlers.set(url, () => {
       const { onRouteChange } = this.props;
-      onRouteChange(url);
-    };
-    return this.onRouteChangeHandlers[url];
+      const path = typeof url === 'string' ? url : url();
+      onRouteChange(path);
+    });
+    return this.onRouteChangeHandlers.get(url);
   };
 
   renderNavItems = () => {
     const { icons, expand, selectedPath } = this.props;
     return icons.map((arr, idx) => {
       return (
-        <MuiList component='nav' disablePadding key={idx}>
+        <MuiList component="nav" disablePadding key={idx}>
           {arr.map((item, index) => {
             const navUrl = item.url;
-            const navPath = navUrl.split('/')[1];
+            const navPath = (typeof navUrl === 'string'
+              ? navUrl
+              : navUrl()
+            ).split('/')[1];
             const selected =
               selectedPath.toLowerCase() === navPath.toLowerCase();
             const NavItem = (
@@ -236,7 +242,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
             return expand ? (
               NavItem
             ) : (
-              <RuiTooltip title={item.title} key={index} placement='right'>
+              <RuiTooltip title={item.title} key={index} placement="right">
                 {NavItem}
               </RuiTooltip>
             );
@@ -250,10 +256,10 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
     return (
       <Left
         expand={expand}
-        variant='permanent'
+        variant="permanent"
         classes={{ paper: 'left-paper' }}
         open={expand}
-        data-test-automation-id='leftPanel'
+        data-test-automation-id="leftPanel"
       >
         {this.renderNavItems()}
       </Left>

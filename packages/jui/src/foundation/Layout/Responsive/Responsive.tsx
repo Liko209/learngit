@@ -36,7 +36,11 @@ type ResponsiveProps = ResponsiveInfo & {
   visual?: boolean;
   TriggerButton?: React.ComponentType<any>;
   addResponsiveInfo?: (info: ResponsiveInfo) => {};
-  children: (width: number, height: number) => ReactNode | ReactNode;
+  children: (
+    width: number,
+    height: number,
+    isShow?: boolean,
+  ) => ReactNode | ReactNode;
 };
 
 type ResponsiveState = {
@@ -46,13 +50,18 @@ type ResponsiveState = {
   prevVisual?: boolean;
 };
 
+const RIGHT_SHELF_DEFAULT_WIDTH = 268;
+const RIGHT_SHELF_MIN_WIDTH = 200;
+const RIGHT_SHELF_MAX_WIDTH = 360;
+
 const StyledResizable = styled<ResizableProps & any>(Resizable)`
   overflow: hidden;
   top: 0;
   bottom: 0;
   left: ${({ styled: { position } }) => (position === 'left' ? 0 : 'auto')};
   right: ${({ styled: { position } }) => (position === 'right' ? 0 : 'auto')};
-  z-index: ${({ styled: { absolute }, theme }) => (absolute ? theme.zIndex.appBar + 1 : 'auto')};
+  z-index: ${({ styled: { absolute }, theme }) =>
+    absolute ? theme.zIndex.appBar + 1 : 'auto'};
   display: ${({ styled: { show } }) => (show ? 'flex' : 'none')};
   flex: ${({ styled: { priority } }) => `0 ${priority} auto`};
 `;
@@ -76,6 +85,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       right: false,
       left: false,
     },
+    visual: true,
     priority: 0,
   };
 
@@ -200,16 +210,21 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   }
 
   private _renderChildren = () => {
-    const { children } = this.props;
-    const { width, height } = this.state;
-    return typeof children === 'function' ? children(width, height) : children;
+    const { children, visual } = this.props;
+    const { width, height, isShow } = this.state;
+    let isOpen = visual !== false || isShow;
+    if (this.isManualMode) {
+      const localShowState = this.localShowState;
+      isOpen = !!localShowState && isOpen;
+    }
+    return typeof children === 'function'
+      ? children(width, height, isOpen)
+      : children;
   };
 
   renderMode = () => {
     const { isShow, width } = this.state;
-    const {
-      enable = {}, minWidth, maxWidth, visual, priority,
-    } = this.props;
+    const { enable = {}, minWidth, maxWidth, visual, priority } = this.props;
     return (
       <>
         {(this.isManualMode || !visual) && this.renderButton()}
@@ -224,7 +239,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             height: '100%',
           }}
           style={{
-            position: !visual ? 'absolute' : 'relative',
+            position: visual === false ? 'absolute' : 'relative',
           }}
           styled={{
             priority,
@@ -232,6 +247,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             show: !this.isManualMode || this.localShowState,
             position: enable.right ? 'left' : 'right',
           }}
+          handleClasses={{ left: 'resize-handle' }}
         >
           {this._renderChildren()}
           {visual && (
@@ -269,23 +285,35 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
 const withResponsive = (
   WrappedComponent: ComponentType<any>,
   props: Partial<ResponsiveProps>,
-) => class ResponsiveHOC extends PureComponent<any> {
-  static tag = `responsive(${WrappedComponent.displayName ||
+) =>
+  class ResponsiveHOC extends PureComponent<any> {
+    static tag = `responsive(${WrappedComponent.displayName ||
       WrappedComponent.name ||
       props.tag})`;
-  render() {
-    return (
+    render() {
+      return (
         <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>
-          {(width: number, height: number) => (
-            <WrappedComponent {...this.props} width={width} height={height} />
+          {(width: number, height: number, isShow?: boolean) => (
+            <WrappedComponent
+              {...this.props}
+              width={width}
+              height={height}
+              isShow={isShow}
+            />
           )}
         </Responsive>
-    );
-  }
-};
+      );
+    }
+  };
 
 export default Responsive;
 
 export {
-  withResponsive, VISUAL_MODE, ResponsiveProps, ResponsiveInfo,
+  withResponsive,
+  VISUAL_MODE,
+  ResponsiveProps,
+  ResponsiveInfo,
+  RIGHT_SHELF_DEFAULT_WIDTH,
+  RIGHT_SHELF_MIN_WIDTH,
+  RIGHT_SHELF_MAX_WIDTH,
 };
