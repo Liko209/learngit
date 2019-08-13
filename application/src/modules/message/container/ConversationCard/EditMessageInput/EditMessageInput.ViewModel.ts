@@ -145,7 +145,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   })
   @action
   private async _handleEditPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
-    this._postService.editPost({
+    await this._postService.editPost({
       text: content,
       groupId: this.gid,
       postId: this.id,
