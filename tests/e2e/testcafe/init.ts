@@ -160,7 +160,7 @@ export function setupCase(accountType: string, needDeleted: boolean = false) {
   return async (t: TestController) => {
     h(t).turnOnNetwork();
     const testRun = t['testRun'];
-    accountType = testRun.test.meta.accountType || accountType;
+    const caseAccountType = testRun.test.meta.accountType || accountType;
     testRun['startTime'] = new Date();
     t.ctx.runnerOpts = RUNNER_OPTS;
 
@@ -168,7 +168,7 @@ export function setupCase(accountType: string, needDeleted: boolean = false) {
     h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
       accountPoolClient,
-      accountType,
+      caseAccountType,
       needDeleted,
     );
 
