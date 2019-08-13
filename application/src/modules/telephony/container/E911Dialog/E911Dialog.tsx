@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import { JuiDialogContent } from 'jui/components/Dialog';
 import { StyledDialogHeader, StyledJuiDialogTitle } from 'jui/pattern/E911';
 import { i18nP } from '@/utils/i18nT';
 import { Dialog } from '@/containers/Dialog';
@@ -14,42 +13,44 @@ import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 const Z_INDEX_GREATER_THAN_TOOLTIP = 1600;
 
 type E911DialogProps = {
-  id: string;
   content: string;
   onOK?: () => any;
   okText?: string;
-  onCancel: () => any;
+  onCancel?: () => any;
+  showCloseIcon?: boolean;
 };
 
 type titleProps = {
-  id: string;
+  showCloseIcon?: boolean;
   onClick: () => void;
 };
 
-function DialogTitle({ onClick }: titleProps) {
+function DialogTitle({ onClick, showCloseIcon }: titleProps) {
   return (
     <StyledDialogHeader data-test-automation-id="DialogTitle">
       <StyledJuiDialogTitle>
         {i18nP('common.dialog.Alert')}
       </StyledJuiDialogTitle>
-      <JuiIconButton
-        data-test-automation-id="emergencyPromptDialogCrossButton"
-        variant="plain"
-        onClick={onClick}
-        tooltipTitle={i18nP('common.dialog.close')}
-      >
-        close
-      </JuiIconButton>
+      {showCloseIcon ? (
+        <JuiIconButton
+          data-test-automation-id="emergencyConfirmDialogCrossButton"
+          variant="plain"
+          onClick={onClick}
+          tooltipTitle={i18nP('common.dialog.close')}
+        >
+          close
+        </JuiIconButton>
+      ) : null}
     </StyledDialogHeader>
   );
 }
 
 function alertE911Dialog({
-  id,
   content,
   onOK,
   okText,
   onCancel,
+  showCloseIcon,
 }: E911DialogProps) {
   const dialog = Dialog.alert({
     content,
@@ -57,48 +58,27 @@ function alertE911Dialog({
     okText,
     title: (
       <DialogTitle
-        id={id}
         onClick={() => {
-          onCancel();
+          onCancel && onCancel();
           dialog.dismiss();
         }}
+        showCloseIcon={showCloseIcon}
       />
     ),
     modalProps: {
-      'data-test-automation-id': `${id}Dialog`,
+      'data-test-automation-id': 'emergencyConfirmDialog',
       style: {
         'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
       }
+    },
+    okBtnProps: {
+      'data-test-automation-id': 'emergencyConfirmDialogOkButton'
+    },
+    cancelBtnProps: {
+      'data-test-automation-id': 'emergencyConfirmDialogCancelButton'
     },
     size: 'small',
   });
 }
 
-function simpleE911Dialog({ id, content, onCancel }: E911DialogProps) {
-  const dialog = Dialog.simple(
-    <>
-      <DialogTitle
-        data-test-automation-id="e911-prompt-dialog"
-        id={id}
-        onClick={() => {
-          onCancel();
-          dialog.dismiss();
-        }}
-      />
-      <JuiDialogContent data-test-automation-id={`${id}DialogContent`}>
-        {content}
-      </JuiDialogContent>
-    </>,
-    {
-      size: 'small',
-      componentProps: {
-        'data-test-automation-id': `${id}Dialog`,
-        style: {
-          'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
-        }
-      }
-    },
-  );
-}
-
-export { alertE911Dialog, simpleE911Dialog };
+export { alertE911Dialog };
