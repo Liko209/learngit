@@ -40,8 +40,7 @@ test(formalName('Check the team conversation more button',['P2','ContentPanel','
   const headerMoreMenu = conversationPage.headerMoreMenu;
   await h(t).withLog('And click more button', async () => {
     await conversationPage.openMoreButtonOnHeader();
-    //AdminActions is text,need to update case
-    await headerMoreMenu.enterAdminActions();
+    await t.hover(headerMoreMenu.adminActionsByClass());
   });
 
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamConversationMore'});

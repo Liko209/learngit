@@ -87,13 +87,8 @@ test(formalName('Make a call from a conversation', ['P2', 'Call', 'OutgoingCall'
   const logoutDialog = app.homePage.logoutDialog;
   await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_logoutDuringACall'});
 
-  await h(t).withLog('When I close the popup and end the call', async () => {
-    // await logoutDialog.clickCancelButton();
+  await h(t).withLog('End the call', async () => {
     await session.hangup();
-  })
-
-  await h(t).withLog('Then the popup disappears', async () => {
-    // await logoutDialog.ensureDismiss();
   })
 
 })
