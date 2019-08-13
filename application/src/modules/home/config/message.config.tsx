@@ -18,7 +18,8 @@ function getNavUrl() {
 const config: SubModuleConfig = {
   route: {
     path: '/messages',
-    component: lazyComponent({
+    cache: true,
+    render: lazyComponent({
       loader: () =>
         import(/*
         webpackChunkName: "c.message" */ './lazy/Message'),

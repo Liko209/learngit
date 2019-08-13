@@ -129,7 +129,7 @@ export class BaseConversationPage extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('conversation-page-header-title');
+    return this.getSelectorByAutomationId('conversation-page-header-title', this.header);
   }
 
   async timeOfPostsShouldOrderByAsc() {

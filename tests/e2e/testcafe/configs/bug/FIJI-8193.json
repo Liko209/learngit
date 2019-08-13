@@ -1,8 +1,5 @@
 {
   "on_merge": {
-    "fixtures": [
-      "./fixtures/LeftNav/*.ts"
-    ],
     "browsers": [
       "selenium:chrome"
     ]

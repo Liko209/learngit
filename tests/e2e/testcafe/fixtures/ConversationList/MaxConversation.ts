@@ -313,9 +313,9 @@ test.meta(<ITestMeta>{
     step.setMetadata('favConversationCount', favConversationCount.toString());
 
     await favoritesSection.expand();
-    await t.expect(favoritesSection.conversations.count).eql(favConversationCount);
     for (let teamId of teamsId) {
       await favoritesSection.conversationEntryById(teamId).ensureLoaded();
     }
+    await t.expect(favoritesSection.conversations.count).eql(favConversationCount);
   });
 });
