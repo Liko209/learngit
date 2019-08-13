@@ -257,6 +257,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c3.c3 .c4,
