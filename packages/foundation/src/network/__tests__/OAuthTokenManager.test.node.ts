@@ -12,7 +12,7 @@ describe('OAuthTokenManager', () => {
     it('should call set', () => {
       const spy = jest.spyOn(manager.tokenHandlers, 'set');
       manager.addOAuthTokenHandler(getFakeOAuthTokenHandler());
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -22,15 +22,27 @@ describe('OAuthTokenManager', () => {
       manager.getOAuthTokenHandler = jest.fn().mockReturnValueOnce(handler);
       const spy = jest.spyOn(handler, 'refreshOAuthToken');
       handler.refreshOAuthToken();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
   describe('setOAuthToken', () => {
-    const handler = getFakeOAuthTokenHandler();
-    manager.getOAuthTokenHandler = jest.fn().mockReturnValueOnce(handler);
-    const token = getFakeToken();
-    manager.setOAuthToken(token, fakeHandleType);
-    expect(handler.token).toEqual(token);
+    it('setOAuthToken', () => {
+      const handler = getFakeOAuthTokenHandler();
+      manager.getOAuthTokenHandler = jest.fn().mockReturnValueOnce(handler);
+      const token = getFakeToken();
+      manager.setOAuthToken(token, fakeHandleType);
+      expect(handler.token).toEqual(token);
+    });
+  });
+
+  describe('getOAuthToken', () => {
+    it('should get correct token', async () => {
+      const handler = getFakeOAuthTokenHandler();
+      handler.getOAuthToken = jest.fn().mockResolvedValue('token');
+      manager.getOAuthTokenHandler = jest.fn().mockReturnValueOnce(handler);
+      expect(await manager.getOAuthToken(fakeHandleType)).toEqual('token');
+      expect(handler.getOAuthToken).toHaveBeenCalled();
+    });
   });
 });
