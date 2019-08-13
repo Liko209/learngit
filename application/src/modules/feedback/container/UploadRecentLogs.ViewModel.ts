@@ -5,15 +5,12 @@
  */
 import { container } from 'framework';
 import { AbstractViewModel } from '@/base';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { logger } from '../utils';
 import { UploadRecentLogsViewModelProps, TaskStatus } from './types';
 import { UploadResult } from '../types';
 import { FeedbackService } from '../service/FeedbackService';
-import {
-  TaskQueueLoop,
-  Task,
-} from 'sdk/module/log/consumer/task';
+import { TaskQueueLoop, Task } from 'sdk/module/log/consumer/task';
 import { Nullable } from 'sdk/types';
 
 const TASK_NAME = {
@@ -103,7 +100,7 @@ export class UploadRecentLogsViewModel
       throw new Error('upload step failed, can not send feedback.');
     }
   };
-
+  @action
   private _uploadRecentLogs = async () => {
     const feedbackService: FeedbackService = container.get(FeedbackService);
     this._uploadLogResult = null;

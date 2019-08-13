@@ -92,11 +92,11 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   get draft() {
     return this._messageService.getDraft(this.props.id);
   }
-
+  @action
   saveDraft(draft: string) {
     return this._messageService.enterEditMode(this.props.id, draft);
   }
-
+  @action
   removeDraft() {
     return this._messageService.leaveEditMode(this.props.id);
   }
@@ -143,6 +143,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     server: 'message.prompt.editPostFailedForServerIssue',
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
+  @action
   private async _handleEditPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
     await this._postService.editPost({
       text: content,
