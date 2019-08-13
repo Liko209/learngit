@@ -695,11 +695,15 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     sectionType: SECTION_TYPE,
     sortableModel: ISortableModel,
   ) {
-    const limitSortableModel: ISortableModel = this._handlersMap[sectionType]
-      .sortableListStore.items[this._maxLeftRailGroup - 1];
-    return limitSortableModel
-      ? sortableModel.sortValue <= limitSortableModel.sortValue
-      : true;
+    const sortableListStore = this._handlersMap[sectionType].sortableListStore;
+    if (sortableListStore.size >= this._maxLeftRailGroup) {
+      const limitSortableModel: ISortableModel = this._handlersMap[sectionType]
+        .sortableListStore.items[this._maxLeftRailGroup - 1];
+      return limitSortableModel
+        ? sortableModel.sortValue <= limitSortableModel.sortValue
+        : true;
+    } 
+    return true;
   }
 
   setLeftRailVisible(isVisible: boolean) {
