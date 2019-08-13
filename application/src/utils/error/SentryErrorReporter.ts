@@ -23,6 +23,9 @@ export class SentryErrorReporter implements IErrorReporter {
       release: deployedVersion,
       ignoreErrors: [
         "Failed to execute 'transaction' on 'IDBDatabase': The database connection is closing.",
+        'The transaction was aborted, so the request cannot be fulfilled.',
+        '"Attempted to disconnect but the websocket doesn\'t exist"',
+        'ResizeObserver loop limit exceeded',
       ],
     });
     if (
