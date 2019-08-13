@@ -5,7 +5,7 @@
  */
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { jit } from 'shield/sdk';
+import { jit } from 'shield/sdk/SdkItFramework';
 import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';

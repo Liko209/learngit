@@ -21,7 +21,7 @@ import { RawPresence } from '../../presence/entity';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { progressManager } from '../../../utils/progress';
+import { progressManager } from 'sdk/utils/progress';
 import { CompanyService } from '../../company';
 import { Group, GroupService } from '../../group';
 import { ItemService } from '../../item/service';

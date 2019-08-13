@@ -6,6 +6,17 @@
 import { PlatformUtils } from '../PlatformUtils';
 import { IApplicationInfo } from '../../pal/applicationInfo';
 import { Pal } from '../../pal';
+
+jest.mock('ua-parser-js', () => {
+  return {
+    UAParser: () => ({
+      getBrowser: () => ({
+        name: 'WebKit',
+        version: '537.36',
+      }),
+    }),
+  };
+});
 jest.mock('../../pal/pal', () => {
   const mockPal: Pal = {
     getApplicationInfo: jest.fn(),

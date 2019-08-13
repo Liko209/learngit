@@ -7,6 +7,11 @@ import { ZipConsumer } from '../ZipConsumer';
 import { IZipProducer } from '../types';
 import { configManager } from '../config';
 
+global.Blob = () => {
+  return {
+    size: 111,
+  };
+};
 jest.mock('filestack-js', () => {
   const mockClient = {
     upload: jest.fn(),
@@ -46,7 +51,7 @@ describe('ZipConsumer', () => {
         url: 'uuu',
       });
       await consumer.consume();
-      expect(consumer.uploadClient.upload).toBeCalled();
+      expect(consumer.uploadClient.upload).toHaveBeenCalled();
       expect(uploaded.length).toEqual(1);
     });
     it('should upload localZips', async () => {
@@ -81,7 +86,7 @@ describe('ZipConsumer', () => {
         url: 'uuu',
       });
       await consumer.consume();
-      expect(consumer.uploadClient.upload).toBeCalled();
+      expect(consumer.uploadClient.upload).toHaveBeenCalled();
       expect(uploaded.length).toEqual(2);
     });
   });

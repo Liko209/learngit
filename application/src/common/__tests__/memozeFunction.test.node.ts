@@ -5,6 +5,8 @@
  */
 import { memoizeColor } from '../memoizeFunction';
 
+jest.unmock('moize');
+
 describe('memoizeColor()', () => {
   it('should return correct icon color', () => {
     expect(memoizeColor('primary', '900')).toEqual(['primary', '900']);

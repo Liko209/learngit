@@ -13,6 +13,7 @@ import { getEntity } from '@/store/utils';
 import { RECORD_STATE } from 'sdk/module/telephony/entity';
 import * as media from '@/modules/media/module.config';
 
+jest.mock('@/modules/telephony/HOC');
 jest.mock('@/modules/media/service');
 
 jest.mock('@/store/utils');

@@ -1,15 +1,17 @@
 const StyledComponent = jest.requireActual('styled-components');
 
-const fixNodeUnmountedErrorInTestForStoryShots = (styledComponents: any) => {
+const fixNodeUnmountedErrorInTestForStoryShots = (styledComponents) => {
   const secretInternals =
     styledComponents.__DO_NOT_USE_OR_YOU_WILL_BE_HAUNTED_BY_SPOOKY_GHOSTS; //eslint-disable-line
   const prevMakeTag = secretInternals.StyleSheet.prototype.makeTag;
   secretInternals.StyleSheet.prototype.makeTag = function makeTagMock(
-    tag: any,
+    tag,
   ) {
     const newTag = tag || {};
     newTag.styleTag = newTag.styleTag || document.createElement('style');
-    const { head } = document;
+    const {
+      head
+    } = document;
     if (!newTag.styleTag.parentNode) {
       head.appendChild(newTag.styleTag);
     }

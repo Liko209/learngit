@@ -129,7 +129,7 @@ testFunction() {}
 testFunction() {}
 ```
  */
-function mockService(mockObject: any, method: MockMethodType, mockData?: any) {
+function mockService(mockObject: any, method?: MockMethodType, mockData?: any) {
   return _fakeService(mockObject, method, mockData);
 }
 

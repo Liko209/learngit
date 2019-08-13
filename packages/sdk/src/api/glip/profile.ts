@@ -9,7 +9,7 @@ import { Profile } from '../../module/profile/entity';
 class ProfileAPI extends Api {
   static basePath = '/profile';
   static requestProfileById(id: number) {
-    return this.getDataById<Profile>(id);
+    return ProfileAPI.getDataById<Profile>(id);
   }
 }
 

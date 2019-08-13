@@ -10,6 +10,7 @@ import { VoiceMailViewModel } from '../VoiceMail.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
 
+jest.mock('@/modules/telephony/HOC/withDialogOrNewWindow');
 jest.mock('../../../service/TelephonyService');
 
 const jupiter = container.get(Jupiter);
@@ -27,6 +28,6 @@ describe('VoiceMailViewModel', () => {
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.sendToVoiceMail).toBeCalled();
+    expect(_telephonyService.sendToVoiceMail).toHaveBeenCalled();
   });
 });

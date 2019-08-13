@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SleepModeDetector } from '../SleepModeDetector';
+
 describe('SleepModeDetector', () => {
   describe('constructor', () => {
-    it('should not be null of _heartBeatCheck', () => {
+    it('should be null of _heartBeatCheck', () => {
       const sl = new SleepModeDetector();
-      expect(sl['_heartBeatCheck']).not.toBeUndefined();
+      expect(sl['_heartBeatCheck']).toBeUndefined();
     });
   });
   describe('subScribe-unSubscribe', () => {
@@ -16,12 +17,14 @@ describe('SleepModeDetector', () => {
       const sl = new SleepModeDetector();
       const result = sl.subScribe('aa', () => {});
       expect(result).toBeTruthy();
+      sl.cleanUp();
     });
     it('should subscribe fail when key is existed', () => {
       const sl = new SleepModeDetector();
       sl.subScribe('aa', () => {});
       const result = sl.subScribe('aa', () => {});
       expect(result).toBeFalsy();
+      sl.cleanUp();
     });
 
     it('should release the callback if unsubscribe', () => {
@@ -32,6 +35,7 @@ describe('SleepModeDetector', () => {
       sl.unSubscribe('aa');
       map = sl['_callbacksMap'];
       expect(map.has('aa')).toBeFalsy();
+      sl.cleanUp();
     });
   });
 

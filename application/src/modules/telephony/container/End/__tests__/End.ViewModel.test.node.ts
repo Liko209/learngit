@@ -13,7 +13,7 @@ import { getEntity } from '@/store/utils';
 
 jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
-
+jest.mock('@/modules/telephony/HOC/withDialogOrNewWindow');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 
@@ -29,7 +29,7 @@ describe('EndViewModel', () => {
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.hangUp).not.toBeCalled();
+    expect(_telephonyService.hangUp).not.toHaveBeenCalled();
   });
 
   it('should call hangUp function', async () => {
@@ -42,6 +42,6 @@ describe('EndViewModel', () => {
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.hangUp).toBeCalled();
+    expect(_telephonyService.hangUp).toHaveBeenCalled();
   });
 });
