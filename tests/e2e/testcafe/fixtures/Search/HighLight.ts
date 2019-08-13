@@ -372,6 +372,8 @@ test.meta(<ITestMeta>{
     postId = await conversationPage.nthPostItem(-1).postId;
   });
 
+  await t.wait(10e3); // wait for websocketManagement.isConnected.
+
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I search keyword {keyword1}`, async (step) => {
