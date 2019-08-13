@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components/Menus';
 import { Dialog } from '@/containers/Dialog';
 import { ViewProps } from './types';
 import { mainLogger } from 'sdk';

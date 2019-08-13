@@ -5,7 +5,8 @@
  */
 
 import { CALLING_OPTIONS, AUDIO_SOUNDS_INFO } from 'sdk/module/profile';
-import { inject, jupiter } from 'framework';
+import { inject } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import {
   TelephonyService as ServerTelephonyService,

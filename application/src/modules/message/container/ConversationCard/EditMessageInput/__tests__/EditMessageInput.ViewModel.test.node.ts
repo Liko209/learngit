@@ -21,7 +21,7 @@ import {
   ERROR_CODES_SERVER,
 } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
-import { jupiter} from 'framework';
+import { jupiter} from 'framework/Jupiter';
 import { IMessageService, IMessageStore } from '@/modules/message/interface';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';

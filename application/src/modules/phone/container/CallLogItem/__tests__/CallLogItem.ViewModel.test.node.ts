@@ -11,7 +11,7 @@ import { getHourMinuteSeconds, DATE_FORMAT } from '@/utils/date';
 import { CallLogItemViewModel } from '../CallLogItem.ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { mockService } from 'shield/sdk';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 
 jest.mock('@/utils/date');
 jest.mock('i18next', () => ({

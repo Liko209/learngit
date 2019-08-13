@@ -9,7 +9,7 @@ import { test, testable } from 'shield';
 import { PostService } from 'sdk/module/post';
 import { mockService } from 'shield/sdk/mockService';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 
 describe('FileItemModel', () => {
   jupiter.registerClass(PostService);

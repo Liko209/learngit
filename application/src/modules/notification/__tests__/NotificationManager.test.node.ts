@@ -1,5 +1,6 @@
 import { AbstractNotificationManager } from '../manager';
-import { Jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { config } from '../module.config';
 import { MediaModule } from '@/modules/media';
 import { INotificationService } from '../interface';

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RecentCallBtnViewModel } from '../RecentCallBtn.ViewModel';
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 
 decorate(injectable(), TelephonyStore);

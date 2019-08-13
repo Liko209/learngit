@@ -3,7 +3,8 @@
  * @Date: 2019-05-30 09:18:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { ISettingService, SETTING_ITEM_TYPE } from '@/interface/setting';
 import history from '@/history';
 import { config } from '../../module.config';

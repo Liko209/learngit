@@ -1,4 +1,5 @@
-import { Jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { NotificationModule } from '../notificationModule';
 import { config } from '../module.config';
 import { config as settingConfig } from '@/modules/setting/module.config';

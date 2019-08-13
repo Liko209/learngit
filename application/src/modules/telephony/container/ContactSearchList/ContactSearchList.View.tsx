@@ -9,7 +9,7 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { JuiList } from 'jui/components';
+import { JuiList } from 'jui/components/Lists';
 import { typography, grey, spacing } from 'jui/foundation/utils';
 import { ContactSearchListViewProps } from './types';
 import { observer } from 'mobx-react';

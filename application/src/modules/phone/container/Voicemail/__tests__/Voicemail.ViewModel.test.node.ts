@@ -15,7 +15,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { VoicemailViewModel } from '../Voicemail.ViewModel';
 import { config } from '../../../module.config';
 import { registerModule } from 'shield/utils';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { PhoneStore } from '../../../store';
 
 registerModule(config);

@@ -6,7 +6,7 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { RecentCallItemViewModel } from '../RecentCallItem.ViewModel';
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';

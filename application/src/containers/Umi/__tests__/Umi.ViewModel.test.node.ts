@@ -9,7 +9,7 @@ import { UmiProps, UMI_SECTION_TYPE } from '../types';
 import * as utils from '@/store/utils';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
 
-jest.mock('framework');
+jest.mock('framework/ioc');
 
 describe('UmiViewModel', () => {
   let viewModel: UmiViewModel;

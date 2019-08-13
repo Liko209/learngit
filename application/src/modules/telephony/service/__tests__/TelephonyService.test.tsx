@@ -8,7 +8,7 @@ import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
 import { OpenDialogE911 } from '../../container/E911';
 import { runInAction } from 'mobx';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import { MediaService } from '@/modules/media/service';
 import { IMediaService } from '@/interface/media';
 import { ENTITY_NAME } from '@/store';

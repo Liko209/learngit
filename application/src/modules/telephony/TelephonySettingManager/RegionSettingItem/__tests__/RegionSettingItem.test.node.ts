@@ -8,11 +8,11 @@ import { getEntity } from '@/store/utils';
 import { RegionSettingItemViewModel } from '../RegionSettingItem.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { Notification } from '@/containers/Notification';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 
 jest.mock('@/utils/i18nT', () => (key: string) => key);
 
-jest.mock('framework');
+jest.mock('framework/ioc');
 
 jest.mock('@/utils/i18nT', () => (key: string) => key);
 

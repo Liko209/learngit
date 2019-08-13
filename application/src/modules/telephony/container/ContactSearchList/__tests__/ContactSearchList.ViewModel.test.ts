@@ -1,6 +1,7 @@
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ContactSearchListViewModel } from '../ContactSearchList.ViewModel';
-import { container, decorate, injectable, Jupiter } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';

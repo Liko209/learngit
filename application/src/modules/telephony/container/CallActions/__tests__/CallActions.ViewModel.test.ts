@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { CallActionsViewModel } from '../CallActions.ViewModel';
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { CALL_ACTION } from '../../../interface/constant';
 import { getEntity } from '@/store/utils';

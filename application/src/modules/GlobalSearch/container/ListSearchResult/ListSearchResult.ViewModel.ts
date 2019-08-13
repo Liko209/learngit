@@ -7,7 +7,7 @@
 import { action, computed } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 

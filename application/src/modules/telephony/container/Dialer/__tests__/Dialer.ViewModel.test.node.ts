@@ -6,7 +6,8 @@
 
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
-import { container, jupiter, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyService } from '../../../service/TelephonyService';

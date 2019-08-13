@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { VoiceMailViewModel } from '../VoiceMail.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';

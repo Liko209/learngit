@@ -5,7 +5,8 @@
  */
 jest.mock('downshift');
 
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { MuteViewModel } from '../Mute.ViewModel';

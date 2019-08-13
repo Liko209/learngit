@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RouteProps } from 'react-router-dom';
-import { inject } from 'framework';
+import { inject } from 'framework/ioc';
 import { RouterStore } from '../store/RouterStore';
 
 type RegisterRouteConfig = RouteProps & { needAuth?: boolean };

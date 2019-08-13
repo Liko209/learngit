@@ -3,7 +3,8 @@
  * @Date: 2019-05-29 09:31:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { FlipViewModel } from '../Flip.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';

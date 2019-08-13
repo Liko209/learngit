@@ -3,7 +3,7 @@
  * @Date: 2019-03-27 19:47:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { AbstractViewModel } from '@/base';
 import { observable, computed, action } from 'mobx';
 import { logger } from '../utils';

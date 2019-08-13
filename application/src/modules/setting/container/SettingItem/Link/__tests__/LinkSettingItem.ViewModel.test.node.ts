@@ -1,4 +1,4 @@
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import { SettingStore } from '../../../../store/SettingStore';
 import { LinkSettingItemViewModel } from '../LinkSettingItem.ViewModel';
 import { getEntity } from '@/store/utils';

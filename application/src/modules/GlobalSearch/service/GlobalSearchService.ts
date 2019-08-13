@@ -5,7 +5,7 @@
  */
 
 import { ComponentType } from 'react';
-import { inject } from 'framework';
+import { inject } from 'framework/ioc';
 import { GlobalSearchStore } from '../store';
 import { SEARCH_VIEW } from '../types';
 

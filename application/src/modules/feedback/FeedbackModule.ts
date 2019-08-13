@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, container } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { container } from 'framework/ioc';
 import { ContextInfoZipItemProvider } from './ContextInfoZipItemProvider';
 import { LogControlManager, mainLogger } from 'sdk';
 import { debugLog } from 'sdk/module/debug/log';
@@ -18,10 +19,16 @@ const LOG_TAG = '[Feedback]';
 
 class FeedbackModule extends AbstractModule {
   async bootstrap() {
-    LogControlManager.instance().registerZipProvider(new ContextInfoZipItemProvider());
+    LogControlManager.instance().registerZipProvider(
+      new ContextInfoZipItemProvider(),
+    );
     debugLog.inject('debug', () => {
       mainLogger.tags(LOG_TAG).info('execute command: debug');
-      if (ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).isAccountReady()) {
+      if (
+        ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        ).isAccountReady()
+      ) {
         UploadRecentLogs.show();
       } else {
         mainLogger.tags(LOG_TAG).info('user not login, execute save instead');
@@ -30,10 +37,16 @@ class FeedbackModule extends AbstractModule {
     });
     debugLog.inject('debugAll', () => {
       mainLogger.tags(LOG_TAG).info('execute command: debugAll');
-      if (ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).isAccountReady()) {
+      if (
+        ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        ).isAccountReady()
+      ) {
         UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL });
       } else {
-        mainLogger.tags(LOG_TAG).info('user not login, execute saveAll instead');
+        mainLogger
+          .tags(LOG_TAG)
+          .info('user not login, execute saveAll instead');
         container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL);
       }
     });

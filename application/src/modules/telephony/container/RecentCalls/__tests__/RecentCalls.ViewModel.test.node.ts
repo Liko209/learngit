@@ -5,7 +5,7 @@
  */
 import { RecentCallsViewModel } from '../RecentCalls.ViewModel';
 import * as RecentCallLogsHandlerModule from '../RecentCallLogsHandler';
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { TelephonyStore } from '../../../store';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';

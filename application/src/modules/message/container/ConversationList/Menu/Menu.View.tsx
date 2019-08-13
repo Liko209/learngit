@@ -7,7 +7,7 @@ import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { withTranslation, WithTranslation } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
-import { JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { Dialog } from '@/containers/Dialog';

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { when } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { testable, test } from 'shield';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';

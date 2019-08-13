@@ -5,7 +5,7 @@
  */
 import { ComponentType } from 'react';
 import { RouteProps } from 'react-router-dom';
-import { createDecorator } from 'framework';
+import { createDecorator } from 'framework/ioc';
 import { SubModuleConfig, NavConfig } from '../types';
 
 const IHomeService = createDecorator('IHomeService');

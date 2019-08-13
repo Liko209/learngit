@@ -7,7 +7,7 @@ import { observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { TelephonyService } from '../../../service';
 import { Props, ViewProps, ForwardCall } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { Notification } from '@/containers/Notification';

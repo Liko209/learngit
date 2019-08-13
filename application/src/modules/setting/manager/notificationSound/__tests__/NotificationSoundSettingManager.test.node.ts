@@ -3,7 +3,8 @@
  * @Date: 2019-05-30 09:18:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { ISettingService } from '@/interface/setting';
 import { config } from '../../../module.config';
 import { NotificationSoundSettingManager } from '../NotificationSoundSettingManager';

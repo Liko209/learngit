@@ -3,7 +3,7 @@
  * @Date: 2019-04-10 19:46:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { GlobalSearchStore } from '../../store';

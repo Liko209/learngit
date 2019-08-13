@@ -3,7 +3,8 @@
  * @Date: 2019-05-30 12:35:58
  * Copyright © RingCentral. All rights reserved.
  */
-import { jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { SettingStore } from '../../../store';
 import { SettingSectionViewModel } from '../SettingSection.ViewModel';
 

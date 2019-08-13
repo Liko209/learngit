@@ -2,7 +2,7 @@ import { getEntity } from '../../../../store/utils';
 import { MemberViewModel } from '../Member.ViewModel';
 import { CONVERSATION_TYPES as TYPES } from '@/constants';
 import { ENTITY_NAME } from '@/store';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 
 jest.mock('../../../../store/utils');
 

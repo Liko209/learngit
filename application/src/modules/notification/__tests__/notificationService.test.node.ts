@@ -1,4 +1,5 @@
-import { Jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import * as notification from '@/modules/notification/module.config';
 import { MediaModule } from '@/modules/media';
 import { INotificationService, NotificationStrategy } from '../interface';

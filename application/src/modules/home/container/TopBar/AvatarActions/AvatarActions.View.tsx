@@ -8,7 +8,7 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
-import { JuiMenuList } from 'jui/components';
+import { JuiMenuList } from 'jui/components/Menus';
 import {
   JuiAvatarActions,
   JuiStyledDropdown,

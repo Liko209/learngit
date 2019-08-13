@@ -11,7 +11,7 @@ import { JuiSearchFilter } from 'jui/pattern/SearchFilter';
 import { ContactSearch, GroupSearch } from '@/containers/Downshift';
 import { SearchFilterViewProps, SearchContentTypeItem } from './types';
 import { JuiLineSelect, MenuProps } from 'jui/components/Selects/LineSelect';
-import { JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components/Menus';
 
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
