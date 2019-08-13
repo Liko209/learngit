@@ -237,11 +237,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       id: oldGroupId,
     });
   }
-
-  forceSaveDraft = () => {
+  
+  @action
+  forceSaveDraft = async() => {
     const draft = isEmpty(this.draft) ? '' : this.draft;
     this._memoryDraftMap.set(this.props.id, draft);
-    this._groupConfigService.updateDraft({
+    await this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
     });
@@ -256,7 +257,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @computed
-  get _group() {
+  private get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
@@ -366,7 +367,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   addOnPostCallback = (callback: OnPostCallback) => {
     this._onPostCallbacks.push(callback);
   }
-
+  
+  @action
   private _trackSendPost(containsTeamMention:boolean) {
     const type = this.items.length ? 'file' : 'text';
     const isAtTeam = containsTeamMention ? 'yes' : 'no'
