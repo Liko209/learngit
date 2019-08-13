@@ -645,7 +645,7 @@ test.meta(<ITestMeta>{
   keywords: ['search', 'HighLight'],
 })('Check can highlight the keyword in full search results that type is Events', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[1];
   await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
 
   const url = 'https://www.google.com';
@@ -771,7 +771,7 @@ test.meta(<ITestMeta>{
   keywords: ['search', 'HighLight'],
 })('Check can highlight keyword in full search results that type is Notes', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[1];
 
   const url = 'https://www.google.com';
   const phoneNumber = "+1(650)399-0766";
@@ -854,8 +854,8 @@ test.meta(<ITestMeta>{
   keywords: ['search', 'HighLight'],
 })('Check can highlight keyword in full search results when type is Tasks', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  const otherUser = users[5];
+  const loginUser = users[1];
+  const otherUser = users[2];
   await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
 
   const url = 'https://www.google.com';
