@@ -6,6 +6,7 @@
 const setupTimer = require('../jest/setup/timer');
 require('../jest/setup/thirdParty');
 require('../jest/setup/emoji');
+require('../jest/setup/timezone');
 
 afterAll(() => {
   setupTimer.tearDown();
