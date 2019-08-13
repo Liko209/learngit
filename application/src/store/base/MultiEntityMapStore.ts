@@ -19,7 +19,7 @@ export default class MultiEntityMapStore<
   K extends Entity<IdType>,
   IdType extends ModelIdType = number
 > extends BaseStore {
-  @observable.shallow private _data: Map<string, K> = new Map();
+  private _data: Map<string, K> = observable.map();
   private _usedIds: Set<IdType> = new Set();
 
   private _getService: Function | [Function, string];
