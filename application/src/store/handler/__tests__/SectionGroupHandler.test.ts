@@ -289,6 +289,30 @@ describe('SectionGroupHandler', () => {
       });
     });
 
+    it('should not add this group in because it has not post and did not created by current user', done => {
+      SectionGroupHandler.getInstance();
+      getEntity.mockReturnValue({ unreadCount: 0 });
+      const fakeData = [
+        {
+          id: 0,
+          is_team: false,
+          created_at: 0,
+          creator_id: 2,
+          members: [3],
+        },
+      ];
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
+      setTimeout(() => {
+        expect(
+          sectionGroupHandler.getGroupIdsByType(SECTION_TYPE.TEAM),
+        ).toEqual([19, 18, 16]);
+        expect(
+          sectionGroupHandler.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE),
+        ).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 2]);
+        done();
+      });
+    });
+
     it('should add this group in even it has not post but created by current user', done => {
       (getGlobalValue as jest.Mock).mockReturnValue(3);
       SectionGroupHandler.getInstance();

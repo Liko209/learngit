@@ -626,9 +626,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         !model.is_team &&
+        createdByMeOrHasPostTime &&
         groupService.isValid(model) &&
-        (createdByMeOrHasPostTime ||
-          hasUnread ||
+        (hasUnread ||
           isCurrentConversation ||
           this._isInLimitation(SECTION_TYPE.DIRECT_MESSAGE, sortableModel))
       );
