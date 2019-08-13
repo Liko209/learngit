@@ -5,7 +5,7 @@
  */
 import { container } from 'framework';
 import { AbstractViewModel } from '@/base';
-import { observable, computed, runInAction } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { logger } from '../utils';
 import { UploadRecentLogsViewModelProps, TaskStatus } from './types';
 import { UploadResult } from '../types';
@@ -100,19 +100,17 @@ export class UploadRecentLogsViewModel
       throw new Error('upload step failed, can not send feedback.');
     }
   };
-
-  private _uploadRecentLogs = () => {
+  @action
+  private _uploadRecentLogs = async () => {
     const feedbackService: FeedbackService = container.get(FeedbackService);
     this._uploadLogResult = null;
-    runInAction(async () => {
-      this._uploadLogResult = await feedbackService.uploadRecentLogs({
-        level: this.props.level,
-      });
-      if (!this._uploadLogResult) {
-        logger.debug('Upload recent logs failed.');
-        throw new Error('Upload recent logs failed.');
-      }
+    this._uploadLogResult = await feedbackService.uploadRecentLogs({
+      level: this.props.level,
     });
+    if (!this._uploadLogResult) {
+      logger.debug('Upload recent logs failed.');
+      throw new Error('Upload recent logs failed.');
+    }
   };
 
   @computed get isLoading() {

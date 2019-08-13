@@ -367,18 +367,17 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   addOnPostCallback = (callback: OnPostCallback) => {
     this._onPostCallbacks.push(callback);
   }
-
+  
+  @action
   private _trackSendPost(containsTeamMention:boolean) {
     const type = this.items.length ? 'file' : 'text';
     const isAtTeam = containsTeamMention ? 'yes' : 'no'
-    runInAction(() => {
-      analyticsCollector.sendPost(
-        'conversation thread',
-        type,
-        this._group.analysisType,
-        isAtTeam,
-      );
-    });
+    analyticsCollector.sendPost(
+      'conversation thread',
+      type,
+      this._group.analysisType,
+      isAtTeam,
+    );
   }
 
   private _handleDraftSave = debounce(() => {

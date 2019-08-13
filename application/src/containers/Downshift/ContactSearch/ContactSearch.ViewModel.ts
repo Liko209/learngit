@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 14:33:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed, autorun } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { differenceBy } from 'lodash';
 
 import { ENTITY_NAME } from '@/store';
@@ -28,11 +28,10 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   constructor(props: ContactSearchProps) {
     super(props);
-    const disposer = autorun(() => {
+    this.autorun(() => {
       const { prefillMembers } = this.props;
       prefillMembers && this._setSelectedItems(prefillMembers);
     });
-    disposer();
     this.reaction(
       () => this.props.groupId,
       () => {
