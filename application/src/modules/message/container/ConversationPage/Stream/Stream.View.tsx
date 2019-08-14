@@ -31,8 +31,7 @@ import {
   ItemWrapper,
   ScrollInfo,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay } from 'jui/hoc/withDelay';
-import { DefaultLoadingMore } from 'jui/hoc/withLoading';
+import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';

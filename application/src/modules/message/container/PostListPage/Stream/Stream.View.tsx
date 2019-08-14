@@ -16,8 +16,10 @@ import {
   JuiInfiniteList,
   ThresholdStrategy,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay } from 'jui/hoc/withDelay';
-import { DefaultLoadingMore } from 'jui/hoc/withLoading';
+import {
+  DefaultLoadingWithDelay,
+  DefaultLoadingMore,
+} from 'jui/hoc/withLoading';
 import _ from 'lodash';
 import { POST_LIST_TYPE } from '../types';
 import { JuiEmptyPage } from 'jui/pattern/EmptyPage';
