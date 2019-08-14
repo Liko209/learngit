@@ -413,8 +413,8 @@ test(formalName('Check the maximum rows of members/guests are displayed on the r
   });
 
   const AVATAR_HEIGHT = 40;
-  await h(t).withLog('Then the team member section should have 4 rows of member avatars', async () => {
-    await t.expect(rightRail.memberListSection.members.clientHeight).eql(AVATAR_HEIGHT * 4);
+  await h(t).withLog('Then the team member section should have 3 rows of member avatars', async () => {
+    await t.expect(rightRail.memberListSection.members.clientHeight).eql(AVATAR_HEIGHT * 3);
   })
 
   const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListAvatar"]');
