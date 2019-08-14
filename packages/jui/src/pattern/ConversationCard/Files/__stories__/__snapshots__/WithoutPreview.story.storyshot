@@ -38,6 +38,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c7.c7 .c8,

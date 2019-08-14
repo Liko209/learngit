@@ -9,6 +9,7 @@ import { observable, action } from 'mobx';
 import { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE } from '../types';
 
 class GlobalSearchStore {
+  @observable alive: boolean = false;
   @observable open: boolean = false;
   @observable searchKey: string = '';
   @observable currentTab: TAB_TYPE;
@@ -19,6 +20,11 @@ class GlobalSearchStore {
 
   @action
   setOpen(open: boolean) {
+    // Fix memory leaks when dialog toggled caused by input element, React <= 16.9.0
+    if (open && !this.alive) {
+      this.alive = true;
+    }
+
     this.open = open;
   }
 

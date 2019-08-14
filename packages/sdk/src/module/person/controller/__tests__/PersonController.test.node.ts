@@ -23,6 +23,7 @@ import { IEntitySourceController } from 'sdk/framework/controller/interface/IEnt
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
+import { GlobalConfigService } from 'sdk/module/config';
 import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
 import { ContactType } from '../../types';
@@ -34,13 +35,11 @@ import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountService } from 'sdk/module/account';
-import { GlobalConfig } from 'sdk/module/config/GlobalConfig';
-import { UserConfig } from 'sdk/module/config/UserConfig';
 import { PersonActionController } from '../PersonActionController';
 
-jest.mock('sdk/module/config/GlobalConfig');
-jest.mock('sdk/module/config/UserConfig');
+jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config');
+
 jest.mock('sdk/module/group');
 jest.mock('sdk/service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');
@@ -56,30 +55,20 @@ describe('PersonService', () => {
   let entityCacheController: IEntityCacheController<Person>;
   let cacheSearchController: IEntityCacheSearchController<Person>;
   let phoneNumberService: PhoneNumberService;
-  let accountUserConfig: AccountUserConfig;
-  let authUserConfig: AuthUserConfig;
 
   function setUp() {
     phoneNumberService = new PhoneNumberService(true);
-    accountUserConfig = new AccountUserConfig();
-    authUserConfig = new AuthUserConfig();
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((config: string) => {
         if (config === ServiceConfig.ACCOUNT_SERVICE) {
           return {
-            userConfig: accountUserConfig,
-            authUserConfig,
+            userConfig: AccountUserConfig.prototype,
+            authUserConfig: AuthUserConfig.prototype,
           };
         }
         if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
           return phoneNumberService;
-        }
-        if (config === ServiceConfig.USER_CONFIG_SERVICE) {
-          return {};
-        }
-        if (config === ServiceConfig.GLOBAL_CONFIG_SERVICE) {
-          return {};
         }
       });
     personController = new PersonController();
@@ -102,6 +91,33 @@ describe('PersonService', () => {
       cacheSearchController,
       entityCacheController,
     );
+  }
+
+  function getPerson() {
+    const person: Person = {
+      id: 1,
+      created_at: 1,
+      modified_at: 1,
+      creator_id: 1,
+      is_new: false,
+      has_registered: true,
+      version: 1,
+      company_id: 1,
+      email: 'cat1@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'dora1',
+      last_name: 'bruce1',
+      display_name: 'dora1 bruce1',
+      sanitized_rc_extension: {
+        extensionNumber: '98494',
+        type: 'User',
+      },
+      rc_phone_numbers: [
+        { id: 1, phoneNumber: '650425743', usageType: 'DirectNumber' },
+      ],
+    };
+
+    return person;
   }
 
   beforeEach(() => {
@@ -151,10 +167,9 @@ describe('PersonService', () => {
 
     it('should return all matched person', async () => {
       entitySourceController.batchGet = jest.fn();
-      entitySourceController.batchGet.mockImplementation(() => [
-        person1,
-        person2,
-      ]);
+      entitySourceController.batchGet.mockImplementation(() => {
+        return [person1, person2];
+      });
       const result = await personController.getPersonsByIds([1, 2]);
       expect(entitySourceController.batchGet).toHaveBeenCalledWith([1, 2]);
       expect(result).toEqual([person1, person2]);
@@ -505,7 +520,6 @@ describe('PersonService', () => {
         await personEntityCacheController.put(person);
       }
     }
-
     async function preparePhoneNumData() {
       for (let i = 1; i <= 30; i += 1) {
         const person: Person = {
@@ -527,7 +541,6 @@ describe('PersonService', () => {
         };
         await personEntityCacheController.put(person);
       }
-
       for (let i = 31; i <= 35; i += 1) {
         const person: Person = {
           id: i,
@@ -542,12 +555,11 @@ describe('PersonService', () => {
           last_name: `bruce${i.toString()}`,
           display_name: `dora${i.toString()} bruce${i.toString()}`,
           rc_phone_numbers: [
-            { id: i, phoneNumber: `+165022700${i}`, usageType: 'DirectNumber' },
+            { id: i, phoneNumber: `65022700${i}`, usageType: 'DirectNumber' },
           ],
         };
         await personEntityCacheController.put(person);
       }
-
       for (let i = 36; i <= 37; i += 1) {
         const person: Person = {
           id: i,
@@ -564,38 +576,14 @@ describe('PersonService', () => {
           rc_phone_numbers: [
             {
               id: i,
-              phoneNumber: '+18885287464',
+              phoneNumber: '8885287464',
               usageType: 'MainCompanyNumber',
             },
-            { id: i, phoneNumber: `+165022700${i}`, usageType: 'DirectNumber' },
+            { id: i, phoneNumber: `65022700${i}`, usageType: 'DirectNumber' },
           ],
         };
         await personEntityCacheController.put(person);
       }
-
-      const deactivatedPerson1: Person = {
-        id: 38,
-        created_at: 38,
-        modified_at: 38,
-        creator_id: 38,
-        is_new: false,
-        version: 38,
-        company_id: 1,
-        email: 'deactivatedPerson1@ringcentral.com',
-        first_name: 'deactivatedPerson1',
-        last_name: 'deactivatedPerson1',
-        display_name: 'deactivatedPerson1',
-        deactivated: true,
-        rc_phone_numbers: [
-          {
-            id: 38,
-            phoneNumber: '+18885287464',
-            usageType: 'MainCompanyNumber',
-          },
-          { id: 38, phoneNumber: '+16502270038', usageType: 'DirectNumber' },
-        ],
-      };
-      await personEntityCacheController.put(deactivatedPerson1);
 
       const deactivatedPerson2: Person = {
         id: 39,
@@ -617,66 +605,42 @@ describe('PersonService', () => {
         rc_phone_numbers: [
           {
             id: 39,
-            phoneNumber: '+18885287464',
+            phoneNumber: '8885287464',
             usageType: 'MainCompanyNumber',
           },
-          { id: 39, phoneNumber: '+16502270039', usageType: 'DirectNumber' },
+          { id: 39, phoneNumber: '6502270039', usageType: 'DirectNumber' },
         ],
       };
       await personEntityCacheController.put(deactivatedPerson2);
-    }
 
-    async function prepareReuseData() {
-      const reuseExt: Person = {
-        id: 40,
-        created_at: 40,
-        modified_at: 40,
-        creator_id: 40,
+      const deactivatedPerson1: Person = {
+        id: 38,
+        created_at: 38,
+        modified_at: 38,
+        creator_id: 38,
         is_new: false,
-        version: 40,
+        version: 38,
         company_id: 1,
-        email: 'reuseExt@ringcentral.com',
-        first_name: 'reuseExt',
-        last_name: 'reuseExt',
-        display_name: 'reuseExt',
-        sanitized_rc_extension: {
-          extensionNumber: '39',
-          type: 'User',
-        },
-      };
-      await personEntityCacheController.put(reuseExt);
-
-      const reuseDid: Person = {
-        id: 41,
-        created_at: 41,
-        modified_at: 41,
-        creator_id: 41,
-        is_new: false,
-        version: 41,
-        company_id: 1,
-        email: 'reuseDid@ringcentral.com',
-        first_name: 'reuseDid',
-        last_name: 'reuseDid',
-        display_name: 'reuseDid',
+        email: 'deactivatedPerson1@ringcentral.com',
+        first_name: 'deactivatedPerson1',
+        last_name: 'deactivatedPerson1',
+        display_name: 'deactivatedPerson1',
+        deactivated: true,
         rc_phone_numbers: [
           {
-            id: 41,
-            phoneNumber: '+18885287464',
+            id: 38,
+            phoneNumber: '8885287464',
             usageType: 'MainCompanyNumber',
           },
-          { id: 41, phoneNumber: '+16502270038', usageType: 'DirectNumber' },
+          { id: 38, phoneNumber: '6502270038', usageType: 'DirectNumber' },
         ],
       };
-      await personEntityCacheController.put(reuseDid);
+      await personEntityCacheController.put(deactivatedPerson1);
     }
 
-    let isShort: boolean;
-    const numList = [''];
-
-    beforeEach(() => {
+    beforeEach(async () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
-      jest.restoreAllMocks();
       setUp();
 
       personController.setDependentController(
@@ -685,23 +649,8 @@ describe('PersonService', () => {
         personEntityCacheController,
       );
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
-      PhoneParserUtility.getPhoneParser = jest
-        .fn()
-        .mockImplementation((phoneNumber: string) => ({
-          getE164: jest.fn(),
-          isShortNumber: jest.fn().mockReturnValue(isShort),
-        }));
-      phoneNumberService.generateMatchedPhoneNumberList = jest
-        .fn()
-        .mockReturnValue(numList);
-      accountUserConfig.getCurrentCompanyId = jest.fn().mockReturnValue(1);
-      personEntityCacheController.clear();
     });
-
-    it('should return null when no ext is matched', async () => {
-      isShort = true;
-      numList.length = 0;
-      numList.push('123');
+    it('should return null when there is no phone number data', async () => {
       await prepareInvalidData();
       const result = await personController.matchContactByPhoneNumber(
         '123',
@@ -709,11 +658,7 @@ describe('PersonService', () => {
       );
       expect(result).toBeNull();
     });
-
-    it('should return null when no direct num is matched', async () => {
-      isShort = false;
-      numList.length = 0;
-      numList.push('+16502274787');
+    it('should return null when no one is matched', async () => {
       await prepareInvalidData();
       const result = await personController.matchContactByPhoneNumber(
         '6502274787',
@@ -723,9 +668,16 @@ describe('PersonService', () => {
     });
 
     it('should return when both short number and company id are matched', async () => {
-      isShort = true;
-      numList.length = 0;
-      numList.push('21');
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(true),
+        getE164: jest.fn().mockReturnValue('21'),
+      });
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue(['21']);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(1);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '21',
@@ -735,18 +687,11 @@ describe('PersonService', () => {
       expect(result.id).toBe(21);
     });
 
-    it('should not add to cache if short number is from other company', async () => {
-      accountUserConfig.getCurrentCompanyId = jest.fn().mockReturnValue(2);
-      await preparePhoneNumData();
-      expect(personEntityCacheController._shortNumberCache.size).toBe(0);
-    });
-
     it('should not return when short number is matched, but company not', async () => {
-      isShort = true;
-      numList.length = 0;
-      numList.push('21');
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(2);
       await preparePhoneNumData();
-      accountUserConfig.getCurrentCompanyId = jest.fn().mockReturnValueOnce(2);
       const result = await personController.matchContactByPhoneNumber(
         '21',
         ContactType.GLIP_CONTACT,
@@ -755,12 +700,18 @@ describe('PersonService', () => {
     });
 
     it('should return when long number is matched', async () => {
-      isShort = false;
-      numList.length = 0;
-      numList.push('+16502270033');
-      numList.push('16502270033');
-      numList.push('6502270033');
-      numList.push('06502270033');
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(false),
+        getE164: jest.fn().mockReturnValue('+16502270033'),
+      });
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue([
+          '+16502270033',
+          '16502270033',
+          '6502270033',
+          '06502270033',
+        ]);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '6502270033',
@@ -770,14 +721,20 @@ describe('PersonService', () => {
       expect(result.id).toBe(33);
     });
 
-    it('should return when there is more than one long number and long number is matched', async () => {
+    it('should return when there is two more long number and long number is matched', async () => {
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(false),
+        getE164: jest.fn().mockReturnValue('+16502270036'),
+      });
       await preparePhoneNumData();
-      isShort = false;
-      numList.length = 0;
-      numList.push('+16502270036');
-      numList.push('16502270036');
-      numList.push('6502270036');
-      numList.push('06502270036');
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue([
+          '+16502270036',
+          '16502270036',
+          '6502270036',
+          '06502270036',
+        ]);
       const result = await personController.matchContactByPhoneNumber(
         '6502270036',
         ContactType.GLIP_CONTACT,
@@ -787,9 +744,9 @@ describe('PersonService', () => {
     });
 
     it('should not return when phone number matches, but user is deactivated', async () => {
-      isShort = false;
-      numList.length = 0;
-      numList.push('+16502270038');
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '6502270038',
@@ -799,10 +756,10 @@ describe('PersonService', () => {
     });
 
     it('should not return when phone number matches, but user flag is deactivated', async () => {
-      isShort = true;
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
       await preparePhoneNumData();
-      numList.length = 0;
-      numList.push('39');
       const result = await personController.matchContactByPhoneNumber(
         '39',
         ContactType.GLIP_CONTACT,
@@ -811,43 +768,15 @@ describe('PersonService', () => {
     });
 
     it('should not match when phone number is not direct number', async () => {
-      isShort = false;
-      numList.length = 0;
-      numList.push('+18885287464');
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '8885287464',
         ContactType.GLIP_CONTACT,
       );
       expect(result).toBeNull();
-    });
-
-    it('should match the right person when ext is reused', async () => {
-      await preparePhoneNumData();
-      await prepareReuseData();
-      isShort = true;
-      numList.length = 0;
-      numList.push('39');
-      const result = await personController.matchContactByPhoneNumber(
-        '39',
-        ContactType.GLIP_CONTACT,
-      );
-      expect(result).not.toBeNull();
-      expect(result.id).toBe(40);
-    });
-
-    it('should match the right person when direct number is reused', async () => {
-      await preparePhoneNumData();
-      await prepareReuseData();
-      isShort = false;
-      numList.length = 0;
-      numList.push('+16502270038');
-      const result = await personController.matchContactByPhoneNumber(
-        '6502270038',
-        ContactType.GLIP_CONTACT,
-      );
-      expect(result).not.toBeNull();
-      expect(result.id).toBe(41);
     });
   });
 
@@ -892,33 +821,6 @@ describe('PersonService', () => {
   });
 
   describe('getPhoneNumbers', () => {
-    function getPerson() {
-      const person: Person = {
-        id: 1,
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        has_registered: true,
-        version: 1,
-        company_id: 1,
-        email: 'cat1@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'dora1',
-        last_name: 'bruce1',
-        display_name: 'dora1 bruce1',
-        sanitized_rc_extension: {
-          extensionNumber: '98494',
-          type: 'User',
-        },
-        rc_phone_numbers: [
-          { id: 1, phoneNumber: '650425743', usageType: 'DirectNumber' },
-        ],
-      };
-
-      return person;
-    }
-    
     it('should return all phone numbers when is company contact, and extension is at first', () => {
       const person = getPerson();
       const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -960,5 +862,59 @@ describe('PersonService', () => {
     it('should return instance of PersonActionController', ()=>{
       expect(personController.personActionController).toBeInstanceOf(PersonActionController);
     })
+  });
+
+  describe('getCurrentPerson', ()=>{
+    it('should return current user depends on user id', async()=>{
+      setUp();
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(2);
+      const person = getPerson();
+      entitySourceController.get = jest.fn().mockReturnValueOnce(person);
+      await personController.getCurrentPerson();
+      expect(entitySourceController.get).toHaveBeenCalledWith(2);
+    });
+  });
+
+  describe('getFirstName', ()=>{
+    it.each`
+      rcExtensionId | firstName   | lastName    | sRcFirstName  | res
+      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'f_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'s_name'}
+      ${'1'}        | ${'f_name'} | ${''}       | ${''}         | ${'f_name'}
+    `(
+      'should return first name of the person $res ',
+      ({ rcExtensionId, firstName, lastName, sRcFirstName, res }) => {
+        const person: any = {
+          sanitized_rc_first_name:sRcFirstName,
+          first_name: firstName,
+          last_name: lastName,
+          rc_extension_id: rcExtensionId
+        };
+        expect(personController.getFirstName(person)).toEqual(res);
+      },
+    );
+  });
+
+  describe('getLastName', ()=>{
+    it.each`
+      rcExtensionId | firstName   | lastName    | sRcLastName   | res
+      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'l_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'s_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${''}         | ${'l_name'}
+    `(
+      'should return first name of the person $res ',
+      ({ rcExtensionId, firstName, lastName, sRcLastName, res }) => {
+        const person: any = {
+          sanitized_rc_last_name: sRcLastName,
+          first_name: firstName,
+          last_name: lastName,
+          rc_extension_id: rcExtensionId
+        };
+        expect(personController.getLastName(person)).toEqual(res);
+      },
+    );
   })
 });

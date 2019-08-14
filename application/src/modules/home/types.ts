@@ -16,8 +16,12 @@ type NavConfig = {
   disable?: boolean | Promise<boolean>;
 };
 
+type RouteConfig = {
+  cache?: boolean;
+} & RouteProps;
+
 type SubModuleConfig = {
-  route?: RouteProps;
+  route?: RouteConfig;
   nav?: () => Promise<NavConfig>;
   moduleConfigLoader?: () => Promise<{ config: ModuleConfig }>;
   moduleConfig?: ModuleConfig;
@@ -29,4 +33,4 @@ type HomeConfig = {
   subModules: { [key: string]: SubModuleConfig };
 };
 
-export { HomeConfig, NavConfig, SubModuleConfig };
+export { HomeConfig, NavConfig, SubModuleConfig, RouteConfig };

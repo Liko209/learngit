@@ -57,7 +57,7 @@ class HomeViewModel extends StoreViewModel {
 
   @computed
   get showGlobalSearch() {
-    return this._globalSearchStore.open;
+    return this._globalSearchStore.alive;
   }
 
   dispose() {

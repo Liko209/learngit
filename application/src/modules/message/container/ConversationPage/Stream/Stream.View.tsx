@@ -289,13 +289,15 @@ class StreamViewComponent extends Component<Props> {
     } = this.props;
     const listEl = this._listRef.current;
     const lastPostVisible = stopIndex === items.length - 1;
+
+    this._isAtBottom = lastPostVisible;
+
     if (lastPostVisible) {
       this._isAboveScrollToLatestCheckPoint = false;
-    } else if(!this._isAboveScrollToLatestCheckPoint) {
+    } else if (!this._isAboveScrollToLatestCheckPoint) {
       const isAboveScrollToLatestCheckPoint =
         scrollHeight - clientHeight - scrollTop > checkPointThreshold;
       this._isAboveScrollToLatestCheckPoint = isAboveScrollToLatestCheckPoint;
-      this._isAtBottom = false;
     }
 
     if (startIndex === -1 || stopIndex === -1 || !listEl) return;
@@ -319,7 +321,6 @@ class StreamViewComponent extends Component<Props> {
   };
 
   private _bottomStatusChangeHandler = (isAtBottom: boolean) => {
-    this._isAtBottom = isAtBottom;
     if (this.props.hasMore(DIRECTION.DOWN) || !isAtBottom) {
       this.handleMostRecentHidden();
     } else if (isAtBottom) {
@@ -455,6 +456,7 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread,
       historyUnreadCount,
     } = this.props;
+
     const anchorButtonProps = {
       jumpToLatest: this._jumpToLatest,
       firstHistoryUnreadInPage,

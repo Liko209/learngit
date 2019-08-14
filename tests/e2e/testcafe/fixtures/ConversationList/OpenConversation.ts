@@ -102,11 +102,8 @@ test(formalName('Should not display in conversation list when last conversation 
   await h(t).withLog('Then the conversation should not display in conversation list', async () => {
     await t.expect(directMessagesSection.conversationEntryById(chat.glipId).exists).notOk();
     const url = new URL(SITE_URL);
-    const targetUrl = `${url.protocol}//${url.hostname}/messages/`
-    await H.retryUntilPass(async () => {
-      const currentUrl = await h(t).href;
-      assert.strictEqual(currentUrl, targetUrl, `${currentUrl} is invalid`);
-    });
+    const targetUrl = `${url.origin}/messages/`
+    await t.expect(h(t).href).eql(targetUrl);
   });
 });
 

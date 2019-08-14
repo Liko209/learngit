@@ -8,7 +8,13 @@ import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import { IdModel, Raw } from '../../framework/model';
 
-import { ItemFile, Item, StoredFile, NoteItem } from '../../module/item/entity';
+import {
+  ItemFile,
+  Item,
+  StoredFile,
+  NoteItem,
+  ZoomMeetingItem,
+} from '../../module/item/entity';
 
 import { RequestHolder } from '../requestHolder';
 import {
@@ -132,6 +138,13 @@ class ItemAPI extends Api {
     return ItemAPI.glipNetworkClient.put<Raw<T>>({
       data,
       path: `/${type}/${id}`,
+    });
+  }
+
+  static startZoomMeeting(data: Partial<ZoomMeetingItem>) {
+    return this.glipNetworkClient.post<Raw<ZoomMeetingItem>>({
+      data,
+      path: '/meeting',
     });
   }
 }

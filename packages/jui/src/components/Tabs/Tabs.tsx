@@ -44,7 +44,6 @@ type Props = {
   forceFlex?: boolean;
 };
 
-
 const MORE = 10000; // more tab mui auto add child index
 
 const STYLE: CSSProperties = {
@@ -187,8 +186,10 @@ class JuiTabs extends PureComponent<Props, States> {
       // 5. change original array
       indexTabs.sort();
     }
-    // console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
-    if(isEqual(this.state.indexMenus,indexMenus) && isEqual(this.state.indexTabs,indexTabs)) {
+    if (
+      isEqual(this.state.indexMenus, indexMenus) &&
+      isEqual(this.state.indexTabs, indexTabs)
+    ) {
       return;
     }
     this.setState({
@@ -257,7 +258,7 @@ class JuiTabs extends PureComponent<Props, States> {
     return (
       <JuiPopperMenu
         Anchor={this._renderMore}
-        placement='bottom-start'
+        placement="bottom-start"
         open={openMenu}
         value={MORE}
         key={MORE}
@@ -431,8 +432,8 @@ class JuiTabs extends PureComponent<Props, States> {
         position={position}
         value={index}
         onChange={this._handleChangeTab}
-        indicatorColor='primary'
-        textColor='primary'
+        indicatorColor="primary"
+        textColor="primary"
         ref={this._containerRef}
       >
         {measure ? this._renderForMeasure() : this._renderForShow()}

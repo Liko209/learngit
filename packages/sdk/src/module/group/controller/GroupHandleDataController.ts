@@ -202,9 +202,9 @@ class GroupHandleDataController {
     try {
       if (deactivatedData.length) {
         daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
-        this.entitySourceController.bulkDelete(
-          deactivatedData.map(item => item.id),
-        );
+        const deleteIds = deactivatedData.map(item => item.id);
+        this.entitySourceController.bulkDelete(deleteIds);
+        mainLogger.tags(LOG_TAG).info('operateGroupDao() ids:', deleteIds);
       }
       if (normalData.length) {
         this.entitySourceController.bulkUpdate(normalData);

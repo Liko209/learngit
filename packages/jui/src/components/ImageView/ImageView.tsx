@@ -51,6 +51,8 @@ type JuiImageProps = React.DetailedHTMLProps<
   onSizeLoad?: (naturalWidth: number, naturalHeight: number) => void;
   onLoad?: () => void;
   onError?: () => void;
+  performanceTracerStart?: () => void;
+  performanceTracerEnd?: () => void;
 };
 
 type JuiImageState = {
@@ -97,6 +99,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
 
   constructor(props: JuiImageProps) {
     super(props);
+    const { performanceTracerStart } = this.props;
+    performanceTracerStart && performanceTracerStart();
     this.state = this.getInitState(props);
     const { width, height, onSizeLoad } = this.props;
     width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
@@ -155,6 +159,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
               const { naturalWidth, naturalHeight } = event.currentTarget;
               onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
               onLoad && onLoad();
+              const { performanceTracerEnd } = this.props;
+              performanceTracerEnd && performanceTracerEnd();
             }
             this.setState({
               loadings: {

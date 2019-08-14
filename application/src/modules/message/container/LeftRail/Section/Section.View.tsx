@@ -15,7 +15,6 @@ import { toTitleCase } from '@/utils/string';
 import { SectionViewProps, SECTION_TYPE } from './types';
 import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { observer } from 'mobx-react';
-import { LazySection } from './LazySection.View';
 
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
@@ -26,10 +25,6 @@ type Props = SectionViewProps & WithTranslation;
 class SectionViewComponent extends React.Component<Props> {
   renderList() {
     const { sortable, onSortEnd } = this.props;
-
-    if (this.props.type === SECTION_TYPE.TEAM) {
-      return <LazySection ids={this.props.groupIds} />;
-    }
 
     if (sortable) {
       return (

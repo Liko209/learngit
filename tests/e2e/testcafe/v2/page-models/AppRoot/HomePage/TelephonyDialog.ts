@@ -395,7 +395,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async selectItemByKeyboard() {
-    await this.t.click(this.callLogList).pressKey('down');
+    await this.t.pressKey('down');
   }
 
   async hoverDeleteButton() {

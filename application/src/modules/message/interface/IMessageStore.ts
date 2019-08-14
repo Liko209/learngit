@@ -14,7 +14,7 @@ interface IMessageStore {
   currentFocusedInput?: number;
   isRightRailOpen: boolean;
   lastGroupId?: number;
-  addConversationHeaderExtension(extension: React.ReactNode): void;
+  addConversationHeaderExtension(extensions: React.ReactNode[]): void;
   savePostDraft(id: number, draft: string): void;
   removePostDraft(id: number): void;
   setIsRightRailOpen(bool: boolean): void;

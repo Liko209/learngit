@@ -45,7 +45,7 @@ describe('GroupService', () => {
     getOrCreateGroupByMemberList: jest.fn(),
     isFavored: jest.fn(),
     getGroupEmail: jest.fn(),
-    getMembersAndGuestIds: jest.fn(),
+    getMemberAndGuestIds: jest.fn(),
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
@@ -462,10 +462,10 @@ describe('GroupService', () => {
     });
 
     it('should call getGroupFetchDataController when call getMembersAndGuestIds  ', async () => {
-      await groupService.getMembersAndGuestIds(123, true);
+      await groupService.getMemberAndGuestIds(123, 40, 10, true);
       expect(
-        mockGroupFetchDataController.getMembersAndGuestIds,
-      ).toHaveBeenCalledWith(123, true, undefined);
+        mockGroupFetchDataController.getMemberAndGuestIds,
+      ).toHaveBeenCalledWith(123, 40, 10, true);
     });
   });
 

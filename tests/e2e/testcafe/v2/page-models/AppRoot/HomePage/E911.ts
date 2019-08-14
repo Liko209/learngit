@@ -138,7 +138,7 @@ export class EmergencyConfirmDialog extends BaseWebComponent {
   }
 
   get closeButton() {
-    return this.getSelectorByAutomationIdUnderSelf('emergencyPromptDialogCrossButton');
+    return this.getSelectorByAutomationIdUnderSelf('emergencyConfirmDialogCrossButton');
   }
 
   get dialogContent() {
@@ -146,7 +146,11 @@ export class EmergencyConfirmDialog extends BaseWebComponent {
   }
 
   get emergencyConfirmOkButton() {
-    return this.getSelectorByAutomationIdUnderSelf('DialogOKButton');
+    return this.getSelectorByAutomationIdUnderSelf('emergencyConfirmDialogOkButton');
+  }
+
+  get emergencyConfirmCancelButton() {
+    return this.getSelectorByAutomationIdUnderSelf('emergencyConfirmDialogCancelButton');
   }
 
   /** actions */
@@ -158,30 +162,7 @@ export class EmergencyConfirmDialog extends BaseWebComponent {
     await this.t.click(this.emergencyConfirmOkButton);
   }
 
-}
-
-
-export class EmergencyPromptDialog extends BaseWebComponent {
-  get self() {
-    return this.getSelectorByAutomationId('emergencyPromptDialog');
+  async clickEmergencyConfirmCancelButton() {
+    await this.t.click(this.emergencyConfirmCancelButton);
   }
-
-  get title() {
-    this.warnFlakySelector();
-    return this.self.find('h2');
-  }
-
-  get closeButton() {
-    return this.getSelectorByAutomationIdUnderSelf('emergencyPromptDialogCrossButton');
-  }
-
-  get dialogContent() {
-    return this.getSelectorByAutomationIdUnderSelf("emergencyPromptDialogContent");
-  }
-
-  /** actions */
-  async clickCloseButton() {
-    await this.t.click(this.closeButton);
-  }
-
 }

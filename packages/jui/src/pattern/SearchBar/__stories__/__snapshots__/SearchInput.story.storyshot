@@ -226,6 +226,7 @@ exports[`Storyshots Pattern/SearchBar SearchInput: Pattern/SearchBar SearchInput
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c7.c7 .c8,
