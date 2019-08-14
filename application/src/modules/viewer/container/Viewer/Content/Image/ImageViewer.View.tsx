@@ -79,6 +79,13 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         passive: false,
       });
     });
+
+    const onSwitchCb = (imgInfo: {width: number, height: number}) => {
+      if (imgInfo.width && imgInfo.height && this._zoomRef.current) {
+        this._zoomRef.current.updateContentSize(imgInfo.width, imgInfo.height)
+      }
+    };
+    this.props['setOnImageSwitchCb'](onSwitchCb)
   }
 
   componentWillUnmount() {
