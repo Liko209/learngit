@@ -38,14 +38,32 @@ class RTCCallManager {
   allowCall(flag: ALLOW_CALL_FLAG = ALLOW_CALL_FLAG.OUTBOUND_CALL): boolean {
     if (kRTCMaxCallCount === this._calls.length) {
       if (ALLOW_CALL_FLAG.OUTBOUND_CALL === flag) {
+        rtcLogger.warn(
+          LOG_TAG,
+          'Not allow call. Max simple multiple outbound call count is reached',
+        );
         return false;
       }
       if (ALLOW_CALL_FLAG.EXTRA_OUTBOUND_CALL === flag) {
         return true;
       }
-      return this.connectedCallCount() > 0;
+      if (this.connectedCallCount() === 0) {
+        rtcLogger.warn(
+          LOG_TAG,
+          'Not allow call. there is not connected call when receive incoming call',
+        );
+        return false;
+      }
+      return true;
     }
-    return this._calls.length < kRTCMaxCallCount;
+    if (this._calls.length > kRTCMaxCallCount) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'Not allow call. Max simple multiple call count is reached',
+      );
+      return false;
+    }
+    return true;
   }
 
   callList(): RTCCall[] {
