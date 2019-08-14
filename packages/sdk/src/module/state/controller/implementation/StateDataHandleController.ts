@@ -628,18 +628,23 @@ class StateDataHandleController {
       (localState.group_team_mention_cursor &&
         localState.group_team_mention_cursor < 0);
     const groupIds = localStates.filter(needFix).map(state => state.id);
-    const groups = await this._groupService.getByIdsLocally(groupIds);
-    const groupMap = new Map(groups.map(group => [group.id, group]));
-    return localStates.map(localState => {
-      if (needFix(localState)) {
-        const group = groupMap.get(localState.id);
-        group &&
-          fixKeyPairs.forEach(([stateKey, groupKey]) => {
-            localState[stateKey] = group![groupKey];
-          });
-      }
-      return localState;
-    });
+    if (groupIds.length) {
+      const groups = await this._groupService.getByIdsLocally(groupIds);
+      const groupMap = new Map(groups.map(group => [group.id, group]));
+      return localStates.map(localState => {
+        if (needFix(localState) && groupMap.has(localState.id)) {
+          const group = groupMap.get(localState.id);
+          group &&
+            fixKeyPairs.forEach(([stateKey, groupKey]) => {
+              if (Object.prototype.hasOwnProperty.call(group, groupKey)) {
+                localState[stateKey] = group![groupKey];
+              }
+            });
+        }
+        return localState;
+      });
+    }
+    return localStates;
   }
 }
 

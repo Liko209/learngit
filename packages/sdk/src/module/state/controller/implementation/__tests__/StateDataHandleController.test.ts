@@ -19,6 +19,7 @@ import {
 import { SYNC_SOURCE } from '../../../../sync';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { notificationCenter } from 'sdk/service';
+import { IGroupService } from 'sdk/module/group/service/IGroupService';
 
 jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
@@ -41,6 +42,9 @@ describe('StateDataHandleController', () => {
   const mockActionController = {
     updateReadStatus: jest.fn(),
   } as any;
+  const mockGroupService = ({
+    getByIdsLocally: jest.fn(),
+  } as any) as IGroupService;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -52,6 +56,7 @@ describe('StateDataHandleController', () => {
     stateDataHandleController = new StateDataHandleController(
       mockEntitySourceController,
       mockActionController,
+      mockGroupService,
     );
 
     ServiceLoader.getInstance = jest
@@ -396,6 +401,7 @@ describe('StateDataHandleController', () => {
             unread_deactivated_count: 1,
             unread_mentions_count: 6,
             last_author_id: 56,
+            group_team_mention_cursor: 0,
           },
           {
             id: 2,
@@ -404,6 +410,7 @@ describe('StateDataHandleController', () => {
             read_through: 209,
             unread_deactivated_count: 10,
             unread_mentions_count: 0,
+            group_team_mention_cursor: 0,
           },
           {
             id: 3,
@@ -412,12 +419,14 @@ describe('StateDataHandleController', () => {
             read_through: 6,
             unread_deactivated_count: 10,
             unread_mentions_count: 5,
+            group_team_mention_cursor: 0,
           },
           {
             id: 4,
             marked_as_unread: false,
             last_author_id: 5684,
             post_cursor: 8,
+            group_team_mention_cursor: 0,
           },
         ],
         isSelf: false,
@@ -437,6 +446,7 @@ describe('StateDataHandleController', () => {
             group_post_drp_cursor: 9,
             unread_count: 0,
             last_author_id: 88,
+            group_team_mention_cursor: 0,
           },
           {
             id: 2,
@@ -448,12 +458,14 @@ describe('StateDataHandleController', () => {
             unread_count: 2,
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
+            group_team_mention_cursor: 0,
           },
           {
             id: 4,
             marked_as_unread: true,
             last_author_id: 56,
             post_cursor: 688,
+            group_team_mention_cursor: 0,
           },
         ]);
 
@@ -477,6 +489,7 @@ describe('StateDataHandleController', () => {
             unread_count: 5,
             last_author_id: 56,
             unread_team_mentions_count: 0,
+            group_team_mention_cursor: 0,
           },
           2: {
             group_post_cursor: 15,
@@ -489,6 +502,7 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 0,
             unread_count: 1,
             unread_team_mentions_count: 0,
+            group_team_mention_cursor: 0,
           },
           3: {
             id: 3,
@@ -499,6 +513,7 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 5,
             unread_count: 0,
             unread_team_mentions_count: 0,
+            group_team_mention_cursor: 0,
           },
         },
         myState: undefined,
@@ -530,6 +545,7 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 0,
             unread_count: 1,
             unread_team_mentions_count: 0,
+            group_team_mention_cursor: 0,
           },
         ]);
 
@@ -551,6 +567,7 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 0,
             unread_count: 0,
             unread_team_mentions_count: 0,
+            group_team_mention_cursor: 0,
           },
         },
         myState: undefined,
@@ -564,6 +581,7 @@ describe('StateDataHandleController', () => {
             id: 1,
             marked_as_unread: false,
             last_author_id: 5683,
+            group_team_mention_cursor: 0,
           },
         ],
         isSelf: false,
@@ -582,6 +600,7 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 0,
             unread_count: 1,
             unread_team_mentions_count: 0,
+            group_team_mention_cursor: 0,
           },
         ]);
 
@@ -604,6 +623,128 @@ describe('StateDataHandleController', () => {
             unread_count: 0,
             last_author_id: 5683,
             unread_team_mentions_count: 0,
+            group_team_mention_cursor: 0,
+          },
+        },
+        myState: undefined,
+      });
+    });
+    it('should fix group_team_mention_cursor when state not exist', async () => {
+      const transformedState = {
+        groupStates: [
+          {
+            id: 1,
+            marked_as_unread: false,
+            last_author_id: 11,
+          },
+        ],
+        isSelf: false,
+      };
+
+      mockEntitySourceController.getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([
+          {
+            id: 1,
+            marked_as_unread: true,
+            group_post_cursor: 17,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 2,
+            team_mention_cursor: 1,
+            unread_team_mentions_count: 0,
+          },
+        ]);
+
+      mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
+      mockGroupService.getByIdsLocally.mockResolvedValue([
+        {
+          id: 1,
+          team_mention_cursor: 2,
+        },
+      ]);
+      expect(
+        await stateDataHandleController['_generateUpdatedState'](
+          transformedState,
+        ),
+      ).toEqual({
+        groupStates: {
+          1: {
+            id: 1,
+            marked_as_unread: false,
+            group_post_cursor: 17,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 1,
+            last_author_id: 11,
+            team_mention_cursor: 1,
+            unread_team_mentions_count: 1,
+            group_team_mention_cursor: 2,
+          },
+        },
+        myState: undefined,
+      });
+    });
+    it('should fix group_team_mention_cursor when state error', async () => {
+      const transformedState = {
+        groupStates: [
+          {
+            id: 1,
+            marked_as_unread: false,
+            last_author_id: 11,
+          },
+        ],
+        isSelf: false,
+      };
+
+      mockEntitySourceController.getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([
+          {
+            id: 1,
+            marked_as_unread: true,
+            group_post_cursor: 17,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 2,
+            team_mention_cursor: 1,
+            unread_team_mentions_count: 0,
+            group_team_mention_cursor: -2,
+          },
+        ]);
+
+      mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
+      mockGroupService.getByIdsLocally.mockResolvedValue([
+        {
+          id: 1,
+          team_mention_cursor: 2,
+        },
+      ]);
+      expect(
+        await stateDataHandleController['_generateUpdatedState'](
+          transformedState,
+        ),
+      ).toEqual({
+        groupStates: {
+          1: {
+            id: 1,
+            marked_as_unread: false,
+            group_post_cursor: 17,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 1,
+            last_author_id: 11,
+            team_mention_cursor: 1,
+            unread_team_mentions_count: 1,
+            group_team_mention_cursor: 2,
           },
         },
         myState: undefined,
