@@ -4,4 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+require('../jest/setup/timezone');
+
 afterAll(() => global.gc && global.gc());
