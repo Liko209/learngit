@@ -116,8 +116,11 @@ class EntityCacheController<
     return '';
   }
 
-  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
-    const values = await this.getAll();
+  async getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]> {
+    let values = await this.getAll();
     if (filterFunc) {
       const filterEntities: T[] = [];
       values.forEach((entity: T) => {
@@ -125,8 +128,13 @@ class EntityCacheController<
           filterEntities.push(entity);
         }
       });
-      return filterEntities;
+      values = filterEntities;
     }
+
+    if (sortFunc && values.length) {
+      values.sort(sortFunc);
+    }
+
     return values;
   }
 

@@ -169,8 +169,14 @@ class EntitySourceController<
     return await this.entityPersistentController.getTotalCount();
   }
 
-  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
-    return await this.entityPersistentController.getEntities(filterFunc);
+  async getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]> {
+    return await this.entityPersistentController.getEntities(
+      filterFunc,
+      sortFunc,
+    );
   }
 
   getEntityNotificationKey(): string {
