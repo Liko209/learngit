@@ -39,6 +39,7 @@ const StyledContactInfoWrapper = styled('div')`
   flex: 1;
   width: ${width(39)};
   margin-left: ${spacing(4)};
+  overflow: hidden;
 `;
 const StyledContactInfoName = styled(JuiTypography)`
   && {
