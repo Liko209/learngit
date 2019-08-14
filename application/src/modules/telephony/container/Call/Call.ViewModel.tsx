@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { AbstractViewModel } from '@/base';
 import { TelephonyService } from '../../service';
 import { CallProps, CallViewProps } from './types';

@@ -5,7 +5,8 @@
  */
 // import { UserConfig } from 'sdk/service/account';
 // import { getEntity } from '../../../../../../store/utils';
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { config } from '../../../../module.config';
 import { GlobalSearchStore } from '../../../../store';
 import i18nT from '@/utils/i18nT';

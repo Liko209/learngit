@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReplyViewModel } from '../Reply.ViewModel';
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore, INCOMING_STATE } from '../../../../store';
 
 decorate(injectable(), TelephonyStore);

@@ -3,7 +3,7 @@
  * @Date: 2019-04-03 10:45:35,
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import * as utils from '@/utils/error';
 import { Post } from 'sdk/module/post/entity';
 import { getGlobalValue } from '@/store/utils';

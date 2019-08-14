@@ -15,7 +15,7 @@ import {
 import { JuiButton } from 'jui/components/Buttons/Button';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
-import { JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components/Menus';
 import dialogContext from '@/containers/Dialog/DialogContext';
 import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
 import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';

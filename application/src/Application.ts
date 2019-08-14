@@ -3,7 +3,8 @@
  * @Date: 2019-01-16 17:14:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { Jupiter, inject, container, injectable } from 'framework';
+import { inject, container, injectable } from 'framework/ioc';
+import { Jupiter} from 'framework/Jupiter';
 import * as sw from '@/modules/service-worker/module.config';
 import * as leaveBlocker from '@/modules/leave-blocker/module.config';
 import * as router from '@/modules/router/module.config';

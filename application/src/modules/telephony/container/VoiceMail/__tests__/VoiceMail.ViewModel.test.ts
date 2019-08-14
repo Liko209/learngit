@@ -4,12 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { VoiceMailViewModel } from '../VoiceMail.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
 
+jest.mock('@/modules/telephony/HOC/withDialogOrNewWindow');
 jest.mock('../../../service/TelephonyService');
 
 const jupiter = container.get(Jupiter);
@@ -27,6 +29,6 @@ describe('VoiceMailViewModel', () => {
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.sendToVoiceMail).toBeCalled();
+    expect(_telephonyService.sendToVoiceMail).toHaveBeenCalled();
   });
 });

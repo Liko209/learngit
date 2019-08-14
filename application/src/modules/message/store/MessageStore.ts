@@ -14,8 +14,10 @@ class MessageStore implements IMessageStore {
   @observable isRightRailOpen: boolean = true;
   lastGroupId?: number;
 
-  addConversationHeaderExtension(extension: ReactNode) {
-    this.conversationHeaderExtensions.push(extension);
+  addConversationHeaderExtension(extensions: ReactNode[]) {
+    this.conversationHeaderExtensions = this.conversationHeaderExtensions.concat(
+      extensions,
+    );
   }
 
   savePostDraft(id: number, draft: string) {

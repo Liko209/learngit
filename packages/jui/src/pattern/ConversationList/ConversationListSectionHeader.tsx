@@ -6,7 +6,10 @@
 import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
-import { JuiListNavItem, JuiListNavItemIconography } from '../../components';
+import {
+  JuiListNavItem,
+  JuiListNavItemIconography,
+} from '../../components/Lists';
 import { typography } from '../../foundation/utils';
 
 const StyledRightWrapper = styled.div`

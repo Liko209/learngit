@@ -10,7 +10,7 @@ import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { Notification } from '@/containers/Notification';
 import { catchError } from '@/common/catchError';
 import {

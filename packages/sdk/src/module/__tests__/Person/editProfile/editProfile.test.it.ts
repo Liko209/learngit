@@ -5,7 +5,8 @@
  */
 
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { jit, readApiJson } from 'shield/sdk';
+import { readApiJson } from 'shield/sdk';
+import { jit } from 'shield/sdk/SdkItFramework';
 import { PersonService } from 'sdk/module/person';
 import { IGlipPersonPut } from 'shield/sdk/mocks/glip/api/person/person.put.contract';
 

@@ -197,6 +197,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c4.c4 .c5,

@@ -21,7 +21,7 @@ import {
 import { INITIAL_COUNT } from './config';
 import { VoicemailListHandler } from './VoicemailListHandler';
 import { HoverControllerViewModel } from '../HoverController';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { PhoneStore } from '../../store';
 
 class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>

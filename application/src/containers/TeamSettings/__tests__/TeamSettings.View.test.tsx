@@ -20,7 +20,7 @@ import { i18nP } from '@/utils/i18nT';
 jest.mock('react-i18next', () => ({
   Trans: 'Trans',
   withTranslation: () => (comp: React.ComponentType) => comp,
-}))
+}));
 const mockTransition = (text: string, options?: object) => {
   if (!options) {
     return text.substring(text.lastIndexOf('.') + 1);
@@ -145,8 +145,8 @@ describe('TeamSettingsView', () => {
             content: (
               <JuiDialogContentText>
                 <Trans
-                  components={[<strong key='0' />]}
-                  i18nKey='people.team.leaveTeamConfirmContent'
+                  components={[<strong key="0" />]}
+                  i18nKey="people.team.leaveTeamConfirmContent"
                   values={{ teamName: 'my team' }}
                 />
               </JuiDialogContentText>

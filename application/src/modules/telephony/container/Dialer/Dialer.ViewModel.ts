@@ -5,7 +5,7 @@
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed, action } from 'mobx';
 import { i18nP } from '@/utils/i18nT';
 import { DialerProps, DialerViewProps } from './types';
@@ -15,15 +15,12 @@ import { TelephonyService } from '../../service';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
-import { simpleE911Dialog, alertE911Dialog } from '../E911Dialog';
+import { alertE911Dialog } from '../E911Dialog';
 import { DialerUIConfig } from '../../Dialer.config';
 
-class DialerViewModel extends StoreViewModel<DialerProps>
-  implements DialerViewProps {
+class DialerViewModel extends StoreViewModel<DialerProps> implements DialerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  private _telephonyService: TelephonyService = container.get(
-    TELEPHONY_SERVICE,
-  );
+  private _telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
   private _DialerUIConfig: DialerUIConfig = container.get(DialerUIConfig);
 
   dialerId = this._telephonyStore.dialerId;
@@ -44,10 +41,7 @@ class DialerViewModel extends StoreViewModel<DialerProps>
     this.reaction(
       () => this.callWindowState,
       async (callWindowState: CALL_WINDOW_STATUS) => {
-        if (
-          !this.shouldDisplayDialer ||
-          callWindowState === CALL_WINDOW_STATUS.MINIMIZED
-        ) {
+        if (!this.shouldDisplayDialer || callWindowState === CALL_WINDOW_STATUS.MINIMIZED) {
           return;
         }
         const needConfirmE911 = await this._telephonyService.needConfirmE911();
@@ -58,11 +52,7 @@ class DialerViewModel extends StoreViewModel<DialerProps>
         // getDialerMarked()
         // if user open e911 dialog and click cancel.
         // Next time open dialer not show confirm dialog
-        if (
-          needConfirmE911 &&
-          this.shouldShowConfirm &&
-          !this._DialerUIConfig.getDialerMarked()
-        ) {
+        if (needConfirmE911 && this.shouldShowConfirm && !this._DialerUIConfig.getDialerMarked()) {
           return this.showConfirmDialog();
         }
       },
@@ -72,7 +62,6 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   @action
   showConfirmDialog() {
     alertE911Dialog({
-      id: 'emergencyConfirm',
       content: i18nP('telephony.prompt.emergencyAddressIsUnknown'),
       onOK: () => {
         this._telephonyService.openE911();
@@ -82,17 +71,18 @@ class DialerViewModel extends StoreViewModel<DialerProps>
         this.shouldShowConfirm = false;
       },
       okText: i18nP('telephony.e911.confirmEmergencyAddress'),
+      showCloseIcon: true,
     });
   }
 
   @action
   showPromptDialog() {
-    simpleE911Dialog({
-      id: 'emergencyPrompt',
+    alertE911Dialog({
       content: i18nP('telephony.prompt.e911ServiceMayBeLimitedOrUnavailable'),
-      onCancel: () => {
+      onOK: () => {
         this.shouldShowPrompt = false;
       },
+      okText: i18nP('common.dialog.close'),
     });
   }
 

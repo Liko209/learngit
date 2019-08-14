@@ -139,6 +139,8 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
             .setAlpha(theme.palette.action.hoverOpacity)
             .toRgbString()
         : 'inherit'};
+    border-radius: ${({ variant }) => (variant === 'round' ? '50%' : '0')};
+
     ${StyledIcon} {
       &, svg {
         font-size: ${({ size = 'medium', theme, stretchIcon, variant }) =>

@@ -3,7 +3,7 @@
  * @Date: 2018-10-11 09:40:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { HomeStore } from '@/modules/home/store';
 import { notificationCenter, SERVICE } from 'sdk/service';
 

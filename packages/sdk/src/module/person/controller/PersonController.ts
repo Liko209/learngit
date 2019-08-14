@@ -105,6 +105,13 @@ class PersonController {
     return await this._entitySourceController.batchGet(ids);
   }
 
+  async getCurrentPerson(): Promise<Person | null> {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return this._entitySourceController.get(userConfig.getGlipUserId());
+  }
+
   async getAllCount() {
     return await this._entitySourceController.getTotalCount();
   }
@@ -224,6 +231,22 @@ class PersonController {
       return `${person.first_name} ${person.last_name}`;
     }
     return person.first_name || person.last_name ||'';
+  }
+
+  getFirstName(person: Person){
+    let firstName = person.first_name || "";
+    if (person.rc_extension_id) {
+      firstName = person.sanitized_rc_first_name || firstName;
+    }
+    return firstName;
+  }
+
+  getLastName(person: Person){
+    let lastName = person.last_name || "";
+    if (person.rc_extension_id) {
+      lastName = person.sanitized_rc_last_name || lastName;
+    }
+    return lastName;
   }
 
   getEmailAsName(person: Person) {

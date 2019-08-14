@@ -25,6 +25,11 @@ class OAuthTokenManager {
     }
   }
 
+  async getOAuthToken(type: IHandleType): Promise<Token | undefined> {
+    const tokenHandler = this.getOAuthTokenHandler(type);
+    return tokenHandler && tokenHandler.getOAuthToken();
+  }
+
   clearOAuthToken() {
     this.tokenHandlers.forEach((handler: OAuthTokenHandler) => {
       handler.clearOAuthToken();

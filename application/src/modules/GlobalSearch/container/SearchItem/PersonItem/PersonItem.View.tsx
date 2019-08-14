@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';

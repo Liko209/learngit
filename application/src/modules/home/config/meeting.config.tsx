@@ -24,6 +24,9 @@ const config: SubModuleConfig = {
     title: 'meeting.Meetings',
     placement: 'top',
   }),
+  moduleConfigLoader: () =>
+    import(/*
+    webpackChunkName: "m.meeting" */ '@/modules/meeting'),
 };
 
 export { config };

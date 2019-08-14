@@ -1,6 +1,6 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { DialerPanelProps, DialerPanelViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
