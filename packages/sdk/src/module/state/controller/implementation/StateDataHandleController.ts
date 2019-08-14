@@ -26,6 +26,7 @@ import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { StateActionController } from './StateActionController';
 import { UndefinedAble } from 'sdk/types';
+import { IGroupService } from 'sdk/module/group';
 
 type DataHandleTask =
   | StateHandleTask
@@ -55,6 +56,7 @@ class StateDataHandleController {
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _actionController: StateActionController,
+    private _groupService: IGroupService,
   ) {
     this._taskArray = [];
     this._ignoredIdSet = new Set<number>();
@@ -300,9 +302,11 @@ class StateDataHandleController {
 
     const ids: number[] = Object.keys(transformedState.groupStates).map(Number);
     if (ids.length > 0) {
-      const localStates =
+      const localStates = await this._fixOldStatesData(
         (await this._entitySourceController.getEntitiesLocally(ids, false)) ||
-        [];
+          [],
+      );
+
       const localStatesMap = new Map(
         localStates.map(state => [state.id, state]),
       );
@@ -596,6 +600,46 @@ class StateDataHandleController {
         }
       }
     }
+  }
+
+  // todo remove it after db upgrade
+  private async _fixOldStatesData(
+    localStates: GroupState[],
+  ): Promise<GroupState[]> {
+    const fixKeyPairs = [
+      [
+        GROUP_STATE_KEY.TEAM_MENTION_CURSOR_OFFSET,
+        GROUP_KEY.TEAM_MENTION_CURSOR_OFFSET,
+      ],
+      [
+        GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
+        GROUP_KEY.TEAM_MENTION_CURSOR,
+      ],
+      [
+        GROUP_STATE_KEY.REMOVED_CURSORS_TEAM_MENTION,
+        GROUP_KEY.REMOVED_CURSORS_TEAM_MENTION,
+      ],
+    ];
+    const needFix = (localState: GroupState) =>
+      !Object.prototype.hasOwnProperty.call(
+        localState,
+        GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
+      ) ||
+      (localState.group_team_mention_cursor &&
+        localState.group_team_mention_cursor < 0);
+    const groupIds = localStates.filter(needFix).map(state => state.id);
+    const groups = await this._groupService.getByIdsLocally(groupIds);
+    const groupMap = new Map(groups.map(group => [group.id, group]));
+    return localStates.map(localState => {
+      if (needFix(localState)) {
+        const group = groupMap.get(localState.id);
+        group &&
+          fixKeyPairs.forEach(([stateKey, groupKey]) => {
+            localState[stateKey] = group![groupKey];
+          });
+      }
+      return localState;
+    });
   }
 }
 

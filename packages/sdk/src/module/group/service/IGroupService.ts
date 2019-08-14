@@ -137,6 +137,8 @@ interface IGroupService {
   sendTypingEvent(groupId: number, isClear: boolean): void;
 
   getSynchronously(id: number): Group | null;
+
+  getByIdsLocally(ids: number[]): Promise<Group[]>;
 }
 
 export { IGroupService };

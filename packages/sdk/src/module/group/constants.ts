@@ -27,6 +27,12 @@ enum GROUP_CAN_NOT_SHOWN_REASON {
   UNKNOWN,
 }
 
+const TEAM_ADDITION_MOVE_PROPERTIES = [
+  'team_mention_cursor_offset',
+  'team_mention_cursor',
+  'removed_cursors_team_mention',
+]
+
 export {
   MAX_PERMISSION_LEVEL,
   PERMISSION_ENUM,
@@ -34,4 +40,5 @@ export {
   DEFAULT_USER_PERMISSION_LEVEL,
   DEFAULT_GUEST_PERMISSION_LEVEL,
   GROUP_CAN_NOT_SHOWN_REASON,
+  TEAM_ADDITION_MOVE_PROPERTIES,
 };

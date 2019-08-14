@@ -446,6 +446,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getHandleDataController()
       .removeCursorsFromGroup(group);
   }
+
+  async getByIdsLocally(ids: number[]) {
+    return this.getEntityCacheController().batchGet(ids);
+  }
 }
 
 export { GroupService };
