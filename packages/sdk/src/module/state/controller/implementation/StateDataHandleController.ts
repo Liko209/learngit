@@ -239,7 +239,19 @@ class StateDataHandleController {
           GROUP_STATE_KEY.REMOVED_CURSORS_TEAM_MENTION,
           GROUP_KEY.REMOVED_CURSORS_TEAM_MENTION,
         ],
-      ].filter(([, groupKey]) => !!group[groupKey]);
+        [
+          GROUP_STATE_KEY.ADMIN_MENTION_CURSOR_OFFSET,
+          GROUP_KEY.ADMIN_MENTION_CURSOR_OFFSET,
+        ],
+        [
+          GROUP_STATE_KEY.GROUP_ADMIN_MENTION_CURSOR,
+          GROUP_KEY.ADMIN_MENTION_CURSOR,
+        ],
+        [
+          GROUP_STATE_KEY.REMOVED_CURSORS_ADMIN_MENTION,
+          GROUP_KEY.REMOVED_CURSORS_ADMIN_MENTION,
+        ],
+      ].filter(([, groupKey]) => Object.prototype.hasOwnProperty.call(group, groupKey));
       keyPairs.forEach(([stateKey, groupKey]) => {
         groupState[stateKey] = group[groupKey];
       });
@@ -626,14 +638,26 @@ class StateDataHandleController {
         GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
       ) ||
       (localState.group_team_mention_cursor &&
-        localState.group_team_mention_cursor < 0);
+        localState.group_team_mention_cursor < 0) ||
+      (localState.unread_team_mentions_count &&
+        localState.unread_team_mentions_count < 0);
     return localStates.map(localState => {
       if (
         needFix(localState) &&
         this._groupService.getSynchronously(localState.id)
       ) {
         const group = this._groupService.getSynchronously(localState.id)!;
-        mainLogger.tags('[FIX-TEAM-UMI]').info(`fix cursor from ${localState.group_team_mention_cursor} => ${group[GROUP_KEY.TEAM_MENTION_CURSOR]}`)
+        Object.prototype.hasOwnProperty.call(
+          group,
+          GROUP_KEY.TEAM_MENTION_CURSOR,
+        ) &&
+          mainLogger
+            .tags('[FIX-TEAM-UMI]')
+            .info(
+              `fix groupState:${localState.id} cursor from ${
+                localState.group_team_mention_cursor
+              } => ${group[GROUP_KEY.TEAM_MENTION_CURSOR]}`,
+            );
         fixKeyPairs.forEach(([stateKey, groupKey]) => {
           if (Object.prototype.hasOwnProperty.call(group, groupKey)) {
             localState[stateKey] = group![groupKey];

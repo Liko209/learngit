@@ -31,7 +31,10 @@ const TEAM_ADDITION_MOVE_PROPERTIES = [
   'team_mention_cursor_offset',
   'team_mention_cursor',
   'removed_cursors_team_mention',
-]
+  'admin_mention_cursor',
+  'admin_mention_cursor_offset',
+  'removed_cursors_admin_mention',
+];
 
 export {
   MAX_PERMISSION_LEVEL,

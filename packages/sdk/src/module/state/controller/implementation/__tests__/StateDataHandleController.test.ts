@@ -712,8 +712,7 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 0,
             unread_count: 2,
             team_mention_cursor: 1,
-            unread_team_mentions_count: 0,
-            group_team_mention_cursor: -2,
+            unread_team_mentions_count: -2,
           },
         ]);
 

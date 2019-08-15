@@ -446,7 +446,7 @@ class TotalUnreadController {
       unread_mentions_count = 0,
       unread_team_mentions_count = 0,
     } = groupState;
-    return unread_mentions_count + unread_team_mentions_count;
+    return unread_mentions_count + Math.max(unread_team_mentions_count, 0);
   }
 }
 
