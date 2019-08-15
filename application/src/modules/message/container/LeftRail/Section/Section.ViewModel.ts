@@ -12,7 +12,7 @@ import { SectionProps, SectionConfigs, SECTION_TYPE } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const SECTION_CONFIGS: SectionConfigs = {

@@ -24,7 +24,7 @@ import { IdListPagingDataProvider } from '../base/fetch/IdListPagingDataProvider
 import PersonModel from '@/store/models/Person';
 import { IEntityDataProvider, IMatchFunc } from '../base/fetch/types';
 import { STORE_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { PerformanceTracer } from 'sdk';
+import { PerformanceTracer } from 'foundation/performance';
 
 class PersonProvider implements IEntityDataProvider<Person> {
   async getByIds(ids: number[]) {

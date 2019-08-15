@@ -15,7 +15,7 @@ import {
   SingletonSequenceProcessor,
 } from 'sdk/framework/processor';
 import { getLargeRawImageURL } from '@/common/getThumbnailURL';
-import { mainLogger, ILogger } from 'sdk';
+import { mainLogger, ILogger } from 'foundation/log';
 import { action } from 'mobx';
 
 class PreloadController implements IImageDownloadedListener {

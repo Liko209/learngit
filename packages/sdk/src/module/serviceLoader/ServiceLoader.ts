@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractService } from '../../framework';
-import { container } from '../../container';
+import { AbstractService } from 'sdk/framework';
+import { container } from 'sdk/container';
 
 class ServiceLoader {
   static getInstance<T extends AbstractService>(serviceName: string): T {

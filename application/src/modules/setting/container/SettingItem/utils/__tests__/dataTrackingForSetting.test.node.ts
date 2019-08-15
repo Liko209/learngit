@@ -8,8 +8,9 @@ import {
   debounceTrackData,
   booleanTransform,
 } from '../dataTrackingForSetting';
-import { dataAnalysis } from 'sdk';
-jest.mock('sdk');
+import { dataAnalysis } from 'foundation/analysis';
+
+jest.mock('foundation/analysis');
 
 describe('dataTrackingForSetting()', () => {
   it('should save setting ', async () => {

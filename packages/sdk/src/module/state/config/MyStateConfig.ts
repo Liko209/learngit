@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { CommonUserConfig } from '../../common/config';
+import { CommonUserConfig } from 'sdk/module/common/config';
 import { CONFIG_KEYS } from './ConfigKeys';
 
 class MyStateConfig extends CommonUserConfig {

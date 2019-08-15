@@ -8,7 +8,7 @@ import { setup } from '../../../../../../dao/__tests__/utils';
 import { SubItemDao } from '../SubItemDao';
 import { SanitizedItem, Item } from '../../entity';
 import { QUERY_DIRECTION } from '../../../../../../dao/constants';
-import { DatabaseType } from 'foundation/src';
+import { DatabaseType } from 'foundation/db';
 
 const Dexie = require('dexie');
 // Create an IDBFactory at window.indexedDB so your code can use IndexedDB.

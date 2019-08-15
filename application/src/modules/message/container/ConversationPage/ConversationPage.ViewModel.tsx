@@ -15,7 +15,7 @@ import { ENTITY_NAME } from '@/store';
 import { ConversationPageProps, STATUS } from './types';
 import _ from 'lodash';
 import history from '@/history';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { getErrorType } from '@/common/catchError';
 

@@ -8,7 +8,7 @@ import { IProcessor } from 'sdk/framework/processor';
 import { ItemService, FileItemUtils } from 'sdk/module/item';
 import { getThumbnailURLWithType, IMAGE_TYPE } from '@/common/getThumbnailURL';
 import { Pal, DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { RULE } from '@/common/generateModifiedImageURL';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils/entities';

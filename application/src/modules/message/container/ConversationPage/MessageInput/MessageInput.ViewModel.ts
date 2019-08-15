@@ -28,7 +28,7 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import {isMentionIdsContainTeam} from '../../ConversationCard/utils'
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';

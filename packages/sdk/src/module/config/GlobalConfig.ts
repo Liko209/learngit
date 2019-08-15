@@ -6,7 +6,7 @@
 
 import { Listener } from 'eventemitter2';
 import { GlobalConfigService } from './service/GlobalConfigService';
-import { ServiceLoader, ServiceConfig } from '../serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class GlobalConfig {
   static moduleName: string;
@@ -18,23 +18,24 @@ class GlobalConfig {
   }
 
   static get(key: string) {
-    return this.configService.get(this.moduleName, key);
+    console.log(GlobalConfig.moduleName, key);
+    return GlobalConfig.configService.get(GlobalConfig.moduleName, key);
   }
 
   static put(key: string, value: any) {
-    this.configService.put(this.moduleName, key, value);
+    GlobalConfig.configService.put(GlobalConfig.moduleName, key, value);
   }
 
   static remove(key: string) {
-    this.configService.remove(this.moduleName, key);
+    GlobalConfig.configService.remove(GlobalConfig.moduleName, key);
   }
 
   static on(key: string, listener: Listener) {
-    this.configService.on(this.moduleName, key, listener);
+    GlobalConfig.configService.on(GlobalConfig.moduleName, key, listener);
   }
 
   static off(key: string, listener: Listener) {
-    this.configService.off(this.moduleName, key, listener);
+    GlobalConfig.configService.off(GlobalConfig.moduleName, key, listener);
   }
 }
 
