@@ -561,7 +561,7 @@ class StateDataHandleController {
     if (transformedState.myState) {
       const myState = transformedState.myState;
       try {
-        daoManager.getDao(StateDao).update(myState);
+        await daoManager.getDao(StateDao).update(myState);
         const config = ServiceLoader.getInstance<StateService>(
           ServiceConfig.STATE_SERVICE,
         ).myStateConfig;
@@ -585,7 +585,8 @@ class StateDataHandleController {
 
     const groupStates = Object.values(transformedState.groupStates);
     if (groupStates.length > 0) {
-      this._entitySourceController.bulkUpdate(groupStates);
+      // never remove the await!!! sequence problem!!!
+      await this._entitySourceController.bulkUpdate(groupStates);
 
       // should set umi = 0 when conversation is ignored
       const GroupStatesForNotify = groupStates.filter(
