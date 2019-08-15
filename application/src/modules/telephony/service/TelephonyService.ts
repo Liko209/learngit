@@ -171,13 +171,13 @@ class TelephonyService {
     });
   };
 
-  private _pauseRingtone = async () => {
+  private _stopRingtone = async () => {
     mainLogger.tags(TelephonyService.TAG).info(`pause audio, ${new Date()}`);
 
     if (!this._ringtone) {
       return;
     }
-    this._ringtone.pause();
+    this._ringtone.stop();
     this._ringtone.dispose();
     return;
   };
@@ -411,7 +411,7 @@ class TelephonyService {
           this._playRingtone();
           return;
         }
-        this._pauseRingtone();
+        this._stopRingtone();
       },
       { fireImmediately: true },
     );
@@ -920,7 +920,7 @@ class TelephonyService {
     this._ringerDisposer && this._ringerDisposer();
     this._speakerDisposer && this._speakerDisposer();
 
-    this._pauseRingtone();
+    this._stopRingtone();
     this._telephonyStore.hasManualSelected = false;
     delete this._telephonyStore;
     delete this._serverTelephonyService;
