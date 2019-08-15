@@ -222,7 +222,6 @@ class StateDataHandleController {
           transformedState.isSelf = true;
         }
       }
-
       const keyPairs = [
         [GROUP_STATE_KEY.GROUP_POST_CURSOR, GROUP_KEY.POST_CURSOR],
         [GROUP_STATE_KEY.GROUP_POST_DRP_CURSOR, GROUP_KEY.POST_DRP_CURSOR],
