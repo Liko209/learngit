@@ -251,7 +251,9 @@ class StateDataHandleController {
           GROUP_STATE_KEY.REMOVED_CURSORS_ADMIN_MENTION,
           GROUP_KEY.REMOVED_CURSORS_ADMIN_MENTION,
         ],
-      ].filter(([, groupKey]) => Object.prototype.hasOwnProperty.call(group, groupKey));
+      ].filter(([, groupKey]) =>
+        Object.prototype.hasOwnProperty.call(group, groupKey),
+      );
       keyPairs.forEach(([stateKey, groupKey]) => {
         groupState[stateKey] = group[groupKey];
       });
@@ -647,10 +649,7 @@ class StateDataHandleController {
         this._groupService.getSynchronously(localState.id)
       ) {
         const group = this._groupService.getSynchronously(localState.id)!;
-        Object.prototype.hasOwnProperty.call(
-          group,
-          GROUP_KEY.TEAM_MENTION_CURSOR,
-        ) &&
+        group[GROUP_KEY.TEAM_MENTION_CURSOR] &&
           mainLogger
             .tags('[FIX-TEAM-UMI]')
             .info(
