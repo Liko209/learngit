@@ -43,6 +43,10 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+  
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -100,6 +104,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -210,6 +218,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -326,6 +338,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
