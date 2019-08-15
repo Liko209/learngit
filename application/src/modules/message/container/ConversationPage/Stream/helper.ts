@@ -7,7 +7,12 @@
 import { debounce } from 'lodash';
 import ReactDOM from 'react-dom';
 
+const ancestorMap = new WeakMap();
 function getScrollParent(element: HTMLElement, includeHidden: boolean = false) {
+  const storedVal = ancestorMap.get(element);
+  if (storedVal) {
+    return storedVal;
+  }
   let style = getComputedStyle(element);
   const excludeStaticParent = style.position === 'absolute';
   const overflowRegex = includeHidden
@@ -27,10 +32,11 @@ function getScrollParent(element: HTMLElement, includeHidden: boolean = false) {
     const overflowY = style.overflowY || '';
 
     if (overflowRegex.test(overflow + overflowX + overflowY)) {
+      ancestorMap.set(element, parent);
       return parent;
     }
   } while ((parent = parent.parentElement));
-
+  ancestorMap.set(element, parent);
   return document.body;
 }
 
