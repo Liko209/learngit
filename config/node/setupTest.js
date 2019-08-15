@@ -5,4 +5,6 @@
  */
 require('../jest/setup/timezone');
 
+require('../jest/setup/timezone');
+
 afterAll(() => global.gc && global.gc());
