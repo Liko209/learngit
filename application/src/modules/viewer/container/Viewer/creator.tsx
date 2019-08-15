@@ -10,6 +10,7 @@ import { ImageViewer, ImageViewerOptions } from './Content/Image';
 import { JuiDialogOpenTransition } from 'jui/components/Dialog';
 import { ViewerViewProps } from './types';
 import { VIEWER_ITEM_TYPE } from './constants';
+import _ from 'lodash';
 
 export const showImageViewer = (
   groupId: number,
@@ -26,7 +27,10 @@ export const showImageViewer = (
       isNavigation={mode === 'navigation'}
       postId={postId}
       contentLeftRender={(props: ViewerViewProps) => (
-        <ImageViewer {...props} initialOptions={initialOptions} />
+        <ImageViewer
+          {...props}
+          initialOptions={_.omit(initialOptions, 'thumbnailSrc')}
+        />
       )}
       viewerDestroyer={() => dismiss()}
     />,

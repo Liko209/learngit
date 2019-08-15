@@ -28,6 +28,7 @@ import debounce from 'lodash/debounce';
 import { CanNotScrollFixer } from './CanNotScrollFixer';
 
 const DISTANCE_FROM_BOTTOM_TO_TRIGGER_LOAD = 300;
+const LOADER_HEIGHT = 50;
 
 @observer
 class LeftRailViewComponent extends Component<
@@ -49,16 +50,7 @@ class LeftRailViewComponent extends Component<
   }
 
   componentDidUpdate() {
-    if (this._mainSectionRef.current) {
-      const element = this._mainSectionRef.current;
-      const hasMore = SectionGroupHandler.getInstance().hasMore(
-        SECTION_TYPE.TEAM,
-        QUERY_DIRECTION.NEWER,
-      );
-      if (element.scrollHeight === element.clientHeight && hasMore) {
-        this._loadGroups();
-      }
-    }
+    this.fixLoaderStuck();
   }
 
   componentWillUnmount() {
@@ -88,8 +80,24 @@ class LeftRailViewComponent extends Component<
     this._loading = true;
     this._loadGroupDebounce().finally(() => {
       this._loading = false;
+      this.fixLoaderStuck();
     });
   };
+
+  fixLoaderStuck = debounce(() => {
+    if (this._mainSectionRef.current) {
+      const element = this._mainSectionRef.current;
+      const hasMore = SectionGroupHandler.getInstance().hasMore(
+        SECTION_TYPE.TEAM,
+        QUERY_DIRECTION.NEWER,
+      );
+      const isLoaderShown =
+        element.scrollHeight - element.clientHeight < LOADER_HEIGHT;
+      if (isLoaderShown && hasMore) {
+        this._loadGroups();
+      }
+    }
+  }, 100);
 
   private _loadGroupDebounce = debounce(
     async () => {
