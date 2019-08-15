@@ -627,24 +627,21 @@ class StateDataHandleController {
       ) ||
       (localState.group_team_mention_cursor &&
         localState.group_team_mention_cursor < 0);
-    const groupIds = localStates.filter(needFix).map(state => state.id);
-    if (groupIds.length) {
-      const groups = await this._groupService.getByIdsLocally(groupIds);
-      const groupMap = new Map(groups.map(group => [group.id, group]));
-      return localStates.map(localState => {
-        if (needFix(localState) && groupMap.has(localState.id)) {
-          const group = groupMap.get(localState.id);
-          group &&
-            fixKeyPairs.forEach(([stateKey, groupKey]) => {
-              if (Object.prototype.hasOwnProperty.call(group, groupKey)) {
-                localState[stateKey] = group![groupKey];
-              }
-            });
-        }
-        return localState;
-      });
-    }
-    return localStates;
+    return localStates.map(localState => {
+      if (
+        needFix(localState) &&
+        this._groupService.getSynchronously(localState.id)
+      ) {
+        const group = this._groupService.getSynchronously(localState.id)!;
+        mainLogger.tags('[FIX-TEAM-UMI]').info(`fix cursor from ${localState.group_team_mention_cursor} => ${group[GROUP_KEY.TEAM_MENTION_CURSOR]}`)
+        fixKeyPairs.forEach(([stateKey, groupKey]) => {
+          if (Object.prototype.hasOwnProperty.call(group, groupKey)) {
+            localState[stateKey] = group![groupKey];
+          }
+        });
+      }
+      return localState;
+    });
   }
 }
 

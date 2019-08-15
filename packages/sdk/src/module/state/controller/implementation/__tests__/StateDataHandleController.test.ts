@@ -43,7 +43,7 @@ describe('StateDataHandleController', () => {
     updateReadStatus: jest.fn(),
   } as any;
   const mockGroupService = ({
-    getByIdsLocally: jest.fn(),
+    getSynchronously: jest.fn(),
   } as any) as IGroupService;
   beforeEach(() => {
     jest.clearAllMocks();
@@ -659,12 +659,10 @@ describe('StateDataHandleController', () => {
         ]);
 
       mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
-      mockGroupService.getByIdsLocally.mockResolvedValue([
-        {
-          id: 1,
-          team_mention_cursor: 2,
-        },
-      ]);
+      mockGroupService.getSynchronously.mockReturnValue({
+        id: 1,
+        team_mention_cursor: 2,
+      });
       expect(
         await stateDataHandleController['_generateUpdatedState'](
           transformedState,
@@ -720,12 +718,10 @@ describe('StateDataHandleController', () => {
         ]);
 
       mockAccountService.userConfig.getGlipUserId.mockReturnValue(5683);
-      mockGroupService.getByIdsLocally.mockResolvedValue([
-        {
-          id: 1,
-          team_mention_cursor: 2,
-        },
-      ]);
+      mockGroupService.getSynchronously.mockReturnValue({
+        id: 1,
+        team_mention_cursor: 2,
+      });
       expect(
         await stateDataHandleController['_generateUpdatedState'](
           transformedState,
