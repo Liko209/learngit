@@ -14,6 +14,7 @@ import {
   RTC_CALL_ACTION,
   RTCCallOptions,
   RTC_REPLY_MSG_PATTERN,
+  RTC_CALL_ACTION_DIRECTION,
 } from '../types';
 import { WEBPHONE_SESSION_STATE, RC_REFER_EVENT} from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
@@ -1465,9 +1466,9 @@ describe('RTC call', () => {
   });
 
   describe('mute()', () => {
-    let observer = null;
-    let session = null;
-    let call = null;
+    let observer: VirturlAccountAndCallObserver;
+    let session: MockSession;
+    let call: RTCCall;
 
     function setupCall() {
       observer = new VirturlAccountAndCallObserver();
@@ -1475,374 +1476,660 @@ describe('RTC call', () => {
       call = new RTCCall(true, '123', session, observer, observer);
     }
 
-    it('should do nothing when isMute is true [JPT-879]', done => {
-      setupCall();
-      call._fsm._callFsmTable.accountReady();
-      call._fsm._callFsmTable.sessionAccepted();
-      expect(call._fsm.state()).toBe('connected');
-      call._isMute = true;
-      expect(call._isMute).toBeTruthy();
-      call.mute();
-      setImmediate(() => {
-        expect(session.mute).toBeCalledTimes(0);
-        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should call mute api and set isMute to true when FSM state in connected [JPT-893]', done => {
+    it('should mute local, set "isLocalMute" true and report local mute succeed if call state is connected when mute direction is local[JPT-2729]', done => {
       setupCall();
       call._fsm._callFsmTable.accountReady();
       call._fsm._callFsmTable.sessionAccepted();
       expect(call._fsm.state()).toBe('connected');
       call.mute();
+      expect(call.isMuted()).toBeTruthy();
+      expect(observer.onCallActionSuccess).toBeCalledWith(
+        RTC_CALL_ACTION.MUTE,
+        {
+          actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+        },
+      );
       setImmediate(() => {
         expect(session.mute).toBeCalledTimes(1);
-        expect(call._isMute).toBeTruthy();
-        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
         done();
       });
     });
 
-    it('should call mute api when FSM enter connected state and isMute is true[JPT-896]', done => {
+    it('should mute remote, set "isRemoteMute" true and report remote mute succeed if call state is connected when mute direction is remote[JPT-2731]', done => {
       setupCall();
-      call._fsm._callFsmTable.accountReady();
-      call._isMute = true;
-      call._fsm._callFsmTable.sessionAccepted();
-      setImmediate(() => {
-        expect(session.mute).toBeCalledTimes(1);
-        expect(call._fsm.state()).toBe('connected');
-        done();
-      });
-    });
-
-    it('should only set isMute true when FSM state in idle state and isMute is false [JPT-880]', done => {
-      setupCall();
-      call.mute();
-      setImmediate(() => {
-        expect(session.mute).toBeCalledTimes(0);
-        expect(call._isMute).toBeTruthy();
-        expect(call._fsm.state()).toBe('idle');
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should only set isMute true when FSM state in connecting and isMute is false [JPT-882]', done => {
-      setupCall();
-      call._fsm._callFsmTable.accountReady();
-      call.mute();
-      setImmediate(() => {
-        expect(session.mute).toBeCalledTimes(0);
-        expect(call._isMute).toBeTruthy();
-        expect(call._fsm.state()).toBe('connecting');
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should only set isMute true when FSM state in answering and isMute is false [JPT-884]', done => {
-      setupCall();
-      call._fsm._callFsmTable.answer();
-      call.mute();
-      setImmediate(() => {
-        expect(session.mute).toBeCalledTimes(0);
-        expect(call._isMute).toBeTruthy();
-        expect(call._fsm.state()).toBe('answering');
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should only set isMute true when FSM state in pending and isMute is false [JPT-881]', done => {
-      setupCall();
-      call._fsm._callFsmTable.accountNotReady();
-      call.mute();
-      setImmediate(() => {
-        expect(session.mute).toBeCalledTimes(0);
-        expect(call._isMute).toBeTruthy();
-        expect(call._fsm.state()).toBe('pending');
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should only set isMute true when FSM state in disconnected and isMute is false [JPT-885]', done => {
-      setupCall();
-      call._fsm._callFsmTable.accountReady();
-      call._fsm._callFsmTable.sessionAccepted();
-      call._fsm._callFsmTable.sessionDisconnected();
-      call.mute();
-      setImmediate(() => {
-        expect(session.mute).toBeCalledTimes(0);
-        expect(call._isMute).toBeTruthy();
-        expect(call._fsm.state()).toBe('disconnected');
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should isMute is true when mute call and call is in holded state [JPT-886]', done => {
-      setupCall();
-      session.hold.mockResolvedValue(null);
-      call.answer();
-      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
-      call.hold();
-      session.emitSessionReinviteAccepted();
-      call.mute();
-      setImmediate(() => {
-        expect(call._fsm.state()).toBe('holded');
-        expect(call.isMuted()).toBe(true);
-        done();
-      });
-    });
-
-    it('should isMute is true when mute call and call is in holding state [JPT-887]', done => {
-      setupCall();
-      session.hold.mockResolvedValue(null);
-      call.answer();
-      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
-      call.hold();
-      call.mute();
-      setImmediate(() => {
-        expect(call._fsm.state()).toBe('holding');
-        expect(call.isMuted()).toBe(true);
-        done();
-      });
-    });
-
-    it('should isMute is true when mute call and call is in unholding state [JPT-888]', done => {
-      setupCall();
-      session.hold.mockResolvedValue(null);
-      session.unhold.mockResolvedValue(null);
-      call.answer();
-      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
-      call.hold();
-      session.emitSessionReinviteAccepted();
-      call.unhold();
-      call.mute();
-      setImmediate(() => {
-        expect(call._fsm.state()).toBe('unholding');
-        expect(call.isMuted()).toBe(true);
-        done();
-      });
-    });
-  });
-
-  describe('unmute()', () => {
-    let observer = null;
-    let session = null;
-    let call = null;
-
-    function setupCall() {
-      observer = new VirturlAccountAndCallObserver();
-      session = new MockSession();
-      call = new RTCCall(true, '123', session, observer, observer);
-    }
-
-    it('should do nothing when isMute is false [JPT-897]', done => {
-      setupCall();
+      jest.spyOn(call._callSession,"toggleRemoteMute");
       call._fsm._callFsmTable.accountReady();
       call._fsm._callFsmTable.sessionAccepted();
       expect(call._fsm.state()).toBe('connected');
-      call._isMute = false;
-      call.unmute();
+      call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+      expect(call.isRemoteMuted()).toBeTruthy();
+      expect(observer.onCallActionSuccess).toBeCalledWith(
+        RTC_CALL_ACTION.MUTE,
+        {
+          actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+        },
+      );
       setImmediate(() => {
-        expect(session.unmute).toBeCalledTimes(1);
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
-        );
+        expect(call._callSession.toggleRemoteMute).toBeCalledWith(true);
         done();
       });
     });
 
-    it('should call unmute api and set isMute to false when FSM state in connected and isMute is true [JPT-906]', done => {
+    it('should unmute session, set "isLocalMute","isRemoteMute" false and report unmute succeed if call state is connected when unmute call[JPT-2737],[JPT-2735],[JPT-2733]', done => {
       setupCall();
+      jest.spyOn(call._callSession,"toggleRemoteMute");
       call._fsm._callFsmTable.accountReady();
       call._fsm._callFsmTable.sessionAccepted();
-      call._isMute = true;
+      expect(call._fsm.state()).toBe('connected');
+      expect(session.unmute).toBeCalledTimes(1);
+      expect(call._callSession.toggleRemoteMute).toHaveBeenNthCalledWith(1, false);
       call.unmute();
+      expect(call.isRemoteMuted()).toBeFalsy();
+      expect(call.isMuted()).toBeFalsy();
+      expect(observer.onCallActionSuccess).toBeCalledWith(
+        RTC_CALL_ACTION.UNMUTE, {},
+      );
       setImmediate(() => {
+        expect(call._callSession.toggleRemoteMute).toHaveBeenNthCalledWith(2, false);
         expect(session.unmute).toBeCalledTimes(2);
-        expect(call._isMute).not.toBeTruthy();
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
-        );
         done();
       });
     });
 
-    it('should call unmute api when FSM enter connected state and isMute is false[JPT-908]', done => {
+    it('should mute local if call state enter connected when isLocalMute is true [JPT-2736]', done => {
       setupCall();
+      call._isLocalMute = true;
       call._fsm._callFsmTable.accountReady();
-      call._isMute = false;
       call._fsm._callFsmTable.sessionAccepted();
+      expect(call._fsm.state()).toBe('connected');
       setImmediate(() => {
-        expect(session.unmute).toBeCalledTimes(1);
-        expect(call._fsm.state()).toBe('connected');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(session.mute).toBeCalledTimes(1);
         done();
       });
     });
 
-    it('should only set isMute false when FSM state in idle state and isMute is true [JPT-898]', done => {
+    it('should mute remote if call state enter connected when isRemoteMute is true [JPT-2734]', done => {
       setupCall();
-      call._isMute = true;
-      call.unmute();
+      jest.spyOn(call._callSession,"toggleRemoteMute");
+      call._isRemoteMute = true;
+      call._fsm._callFsmTable.accountReady();
+      call._fsm._callFsmTable.sessionAccepted();
+      expect(call._fsm.state()).toBe('connected');
       setImmediate(() => {
-        expect(session.unmute).toBeCalledTimes(0);
-        expect(call._isMute).not.toBeTruthy();
+        expect(call._callSession.toggleRemoteMute).toBeCalledWith(true);
+        expect(call._callSession.toggleRemoteMute).toBeCalledTimes(1);
+        done();
+      });
+    });
+
+    describe('should set "isLocalMute" true, report local mute succeed and do not mute local stream if call state is not connected when mute direction is local[JPT-2728]', () => {
+      it("idle", done => {
+        setupCall();
         expect(call._fsm.state()).toBe('idle');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
         expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
         );
-        done();
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
       });
-    });
-
-    it('should only set isMute false when FSM state in connecting and isMute is true [JPT-900]', done => {
-      setupCall();
-      call._fsm._callFsmTable.accountReady();
-      call._isMute = true;
-      call.unmute();
-      setImmediate(() => {
-        expect(session.unmute).toBeCalledTimes(0);
-        expect(call._isMute).not.toBeTruthy();
-        expect(call._fsm.state()).toBe('connecting');
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should only set isMute false when FSM state in answering and isMute is true [JPT-901]', done => {
-      setupCall();
-      call._fsm._callFsmTable.answer();
-      call._isMute = true;
-      call.unmute();
-      setImmediate(() => {
-        expect(session.unmute).toBeCalledTimes(0);
-        expect(call._isMute).not.toBeTruthy();
-        expect(call._fsm.state()).toBe('answering');
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
-        );
-        done();
-      });
-    });
-
-    it('should only set isMute false when FSM state in pending and isMute is true [JPT-899]', done => {
-      setupCall();
-      call._fsm._callFsmTable.accountNotReady();
-      call._isMute = true;
-      call.unmute();
-      setImmediate(() => {
-        expect(session.unmute).toBeCalledTimes(0);
-        expect(call._isMute).not.toBeTruthy();
+      it("pending", done => {
+        setupCall();
+        call._fsm._callFsmTable.accountNotReady();
         expect(call._fsm.state()).toBe('pending');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
         expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
         );
-        done();
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
       });
-    });
-
-    it('should only set isMute false when FSM state in disconnected and isMute is true [JPT-902]', done => {
-      setupCall();
-      call._fsm._callFsmTable.accountReady();
-      call._fsm._callFsmTable.sessionAccepted();
-      call._fsm._callFsmTable.sessionDisconnected();
-      call._isMute = true;
-      call.unmute();
-      setImmediate(() => {
-        expect(session.unmute).toBeCalledTimes(1);
-        expect(call._isMute).not.toBeTruthy();
-        expect(call._fsm.state()).toBe('disconnected');
+      it("answering", done => {
+        setupCall();
+        call._fsm._callFsmTable.answer();
+        expect(call._fsm.state()).toBe('answering');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
         expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
         );
-        done();
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
       });
-    });
-
-    it('should isMute is false when unmute call and call is in holded state [JPT-903]', done => {
-      setupCall();
-      session.hold.mockResolvedValue(null);
-      call.answer();
-      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
-      call.hold();
-      session.emitSessionReinviteAccepted();
-      call.mute();
-      call.unmute();
-      setImmediate(() => {
-        expect(call._fsm.state()).toBe('holded');
-        expect(call.isMuted()).toBe(false);
-        done();
+      it("replying", done => {
+        setupCall();
+        call._fsm._callFsmTable.startReplyWithMessage();
+        expect(call._fsm.state()).toBe('replying');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
+        );
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
       });
-    });
-
-    it('should isMute is false when unmute call and call is in holding state [JPT-904]', done => {
-      setupCall();
-      session.hold.mockResolvedValue(null);
-      call.answer();
-      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
-      call.hold();
-      call.mute();
-      call.unmute();
-      setImmediate(() => {
+      it("forwarding", done => {
+        setupCall();
+        session.forward.mockResolvedValue(null);
+        call._fsm._callFsmTable.forward();
+        expect(call._fsm.state()).toBe('forwarding');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
+        );
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("connecting", done => {
+        setupCall();
+        call._fsm._callFsmTable.accountReady();
+        expect(call._fsm.state()).toBe('connecting');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
+        );
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("holding", done => {
+        setupCall();
+        session.hold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
         expect(call._fsm.state()).toBe('holding');
-        expect(call.isMuted()).toBe(false);
-        done();
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
+        );
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("holded", done => {
+        setupCall();
+        session.hold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        call._fsm._callFsmTable.holdSuccess();
+        expect(call._fsm.state()).toBe('holded');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
+        );
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("unholding", done => {
+        setupCall();
+        session.hold.mockResolvedValue(null);
+        session.unhold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        call._fsm._callFsmTable.holdSuccess();
+        call._fsm._callFsmTable.unhold();
+        expect(call._fsm.state()).toBe('unholding');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
+        );
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("disconnected", done => {
+        setupCall();
+        call._fsm._callFsmTable.reject();
+        expect(call._fsm.state()).toBe('disconnected');
+        call.mute();
+        expect(call.isMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
+          },
+        );
+        setImmediate(() => {
+          expect(session.mute).toBeCalledTimes(0);
+          done();
+        });
       });
     });
 
-    it('should isMute is false when unmute call and call is in unholding state [JPT-905]', done => {
-      setupCall();
-      session.hold.mockResolvedValue(null);
-      session.unhold.mockResolvedValue(null);
-      call.answer();
-      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
-      call.hold();
-      session.emitSessionReinviteAccepted();
-
-      call.unhold();
-      call.mute();
-      call.unmute();
-      setImmediate(() => {
+    describe('should set "isRemoteMute" true, report remote mute succeed and not mute remote audio if call state is not connected when mute direction is remote[JPT-2730]', () => {
+      it("idle", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        expect(call._fsm.state()).toBe('idle');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("pending", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call._fsm._callFsmTable.accountNotReady();
+        expect(call._fsm.state()).toBe('pending');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("answering", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call._fsm._callFsmTable.answer();
+        expect(call._fsm.state()).toBe('answering');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("replying", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call._fsm._callFsmTable.startReplyWithMessage();
+        expect(call._fsm.state()).toBe('replying');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("forwarding", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        session.forward.mockResolvedValue(null);
+        call._fsm._callFsmTable.forward();
+        expect(call._fsm.state()).toBe('forwarding');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("connecting", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call._fsm._callFsmTable.accountReady();
+        expect(call._fsm.state()).toBe('connecting');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("holding", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        session.hold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        expect(call._fsm.state()).toBe('holding');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(1);
+          expect(call._callSession.toggleRemoteMute).toBeCalledWith(false);
+          done();
+        });
+      });
+      it("holded", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        session.hold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        call._fsm._callFsmTable.holdSuccess();
+        expect(call._fsm.state()).toBe('holded');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(1);
+          expect(call._callSession.toggleRemoteMute).toBeCalledWith(false);
+          done();
+        });
+      });
+      it("unholding", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        session.hold.mockResolvedValue(null);
+        session.unhold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        call._fsm._callFsmTable.holdSuccess();
+        call._fsm._callFsmTable.unhold();
         expect(call._fsm.state()).toBe('unholding');
-        expect(call.isMuted()).toBe(false);
-        done();
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(1);
+          expect(call._callSession.toggleRemoteMute).toBeCalledWith(false);
+          done();
+        });
+      });
+      it("disconnected", done => {
+        setupCall();
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call._fsm._callFsmTable.reject();
+        expect(call._fsm.state()).toBe('disconnected');
+        call.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+        expect(call.isRemoteMuted()).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {
+            actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
+          },
+        );
+        setImmediate(() => {
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+    });
+
+    describe('should set "isLocalMute","isRemoteMute" false, report unmute succeed and not unmute session if call state is not connected when unmute call [JPT-2732]', () => {
+      it("idle", done => {
+        setupCall();
+        expect(call._fsm.state()).toBe('idle');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(0);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("pending", done => {
+        setupCall();
+        call._fsm._callFsmTable.accountNotReady();
+        expect(call._fsm.state()).toBe('pending');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(0);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("answering", done => {
+        setupCall();
+        call._fsm._callFsmTable.answer();
+        expect(call._fsm.state()).toBe('answering');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(0);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("replying", done => {
+        setupCall();
+        call._fsm._callFsmTable.startReplyWithMessage();
+        expect(call._fsm.state()).toBe('replying');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(0);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("forwarding", done => {
+        setupCall();
+        session.forward.mockResolvedValue(null);
+        call._fsm._callFsmTable.forward();
+        expect(call._fsm.state()).toBe('forwarding');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(0);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("connecting", done => {
+        setupCall();
+        call._fsm._callFsmTable.accountReady();
+        expect(call._fsm.state()).toBe('connecting');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(0);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("holding", done => {
+        setupCall();
+        session.hold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        expect(call._fsm.state()).toBe('holding');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(1);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("holded", done => {
+        setupCall();
+        session.hold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        call._fsm._callFsmTable.holdSuccess();
+        expect(call._fsm.state()).toBe('holded');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(1);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("unholding", done => {
+        setupCall();
+        session.hold.mockResolvedValue(null);
+        session.unhold.mockResolvedValue(null);
+        call._fsm._callFsmTable.accountReady();
+        call._fsm._callFsmTable.sessionAccepted();
+        call._fsm._callFsmTable.hold();
+        call._fsm._callFsmTable.holdSuccess();
+        call._fsm._callFsmTable.unhold();
+        expect(call._fsm.state()).toBe('unholding');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(1);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
+      });
+      it("disconnected", done => {
+        setupCall();
+        call._fsm._callFsmTable.reject();
+        expect(call._fsm.state()).toBe('disconnected');
+        jest.spyOn(call._callSession,"toggleRemoteMute");
+        call.unmute();
+        expect(call.isMuted()).toBeFalsy();
+        expect(call.isRemoteMuted()).toBeFalsy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE, {},
+        );
+        setImmediate(() => {
+          expect(session.unmute).toBeCalledTimes(0);
+          expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
+          done();
+        });
       });
     });
   });
@@ -2258,7 +2545,7 @@ describe('RTC call', () => {
       });
     });
 
-    it.only('should notify no audio with no-rtp-incoming if has sent but no received when call is terminated. [JPT-2509]', done => {
+    it('should notify no audio with no-rtp-incoming if has sent but no received when call is terminated. [JPT-2509]', done => {
       setup();
       jest.spyOn(call, '_notifyNoAudioStateEvent');
       jest.spyOn(call, '_notifyNoAudioDataEvent');

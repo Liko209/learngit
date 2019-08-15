@@ -273,14 +273,13 @@ class RTCCall {
     direction: RTC_CALL_ACTION_DIRECTION = RTC_CALL_ACTION_DIRECTION.LOCAL,
   ): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'mute');
-    if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL && !this._isLocalMute) {
+    if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
       this._isLocalMute = true;
-      this._fsm.mute(direction);
     }
-    if (direction === RTC_CALL_ACTION_DIRECTION.REMOTE && !this._isRemoteMute) {
+    if (direction === RTC_CALL_ACTION_DIRECTION.REMOTE) {
       this._isRemoteMute = true;
-      this._fsm.mute(direction);
     }
+    this._fsm.mute(direction);
     this._onCallActionSuccess(RTC_CALL_ACTION.MUTE, {
       actionDirection: direction,
     });
@@ -288,18 +287,11 @@ class RTCCall {
 
   unmute(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'unmute');
-    if (this._isLocalMute || this._isRemoteMute) {
-      this._isLocalMute = false;
-      this._fsm.unmute(RTC_CALL_ACTION_DIRECTION.LOCAL);
-      this._isRemoteMute = false;
-      this._fsm.unmute(RTC_CALL_ACTION_DIRECTION.REMOTE);
-    }
-    this._onCallActionSuccess(RTC_CALL_ACTION.UNMUTE, {
-      actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
-    });
-    this._onCallActionSuccess(RTC_CALL_ACTION.UNMUTE, {
-      actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
-    });
+    this._isLocalMute = false;
+    this._isRemoteMute = false;
+    this._fsm.unmute(RTC_CALL_ACTION_DIRECTION.LOCAL);
+    this._fsm.unmute(RTC_CALL_ACTION_DIRECTION.REMOTE);
+    this._onCallActionSuccess(RTC_CALL_ACTION.UNMUTE, {});
   }
 
   park(): void {
@@ -466,6 +458,7 @@ class RTCCall {
       this._isLocalMute
         ? this._callSession.mute(RTC_CALL_ACTION_DIRECTION.LOCAL)
         : this._callSession.unmute(RTC_CALL_ACTION_DIRECTION.LOCAL);
+
       this._isRemoteMute
         ? this._callSession.mute(RTC_CALL_ACTION_DIRECTION.REMOTE)
         : this._callSession.unmute(RTC_CALL_ACTION_DIRECTION.REMOTE);
