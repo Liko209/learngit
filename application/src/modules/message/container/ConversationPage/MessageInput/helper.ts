@@ -7,7 +7,7 @@
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 export function isEmpty(content: string) {
-  const trimmed = content.replace(/[(<br>)(<br/>)(<p>)(<p/>)\s]/g, '');
+  const trimmed = content.replace(/<br>|<br\/>|<p>|<\/p>|\s/g, '');
   return trimmed === '';
 }
 

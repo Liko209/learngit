@@ -153,7 +153,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
         <StyledImage
           ref={this.getImageRef() as any}
           src={currentShowSrc}
-          visibility={loading || error ? 'hidden' : 'visible'}
+          visibility={error ? 'hidden' : 'visible'}
           onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
             if (currentShow === 'raw') {
               const { naturalWidth, naturalHeight } = event.currentTarget;
