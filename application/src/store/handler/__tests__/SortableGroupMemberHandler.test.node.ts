@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { notificationCenter } from 'sdk/service';
+import notificationCenter  from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
 import { GroupService } from 'sdk/module/group';
 import SortableGroupMemberHandler from '../SortableGroupMemberHandler';

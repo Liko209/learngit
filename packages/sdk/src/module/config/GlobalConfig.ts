@@ -18,24 +18,23 @@ class GlobalConfig {
   }
 
   static get(key: string) {
-    console.log(GlobalConfig.moduleName, key);
-    return GlobalConfig.configService.get(GlobalConfig.moduleName, key);
+    return GlobalConfig.configService.get(this.moduleName, key);
   }
 
   static put(key: string, value: any) {
-    GlobalConfig.configService.put(GlobalConfig.moduleName, key, value);
+    GlobalConfig.configService.put(this.moduleName, key, value);
   }
 
   static remove(key: string) {
-    GlobalConfig.configService.remove(GlobalConfig.moduleName, key);
+    GlobalConfig.configService.remove(this.moduleName, key);
   }
 
   static on(key: string, listener: Listener) {
-    GlobalConfig.configService.on(GlobalConfig.moduleName, key, listener);
+    GlobalConfig.configService.on(this.moduleName, key, listener);
   }
 
   static off(key: string, listener: Listener) {
-    GlobalConfig.configService.off(GlobalConfig.moduleName, key, listener);
+    GlobalConfig.configService.off(this.moduleName, key, listener);
   }
 }
 
