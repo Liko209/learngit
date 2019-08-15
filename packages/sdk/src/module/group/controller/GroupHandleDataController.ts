@@ -238,6 +238,9 @@ class GroupHandleDataController {
       'team_mention_cursor',
       'team_mention_cursor_offset',
       'removed_cursors_team_mention',
+      'admin_mention_cursor',
+      'admin_mention_cursor_offset',
+      'removed_cursors_admin_mention',
     ]);
   }
 

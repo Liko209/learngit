@@ -26,6 +26,7 @@ import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { StateActionController } from './StateActionController';
 import { UndefinedAble } from 'sdk/types';
+import { IGroupService } from 'sdk/module/group';
 
 type DataHandleTask =
   | StateHandleTask
@@ -55,6 +56,7 @@ class StateDataHandleController {
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _actionController: StateActionController,
+    private _groupService: IGroupService,
   ) {
     this._taskArray = [];
     this._ignoredIdSet = new Set<number>();
@@ -220,7 +222,6 @@ class StateDataHandleController {
           transformedState.isSelf = true;
         }
       }
-
       const keyPairs = [
         [GROUP_STATE_KEY.GROUP_POST_CURSOR, GROUP_KEY.POST_CURSOR],
         [GROUP_STATE_KEY.GROUP_POST_DRP_CURSOR, GROUP_KEY.POST_DRP_CURSOR],
@@ -237,7 +238,21 @@ class StateDataHandleController {
           GROUP_STATE_KEY.REMOVED_CURSORS_TEAM_MENTION,
           GROUP_KEY.REMOVED_CURSORS_TEAM_MENTION,
         ],
-      ].filter(([, groupKey]) => !!group[groupKey]);
+        [
+          GROUP_STATE_KEY.ADMIN_MENTION_CURSOR_OFFSET,
+          GROUP_KEY.ADMIN_MENTION_CURSOR_OFFSET,
+        ],
+        [
+          GROUP_STATE_KEY.GROUP_ADMIN_MENTION_CURSOR,
+          GROUP_KEY.ADMIN_MENTION_CURSOR,
+        ],
+        [
+          GROUP_STATE_KEY.REMOVED_CURSORS_ADMIN_MENTION,
+          GROUP_KEY.REMOVED_CURSORS_ADMIN_MENTION,
+        ],
+      ].filter(([, groupKey]) =>
+        Object.prototype.hasOwnProperty.call(group, groupKey),
+      );
       keyPairs.forEach(([stateKey, groupKey]) => {
         groupState[stateKey] = group[groupKey];
       });
@@ -300,9 +315,11 @@ class StateDataHandleController {
 
     const ids: number[] = Object.keys(transformedState.groupStates).map(Number);
     if (ids.length > 0) {
-      const localStates =
+      const localStates = await this._fixOldStatesData(
         (await this._entitySourceController.getEntitiesLocally(ids, false)) ||
-        [];
+          [],
+      );
+
       const localStatesMap = new Map(
         localStates.map(state => [state.id, state]),
       );
@@ -544,7 +561,7 @@ class StateDataHandleController {
     if (transformedState.myState) {
       const myState = transformedState.myState;
       try {
-        daoManager.getDao(StateDao).update(myState);
+        await daoManager.getDao(StateDao).update(myState);
         const config = ServiceLoader.getInstance<StateService>(
           ServiceConfig.STATE_SERVICE,
         ).myStateConfig;
@@ -568,7 +585,8 @@ class StateDataHandleController {
 
     const groupStates = Object.values(transformedState.groupStates);
     if (groupStates.length > 0) {
-      this._entitySourceController.bulkUpdate(groupStates);
+      // never remove the await!!! sequence problem!!!
+      await this._entitySourceController.bulkUpdate(groupStates);
 
       // should set umi = 0 when conversation is ignored
       const GroupStatesForNotify = groupStates.filter(
@@ -596,6 +614,57 @@ class StateDataHandleController {
         }
       }
     }
+  }
+
+  // todo remove it after db upgrade
+  private async _fixOldStatesData(
+    localStates: GroupState[],
+  ): Promise<GroupState[]> {
+    const fixKeyPairs = [
+      [
+        GROUP_STATE_KEY.TEAM_MENTION_CURSOR_OFFSET,
+        GROUP_KEY.TEAM_MENTION_CURSOR_OFFSET,
+      ],
+      [
+        GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
+        GROUP_KEY.TEAM_MENTION_CURSOR,
+      ],
+      [
+        GROUP_STATE_KEY.REMOVED_CURSORS_TEAM_MENTION,
+        GROUP_KEY.REMOVED_CURSORS_TEAM_MENTION,
+      ],
+    ];
+    const needFix = (localState: GroupState) =>
+      !Object.prototype.hasOwnProperty.call(
+        localState,
+        GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
+      ) ||
+      (localState.group_team_mention_cursor &&
+        localState.group_team_mention_cursor < 0) ||
+      (localState.unread_team_mentions_count &&
+        localState.unread_team_mentions_count < 0);
+    return localStates.map(localState => {
+      if (
+        needFix(localState) &&
+        this._groupService.getSynchronously(localState.id)
+      ) {
+        const group = this._groupService.getSynchronously(localState.id)!;
+        group[GROUP_KEY.TEAM_MENTION_CURSOR] &&
+          mainLogger
+            .tags('[FIX-TEAM-UMI]')
+            .info(
+              `fix groupState:${localState.id} cursor from ${
+                localState.group_team_mention_cursor
+              } => ${group[GROUP_KEY.TEAM_MENTION_CURSOR]}`,
+            );
+        fixKeyPairs.forEach(([stateKey, groupKey]) => {
+          if (Object.prototype.hasOwnProperty.call(group, groupKey)) {
+            localState[stateKey] = group![groupKey];
+          }
+        });
+      }
+      return localState;
+    });
   }
 }
 

@@ -759,7 +759,8 @@
     }
   },
   "meeting": {
-    "Meetings": "会議"
+    "Meetings": "会議",
+    "Meet": "会議"
   },
   "integration": "",
   "setting": {
