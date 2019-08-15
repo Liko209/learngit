@@ -21,13 +21,14 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
   private _initialHeight?: number;
   @observable
   private _largeRawImageURL?: string;
+  onImageSwitchCb: (imgInfo: { width: number; height: number }) => void;
 
   constructor(props: ImageViewerProps) {
     super(props);
     this.thumbnailSrc = props.initialOptions.thumbnailSrc;
     this._initialWidth = props.initialOptions.initialWidth;
     this._initialHeight = props.initialOptions.initialHeight;
-    props.setOnItemSwitchCb(this._clearThumbnailInfo);
+    props.setOnItemSwitchCb(this._onItemSwitchCb);
     this.reaction(
       () => {
         const item = this.item;
@@ -77,13 +78,29 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
     return getEntity(ENTITY_NAME.ITEM, this._getCurrentItemId());
   }
 
+  setOnImageSwitchCb = (
+    cb: (imgInfo: { width: number; height: number }) => void,
+  ) => {
+    this.onImageSwitchCb = cb;
+  };
+
+  private _onItemSwitchCb = () => {
+    this._clearThumbnailInfo();
+
+    this.onImageSwitchCb &&
+      this.onImageSwitchCb({
+        width: this.item.origWidth,
+        height: this.item.origHeight,
+      });
+  };
+
   private _clearThumbnailInfo = () => {
     this.thumbnailSrc = undefined;
     this._initialWidth = undefined;
     this._initialHeight = undefined;
-  }
+  };
 
-  private _getCurrentItemId = () => this.props.getCurrentItemId()
+  private _getCurrentItemId = () => this.props.getCurrentItemId();
 }
 
 export { ImageViewerViewModel };
