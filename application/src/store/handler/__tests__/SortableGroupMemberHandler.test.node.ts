@@ -66,7 +66,9 @@ describe('SortableGroupMemberHandler', () => {
       sortableGroupMemberHandler['_handleGroupUpdate'] = jest.fn();
       sortableGroupMemberHandler['_subscribeGroupChange']();
 
-      expect(sortableGroupMemberHandler['_handleGroupUpdate']).not.toHaveBeenCalled();
+      expect(
+        sortableGroupMemberHandler['_handleGroupUpdate'],
+      ).not.toHaveBeenCalled();
     });
 
     it('should not handle when is not initialized', () => {
@@ -88,7 +90,9 @@ describe('SortableGroupMemberHandler', () => {
       sortableGroupMemberHandler['_initGroupData'] = jest.fn();
       sortableGroupMemberHandler['_foc'] = undefined as any;
       sortableGroupMemberHandler['_subscribeGroupChange']();
-      expect(sortableGroupMemberHandler['_initGroupData']).not.toHaveBeenCalled();
+      expect(
+        sortableGroupMemberHandler['_initGroupData'],
+      ).not.toHaveBeenCalled();
     });
 
     it('should update member list when member is changed', () => {

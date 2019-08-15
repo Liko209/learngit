@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import notificationCenter from 'sdk/service/notificationCenter';
+import { notificationCenter } from 'sdk/service';
 import { Listener, EventEmitter2 } from 'eventemitter2';
 
 export default class BaseNotificationSubscribe extends EventEmitter2 {
