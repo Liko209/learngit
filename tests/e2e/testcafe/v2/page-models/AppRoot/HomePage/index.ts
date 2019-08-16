@@ -196,9 +196,9 @@ export class HomePage extends BaseWebComponent {
   }
 
   async closeE911Prompt() {
-    const button = this.getSelectorByAutomationId('emergencyConfirmDialogCrossButton');
-    if (await button.exists) {
-      await this.t.click(button);
+    const closeButton = this.getSelectorByAutomationId('emergencyConfirmDialogOkButton');
+    if (await closeButton.exists) {
+      await this.t.click(closeButton);
     }
   }
 

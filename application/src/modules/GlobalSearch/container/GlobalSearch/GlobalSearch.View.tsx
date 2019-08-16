@@ -40,13 +40,25 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
   };
 
   get currentView() {
-    const { currentView } = this.props;
+    const { currentView, open } = this.props;
+
+    if (!open) {
+      return null;
+    }
+
     const componentMap = {
       [SEARCH_VIEW.FULL_SEARCH]: FullSearch,
       [SEARCH_VIEW.INSTANT_SEARCH]: InstantSearch,
       [SEARCH_VIEW.RECENT_SEARCH]: RecentSearch,
     };
-    return componentMap[currentView];
+
+    const CurrentView = componentMap[currentView];
+
+    return (
+      <InputContext.Provider value={this.state.ref}>
+        <CurrentView />
+      </InputContext.Provider>
+    );
   }
 
   componentDidUpdate({ open: preOpen }: GlobalSearchViewProps) {
@@ -59,15 +71,12 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
   }
 
   render() {
-    const { ref } = this.state;
     const { open, onClose, searchKey, onClear, showClear, t } = this.props;
-
-    const CurrentView = this.currentView;
 
     return (
       <JuiGlobalSearch open={open} onClose={onClose}>
         <JuiGlobalSearchInput
-          ref={ref}
+          ref={this.state.ref}
           value={searchKey}
           showClear={showClear}
           onClear={onClear}
@@ -84,9 +93,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
           }}
           clearText={t('globalSearch.clear')}
         />
-        <InputContext.Provider value={ref}>
-          <CurrentView />
-        </InputContext.Provider>
+        {this.currentView}
       </JuiGlobalSearch>
     );
   }
