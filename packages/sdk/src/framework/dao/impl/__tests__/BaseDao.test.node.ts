@@ -308,12 +308,6 @@ describe('BaseDao', () => {
         name: 'NAME1',
         boolean: false,
       });
-
-      // await expect(dao.get(2)).resolves.toEqual({
-      //   id: 2,
-      //   name: 'NAME2',
-      //   boolean: false,
-      // });
     });
 
     it('should not do put when update a not exist item and set not do put', async () => {
