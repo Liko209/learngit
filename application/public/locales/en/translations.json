@@ -1129,6 +1129,10 @@
     "prompt": {
       "updateRegionalSettingsBackendError": "Sorry, something went wrong on our end and we weren't able to save your region settings. Try again later.",
       "updateRegionalSettingsNetworkError": "Sorry, we weren't able to save your region settings due to a poor network connection. Try again."
+    },
+    "conversationPreferences": {
+      "entry": "Notification preferences",
+      "title": "Conversation notification preferences"
     }
   },
   "viewer": {
