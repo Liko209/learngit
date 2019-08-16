@@ -7,7 +7,7 @@ import React from 'react';
 import { test, testable } from 'shield';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { mountWithTheme } from 'shield/utils';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Call } from '../Call';
 

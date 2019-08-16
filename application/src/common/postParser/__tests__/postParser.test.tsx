@@ -3,6 +3,10 @@
  * @Date: 2019-05-24 15:20:10
  * Copyright © RingCentral. All rights reserved.
  */
+jest.unmock('@/common/emojiHelpers/map/mapAscii');
+jest.unmock('@/common/emojiHelpers/map/mapEmojiOne');
+jest.unmock('@/common/emojiHelpers/map/mapUnicode');
+
 import React from 'react';
 import { postParser } from '..';
 import { JuiAtMention } from 'jui/components/AtMention';
@@ -456,13 +460,19 @@ describe('glipdown text', () => {
 
       it('should unescape mention name', () => {
         expect(
-          postParser(`sdds${atmention('999', '&amp;')}123  ss`, {
+          postParser(`${atmention('999', '&amp;')}`, {
             atMentions: { map },
           }),
         ).toEqual([
-          'sdds',
           <JuiAtMention key={0} id='999' isCurrent={false} name='&' />,
-          '123  ss',
+        ]);
+
+        expect(
+          postParser(`${atmention('998', 'team &#x2F;&amp;&#x2F; name &amp;&#x2F;')}`, {
+            atMentions: { map },
+          }),
+        ).toEqual([
+          <JuiAtMention key={0} id='998' isCurrent={false} name='team /&/ name &/' />,
         ]);
       })
     });
@@ -1295,7 +1305,7 @@ Veniam anim velit amet aliqua proident.`}
         ]);
       });
 
-      it('should parse correcly when quote an emoji', () => {
+      it('should parse correctly when quote an emoji', () => {
         expect(
           renderToStaticMarkup(postParser('> :joy:', {
             emoji: {},

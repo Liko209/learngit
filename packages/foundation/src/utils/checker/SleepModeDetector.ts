@@ -17,15 +17,17 @@ const TAG = 'SleepModeDetector';
 class SleepModeDetector {
   private _heartBeatCheck: HeartBeatCheck;
   private _callbacksMap = new Map<string, SleepModeDetectorCallback>();
-  constructor() {
-    this._heartBeatCheck = new HeartBeatCheck(
-      CHECK_CONNECTED_INTERVAL,
-      CHECK_CONNECTED_MAX_TIMEOUT,
-      this._wakeUpFromSleepMode.bind(this),
-    );
-  }
+  constructor() {}
 
   public subScribe(key: string, callback: SleepModeDetectorCallback) {
+    if (!this._heartBeatCheck) {
+      this._heartBeatCheck = new HeartBeatCheck(
+        CHECK_CONNECTED_INTERVAL,
+        CHECK_CONNECTED_MAX_TIMEOUT,
+        this._wakeUpFromSleepMode.bind(this),
+      );
+    }
+
     mainLogger.info(TAG, ' subScribe:', key);
     if (this._callbacksMap.has(key)) {
       mainLogger.info(`SleepModeDetector subscribe, key:${key} has existed`);

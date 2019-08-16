@@ -17,7 +17,7 @@ class SearchAPI extends Api {
   static basePath = '/search';
 
   static async search(params: ContentSearchParams) {
-    return this.glipNetworkClient.get<InitialSearchResponse>({
+    return SearchAPI.glipNetworkClient.get<InitialSearchResponse>({
       params,
       path: '/search',
       via: NETWORK_VIA.SOCKET,
@@ -25,7 +25,7 @@ class SearchAPI extends Api {
   }
 
   static async scrollSearch(params: ScrollSearchParams) {
-    return this.glipNetworkClient.get<ScrollSearchResponse>({
+    return SearchAPI.glipNetworkClient.get<ScrollSearchResponse>({
       params,
       path: '/search_scroll',
       via: NETWORK_VIA.SOCKET,

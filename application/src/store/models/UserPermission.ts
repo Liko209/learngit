@@ -15,6 +15,8 @@ export default class UserPermissionModel extends Base<UserPermission> {
   canSendNewMessage: boolean;
   @observable
   canMentionTeam: boolean;
+  @observable
+  canUseVideoCall: boolean;
 
   constructor(data: UserPermission) {
     super(data);
@@ -23,6 +25,7 @@ export default class UserPermissionModel extends Base<UserPermission> {
     this.canSendNewMessage =
       permissions[UserPermissionType.JUPITER_SEND_NEW_MESSAGE];
     this.canMentionTeam = permissions[UserPermissionType.CAN_MENTION_TEAM];
+    this.canUseVideoCall = permissions[UserPermissionType.CAN_USE_VIDEO_CALL];
   }
 
   static fromJS(data: UserPermission) {

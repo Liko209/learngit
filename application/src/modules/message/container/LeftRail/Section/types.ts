@@ -8,12 +8,18 @@ import { SortEndHandler } from 'react-sortable-hoc';
 enum SECTION_TYPE {
   FAVORITE = 'favorites',
   DIRECT_MESSAGE = 'direct_messages',
-  TEAM = 'teams'
+  TEAM = 'teams',
 }
+
+type OnCollapseChange = (arg: {
+  sectionType: SECTION_TYPE;
+  value: boolean;
+}) => void;
 
 type SectionProps = {
   type: SECTION_TYPE;
   isLast: boolean;
+  onCollapseChange?: OnCollapseChange;
 };
 
 type SectionViewProps = {
@@ -41,5 +47,6 @@ export {
   SectionViewProps,
   SectionConfig,
   SectionConfigs,
-  SECTION_TYPE
+  SECTION_TYPE,
+  OnCollapseChange,
 };

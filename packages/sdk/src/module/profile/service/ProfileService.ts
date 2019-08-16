@@ -21,6 +21,7 @@ import { ProfileSetting } from '../setting';
 import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
+import { VIDEO_SERVICE_OPTIONS } from '../constants';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -161,6 +162,12 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .isNotificationMute(conversationId);
+  }
+
+  isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {
+    return this.getProfileController()
+      .getProfileDataController()
+      .isVideoServiceEnabled(option);
   }
 
   private get profileSetting() {

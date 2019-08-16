@@ -9,25 +9,23 @@ import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { TelephonyTabs } from './config';
-import { JuiListNavItem, JuiListNavItemText } from 'jui/components';
+import { JuiListNavItem, JuiListNavItemText } from 'jui/components/Lists';
 import { LeftRailViewProps } from './types';
 import { PhoneUMI } from '../PhoneUMI';
 
 @observer
 class LeftRailViewComponent extends Component<
   WithTranslation & LeftRailViewProps
-  > {
+> {
   private _handleClick = (path: string) => {
     history.push(path);
     this.props.updateCurrentTab(path);
-  }
+  };
   render() {
     const { t } = this.props;
     return (
       <JuiLeftRail data-test-automation-id="telephony-tab">
-        {TelephonyTabs.map(({
-          title, path, automationID, UMIType,
-        }, index) => {
+        {TelephonyTabs.map(({ title, path, automationID, UMIType }, index) => {
           const key = `telephony-tab-${title}-${index}`;
           const selected = path === this.props.currentTab;
           return (

@@ -14,7 +14,7 @@ class PersonAPI extends Api {
    */
   static basePath = '/person';
   static requestPersonById(id: number) {
-    return this.getDataById<Person>(id);
+    return PersonAPI.getDataById<Person>(id);
   }
   static getHeadShotUrl(headShotParam: {
     uid: number;

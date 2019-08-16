@@ -3,7 +3,9 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, inject, Jupiter } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 import { ItemService } from 'sdk/module/item/service';
 

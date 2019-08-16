@@ -13,7 +13,8 @@ import CodeItemModel from '../models/CodeItem';
 import EventItemModel from '../models/EventItem';
 import ConferenceItemModel from '../models/ConferenceItem';
 import ItemModel from '../models/Item';
-import MeetingItemModel from '../models/MeetingItem';
+import { MeetingItemModel } from '../models/MeetingItem';
+import { RCVideoMeetingItemModel } from '../models/RCVideoMeetingItem';
 import { IdModel } from 'sdk/framework/model';
 
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
@@ -27,7 +28,8 @@ import {
   ConferenceItem,
   IntegrationItem,
   InteractiveMessageItem,
-  MeetingItem,
+  ZoomMeetingItem,
+  RCVideoMeetingItem,
 } from 'sdk/module/item/entity';
 import IntegrationItemModel from '../models/IntegrationItem';
 import InteractiveMessageItemModel from '../models/InteractiveMessageItem';
@@ -69,7 +71,10 @@ class ModelCreator {
         );
         break;
       case TypeDictionary.TYPE_ID_MEETING:
-        itemModel = new MeetingItemModel(model as MeetingItem);
+        itemModel = new MeetingItemModel(model as ZoomMeetingItem);
+        break;
+      case TypeDictionary.TYPE_ID_RC_VIDEO:
+        itemModel = new RCVideoMeetingItemModel(model as RCVideoMeetingItem);
         break;
       default:
         itemModel = new ItemModel(model as Item);

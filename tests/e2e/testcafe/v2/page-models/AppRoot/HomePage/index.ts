@@ -34,7 +34,7 @@ import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
 import { BlockNumberDialog } from './PhoneTab/index';
 import { AvatarEditDialog } from './AvatarEditDialog';
 import { ProfileEditDialog } from './ProfileEditDialog';
-import { AddressConfirmDialog, EmergencyConfirmDialog, EmergencyPromptDialog } from './E911';
+import { AddressConfirmDialog, EmergencyConfirmDialog } from './E911';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
@@ -196,9 +196,9 @@ export class HomePage extends BaseWebComponent {
   }
 
   async closeE911Prompt() {
-    const button = this.getSelectorByAutomationId('emergencyPromptDialogCrossButton');
-    if (await button.exists) {
-      await this.t.click(button);
+    const closeButton = this.getSelectorByAutomationId('emergencyConfirmDialogOkButton');
+    if (await closeButton.exists) {
+      await this.t.click(closeButton);
     }
   }
 
@@ -311,9 +311,5 @@ export class HomePage extends BaseWebComponent {
 
   get emergencyConfirmDialog() {
     return this.getComponent(EmergencyConfirmDialog);
-  }
-
-  get emergencyPromptDialog() {
-    return this.getComponent(EmergencyPromptDialog);
   }
 }

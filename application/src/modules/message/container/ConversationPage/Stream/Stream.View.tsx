@@ -7,7 +7,9 @@ import _ from 'lodash';
 import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import { observable, runInAction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger, PerformanceTracer, dataAnalysis } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -31,7 +33,7 @@ import {
   ItemWrapper,
   ScrollInfo,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
+import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
@@ -289,13 +291,15 @@ class StreamViewComponent extends Component<Props> {
     } = this.props;
     const listEl = this._listRef.current;
     const lastPostVisible = stopIndex === items.length - 1;
+
+    this._isAtBottom = lastPostVisible;
+
     if (lastPostVisible) {
       this._isAboveScrollToLatestCheckPoint = false;
-    } else if(!this._isAboveScrollToLatestCheckPoint) {
+    } else if (!this._isAboveScrollToLatestCheckPoint) {
       const isAboveScrollToLatestCheckPoint =
         scrollHeight - clientHeight - scrollTop > checkPointThreshold;
       this._isAboveScrollToLatestCheckPoint = isAboveScrollToLatestCheckPoint;
-      this._isAtBottom = false;
     }
 
     if (startIndex === -1 || stopIndex === -1 || !listEl) return;
@@ -319,7 +323,6 @@ class StreamViewComponent extends Component<Props> {
   };
 
   private _bottomStatusChangeHandler = (isAtBottom: boolean) => {
-    this._isAtBottom = isAtBottom;
     if (this.props.hasMore(DIRECTION.DOWN) || !isAtBottom) {
       this.handleMostRecentHidden();
     } else if (isAtBottom) {
@@ -455,6 +458,7 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread,
       historyUnreadCount,
     } = this.props;
+
     const anchorButtonProps = {
       jumpToLatest: this._jumpToLatest,
       firstHistoryUnreadInPage,

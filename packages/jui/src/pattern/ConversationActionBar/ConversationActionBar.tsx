@@ -6,9 +6,7 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 
-import {
-  spacing, palette, height, width,
-} from '../../foundation/utils/styles';
+import { spacing, palette, height, width } from '../../foundation/utils/styles';
 
 type Props = {
   More: React.ReactNode;
@@ -30,6 +28,7 @@ const StyledWrapper = styled('div')`
     background-color: ${palette('common', 'white')};
     transition: box-shadow 0.3s ease-in;
     box-shadow: ${props => props.theme.shadows[1]};
+    overflow: hidden;
     &:hover {
       box-shadow: ${props => props.theme.shadows[5]};
     }
@@ -52,9 +51,7 @@ class JuiConversationActionBar extends PureComponent<Props> {
   }
 
   render() {
-    const {
-      More, Like, Bookmark, Pin,
-    } = this.props;
+    const { More, Like, Bookmark, Pin } = this.props;
     return (
       <StyledWrapper onClick={this.clickHandler}>
         {Like}

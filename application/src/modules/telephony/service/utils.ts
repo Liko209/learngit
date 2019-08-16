@@ -3,7 +3,7 @@ import i18nT from '@/utils/i18nT';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ERCWebUris } from 'sdk//module/rcInfo/types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
 import { Notification } from '@/containers/Notification';

@@ -59,4 +59,7 @@ export type Person = ExtendedBaseModel & {
   flags?: number;
   has_registered?: boolean;
   has_bogus_email?: boolean;
+  rc_extension_id?: number;
+  sanitized_rc_first_name?: string;
+  sanitized_rc_last_name?: string;
 };

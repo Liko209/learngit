@@ -8,30 +8,86 @@ import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
-import {
-  Props, ViewProps, MEETING_STATUS, MEETING_TITLE,
-} from './types';
+import { Props, ViewProps, MEETING_TITLE } from './types';
+import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
 import { Item } from 'sdk/module/item/module/base/entity';
 import MeetingItemModel from '@/store/models/MeetingItem';
 import { formatDuration } from '@/utils/date/';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import RCVideoMeetingItemModel from '@/store/models/RCVideoMeetingItem';
+import { MeetingsService } from 'sdk/module/meetings';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
-  get meetingItem() {
-    return getEntity<Item, MeetingItemModel>(
-      ENTITY_NAME.ITEM,
-      this.props.ids[0],
-    );
+  get meetingStrategy(): {
+    [x: number]:
+      | (() => {
+          meeting: MeetingItemModel;
+          meetingId: number;
+        })
+      | (() => {
+          meeting: RCVideoMeetingItemModel;
+          meetingId: number;
+        });
+  } {
+    return {
+      [TypeDictionary.TYPE_ID_MEETING]: () => {
+        const meeting = getEntity<Item, MeetingItemModel>(
+          ENTITY_NAME.ITEM,
+          this.props.ids[0],
+        );
+        return {
+          meeting,
+          meetingId: meeting.zoomMeetingId,
+        };
+      },
+      [TypeDictionary.TYPE_ID_RC_VIDEO]: () => {
+        const meeting = getEntity<Item, RCVideoMeetingItemModel>(
+          ENTITY_NAME.ITEM,
+          this.props.ids[0],
+        );
+        return {
+          meeting,
+          meetingId: Number(meeting.meetingId),
+        };
+      },
+    };
   }
   @computed
+  get meetingType() {
+    return GlipTypeUtil.extractTypeId(this.props.ids[0]);
+  }
+  @computed
+  get meetingDTO() {
+    return this.meetingStrategy[this.meetingType]();
+  }
+  @computed
+  get meetingItem() {
+    return this.meetingDTO.meeting;
+  }
+  @computed
+  get meetingId() {
+    return this.meetingDTO.meetingId;
+  }
+
+  getDialInNumber = () => {
+    const a = ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).getDialInNumber(this.meetingType === TypeDictionary.TYPE_ID_RC_VIDEO);
+    return a;
+  };
+
+  @computed
   get meetingTitle() {
-    const { status } = this.meetingItem;
+    const status = this.meetingItem.meetingStatus;
     const statusMap = {
       [MEETING_STATUS.ENDED]: MEETING_TITLE.VIDEO_CALL_ENDED,
       [MEETING_STATUS.CANCELLED]: MEETING_TITLE.VIDEO_CALL_CANCELLED,
       [MEETING_STATUS.NOT_STARTED]: MEETING_TITLE.START_VIDEO_CALL,
       [MEETING_STATUS.EXPIRED]: MEETING_TITLE.VIDEO_CALL_ENDED,
       [MEETING_STATUS.LIVE]: MEETING_TITLE.VIDEO_CALL_IN_PROGRESS,
+      [MEETING_STATUS.NO_ANSWER]: 'No Answer for This Video Call', // need to confirm with UX for translation
     };
     if (statusMap[status]) {
       return statusMap[status];

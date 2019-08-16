@@ -6,7 +6,7 @@ import {
   SOUNDS_TYPE,
   RINGS_TYPE,
 } from 'sdk/module/profile';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 export class SoundNotification implements ISoundNotification {
   @IMediaService private _mediaService: IMediaService;

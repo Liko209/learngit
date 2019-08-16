@@ -6,7 +6,7 @@
 import { action, computed } from 'mobx';
 import { promisedComputed } from 'computed-async-mobx';
 import { SearchService } from 'sdk/module/search';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue, getEntity } from '@/store/utils';

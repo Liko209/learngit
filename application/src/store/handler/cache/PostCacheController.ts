@@ -9,7 +9,7 @@ import { Post } from 'sdk/module/post/entity';
 import storeManager from '@/store/base/StoreManager';
 import { ENTITY_NAME } from '@/store';
 import { Item } from 'sdk/module/item/entity';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
 import _ from 'lodash';

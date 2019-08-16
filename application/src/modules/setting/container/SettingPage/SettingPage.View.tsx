@@ -16,7 +16,8 @@ import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { SettingSection } from '../SettingSection';
 import { SETTING_PERFORMANCE_KEYS } from '../../performanceKeys';
 import { SettingPageViewProps, SettingPageProps } from './types';
-import { mainLogger, PerformanceTracer } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`

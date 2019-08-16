@@ -112,4 +112,23 @@ describe('OAuthTokenHandler', () => {
       );
     });
   });
+
+  describe('getOAuthToken', () => {
+    it('should refresh token when token is expired', async () => {
+      handler.isAccessTokenExpired = jest.fn().mockReturnValue(true);
+      handler.refreshOAuthToken = jest.fn().mockResolvedValue('token1');
+      expect(await handler.getOAuthToken()).toEqual('token1');
+      expect(handler.isAccessTokenExpired).toHaveBeenCalled();
+      expect(handler.refreshOAuthToken).toHaveBeenCalled();
+    });
+
+    it('should return token when token is not expired', async () => {
+      handler.isAccessTokenExpired = jest.fn().mockReturnValue(false);
+      handler.refreshOAuthToken = jest.fn();
+      handler.token = 'token2';
+      expect(await handler.getOAuthToken()).toEqual('token2');
+      expect(handler.isAccessTokenExpired).toHaveBeenCalled();
+      expect(handler.refreshOAuthToken).not.toHaveBeenCalled();
+    });
+  });
 });

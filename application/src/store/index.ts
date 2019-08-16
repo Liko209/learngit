@@ -1,5 +1,5 @@
 import * as mobx from 'mobx';
-import { ENTITY_NAME } from './constants';
+import { ENTITY_NAME, PERMISSION_KEYS } from './constants';
 import { ENTITY_SETTING } from './config';
 import storeManager from './base/StoreManager';
 
@@ -8,6 +8,6 @@ mobx.configure({
   // enforceActions: 'observed',
 });
 
-export { ENTITY_NAME, ENTITY_SETTING, storeManager };
+export { ENTITY_NAME, ENTITY_SETTING, storeManager, PERMISSION_KEYS };
 
 export default storeManager;

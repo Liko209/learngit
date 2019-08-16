@@ -3,7 +3,7 @@
  * @Date: 2019-01-03 15:01:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ErrorParserHolder } from 'sdk/error';
 import { ErrorReporterProxy } from './ErrorReporterProxy';
 import { IErrorReporter } from './types';

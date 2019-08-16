@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { jit } from 'shield/sdk';
+import { jit } from 'shield/sdk/SdkItFramework';
 import { PostService } from 'sdk/module/post';
 import { Post } from './post/scenario';
 import * as idUtils from 'shield/sdk/mocks/glip/utils';
