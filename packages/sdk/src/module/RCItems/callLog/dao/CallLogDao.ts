@@ -6,7 +6,7 @@
 
 import { daoManager } from 'sdk/dao';
 import { CallLog } from '../entity';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { CallLogViewDao } from './CallLogViewDao';
 import { Nullable } from 'sdk/types';
 import { FetchDataOptions } from '../../types';

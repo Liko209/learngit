@@ -12,7 +12,7 @@ import { PostDao } from '../../dao';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { PostFetchController } from '../PostFetchController';
 import PostAPI from '../../../../api/glip/post';
-import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation/error';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
 import { ServiceLoader } from '../../../serviceLoader';

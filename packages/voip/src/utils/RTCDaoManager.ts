@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ITelephonyDaoDelegate } from 'foundation';
+import { ITelephonyDaoDelegate } from 'foundation/telephony';
 import { RTCSipProvisionInfo } from '../api/types';
 import { rtcLogger } from './RTCLoggerProxy';
 import { kProvisioningInfoKey } from './constants';

@@ -3,7 +3,8 @@
  * @Date: 2019-01-10 17:20:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { IDatabase, mainLogger } from 'foundation';
+import { IDatabase } from 'foundation/db';
+import { mainLogger } from 'foundation/log';
 import _ from 'lodash';
 import { BaseDao } from '../../../framework/dao';
 import { Post, PostView, UnreadPostQuery } from '../entity';

@@ -9,8 +9,8 @@ import {
   LokiDB,
   IDatabaseCollection,
   IDatabase,
-  mainLogger,
-} from 'foundation';
+} from 'foundation/db';
+import { mainLogger } from 'foundation/log';
 import Query from './Query';
 import { Throw } from '../../../utils';
 import { errorHandler } from '../errors/handler';

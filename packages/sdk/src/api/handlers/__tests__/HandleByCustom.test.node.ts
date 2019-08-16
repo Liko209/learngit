@@ -5,7 +5,7 @@
  */
 
 import HandleByCustom from '../HandleByCustom';
-import { AbstractHandleType } from 'foundation';
+import { AbstractHandleType } from 'foundation/network';
 
 describe('HandleByCustom', () => {
   beforeEach(() => {

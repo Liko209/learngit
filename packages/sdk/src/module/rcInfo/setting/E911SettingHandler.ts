@@ -18,7 +18,7 @@ import {
   IUpdateLineRequest,
   ERCServiceFeaturePermission,
 } from 'sdk/module/rcInfo/types';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { notificationCenter } from 'sdk/service';
 import { SERVICE, RC_INFO } from 'sdk/service/eventKey';
 

@@ -10,7 +10,7 @@ import {
   MediaEvents,
 } from '@/interface/media';
 import { Utils } from './Utils';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 class Sound {
   private _id: SoundOptions['id'];

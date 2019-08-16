@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ConfigChangeHistory, ConfigKey, ConfigMove } from './types';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 import { GlobalConfigService } from '../../module/config/service/GlobalConfigService';

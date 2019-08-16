@@ -7,7 +7,9 @@
 import _ from 'lodash';
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { CallLogView, CallLog } from '../entity';
-import { IDatabase, mainLogger, PerformanceTracer } from 'foundation';
+import { IDatabase } from 'foundation/db';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE, CALL_RESULT } from '../constants';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { DEFAULT_FETCH_SIZE, CALL_DIRECTION } from '../../constants';

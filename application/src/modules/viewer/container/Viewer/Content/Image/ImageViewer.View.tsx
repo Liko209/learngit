@@ -25,8 +25,9 @@ import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
 import { accelerateURL } from '@/common/accelerateURL';
-import { mainLogger, PerformanceTracer } from 'sdk';
-import { VIEWER_PERFORMANCE_KEYS } from '../../../../performanceKeys';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { VIEWER_PERFORMANCE_KEYS } from '@/modules/viewer/performanceKeys';
 
 type ImageViewerProps = WithTranslation & ImageViewerViewProps;
 

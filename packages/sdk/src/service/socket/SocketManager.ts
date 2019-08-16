@@ -6,17 +6,14 @@
 import { SocketFSM, StateHandlerType } from './SocketFSM';
 import notificationCenter from '../notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../eventKey';
-import {
-  mainLogger,
-  HealthModuleManager,
-  BaseHealthModule,
-  powerMonitor,
-} from 'foundation';
-import { AccountService } from '../../module/account/service';
+import { mainLogger } from 'foundation/log';
+import { HealthModuleManager, BaseHealthModule } from 'foundation/health';
+import { powerMonitor } from 'foundation/utils';
+import { AccountService } from 'sdk/module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
-import { getCurrentTime } from '../../utils/jsUtils';
-import { SyncService } from '../../module/sync/service';
-import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { getCurrentTime } from 'sdk/utils/jsUtils';
+import { SyncService } from 'sdk/module/sync/service';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { MODULE_IDENTIFY, MODULE_NAME } from './constants';
 
 const SOCKET_LOGGER = 'SOCKET';

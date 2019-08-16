@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { SanitizedEventItem } from '../entity';
 
 const ONE_HOUR = 60 * 60 * 1000;

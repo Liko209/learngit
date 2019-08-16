@@ -23,6 +23,8 @@ jest.mock('@/store/utils', () => ({
 }));
 jest.mock('sdk/api');
 
+jest.mock('sdk/module/config');
+
 const postService = {
   sendPost: jest.fn(),
 };

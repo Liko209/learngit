@@ -11,7 +11,7 @@ import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
 import { Raw } from '../../../framework/model/Raw';
 import notificationCenter from '../../../service/notificationCenter';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';

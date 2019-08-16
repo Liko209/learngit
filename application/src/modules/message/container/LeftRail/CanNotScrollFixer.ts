@@ -3,7 +3,7 @@
  * @Date: 2019-08-12 11:53:38
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 const logger = mainLogger.tags('[FIJI-7739]');
 const THROTTLE = 100;

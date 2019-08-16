@@ -49,6 +49,7 @@ test(formalName('Should remains where it is when click a conversation in the con
   await h(t).withLog('When I open the second conversation 2', async () => {
     await teamsSection.expand();
     await teamsSection.nthConversationEntry(1).enter();
+    await t.wait(2e3);
     teamId = await app.homePage.messageTab.conversationPage.currentGroupId;
   });
 

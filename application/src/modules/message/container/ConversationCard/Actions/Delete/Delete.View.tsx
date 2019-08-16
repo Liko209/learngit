@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { Dialog } from '@/containers/Dialog';
 import { ViewProps } from './types';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 type Props = ViewProps & WithTranslation;
 

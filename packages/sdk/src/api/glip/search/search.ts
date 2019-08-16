@@ -11,7 +11,7 @@ import {
   InitialSearchResponse,
   ScrollSearchResponse,
 } from './types';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA } from 'foundation/network';
 
 class SearchAPI extends Api {
   static basePath = '/search';

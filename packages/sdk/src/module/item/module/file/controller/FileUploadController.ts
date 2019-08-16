@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { daoManager } from 'sdk/dao';
 import { ItemDao } from '../../../dao';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
@@ -571,7 +571,7 @@ class FileUploadController {
       const storedFile = await this.uploadFileToAmazonServer(file, (event: ProgressEventInit)=>{
         this._updateProgress(event, itemId);
       }, requestHolder)
-     
+
       this._handleFileUploadSuccess(
         storedFile,
         groupId,

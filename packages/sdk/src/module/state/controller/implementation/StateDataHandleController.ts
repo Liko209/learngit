@@ -18,7 +18,7 @@ import {
 } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { AccountService } from '../../../account/service';
 import { StateService } from '../../service';
 import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';

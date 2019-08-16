@@ -6,7 +6,9 @@
 import _ from 'lodash';
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { Voicemail, VoicemailView } from '../entity';
-import { IDatabase, mainLogger, PerformanceTracer } from 'foundation';
+import { IDatabase } from 'foundation/db';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { SortUtils } from 'sdk/framework/utils';
 import { FetchDataOptions } from '../../types';

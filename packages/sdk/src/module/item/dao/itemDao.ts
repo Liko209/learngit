@@ -6,7 +6,7 @@
 
 import { BaseDao } from '../../../framework/dao';
 import { Item } from '../entity';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { daoManager } from '../../../dao';
 import { FileItemDao } from '../module/file/dao';
 import { TaskItemDao } from '../module/task/dao';

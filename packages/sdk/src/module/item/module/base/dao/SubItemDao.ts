@@ -3,7 +3,7 @@
  * @Date: 2019-1-2 15:50:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { isIEOrEdge, isFirefox } from 'sdk/service/utils';
 import _ from 'lodash';
 import { BaseDao } from 'sdk/framework/dao';

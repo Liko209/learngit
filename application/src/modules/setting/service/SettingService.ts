@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { inject } from 'framework/ioc';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import {
   ISettingService,
   SettingPage,

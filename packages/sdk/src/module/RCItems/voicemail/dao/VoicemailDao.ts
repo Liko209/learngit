@@ -6,7 +6,7 @@
 
 import { daoManager } from 'sdk/dao';
 import { Voicemail } from '../entity';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { VoicemailViewDao } from './VoicemailViewDao';
 import { FetchDataOptions } from '../../types';
 import { AbstractComposedDao } from 'sdk/module/base/dao/AbstractComposedDao';
