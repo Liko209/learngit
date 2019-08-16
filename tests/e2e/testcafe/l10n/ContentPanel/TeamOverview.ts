@@ -52,10 +52,6 @@ async (t: TestController) => {
 
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_PublicLock'});
 
-  await h(t).withLog('And close the right rail', async () => {
-    app.homePage.messageTab.rightRail.fold();
-  }, true);
-
   await h(t).withLog('When I hover members button', async () => {
     await t.hover(conversationPage.memberCountIcon);
   });

@@ -24,7 +24,7 @@ import {
   RIGHT_SHELF_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
 
-const GUEST_SECTION_HEIGHT = 95;
+const GUEST_SECTION_HEIGHT = 85;
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
 const AVATAR_MARGIN_BOTTOM = 8;
