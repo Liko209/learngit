@@ -219,7 +219,7 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
             await Promise.all(
               updates.map(item => this._update(item, primaryKeyName)),
             );
-            await this.bulkPut(puts as T[], true);
+            await this.bulkPut(puts as T[]);
           }
         });
       } else {
