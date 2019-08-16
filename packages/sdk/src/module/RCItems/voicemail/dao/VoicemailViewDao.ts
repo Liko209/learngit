@@ -12,17 +12,19 @@ import { SortUtils } from 'sdk/framework/utils';
 import { FetchDataOptions } from '../../types';
 import { DEFAULT_FETCH_SIZE, MESSAGE_AVAILABILITY } from '../../constants';
 import { VOICEMAIL_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { IViewDao } from 'sdk/module/base/dao/IViewDao';
 
 const LOG_TAG = 'VoicemailViewDao';
 
-class VoicemailViewDao extends BaseDao<VoicemailView> {
+class VoicemailViewDao extends BaseDao<VoicemailView>
+  implements IViewDao<number, Voicemail, VoicemailView> {
   static COLLECTION_NAME = 'voicemailView';
 
   constructor(db: IDatabase) {
     super(VoicemailViewDao.COLLECTION_NAME, db);
   }
 
-  toVoicemailView(vm: Voicemail): VoicemailView {
+  toViewItem(vm: Voicemail): VoicemailView {
     return {
       id: vm.id,
       from: this._getFromView(vm),
@@ -30,9 +32,7 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     };
   }
 
-  toPartialVoicemailView(
-    partialVM: Partial<Voicemail>,
-  ): Partial<VoicemailView> {
+  toPartialViewItem(partialVM: Partial<Voicemail>): Partial<VoicemailView> {
     return _.pickBy(
       {
         id: partialVM.id,
@@ -41,6 +41,10 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
       },
       _.identity,
     );
+  }
+
+  getCollection() {
+    return this.getDb().getCollection<VoicemailView, number>(this.modelName);
   }
 
   private _getFromView(vm: Partial<Voicemail> | Voicemail) {
@@ -76,13 +80,18 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     const performanceTracer = PerformanceTracer.start();
 
     const sortedIds = allVMs
-      .filter((view: VoicemailView) => !filterFunc || filterFunc(this._translate2VMForFilter(view)))
-      .sort((vmA: VoicemailView, vmB: VoicemailView) => SortUtils.sortModelByKey<VoicemailView, number>(
-        vmA,
-        vmB,
-        ['__timestamp'],
-        false,
-      ))
+      .filter(
+        (view: VoicemailView) =>
+          !filterFunc || filterFunc(this._translate2VMForFilter(view)),
+      )
+      .sort((vmA: VoicemailView, vmB: VoicemailView) =>
+        SortUtils.sortModelByKey<VoicemailView, number>(
+          vmA,
+          vmB,
+          ['__timestamp'],
+          false,
+        ),
+      )
       .map((value: VoicemailView) => value.id);
 
     const voicemailIds = ArrayUtils.sliceIdArray(

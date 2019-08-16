@@ -5,61 +5,24 @@
  */
 
 import { IDatabase } from 'foundation';
-import { BaseDao } from '../../../framework/dao';
 import { PostViewDao } from './PostViewDao';
 import { Post, PostView, UnreadPostQuery } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
+import { AbstractComposedDao } from 'sdk/module/base/dao/AbstractComposedDao';
 
-class PostDao extends BaseDao<Post> {
+class PostDao extends AbstractComposedDao<Post> {
   static COLLECTION_NAME = 'post';
   private _postViewDao: PostViewDao;
   // TODO, use IDatabase after import foundation module in
   constructor(db: IDatabase) {
     super(PostDao.COLLECTION_NAME, db);
     this._postViewDao = daoManager.getDao(PostViewDao);
+    this.addViewDaos(this._postViewDao);
   }
 
   getPostViewDao() {
     return this._postViewDao;
-  }
-
-  async put(item: Post | Post[]): Promise<void> {
-    await this.doInTransaction(async () => {
-      await Promise.all([
-        super.put(item),
-        Array.isArray(item)
-          ? this._bulkPutPostView(item)
-          : this._putPostView(item),
-      ]);
-    });
-  }
-
-  async bulkPut(array: Post[]): Promise<void> {
-    await this.doInTransaction(async () => {
-      await Promise.all([super.bulkPut(array), this._bulkPutPostView(array)]);
-    });
-  }
-
-  async clear(): Promise<void> {
-    await this.doInTransaction(async () => {
-      await Promise.all([super.clear(), this.getPostViewDao().clear()]);
-    });
-  }
-
-  async delete(key: number): Promise<void> {
-    await this.doInTransaction(async () => {
-      await Promise.all([super.delete(key), this.getPostViewDao().delete(key)]);
-    });
-  }
-
-  async bulkDelete(keys: number[]): Promise<void> {
-    await this.doInTransaction(async () => {
-      await Promise.all([
-        super.bulkDelete(keys),
-        this.getPostViewDao().bulkDelete(keys),
-      ]);
-    });
   }
 
   async queryPostViewByIds(ids: number[]) {
@@ -70,7 +33,8 @@ class PostDao extends BaseDao<Post> {
     return await this.getPostViewDao().queryPostIdsByGroupId(groupId);
   }
 
-  private _fetchPostsFunc = async (ids: number[]) => await this.batchGet(ids, true)
+  private _fetchPostsFunc = async (ids: number[]) =>
+    await this.batchGet(ids, true);
 
   async queryPostsByGroupId(
     groupId: number,
@@ -134,24 +98,6 @@ class PostDao extends BaseDao<Post> {
   async groupPostCount(groupId: number): Promise<number> {
     const query = this.createQuery();
     return query.equal('group_id', groupId).count();
-  }
-
-  private async _putPostView(item: Post) {
-    await this.getPostViewDao().put({
-      id: item.id,
-      group_id: item.group_id,
-      created_at: item.created_at,
-    });
-  }
-
-  private async _bulkPutPostView(array: Post[]) {
-    await this.getPostViewDao().bulkPut(
-      array.map((post: Post) => ({
-        id: post.id,
-        group_id: post.group_id,
-        created_at: post.created_at,
-      })),
-    );
   }
 }
 

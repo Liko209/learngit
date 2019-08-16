@@ -43,7 +43,8 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
       sanitizedItems = sanitizedItems.filter(filterFunc);
     }
 
-    const sortFunc = (lhs: T, rhs: T): number => SortUtils.sortModelByKey(lhs, rhs, [sortKey], desc);
+    const sortFunc = (lhs: T, rhs: T): number =>
+      SortUtils.sortModelByKey(lhs, rhs, [sortKey], desc);
 
     sanitizedItems = sanitizedItems.sort(sortFunc);
     const allItemIds = sanitizedItems.map((x: T) => x.id);
@@ -72,8 +73,8 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return isIEOrEdge
       ? query.filter(item => item.group_ids.includes(groupId))
       : isFirefox
-        ? query.contain('group_ids', groupId)
-        : query.equal('group_ids', groupId);
+      ? query.contain('group_ids', groupId)
+      : query.equal('group_ids', groupId);
   }
 
   toSanitizedItem(item: Item) {
@@ -95,7 +96,7 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return item.id > 0 && item.post_ids && item.post_ids.length > 0;
   }
 
-  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+  async update(item: Partial<T>): Promise<void> {
     await super.update(item, false);
   }
 

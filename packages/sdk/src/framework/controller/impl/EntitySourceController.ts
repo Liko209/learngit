@@ -27,7 +27,7 @@ class EntitySourceController<
     },
   ) {}
 
-  async put(item: T | T[]): Promise<void> {
+  async put(item: T): Promise<void> {
     await this.entityPersistentController.put(item);
   }
 
@@ -47,7 +47,7 @@ class EntitySourceController<
     await this.entityPersistentController.bulkDelete(keys);
   }
 
-  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+  async update(item: Partial<T>): Promise<void> {
     await this.entityPersistentController.update(item);
   }
 

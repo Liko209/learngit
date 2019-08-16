@@ -53,7 +53,7 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     ]);
     const preInsertKey = this._getPreInsertKey(entity);
     if (preInsertKey && !this.isInPreInsert(preInsertKey)) {
-      this.dao && (await this.dao.update([entity]));
+      this.dao && (await this.dao.update(entity));
     } else {
       mainLogger
         .tags(LOG_TAG)
