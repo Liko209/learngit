@@ -15,6 +15,7 @@ import { FetchDataOptions } from '../../types';
 import { DEFAULT_FETCH_SIZE, MESSAGE_AVAILABILITY } from '../../constants';
 import { VOICEMAIL_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { IViewDao } from 'sdk/module/base/dao/IViewDao';
+import { RCItemUtils } from '../../utils';
 
 const LOG_TAG = 'VoicemailViewDao';
 
@@ -50,9 +51,7 @@ class VoicemailViewDao extends BaseDao<VoicemailView>
   }
 
   private _getFromView(vm: Partial<Voicemail> | Voicemail) {
-    return vm
-      ? { ..._.pick(vm.from, 'name', 'phoneNumber', 'extensionNumber') }
-      : undefined;
+    return RCItemUtils.toCallerView(vm.from);
   }
 
   async queryVoicemails(options: FetchDataOptions<Voicemail>) {

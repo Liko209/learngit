@@ -20,7 +20,7 @@ class CallLogDao extends AbstractComposedDao<CallLog, string> {
   constructor(db: IDatabase) {
     super(CallLogDao.COLLECTION_NAME, db);
     this._viewDao = daoManager.getDao(CallLogViewDao);
-    this.addViewDaos(this._viewDao);
+    this.addViewDaos([this._viewDao]);
   }
 
   async queryCallLogs(

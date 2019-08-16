@@ -19,8 +19,8 @@ abstract class AbstractComposedDao<
     super(collectionName, db);
   }
 
-  addViewDaos(viewDao: IViewDao<IdType, T>) {
-    this._viewDaos.push(viewDao);
+  addViewDaos(viewDaos: IViewDao<IdType, T>[]) {
+    this._viewDaos.push(...viewDaos);
   }
 
   async put(item: T): Promise<void> {

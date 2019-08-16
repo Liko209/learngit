@@ -10,9 +10,9 @@ import { UndefinedAble } from 'sdk/types';
 
 class RCItemUtils {
   static toCallerView(caller: UndefinedAble<Caller>) {
-    return caller
-      ? { ..._.pick(caller, 'name', 'phoneNumber', 'extensionNumber') }
-      : undefined;
+    return (
+      caller && { ..._.pick(caller, 'name', 'phoneNumber', 'extensionNumber') }
+    );
   }
 }
 

@@ -18,19 +18,15 @@ class PostDao extends AbstractComposedDao<Post> {
   constructor(db: IDatabase) {
     super(PostDao.COLLECTION_NAME, db);
     this._postViewDao = daoManager.getDao(PostViewDao);
-    this.addViewDaos(this._postViewDao);
-  }
-
-  getPostViewDao() {
-    return this._postViewDao;
+    this.addViewDaos([this._postViewDao]);
   }
 
   async queryPostViewByIds(ids: number[]) {
-    return await this.getPostViewDao().batchGet(ids);
+    return await this._postViewDao.batchGet(ids);
   }
 
   async queryPostIdsByGroupId(groupId: number) {
-    return await this.getPostViewDao().queryPostIdsByGroupId(groupId);
+    return await this._postViewDao.queryPostIdsByGroupId(groupId);
   }
 
   private _fetchPostsFunc = async (ids: number[]) =>
@@ -42,7 +38,7 @@ class PostDao extends AbstractComposedDao<Post> {
     direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
     limit: number = Infinity,
   ): Promise<Post[]> {
-    return this.getPostViewDao().queryPostsByGroupId(
+    return this._postViewDao.queryPostsByGroupId(
       this._fetchPostsFunc,
       groupId,
       anchorPostId,
@@ -52,7 +48,7 @@ class PostDao extends AbstractComposedDao<Post> {
   }
 
   queryUnreadPostsByGroupId(unreadPostQuery: UnreadPostQuery): Promise<Post[]> {
-    return this.getPostViewDao().queryUnreadPostsByGroupId(
+    return this._postViewDao.queryUnreadPostsByGroupId(
       this._fetchPostsFunc,
       unreadPostQuery,
     );

@@ -18,7 +18,7 @@ class VoicemailDao extends AbstractComposedDao<Voicemail, number> {
   constructor(db: IDatabase) {
     super(VoicemailDao.COLLECTION_NAME, db);
     this._voicemailViewDao = daoManager.getDao(VoicemailViewDao);
-    this.addViewDaos(this._voicemailViewDao);
+    this.addViewDaos([this._voicemailViewDao]);
   }
 
   async queryVoicemails(
