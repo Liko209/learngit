@@ -133,7 +133,7 @@ export class ContactSearchListViewModel
 
   @action
   onEnter = () => {
-    if (!this.dialerInputFocused) {
+    if (!this.dialerInputFocused || this.isSearching) {
       return;
     }
     const res = this.searchResult[this.focusIndex];
