@@ -1,5 +1,3 @@
-// import { ErrorParser } from 'foundation';
-
 /*
  * @Author: Paynter Chen
  * @Date: 2019-01-04 10:53:36

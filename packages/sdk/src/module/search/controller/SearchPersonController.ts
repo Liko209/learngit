@@ -9,7 +9,8 @@ import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { Group } from 'sdk/module/group';
 import { SortableModel, IdModel } from 'sdk/framework/model';
-import { PerformanceTracer, mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { AccountService } from '../../account/service';
 import {
   RecentSearchTypes,

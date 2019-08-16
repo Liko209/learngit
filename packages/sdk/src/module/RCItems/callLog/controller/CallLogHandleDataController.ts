@@ -24,7 +24,7 @@ import { notificationCenter } from 'sdk/service';
 import { daoManager } from 'sdk/dao';
 import { CallLogDao } from '../dao';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { PseudoCallLogInfo } from '../types';
 import { PhoneNumberType, PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';

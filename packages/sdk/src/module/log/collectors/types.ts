@@ -3,7 +3,7 @@
  * @Date: 2019-04-14 07:46:09
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogEntity } from 'foundation';
+import { LogEntity } from 'foundation/log';
 
 interface ILogProducer {
   produce(size?: number): LogEntity[];

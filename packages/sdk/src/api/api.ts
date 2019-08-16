@@ -7,7 +7,7 @@ import NetworkClient, { INetworkRequests, IBaseQuery } from './NetworkClient';
 import { ApiConfig, HttpConfigType, BaseConfig } from '../types';
 import { Raw } from '../framework/model';
 
-import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
+import { IHandleType, NetworkSetup, NetworkManager } from 'foundation/network';
 import {
   HandleByGlip,
   HandleByRingCentral,

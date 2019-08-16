@@ -8,7 +8,11 @@ import {
   GlipTypeUtil,
   TypeDictionary,
 } from '../../../utils/glip-type-dictionary';
-import { NETWORK_METHOD, NETWORK_VIA, TEN_MINUTE_TIMEOUT } from 'foundation';
+import {
+  NETWORK_METHOD,
+  NETWORK_VIA,
+  TEN_MINUTE_TIMEOUT,
+} from 'foundation/network';
 
 jest.mock('../../api');
 
@@ -121,7 +125,7 @@ describe('ItemAPI', () => {
 
       const requestHolder: { request: undefined };
       ItemAPI.cancelUploadRequest(requestHolder);
-      expect(mockUploadClient.cancelRequest).not.toBeCalled();
+      expect(mockUploadClient.cancelRequest).not.toHaveBeenCalled();
     });
   });
 
@@ -158,7 +162,7 @@ describe('ItemAPI', () => {
         .fn()
         .mockReturnValueOnce(mockNetworkClient);
       ItemAPI.uploadFileToAmazonS3(host, formFile, callback, requestHolder);
-      expect(mockNetworkClient.http).toBeCalledWith(
+      expect(mockNetworkClient.http).toHaveBeenCalledWith(
         expect.objectContaining({
           path: '',
           method: NETWORK_METHOD.POST,

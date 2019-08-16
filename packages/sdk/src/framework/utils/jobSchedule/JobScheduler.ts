@@ -9,7 +9,7 @@ import { JOB_KEY, DailyJobIntervalSeconds } from './constants';
 import { JobSchedulerConfig } from './JobSchedulerConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { WINDOW, SERVICE } from '../../../service/eventKey';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import {
   SequenceProcessorHandler,
   IProcessor,

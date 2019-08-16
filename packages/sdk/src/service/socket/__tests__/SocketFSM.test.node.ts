@@ -5,10 +5,11 @@
  */
 // / <reference path="../../../__tests__/types.d.ts" />
 import { SocketFSM } from '../SocketFSM';
-import { mainLogger, SocketClient } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { SocketClient } from 'foundation/network';
 import SocketIO from '../__mocks__/socket';
 
-jest.mock('foundation');
+jest.mock('foundation/network');
 const mockLogger = {
   tags: jest.fn(),
   error: jest.fn(),

@@ -11,7 +11,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { StateFetchDataController } from './StateFetchDataController';
 import { Raw } from '../../../../framework/model';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
 
 class StateActionController {

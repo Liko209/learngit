@@ -1,4 +1,4 @@
-import { errorUtils } from 'foundation';
+import { errorUtils } from 'foundation/error';
 import { ERROR_CONDITIONS } from './constants';
 import { ErrorParserHolder } from './ErrorParserHolder';
 

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import _ from 'lodash';
 import { IRTCMediaDeviceDelegate, RTCEngine, RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
