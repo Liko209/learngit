@@ -1,0 +1,9 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/*.ts",
+      "./telephony/*/*.ts",
+      "./fixtures/MessageInput/*.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}
