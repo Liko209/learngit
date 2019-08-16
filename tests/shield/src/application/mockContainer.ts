@@ -3,7 +3,7 @@
  * @Date: 2019-07-26 10:50:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { descriptorAOP } from '../core/utils';
 import { mockMethods } from '../shared';
 

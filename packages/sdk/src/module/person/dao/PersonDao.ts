@@ -6,7 +6,7 @@
 
 import { BaseDao } from '../../../framework/dao';
 import { Person } from '../entity';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 
 const GET_ALL_EXCEED_COUNT = 30000;
 

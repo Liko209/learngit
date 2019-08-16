@@ -3,7 +3,7 @@
  * @Date: 2018-12-17 16:21:08
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { LOG_LEVEL, IRTCLogger } from './IRTCLogger';
 
 class RTCLoggerProxy {

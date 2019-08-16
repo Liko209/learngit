@@ -5,7 +5,7 @@
  */
 import { ILogChunkSplitStrategy } from './types';
 import { extractLogMessageLine } from './utils';
-import { LogEntity, LOG_LEVEL } from 'foundation';
+import { LogEntity, LOG_LEVEL } from 'foundation/log';
 import _ from 'lodash';
 
 export class ErrorChunkStrategy implements ILogChunkSplitStrategy {

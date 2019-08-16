@@ -6,7 +6,7 @@
 import TypeDictionary from './types';
 import GlipTypeUtil, { TYPE_ID_MASK } from './util';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { UndefinedAble } from 'sdk/types';
 
 interface IMessage<V> {
@@ -49,6 +49,7 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_PAGE]: socketKeyMap.ITEM,
   [TypeDictionary.TYPE_ID_CODE]: socketKeyMap.ITEM,
   [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_RC_VIDEO]: socketKeyMap.ITEM,
 };
 
 function getSocketMessageKey(id: number) {

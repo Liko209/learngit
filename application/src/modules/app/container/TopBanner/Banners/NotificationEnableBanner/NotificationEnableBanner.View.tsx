@@ -12,7 +12,7 @@ import {
 import { observer } from 'mobx-react';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 import { NotificationEnableBannerViewProps } from './types';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import {
   INotificationPermission,
   INotificationService,

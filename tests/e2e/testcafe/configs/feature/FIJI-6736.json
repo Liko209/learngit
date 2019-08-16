@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/Search/ContactSearch.ts", "./fixtures/MessageInput/*.ts", "./fixtures/RightRail/Members.ts","./fixtures/ContentPanel/AtMention.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

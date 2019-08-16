@@ -28,7 +28,7 @@ import {
 } from '../types';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from 'sdk/module/account/config';

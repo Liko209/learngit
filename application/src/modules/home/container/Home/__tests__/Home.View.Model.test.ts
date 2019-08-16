@@ -17,8 +17,8 @@ describe('HomeViewModel', () => {
   };
   @testable
   class showGlobalSearch {
-    @test('should be true if global search store open = true')
-    @mockContainer(GlobalSearchStore, 'open.get', true)
+    @test('should be true if global search store alive = true')
+    @mockContainer(GlobalSearchStore, 'alive.get', true)
     t1() {
       const vm = new HomeViewModel();
       expect(vm.showGlobalSearch).toBeTruthy();

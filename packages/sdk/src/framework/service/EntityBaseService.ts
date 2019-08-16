@@ -20,7 +20,7 @@ import {
   buildEntityCacheSearchController,
   buildEntityNotificationController,
 } from '../controller';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
 import { IEntityNotificationController } from '../controller/interface/IEntityNotificationController';
@@ -134,6 +134,20 @@ class EntityBaseService<
     throw new Error('entitySourceController is null');
   }
 
+  batchGetSynchronously(ids: IdType[]): T[] {
+    if (this._entityCacheController) {
+      const entities: T[] = [];
+      ids.forEach((id: IdType) => {
+        const entity = this.getSynchronously(id);
+        if (entity) {
+          entities.push(entity);
+        }
+      });
+      return entities;
+    }
+    return [];
+  }
+
   getSynchronously(id: IdType): T | null {
     if (this._entityCacheController) {
       return this._entityCacheController.getSynchronously(id);
@@ -176,12 +190,12 @@ class EntityBaseService<
         ),
         this.networkConfig
           ? {
-            requestController: buildRequestController<T, IdType>(
-              this.networkConfig,
-            ),
-            canSaveRemoteData: this.canSaveRemoteEntity(),
-            canRequest: this._canRequest,
-          }
+              requestController: buildRequestController<T, IdType>(
+                this.networkConfig,
+              ),
+              canSaveRemoteData: this.canSaveRemoteEntity(),
+              canRequest: this._canRequest,
+            }
           : undefined,
       );
     }

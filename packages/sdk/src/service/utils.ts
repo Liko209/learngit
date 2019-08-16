@@ -5,7 +5,7 @@
  */
 import notificationCenter from './notificationCenter';
 import { daoManager, DeactivatedDao } from '../dao';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IdModel } from '../framework/model';
 import { shouldEmitNotification } from '../utils/notificationUtils';
 

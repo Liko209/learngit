@@ -7,7 +7,7 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { LazyFormatPhoneProps } from './types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import i18next from 'i18next';

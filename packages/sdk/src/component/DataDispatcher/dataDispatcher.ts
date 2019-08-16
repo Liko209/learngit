@@ -1,7 +1,7 @@
 import { parseSocketData } from '../../utils';
 import { EventEmitter2 } from 'eventemitter2';
 import { SOCKET } from '../../service/eventKey';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 type Handler = (data: any) => any;
 

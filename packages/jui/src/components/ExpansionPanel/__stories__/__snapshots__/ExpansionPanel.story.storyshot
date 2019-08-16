@@ -44,6 +44,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c2.c2 .c3,

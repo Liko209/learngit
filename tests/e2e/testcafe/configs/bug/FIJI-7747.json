@@ -1,0 +1,8 @@
+{
+  "on_merge": {
+    "fixtures": ["./telephony/ContactSearch.ts"],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -3,7 +3,7 @@
  * @Date: 2019-01-21 10:25:00
  */
 
-import { IFilter } from 'foundation';
+import { IFilter } from 'foundation/db';
 import { ModelIdType } from '../../model';
 
 interface IQueryOpt<T, IdType extends ModelIdType = number> {

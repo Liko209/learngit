@@ -23,7 +23,7 @@ import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { AccountUserConfig } from '../../../../account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
-import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation';
+import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation/network';
 import { PostDataController } from '../../PostDataController';
 import { GroupService } from 'sdk/module/group/service';
 jest.mock('../../../../../module/config');

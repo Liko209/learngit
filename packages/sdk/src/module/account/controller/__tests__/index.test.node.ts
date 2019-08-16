@@ -14,7 +14,7 @@ import { SERVICE } from '../../../../service/eventKey';
 import { AuthUserConfig } from '../../config/AuthUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { glipStatus } from 'sdk/api';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { TaskController } from 'sdk/framework/controller/impl/TaskController';
 import { ReLoginGlipStrategy } from '../../strategy/ReLoginGlipStrategy';
 

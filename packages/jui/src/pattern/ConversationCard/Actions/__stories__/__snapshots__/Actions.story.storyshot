@@ -28,6 +28,7 @@ Array [
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c1.c1 .c2,
@@ -292,6 +293,7 @@ Array [
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c1.c1 .c2,

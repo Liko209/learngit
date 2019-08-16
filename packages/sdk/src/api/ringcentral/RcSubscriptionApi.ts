@@ -10,7 +10,7 @@ import {
   CONTENT_TYPES,
   REQUEST_HEADER_KEYS,
   DEFAULT_RETRY_COUNT,
-} from 'foundation';
+} from 'foundation/network';
 
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';

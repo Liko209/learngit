@@ -2,7 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-03-01 14:02:24
  */
-/// <reference path="../../../__tests__/types.d.ts" />
+// / <reference path="../../../__tests__/types.d.ts" />
 
 import { AccountService } from '..';
 import { PersonService } from '../../../person';
@@ -13,6 +13,7 @@ import { ServiceLoader } from '../../../serviceLoader';
 import { setRCToken } from '../../../../authenticator/utils';
 import { AuthUserConfig } from '../../config/AuthUserConfig';
 import { generateUUID } from '../../../../utils/mathUtils';
+
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
 jest.mock('../../../../api');
@@ -107,7 +108,7 @@ describe('AccountService', () => {
         .mockReturnValue(undefined);
       generateUUID = jest.fn().mockReturnValue('155');
       expect(accountService.getClientId()).toEqual('155');
-      expect(generateUUID).toBeCalled();
+      expect(generateUUID).toHaveBeenCalled();
     });
   });
 
@@ -165,13 +166,13 @@ describe('AccountService', () => {
 
       const res = await Promise.all([token1, token2, token3]);
 
-      expect(RCAuthApi.refreshToken).toBeCalledTimes(1);
+      expect(RCAuthApi.refreshToken).toHaveBeenCalledTimes(1);
       expect(accountService['_refreshTokenQueue']).toEqual([]);
       expect(accountService['_isRefreshingToken']).toBeFalsy();
       expect(res[0]).toEqual(result);
       expect(res[1]).toEqual(result);
       expect(res[2]).toEqual(result);
-      expect(setRCToken).toBeCalledTimes(1);
+      expect(setRCToken).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -195,38 +196,27 @@ describe('AccountService', () => {
     });
   });
 
-  describe('get rc token', () => {
-    const accessToken = {
-      access_token: 'access_token',
-      endpoint_id: 'i6Kffo9iTCun9yEIOT7drQ',
-      expires_in: 3600,
-      timestamp: 1559613357949,
-    };
-
+  describe('getRCToken', () => {
     beforeEach(() => {
-      AuthUserConfig.prototype.getRCToken = jest
-        .fn()
-        .mockReturnValue(accessToken);
+      RCAuthApi['networkManager'] = {
+        getTokenManager: jest.fn(),
+      } as any;
     });
 
-    it('should  not refresh token when token is invalid', async () => {
-      accountService['refreshRCToken'] = jest.fn().mockResolvedValue({ id: 1 });
-      Date.now = jest
-        .fn()
-        .mockReturnValue(1559613357949 + 3600 * 1000 - 5 * 60 * 1000);
+    it('should return empty string when tokenManager is invalid', async () => {
+      RCAuthApi.networkManager.getTokenManager.mockReturnValue(undefined);
       const result = await accountService.getRCToken();
-      expect(accountService['refreshRCToken']).not.toBeCalled();
-      expect(result).toEqual(accessToken);
+      expect(RCAuthApi.networkManager.getTokenManager).toHaveBeenCalledTimes(1);
+      expect(result).toBeUndefined();
     });
 
-    it('should refresh token when token is invalid', async () => {
-      accountService['refreshRCToken'] = jest.fn().mockResolvedValue({ id: 1 });
-      Date.now = jest
-        .fn()
-        .mockReturnValue(1559613357949 + 3600 * 1000 - 5 * 60 * 1000 + 1);
+    it('should return token when tokenManager is valid', async () => {
+      RCAuthApi.networkManager.getTokenManager.mockReturnValue({
+        getOAuthToken: jest.fn().mockResolvedValue('token'),
+      });
       const result = await accountService.getRCToken();
-      expect(accountService['refreshRCToken']).toBeCalled();
-      expect(result).toEqual({ id: 1 });
+      expect(RCAuthApi.networkManager.getTokenManager).toHaveBeenCalledTimes(1);
+      expect(result).toEqual('token');
     });
   });
 
@@ -237,7 +227,7 @@ describe('AccountService', () => {
         unifiedLogin: mockFunc,
       });
       await accountService.unifiedLogin({});
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
@@ -248,7 +238,7 @@ describe('AccountService', () => {
         loginGlip: mockFunc,
       });
       await accountService.loginGlip({} as any);
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
@@ -259,7 +249,7 @@ describe('AccountService', () => {
         makeSureUserInWhitelist: mockFunc,
       });
       await accountService.makeSureUserInWhitelist();
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
@@ -270,7 +260,7 @@ describe('AccountService', () => {
         logout: mockFunc,
       });
       await accountService.logout();
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
@@ -281,7 +271,7 @@ describe('AccountService', () => {
         isLoggedIn: mockFunc,
       });
       await accountService.isLoggedIn();
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
@@ -292,7 +282,7 @@ describe('AccountService', () => {
         isRCOnlyMode: mockFunc,
       });
       await accountService.isRCOnlyMode();
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
@@ -303,15 +293,13 @@ describe('AccountService', () => {
         startLoginGlip: mockFunc,
       });
       await accountService.startLoginGlip();
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
   describe('isAccountReady()', () => {
     it('should return true when GlipUserId exist', async () => {
-      AccountUserConfig.prototype.getGlipUserId = jest
-        .fn()
-        .mockReturnValue(11);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(11);
 
       expect(accountService.isAccountReady()).toBeTruthy();
     });
@@ -319,7 +307,7 @@ describe('AccountService', () => {
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
         .mockImplementation(() => {
-          throw new Error('not login')
+          throw new Error('not login');
         });
 
       expect(accountService.isAccountReady()).toBeFalsy();

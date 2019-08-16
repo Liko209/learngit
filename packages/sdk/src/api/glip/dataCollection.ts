@@ -3,7 +3,7 @@
  * @Date: 2019-07-26 13:35:53
  * Copyright © RingCentral. All rights reserved.
  */
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA } from 'foundation/network';
 
 import Api from '../api';
 

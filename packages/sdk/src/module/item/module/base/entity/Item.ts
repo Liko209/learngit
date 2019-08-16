@@ -48,6 +48,7 @@ export type Item = ExtendedBaseModel & {
   do_not_render?: boolean;
   at_mentioning_post_ids?: number[];
   deactivate_version?: number;
+  no_post?: boolean;
 };
 
 export type StoredFile = Raw<ExtendedBaseModel> & {

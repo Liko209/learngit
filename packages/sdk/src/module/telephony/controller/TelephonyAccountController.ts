@@ -17,6 +17,7 @@ import {
   RTCCallOptions,
   RTCSipEmergencyServiceAddr,
   RTCSipProvisionInfo,
+  RTC_CALL_STATE,
 } from 'voip';
 import { TelephonyCallController } from './TelephonyCallController';
 import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
@@ -26,7 +27,7 @@ import {
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
 } from '../types';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
@@ -425,6 +426,14 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     }
     const result = this._checkVoipStatus();
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      return;
+    }
+    if (call.getCallState() === RTC_CALL_STATE.DISCONNECTED) {
+      telephonyLogger.info(
+        `Call: ${
+          call.getCallInfo().uuid
+        } is disconnected already, no need to create call`,
+      );
       return;
     }
     const callController = new TelephonyCallController(

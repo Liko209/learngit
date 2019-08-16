@@ -493,6 +493,25 @@ describe('TelephonyAccountController', () => {
       expect(mockAcc.onReceiveIncomingCall).not.toHaveBeenCalled();
     });
 
+    it('should return when call is disconnected before notifying UX', async () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
+        isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
+      });
+      accountController._checkVoipStatus = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      spyOn(mockAcc, 'onReceiveIncomingCall');
+      const call = new RTCCall();
+      call.getCallState = jest
+        .fn()
+        .mockReturnValue(RTC_CALL_STATE.DISCONNECTED);
+      call.getCallInfo = jest.fn().mockReturnValue({
+        uuid: 'test',
+      });
+      await accountController.onReceiveIncomingCall(call);
+      expect(mockAcc.onReceiveIncomingCall).not.toHaveBeenCalled();
+    });
+
     it('should call incoming call delegate when there is an incoming call', async () => {
       const rtcCall = new RTCCall(false, '', null, null);
       rtcCall.getCallInfo = jest.fn().mockReturnValue({

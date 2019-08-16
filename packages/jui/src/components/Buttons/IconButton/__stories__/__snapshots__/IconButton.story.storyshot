@@ -61,6 +61,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c1.c1 .c2,
@@ -232,6 +233,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c1.c1 .c2,

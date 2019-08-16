@@ -27,6 +27,10 @@ test(formalName('Make a call from a conversation', ['P2', 'Call', 'OutgoingCall'
     await h(t).scenarioHelper.createOrOpenChat(chat);
   })
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   let session: WebphoneSession;
   await h(t).withLog(`And ${otherUser.company.number}#${otherUser.extension} login webphone`, async () => {
     session = await h(t).newWebphoneSession(otherUser);

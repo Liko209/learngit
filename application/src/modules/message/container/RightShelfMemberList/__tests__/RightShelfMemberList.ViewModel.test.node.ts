@@ -38,9 +38,10 @@ describe('RightShelfMemberListViewModel', () => {
         };
       }
     });
-    groupService.getMembersAndGuestIds = jest.fn().mockResolvedValue({
-      memberIds: [123, 234, 456],
+    groupService.getMemberAndGuestIds = jest.fn().mockResolvedValue({
+      realMemberIds: [123, 234, 456],
       guestIds: [111, 999],
+      optionalIds: [],
     });
     mockGroupServce();
   });
@@ -51,7 +52,7 @@ describe('RightShelfMemberListViewModel', () => {
     expect(vm.allMemberLength).toBe(5);
     await vm._getMemberAndGuestIds();
 
-    expect(groupService.getMembersAndGuestIds).toHaveBeenCalledWith(1);
+    expect(groupService.getMemberAndGuestIds).toHaveBeenCalledWith(1, 40, 10);
     expect(vm.isLoading).toBe(false);
     expect(vm.fullMemberIds).toEqual([123, 234, 456]);
     expect(vm.fullGuestIds).toEqual([111, 999]);
@@ -137,9 +138,10 @@ describe('RightShelfMemberListViewModel', () => {
 
   describe('member count and guest count', () => {
     it('should show correct counts when there are no guests and 36 members and row count is 9', async () => {
-      groupService.getMembersAndGuestIds = jest.fn().mockResolvedValue({
-        memberIds: Array(36).fill(1),
+      groupService.getMemberAndGuestIds = jest.fn().mockResolvedValue({
+        realMemberIds: Array(36).fill(1),
         guestIds: [],
+        optionalIds: [],
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
       vm.setWrapperWidth(getRandomInt(348, 360));
@@ -150,9 +152,10 @@ describe('RightShelfMemberListViewModel', () => {
     });
 
     it('should show correct counts when there are no guests and more than 36 members and row count is 9', async () => {
-      groupService.getMembersAndGuestIds = jest.fn().mockResolvedValue({
-        memberIds: Array(37).fill(1),
+      groupService.getMemberAndGuestIds = jest.fn().mockResolvedValue({
+        realMemberIds: Array(37).fill(1),
         guestIds: [],
+        optionalIds: [],
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
       vm.setWrapperWidth(getRandomInt(348, 360));
@@ -163,9 +166,10 @@ describe('RightShelfMemberListViewModel', () => {
     });
 
     it('should show correct counts when there are guests and 27 members and row count is 9', async () => {
-      groupService.getMembersAndGuestIds = jest.fn().mockResolvedValue({
-        memberIds: Array(27).fill(1),
+      groupService.getMemberAndGuestIds = jest.fn().mockResolvedValue({
+        realMemberIds: Array(27).fill(1),
         guestIds: Array(22).fill(1),
+        optionalIds: [],
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
       vm.setWrapperWidth(getRandomInt(348, 360));
@@ -176,9 +180,10 @@ describe('RightShelfMemberListViewModel', () => {
     });
 
     it('should show correct counts when there are guests and 29 members and row count is 9', async () => {
-      groupService.getMembersAndGuestIds = jest.fn().mockResolvedValue({
-        memberIds: Array(29).fill(1),
+      groupService.getMemberAndGuestIds = jest.fn().mockResolvedValue({
+        realMemberIds: Array(22).fill(1),
         guestIds: Array(9).fill(1),
+        optionalIds: Array(7).fill(1),
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
       vm.setWrapperWidth(getRandomInt(348, 360));

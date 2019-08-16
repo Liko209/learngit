@@ -3,8 +3,10 @@
  * @Date: 2019-04-11 09:50:10
  * Copyright © RingCentral. All rights reserved.
  */
+jest.mock('downshift');
 
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { MuteViewModel } from '../Mute.ViewModel';
@@ -15,6 +17,7 @@ import { getEntity } from '@/store/utils';
 
 jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
+jest.mock('@/modules/telephony/HOC/withDialogOrNewWindow');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
@@ -41,6 +44,6 @@ describe('MuteViewModel', () => {
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.muteOrUnmute).toBeCalled();
+    expect(_telephonyService.muteOrUnmute).toHaveBeenCalled();
   });
 });

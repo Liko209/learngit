@@ -16,12 +16,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { AttachmentViewProps } from './types';
 import { JuiIconButton } from '../../../components/Buttons';
 import styled from '../../../foundation/styled-components';
-import {
-  JuiMenu,
-  JuiMenuItem,
-  JuiMenuList,
-  JuiDivider,
-} from '../../../components';
+import { JuiMenu, JuiMenuItem, JuiMenuList } from '../../../components/Menus';
+import { JuiDivider } from '../../../components/Divider';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
 const Menu = styled(JuiMenu)`

@@ -30,7 +30,7 @@ import { JuiDivider } from 'jui/components/Divider';
 import { JuiToggleButton, JuiIconButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 
 type TeamSettingsProps = WithTranslation & ViewProps;
 

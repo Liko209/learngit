@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Token } from 'foundation';
+import { Token } from 'foundation/network';
 import { IdModel } from 'sdk/framework/model';
 
 type RCCountryInfo = {

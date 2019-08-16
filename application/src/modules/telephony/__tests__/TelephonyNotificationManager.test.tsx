@@ -3,7 +3,8 @@
  * @Date: 2019-04-02 15:41:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { Jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
 import * as i18nT from '@/utils/i18nT';
 import * as telephony from '@/modules/telephony/module.config';

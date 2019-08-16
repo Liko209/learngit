@@ -7,7 +7,8 @@
 import i18nT from '@/utils/i18nT';
 import { showRCDownloadDialog } from '../utils';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { container, injectable, decorate, jupiter } from 'framework';
+import { container, injectable, decorate } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { config } from '../../module.config';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';

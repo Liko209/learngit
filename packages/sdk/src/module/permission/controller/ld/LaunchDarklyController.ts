@@ -14,7 +14,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { Api } from 'sdk/api';
 import { EnvConfig } from 'sdk/module/env/config';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { PersonService } from 'sdk/module/person';
 
 class LaunchDarklyController extends AbstractPermissionController

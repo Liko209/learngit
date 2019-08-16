@@ -49,6 +49,7 @@ test(formalName('Should remains where it is when click a conversation in the con
   await h(t).withLog('When I open the second conversation 2', async () => {
     await teamsSection.expand();
     await teamsSection.nthConversationEntry(1).enter();
+    await t.wait(2e3);
     teamId = await app.homePage.messageTab.conversationPage.currentGroupId;
   });
 
@@ -102,11 +103,8 @@ test(formalName('Should not display in conversation list when last conversation 
   await h(t).withLog('Then the conversation should not display in conversation list', async () => {
     await t.expect(directMessagesSection.conversationEntryById(chat.glipId).exists).notOk();
     const url = new URL(SITE_URL);
-    const targetUrl = `${url.protocol}//${url.hostname}/messages/`
-    await H.retryUntilPass(async () => {
-      const currentUrl = await h(t).href;
-      assert.strictEqual(currentUrl, targetUrl, `${currentUrl} is invalid`);
-    });
+    const targetUrl = `${url.origin}/messages/`
+    await t.expect(h(t).href).eql(targetUrl);
   });
 });
 

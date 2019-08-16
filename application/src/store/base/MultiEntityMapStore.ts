@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
-import { service, mainLogger } from 'sdk';
+import { service } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { IdModel, ModelIdType, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
@@ -19,7 +20,7 @@ export default class MultiEntityMapStore<
   K extends Entity<IdType>,
   IdType extends ModelIdType = number
 > extends BaseStore {
-  @observable.shallow private _data: Map<string, K> = new Map();
+  private _data: Map<string, K> = observable.map();
   private _usedIds: Set<IdType> = new Set();
 
   private _getService: Function | [Function, string];

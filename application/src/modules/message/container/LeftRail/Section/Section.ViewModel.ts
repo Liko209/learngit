@@ -12,23 +12,23 @@ import { SectionProps, SectionConfigs, SECTION_TYPE } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     dataNameForTest: 'Favorites',
     title: 'message.favoriteGroups',
-    sortable: true
+    sortable: true,
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     dataNameForTest: 'Direct Messages',
-    title: 'message.directGroups'
+    title: 'message.directGroups',
   },
   [SECTION_TYPE.TEAM]: {
     dataNameForTest: 'Teams',
-    title: 'message.teamGroups'
-  }
+    title: 'message.teamGroups',
+  },
 };
 
 class SectionViewModel extends StoreViewModel<SectionProps> {
@@ -42,7 +42,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
     super(props);
     this.autorun(() => {
       const ids = SectionGroupHandler.getInstance().getGroupIdsByType(
-        this.props.type
+        this.props.type,
       );
       this._groupIDs = [...ids];
     });
@@ -76,7 +76,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
 
   onSortEnd = ({
     oldIndex,
-    newIndex
+    newIndex,
   }: {
     oldIndex: number;
     newIndex: number;
@@ -88,7 +88,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
   async fetchGroups() {
     await SectionGroupHandler.getInstance().fetchGroups(
       this.props.type,
-      QUERY_DIRECTION.NEWER
+      QUERY_DIRECTION.NEWER,
     );
   }
 
@@ -114,7 +114,7 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
     this._groupIDs = this._reorder(oldIndex, newIndex);
 
     const profileService = ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE
+      ServiceConfig.PROFILE_SERVICE,
     );
     try {
       await profileService.reorderFavoriteGroups(oldIds, oldIndex, newIndex);
@@ -127,11 +127,15 @@ class SectionViewModel extends StoreViewModel<SectionProps> {
 
   @action
   handleCollapse = () => {
+    const { type, onCollapseChange } = this.props;
+    onCollapseChange && onCollapseChange({ sectionType: type, value: true });
     this.expanded = false;
   };
 
   @action
   handleExpand = () => {
+    const { type, onCollapseChange } = this.props;
+    onCollapseChange && onCollapseChange({ sectionType: type, value: false });
     this.expanded = true;
   };
 }

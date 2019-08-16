@@ -140,7 +140,7 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.ensureLoaded();
   });
 
-  const emergencyPromptDialog = app.homePage.emergencyPromptDialog;
+  const emergencyPromptDialog = app.homePage.emergencyConfirmDialog;
   await h(t).withLog('Then should pop a alert: {alertMessage}', async (step) => {
     step.setMetadata('alertMessage', alertMessage);
     await t.expect(emergencyPromptDialog.dialogContent.withText(alertMessage).exists).ok();
@@ -149,7 +149,7 @@ test.meta(<ITestMeta>{
   const telephonyDialog = app.homePage.telephonyDialog
   await h(t).withLog('When I close this alert and call a DID number {targePhoneNumber}', async (step) => {
     step.setMetadata('targePhoneNumber', targePhoneNumber);
-    await emergencyPromptDialog.clickCloseButton();
+    await emergencyPromptDialog.clickEmergencyConfirmOkButton();
     await telephonyDialog.typeTextInDialer(targePhoneNumber);
     await t.wait(2e3);
     await telephonyDialog.hitEnterToMakeCall();
@@ -252,7 +252,7 @@ test.meta(<ITestMeta>{
     await app.homePage.openDialer(false);
   });
 
-  const emergencyPromptDialog = app.homePage.emergencyPromptDialog;
+  const emergencyPromptDialog = app.homePage.emergencyConfirmDialog;
   await h(t).withLog('Then the alert confirm dialog should be showed', async () => {
     await emergencyPromptDialog.ensureLoaded();
   });

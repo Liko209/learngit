@@ -1,4 +1,4 @@
-import { createDecorator } from 'framework/src';
+import { createDecorator } from 'framework/ioc';
 
 interface IRingtonePrefetcher {
   prefetch: (url: string) => void;

@@ -5,7 +5,8 @@
  */
 
 import { CALLING_OPTIONS, AUDIO_SOUNDS_INFO } from 'sdk/module/profile';
-import { inject, jupiter } from 'framework';
+import { inject } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import {
   TelephonyService as ServerTelephonyService,
@@ -21,7 +22,7 @@ import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -118,7 +119,7 @@ class TelephonyService {
   };
 
   private _onReceiveIncomingCall = async (id: number) => {
-    const shouldIgnore = !(await this._isJupiterDefaultApp());
+    const shouldIgnore = !(await this._isJupiterDefaultApp()) || isCurrentUserDND();
     if (shouldIgnore) {
       return;
     }
@@ -832,7 +833,7 @@ class TelephonyService {
     return this._serverTelephonyService.dtmf(this._callEntityId, digits);
   };
 
-  callComponent = () => import('../container/Call');
+  getComponent = () => import('../container/Call');
 
   setCallerPhoneNumber = (phoneNumber?: string) => {
     if (

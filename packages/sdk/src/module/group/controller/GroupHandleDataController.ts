@@ -3,7 +3,7 @@
  * @Date: 2018-04-16 09:35:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import _ from 'lodash';
 
 import GroupAPI from '../../../api/glip/group';
@@ -202,9 +202,9 @@ class GroupHandleDataController {
     try {
       if (deactivatedData.length) {
         daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
-        this.entitySourceController.bulkDelete(
-          deactivatedData.map(item => item.id),
-        );
+        const deleteIds = deactivatedData.map(item => item.id);
+        this.entitySourceController.bulkDelete(deleteIds);
+        mainLogger.tags(LOG_TAG).info('operateGroupDao() ids:', deleteIds);
       }
       if (normalData.length) {
         this.entitySourceController.bulkUpdate(normalData);

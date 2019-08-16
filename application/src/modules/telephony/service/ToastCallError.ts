@@ -8,7 +8,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import i18next from 'i18next';
 
 class ToastCallError {

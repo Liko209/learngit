@@ -6,7 +6,7 @@
 
 import { AbstractProcessor } from './AbstractProcessor';
 import { IProcessor } from './IProcessor';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 

@@ -11,7 +11,7 @@ import {
 } from 'voip';
 import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
 import _ from 'lodash';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import { notificationCenter } from 'sdk/service';
 import { SERVICE } from 'sdk/service/eventKey';
 

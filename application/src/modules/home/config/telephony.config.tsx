@@ -14,7 +14,7 @@ import { PhoneUMI } from '@/modules/phone/container/PhoneUMI';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 function getUrl() {

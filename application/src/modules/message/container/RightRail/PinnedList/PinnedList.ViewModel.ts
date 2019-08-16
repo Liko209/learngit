@@ -22,7 +22,9 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   constructor(props: PinnedListProps) {
     super(props);
     // url change need build first
-    this.build(this.pinnedPostIds);
+    this.autorun(() => {
+      this.build(this.pinnedPostIds);
+    });
     this.reaction(
       () => this._groupId,
       (id: number) => {
@@ -71,7 +73,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
         15,
       );
     }
-  }
+  };
 
   @action
   loadMore = async (direction: 'up' | 'down', count: number) => {
@@ -81,7 +83,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
         count,
       );
     }
-  }
+  };
 
   @computed
   private get _groupId() {

@@ -2,7 +2,7 @@
  * @Author: Potar.He
  * @Date: 2019-02-20 10:25:49
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-06-04 19:16:45
+ * @Last Modified time: 2019-08-09 15:10:49
  */
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
@@ -120,7 +120,9 @@ test(formalName(`Archive team successfully after clicking Archive button.`, ['P1
 });
 
 
-test.skip(formalName(`Should display tooltip when click "i" icon beside the "Archive team" button`, ['P2', 'JPT-1131', 'ArchiveTeam', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-1131'], keywords: ['ArchiveTeam'], maintainers: ['Potar.He']
+})(`Should display tooltip when click "i" icon beside the "Archive team" button`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(adminUser).init();
@@ -140,7 +142,11 @@ test.skip(formalName(`Should display tooltip when click "i" icon beside the "Arc
     });
   });
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -160,11 +166,12 @@ test.skip(formalName(`Should display tooltip when click "i" icon beside the "Arc
     await t.expect(teamSettingDialog.archiveTeamButton.visible).ok();
   });
 
-  await h(t).withLog(`When I click "i" icon beside the 'Archive team' button`, async () => {
-    await t.click(teamSettingDialog.archiveTeamButtonInfoIcon);
+  await h(t).withLog(`When I hover "i" icon beside the "Archive team" button`, async () => {
+    await t.hover(teamSettingDialog.archiveTeamButtonInfoIcon);
   });
 
-  await h(t).withLog(`Then there should be tooltip displayed '${tooltipText}`, async () => {
+  await h(t).withLog(`Then there should be tooltip displayed: "{tooltipText}"`, async (step) => {
+    step.setMetadata("tooltipText", tooltipText);
     await teamSettingDialog.showTooltip(tooltipText);
   });
 });

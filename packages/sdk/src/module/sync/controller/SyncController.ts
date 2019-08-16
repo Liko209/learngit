@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERROR_CODES_NETWORK, mainLogger, PerformanceTracer } from 'foundation';
+import { ERROR_CODES_NETWORK } from 'foundation/error';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { indexData, initialData, remainingData } from '../../../api';
 import { IndexDataModel } from '../../../api/glip/user';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -21,7 +23,7 @@ import { RawPresence } from '../../presence/entity';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { progressManager } from '../../../utils/progress';
+import { progressManager } from 'sdk/utils/progress';
 import { CompanyService } from '../../company';
 import { Group, GroupService } from '../../group';
 import { ItemService } from '../../item/service';

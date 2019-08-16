@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { RESPONSE_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
+import { LogEntity, mainLogger } from 'foundation/log';
+import { RESPONSE_STATUS_CODE } from 'foundation/network';
 import { Api } from 'sdk/api';
 import { Pal } from 'sdk/pal';
 import { ILogUploader } from './consumer';

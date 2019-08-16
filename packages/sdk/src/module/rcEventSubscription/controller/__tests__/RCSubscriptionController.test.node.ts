@@ -13,7 +13,7 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { RcSubscriptionApi } from 'sdk/api/ringcentral/RcSubscriptionApi';
 import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
 import Pubnub from 'pubnub';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 jest.mock('sdk/framework/utils/jobSchedule');
 jest.mock('sdk/api/ringcentral/RcSubscriptionApi');

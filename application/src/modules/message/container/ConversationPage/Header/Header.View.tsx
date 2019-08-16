@@ -53,7 +53,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     const actionButtons = conversationHeaderExtensions.map(
       (Comp: ComponentType<{ groupId: number; analysisSource: string }>) => (
         <Comp
-          key={`ACTION_${groupId}`}
+          key={`ACTION_${groupId}${Comp.displayName}`}
           groupId={groupId}
           analysisSource={analysisSource}
         />

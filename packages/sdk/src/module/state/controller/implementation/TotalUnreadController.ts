@@ -22,7 +22,7 @@ import { AccountService } from '../../../account/service';
 import { NotificationEntityPayload } from '../../../../service/notificationCenter';
 import { EVENT_TYPES } from '../../../../service/constants';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { BadgeService } from 'sdk/module/badge';
 import { UndefinedAble } from 'sdk/types';
