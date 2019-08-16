@@ -33,12 +33,9 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
   constructor() {
     super();
     this.reaction(
-      () => ({
-        key: this._globalSearchStore.searchKey,
-        open: this._globalSearchStore.open,
-      }),
-      async ({ key, open }) => {
-        if (key === '' && open) {
+      () => this._globalSearchStore.searchKey,
+      async (searchKey: string) => {
+        if (searchKey === '') {
           await this.fetchRecent();
         }
       },
