@@ -203,7 +203,9 @@ export class RcPlatformSdk {
     const params = _.pickBy({ groupId, name }, _.identity);
     return await this.retryRequestOnException(async () => {
       return await this.sdk.post(url, content, {
-        'Content-Type': 'application/octet-stream',
+        headers: {
+          'Content-Type': 'application/octet-stream'
+        },
         params,
       });
     });
