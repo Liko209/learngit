@@ -153,6 +153,17 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: CACHE_COUNT,
   },
+  [ENTITY_NAME.CONVERSATION_PREFERENCE]: {
+    event: [ENTITY.CONVERSATION_PREFERENCE],
+    service: () => ({
+      getById: (id: number) =>
+        ServiceLoader.getInstance<SettingService>(
+          ServiceConfig.SETTING_SERVICE,
+        ).getByGroupId(id),
+    }),
+    type: HANDLER_TYPE.SINGLE_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
   [ENTITY_NAME.PHONE_NUMBER]: {
     event: [ENTITY.PHONE_NUMBER],
     service: () =>

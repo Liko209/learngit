@@ -136,6 +136,11 @@ const RingsList = ringsTypeList.map(id => ({
   url: `${AudioSourceUrl}${id}`,
 }));
 
+const SoundsListWithDefault = [
+  { id: SOUNDS_TYPE.Default, url: `${AudioSourceUrl}${SOUNDS_TYPE.Default}` },
+  ...SoundsList,
+];
+
 enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
@@ -193,5 +198,6 @@ export {
   SOUNDS_TYPE,
   RingsList,
   SoundsList,
+  SoundsListWithDefault,
   VIDEO_SERVICE_OPTIONS,
 };
