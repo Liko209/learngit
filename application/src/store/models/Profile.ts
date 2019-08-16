@@ -70,7 +70,10 @@ export default class ProfileModel extends Base<Profile> {
   desktopVoicemailOption: boolean;
 
   @observable
-  maxLeftRailGroup: number;
+  maxLeftrailGroupTabs2: number;
+
+  @observable
+  showLinkPreviews?: boolean;
 
   @observable
   lastReadMissed: number | undefined;
@@ -105,7 +108,7 @@ export default class ProfileModel extends Base<Profile> {
     });
 
     this.hiddenGroupIds = hiddenGroupIds;
-    this.maxLeftRailGroup = Number(data.max_leftrail_group_tabs2) || 0;
+    this.maxLeftrailGroupTabs2 = Number(data.max_leftrail_group_tabs2) || 0;
 
     // TODO, refactor these default value, should move them into a map or standalone file
     // settings
@@ -144,6 +147,7 @@ export default class ProfileModel extends Base<Profile> {
     this.videoService =
       data.video_service || VIDEO_SERVICE_OPTIONS.RINGCENTRAL_MEETINGS;
     this.rcvBeta = !!data.rcv_beta;
+    this.showLinkPreviews = data.show_link_previews;
   }
 
   @computed
