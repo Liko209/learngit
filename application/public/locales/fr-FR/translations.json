@@ -759,7 +759,8 @@
     }
   },
   "meeting": {
-    "Meetings": "Réunions"
+    "Meetings": "Réunions",
+    "Meet": "Réunions"
   },
   "integration": "",
   "setting": {

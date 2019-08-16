@@ -31,6 +31,7 @@ const AVATAR_MARGIN_BOTTOM = 8;
 const WRAPPER_PADDING = 24;
 const DEFAULT_MEMBER_FETCH_COUNT = 40;
 const DEFAULT_GUEST_FETCH_COUNT = 10;
+const MAX_MEMBER_ROW_COUNT = 3;
 class RightShelfMemberListViewModel
   extends StoreViewModel<RightShelfMemberListProps>
   implements RightShelfMemberListViewProps {
@@ -190,7 +191,7 @@ class RightShelfMemberListViewModel
         this.allMemberLength && this.allMemberLength > this.countPerRow
           ? Math.ceil(this.allMemberLength / this.countPerRow)
           : 1,
-        this._guestCompanyIdsLen > 0 ? 3 : 4,
+        MAX_MEMBER_ROW_COUNT,
       ) *
         (AVATAR_WIDTH + AVATAR_MARGIN_BOTTOM)
     );
@@ -205,7 +206,7 @@ class RightShelfMemberListViewModel
 
   @computed
   get shownMemberIds() {
-    const rowCount = this.fullGuestIds.length > 0 ? 3 : 4;
+    const rowCount = MAX_MEMBER_ROW_COUNT;
     let showCount = Math.min(
       rowCount * this.countPerRow,
       this.fullMemberIds.length,

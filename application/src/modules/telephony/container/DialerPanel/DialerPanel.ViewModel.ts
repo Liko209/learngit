@@ -12,7 +12,6 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
   );
-
   @action
   makeCall = async (val: string) => {
     // make sure `this._telephonyStore.dialerCall()` run before `this._telephonyStore.end()`
@@ -22,7 +21,6 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
       });
       this._telephonyStore.end();
     }
-    this._telephonyStore.enterFirstLetterThroughKeypadForInputString();
   };
 
   onAfterDialerOpen = () => this._telephonyService.onAfterDialerOpen();
