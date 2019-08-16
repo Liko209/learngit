@@ -70,12 +70,6 @@ export default class ProfileModel extends Base<Profile> {
   desktopVoicemailOption: boolean;
 
   @observable
-  maxLeftrailGroupTabs2: number;
-
-  @observable
-  showLinkPreviews?: boolean;
-
-  @observable
   lastReadMissed: number | undefined;
 
   @observable
@@ -108,8 +102,6 @@ export default class ProfileModel extends Base<Profile> {
     });
 
     this.hiddenGroupIds = hiddenGroupIds;
-    this.maxLeftrailGroupTabs2 = Number(data.max_leftrail_group_tabs2) || 0;
-
     // TODO, refactor these default value, should move them into a map or standalone file
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;
@@ -147,7 +139,6 @@ export default class ProfileModel extends Base<Profile> {
     this.videoService =
       data.video_service || VIDEO_SERVICE_OPTIONS.RINGCENTRAL_MEETINGS;
     this.rcvBeta = !!data.rcv_beta;
-    this.showLinkPreviews = data.show_link_previews;
   }
 
   @computed

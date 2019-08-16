@@ -138,11 +138,10 @@ const RingsList = ringsTypeList.map(id => ({
 
 const MAX_LEFTRAIL_GROUP_MAX_VALUE = 59;
 const MAX_LEFTRAIL_GROUP_DEFAULT_VALUE = 10;
-const MAX_LEFTRAIL_GROUP_VALUE_LIST: number[] = Array(
-  MAX_LEFTRAIL_GROUP_MAX_VALUE,
-)
-  .fill(0, 0, MAX_LEFTRAIL_GROUP_MAX_VALUE)
-  .map((e, i) => i + 2);
+const MAX_LEFTRAIL_GROUP_VALUE_LIST: number[] = Array.from(
+  { length: MAX_LEFTRAIL_GROUP_MAX_VALUE },
+  (v, k) => k + 2,
+);
 
 enum SETTING_KEYS {
   // call settings
