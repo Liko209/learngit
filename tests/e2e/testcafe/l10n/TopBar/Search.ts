@@ -129,7 +129,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     const typeOption = searchDialog.fullSearchPage.messagesTab.typeOptionSelector;
     await t.expect(typeOption.exists).ok();
   });
-  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_TypeSelector' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_TypeFilters' });
 
   await h(t).withLog('When I click "Time posted" selector', async () => {
     const messagesTab = searchDialog.fullSearchPage.messagesTab;
@@ -140,5 +140,5 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     const timePostOption = searchDialog.fullSearchPage.messagesTab.timePostOptionSelector;
     await t.expect(timePostOption.exists).ok();
   });
-  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_TopBar_TimePostedSelector' });
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_TopBar_TimePostedFilters' });
 });

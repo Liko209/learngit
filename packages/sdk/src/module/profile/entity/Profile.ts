@@ -50,6 +50,9 @@ type Profile = ExtendedBaseModel & {
 
   // conversation settings
   [SETTING_KEYS.MAX_LEFTRAIL_GROUP]?: string;
+  // meetings
+  video_service?: string;
+  rcv_beta?: boolean;
 };
 
 export { Profile };

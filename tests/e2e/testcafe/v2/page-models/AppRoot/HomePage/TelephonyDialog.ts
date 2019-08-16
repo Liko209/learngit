@@ -395,7 +395,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async selectItemByKeyboard() {
-    await this.t.click(this.callLogList).pressKey('down');
+    await this.t.pressKey('down');
   }
 
   async hoverDeleteButton() {
@@ -579,6 +579,10 @@ export class ContactSearchList extends BaseWebComponent {
 
   get hasDirectDialIcon() {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0)).exists;
+  }
+
+  async clickDirectDialIcon() {
+    await this.t.click(this.directDialIcon);
   }
 
   get hasDirectDial() {

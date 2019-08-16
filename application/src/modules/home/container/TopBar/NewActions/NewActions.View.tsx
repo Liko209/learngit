@@ -7,7 +7,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
-import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
 import { JuiNewActions } from 'jui/pattern/TopBar';
 import { JuiFabButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';

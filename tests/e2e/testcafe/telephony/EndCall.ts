@@ -134,6 +134,10 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   let session: WebphoneSession;
   await h(t).withLog('And another user login webphone', async () => {
     session = await h(t).newWebphoneSession(anotherUser);
@@ -289,6 +293,10 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -382,6 +390,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And I have a 1:1 conversation with that user'`, async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, me);
   });
 
   await h(t).withLog(`And I login Jupiter with my extension: ${me.company.number}#${me.extension}`, async () => {

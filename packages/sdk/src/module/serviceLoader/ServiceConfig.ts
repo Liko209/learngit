@@ -30,6 +30,7 @@ const ServiceConfig = {
   CALL_LOG_SERVICE: 'CallLogService',
   VOICEMAIL_SERVICE: 'VoicemailService',
   BADGE_SERVICE: 'BadgeService',
+  MEETINGS_SERVICE: 'MeetingsService',
 };
 
 export { ServiceConfig };

@@ -17,7 +17,7 @@ class PresenceAPI extends Api {
    */
   static requestPresenceByIds(idArr: number[]) {
     const ids = idArr.join(',');
-    return this.glipNetworkClient.get<RawPresence[]>({
+    return PresenceAPI.glipNetworkClient.get<RawPresence[]>({
       path: `/glip-presence/v1/person/${ids}/presence`,
       via: NETWORK_VIA.SOCKET,
       retryCount: 3,
@@ -27,7 +27,7 @@ class PresenceAPI extends Api {
   }
 
   static setPresence(presence: Presence) {
-    return this.glipNetworkClient.post<Presence>({
+    return PresenceAPI.glipNetworkClient.post<Presence>({
       path: `/glip-presence/v1/person/${presence.id}/set-status`,
       via: NETWORK_VIA.SOCKET,
       host: Api.httpConfig.glip.presenceServer,
@@ -39,7 +39,7 @@ class PresenceAPI extends Api {
   }
 
   static setAutoPresence(presence: PRESENCE_REQUEST_STATUS) {
-    return this.glipNetworkClient.post<Presence>({
+    return PresenceAPI.glipNetworkClient.post<Presence>({
       path: '/set_presence',
       via: NETWORK_VIA.SOCKET,
       host: Api.httpConfig.glip.presenceServer,

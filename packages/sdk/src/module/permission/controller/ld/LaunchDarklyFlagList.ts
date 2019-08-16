@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-
 const LaunchDarklyDefaultPermissions = {
   JUPITER_CREATE_TEAM: true,
   JUPITER_CAN_SAVE_LOG: false,
@@ -14,6 +13,7 @@ const LaunchDarklyDefaultPermissions = {
   CAN_SHOW_NOTE: false,
   LEFT_RAIL_MAX_COUNT: 80,
   CAN_MENTION_TEAM: false,
+  CAN_USE_VIDEO_CALL: false,
 };
 
 export { LaunchDarklyDefaultPermissions };

@@ -285,6 +285,11 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createTeamsOrChats([team, group, chat]);
   });
 
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', group, loginUser);
+  });
+
   await h(t).withLog(`And I login Jupiter this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();

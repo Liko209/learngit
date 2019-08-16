@@ -23,7 +23,8 @@ import ProfileModel from '@/store/models/Profile';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import _ from 'lodash';
 import { autorun, computed, reaction, action } from 'mobx';
-import { mainLogger, PerformanceTracer } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { MAINTAIN_DIRECTION, QUERY_DIRECTION } from 'sdk/dao';
 import { AccountService } from 'sdk/module/account';
 import { GroupService } from 'sdk/module/group';
@@ -181,12 +182,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
           const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-          const currentGroupId = getGlobalValue(
-            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-          );
           ids.forEach((id: number) => {
             const group = payload.body.entities.get(id);
-            const isCurrentGroup = id === currentGroupId;
+            const isCurrentGroup = this._isCurrentConversation(id);
             const includeCurrentUser =
               group && group.members.includes(currentUserId);
             removeFromCurrentTeam =
@@ -617,10 +615,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           ? groupState.unreadCount > 0
           : false;
       const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const currentConversationId = getGlobalValue(
-        GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-      );
-      const isCurrentConversation = currentConversationId === model.id;
+      const isCurrentConversation = this._isCurrentConversation(model.id);
       const createdByMeOrHasPostTime: boolean =
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;
@@ -632,9 +627,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         !model.is_team &&
-        (isCurrentConversation || createdByMeOrHasPostTime) &&
+        createdByMeOrHasPostTime &&
         groupService.isValid(model) &&
         (hasUnread ||
+          isCurrentConversation ||
           this._isInLimitation(SECTION_TYPE.DIRECT_MESSAGE, sortableModel))
       );
     };
@@ -674,7 +670,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         includesMe() &&
-        (hasUnread || this._isInLimitation(SECTION_TYPE.TEAM, sortableModel))
+        (hasUnread ||
+          this._isCurrentConversation(model.id) ||
+          this._isInLimitation(SECTION_TYPE.TEAM, sortableModel))
       );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
@@ -687,15 +685,26 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
 
+  private _isCurrentConversation(id: number) {
+    const currentConversationId = getGlobalValue(
+      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+    );
+    return currentConversationId === id;
+  }
+
   private _isInLimitation(
     sectionType: SECTION_TYPE,
     sortableModel: ISortableModel,
   ) {
-    const limitSortableModel: ISortableModel = this._handlersMap[sectionType]
-      .sortableListStore.items[this._maxLeftRailGroup - 1];
-    return limitSortableModel
-      ? sortableModel.sortValue <= limitSortableModel.sortValue
-      : true;
+    const sortableListStore = this._handlersMap[sectionType].sortableListStore;
+    if (sortableListStore.size >= this._maxLeftRailGroup) {
+      const limitSortableModel: ISortableModel = this._handlersMap[sectionType]
+        .sortableListStore.items[this._maxLeftRailGroup - 1];
+      return limitSortableModel
+        ? sortableModel.sortValue <= limitSortableModel.sortValue
+        : true;
+    } 
+    return true;
   }
 
   setLeftRailVisible(isVisible: boolean) {
@@ -710,14 +719,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   async fetchPagination(sectionType: SECTION_TYPE) {
-    const offset = this._handlersMap[SECTION_TYPE.TEAM].size;
+    const offset = this._handlersMap[SECTION_TYPE.TEAM].size - 1;
     mainLogger
       .tags(LOG_TAG)
       .info('fetchPagination() offset:', offset, sectionType);
     this._handlersMap[sectionType].fetchData(
       QUERY_DIRECTION.NEWER,
       DEFAULT_LEFT_RAIL_GROUP,
-      offset,
+      offset > 0 ? offset : 0,
     );
   }
 

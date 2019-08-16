@@ -21,7 +21,10 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
-import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from '../constants';
+import {
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  VIDEO_SERVICE_OPTIONS,
+} from '../constants';
 import GroupService from 'sdk/module/group';
 
 class ProfileDataController {
@@ -142,6 +145,11 @@ class ProfileDataController {
       return this._getGlobalSetting(conversationId);
     }
     return !notification.desktop_notifications;
+  }
+
+  async isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {
+    const profile = await this.getProfile();
+    return _.get(profile, 'video_service') === option;
   }
 
   private async _handleProfile(

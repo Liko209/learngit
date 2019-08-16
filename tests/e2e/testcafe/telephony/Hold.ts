@@ -43,8 +43,12 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   let session: WebphoneSession;
-  await h(t).withLog('And anpther user login webphone', async () => {
+  await h(t).withLog('And another user login webphone', async () => {
     session = await h(t).newWebphoneSession(anotherUser);
   });
 

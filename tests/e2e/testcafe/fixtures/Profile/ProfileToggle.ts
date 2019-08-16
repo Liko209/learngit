@@ -139,10 +139,15 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createTeamsOrChats([chat, group, team]);
   });
 
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', group, loginUser);
+  });
+
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
-  await h(t).withLog(`WHen I login Jupiter with {number}#{extension}`, async (step) => {
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
       number: loginUser.company.number,
       extension: loginUser.extension,

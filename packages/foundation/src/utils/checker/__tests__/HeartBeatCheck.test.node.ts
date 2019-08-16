@@ -6,6 +6,7 @@
 
 import { HeartBeatCheck } from '../HeartBeatCheck';
 import { getCurrentTime } from '../../jsUtils/jsUtils';
+
 jest.mock('../../jsUtils/jsUtils');
 
 describe('HeartBeatCheck', () => {
@@ -18,11 +19,12 @@ describe('HeartBeatCheck', () => {
   describe('constructor', () => {
     it('should not do callback when heat beat is normal', () => {
       let called = false;
-      new HeartBeatCheck(1, 5, () => {
+      const heartBeatCheck = new HeartBeatCheck(1, 5, () => {
         called = true;
       });
       expect(setInterval).toHaveBeenCalled();
       expect(called).toBeFalsy();
+      heartBeatCheck.cleanUp();
     });
   });
   describe('cleanup', () => {

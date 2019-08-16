@@ -78,13 +78,15 @@ function getDurationTimeText(
   const date: string = repeatEndingOn
     ? dateFormatter.exactDate(moment(repeatEndingOn))
     : '';
-  const hideUntil = (repeat: string, repeatEnding: string) => repeat === '' || // task not set repeat will be ''
+  const hideUntil = (repeat: string, repeatEnding: string) =>
+    repeat === '' || // task not set repeat will be ''
     repeat === 'none' ||
     repeatEnding === 'none' ||
     repeatEnding === 'after' ||
     repeatEndingOn === null;
   // if has repeat and is forever need hide times
-  const hideTimes = (repeatEndingAfter: string, repeatEnding: string) => repeatEnding === 'none' || repeatEnding === 'on';
+  const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
+    repeatEnding === 'none' || repeatEnding === 'on';
   const repeatText = date ? ` ${i18nP('item.until')} ${date}` : '';
 
   return `${i18nP(REPEAT_TEXT[repeat]) || ''} ${
@@ -92,15 +94,30 @@ function getDurationTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
-function filterIDsByType(sheets: SheetsType, type: any) {
+function filterIDsByArrayType(sheets: SheetsType, type: any): number[] {
   let ids: number[] = [];
+  (type as Array<number>).forEach(subType => {
+    ids = [...ids, ...(sheets[subType] || [])];
+  });
+  return ids;
+}
+
+function filterIDsByFuncType(sheets: SheetsType, type: any): number[] {
+  let ids: number[] = [];
+  Object.keys(sheets).forEach((key: string) => {
+    if (type(key)) {
+      ids = [...ids, ...(sheets[key] || [])];
+    }
+  });
+  return ids;
+}
+
+function filterIDsByType(sheets: SheetsType, type: any) {
+  if (Array.isArray(type)) {
+    return filterIDsByArrayType(sheets, type);
+  }
   if (typeof type === 'function') {
-    Object.keys(sheets).forEach((key: string) => {
-      if (type(key)) {
-        ids = ids.concat(sheets[key]);
-      }
-    });
-    return ids;
+    return filterIDsByFuncType(sheets, type);
   }
   return sheets[type] || [];
 }

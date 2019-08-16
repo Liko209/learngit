@@ -44,6 +44,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c4.c4 .c5,
@@ -336,6 +337,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c8.c8 .c5,
@@ -411,6 +413,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c4.c4 .c5,
@@ -817,6 +820,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c13.c13 .c10,
@@ -892,6 +896,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c9.c9 .c10,

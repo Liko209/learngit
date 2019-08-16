@@ -5,7 +5,7 @@
  */
 
 import { computed, action } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GlobalSearchStore } from '../../store';
 import { GlobalSearchService } from '../../service';

@@ -134,6 +134,20 @@ class EntityBaseService<
     throw new Error('entitySourceController is null');
   }
 
+  batchGetSynchronously(ids: IdType[]): T[] {
+    if (this._entityCacheController) {
+      const entities: T[] = [];
+      ids.forEach((id: IdType) => {
+        const entity = this.getSynchronously(id);
+        if (entity) {
+          entities.push(entity);
+        }
+      });
+      return entities;
+    }
+    return [];
+  }
+
   getSynchronously(id: IdType): T | null {
     if (this._entityCacheController) {
       return this._entityCacheController.getSynchronously(id);
@@ -176,12 +190,12 @@ class EntityBaseService<
         ),
         this.networkConfig
           ? {
-            requestController: buildRequestController<T, IdType>(
-              this.networkConfig,
-            ),
-            canSaveRemoteData: this.canSaveRemoteEntity(),
-            canRequest: this._canRequest,
-          }
+              requestController: buildRequestController<T, IdType>(
+                this.networkConfig,
+              ),
+              canSaveRemoteData: this.canSaveRemoteEntity(),
+              canRequest: this._canRequest,
+            }
           : undefined,
       );
     }

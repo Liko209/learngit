@@ -3,7 +3,8 @@
  * @Date: 2019-04-03 12:06:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import GroupModel from '@/store/models/Group';
 
 import { config } from '../../../module.config';

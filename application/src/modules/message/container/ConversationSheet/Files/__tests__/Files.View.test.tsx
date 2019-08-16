@@ -6,7 +6,8 @@
 import { testable, test } from 'shield';
 import React from 'react';
 import { shallow } from 'enzyme';
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { FilesView } from '../Files.View';
 import {
   JuiPreviewImage,
@@ -17,8 +18,6 @@ import { ImageCard } from 'jui/pattern/ConversationCard/Files/style';
 import { config } from '@/modules/viewer/module.config';
 import * as Viewer from '@/modules/viewer/container/Viewer';
 import { VIEWER_SERVICE } from '@/modules/viewer/interface';
-
-jest.mock('styled-components', () => require('./styled-components'));
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

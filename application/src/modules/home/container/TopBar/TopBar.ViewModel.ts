@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 17:23:20
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { action, computed } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 

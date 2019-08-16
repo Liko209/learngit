@@ -5,6 +5,8 @@
  */
 const BETA_CONFIG_KEYS = {
   BETA_ENABLE_LOG: 'beta_enable_log',
+  BETA_RCV: 'beta_rcv',
+  BETA_RCV_EMBEDDED: 'beta_rcv_embedded',
 };
 
 export { BETA_CONFIG_KEYS };

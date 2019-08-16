@@ -6,7 +6,7 @@
 
 import React, { Component, ChangeEvent } from 'react';
 import { observer } from 'mobx-react';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { JuiBoxSelect } from 'jui/components/Selects';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';
@@ -15,7 +15,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { catchError } from '@/common/catchError';
 import { JuiText } from 'jui/components/Text';
-import { JuiListItemSecondaryAction } from 'jui/components';
+import { JuiListItemSecondaryAction } from 'jui/components/Lists';
 import { JuiVirtualizedBoxSelect } from 'jui/components/VirtualizedSelects';
 import { SETTING_ITEM_TYPE } from '@/interface/setting';
 

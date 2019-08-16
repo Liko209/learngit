@@ -25,12 +25,15 @@ import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
 import { accelerateURL } from '@/common/accelerateURL';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { VIEWER_PERFORMANCE_KEYS } from '@/modules/viewer/performanceKeys';
 
 type ImageViewerProps = WithTranslation & ImageViewerViewProps;
 
 @observer
 class ImageViewerComponent extends Component<ImageViewerProps, any> {
+  private _performanceTracer: PerformanceTracer;
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
   private _animateRef: RefObject<ZoomElementAnimation> = createRef();
@@ -38,6 +41,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   constructor(props: ImageViewerProps) {
     super(props);
     props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
+    props.setOnImageSwitchCb(this._onImageSwitch);
     this.state = {
       switched: false,
       imageInited: false,
@@ -126,6 +130,12 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     this.context();
   };
 
+  private _onImageSwitch = (imgInfo: { width: number; height: number }) => {
+    if (imgInfo.width && imgInfo.height && this._zoomRef.current) {
+      this._zoomRef.current.updateContentSize(imgInfo.width, imgInfo.height);
+    }
+  };
+
   private _onZoomImageContentChange = () => {
     if (!this.state.imageInited) {
       this.setState({
@@ -142,6 +152,18 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   private _canSwitchNext = () => {
     const { hasNext, isLoadingMore } = this.props;
     return !isLoadingMore && hasNext;
+  };
+
+  performanceTracerStart = () => {
+    this._performanceTracer = PerformanceTracer.start();
+  };
+
+  performanceTracerEnd = () => {
+    this._performanceTracer &&
+      this._performanceTracer.end({
+        key: VIEWER_PERFORMANCE_KEYS.UI_IMAGE_VIEWER_IMAGE_RENDER,
+        infos: this.props.currentItemId,
+      });
   };
 
   render() {
@@ -199,6 +221,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     return (
                       <JuiImageView
                         data-test-automation-id={'previewerCanvas'}
+                        performanceTracerStart={this.performanceTracerStart}
+                        performanceTracerEnd={this.performanceTracerEnd}
                         key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
                         src={accelerateURL(imageUrl)}

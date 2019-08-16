@@ -9,7 +9,7 @@ import { TopBannerView } from '../TopBanner.View';
 import { ElectronUpgradeBanner } from '../Banners/ElectronUpgradeBanner/ElectronUpgradeBanner';
 import { NetworkBanner } from '../Banners/NetworkBanner';
 import { DndBanner } from '../Banners/DndBanner';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 
 jest.spyOn(container, 'get').mockReturnValue({
   topBanners: [],

@@ -84,6 +84,9 @@ class HeaderMoreMenu extends BaseWebComponent {
   get adminActions() {
     return this.self.find('li').withText('Admin actions');
   }
+  get adminActionsByClass() {
+    return this.self.find('*[class=" arrow_right icon sc-htpNat dQnPez"]');
+  }
 
   async enterAdminActions() {
     return await this.t.hover(this.adminActions);
@@ -129,7 +132,7 @@ export class BaseConversationPage extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('conversation-page-header-title');
+    return this.getSelectorByAutomationId('conversation-page-header-title', this.header);
   }
 
   async timeOfPostsShouldOrderByAsc() {

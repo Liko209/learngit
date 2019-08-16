@@ -3,7 +3,8 @@
  * @Date: 2019-05-29 09:31:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, decorate, injectable, Jupiter } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyService } from '../../../../service/TelephonyService';
 import { ForwardViewModel } from '../Forward.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../../interface/constant';

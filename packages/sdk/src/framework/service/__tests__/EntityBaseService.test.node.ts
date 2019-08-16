@@ -17,6 +17,9 @@ import { PostDao } from 'sdk/module/post/dao';
 import { Post } from 'sdk/module/post/entity';
 import { ModelIdType } from 'sdk/framework/model';
 import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySourceController';
+import { buildEntityCacheController } from 'sdk/framework/controller';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCacheController';
 
 jest.mock('../../../api/NetworkClient');
 jest.mock('../../../dao');
@@ -77,7 +80,7 @@ describe('EntityBaseService', () => {
         networkConfig,
       );
       service['initialEntitiesCache']();
-      expect(query.toArray).toBeCalled();
+      expect(query.toArray).toHaveBeenCalled();
     });
 
     it('should not call toArray api for other dao', () => {
@@ -96,7 +99,7 @@ describe('EntityBaseService', () => {
         networkConfig,
       );
       service['initialEntitiesCache']();
-      expect(query.toArray).not.toBeCalled();
+      expect(query.toArray).not.toHaveBeenCalled();
     });
   });
 
@@ -249,14 +252,14 @@ describe('EntityBaseService', () => {
       controller.addObserver = jest.fn();
       const observer = { id: 999 };
       service.addEntityNotificationObserver(observer as any);
-      expect(controller.addObserver).toBeCalledWith(observer);
+      expect(controller.addObserver).toHaveBeenCalledWith(observer);
     });
 
     it('should call removeObserver in controller when call removeEntityNotificationObserver', () => {
       controller.removeObserver = jest.fn();
       const observer = { id: 999 };
       service.removeEntityNotificationObserver(observer as any);
-      expect(controller.removeObserver).toBeCalledWith(observer);
+      expect(controller.removeObserver).toHaveBeenCalledWith(observer);
     });
 
     it('should return EntityNotificationController when call getEntityNotificationController', () => {
@@ -288,6 +291,19 @@ describe('EntityBaseService', () => {
       expect(service['_entitySourceController']).toBeUndefined();
       expect(service['_entityCacheController']).toBeUndefined();
       expect(service['_entityNotificationController']).toBeUndefined();
+    });
+  });
+
+  describe('batchGetSynchronously()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should get the data from cache directly', async () => {
+      const spy = jest.spyOn(service, 'getSynchronously');
+      const entities = service.batchGetSynchronously([1, 2]);
+      expect(spy).toHaveBeenCalledTimes(2);
     });
   });
 });

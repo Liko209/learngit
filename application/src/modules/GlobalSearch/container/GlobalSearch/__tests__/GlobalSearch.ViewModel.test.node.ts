@@ -3,7 +3,8 @@
  * @Date: 2019-04-03 14:24:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { GlobalSearchViewModel } from '../GlobalSearch.ViewModel';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';

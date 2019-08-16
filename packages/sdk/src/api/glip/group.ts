@@ -7,7 +7,7 @@ import Api from '../api';
 import { GroupApiType } from '../../models';
 import { Group } from '../../module/group/entity';
 import { Raw } from '../../framework/model';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA } from 'foundation/network';
 
 class GroupAPI extends Api {
   /**
@@ -17,19 +17,19 @@ class GroupAPI extends Api {
    */
   static basePath = '/group';
   static requestGroupById(id: number) {
-    return this.getDataById<Group>(id);
+    return GroupAPI.getDataById<Group>(id);
   }
 
   static requestNewGroup(options: Partial<Group>) {
-    return this.postData<Group>(options);
+    return GroupAPI.postData<Group>(options);
   }
 
   static pinPost(path: string, options: object) {
-    return this.glipNetworkClient.put<Raw<Group>>({ path, data: options });
+    return GroupAPI.glipNetworkClient.put<Raw<Group>>({ path, data: options });
   }
 
   static addTeamMembers(groupId: number, memberIds: number[]) {
-    return this.glipNetworkClient.put<Raw<Group>>({
+    return GroupAPI.glipNetworkClient.put<Raw<Group>>({
       path: `/add_team_members/${groupId}`,
       data: {
         members: memberIds,
@@ -38,11 +38,11 @@ class GroupAPI extends Api {
   }
 
   static createTeam(data: Partial<GroupApiType>) {
-    return this.glipNetworkClient.post<Raw<Group>>({ data, path: '/team' });
+    return GroupAPI.glipNetworkClient.post<Raw<Group>>({ data, path: '/team' });
   }
 
   static convertToTeam(data: Partial<GroupApiType>) {
-    return this.glipNetworkClient.post<Raw<Group>>({
+    return GroupAPI.glipNetworkClient.post<Raw<Group>>({
       data,
       path: '/convert_to_team',
     });
@@ -52,11 +52,11 @@ class GroupAPI extends Api {
     group._id = group.id;
     delete group.id;
     const path = group.is_team ? `/team/${id}` : `/group/${id}`;
-    return this.glipNetworkClient.put<Raw<Group>>({ path, data: group });
+    return GroupAPI.glipNetworkClient.put<Raw<Group>>({ path, data: group });
   }
 
   static sendTypingEvent(options: any) {
-    return this.glipNetworkClient.send({
+    return GroupAPI.glipNetworkClient.send({
       path: '',
       data: options,
       via: NETWORK_VIA.SOCKET,

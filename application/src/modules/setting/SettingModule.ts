@@ -3,7 +3,8 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, inject } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
 import { GeneralSettingManager } from './manager/general';
 import { NotificationSoundSettingManager } from './manager/notificationSound';
 import { PlaceholderSettingManager } from './manager/placeholder/PlaceholderSettingManager';

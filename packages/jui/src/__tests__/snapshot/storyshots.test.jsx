@@ -8,14 +8,28 @@ import initStoryshots, {
   Stories2SnapsConverter
 } from '@storybook/addon-storyshots';
 import * as renderer from 'react-test-renderer';
-import { styleSheetSerializer } from 'jest-styled-components/serializer';
-import { addSerializer } from 'jest-specific-snapshot';
-import { excludeDomSnapshot } from './snapshotConfig';
-import { isExcluded } from './utils';
+import {
+  styleSheetSerializer
+} from 'jest-styled-components/serializer';
+import {
+  addSerializer
+} from 'jest-specific-snapshot';
+import {
+  excludeDomSnapshot
+} from './snapshotConfig';
+import {
+  isExcluded
+} from './utils';
 
 addSerializer(styleSheetSerializer);
 
+jest.unmock('moize');
+jest.unmock('styled-components');
+jest.unmock('downshift');
+jest.unmock('react-resize-detector');
+
 const tested = new Set();
+
 function isTested(story) {
   const hash = `${story.kind} ${story.name}`;
   if (tested.has(hash)) {
@@ -25,7 +39,10 @@ function isTested(story) {
   return false;
 }
 initStoryshots({
-  test: ({ story, context }) => {
+  test: ({
+    story,
+    context
+  }) => {
     if (isExcluded(story.kind, story.name, excludeDomSnapshot)) {
       return;
     }

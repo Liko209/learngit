@@ -1,0 +1,7 @@
+{
+  "on_merge": {
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

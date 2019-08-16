@@ -13,7 +13,7 @@ import {
   DidUploadFileCallback,
 } from './types';
 import { notificationCenter, EVENT_TYPES } from 'sdk/service';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService, ItemNotification } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';

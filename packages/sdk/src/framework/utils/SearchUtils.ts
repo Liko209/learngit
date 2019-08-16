@@ -3,9 +3,9 @@
  * @Date: 2019-03-15 18:47:28
  * Copyright © RingCentral. All rights reserved.
  */
-import UserPermissionType from '../../module/permission/types';
-import { IPermissionService } from '../../module/permission/service/IPermissionService';
-import { container } from '../../container';
+import UserPermissionType from 'sdk/module/permission/types';
+import { IPermissionService } from 'sdk/module/permission/service/IPermissionService';
+import { container } from 'sdk/container';
 import _ from 'lodash';
 
 const SplitTermsSymbols = new RegExp(/[\s,._-]+/);

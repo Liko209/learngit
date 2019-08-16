@@ -3,7 +3,7 @@
  * @Date: 2019-07-23 10:25:41
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { UserSettingEntity } from 'sdk/module/setting';

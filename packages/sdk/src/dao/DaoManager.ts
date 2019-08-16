@@ -7,8 +7,9 @@ import {
   KVStorageManager,
   DexieDB,
   DatabaseType,
-  mainLogger,
-} from 'foundation';
+} from 'foundation/db';
+import { mainLogger } from 'foundation/log';
+
 import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
@@ -68,6 +69,9 @@ class DaoManager extends Manager<
             Number(e.newValue) === BLOCK_MESSAGE_VALUE
           ) {
             DaoGlobalConfig.removeDBBlockMessageKey();
+            mainLogger
+              .tags(LOG_TAG)
+              .info('initDatabase() delete database due to db version change');
             await this.dbManager.deleteDatabase();
           }
         });

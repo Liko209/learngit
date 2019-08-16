@@ -31,10 +31,13 @@ describe('Client Config', () => {
     AccountUserConfig.prototype.getClientConfig = jest.fn().mockReturnValue({
       beta_enable_log_emails: '123,234,456',
       beta_enable_log_domains: '1,2,3,4',
+      beta_enable_log_email: '567,678,789',
+      beta_enable_log_domain: '5,6,7,8',
+      beta_rcv_emails: 'all',
     });
   }
 
-  it('beta log', async () => {
+  it('beta log', () => {
     setUploadLogBeta();
 
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(123);
@@ -71,7 +74,7 @@ describe('Client Config', () => {
     expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(true);
   });
 
-  it('should return true when user company is in beta domain list', async () => {
+  it('should return true when user company is in beta domain list', () => {
     setUploadLogBeta();
 
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(567);
@@ -82,14 +85,39 @@ describe('Client Config', () => {
     expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(true);
   });
 
-  it('should return false when user company is not in beta domain list', async () => {
+  it('should return false when user company is not in beta domain list', () => {
     setUploadLogBeta();
 
-    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(567);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5678);
     AccountUserConfig.prototype.getCurrentCompanyId = jest
       .fn()
       .mockReturnValue(9);
 
     expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(false);
+  });
+  it('should check xxx_emails, xxx_domains, xx_email and xx_domains', () => {
+    setUploadLogBeta();
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(789);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(10);
+    expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(true);
+    AccountUserConfig.prototype.getGlipUserId = jest
+      .fn()
+      .mockReturnValue(78910);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(8);
+    expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(true);
+  });
+  it('should return true if the flag value is all', () => {
+    setUploadLogBeta();
+    AccountUserConfig.prototype.getGlipUserId = jest
+      .fn()
+      .mockReturnValue(78910);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(81);
+    expect(isInBeta(EBETA_FLAG.ENABLE_RCV)).toEqual(true);
   });
 });

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { MessageUmi } from '../container/MessageUmi';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -18,7 +18,8 @@ function getNavUrl() {
 const config: SubModuleConfig = {
   route: {
     path: '/messages',
-    component: lazyComponent({
+    cache: true,
+    render: lazyComponent({
       loader: () =>
         import(/*
         webpackChunkName: "c.message" */ './lazy/Message'),

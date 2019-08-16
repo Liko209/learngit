@@ -8,7 +8,7 @@ import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
 import { OpenDialogE911 } from '../../container/E911';
 import { runInAction } from 'mobx';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import { MediaService } from '@/modules/media/service';
 import { IMediaService } from '@/interface/media';
 import { ENTITY_NAME } from '@/store';
@@ -37,16 +37,17 @@ describe('TelephonyService', () => {
 
   @testable
   class needE911Prompt {
-    @mockEntity(mockVolumeEntity)
-    beforeEach() {
+    beforeAll() {
       jupiter.registerService(IMediaService, MediaService);
       jupiter.registerModule(config);
     }
 
+    @mockEntity(mockVolumeEntity)
+    beforeEach() {}
     @test(
       'should needE911Prompt if account has DL and emergency has been confirmed',
     )
-    @mockService(RCInfoService, 'getDigitalLines', [1])
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -59,7 +60,6 @@ describe('TelephonyService', () => {
     }
 
     @test('should not needE911Prompt if account does not have DL [JPT-2703]')
-    @mockService(RCInfoService, 'getDigitalLines', [])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -67,6 +67,7 @@ describe('TelephonyService', () => {
       let ts;
       runInAction(() => {
         ts = jupiter.get(TELEPHONY_SERVICE);
+        ts['_rcInfoService'] = { getDigitalLines: () => [] };
       });
       expect(await ts.needE911Prompt()).toBe(false);
     }
@@ -74,7 +75,7 @@ describe('TelephonyService', () => {
     @test(
       'should not needE911Prompt if account has DL but emergency has not been confirmed',
     )
-    @mockService(RCInfoService, 'getDigitalLines', [1])
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', false)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -89,25 +90,23 @@ describe('TelephonyService', () => {
 
   @testable
   class openE911 {
-    @mockEntity(mockVolumeEntity)
-    beforeEach() {
-      jupiter.registerService(IMediaService, MediaService);
+    beforeAll() {
+      if (!jupiter.get(IMediaService)) {
+        jupiter.registerService(IMediaService, MediaService);
+      }
     }
-
+    @mockEntity(mockVolumeEntity)
+    beforeEach() {}
     @test('should show E911 if not have been show E911')
-    @mockService(RCInfoService, 'getDigitalLines')
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed')
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
+    @mockService(TelephonyStore, [
+      { method: 'hasShowE911', data: false },
+      { method: 'switchE911Status', data: true },
+    ])
     t1() {
-      jest.mock('../../store', () => {
-        class TelephonyStore {
-          hasShowE911 = false;
-          switchE911Status = () => true;
-        }
-        return { TelephonyStore };
-      });
-      jupiter.registerClass(TelephonyStore);
       (OpenDialogE911 as jest.Mock) = jest.fn();
       let ts;
       runInAction(() => {
@@ -118,7 +117,7 @@ describe('TelephonyService', () => {
     }
 
     @test('should not show E911 if have been show E911')
-    @mockService(RCInfoService, 'getDigitalLines')
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
     @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed')
     @mockService(globalConfigService)
     @mockService(phoneNumberService)

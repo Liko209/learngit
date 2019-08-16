@@ -7,7 +7,7 @@
 import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PhoneLinkProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '@/modules/telephony/service';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';

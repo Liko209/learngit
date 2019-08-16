@@ -85,6 +85,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       right: false,
       left: false,
     },
+    visual: true,
     priority: 0,
   };
 

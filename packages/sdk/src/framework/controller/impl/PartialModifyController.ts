@@ -14,6 +14,7 @@ import {
   PartialUpdateParams,
   PartialNotifyFunc,
   UpdateEntityFunc,
+  HandleRollbackPartialEntityFunc,
 } from '../interface/IPartialModifyController';
 import { transform } from '../../../service/utils';
 
@@ -36,6 +37,7 @@ class PartialModifyController<
       doPartialNotify,
       saveLocalFirst = true,
       forceDoUpdateEntity = false,
+      handleRollbackPartialEntity,
     } = params;
 
     const id: IdType = entityId;
@@ -70,6 +72,7 @@ class PartialModifyController<
         doPartialNotify,
         saveLocalFirst,
         forceDoUpdateEntity,
+        handleRollbackPartialEntity,
       );
     } while (false);
 
@@ -126,6 +129,7 @@ class PartialModifyController<
     doPartialNotify?: PartialNotifyFunc<T>,
     saveLocalFirst = true,
     forceDoUpdateEntity: boolean = false,
+    handleRollbackPartialEntity?: HandleRollbackPartialEntityFunc<T>,
   ): Promise<T> {
     let result: T;
     partialEntity.id = originalEntity.id;
@@ -163,14 +167,18 @@ class PartialModifyController<
         result = await doUpdateEntity(mergedEntity);
       } catch (e) {
         mainLogger.error('handlePartialUpdate: doUpdateEntity failed');
+        const handledRollbackEntity =
+          (handleRollbackPartialEntity &&
+            handleRollbackPartialEntity(mergedEntity, rollbackPartialEntity)) ||
+          rollbackPartialEntity;
         const fullRollbackEntity = this.getMergedEntity(
-          rollbackPartialEntity,
+          handledRollbackEntity,
           mergedEntity,
         );
         await this._doPartialSaveAndNotify(
           mergedEntity,
           fullRollbackEntity,
-          rollbackPartialEntity,
+          handledRollbackEntity,
           doPartialNotify,
         );
 
