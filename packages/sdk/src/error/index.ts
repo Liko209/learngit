@@ -19,5 +19,5 @@ export {
   JRuntimeError,
   ERROR_CODES_NETWORK,
   ERROR_CODES_RUNTIME,
-} from 'foundation';
+} from 'foundation/error';
 export { default as errorHelper } from './helper';

@@ -2,9 +2,9 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-06-24 17:14:41
  * Copyright © RingCentral. All rights reserved
-*/
-/// <reference path="../../../__tests__/types.d.ts" />
-import { Container } from 'foundation';
+ */
+// / <reference path="../../../__tests__/types.d.ts" />
+import { Container } from 'foundation/ioc';
 import TestService from '../../__mocks__/services/TestService';
 import { ServiceManager } from '..';
 

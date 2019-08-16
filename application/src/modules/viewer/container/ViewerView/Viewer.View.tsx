@@ -14,7 +14,8 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDialogHeader } from 'jui/components/Dialog/DialogHeader';
-import { dataAnalysis, PerformanceTracer } from 'sdk';
+import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 import { JuiZoomButtonGroup } from 'jui/pattern/DragZoom';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';

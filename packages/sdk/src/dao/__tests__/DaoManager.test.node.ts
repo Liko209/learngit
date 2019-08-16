@@ -8,25 +8,26 @@ import {
   DBManager,
   DexieDB,
   IDatabase,
-  mainLogger,
   LokiDB,
   DatabaseType,
-} from 'foundation';
+} from 'foundation/db';
+import { mainLogger } from 'foundation/log';
 import DaoManager from '../DaoManager';
-import { BaseDao, BaseKVDao } from '../../framework/dao';
+import { BaseDao, BaseKVDao } from 'sdk/framework/dao';
 import Loki from 'lokijs';
-import { IdModel } from '../../framework/model';
+import { IdModel } from 'sdk/framework/model';
 import { DaoGlobalConfig } from '../config';
-import { AccountGlobalConfig } from '../../module/account/config';
-import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
+import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import Dexie from 'dexie';
 
-jest.mock('../../module/env/index');
+jest.mock('sdk/module/env/index');
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
-jest.mock('../../framework/dao');
+jest.mock('foundation/db');
+jest.mock('sdk/framework/dao');
 jest.mock('../schema', () => ({
   name: 'DB',
   version: 1,

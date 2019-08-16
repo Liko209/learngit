@@ -19,7 +19,7 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
 import { Dialog } from '@/containers/Dialog';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import i18nT from '@/utils/i18nT';
 import { isMentionIdsContainTeam} from '../utils';
 

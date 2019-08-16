@@ -24,7 +24,7 @@ import { IdListPagingDataProvider } from '../base/fetch/IdListPagingDataProvider
 import PersonModel from '@/store/models/Person';
 import { IEntityDataProvider, IMatchFunc } from '../base/fetch/types';
 import { STORE_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { PerformanceTracer } from 'sdk';
+import { PerformanceTracer } from 'foundation/performance';
 
 class PersonProvider implements IEntityDataProvider<Person> {
   async getByIds(ids: number[]) {
@@ -36,8 +36,8 @@ class PersonProvider implements IEntityDataProvider<Person> {
 }
 
 class GroupMemberDataProvider extends IdListPagingDataProvider<
-Person,
-PersonModel
+  Person,
+  PersonModel
 > {
   constructor(
     sortedGroupMembers: number[],
@@ -136,23 +136,24 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private async _buildFoc() {
     const filterFunc = <T extends { id: number; deactivated: boolean }>(
       model: T,
-    ) => (model && !model.deactivated
+    ) =>
+      model && !model.deactivated
         ? this._group.members.some((x: number) => x === model.id)
-        : false);
+        : false;
     const isMatchFunc = filterFunc;
 
-    const transformFun = (model: Person) => ({
-      id: model.id,
-      sortValue: model.id,
-    } as ISortableModelWithData<Person>);
+    const transformFun = (model: Person) =>
+      ({
+        id: model.id,
+        sortValue: model.id,
+      } as ISortableModelWithData<Person>);
 
     const sortMemberFunc = (
       lhs: ISortableModelWithData<Person>,
       rhs: ISortableModelWithData<Person>,
-    ): number => (
+    ): number =>
       this._sortedGroupMemberIds.indexOf(lhs.id) -
-        this._sortedGroupMemberIds.indexOf(rhs.id)
-    );
+      this._sortedGroupMemberIds.indexOf(rhs.id);
 
     this._groupMemberDataProvider = new GroupMemberDataProvider(
       this._sortedGroupMemberIds,

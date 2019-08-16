@@ -2,8 +2,8 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-06-24 15:41:55
  * Copyright © RingCentral. All rights reserved
-*/
-import { Container } from 'foundation';
+ */
+import { Container } from 'foundation/ioc';
 import { IService } from './IService';
 import { EventEmitter2 } from 'eventemitter2';
 
