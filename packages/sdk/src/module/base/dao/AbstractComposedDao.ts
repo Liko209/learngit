@@ -5,7 +5,7 @@
  */
 
 import { BaseDao } from 'sdk/dao';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { ModelIdType, IdModel } from 'sdk/framework/model';
 import { IViewDao } from './IViewDao';
 
