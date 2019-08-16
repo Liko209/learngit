@@ -69,5 +69,5 @@ export {
   REGISTRATION_EVENT,
   RTC_PROV_EVENT,
   RTCRegisterAsyncTask,
-  ALLOW_CALL_FLAG，
+  ALLOW_CALL_FLAG,
 };
