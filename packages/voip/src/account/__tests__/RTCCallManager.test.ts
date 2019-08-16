@@ -7,11 +7,8 @@ import { RTCCallManager } from '../RTCCallManager';
 import { RTCCall } from '../../api/RTCCall';
 import { IRTCCallDelegate } from '../../api/IRTCCallDelegate';
 import { IRTCAccount } from '../IRTCAccount';
-import {
-  RTC_CALL_STATE,
-  RTC_CALL_ACTION,
-  ALLOW_CALL_FLAG,
-} from '../../api/types';
+import { RTC_CALL_STATE, RTC_CALL_ACTION } from '../../api/types';
+import { ALLOW_CALL_FLAG } from '../types';
 
 class MockAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
   createOutgoingCallSession(toNum: string): void {

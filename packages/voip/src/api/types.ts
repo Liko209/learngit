@@ -206,12 +206,6 @@ type RTCNoAudioDataEvent = {
   };
 };
 
-enum ALLOW_CALL_FLAG {
-  OUTBOUND_CALL = 'outboundCall',
-  EXTRA_OUTBOUND_CALL = 'extraOutboundCall',
-  INBOUND_CALL = 'inboundCall',
-}
-
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
@@ -231,5 +225,4 @@ export {
   RTCNoAudioDataEvent,
   RTCSipProvisionInfo,
   RTCSipEmergencyServiceAddr,
-  ALLOW_CALL_FLAG,
 };

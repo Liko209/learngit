@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTC_CALL_STATE, ALLOW_CALL_FLAG } from '../api/types';
+import { RTC_CALL_STATE } from '../api/types';
 import { RTCCall } from '../api/RTCCall';
 import { kRTCMaxCallCount } from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { ALLOW_CALL_FLAG } from './types';
 
 const LOG_TAG = 'RTCCallManager';
 class RTCCallManager {
@@ -45,6 +46,10 @@ class RTCCallManager {
         return false;
       }
       if (ALLOW_CALL_FLAG.EXTRA_OUTBOUND_CALL === flag) {
+        rtcLogger.info(
+          LOG_TAG,
+          'allow call. it is extra outbound call and there is a call now.',
+        );
         return true;
       }
       if (this.connectedCallCount() === 0) {
@@ -54,6 +59,10 @@ class RTCCallManager {
         );
         return false;
       }
+      rtcLogger.info(
+        LOG_TAG,
+        'allow call. it is incoming call and there is a connected call now.',
+      );
       return true;
     }
     if (this._calls.length > kRTCMaxCallCount) {
@@ -63,6 +72,7 @@ class RTCCallManager {
       );
       return false;
     }
+    rtcLogger.info(LOG_TAG, 'allow call. Max call count is not reached.');
     return true;
   }
 

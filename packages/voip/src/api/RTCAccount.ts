@@ -14,7 +14,11 @@ import {
   kRetryIntervalList,
 } from '../account/constants';
 import { IRTCCallDelegate } from './IRTCCallDelegate';
-import { REGISTRATION_EVENT, RTC_PROV_EVENT } from '../account/types';
+import {
+  REGISTRATION_EVENT,
+  RTC_PROV_EVENT,
+  ALLOW_CALL_FLAG,
+} from '../account/types';
 import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
@@ -23,7 +27,6 @@ import {
   RTCSipProvisionInfo,
   RTCNoAudioStateEvent,
   RTCNoAudioDataEvent,
-  ALLOW_CALL_FLAG,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
