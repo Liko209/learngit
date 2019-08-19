@@ -258,7 +258,7 @@ describe('RightShelfMemberListViewModel', () => {
         }
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
-      expect(vm.loadingH).toBe(40 * 1 + 95);
+      expect(vm.loadingH).toBe(40 * 1 + 85);
     });
 
     it('should compute correct height for the loading page when there are guests section and more than 1 row of members', () => {
@@ -273,7 +273,7 @@ describe('RightShelfMemberListViewModel', () => {
         }
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
-      expect(vm.loadingH).toBe(40 * 2 + 95);
+      expect(vm.loadingH).toBe(40 * 2 + 85);
     });
   });
 
