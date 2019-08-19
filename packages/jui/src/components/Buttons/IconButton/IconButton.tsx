@@ -19,6 +19,7 @@ import styled, { keyframes } from '../../../foundation/styled-components';
 import { palette, width } from '../../../foundation/utils/styles';
 import { usePopupHelper } from '../../../foundation/hooks/usePopupHelper';
 import { Theme, Palette } from '../../../foundation/theme/theme';
+import { parseColor } from '../../../foundation/utils/parseColor';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
@@ -193,18 +194,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     symbol,
     ...rest
   } = props;
-  let colorScope: keyof Palette = 'primary';
-  let colorName: string = 'main';
-  if (color) {
-    const array = color.split('.');
-    if (array.length > 1) {
-      colorScope = array[0] as keyof Palette;
-      colorName = array[1];
-    } else {
-      colorScope = array[0] as keyof Palette;
-      colorName = 'main';
-    }
-  }
+  const colorObj = parseColor(color);
   const popupHelper = usePopupHelper({ variant: 'popover' });
 
   const icon = useMemo(
@@ -215,8 +205,8 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   let iconButton = (
     <StyledIconButton
       disableRipple={disableTouchRipple || rest.variant === 'plain'}
-      colorScope={colorScope}
-      colorName={colorName}
+      colorScope={colorObj.scope}
+      colorName={colorObj.name}
       aria-label={ariaLabel || tooltipTitle}
       className={className}
       classes={MUI_ICON_BUTTON_CLASSES}
