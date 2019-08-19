@@ -760,19 +760,6 @@ describe('sip call session', () => {
       });
     });
 
-    it('should set default audio device to session when outbound call received session accept event and hasDefaultAudioDevice equals true [JPT-1458]', done => {
-      initDefaultAudioDevice(true);
-      initSession();
-      jest.spyOn(sipCallSession, '_setAudioOutputDevice').mockImplementation();
-      jest.spyOn(sipCallSession, '_setAudioInputDevice').mockImplementation();
-      mockSession.emitSessionAccepted();
-      setImmediate(() => {
-        expect(sipCallSession._setAudioOutputDevice).toHaveBeenCalled();
-        expect(sipCallSession._setAudioInputDevice).toHaveBeenCalled();
-        done();
-      });
-    });
-
     it('should do nothing if hasDefaultAudioDevice equals false when incoming call received session confirmed event [JPT-1512]', () => {
       initDefaultAudioDevice(false);
       initSession();
@@ -781,19 +768,6 @@ describe('sip call session', () => {
       mockSession.emitSessionConfirmed();
       expect(sipCallSession._setAudioOutputDevice).not.toHaveBeenCalled();
       expect(sipCallSession._setAudioInputDevice).not.toHaveBeenCalled();
-    });
-
-    it('should set default audio device to session when incoming call received session confirmed event and hasDefaultAudioDevice equals true [JPT-1513]', done => {
-      initDefaultAudioDevice(true);
-      initSession();
-      jest.spyOn(sipCallSession, '_setAudioOutputDevice').mockImplementation();
-      jest.spyOn(sipCallSession, '_setAudioInputDevice').mockImplementation();
-      mockSession.emitSessionConfirmed();
-      setImmediate(() => {
-        expect(sipCallSession._setAudioOutputDevice).toHaveBeenCalled();
-        expect(sipCallSession._setAudioInputDevice).toHaveBeenCalled();
-        done();
-      });
     });
 
     it('should call _setAudioInput API of call session when upper layer call setAudioInput API.[JPT-2262]', () => {
