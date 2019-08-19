@@ -20,6 +20,9 @@ import { ConfigChangeHistory } from 'sdk/framework/config/types';
 import { Nullable } from 'sdk/types';
 import { configMigrator } from 'sdk/framework/config';
 import { SearchConfigHistory } from '../config/ConfigHistory';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import GroupService, { Group } from 'sdk/module/group';
+import { SortUtils } from 'sdk/framework/utils';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {
@@ -92,18 +95,18 @@ class SearchService extends AbstractService
   async doFuzzySearchPersons(
     options: FuzzySearchPersonOptions,
   ): Promise<{
-      terms: string[];
-      sortableModels: SortableModel<Person>[];
-    }> {
+    terms: string[];
+    sortableModels: SortableModel<Person>[];
+  }> {
     return await this.searchPersonController.doFuzzySearchPersons(options);
   }
 
   async doFuzzySearchPersonsAndGroups(
     options: FuzzySearchPersonOptions,
   ): Promise<{
-      terms: string[];
-      sortableModels: SortableModel<IdModel>[];
-    }> {
+    terms: string[];
+    sortableModels: SortableModel<IdModel>[];
+  }> {
     return await this.searchPersonController.doFuzzySearchPersonsAndGroups(
       options,
     );
@@ -112,12 +115,36 @@ class SearchService extends AbstractService
   async doFuzzySearchPhoneContacts(
     options: FuzzySearchPersonOptions,
   ): Promise<{
-      terms: string[];
-      phoneContacts: PhoneContactEntity[];
-    }> {
+    terms: string[];
+    phoneContacts: PhoneContactEntity[];
+  }> {
     return await this.searchPersonController.doFuzzySearchPhoneContacts(
       options,
     );
+  }
+
+  async doFuzzySearchAllGroups(
+    searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+    myGroupsOnly?: boolean,
+    recentFirst?: boolean,
+  ) {
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    const option = {
+      fetchAllIfSearchKeyEmpty,
+      myGroupsOnly,
+      recentFirst,
+      sortFunc: (
+        groupA: SortableModel<Group>,
+        groupB: SortableModel<Group>,
+      ) => {
+        return SortUtils.compareSortableModel<Group>(groupA, groupB);
+      },
+    };
+
+    return groupService.doFuzzySearchAllGroups(searchKey, option);
   }
 }
 
