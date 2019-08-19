@@ -37,8 +37,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   static contextType = DialogContext;
   constructor(props: ImageViewerProps) {
     super(props);
-    props.setOnCurrentItemDeletedCb &&
-      props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
+    props.dataModule.setOnCurrentItemDeletedCb &&
+      props.dataModule.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
     this.state = {
       switched: false,
       imageInited: false,
@@ -69,7 +69,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     }
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     window.addEventListener('keydown', this._handlerKeydown, {
       passive: false,
     });
@@ -78,6 +78,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         passive: false,
       });
     });
+    await this.props.dataModule.init();
   }
 
   componentWillUnmount() {
@@ -90,7 +91,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   switchPreImage = () => {
     if (this._canSwitchPrevious()) {
       this._zoomRef.current!.reset();
-      this.props.switchToPrevious();
+      this.props.dataModule.switchToPrevious();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -100,7 +101,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   switchNextImage = () => {
     if (this._canSwitchNext()) {
       this._zoomRef.current!.reset();
-      this.props.switchToNext();
+      this.props.dataModule.switchToNext();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -136,26 +137,27 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   };
 
   private _canSwitchPrevious = () => {
-    const { hasPrevious, isLoadingMore } = this.props;
+    const { hasPrevious, isLoadingMore } = this.props.dataModule;
     return !isLoadingMore && hasPrevious;
   };
 
   private _canSwitchNext = () => {
-    const { hasNext, isLoadingMore } = this.props;
+    const { hasNext, isLoadingMore } = this.props.dataModule;
     return !isLoadingMore && hasNext;
   };
 
   render() {
+    const { dataModule, t } = this.props;
     const {
       pages,
-      t,
       thumbnailSrc,
+      originElement,
       imageWidth,
       imageHeight,
       currentItemId,
       hasPrevious,
       hasNext,
-    } = this.props;
+    } = dataModule;
     const padding = 32;
     return (
       <ViewerContext.Consumer>
@@ -239,11 +241,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
             {this._imageRef.current && this.state.imageInited && (
               <JuiZoomElement
                 ref={this._animateRef}
-                originalElement={
-                  this.state.switched
-                    ? null
-                    : this.props.initialOptions.originElement!
-                }
+                originalElement={this.state.switched ? null : originElement}
                 targetElement={this._imageRef.current}
                 show={value.show}
                 duration="standard"

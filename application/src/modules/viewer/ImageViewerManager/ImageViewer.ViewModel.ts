@@ -50,7 +50,8 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
   @observable _sender: PersonModel | null;
   @observable _createdAt: number | null;
   @observable private _largeRawImageURL?: string;
-  @observable thumbnailSrc: string
+  @observable thumbnailSrc: string;
+  @observable originElement: HTMLElement;
   @observable
   isLoadingMore: boolean = false;
   @observable
@@ -79,6 +80,7 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
     const { groupId, type, itemId, postId, isNavigation, initialOptions } = props;
 
     this.thumbnailSrc = initialOptions.thumbnailSrc;
+    this.originElement = initialOptions.originElement;
     this.currentItemId = itemId;
     this._itemListDataSource = isNavigation
       ? new ItemListDataSourceByPost({ groupId, type, postId })
@@ -316,6 +318,7 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
   private _updateIndexInfo = async () => {
     const itemId = this.currentItemId;
     const info = await this._itemListDataSource.fetchIndexInfo(itemId);
+    console.log('looper', info)
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {
@@ -422,7 +425,7 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
 
   @computed
   private get _item() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this.props.itemId);
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this.currentItemId);
   }
 
   @computed
@@ -467,7 +470,7 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
       name,
       downloadUrl,
       createdAt,
-      currentPageIdx: this.currentIndex,
+      currentPageIdx: this.currentIndex + 1,
       pageTotal: this.total,
       fileId: id,
       groupId: this.props.groupId,
