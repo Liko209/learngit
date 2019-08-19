@@ -17,6 +17,9 @@ import { Post } from '../../entity';
 import { RawPostInfo } from '../../types';
 import { Raw } from '../../../../framework/model';
 import { transform } from '../../../../service/utils';
+import _ from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ItemService } from 'sdk/module/item';
 
 export type LinksArray = { url: string }[];
 
@@ -91,6 +94,52 @@ class SendPostControllerHelper {
     }
 
     return buildPost;
+  }
+
+  async buildShareFilePost(options: {
+    fromPost: Post;
+    itemIds: number[];
+    targetGroupId: number;
+  }) {
+    const { fromPost, itemIds, targetGroupId } = options;
+    const now = Date.now();
+    const vers = versionHash();
+    const linkIds = itemIds.filter(id =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_LINK),
+    );
+    const noLinkIds = _.difference(itemIds, linkIds);
+    const mapToLinks = async (id: number) => {
+      const item = await ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).getById(id);
+      return item
+        ? {
+            url: item.url,
+            source: 'streamPostLink',
+            history: [{ url: item.url }],
+            do_not_render: false,
+          }
+        : null;
+    };
+    const links = await Promise.all(
+      linkIds.map(mapToLinks).filter(item => !!item),
+    );
+    return {
+      links,
+      is_new: true,
+      source: 'Jupiter',
+      version: vers,
+      new_version: vers,
+      created_at: now,
+      modified_at: now,
+      group_id: targetGroupId,
+      item_ids: noLinkIds,
+      from_company_id: fromPost.company_id,
+      from_group_id: fromPost.group_id,
+      item_data: fromPost.item_data || {
+        version_map: {},
+      },
+    } as Post;
   }
 
   transformData(data: Raw<Post>[] | Raw<Post>): Post[] {

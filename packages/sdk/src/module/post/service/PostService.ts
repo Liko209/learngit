@@ -227,6 +227,12 @@ class PostService extends EntityBaseService<Post> {
       .getLatestPostIdByItem(groupId, itemId);
   }
 
+  async shareItem(postId: number, itemId: number, targetGroupId: number) {
+    return await this.getPostController()
+      .getSendPostController()
+      .shareItem(postId, itemId, targetGroupId);
+  }
+
   private get _postDataController() {
     return this.getPostController().getPostDataController();
   }

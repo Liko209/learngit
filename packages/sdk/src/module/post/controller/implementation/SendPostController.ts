@@ -28,7 +28,12 @@ import {
 import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { PostDataController } from '../PostDataController';
-import { ErrorParserHolder } from '../../../../error';
+import {
+  ErrorParserHolder,
+  errorHelper,
+  JSdkError,
+  ERROR_CODES_SDK,
+} from '../../../../error';
 import { PostActionController } from './PostActionController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PostItemController } from './PostItemController';
@@ -36,6 +41,7 @@ import SendPostControllerHelper from './SendPostControllerHelper';
 import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
 import { AT_TEAM_MENTION_REGEXP } from '../../constant';
 import { POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 
 class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
@@ -45,6 +51,7 @@ class SendPostController implements ISendPostController {
     public preInsertController: IPreInsertController,
     public postDataController: PostDataController,
     public groupService: IGroupService,
+    public entitySourceController: IEntitySourceController<Post>,
   ) {
     this._helper = new SendPostControllerHelper();
     this._postItemController = new PostItemController(
@@ -235,6 +242,28 @@ class SendPostController implements ISendPostController {
     return [];
   }
 
+  async shareItem(postId: number, itemId: number, targetGroupId: number) {
+    const post = await this.entitySourceController.get(postId);
+    if (!post) {
+      return;
+    }
+    if (post.deactivated) {
+      throw new JSdkError(ERROR_CODES_SDK.POST_DEACTIVATED, 'post deactivated');
+    }
+    const buildPost = await this._helper.buildShareFilePost({
+      targetGroupId,
+      fromPost: post,
+      itemIds: [itemId],
+    });
+    await this._checkSharePermission(targetGroupId);
+    try {
+      await this.sendPostToServer(buildPost);
+    } catch (error) {
+      await this._checkSharePermission(targetGroupId);
+      throw error;
+    }
+  }
+
   private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
@@ -246,6 +275,48 @@ class SendPostController implements ISendPostController {
     return text.replace(AT_TEAM_MENTION_REGEXP, (match, ...[, content]) => {
       return content;
     });
+  }
+
+  private async _checkSharePermission(targetGroupId: number) {
+    let isTeamMember = true;
+    let error;
+    const targetGroup = await this.groupService
+      .getById(targetGroupId)
+      .catch(e => {
+        error = e;
+        if (errorHelper.isAuthenticationError(e)) {
+          isTeamMember = false;
+        }
+      });
+    if (!isTeamMember) {
+      throw new JSdkError(ERROR_CODES_SDK.GROUP_NOT_MEMBER, 'not a member');
+    }
+    if (!targetGroup) {
+      throw error;
+    }
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const userId: number = userConfig.getGlipUserId();
+    if (!targetGroup.members.includes(userId)) {
+      throw new JSdkError(ERROR_CODES_SDK.GROUP_NOT_MEMBER, 'not a member');
+    }
+    if (targetGroup.is_archived) {
+      throw new JSdkError(ERROR_CODES_SDK.GROUP_ARCHIVED, 'archived');
+    }
+    if (targetGroup.deactivated) {
+      throw new JSdkError(ERROR_CODES_SDK.GROUP_DEACTIVATED, 'deactivated');
+    }
+    if (
+      targetGroup.is_team &&
+      !this.groupService.getTeamUserPermissionFlags(targetGroup.permissions!)
+        .TEAM_POST
+    ) {
+      throw new JSdkError(
+        ERROR_CODES_SDK.GROUP_NO_PERMISSION,
+        'has not permission',
+      );
+    }
   }
 }
 
