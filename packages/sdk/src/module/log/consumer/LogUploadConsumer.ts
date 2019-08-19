@@ -3,7 +3,7 @@
  * @Date: 2018-12-26 15:21:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogEntity, LOG_LEVEL } from 'foundation';
+import { LogEntity, LOG_LEVEL } from 'foundation/log';
 import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';

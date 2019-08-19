@@ -22,7 +22,7 @@ import { AccountService } from '../../../account/service';
 import { NotificationEntityPayload } from '../../../../service/notificationCenter';
 import { EVENT_TYPES } from '../../../../service/constants';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { BadgeService } from 'sdk/module/badge';
 import { UndefinedAble } from 'sdk/types';
@@ -446,7 +446,7 @@ class TotalUnreadController {
       unread_mentions_count = 0,
       unread_team_mentions_count = 0,
     } = groupState;
-    return unread_mentions_count + unread_team_mentions_count;
+    return unread_mentions_count + Math.max(unread_team_mentions_count, 0);
   }
 }
 

@@ -3,7 +3,7 @@
  * @Date: 2018-03-01 14:31:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { DBManager, IDatabase, DatabaseType } from 'foundation';
+import { DBManager, IDatabase, DatabaseType } from 'foundation/db';
 import BaseDao from '../BaseDao';
 import Query from '../Query';
 

@@ -7,7 +7,7 @@ import { RCInfoApi } from 'sdk/api/ringcentral';
 import { RCPresenceEventPayload } from 'sdk/module/rcEventSubscription/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TelephonyService } from 'sdk/module/telephony';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import {
   SingletonSequenceProcessor,
   SequenceProcessorHandler,

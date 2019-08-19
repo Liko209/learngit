@@ -11,7 +11,7 @@ import {
   DEFAULT_RETRY_COUNT,
   REQUEST_PRIORITY,
   HA_PRIORITY,
-} from 'foundation';
+} from 'foundation/network';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import { Raw } from '../../framework/model';

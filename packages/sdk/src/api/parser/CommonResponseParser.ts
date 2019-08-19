@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseResponse, RESPONSE_STATUS_CODE } from 'foundation';
+import { BaseResponse, RESPONSE_STATUS_CODE } from 'foundation/network';
 import isNumber from 'lodash/isNumber';
 import isString from 'lodash/isString';
 import { JError, JNetworkError, ERROR_CODES_NETWORK } from '../../error';

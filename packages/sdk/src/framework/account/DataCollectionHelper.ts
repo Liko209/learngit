@@ -6,7 +6,7 @@
 
 import { getCurrentTime } from 'sdk/utils/jsUtils';
 import { traceData } from 'sdk/api/glip/dataCollection';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import {
   DataCollectionSignInSuccessModel,
   DataCollectionSignInFailureDetailsModel,

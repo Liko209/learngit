@@ -25,7 +25,7 @@ import Dexie from 'dexie';
 jest.mock('sdk/module/env/index');
 
 // Using manual mock to improve mock priority.
-jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
+// jest.mock('foundation/F', () => jest.genMockFromModule<any>('foundation'));
 jest.mock('foundation/db');
 jest.mock('sdk/framework/dao');
 jest.mock('../schema', () => ({

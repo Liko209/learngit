@@ -2,7 +2,7 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-27 21:51:38
  */
-import { KVStorage, storageFactory } from 'foundation';
+import { KVStorage, storageFactory } from 'foundation/db';
 import BaseKVDao from '../BaseKVDao';
 
 const KEY1 = 'key1';

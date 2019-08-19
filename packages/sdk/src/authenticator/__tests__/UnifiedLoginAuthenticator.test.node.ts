@@ -13,7 +13,7 @@ import {
   OAuthTokenManager,
   HttpResponseBuilder,
   HttpResponse,
-} from 'foundation';
+} from 'foundation/network';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { AccountGlobalConfig } from 'sdk/module/account/config';

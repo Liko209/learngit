@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { glipStatus } from '../../../api';
 import {
   RCPasswordAuthenticator,
