@@ -335,4 +335,12 @@ describe('TelephonyService', () => {
       expect(r).toEqual(retData);
     });
   });
+
+  describe('hasActiveDL', () => {
+    it('should call engineController', async () => {
+      engineController.hasActiveDL = jest.fn().mockReturnValue(true);
+      const res = telephonyService.hasActiveDL();
+      expect(res).toEqual(true);
+    });
+  });
 });
