@@ -160,14 +160,14 @@ describe('TelephonyEngineController', () => {
         .fn()
         .mockReturnValue('test');
       const res = engineController.hasActiveDL();
-      expect(res).toBe(true);
+      expect(res).toBeTruthy();
     });
     it('should return false when getRemoteEmergencyAddress return empty', () => {
       engineController.getRemoteEmergencyAddress = jest
         .fn()
         .mockReturnValue('');
       const res = engineController.hasActiveDL();
-      expect(res).toBe(false);
+      expect(res).toBeFalsy();
     });
   });
 

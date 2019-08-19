@@ -340,7 +340,7 @@ describe('TelephonyService', () => {
     it('should call engineController', async () => {
       engineController.hasActiveDL = jest.fn().mockReturnValue(true);
       const res = telephonyService.hasActiveDL();
-      expect(res).toEqual(true);
+      expect(res).toBeTruthy();
     });
   });
 });
