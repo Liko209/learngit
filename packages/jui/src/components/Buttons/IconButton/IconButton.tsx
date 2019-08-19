@@ -229,7 +229,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   );
 
   if (alwaysEnableTooltip) {
-    iconButton = <span>{iconButton}</span>;
+    iconButton = <span {...popupHelper.HoverProps}>{iconButton}</span>;
   }
 
   if (!disableToolTip && tooltipTitle && popupHelper.PopoverProps.open) {

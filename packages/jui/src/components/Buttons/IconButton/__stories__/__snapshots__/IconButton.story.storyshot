@@ -61,7 +61,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   animation-name: cBKRfH;
 }
 
-.c0 .iconButtonWrapper {
+.c0 {
   margin-right: 20px;
 }
 
@@ -79,7 +79,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
       aria-haspopup={true}
       aria-label="add"
       aria-owns={null}
-      className="MuiButtonBase-root MuiIconButton-root iconButtonWrapper c1"
+      className="MuiButtonBase-root MuiIconButton-root c1"
       disabled={false}
       onBlur={[Function]}
       onDragLeave={[Function]}
@@ -180,7 +180,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
   animation-name: cBKRfH;
 }
 
-.c0 .iconButtonWrapper {
+.c0 {
   margin-right: 20px;
 }
 
@@ -198,7 +198,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
       aria-haspopup={true}
       aria-label="I'm a star"
       aria-owns={null}
-      className="MuiButtonBase-root MuiIconButton-root iconButtonWrapper c1"
+      className="MuiButtonBase-root MuiIconButton-root c1"
       disabled={false}
       onBlur={[Function]}
       onDragLeave={[Function]}

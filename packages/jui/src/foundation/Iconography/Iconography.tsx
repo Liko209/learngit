@@ -37,6 +37,7 @@ type JuiIconographyProps = {
   symbol?: SvgSymbol;
   useLoading?: boolean;
   loadingSize?: number;
+  disabled?: boolean;
   desc?: string;
 } & React.HTMLAttributes<HTMLElement>;
 
