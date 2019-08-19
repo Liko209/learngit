@@ -70,7 +70,7 @@ function isDescending(arr: any[]) {
   return arr.every((x, i) => i === 0 || x <= arr[i - 1]);
 }
 
-describe.skip('Query', () => {
+describe('Query', () => {
   let dao: BaseDao<RandomItem, string>;
   let query: Query<RandomItem, string>;
 
