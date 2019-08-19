@@ -238,7 +238,7 @@ test.meta(<ITestMeta>{
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(loginUser).init();
-  await h(t).platform(loginUser).updateDevices(() => E911Address);
+  // await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).platform(callee).init();
 
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
@@ -254,11 +254,14 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  const emergencyConfirmDialog = app.homePage.emergencyConfirmDialog;
   await h(t).withLog('When I click the to diapad button', async () => {
     await app.homePage.openDialer();
+    await emergencyConfirmDialog.closeButton()
   });
 
   const telephonyDialog = app.homePage.telephonyDialog;
+
 
   await h(t).withLog('Then display the dialer', async () => {
     await telephonyDialog.ensureLoaded();
