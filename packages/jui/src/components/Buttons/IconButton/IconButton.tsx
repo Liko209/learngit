@@ -16,7 +16,7 @@ import {
 } from '../../../foundation/Iconography';
 import tinycolor from 'tinycolor2';
 import styled, { keyframes } from '../../../foundation/styled-components';
-import { palette, grey, width } from '../../../foundation/utils/styles';
+import { palette, width } from '../../../foundation/utils/styles';
 import { usePopupHelper } from '../../../foundation/hooks/usePopupHelper';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 
