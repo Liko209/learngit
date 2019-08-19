@@ -30,14 +30,7 @@ class CallLogViewDao extends BaseDao<CallLogView, string>
   }
 
   toViewItem(callLog: CallLog) {
-    const caller =
-      callLog.direction === CALL_DIRECTION.INBOUND ? callLog.from : callLog.to;
-    return {
-      id: callLog.id,
-      caller: RCItemUtils.toCallerView(caller),
-      __localInfo: callLog.__localInfo,
-      __timestamp: callLog.__timestamp,
-    };
+    return this.toPartialViewItem(callLog) as CallLogView;
   }
 
   toPartialViewItem(partialCallLog: Partial<CallLog>) {
@@ -53,7 +46,9 @@ class CallLogViewDao extends BaseDao<CallLogView, string>
         __localInfo: partialCallLog.__localInfo,
         caller: caller && RCItemUtils.toCallerView(caller),
       },
-      _.identity,
+      value => {
+        return value !== undefined && value !== null;
+      },
     );
   }
 

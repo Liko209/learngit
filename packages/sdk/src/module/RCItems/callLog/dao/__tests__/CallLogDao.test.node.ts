@@ -152,34 +152,6 @@ describe('CallLogDao', () => {
     });
   });
 
-  // describe('_putCallLogView', () => {
-  //   it('should put in viewDao', async () => {
-  //     await dao['_putCallLogView'](mockCallLog);
-  //     expect(viewDao.put).toHaveBeenCalled();
-  //   });
-  // });
-
-  // describe('_bulkPutCallLogView', () => {
-  //   it('should bulkPut in viewDao', async () => {
-  //     await dao['_bulkPutCallLogView']([mockCallLog]);
-  //     expect(viewDao.bulkPut).toHaveBeenCalled();
-  //   });
-  // });
-
-  // describe('_updateCallLogView', () => {
-  //   it('should update in viewDao', async () => {
-  //     await dao['_updateCallLogView'](mockCallLog, true);
-  //     expect(viewDao.update).toHaveBeenCalled();
-  //   });
-  // });
-
-  // describe('_bulkUpdateCallLogView', () => {
-  //   it('should bulkUpdate in viewDao', async () => {
-  //     await dao['_bulkUpdateCallLogView']([mockCallLog], true);
-  //     expect(viewDao.bulkUpdate).toHaveBeenCalled();
-  //   });
-  // });
-
   describe('queryAllUniquePhoneNumberCalls', () => {
     it('should call with right parameters', async () => {
       const result = [{ id: '1' }];
