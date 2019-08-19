@@ -5,7 +5,7 @@
  */
 import { GroupService, Group } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { jit } from 'shield/sdk';
+import { jit } from 'shield/sdk/SdkItFramework';
 import { IApiContract, IRequestResponse } from 'shield/sdk/types';
 import { readApiJson } from 'shield/sdk/utils';
 import { IGlipTeamPost } from 'shield/sdk/mocks/glip/api/team/team.post.contract';

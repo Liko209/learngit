@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 17:59:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RecordProps, RecordViewProps } from './types';
 import { TelephonyService } from '../../service';

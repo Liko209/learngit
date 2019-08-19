@@ -15,7 +15,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { catchError } from '@/common/catchError';
 import { JuiText } from 'jui/components/Text';
-import { JuiListItemSecondaryAction } from 'jui/components';
+import { JuiListItemSecondaryAction } from 'jui/components/Lists';
 import { JuiVirtualizedBoxSelect } from 'jui/components/VirtualizedSelects';
 import { SETTING_ITEM_TYPE } from '@/interface/setting';
 

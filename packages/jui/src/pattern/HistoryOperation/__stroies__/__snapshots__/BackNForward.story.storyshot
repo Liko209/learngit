@@ -180,6 +180,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c2.c2 .c3,

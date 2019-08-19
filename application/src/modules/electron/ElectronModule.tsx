@@ -1,4 +1,4 @@
-import { AbstractModule } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ElectronZipItemProvider } from './ElectronZipItemProvider';

@@ -7,7 +7,11 @@
 import React, { Component, ChangeEvent, RefObject } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiGlobalSearch, JuiGlobalSearchInput, JuiOutlineTextFieldRef } from 'jui/pattern/GlobalSearch';
+import {
+  JuiGlobalSearch,
+  JuiGlobalSearchInput,
+  JuiOutlineTextFieldRef,
+} from 'jui/pattern/GlobalSearch';
 
 import { GlobalSearchViewProps, SEARCH_VIEW } from './types';
 import { FullSearch } from '../FullSearch';
@@ -45,11 +49,18 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
     return componentMap[currentView];
   }
 
+  componentDidUpdate({ open: preOpen }: GlobalSearchViewProps) {
+    const inputEl = this.state.ref.current;
+    const open = this.props.open;
+
+    if (!preOpen && open && inputEl) {
+      inputEl.focus();
+    }
+  }
+
   render() {
     const { ref } = this.state;
-    const {
-      open, onClose, searchKey, onClear, showClear, t
-    } = this.props;
+    const { open, onClose, searchKey, onClear, showClear, t } = this.props;
 
     const CurrentView = this.currentView;
 
@@ -81,6 +92,8 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
   }
 }
 
-const GlobalSearchView = withTranslation('translations')(GlobalSearchViewComponent);
+const GlobalSearchView = withTranslation('translations')(
+  GlobalSearchViewComponent,
+);
 
 export { GlobalSearchView };

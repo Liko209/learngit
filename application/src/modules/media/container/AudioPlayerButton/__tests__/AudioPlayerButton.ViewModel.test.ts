@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { IMediaService, MediaEventName } from '@/interface/media';
 import { MediaService } from '@/modules/media/service';
 import { AudioPlayerButtonViewModel } from '../AudioPlayerButton.ViewModel';

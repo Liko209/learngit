@@ -44,6 +44,7 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c1.c1 .c2,

@@ -32,6 +32,9 @@ const config: ApiConfig = {
     uniqueHttpCollectorCode:
       'ZaVnC4dhaV1A4q5yB61FYa9uEO9Xj35paUEvTIyvb9UcNNdnMWZbMdC8OgM_BucGgknUL_nGS_PubsR9FIhVZd07rcAhgvJ6v7ZxoOvULJt_4HiwkCgEYw==',
   },
+  meetingsConfig: {
+    rcv: { baseUrl: 'https://v.ringcentral.com', dialInNumber: '+18582073116' },
+  },
   data_collection: 'https://jupedc.ringcentral.com',
 };
 export default config;

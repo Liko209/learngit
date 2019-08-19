@@ -16,7 +16,7 @@ import {
   INotificationService,
   NOTIFICATION_PRIORITY,
 } from '@/modules/notification/interface';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import i18nT from '@/utils/i18nT';
 import { dataAnalysis } from 'sdk';
 import { catchError } from '@/common/catchError';

@@ -10,7 +10,7 @@ import {
   Route,
   RouteProps,
 } from 'react-router-dom';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import history from '@/history';
 import { RouterStore } from '../../store/RouterStore';
 import { AuthRoute } from '../AuthRoute';

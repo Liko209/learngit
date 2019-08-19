@@ -4,13 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { useState, useEffect, ComponentType } from 'react';
-import {
-  Jupiter,
-  container,
-  ModuleConfig,
-  injectable,
-  decorate,
-} from 'framework';
+import { container, injectable, decorate } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
+import { ModuleConfig } from 'framework/types';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
 import { App } from '@/modules/app/container';
@@ -90,6 +86,4 @@ const mock = (Comp: ComponentType) => async (config: BootstrapConfig) => {
 
 const mockApp = mock(App);
 
-export {
-  mockApp, mock, bootstrap, BootstrapConfig
-};
+export { mockApp, mock, bootstrap, BootstrapConfig };

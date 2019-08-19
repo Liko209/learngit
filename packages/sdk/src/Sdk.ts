@@ -86,6 +86,7 @@ class Sdk {
 
     if (!loginResp || !loginResp.success) {
       if (process.env.NODE_ENV !== 'test') {
+        mainLogger.tags(LOG_TAG).info('init() delete database');
         window.indexedDB && window.indexedDB.deleteDatabase('Glip');
       }
     }
@@ -213,6 +214,7 @@ class Sdk {
   async onLogout() {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
+    mainLogger.tags(LOG_TAG).info('onLogout() delete database');
     this.daoManager.deleteDatabase();
     ServiceLoader.getInstance<UserConfigService>(
       ServiceConfig.USER_CONFIG_SERVICE,
@@ -261,6 +263,7 @@ class Sdk {
   }
 
   clearAllData = async () => {
+    mainLogger.tags(LOG_TAG).info('clearAllData() delete database');
     await this.daoManager.deleteDatabase();
     // remove relevant config
     if (AccountGlobalConfig.getUserDictionary()) {

@@ -8,10 +8,14 @@ export * from './db';
 export * from './network';
 export * from './log';
 export * from './telephony';
+
 export * from './error';
+
 export * from './analysis';
-export * from './utils';
+
 export * from './health';
+export * from './utils';
+
 export * from './performance';
 
 export { default as Foundation } from './Foundation';

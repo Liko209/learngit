@@ -15,7 +15,7 @@ import CallLogModel from '@/store/models/CallLog';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import PhoneNumberModel from '@/store/models/PhoneNumber';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';

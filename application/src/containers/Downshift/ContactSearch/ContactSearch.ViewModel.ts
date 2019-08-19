@@ -28,8 +28,10 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   constructor(props: ContactSearchProps) {
     super(props);
-    const { prefillMembers } = this.props;
-    prefillMembers && this._setSelectedItems(prefillMembers);
+    this.autorun(() => {
+      const { prefillMembers } = this.props;
+      prefillMembers && this._setSelectedItems(prefillMembers);
+    });
     this.reaction(
       () => this.props.groupId,
       () => {

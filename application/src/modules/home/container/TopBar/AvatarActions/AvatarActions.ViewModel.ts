@@ -10,7 +10,7 @@ import storeManager, { ENTITY_NAME } from '@/store';
 import { getGlobalValue, getPresence, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '@/modules/telephony/service';
 import { Dialog } from '@/containers/Dialog';
 import i18nT from '@/utils/i18nT';

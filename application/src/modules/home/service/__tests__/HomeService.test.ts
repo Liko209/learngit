@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { HomeService } from '../HomeService';
 import { IHomeService } from '../../interface/IHomeService';
 import { config } from '../../module.config';

@@ -9,7 +9,8 @@ import React from 'react';
 import {
  sdk, LogControlManager, service, powerMonitor
 } from 'sdk';
-import { AbstractModule, inject } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
 import config from '@/config';
 import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';

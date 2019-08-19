@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { mainLogger } from 'sdk';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils/entities';
+import { reaction, IReactionDisposer } from 'mobx';
 
 type PreloadImgProps = {
   url?: string;
@@ -19,13 +23,31 @@ type PreloadImgState = {
   isError: boolean;
 };
 
+@observer
 class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
+  private _disposeReaction: IReactionDisposer;
+
   constructor(props: PreloadImgProps) {
     super(props);
     this.state = {
       loaded: false,
       isError: false,
     };
+    this._disposeReaction = reaction(
+      () => getGlobalValue(GLOBAL_KEYS.NETWORK),
+      (status: string) => {
+        if (status === 'online' && this.state.isError) {
+          this.setState({
+            isError: false,
+            loaded: false,
+          });
+        }
+      },
+    );
+  }
+
+  componentWillUnmount() {
+    this._disposeReaction();
   }
 
   handleLoad = () => {

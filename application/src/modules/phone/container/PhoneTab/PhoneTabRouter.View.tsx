@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import {

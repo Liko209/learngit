@@ -9,5 +9,5 @@ import { Meeting } from './Meeting';
 export default {
   priority: 0,
   component: Meeting,
-  type: TypeDictionary.TYPE_ID_MEETING,
+  type: [TypeDictionary.TYPE_ID_MEETING, TypeDictionary.TYPE_ID_RC_VIDEO],
 };

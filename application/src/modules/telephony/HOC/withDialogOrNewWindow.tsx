@@ -8,7 +8,7 @@ import React, { ComponentType, ComponentClass } from 'react';
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import { JuiDraggableDialog } from 'jui/components/Dialog';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../store';
 import { TelephonyService } from '../service';
 import { CALL_WINDOW_STATUS } from '../FSM';

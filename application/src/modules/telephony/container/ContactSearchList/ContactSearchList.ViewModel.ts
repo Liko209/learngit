@@ -12,7 +12,7 @@ import {
   IReactionDisposer,
   action,
 } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';

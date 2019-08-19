@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { AccountService } from './service/AccountService';
+export { EBETA_FLAG, isInBeta, AccountService } from './service';

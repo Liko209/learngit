@@ -13,7 +13,7 @@ import {
   JuiListNavItem,
   JuiListNavItemIconographyLeft,
   JuiListNavItemText,
-} from 'jui/components';
+} from 'jui/components/Lists';
 import { JuiLeftRail } from 'jui/pattern/LeftRail/LeftRail';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';

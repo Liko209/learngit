@@ -1,4 +1,4 @@
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { CallCtrlPanelViewModel } from '../CallCtrlPanel.ViewModel';
 import { getEntity } from '@/store/utils';

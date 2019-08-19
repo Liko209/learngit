@@ -9,7 +9,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { MenuProps, MenuViewProps } from './types';
-import { JuiMenuList, JuiMenuItem, JuiSubMenu } from 'jui/components';
+import { JuiMenuList, JuiMenuItem, JuiSubMenu } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { ConvertToTeam } from '@/containers/ConvertToTeam';
 import { CONVERSATION_TYPES } from '@/constants';

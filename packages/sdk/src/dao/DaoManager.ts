@@ -68,6 +68,7 @@ class DaoManager extends Manager<
             Number(e.newValue) === BLOCK_MESSAGE_VALUE
           ) {
             DaoGlobalConfig.removeDBBlockMessageKey();
+            mainLogger.tags(LOG_TAG).info('initDatabase() delete database due to db version change');
             await this.dbManager.deleteDatabase();
           }
         });

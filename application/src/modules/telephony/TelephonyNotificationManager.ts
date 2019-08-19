@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { inject } from 'framework';
+import { inject } from 'framework/ioc';
 import { reaction, comparer, computed } from 'mobx';
 import { Disposer } from 'mobx-react';
 import { AbstractNotificationManager } from '@/modules/notification/manager';

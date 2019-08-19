@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { joinPublicTeam } from '@/common/joinPublicTeam';
