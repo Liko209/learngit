@@ -254,10 +254,8 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
-  const emergencyConfirmDialog = app.homePage.emergencyConfirmDialog;
   await h(t).withLog('When I click the to diapad button', async () => {
     await app.homePage.openDialer();
-    await emergencyConfirmDialog.closeButton()
   });
 
   const telephonyDialog = app.homePage.telephonyDialog;
