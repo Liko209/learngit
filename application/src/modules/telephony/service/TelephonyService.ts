@@ -22,7 +22,7 @@ import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -172,13 +172,13 @@ class TelephonyService {
     });
   };
 
-  private _pauseRingtone = async () => {
+  private _stopRingtone = async () => {
     mainLogger.tags(TelephonyService.TAG).info(`pause audio, ${new Date()}`);
 
     if (!this._ringtone) {
       return;
     }
-    this._ringtone.pause();
+    this._ringtone.stop();
     this._ringtone.dispose();
     return;
   };
@@ -412,7 +412,7 @@ class TelephonyService {
           this._playRingtone();
           return;
         }
-        this._pauseRingtone();
+        this._stopRingtone();
       },
       { fireImmediately: true },
     );
@@ -921,7 +921,7 @@ class TelephonyService {
     this._ringerDisposer && this._ringerDisposer();
     this._speakerDisposer && this._speakerDisposer();
 
-    this._pauseRingtone();
+    this._stopRingtone();
     this._telephonyStore.hasManualSelected = false;
     delete this._telephonyStore;
     delete this._serverTelephonyService;

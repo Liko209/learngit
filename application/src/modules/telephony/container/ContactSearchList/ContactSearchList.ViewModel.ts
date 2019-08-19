@@ -29,7 +29,7 @@ import {
 import { SearchService } from 'sdk/module/search';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { debounce } from 'lodash';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 const INITIAL_PAGE_SIZE = 10;
 const ONE_FRAME = 1000 / 60;
@@ -133,7 +133,7 @@ export class ContactSearchListViewModel
 
   @action
   onEnter = () => {
-    if (!this.dialerInputFocused) {
+    if (!this.dialerInputFocused || this.isSearching) {
       return;
     }
     const res = this.searchResult[this.focusIndex];

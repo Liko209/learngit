@@ -6,7 +6,7 @@
 import { TaskController } from '../../../framework/controller/impl/TaskController';
 import { ITaskStrategy } from '../../../framework/strategy/ITaskStrategy';
 import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const MAX_COUNT = 2;
 

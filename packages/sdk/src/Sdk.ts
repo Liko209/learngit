@@ -5,15 +5,12 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import {
-  Foundation,
-  NetworkManager,
-  Token,
-  dataAnalysis,
-  sleepModeDetector,
-  mainLogger,
-  Performance,
-} from 'foundation';
+import Foundation from 'foundation/Foundation';
+import { NetworkManager, Token } from 'foundation/network';
+import { dataAnalysis } from 'foundation/analysis';
+import { sleepModeDetector } from 'foundation/utils';
+import { mainLogger } from 'foundation/log';
+import { Performance } from 'foundation/performance';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 

@@ -6,7 +6,7 @@ import Api from '../api';
 import { Raw } from '../../framework/model';
 import { Post } from '../../module/post/entity';
 import { Item } from '../../module/item/entity';
-import { DEFAULT_RETRY_COUNT } from 'foundation';
+import { DEFAULT_RETRY_COUNT } from 'foundation/network';
 
 export interface IPostsModel {
   posts: Raw<Post>[];

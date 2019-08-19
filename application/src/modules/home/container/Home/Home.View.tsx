@@ -19,7 +19,8 @@ import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import Wrapper from './Wrapper';
 
-import { dao, mainLogger } from 'sdk';
+import { dao } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
@@ -39,8 +40,11 @@ type Props = WithTranslation & HomeViewProps;
 class HomeViewComponent extends Component<Props> {
   private _homeStore: HomeStore = container.get(HomeStore);
   constructor(props: Props) {
-    super(props)
-    notificationCenter.on(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
+    super(props);
+    notificationCenter.on(
+      SERVICE.RC_INFO_SERVICE.E911_UPDATED,
+      this.showE911Confirm,
+    );
   }
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
@@ -55,7 +59,10 @@ class HomeViewComponent extends Component<Props> {
 
   componentWillUnmount() {
     window.removeEventListener('storage', this._storageEventHandler);
-    notificationCenter.off(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
+    notificationCenter.off(
+      SERVICE.RC_INFO_SERVICE.E911_UPDATED,
+      this.showE911Confirm,
+    );
   }
 
   showE911Confirm = async () => {
@@ -98,7 +105,7 @@ class HomeViewComponent extends Component<Props> {
       dismissible: true,
       onClose: markE911,
     });
-  }
+  };
 
   private _storageEventHandler = (event: StorageEvent) => {
     if (!event.key) {

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IRTCLogger, LOG_LEVEL } from 'voip';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 
 class TelephonyLogController implements IRTCLogger {
   doLog(level: LOG_LEVEL, message: string) {

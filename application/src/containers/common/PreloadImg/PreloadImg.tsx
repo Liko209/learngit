@@ -5,10 +5,11 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { mainLogger } from 'sdk';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils/entities';
 import { reaction, IReactionDisposer } from 'mobx';
+
+import { mainLogger } from 'foundation/log';
 
 type PreloadImgProps = {
   url?: string;

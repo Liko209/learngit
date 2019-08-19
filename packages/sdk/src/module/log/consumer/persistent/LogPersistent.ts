@@ -8,9 +8,11 @@ import {
   DBManager,
   IDatabase,
   IDatabaseCollection,
-  KVStorageManager,
+  KVStorageManager
+} from 'foundation/db';
+import {
   PerformanceTracer
-} from 'foundation';
+} from 'foundation/performance';
 import { configManager } from '../../config';
 import schema, { TABLE_LOG } from './schema';
 import { ILogPersistent, PersistentLogEntity } from './types';

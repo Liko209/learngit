@@ -11,6 +11,12 @@ import { daoManager } from '../../../../dao';
 import { PostViewDao } from '../PostViewDao';
 import { Post } from '../../entity';
 
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 const posts: Post[] = [
   postFactory.build({
     id: 3752569593860,
@@ -73,42 +79,35 @@ describe('Post Dao', () => {
   let postViewDao: PostViewDao;
   let postDao: PostDao;
 
-  beforeAll(async () => {
+  beforeEach(() => {
+    clearMocks();
     const { database } = setup();
     postViewDao = new PostViewDao(database);
-    jest.spyOn(daoManager, 'getDao').mockReturnValue(postViewDao);
+    daoManager.getDao = jest.fn().mockImplementation(x => {
+      switch (x) {
+        case PostViewDao:
+          return postViewDao;
+        default:
+          return PostDao;
+      }
+    });
     postDao = new PostDao(database);
   });
 
   describe('Save', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-      jest.resetAllMocks();
-    });
     it('Save posts', async () => {
       await postDao.bulkPut(posts);
-      const results: Post = await postDao.get(3752569593860);
-      expect(results.text).toBe('2');
+      const results = await postDao.get(3752569593860);
+      expect(results!.text).toBe('2');
     });
   });
 
   describe('Queries', () => {
-    beforeAll(async () => {
-      jest.spyOn(postDao, 'getPostViewDao').mockReturnValue(postViewDao);
-      await postDao.clear();
+    beforeEach(async () => {
       await postDao.bulkPut(posts);
     });
 
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-      jest.resetAllMocks();
-      jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
-    });
-
     it('Query older posts by group Id and post id', async () => {
-      jest.spyOn(postDao, 'get').mockResolvedValue(posts[2]);
       const result = await postDao.queryPostsByGroupId(
         9163628546,
         1151236399108,
@@ -116,7 +115,7 @@ describe('Post Dao', () => {
         3,
       );
       expect(result).toHaveLength(3);
-      expect(_.first(result).created_at).toBe(1);
+      expect(result[0].created_at).toBe(1);
     });
 
     it('Query newer posts by group Id and post id', async () => {
@@ -128,7 +127,7 @@ describe('Post Dao', () => {
         3,
       );
       expect(result).toHaveLength(3);
-      expect(_.first(result).created_at).toBe(2);
+      expect(result[0].created_at).toBe(2);
     });
 
     it('Query Oldest Post By Group Id', async () => {
@@ -149,17 +148,8 @@ describe('Post Dao', () => {
   });
 
   describe('queryUnreadPostsByGroupId()', () => {
-    beforeAll(async () => {
-      jest.spyOn(postDao, 'getPostViewDao').mockReturnValue(postViewDao);
-      await postDao.clear();
-      await postDao.bulkPut(unreadPosts);
-    });
-
     beforeEach(async () => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-      jest.resetAllMocks();
-      jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
+      await postDao.bulkPut(unreadPosts);
     });
 
     it('should call postViewDao queryIntervalPostsByGroupId', async () => {
@@ -168,9 +158,10 @@ describe('Post Dao', () => {
         groupId: 9163628546,
         startPostId: 1151236554756,
         endPostId: 1151236399108,
-        limit: 500,
+        unreadCount: 500,
       });
-      expect(spy).toBeCalled();
+      expect(result.length).toEqual(0);
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should return interval posts if start post is in db and end post is in db', async () => {
@@ -178,7 +169,7 @@ describe('Post Dao', () => {
         groupId: 9163628546,
         startPostId: 3752569593866,
         endPostId: 3752569594960,
-        limit: 500,
+        unreadCount: 500,
       });
       expect(result).toHaveLength(5);
       expect(_.first(result).created_at).toBe(1);
@@ -188,7 +179,6 @@ describe('Post Dao', () => {
 
   describe('local pre-inserted posts', () => {
     beforeEach(async () => {
-      await postDao.clear();
       const processedPosts: Post[] = [];
 
       posts.forEach((element: Post) => {
@@ -209,7 +199,6 @@ describe('Post Dao', () => {
 
   describe('groupPostCount', () => {
     beforeEach(async () => {
-      await postDao.clear();
       await postDao.bulkPut(posts);
     });
     it('should return 4 when there has 4 posts group_id 9163628546', async () => {
@@ -227,7 +216,7 @@ describe('Post Dao', () => {
     it('should call post view batchGet', async () => {
       postViewDao.batchGet = jest.fn().mockReturnValue([]);
       await postDao.queryPostViewByIds([1]);
-      expect(postViewDao.batchGet).toBeCalledWith([1]);
+      expect(postViewDao.batchGet).toHaveBeenCalledWith([1]);
     });
   });
 });

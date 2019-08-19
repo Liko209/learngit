@@ -9,6 +9,7 @@ import { Post } from 'sdk/module/post/entity';
 import { SortableListStore } from '@/store/base';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PinnedPostListHandler } from '../../PinnedPostListHandler';
+import { observable } from 'mobx';
 
 jest.mock('mobx');
 jest.mock('sdk/api');
@@ -27,6 +28,7 @@ describe('PinnedPostCacheController', () => {
   let fetchSortableDataListHandler2: FetchSortableDataListHandler<Post>;
   let fetchSortableDataListHandler3: FetchSortableDataListHandler<Post>;
   function setUp() {
+    observable.map = jest.fn().mockReturnValue(new Map());
     pinnedPostCacheController = new PinnedPostCacheController();
     fetchSortableDataListHandler2 = new FetchSortableDataListHandler(
       null as any,

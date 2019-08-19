@@ -22,7 +22,7 @@ import {
 import { Notification } from '@/containers/Notification';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, defaultNotificationOptions } from '@/common/catchError';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable

@@ -1,10 +1,10 @@
-import { LogEntity } from 'foundation/src';
-
 /*
  * @Author: Paynter Chen
  * @Date: 2019-03-24 11:06:23
  * Copyright © RingCentral. All rights reserved.
  */
+
+import { LogEntity } from 'foundation/log';
 
 type LogControlConfig = {
   uploadEnabled: boolean;

@@ -25,8 +25,9 @@ import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
 import { accelerateURL } from '@/common/accelerateURL';
-import { mainLogger, PerformanceTracer } from 'sdk';
-import { VIEWER_PERFORMANCE_KEYS } from '../../../../performanceKeys';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { VIEWER_PERFORMANCE_KEYS } from '@/modules/viewer/performanceKeys';
 
 type ImageViewerProps = WithTranslation & ImageViewerViewProps;
 
@@ -40,6 +41,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   constructor(props: ImageViewerProps) {
     super(props);
     props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
+    props.setOnImageSwitchCb(this._onImageSwitch);
     this.state = {
       switched: false,
       imageInited: false,
@@ -126,6 +128,12 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       dismissible: false,
     });
     this.context();
+  };
+
+  private _onImageSwitch = (imgInfo: { width: number; height: number }) => {
+    if (imgInfo.width && imgInfo.height && this._zoomRef.current) {
+      this._zoomRef.current.updateContentSize(imgInfo.width, imgInfo.height);
+    }
   };
 
   private _onZoomImageContentChange = () => {

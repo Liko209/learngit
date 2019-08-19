@@ -17,7 +17,7 @@ import {
 } from 'sdk/service';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import {
   jobScheduler,
   JOB_KEY,

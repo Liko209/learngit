@@ -14,7 +14,7 @@ import { SplitIOClient } from './SplitIOClient';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { Api } from 'sdk/api';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { EnvConfig } from 'sdk/module/env/config';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 

@@ -5,7 +5,8 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import _ from 'lodash';
-import { mainLogger, Container } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { Container } from 'foundation/ioc';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';

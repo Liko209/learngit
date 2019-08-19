@@ -1,5 +1,5 @@
 import { LogUploader } from '../LogUploader';
-import { LogEntity } from 'foundation';
+import { LogEntity } from 'foundation/log';
 import { AccountService } from '../../account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';

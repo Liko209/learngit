@@ -4,24 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { CommonGlobalConfig } from '../../common/config';
+import { CommonGlobalConfig } from 'sdk/module/common/config';
 import { CONFIG_KEYS } from './ConfigKeys';
 
 class EnvConfig extends CommonGlobalConfig {
   static getEnv() {
-    return this.get(CONFIG_KEYS.ENV);
+    return EnvConfig.get(CONFIG_KEYS.ENV);
   }
 
   static setEnv(env: string) {
-    this.put(CONFIG_KEYS.ENV, env);
+    EnvConfig.put(CONFIG_KEYS.ENV, env);
   }
 
   static getIsRunningE2E() {
-    return this.get(CONFIG_KEYS.RUNNING_E2E);
+    return EnvConfig.get(CONFIG_KEYS.RUNNING_E2E);
   }
 
   static disableLD(disable: boolean = true) {
-    return this.put(CONFIG_KEYS.DISABLE_LD, disable);
+    return EnvConfig.put(CONFIG_KEYS.DISABLE_LD, disable);
   }
 
   static getDisableSplitIo(): boolean {
@@ -29,7 +29,7 @@ class EnvConfig extends CommonGlobalConfig {
   }
 
   static disableSplitIo(disable: boolean = true) {
-    return this.put(CONFIG_KEYS.DISABLE_SPLIT_IO, disable);
+    return EnvConfig.put(CONFIG_KEYS.DISABLE_SPLIT_IO, disable);
   }
 }
 

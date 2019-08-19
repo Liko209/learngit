@@ -10,7 +10,7 @@ import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { GroupConfigDao } from '../dao/GroupConfigDao';
 import { GroupConfigController } from '../controller/GroupConfigController';
 import { Post } from 'sdk/module/post/entity';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const MODULE_NAME = 'GroupConfigService';
 class GroupConfigService extends EntityBaseService<GroupConfig> {

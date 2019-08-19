@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { inject, container, injectable } from 'framework/ioc';
-import { Jupiter} from 'framework/Jupiter';
+import { Jupiter } from 'framework/Jupiter';
 import * as sw from '@/modules/service-worker/module.config';
 import * as leaveBlocker from '@/modules/leave-blocker/module.config';
 import * as router from '@/modules/router/module.config';
@@ -25,7 +25,7 @@ import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
 
 import config from '@/config';
-import { Performance, FirebasePerformance } from '../../packages/foundation';
+import { Performance, FirebasePerformance } from 'foundation/performance';
 
 @injectable()
 class Application {

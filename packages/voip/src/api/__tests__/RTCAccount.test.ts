@@ -24,7 +24,7 @@ import { REGISTRATION_FSM_STATE, RTC_PROV_EVENT } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 import { kProvisioningInfoKey } from '../../utils/constants';
-import { ITelephonyDaoDelegate } from 'foundation';
+import { ITelephonyDaoDelegate } from 'foundation/telephony';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { RTCCall } from '../RTCCall';
 

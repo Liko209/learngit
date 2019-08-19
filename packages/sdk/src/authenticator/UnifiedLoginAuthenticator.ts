@@ -12,7 +12,8 @@ import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../module/account/config';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
-import { PerformanceTracer, JError } from 'foundation';
+import { PerformanceTracer } from 'foundation/performance';
+import { JError } from 'foundation/error';
 import { AUTHENTICATOR_PERFORMANCE_KEYS } from './config/performanceKeys';
 import { dataCollectionHelper } from 'sdk/framework';
 
@@ -94,10 +95,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
       code,
       redirect_uri: window.location.origin,
     }).catch((reason: JError) => {
-      dataCollectionHelper.traceLoginFailed(
-        'rc',
-        'get token failed',
-      );
+      dataCollectionHelper.traceLoginFailed('rc', 'get token failed');
       throw reason;
     });
     if (!rcToken.timestamp) {

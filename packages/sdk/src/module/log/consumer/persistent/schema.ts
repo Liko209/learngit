@@ -3,7 +3,7 @@
  * @Date: 2019-03-24 11:08:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { ISchema } from 'foundation';
+import { ISchema } from 'foundation/db';
 
 export const TABLE_LOG = 'log';
 

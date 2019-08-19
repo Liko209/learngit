@@ -6,7 +6,7 @@
 import TypeDictionary from './types';
 import GlipTypeUtil, { TYPE_ID_MASK } from './util';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { UndefinedAble } from 'sdk/types';
 
 interface IMessage<V> {

@@ -15,7 +15,7 @@ import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';

@@ -5,7 +5,7 @@
  */
 import { ILogChunkSplitStrategy } from './types';
 import { extractLogMessageLine } from './utils';
-import { LogEntity } from 'foundation';
+import { LogEntity } from 'foundation/log';
 
 export class DefaultChunkStrategy implements ILogChunkSplitStrategy {
   private _getEndIndex(array: LogEntity[], limit: number, startIndex: number) {

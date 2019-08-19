@@ -10,6 +10,9 @@ import { HomeService } from '../HomeService';
 import { IHomeService } from '../../interface/IHomeService';
 import { config } from '../../module.config';
 
+jest.unmock('react-quill');
+jest.unmock('quill');
+
 jupiter.registerModule(config);
 
 describe('HomeService', () => {
