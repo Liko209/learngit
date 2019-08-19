@@ -88,6 +88,10 @@ class ProfileMiniCardPersonFooter extends Component<
             id={id}
             profileDialog={ProfileDialogPerson}
             beforeClick={this.handleCloseMiniCard}
+            dataTrackingProps={{
+              category: 'Person',
+              source: 'miniProfile',
+            }}
           >
             <JuiLinkButton>{t('people.team.profile')}</JuiLinkButton>
           </OpenProfileDialog>

@@ -21,10 +21,14 @@ import { getProfileDialogComponent } from '@/common/OpenProfile';
 class MenuComponent extends React.Component<
   WithTranslation & MenuProps & MenuViewProps
 > {
-  renderProfile = (title: string) => (
+  renderProfile = (title: string, dataTrackingProps: { category: string }) => (
     <OpenProfileDialog
       profileDialog={getProfileDialogComponent(this.props.profileId)}
       id={this.props.profileId}
+      dataTrackingProps={{
+        category: dataTrackingProps.category,
+        source: 'conversationHeader_menu',
+      }}
     >
       <JuiMenuItem data-test-automation-id="profileEntry">{title}</JuiMenuItem>
     </OpenProfileDialog>
@@ -34,7 +38,11 @@ class MenuComponent extends React.Component<
     const { t } = this.props;
 
     return (
-      <JuiMenuList>{this.renderProfile(t('people.team.profile'))}</JuiMenuList>
+      <JuiMenuList>
+        {this.renderProfile(t('people.team.profile'), {
+          category: 'Person',
+        })}
+      </JuiMenuList>
     );
   };
 
@@ -43,7 +51,9 @@ class MenuComponent extends React.Component<
 
     return (
       <JuiMenuList>
-        {this.renderProfile(t('people.team.profile'))}
+        {this.renderProfile(t('people.team.profile'), {
+          category: 'Group',
+        })}
         <JuiMenuItem onClick={this.onConvertToTeam}>
           {t('people.team.convertToTeam')}
         </JuiMenuItem>
@@ -71,7 +81,9 @@ class MenuComponent extends React.Component<
 
     return (
       <JuiMenuList>
-        {this.renderProfile(t('people.team.teamDetails'))}
+        {this.renderProfile(t('people.team.teamDetails'), {
+          category: 'Team',
+        })}
         {isAdmin && !isCompanyTeam ? adminActions : null}
       </JuiMenuList>
     );

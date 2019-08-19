@@ -176,9 +176,10 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_phone_dialer_callHistory');
   }
 
-  phoneGoToConversation(source: string) {
+  goToConversation(source: string, conversationType?: string) {
     dataAnalysis.track('Jup_Web/DT_msg_goToConversation', {
       source,
+      conversationType,
     });
   }
 
@@ -214,6 +215,46 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_confirmCallSwitch', {
       source,
     });
+  }
+
+  profileDialog(category: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
+      category,
+      source,
+    });
+  }
+
+  addOrRemoveFavorite(
+    source: string,
+    action: string,
+    conversationType: string,
+  ) {
+    dataAnalysis.track('Jup_Web/DT_profile_addOrRemoveFavorite', {
+      source,
+      action,
+      conversationType,
+    });
+  }
+
+  copyProfileField(field: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_copyProfileField', {
+      field,
+    });
+  }
+
+  toggleTeamVisibility(toggle: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_toggleTeamVisibility', {
+      toggle,
+      source,
+    });
+  }
+
+  copyTeamURL() {
+    dataAnalysis.track('Jup_Web/DT_profile_copyTeamURL');
+  }
+
+  copyTeamEmail() {
+    dataAnalysis.track('Jup_Web/DT_profile_copyTeamEmail');
   }
 }
 
