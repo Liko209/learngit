@@ -16,7 +16,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 
 class PhoneLinkViewModel extends StoreViewModel<PhoneLinkProps> {
   @observable
-  canUseTelephony: boolean = true;
+  canUseTelephony: boolean = false;
 
   private _featuresFlagsService: FeaturesFlagsService = container.get(
     FeaturesFlagsService,
@@ -33,7 +33,7 @@ class PhoneLinkViewModel extends StoreViewModel<PhoneLinkProps> {
 
   @action
   updateCanUseTelephony = async () => {
-    // this.canUseTelephony = await this._featuresFlagsService.canUseTelephony();
+    this.canUseTelephony = await this._featuresFlagsService.canUseTelephony();
   };
 
   directCall = (phoneNumber: string) => {
