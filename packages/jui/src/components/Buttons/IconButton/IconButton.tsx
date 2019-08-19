@@ -195,7 +195,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   } = props;
   let colorScope: keyof Palette = 'primary';
   let colorName: string = 'main';
-  if (color && color.indexOf('.') >= 0) {
+  if (color) {
     const array = color.split('.');
     if (array.length > 1) {
       colorScope = array[0] as keyof Palette;
