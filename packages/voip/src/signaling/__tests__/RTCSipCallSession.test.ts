@@ -747,6 +747,86 @@ describe('sip call session', () => {
       RTCMediaDeviceManager.instance()._gotMediaDevices(deviceInfos);
     }
 
+    it('should do nothing if hasDefaultAudioDevice equals false when outbound call received session accept event [JPT-xxxx]', done => {
+      const mockInputAudioId = '1111';
+      const sessionDescriptionHandlerOptions = {
+        constraints: {
+          audio: {
+            deviceId: {
+              exact: mockInputAudioId,
+            },
+          },
+          video: false,
+        },
+      };
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioInput')
+        .mockReturnValue(mockInputAudioId);
+      initSession();
+      jest
+        .spyOn(sipCallSession as any, '_setAudioOutputDevice')
+        .mockImplementation();
+      sipCallSession.answer();
+      setImmediate(() => {
+        expect(mockSession.accept).toHaveBeenCalledWith({
+          sessionDescriptionHandlerOptions,
+        });
+        RTCMediaDeviceManager.instance().destroy();
+        done();
+      });
+    });
+
+    it('should do nothing if hasDefaultAudioDevice equals false when incoming call received session confirmed event [JPT-xxxx]', done => {
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioInput')
+        .mockReturnValue('');
+      initSession();
+      jest
+        .spyOn(sipCallSession as any, '_setAudioInputDevice')
+        .mockImplementation();
+      sipCallSession.answer();
+      setImmediate(() => {
+        expect(
+          (sipCallSession as any)._setAudioInputDevice,
+        ).not.toHaveBeenCalled();
+        RTCMediaDeviceManager.instance().destroy();
+        done();
+      });
+    });
+
+    it('should do nothing if hasDefaultAudioDevice equals false when outbound call received session accept event [JPT-xxxx]', done => {
+      const mockOutputAudioId = '1111';
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioOutput')
+        .mockReturnValue(mockOutputAudioId);
+      jest.spyOn(rtcLogger, 'debug');
+      sipCallSession = new RTCSipCallSession(mockUuid);
+      setImmediate(() => {
+        expect(rtcLogger.debug).toHaveBeenCalledWith(
+          'RTCSipCallSession',
+          `Set audio output device id: ${mockOutputAudioId}`,
+        );
+        RTCMediaDeviceManager.instance().destroy();
+        done();
+      });
+    });
+
+    it('should do nothing if hasDefaultAudioDevice equals false when incoming call received session confirmed event [JPT-xxxx]', done => {
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioOutput')
+        .mockReturnValue('');
+      jest.spyOn(rtcLogger, 'debug');
+      sipCallSession = new RTCSipCallSession(mockUuid);
+      setImmediate(() => {
+        expect(rtcLogger.debug).not.toHaveBeenCalledWith(
+          'RTCSipCallSession',
+          `Set audio output device id: ${''}`,
+        );
+        RTCMediaDeviceManager.instance().destroy();
+        done();
+      });
+    });
+
     it('should do nothing if hasDefaultAudioDevice equals false when outbound call received session accept event [JPT-1457]', done => {
       initDefaultAudioDevice(false);
       initSession();

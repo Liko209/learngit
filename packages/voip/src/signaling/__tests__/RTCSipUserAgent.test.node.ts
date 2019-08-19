@@ -8,6 +8,7 @@ import { ProvisionDataOptions, UA_EVENT } from '../types';
 import { RTCCallOptions } from '../../api/types';
 import { EventEmitter2 } from 'eventemitter2';
 import { opusModifier } from '../../utils/utils';
+import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 class MockUserAgent extends EventEmitter2 {
   public transport: any;
@@ -129,6 +130,33 @@ describe('RTCSipUserAgent', () => {
         phoneNumber,
         { homeCountryId: '1' },
       );
+    });
+
+    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall [JPT-xxx]', () => {
+      setupMakeCall();
+      const options: RTCCallOptions = {};
+      const sessionDescriptionHandlerOptions = {
+        constraints: {
+          audio: {
+            deviceId: {
+              exact: '1111',
+            },
+          },
+          video: false,
+        },
+      };
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioInput')
+        .mockReturnValue('1111');
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+        phoneNumber,
+        {
+          homeCountryId: '1',
+          sessionDescriptionHandlerOptions,
+        },
+      );
+      RTCMediaDeviceManager.instance().destroy();
     });
 
     it('Should call the invite function of WebPhone with homeCountryId param when UserAgent makeCall [JPT-972]', async () => {
