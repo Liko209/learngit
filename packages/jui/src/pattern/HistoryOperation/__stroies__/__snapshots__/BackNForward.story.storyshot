@@ -61,7 +61,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
   animation-name: cBKRfH;
 }
 
-.c1.c1.c1.c1.c1 .icon[disabled] {
+.c1.c1.c1.c1.c1.disabled .icon {
   color: rgba(255,255,255,0.5);
 }
 
