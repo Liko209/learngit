@@ -21,6 +21,7 @@ type Profile = ExtendedBaseModel & {
   favorite_post_ids: number[];
   skip_close_conversation_confirmation?: boolean;
   me_tab: boolean;
+  show_link_previews: boolean;
   conversation_level_notifications?: object;
 
   // call settings
