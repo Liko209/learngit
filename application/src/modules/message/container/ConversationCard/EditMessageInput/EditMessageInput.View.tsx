@@ -76,10 +76,10 @@ class EditMessageInputViewComponent extends Component<Props, State> {
     if (target) {
       const container = getScrollParent(target, false);
       if (container) {
-        const { bottom: H1 } = target.getBoundingClientRect();
-        const { bottom: H2 } = container.getBoundingClientRect();
-        const delta = H1 - H2;
-        const offset = 20;
+        const { bottom: targetBottom } = target.getBoundingClientRect();
+        const { bottom: containerBottom } = container.getBoundingClientRect();
+        const delta = targetBottom - containerBottom;
+        const offset = 16; // This avoids prevent the bottom of the edit area coincides with the bottom of the container.
         if (delta > 0) {
           container.scrollTop += delta + offset;
         }
