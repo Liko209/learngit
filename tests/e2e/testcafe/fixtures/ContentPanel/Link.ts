@@ -403,6 +403,82 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
+  caseIds: ['JPT-2827'],
+  maintainers: ['andy.hu'],
+  keywords: ['link preview'],
+})('Check the show link previews settings is implemented immediately', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  await h(t).glip(loginUser).init()
+  await h(t).scenarioHelper.resetProfile(loginUser);
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  const url1 = 'https://www.google.com';
+
+  await h(t).withLog(`Given I have 1:1 chat`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter the chat conversation`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  });
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const lastPostItem = conversationPage.lastPostItem;
+  await h(t).withLog(`When I send one link {url1}`, async (step) => {
+    step.setMetadata('url1', url1);
+    await conversationPage.sendMessage(url1);
+    await lastPostItem.waitForPostToSend();
+  });
+
+  await h(t).withLog(`When I turn off link preview`, async (step) => {
+    await h(t).glip(loginUser).updateProfile({
+      show_link_previews:false
+    });
+  });
+
+  await h(t).withLog(`And there is no link preview"`, async (step) => {
+    await t.expect (lastPostItem.linkPreviewCard.exists).notOk()
+  });
+
+  await h(t).withLog(`And display link card: title "{title}" with link "{url1}"`, async (step) => {
+    await t.expect (lastPostItem.linkPreviewCard.exists).ok()
+  });
+
+  await h(t).withLog(`And there is no link preview"`, async (step) => {
+    await t.expect (lastPostItem.linkPreviewCard.exists).notOk()
+  });
+
+  await h(t).withLog(`When I turn on link preview`, async (step) => {
+    await h(t).glip(loginUser).updateProfile({
+      show_link_previews:true
+    });
+  });
+  await h(t).withLog(`And display link card: title "{title}" with link "{url1}"`, async (step) => {
+    await t.expect (lastPostItem.linkPreviewCard.exists).ok()
+  });
+
+
+
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
   caseIds: ['JPT-2596'],
   maintainers: ['alvin.huang'],
   keywords: ['itemCard','cardPreview'],
