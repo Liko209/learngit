@@ -36,10 +36,6 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.resetProfileAndState(loginUser);
   });
 
-  await h(t).withLog('And send a message to ensure chat in list', async () => {
-    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
-  });
-
   let anotherUserName = '';
   await h(t).withLog('And I get the display name {name} of anotherUser ', async (step) => {
     anotherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
