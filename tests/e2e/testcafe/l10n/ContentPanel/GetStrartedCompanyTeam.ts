@@ -15,30 +15,28 @@ test(formalName('Check the GetStarted page ', ['P2', 'ContentPanel','Messages', 
 async(t: TestController) => {
 
   const users=h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[0];
   const app=new AppRoot(t);
 
-  let team = <IGroup>{
-    name: "CompanyTeam",
-    type: "Team",
-    owner: loginUser,
-    members: [loginUser],
-  }
-
-  await h(t).withLog(`Given I own a company team: "${team.name}"`, async () => {
-    await h(t).scenarioHelper.createTeam(team);
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async()=>{
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async()=>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   })
 
-  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('When I click search box', async () => {
+    const searchBar = app.homePage.header.searchBar;
+    await searchBar.enter();
+  });
+
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog('And I search with "Inc"', async () => {
+    await searchDialog.typeSearchKeyword("Inc");
+  });
+
+  const firstConversationResult = searchDialog.instantPage.nthConversation(0);
   const rightRail=app.homePage.messageTab.rightRail;
-  await h(t).withLog(`When I open the company team ${team.name}`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-    await conversationPage.waitUntilPostsBeLoaded;
+  await h(t).withLog('And I click "Team RingCentral Inc." ', async () => {
+    await t.click(firstConversationResult.self);
     try{
       await  rightRail.clickExpandStatusButton();
     }
@@ -46,6 +44,5 @@ async(t: TestController) => {
       console.log("needn't click show detail");
      }
   });
-
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_GetStartedCompanyTeam'});
 });

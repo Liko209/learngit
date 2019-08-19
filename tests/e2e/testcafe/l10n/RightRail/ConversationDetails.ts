@@ -7,27 +7,25 @@ import { v4 as uuid } from 'uuid';
 import { IGroup } from '../../v2/models';
 
 fixture('RightRail/ConversationDetails')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_FIJI_GUEST))
   .afterEach(teardownCase());
 
+  //Update Hank.Huang' V1.4 to Hanny.han V1.7
 test(
-  formalName('Conversation details on the right rail', [
-    'P2',
-    'Messages',
-    'RightRail',
-    'ConversationDetails',
-    'V1.4',
-    'Hank.Huang',
-  ]),
-  async t => {
+  formalName('Conversation details on the right rail', ['P2', 'Messages', 'RightRail', 'ConversationDetails', 'V1.4', 'V1.7', 'Hanny.Han',]),async t => {
+
+    const users=h(t).rcData.mainCompany.users;
+    const loginUser = users[5];
+    const guestUser =  h(t).rcData.guestCompany.users;
+    const guestUser1 = guestUser[0];
     const app = new AppRoot(t);
-    const loginUser = h(t).rcData.mainCompany.users[5];
-    const team = <IGroup>{
-      name: `H-${uuid()}`,
-      type: 'Team',
+
+    let team = <IGroup>{
+      name: `publicTeamWithMe${uuid()}`,
+      type: "Team",
       owner: loginUser,
-      members: [loginUser],
-    };
+      members: [loginUser, guestUser1]
+    }
 
     await h(t).withLog(
       `Given I have a team conversation: "${team.name}"`,
@@ -35,10 +33,7 @@ test(
         await h(t).scenarioHelper.createTeam(team);
       },
     );
-    await h(t).withLog(
-      `And I login Jupiter with ${loginUser.company.number}#${
-        loginUser.extension
-      }`,
+    await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
@@ -46,12 +41,15 @@ test(
     );
 
     const rightRail = app.homePage.messageTab.rightRail;
-
-    await h(t).withLog(
-      'When I open the created team conversation and hover "More" icon on right rail',
+    await h(t).withLog('When I open the created team conversation and hover "Add team members" icon on right rail',
       async () => {
         const teamsSection = app.homePage.messageTab.teamsSection;
         await teamsSection.conversationEntryById(team.glipId).enter();
+        await t.hover(rightRail.memberListSection.addMemberButton);
+      },
+    );
+    await h(t).log('Then I take screenshot', {screenshotPath: 'Jupiter_RightRail_AddTeamMembersIcon'});
+    await h(t).withLog('When I hover "More" icon on right rail',async () => {
         await rightRail.hoverMoreButton();
       },
     );

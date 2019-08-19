@@ -554,4 +554,41 @@ export class SoundsSection extends BaseWebComponent {
   async showSoundInCurrentIncomingCallSetting(sound: string) {
     await this.t.expect(this.soundIncomingCall.withText(sound).exists).ok();
   }
+  // Sound Direct Messages
+  async clickSoundDirectMessages(){
+    await this.t.click(this.soundDirectMessages);
+  }
+  get audioSpeakerButton(){
+    return this.getSelectorByAutomationId(
+      "settingItemSelectBoxItem-soundDirectMessages-2Beep"
+    )
+  }
+  async hoverAudioSpeakerButton(){
+    await this.t.hover(this.audioSpeakerButton);
+  }
+  // Sound Incoming voice calls
+  get incomingVoiceCalls(){
+    return this.getSelectorByAutomationId(
+      "settingItemSelectBox-soundIncomingCall"
+  );
+  }
+  get incomingVoiceCallsLabel(){
+    return this.getSelectorByAutomationId(
+      "settingItemLabel-soundIncomingCall"
+  );
+  }
+  async clickIncomingVoiceCallsLable(){
+    await this.t.click(this.incomingVoiceCallsLabel);
+  }
+  async clickIncomingVoiceCalls(){
+    await this.t.click(this.incomingVoiceCalls);
+  }
+  get incomingVoiceCallsSelectBoxItem(){
+    return this.getSelectorByAutomationId(
+      "settingItemSelectBoxItem-soundIncomingCall-0"
+    );
+  }
+  async hoverIncomingVoiceCallsSelectBoxItem(){
+    await this.t.hover(this.incomingVoiceCallsSelectBoxItem);
+  }
 }
