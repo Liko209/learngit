@@ -31,7 +31,7 @@ class MeetingViewComponent extends Component<Props> {
       <JuiIconButton
         size={size ? size : 'medium'}
         onClick={this._handleClick}
-        tooltipTitle={t('meeting.Meetings')}
+        tooltipTitle={t('meeting.Meet')}
         variant={variant || 'round'}
         data-test-automation-id="rcv-meeting-btn"
       >

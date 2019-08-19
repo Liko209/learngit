@@ -923,7 +923,8 @@
     }
   },
   "meeting": {
-    "Meetings": "Meetings"
+    "Meetings": "Meetings",
+    "Meet": "Meet"
   },
   "integration": {},
   "setting": {

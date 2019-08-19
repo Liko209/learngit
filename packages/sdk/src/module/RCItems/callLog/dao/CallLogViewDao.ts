@@ -6,7 +6,9 @@
 
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { CallLogView, CallLog } from '../entity';
-import { IDatabase, mainLogger, PerformanceTracer } from 'foundation';
+import { IDatabase } from 'foundation/db';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE, CALL_RESULT } from '../constants';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { DEFAULT_FETCH_SIZE, CALL_DIRECTION } from '../../constants';
@@ -100,12 +102,14 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
       }
       return false;
     });
-    return views.sort((lv: CallLogView, rv: CallLogView) => SortUtils.sortModelByKey<CallLogView, string>(
-      lv,
-      rv,
-      ['__timestamp'],
-      desc,
-    ));
+    return views.sort((lv: CallLogView, rv: CallLogView) =>
+      SortUtils.sortModelByKey<CallLogView, string>(
+        lv,
+        rv,
+        ['__timestamp'],
+        desc,
+      ),
+    );
   }
 
   async queryOldestTimestamp(): Promise<Nullable<number>> {

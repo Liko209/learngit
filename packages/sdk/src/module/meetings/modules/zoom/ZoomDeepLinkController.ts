@@ -7,7 +7,7 @@
 import { IMeetingController } from '../controller/IMeetingController';
 import { StartMeetingResultType, MEETING_ACTION } from '../../types';
 import { ZoomMeetingItem } from 'sdk/module/item/entity';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PersonService } from 'sdk/module/person';
 import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';

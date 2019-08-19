@@ -12,7 +12,7 @@ import {
   ZipItemLevel,
   IZip,
 } from './types';
-import { LogEntity, SessionManager } from 'foundation';
+import { LogEntity, SessionManager } from 'foundation/log';
 import { ZipConsumer } from './ZipConsumer';
 import { Zip } from './Zip';
 

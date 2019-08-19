@@ -15,8 +15,8 @@ import {
   HA_PRIORITY,
   REQUEST_PRIORITY,
   NETWORK_FAIL_TEXT,
-  networkLogger,
-} from 'foundation';
+} from 'foundation/network';
+import { networkLogger } from 'foundation/log';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
 import { responseParser } from './parser';

@@ -114,15 +114,7 @@ test.meta(<ITestMeta>{
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog('When I enter the group conversation', async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
-  }, true);
-
-  await h(t).withLog('And close the right rail', async () => {
-    app.homePage.messageTab.rightRail.fold();
-  }, true);
-
-  await h(t).withLog('And click the member count icon(with count) on page header ', async () => {
+  await h(t).withLog('When I enter the group conversation and click Click the member count icon(with count) on page header ', async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
     await conversationPage.clickMemberCountIcon();
   }, true);
@@ -363,85 +355,4 @@ test.meta(<ITestMeta>{
     await t.expect(profileDialog.exists).ok;
     await t.expect(await profileDialog.profileType).eql('chat');
   });
-});
-
-test.meta(<ITestMeta>{
-  priority: ['P2'],
-  caseIds: ['JPT-2618'],
-  maintainers: ['Chris.Zhan'],
-  keywords: ['PageHeader', 'MemberCount'],
-})('The members icon and count of group/team should be hid when the right shelf is opened', async (t: TestController) => {
-  const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[0];
-  const otherUser = h(t).rcData.mainCompany.users[1];
-
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
-
-  const team = <IGroup>{
-    type: 'Team',
-    name: uuid(),
-    owner: loginUser,
-    members: [loginUser, otherUser],
-  };
-
-  await h(t).withLog('Given I have an extension with a team, a group and a 1:1 conversations', async () => {
-    await h(t).scenarioHelper.createTeamsOrChats([team]);
-  });
-
-  await h(t).withLog(`And I login Jupiter this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  const teamSection = app.homePage.messageTab.teamsSection;
-  const conversationPage = app.homePage.messageTab.conversationPage;
-  const memberIcon = conversationPage.memberCountIcon;
-  const rightShell = app.homePage.messageTab.rightRail;
-
-  await h(t).withLog('When I enter team', async () => {
-    await teamSection.conversationEntryById(team.glipId).enter();
-  });
-
-  await h(t).withLog('Then I can not see the member icon because right shell is open by default', async () => {
-    await rightShell.shouldBeExpanded();
-    await t.expect(memberIcon.exists).notOk();
-  }, true);
-
-  await h(t).withLog('When I close the right shell', async () => {
-    await rightShell.fold();
-    await rightShell.shouldBeFolded();
-  });
-
-  await h(t).withLog('Then I can see the member icon', async () => {
-    await t.expect(memberIcon.exists).ok();
-  }, true);
-
-  await h(t).withLog('When I open the right shell', async () => {
-    await rightShell.expand();
-    await rightShell.shouldBeExpanded();
-  });
-
-  await h(t).withLog('Then I can not see the member icon', async () => {
-    await t.expect(memberIcon.exists).notOk();
-  }, true);
-
-
-  await h(t).withLog('When I resize window to smaller', async () => {
-    await t.resizeWindow(750, 700);
-    await rightShell.shouldBeFolded();
-  }, true);
-
-  await h(t).withLog('Then I can see the member icon', async () => {
-    await t.expect(memberIcon.exists).ok();
-  }, true);
-
-  await h(t).withLog('When I resize window to larger', async () => {
-    await t.resizeWindow(1440, 700);
-    await rightShell.shouldBeExpanded();
-  }, true);
-
-  await h(t).withLog('Then I can not see the member icon', async () => {
-    await t.expect(memberIcon.exists).notOk();
-  }, true);
-
 });

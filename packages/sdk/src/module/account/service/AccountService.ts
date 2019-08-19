@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger, JError, IToken } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { JError } from 'foundation/error';
+import { IToken } from 'foundation/network';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';

@@ -6,7 +6,7 @@
 
 import Api from '../api';
 import { RawPresence } from '../../module/presence/entity';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA } from 'foundation/network';
 import { Presence } from 'sdk/module/presence/entity/Presence';
 import { PRESENCE_REQUEST_STATUS } from 'sdk/module/presence/constant';
 

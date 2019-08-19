@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
+import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation/error';
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
 import GroupAPI from '../../../../api/glip/group';

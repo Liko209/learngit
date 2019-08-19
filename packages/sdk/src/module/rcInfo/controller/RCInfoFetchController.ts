@@ -25,7 +25,7 @@ import {
   CountryRecord,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { RC_INFO } from 'sdk/service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';

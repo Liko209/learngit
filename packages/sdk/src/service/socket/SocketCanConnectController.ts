@@ -7,7 +7,8 @@ import { canConnect, CanConnectModel } from 'sdk/api/glip/user';
 import { PresenceService } from 'sdk/module/presence/service/PresenceService';
 import { PRESENCE } from 'sdk/module/presence/constant/Presence';
 import { AccountService } from 'sdk/module/account/service';
-import { mainLogger, getSpartaRandomTime } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { getSpartaRandomTime } from 'foundation/utils';
 import { SyncService } from 'sdk/module/sync/service';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 

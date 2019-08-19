@@ -2,7 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 11:05:46
  */
-import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
+import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation/log';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { ENTITY, SERVICE, WINDOW, DOCUMENT } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';

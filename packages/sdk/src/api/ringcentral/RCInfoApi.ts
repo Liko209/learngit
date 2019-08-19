@@ -13,7 +13,7 @@ import {
   REQUEST_HEADER_KEYS,
   CONTENT_TYPES,
   REQUEST_PRIORITY,
-} from 'foundation';
+} from 'foundation/network';
 import {
   RCClientInfo,
   RCAccountInfo,

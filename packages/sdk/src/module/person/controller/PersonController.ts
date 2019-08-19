@@ -29,7 +29,7 @@ import { PersonEntityCacheController } from './PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { PersonActionController } from './PersonActionController';
 import { buildPartialModifyController } from 'sdk/framework/controller';
 
@@ -412,7 +412,7 @@ class PersonController {
         await this._entitySourceController.update(person);
         notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
       }
-      
+
     }
   }
 

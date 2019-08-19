@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import _ from 'lodash';
 import { ILastUsedDeviceManager, IStorage } from './types';
 

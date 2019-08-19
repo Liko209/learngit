@@ -15,7 +15,7 @@ import { EventItemDao } from '../../module/event/dao';
 import { NoteItemDao } from '../../module/note/dao';
 import { LinkItemDao } from '../../module/link/dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
-import { DatabaseType } from 'foundation';
+import { DatabaseType } from 'foundation/db';
 
 jest.mock('../../module/file/dao');
 jest.mock('../../module/task/dao');

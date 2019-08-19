@@ -1,4 +1,4 @@
-import { JError, IErrorParser } from 'foundation';
+import { JError, IErrorParser } from 'foundation/error';
 import {
   DBCriticalError,
   DBNeedRetryError,

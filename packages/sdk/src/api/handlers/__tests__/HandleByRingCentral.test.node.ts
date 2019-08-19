@@ -2,9 +2,9 @@ import {
   OAuthTokenHandler,
   NETWORK_METHOD,
   NetworkRequestBuilder,
-  JNetworkError,
-  ERROR_CODES_NETWORK,
-} from 'foundation';
+} from 'foundation/network';
+
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation/error';
 import { stringify } from 'qs';
 import HandleByRingCentral from '../HandleByRingCentral';
 import { AccountService } from '../../../module/account';
