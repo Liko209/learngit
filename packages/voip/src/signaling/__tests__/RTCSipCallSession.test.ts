@@ -514,14 +514,10 @@ describe('sip call session', () => {
   });
 
   describe('WebPhone SDK APIs', () => {
-    it('reconnectMedia() API - succeed', async () => {
+    it('reconnectMedia() API - succeed', done => {
       initSession();
-      const succeededFunc = jest.fn((session: any) => {
-        expect(session).toEqual(mockSession);
-      });
-      const failedFunc = jest.fn((error: any, session: any) => {
-        expect(session).toEqual(mockSession);
-      });
+      const succeededFunc = jest.fn();
+      const failedFunc = jest.fn();
       const options = {
         eventHandlers: {
           succeeded: succeededFunc,
@@ -529,25 +525,17 @@ describe('sip call session', () => {
         },
       };
       sipCallSession.reconnectMedia(options);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 100);
-        }),
-      ).resolves.toEqual('new');
-      expect(succeededFunc).toHaveBeenCalled();
-      sipCallSession.destroy();
+      setImmediate(() => {
+        expect(succeededFunc).toHaveBeenCalled();
+        sipCallSession.destroy();
+        done();
+      });
     });
 
-    it('reconnectMedia() API - failed', async () => {
+    it('reconnectMedia() API - failed', done => {
       initSession();
-      const succeededFunc = jest.fn((session: any) => {
-        expect(session).toEqual(mockSession);
-      });
-      const failedFunc = jest.fn((error: any, session: any) => {
-        expect(session).toEqual(mockSession);
-      });
+      const succeededFunc = jest.fn();
+      const failedFunc = jest.fn();
       const options = {
         eventHandlers: {
           succeeded: succeededFunc,
@@ -556,15 +544,11 @@ describe('sip call session', () => {
       };
       mockSession.mediaStreams.testConnectionMode = 'reject';
       sipCallSession.reconnectMedia(options);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 100);
-        }),
-      ).resolves.toEqual('new');
-      expect(failedFunc).toHaveBeenCalled();
-      sipCallSession.destroy();
+      setImmediate(() => {
+        expect(failedFunc).toHaveBeenCalled();
+        sipCallSession.destroy();
+        done();
+      });
     });
 
     it('onMediaConnectionStateChange property should be called when receiving a media connection event', () => {
@@ -584,103 +568,59 @@ describe('sip call session', () => {
     });
 
     it('getMediaStats API - valid callback and valid interval', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
+      const callback = jest.fn();
       sipCallSession.getMediaStats(callback, 2000);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 2100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(2000);
       expect(callback).toHaveBeenCalled();
       sipCallSession.destroy();
     });
 
     it('getMediaStats API - valid callback and invalid interval', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
+      const callback = jest.fn();
       sipCallSession.getMediaStats(callback, -1);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(1000);
       expect(callback).toHaveBeenCalled();
       sipCallSession.destroy();
     });
 
     it('getMediaStats API - valid callback and  interval = null', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
-      sipCallSession.getMediaStats(callback);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
-      expect(callback).toHaveBeenCalled();
-      expect(callback.mock.calls.length).toBe(1);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
-      expect(callback.mock.calls.length).toBe(2);
+      const callback = jest.fn();
+      sipCallSession.getMediaStats(callback, 1000);
+      jest.advanceTimersByTime(1000);
+      expect(callback).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(1000);
+      expect(callback).toHaveBeenCalledTimes(2);
       sipCallSession.destroy();
     });
 
     it('stopMediaStats API ', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
-      sipCallSession.getMediaStats(callback);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      const callback = jest.fn();
+      sipCallSession.getMediaStats(callback, 1000);
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
       sipCallSession.stopMediaStats();
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
       sipCallSession.destroy();
     });
 
     it('_releaseMediaStreams private function ', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
-      sipCallSession.getMediaStats(callback);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      const callback = jest.fn();
+      sipCallSession.getMediaStats(callback, 1000);
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
       sipCallSession.destroy();
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
     });
   });

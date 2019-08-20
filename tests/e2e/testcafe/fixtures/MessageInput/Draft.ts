@@ -538,7 +538,7 @@ test.meta(<ITestMeta>{
   const msg = uuid();
   const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
   const url = new URL(SITE_URL)
-  const Conversation1_URL = `${url.protocol}//${url.hostname}/messages/${team1.glipId}`;
+  const Conversation1_URL = `${url.origin}/messages/${team1.glipId}`;
   await h(t).withLog(`When I enter conversation A to type message "{msg}"`, async (step) => {
     step.setMetadata('msg', msg);
     await conversation1.enter();
