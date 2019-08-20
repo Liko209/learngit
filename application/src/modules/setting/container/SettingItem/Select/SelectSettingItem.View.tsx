@@ -51,6 +51,11 @@ class SelectSettingItemViewComponent<
       mainLogger.error(
         '[SelectSettingItemViewComponent] valueRenderer or sourceRenderer is required for _renderValue()',
       );
+      const type = typeof rawValue;
+
+      if (['string', 'number'].includes(type)) {
+        return <JuiText>{rawValue}</JuiText>;
+      }
       return null;
     }
 
