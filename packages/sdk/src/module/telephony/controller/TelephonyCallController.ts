@@ -29,7 +29,14 @@ import { telephonyLogger } from 'foundation';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
-import { CALL_ACTION_ERROR_CODE, CallOptions } from '../types';
+import {
+  CALL_ACTION_ERROR_CODE,
+  CallOptions,
+  MAKE_CALL_ERROR_CODE,
+} from '../types';
+import { TRANSFER_TYPE } from '../entity/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 type CallActionResult = string | CALL_ACTION_ERROR_CODE;
 
@@ -42,6 +49,7 @@ interface IResultRejectFn {
 }
 
 const ACR_ON = -8;
+const NUMBER_PREFIX = '*0';
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _rtcCall: RTCCall;
@@ -116,7 +124,6 @@ class TelephonyCallController implements IRTCCallDelegate {
   }
 
   private _setSwitchCallInfo(callEntity: Call, callOption: CallOptions) {
-
     const isOutbound = callOption.callDirection === CALL_DIRECTION.OUTBOUND;
     if (isOutbound) {
       callEntity.to_num = callOption.replaceNumber || '';
@@ -476,6 +483,37 @@ class TelephonyCallController implements IRTCCallDelegate {
       this._saveCallActionCallback(RTC_CALL_ACTION.FORWARD, resolve, reject);
       this._rtcCall.forward(phoneNumber);
     });
+  }
+
+  async transfer(type: TRANSFER_TYPE, transferTo: string) {
+    return new Promise(async (resolve, reject) => {
+      if (type === TRANSFER_TYPE.WARM_TRANSFER) {
+        this._saveCallActionCallback(
+          RTC_CALL_ACTION.WARM_TRANSFER,
+          resolve,
+          reject,
+        );
+        this._rtcCall.warmTransfer(transferTo);
+      } else {
+        this._saveCallActionCallback(RTC_CALL_ACTION.TRANSFER, resolve, reject);
+        const phoneNumberService = ServiceLoader.getInstance<
+          PhoneNumberService
+        >(ServiceConfig.PHONE_NUMBER_SERVICE);
+        let number = await phoneNumberService.getE164PhoneNumber(transferTo);
+        if (!number) {
+          reject(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
+          return;
+        }
+        if (type === TRANSFER_TYPE.TO_VOICEMAIL) {
+          number = this._handleNumberToVoicemail(number);
+        }
+        this._rtcCall.transfer(number);
+      }
+    });
+  }
+
+  private _handleNumberToVoicemail(number: string) {
+    return `${NUMBER_PREFIX}${number}`;
   }
 
   ignore() {

@@ -26,6 +26,7 @@ import { RTC_SLEEP_MODE_EVENT } from 'voip/src/utils/types';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { E911Controller } from '../E911Controller';
+import { TRANSFER_TYPE } from '../../entity/types';
 
 jest.mock('../E911Controller');
 jest.mock('../TelephonyCallController');
@@ -573,6 +574,16 @@ describe('TelephonyAccountController', () => {
       const spy = jest.spyOn(callControllerList, 'delete');
       accountController._removeControllerFromList(callId);
       expect(spy).toHaveBeenCalledWith(callId);
+    });
+  });
+  describe('transfer', () => {
+    it('should call controller to transfer', () => {
+      const callController = {
+        transfer: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
+      accountController.transfer(callId, TRANSFER_TYPE.BLIND_TRANSFER, toNum);
+      expect(callController.transfer).toHaveBeenCalled();
     });
   });
 });
