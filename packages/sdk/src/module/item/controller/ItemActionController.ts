@@ -3,11 +3,12 @@
  * @Date: 2019-01-04 13:10:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from '../entity';
+import { Item, ConferenceItem } from '../entity';
 import { Raw } from '../../../framework/model';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { buildRequestController } from '../../../framework/controller';
 import { Api } from '../../../api';
+import ItemAPI from 'sdk/api/glip/item';
 import {
   GlipTypeUtil,
   TypeDictionary,
@@ -17,6 +18,8 @@ import { ProgressService } from '../../progress';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { IItemService } from '../service/IItemService';
+import { mainLogger } from 'foundation/log';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -31,6 +34,7 @@ class ItemActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
     private _entitySourceController: IEntitySourceController<Item>,
+    private _itemService: IItemService,
   ) {}
 
   async doNotRenderItem(id: number, type: string) {
@@ -100,6 +104,20 @@ class ItemActionController {
       );
       progressService.deleteProgress(itemId);
     }
+  }
+
+  async startConference(groupId: number): Promise<ConferenceItem> {
+    const rawConference = await ItemAPI.startRCConference({
+      group_ids: [groupId],
+    });
+    const conferences = await this._itemService.handleIncomingData([
+      rawConference,
+    ]);
+    if (conferences && conferences.length) {
+      return conferences[0];
+    }
+    mainLogger.warn('start conference raw data', rawConference);
+    throw new Error('empty result');
   }
 }
 
