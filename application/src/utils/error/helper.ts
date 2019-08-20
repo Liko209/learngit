@@ -15,8 +15,27 @@ import { mainLogger } from 'foundation/log';
 const uaParser = new UAParser(navigator.userAgent);
 const TAG = '[AppContextInfo]';
 
-export async function getAppContextInfo(): Promise<UserContextInfo> {
+
+export async function getApplicationInfo() {
   const config = await import('@/config');
+  const { deployedVersion } = await fetchVersionInfo();
+  const {
+    name: browserName,
+    version: browserVersion,
+  } = uaParser.getBrowser();
+  const { name: osName, version: osVersion } = uaParser.getOS();
+  return {
+    env: config.default.getEnv(),
+    version: deployedVersion || pkg.version,
+    url: window.location.href,
+    platform: window.jupiterElectron ? 'Desktop' : 'Web',
+    browser: `${browserName} - ${browserVersion}`,
+    os: `${osName} - ${osVersion}`,
+  }
+}
+
+export async function getAppContextInfo(): Promise<UserContextInfo> {
+  // const config = await import('@/config');
   const accountService = ServiceLoader.getInstance<AccountService>(
     ServiceConfig.ACCOUNT_SERVICE,
   );
@@ -32,25 +51,26 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
 
   return Promise.all([
     accountService.getCurrentUserInfo(),
-    fetchVersionInfo(),
-  ]).then(([userInfo, { deployedVersion }]) => {
+    getApplicationInfo(),
+  ]).then(([userInfo, applicationInfo]) => {
     const { display_name = '', email = '' } = userInfo || {};
-    const {
-      name: browserName,
-      version: browserVersion,
-    } = uaParser.getBrowser();
-    const { name: osName, version: osVersion } = uaParser.getOS();
+    // const {
+    //   name: browserName,
+    //   version: browserVersion,
+    // } = uaParser.getBrowser();
+    // const { name: osName, version: osVersion } = uaParser.getOS();
     return {
+      ...applicationInfo,
       email,
       username: display_name,
       id: currentUserId,
       companyId: currentCompanyId,
-      env: config.default.getEnv(),
-      version: deployedVersion || pkg.version,
-      url: window.location.href,
-      platform: window.jupiterElectron ? 'Desktop' : 'Web',
-      browser: `${browserName} - ${browserVersion}`,
-      os: `${osName} - ${osVersion}`,
+      // env: config.default.getEnv(),
+      // version: deployedVersion || pkg.version,
+      // url: window.location.href,
+      // platform: window.jupiterElectron ? 'Desktop' : 'Web',
+      // browser: `${browserName} - ${browserVersion}`,
+      // os: `${osName} - ${osVersion}`,
     };
   });
 }

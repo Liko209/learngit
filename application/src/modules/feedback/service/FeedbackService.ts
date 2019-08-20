@@ -9,7 +9,7 @@ import { logger } from '../utils';
 import { LogControlManager } from 'sdk/module/log/LogControlManager';
 import { FILE_STACK_API_KEY } from '../constants';
 import { UploadResult } from '../types';
-import { getAppContextInfo } from '@/utils/error';
+import { getApplicationInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../FeedbackApi';
 import { SessionManager, mainLogger } from 'foundation/log';
@@ -83,13 +83,13 @@ class FeedbackService {
     if (!Sentry.getCurrentHub().getClient()) {
       throw 'Sentry is not init.';
     }
-    const appContextInfo = await getAppContextInfo();
+    const applicationInfo = await getApplicationInfo();
     const eventId = Sentry.captureMessage(`[Feedback] ${message}`);
     await FeedbackApi.sendFeedback({
       comments,
       event_id: eventId,
-      email: appContextInfo.email,
-      name: appContextInfo.username,
+      email: applicationInfo.email,
+      name: applicationInfo.username,
     });
   };
 }
