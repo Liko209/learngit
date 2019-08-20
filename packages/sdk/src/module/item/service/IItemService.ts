@@ -5,11 +5,12 @@
  */
 
 import { Post } from '../../post/entity';
-import { Item, ItemFile } from '../entity';
+import { Item, ItemFile, ConferenceItem } from '../entity';
 import { Progress, PROGRESS_STATUS } from '../../progress/entity';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { Raw } from '../../../framework/model';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { ChangeModel } from 'sdk/module/sync/types';
 
 interface IItemService {
   getEntitySource(): IEntitySourceController<Item>;
@@ -80,5 +81,12 @@ interface IItemService {
   ): Promise<{ index: number; totalCount: number }>;
 
   editFileName(itemId: number, newName: string): Promise<void>;
+
+  startConference(groupId: number): Promise<ConferenceItem>;
+
+  handleIncomingData(
+    items: Raw<Item>[],
+    changeMap?: Map<string, ChangeModel>,
+  ): Promise<any>;
 }
 export { IItemService };
