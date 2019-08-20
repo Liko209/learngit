@@ -60,7 +60,7 @@ class AppStore {
 
   @computed
   get umi() {
-    return Object.values(this._umiMap).reduce(this._umiReducer);
+    return Object.values(this._umiMap).reduce(this._umiReducer, 0);
   }
 
   @action
