@@ -258,6 +258,10 @@ class TelephonyService extends EntityBaseService<Call>
     return this.telephonyController.getRemoteEmergencyAddress();
   };
 
+  hasActiveDL = () => {
+    return this.telephonyController.hasActiveDL();
+  }
+
   getLocalEmergencyAddress = () => {
     return this.telephonyController.getLocalEmergencyAddress();
   };
