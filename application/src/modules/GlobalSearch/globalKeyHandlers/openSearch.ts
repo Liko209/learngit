@@ -5,12 +5,14 @@
  */
 import { container } from 'framework/ioc';
 import { GlobalSearchService } from '@/modules/GlobalSearch/service';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 function openSearch() {
   const globalSearchService = container.get<GlobalSearchService>(
     GlobalSearchService,
   );
   globalSearchService.openGlobalSearch();
+  analyticsCollector.shortcuts('globalSearch');
   return false; // prevent browser default behavior
 }
 

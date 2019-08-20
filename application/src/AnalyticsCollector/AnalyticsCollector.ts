@@ -215,6 +215,13 @@ class AnalyticsCollector {
       source,
     });
   }
+
+  // for global hot keys
+  shortcuts(source: string) {
+    dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+      source,
+    });
+  }
 }
 
 export { AnalyticsCollector };
