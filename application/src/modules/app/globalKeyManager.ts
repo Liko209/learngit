@@ -22,32 +22,33 @@ type Handler =
     };
 
 class GlobalKeysManager {
-  _mousetrap: MousetrapInstance;
+  private _mousetrap: MousetrapInstance;
 
   constructor() {
     this._mousetrap = new Mousetrap(document.body);
   }
 
+  private _errorTip(type: string, key: string, hotKeyType: string) {
+    mainLogger.error(
+      `[Global Hotkey] type: '${type}' key: '${key}' already exist in ${hotKeyType}.`,
+    );
+  }
+
   checkConflict() {
     const cacheKeys = {};
-    const errorTip = (type: string, key: string, hotKeyType: string) => {
-      mainLogger.error(
-        `[Global Hotkey] type: '${type}' key: '${key}' already exist in ${hotKeyType}.`,
-      );
-    };
 
     Object.keys(GLOBAL_HOT_KEYS).forEach((type: string) => {
       const keys = GLOBAL_HOT_KEYS[type];
       if (Array.isArray(keys)) {
         keys.forEach((key: string) => {
           if (cacheKeys[key]) {
-            errorTip(type, key, cacheKeys[key]);
+            this._errorTip(type, key, cacheKeys[key]);
           } else {
             cacheKeys[key] = type;
           }
         });
       } else if (cacheKeys[keys]) {
-        errorTip(type, keys, cacheKeys[keys]);
+        this._errorTip(type, keys, cacheKeys[keys]);
       } else {
         cacheKeys[keys] = type;
       }
