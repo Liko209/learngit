@@ -27,7 +27,7 @@ const buildFakeDevice = (device: {
 
 describe('DeviceNameHelper', () => {
   describe('getDeviceName()', () => {
-    it('should return original label for a built-in audio input device [JPT-2788]', () => {
+    it('should return original label for a built-in audio input device [JPT-2798]', () => {
       const device = buildFakeDevice({
         deviceId: DEVICE_1,
         label: 'Microphone (built-in)',
@@ -37,7 +37,7 @@ describe('DeviceNameHelper', () => {
       expect(result).toBe('Microphone (built-in)');
     });
 
-    it('should return original label for a built-in audio output device [JPT-2788]', () => {
+    it('should return original label for a built-in audio output device [JPT-2798]', () => {
       const device = buildFakeDevice({
         deviceId: DEVICE_1,
         label: 'Speaker (built-in)',
