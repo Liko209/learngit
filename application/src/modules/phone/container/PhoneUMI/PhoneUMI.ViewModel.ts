@@ -28,7 +28,7 @@ class PhoneUMIViewModel extends StoreViewModel implements PhoneUMIViewProps {
   }
 
   updateAppUmi() {
-    this._appStore.setPhoneUmi(this.unreadCount);
+    this._appStore.setUmi({ phone: this.unreadCount });
   }
 
   @computed
