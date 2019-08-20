@@ -286,6 +286,16 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('getCallIdList', () => {
+    it('should return call id list', () => {
+      callControllerList.clear();
+      callControllerList.set(1, {});
+      callControllerList.set(2, {});
+      const res = accountController.getCallIdList();
+      expect(res).toEqual([1, 2]);
+    });
+  });
+
   describe('_processLogoutIfNeeded', () => {
     it('should call rtcAccount to logout when it is disposed and call count = 1', () => {
       const logoutCallback = jest.fn();
