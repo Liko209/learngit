@@ -18,7 +18,7 @@ import {
 } from '@/modules/notification/interface';
 import { jupiter } from 'framework/Jupiter';
 import i18nT from '@/utils/i18nT';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { catchError } from '@/common/catchError';
 
 const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';

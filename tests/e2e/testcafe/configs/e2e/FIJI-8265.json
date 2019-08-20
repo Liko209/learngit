@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "telephony/phoneSetting/GeneralSettings.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

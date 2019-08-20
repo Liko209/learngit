@@ -5,7 +5,7 @@
  */
 import { SentryErrorReporter } from './SentryErrorReporter';
 import { IErrorReporter, UserContextInfo } from './types';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 export class ErrorReporterProxy implements IErrorReporter {
   private _enabled: boolean;
@@ -24,7 +24,7 @@ export class ErrorReporterProxy implements IErrorReporter {
     } else {
       this._pushToQueue(() => this._reporter.report(error));
     }
-  }
+  };
 
   setUserContextInfo = (contextInfo: UserContextInfo) => {
     if (this._isInit) {
@@ -32,18 +32,18 @@ export class ErrorReporterProxy implements IErrorReporter {
     } else {
       this._pushToQueue(() => this._reporter.setUserContextInfo(contextInfo));
     }
-  }
+  };
 
   private _pushToQueue = (callback: () => void) => {
     this._enabled && this._queue.push(callback);
-  }
+  };
 
   private _executeFromQueue = () => {
     this._enabled &&
       this._queue.forEach((callback: Function) => {
         callback();
       });
-  }
+  };
 
   private _init = () => {
     if (this._enabled && !this._isInit) {
@@ -53,5 +53,5 @@ export class ErrorReporterProxy implements IErrorReporter {
         this._executeFromQueue();
       });
     }
-  }
+  };
 }

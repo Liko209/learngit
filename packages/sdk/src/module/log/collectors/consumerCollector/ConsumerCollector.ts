@@ -3,7 +3,7 @@
  * @Date: 2019-04-13 19:29:40
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILogCollector, LogEntity } from 'foundation';
+import { ILogCollector, LogEntity } from 'foundation/log';
 import { ILogCollection, ILogConsumer, ILogProducer } from '../types';
 
 const SIZE = 100 * 1024;

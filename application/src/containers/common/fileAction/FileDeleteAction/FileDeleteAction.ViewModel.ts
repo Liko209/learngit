@@ -13,7 +13,7 @@ import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 

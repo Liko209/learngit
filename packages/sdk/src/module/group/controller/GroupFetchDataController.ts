@@ -3,7 +3,8 @@
  * @Date: 2019-02-02 16:16:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import _ from 'lodash';
 
 import { Api } from '../../../api';

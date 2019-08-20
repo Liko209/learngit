@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERROR_CODES_NETWORK, mainLogger, PerformanceTracer } from 'foundation';
+import { ERROR_CODES_NETWORK } from 'foundation/error';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { indexData, initialData, remainingData } from '../../../api';
 import { IndexDataModel } from '../../../api/glip/user';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -587,7 +589,7 @@ class SyncController {
       }
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
     } catch (error) {
-      mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
+      mainLogger.warn(`sync/handleData: ${error}`);
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });

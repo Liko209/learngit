@@ -3,7 +3,7 @@
  * @Date: 2019-04-08 15:28:50
  * Copyright © RingCentral. All rights reserved.
  */
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
@@ -89,7 +89,7 @@ class AnalyticsCollector {
     source: string,
     postType: string,
     destination: string,
-    atTeam='no',
+    atTeam = 'no',
   ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
       source,

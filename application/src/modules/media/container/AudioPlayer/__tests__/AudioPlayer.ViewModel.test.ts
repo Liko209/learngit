@@ -11,7 +11,7 @@ import { MediaService } from '@/modules/media/service';
 import { AudioPlayerViewModel } from '../AudioPlayer.ViewModel';
 import { Media } from '@/modules/media/Media';
 import { JuiAudioStatus } from 'jui/components/AudioPlayer';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 jupiter.registerService(IMediaService, MediaService);
 

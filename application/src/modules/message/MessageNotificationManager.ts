@@ -31,7 +31,7 @@ import { GroupService } from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
 import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { throttle } from 'lodash';
 import { Remove_Markdown } from 'glipdown';

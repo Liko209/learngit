@@ -37,10 +37,6 @@ test(formalName('Check the TeamSetting page',['P2','ContentPanel','Messages', 'T
     await conversationPage.waitUntilPostsBeLoaded;
   });
 
-  await h(t).withLog('And close the right rail', async () => {
-    app.homePage.messageTab.rightRail.fold();
-  }, true);
-
   const profileDialog = app.homePage.profileDialog;
   await h(t).withLog('And I click members button and click settings button', async () => {
     await t.click(conversationPage.memberCountIcon);

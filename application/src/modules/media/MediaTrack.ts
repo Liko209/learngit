@@ -12,7 +12,7 @@ import {
 } from '@/interface/media';
 import { Sound } from './Sound';
 import { Utils } from './Utils';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 class MediaTrack {
   private _src: string[] = [];

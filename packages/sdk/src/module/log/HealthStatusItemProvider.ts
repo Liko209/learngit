@@ -5,7 +5,7 @@
  */
 import { IZipItemProvider, ZipItem, ZipItemLevel } from './types';
 import _ from 'lodash';
-import { HealthModuleManager } from 'foundation';
+import { HealthModuleManager } from 'foundation/health';
 import { toText } from 'sdk/utils';
 
 export class HealthStatusItemProvider implements IZipItemProvider {

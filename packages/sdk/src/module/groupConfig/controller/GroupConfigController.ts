@@ -10,7 +10,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { buildPartialModifyController } from '../../../framework/controller';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { Post } from 'sdk/module/post/entity';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 

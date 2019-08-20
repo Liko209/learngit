@@ -31,6 +31,7 @@ class MessageService implements IMessageService {
   }
 
   setEditInputFocus = (id: number) => {
+    this._messageStore.currentFocusedInput = undefined;
     window.requestAnimationFrame(
       () => (this._messageStore.currentFocusedInput = id),
     );

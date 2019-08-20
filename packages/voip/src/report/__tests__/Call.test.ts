@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { dataAnalysis } from 'foundation';
+import { dataAnalysis } from 'foundation/analysis';
 import { CallReport } from '../Call';
 import { RTCCall } from '../../api/RTCCall';
 import { IRTCCallDelegate } from '../../api/IRTCCallDelegate';

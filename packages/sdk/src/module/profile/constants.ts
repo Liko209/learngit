@@ -136,6 +136,13 @@ const RingsList = ringsTypeList.map(id => ({
   url: `${AudioSourceUrl}${id}`,
 }));
 
+const MAX_LEFTRAIL_GROUP_MAX_VALUE = 59;
+const MAX_LEFTRAIL_GROUP_DEFAULT_VALUE = 10;
+const MAX_LEFTRAIL_GROUP_VALUE_LIST: number[] = Array.from(
+  { length: MAX_LEFTRAIL_GROUP_MAX_VALUE },
+  (v, k) => k + 2,
+);
+
 enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
@@ -164,6 +171,7 @@ enum SETTING_KEYS {
   // conversation settings
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
   NEW_MESSAGE_BADGES = 'new_message_badges',
+  SHOW_LINK_PREVIEWS = 'show_link_previews',
 
   // sound settings
   AUDIO_TEAM_MESSAGES = 'want_audio_notifications',
@@ -194,4 +202,6 @@ export {
   RingsList,
   SoundsList,
   VIDEO_SERVICE_OPTIONS,
+  MAX_LEFTRAIL_GROUP_DEFAULT_VALUE,
+  MAX_LEFTRAIL_GROUP_VALUE_LIST,
 };

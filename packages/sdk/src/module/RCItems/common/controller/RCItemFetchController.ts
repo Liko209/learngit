@@ -18,7 +18,9 @@ import { SearchService } from 'sdk/module/search';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 import { DEFAULT_FETCH_SIZE, SYNC_DIRECTION } from '../../constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { mainLogger, PerformanceTracer, JError } from 'foundation';
+import { JError } from 'foundation/error';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 
 abstract class RCItemFetchController<
   T extends IdModel<IdType>,

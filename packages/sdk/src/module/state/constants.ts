@@ -40,6 +40,9 @@ enum GROUP_STATE_KEY {
   TEAM_MENTION_CURSOR_OFFSET = 'team_mention_cursor_offset',
   GROUP_TEAM_MENTION_CURSOR = 'group_team_mention_cursor',
   REMOVED_CURSORS_TEAM_MENTION = 'removed_cursors_team_mention',
+  GROUP_ADMIN_MENTION_CURSOR = 'group_admin_mention_cursor',
+  ADMIN_MENTION_CURSOR_OFFSET = 'admin_mention_cursor_offset',
+  REMOVED_CURSORS_ADMIN_MENTION = 'admin_mention_cursor_offset',
 }
 
 enum GROUP_KEY {
@@ -50,6 +53,9 @@ enum GROUP_KEY {
   TEAM_MENTION_CURSOR_OFFSET = 'team_mention_cursor_offset',
   TEAM_MENTION_CURSOR = 'team_mention_cursor',
   REMOVED_CURSORS_TEAM_MENTION = 'removed_cursors_team_mention',
+  ADMIN_MENTION_CURSOR = 'admin_mention_cursor',
+  ADMIN_MENTION_CURSOR_OFFSET = 'admin_mention_cursor_offset',
+  REMOVED_CURSORS_ADMIN_MENTION = 'admin_mention_cursor_offset',
 }
 
 export {

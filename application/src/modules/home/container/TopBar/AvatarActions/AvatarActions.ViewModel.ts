@@ -14,7 +14,7 @@ import { container } from 'framework/ioc';
 import { TelephonyService } from '@/modules/telephony/service';
 import { Dialog } from '@/containers/Dialog';
 import i18nT from '@/utils/i18nT';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';

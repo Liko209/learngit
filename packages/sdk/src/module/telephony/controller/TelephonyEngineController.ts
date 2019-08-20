@@ -5,10 +5,10 @@
  */
 import {
   ITelephonyNetworkDelegate,
-  IRequest,
   ITelephonyDaoDelegate,
-  telephonyLogger,
-} from 'foundation';
+} from 'foundation/telephony';
+import { telephonyLogger } from 'foundation/log';
+import { IRequest } from 'foundation/network';
 import { RTCEngine, RTCSipEmergencyServiceAddr } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
@@ -238,6 +238,10 @@ class TelephonyEngineController {
 
   getRemoteEmergencyAddress() {
     return this._accountController.getRemoteEmergencyAddress();
+  }
+
+  hasActiveDL() {
+    return !!this.getRemoteEmergencyAddress();
   }
 
   isEmergencyAddrConfirmed() {

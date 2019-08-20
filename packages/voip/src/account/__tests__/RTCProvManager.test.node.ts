@@ -12,7 +12,7 @@ import {
   kRTCProvRequestErrorRetryTimerMin,
 } from '../constants';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
-import { ITelephonyDaoDelegate } from 'foundation';
+import { ITelephonyDaoDelegate } from 'foundation/telephony';
 import { RTCSipProvisionInfo, RTC_PROV_EVENT } from '../types';
 
 describe('RTCProvManager', () => {

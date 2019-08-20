@@ -25,7 +25,7 @@ import {
 } from '../entity';
 import { ENTITY } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
