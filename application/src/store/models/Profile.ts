@@ -70,9 +70,6 @@ export default class ProfileModel extends Base<Profile> {
   desktopVoicemailOption: boolean;
 
   @observable
-  maxLeftRailGroup: number;
-
-  @observable
   lastReadMissed: number | undefined;
 
   @observable
@@ -105,8 +102,6 @@ export default class ProfileModel extends Base<Profile> {
     });
 
     this.hiddenGroupIds = hiddenGroupIds;
-    this.maxLeftRailGroup = Number(data.max_leftrail_group_tabs2) || 0;
-
     // TODO, refactor these default value, should move them into a map or standalone file
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;
