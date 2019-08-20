@@ -4,13 +4,76 @@ import { formalName } from "../../libs/filter";
 import { h } from '../../v2/helpers';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 
-
-
 fixture('TopBar/Profile')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
+test(formalName('Check the "presence" in profile', ['P2', 'TopBar', 'Profile','V1.7', 'Hank.Huang']), async (t) => {
+  const app = new AppRoot(t);
+  const settingMenu = app.homePage.settingMenu;
+  const avatar = app.homePage.avatar;
+  const toolTipAvailable = 'Available';
 
-test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4','V1.7', 'Hank.Huang']), async (t) => {
+  await h(t).withLog('Then check the presence change to "Available" ' , async () => {
+    await avatar.hoverTopBarAvatar();
+    await avatar.showTooltip(toolTipAvailable);
+    await app.homePage.openSettingMenu();
+    await settingMenu.hoverPresenceMenuButton()
+  });
+
+  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_AvailablePresenceSubMenu'})
+
+  await h(t).withLog('When I hover avatar in "available" Presence', async() => {
+    await settingMenu.clickPresenceSubMenuAvailableButton()
+    await avatar.hoverTopBarAvatar();
+  });
+  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_AvailablePresence'})
+
+  await h(t).withLog('When I change presence to "Invisible"', async() => {
+    await app.homePage.openSettingMenu();
+    await settingMenu.hoverPresenceMenuButton()
+    await settingMenu.clickPresenceSubMenuInvisibleButton()
+  });
+
+  const toolTipInvisible = 'Offline';
+  await h(t).withLog('Then check the presence change to "Invisible" ' , async () => {
+    await avatar.hoverTopBarAvatar();
+    await avatar.showTooltip(toolTipInvisible);
+    await app.homePage.openSettingMenu();
+    await settingMenu.hoverPresenceMenuButton()
+  });
+
+  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresenceSubMenu'})
+
+  await h(t).withLog('When I hover avatar in "Invisible" Presence', async() => {
+    await settingMenu.clickPresenceSubMenuInvisibleButton()
+    await avatar.hoverTopBarAvatar();
+  });
+  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresence'})
+
+  await h(t).withLog('When I change presence to "Do Not Disturb" and hover current presence', async() => {
+    await app.homePage.openSettingMenu();
+    await settingMenu.hoverPresenceMenuButton()
+    await settingMenu.clickPresenceSubMenuDndButton()
+  });
+
+  const toolTipDoNotDisturb = 'Do not disturb';
+  await h(t).withLog('Then check the presence change to "Do Not Disturb" ' , async () => {
+    await avatar.hoverTopBarAvatar();
+    await avatar.showTooltip(toolTipDoNotDisturb);
+    await app.homePage.openSettingMenu();
+    await settingMenu.hoverPresenceMenuButton()
+  });
+
+  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_DoNotDisturbPresenceSubMenu'});
+
+  await h(t).withLog('When I hover avatar in "Invisible" Presence', async() => {
+    await settingMenu.clickPresenceSubMenuDndButton()
+    await avatar.hoverTopBarAvatar();
+  });
+  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_DoNotDisturbPresence'});
+});
+
+test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Hank.Huang']), async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const settingMenu = app.homePage.settingMenu;
@@ -86,65 +149,6 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4','V1.7
     await settingMenu.hoverPresenceMenuButton()
     await settingMenu.clickPresenceSubMenuAvailableButton()
   });
-
-  const avatar = app.homePage.avatar;
-  const toolTipAvailable = 'Available';
-  await h(t).withLog('Then check the presence change to "Available" ' , async () => {
-    await avatar.hoverTopBarAvatar();
-    await avatar.showTooltip(toolTipAvailable);
-    await app.homePage.openSettingMenu();
-    await settingMenu.hoverPresenceMenuButton()
-  });
-
-  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_AvailablePresenceSubMenu'})
-
-  await h(t).withLog('When I hover avatar in "available" Presence', async() => {
-    await settingMenu.clickPresenceSubMenuAvailableButton()
-    await avatar.hoverTopBarAvatar();
-  });
-  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_AvailablePresence'})
-
-  await h(t).withLog('When I change presence to "Invisible"', async() => {
-    await app.homePage.openSettingMenu();
-    await settingMenu.hoverPresenceMenuButton()
-    await settingMenu.clickPresenceSubMenuInvisibleButton()
-  });
-
-  const toolTipInvisible = 'Offline';
-  await h(t).withLog('Then check the presence change to "Invisible" ' , async () => {
-    await avatar.hoverTopBarAvatar();
-    await avatar.showTooltip(toolTipInvisible);
-    await app.homePage.openSettingMenu();
-    await settingMenu.hoverPresenceMenuButton()
-  });
-
-  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresenceSubMenu'})
-
-  await h(t).withLog('When I hover avatar in "Invisible" Presence', async() => {
-    await settingMenu.clickPresenceSubMenuInvisibleButton()
-    await avatar.hoverTopBarAvatar();
-  });
-  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresence'})
-
-  await h(t).withLog('When I change presence to "Do Not Disturb" and hover current presence', async() => {
-    await app.homePage.openSettingMenu();
-    await settingMenu.hoverPresenceMenuButton()
-    await settingMenu.clickPresenceSubMenuDndButton()
-  });
-
-  const toolTipDoNotDisturb = 'Do not disturb';
-  await h(t).withLog('Then check the presence change to "Do Not Disturb" ' , async () => {
-    await avatar.hoverTopBarAvatar();
-    await avatar.showTooltip(toolTipDoNotDisturb);
-    await app.homePage.openSettingMenu();
-    await settingMenu.hoverPresenceMenuButton()
-  });
-
-  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_DoNotDisturbPresenceSubMenu'})
-
-  await h(t).withLog('When I hover avatar in "Invisible" Presence', async() => {
-    await settingMenu.clickPresenceSubMenuDndButton()
-    await avatar.hoverTopBarAvatar();
-  });
-  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_DoNotDisturbPresence'})
 });
+
+

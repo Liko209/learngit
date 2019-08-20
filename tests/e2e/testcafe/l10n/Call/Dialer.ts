@@ -5,10 +5,57 @@ import { h } from '../../v2/helpers';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 
 
-fixture('TopBar/Dialer')
+fixture('TopBar/DialerForE911')
+  .beforeEach(setupCase(BrandTire.DID_WITH_MULTI_REGIONS))
+  .afterEach(teardownCase());
+
+  test(formalName('Check confirm emergency address toast and alert',['P2','Call', 'DialerForE911', 'V1.7', 'Hank.Huang']),async (t) => {
+    const app = new AppRoot(t);
+    const loginUser = h(t).rcData.mainCompany.users[0];
+
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+    });
+    await h(t).withLog(`When emergency confirm from entry is displayed`, async() => {
+      await t.expect(app.homePage.emergencyConfirmFromEntry.exists).ok()
+    });
+    await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Call_ConfirmEmergencyAddressToast'})
+
+    await h(t).withLog('When I click "Dialer" button', async() => {
+      await t.click(app.homePage.dialpadButton);
+    });
+    await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Call_ConfirmEmergencyAddressAlert'})
+  });
+
+  fixture('TopBar/CallWithoutDL')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
+  test(formalName('Check make call without any active DL',['P2','Call', 'CallWithoutDL', 'V1.7', 'Hank.Huang']),async (t) => {
+    const app = new AppRoot(t);
+    const loginUser = h(t).rcData.mainCompany.users[0];
+
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+    const telephonyDialog = app.homePage.telephonyDialog;
+    await h(t).withLog('When I click "Dialer" button', async() => {
+      await app.homePage.openDialer();
+    });
+    await h(t).withLog(`And I type a character in the input field`, async () => {
+      await telephonyDialog.typeTextInDialer("17013170001#701");
+    });
+    await h(t).withLog('And I hit the `Enter` key', async () => {
+      await app.homePage.telephonyDialog.hitEnterToMakeCall();
+    });
+    await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Call_CallMakeCallFailAlert'})
+
+  });
+
+fixture('TopBar/Dialer')
+ .beforeEach(setupCase(BrandTire.RCOFFICE))
+ .afterEach(teardownCase());
 test(formalName('Check Dialer popup',['P2','Call', 'Dialer', 'V1.6', 'Jenny.Cai']),async (t) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
