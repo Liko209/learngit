@@ -75,7 +75,7 @@ class JuiStreamLoading extends React.PureComponent<
     showTip: false,
   };
 
-  componentWillReceiveProps(props: JuiConversationLoadingProps) {
+  componentDidUpdate(props: JuiConversationLoadingProps) {
     if (props.showTip) {
       this.showLinkTimer = setTimeout(() => {
         this.setState({

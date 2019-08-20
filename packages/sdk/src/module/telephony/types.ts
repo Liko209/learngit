@@ -90,6 +90,7 @@ type CallOptions = RTCCallOptions & {
   replaceName?: string;
   replaceNumber?: string;
   callDirection?: CALL_DIRECTION;
+  accessCode?: string;
 };
 
 export {

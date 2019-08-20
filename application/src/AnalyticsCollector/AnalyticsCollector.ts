@@ -222,6 +222,15 @@ class AnalyticsCollector {
       shortcut,
     });
   }
+
+  // [FIJI-7395]
+  toggleLeftNavPanel(isExpanded: boolean) {
+    const state = isExpanded ? 'expanded' : 'collapsed';
+
+    dataAnalysis.track('Jup_Web/DT_general_toggleLeftNavigationPanel', {
+      state,
+    });
+  }
 }
 
 export { AnalyticsCollector };
