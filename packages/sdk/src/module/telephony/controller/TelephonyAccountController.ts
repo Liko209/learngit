@@ -458,6 +458,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return this._rtcAccount.callCount();
   }
 
+  getCallIdList() {
+    return [...this._callControllerList.keys()];
+  }
+
   onReceiveSipProv(
     newSipProv: RTCSipProvisionInfo,
     oldSipProv: RTCSipProvisionInfo,

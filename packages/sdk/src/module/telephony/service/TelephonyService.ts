@@ -290,6 +290,10 @@ class TelephonyService extends EntityBaseService<Call>
   subscribeSipProvReceived = (listener: notificationCallback) => {
     this.telephonyController.subscribeSipProvReceived(listener);
   };
+
+  getCallIdList = () => {
+    return this.telephonyController.getAccountController().getCallIdList();
+  };
 }
 
 export { TelephonyService };
