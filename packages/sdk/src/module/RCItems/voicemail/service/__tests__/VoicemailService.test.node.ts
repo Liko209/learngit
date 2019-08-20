@@ -27,6 +27,9 @@ jest.mock('../../controller/VoicemailController', () => {
     voicemailBadgeController: {
       initializeUnreadCount: jest.fn(),
     },
+    voicemailHandleDataController: {
+      handleVoicemailEvent: jest.fn(),
+    },
   };
   return {
     VoicemailController: () => {
@@ -45,7 +48,11 @@ describe('VoicemailService', () => {
   let vmService: VoicemailService;
   let vmController: VoicemailController;
   function setUp() {
-    vmController = new VoicemailController(null as any, null as any);
+    vmController = new VoicemailController(
+      null as any,
+      null as any,
+      null as any,
+    );
     vmService = new VoicemailService();
   }
 
@@ -59,7 +66,7 @@ describe('VoicemailService', () => {
       await vmService.buildFilterFunc({});
       expect(
         vmController.voicemailFetchController.buildFilterFunc,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -75,7 +82,9 @@ describe('VoicemailService', () => {
         direction: 1 as any,
         anchorId: 1,
       });
-      expect(vmController.voicemailFetchController.fetchData).toBeCalledWith({
+      expect(
+        vmController.voicemailFetchController.fetchData,
+      ).toHaveBeenCalledWith({
         limit: 1,
         direction: 1,
         anchorId: 1,
@@ -94,7 +103,7 @@ describe('VoicemailService', () => {
       await vmService.deleteVoicemails(ids);
       expect(
         vmController.voicemailActionController.deleteRcMessages,
-      ).toBeCalledWith(ids, false);
+      ).toHaveBeenCalledWith(ids, false);
     });
   });
 
@@ -106,7 +115,7 @@ describe('VoicemailService', () => {
 
     it('clearAllVoicemails', async () => {
       await vmService.clearAllVoicemails();
-      expect(vmController.voicemailFetchController.clearAll).toBeCalled();
+      expect(vmController.voicemailFetchController.clearAll).toHaveBeenCalled();
     });
   });
 
@@ -120,7 +129,7 @@ describe('VoicemailService', () => {
       await vmService.updateReadStatus(1, READ_STATUS.READ);
       expect(
         vmController.voicemailActionController.updateReadStatus,
-      ).toBeCalledWith(1, READ_STATUS.READ);
+      ).toHaveBeenCalledWith(1, READ_STATUS.READ);
     });
   });
 
@@ -134,7 +143,7 @@ describe('VoicemailService', () => {
       await vmService.buildDownloadUrl('13');
       expect(
         vmController.voicemailActionController.buildDownloadUrl,
-      ).toBeCalledWith('13');
+      ).toHaveBeenCalledWith('13');
     });
   });
 
@@ -146,7 +155,22 @@ describe('VoicemailService', () => {
 
     it('_syncImmediately', async () => {
       await vmService['_syncImmediately']();
-      expect(vmController.voicemailFetchController.doSync).toBeCalled();
+      expect(vmController.voicemailFetchController.doSync).toHaveBeenCalled();
+    });
+  });
+
+  describe('_handleVoicemailEvent', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('_handleVoicemailEvent', async () => {
+      const mockData = { mock: 'voicemail' } as any;
+      await vmService['_handleVoicemailEvent'](mockData);
+      expect(
+        vmController.voicemailHandleDataController.handleVoicemailEvent,
+      ).toHaveBeenCalledWith(mockData);
     });
   });
 
@@ -160,7 +184,7 @@ describe('VoicemailService', () => {
       await vmService['_initBadge']();
       expect(
         vmController.voicemailBadgeController.initializeUnreadCount,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 });

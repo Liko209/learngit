@@ -256,6 +256,23 @@ describe('TelephonyAccountController', () => {
       expect(callControllerList.size).toBe(1);
     });
 
+    it('should start a call with access code', async () => {
+      const code = '123456';
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      await accountController.makeCall(toNum, { accessCode: code });
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith(
+        toNum,
+        expect.any(Object),
+        { accessCode: code },
+      );
+    });
+
     it('should return error when rtc make call fail', async () => {
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
         voipCountryBlocked: false,
