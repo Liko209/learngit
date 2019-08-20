@@ -141,7 +141,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   }
 
   updateAppUmi() {
-    this._appStore.setUmi(this.unreadCount);
+    this._appStore.setMessageUmi(this.unreadCount);
   }
 
   @computed

@@ -49,18 +49,26 @@ class AppStore {
   ];
 
   @observable
-  private _umi: number = 0;
+  private _messageUmi: number = 0;
+  @observable
+  private _phoneUmi: number = 0;
+
   @observable
   private _globalLoading: boolean = false;
 
   @computed
   get umi() {
-    return this._umi;
+    return this._messageUmi + this._phoneUmi;
   }
 
   @action
-  setUmi(umi: number) {
-    this._umi = umi;
+  setMessageUmi(umi: number) {
+    this._messageUmi = umi;
+  }
+
+  @action
+  setPhoneUmi(umi: number) {
+    this._phoneUmi = umi;
   }
 
   @computed
