@@ -37,7 +37,7 @@ describe('PhoneUMI', () => {
     @mockEntity(entityMock)
     @mockSingleEntity(CALLING_OPTIONS.GLIP)
     t1() {
-      const wrapper = mountWithTheme(<PhoneUMI />);
+      const wrapper = mountWithTheme(<PhoneUMI type={PhoneUMIType.ALL}/>);
       expect(wrapper.text()).toBe(`${mockMissedCall + mockUnReadVoiceMail}`);
     }
 
