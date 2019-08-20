@@ -18,8 +18,7 @@ import { RawPostInfo } from '../../types';
 import { Raw } from '../../../../framework/model';
 import { transform } from '../../../../service/utils';
 import _ from 'lodash';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { ItemService } from 'sdk/module/item';
+import { Item } from 'sdk/module/item/entity';
 
 export type LinksArray = { url: string }[];
 
@@ -96,11 +95,14 @@ class SendPostControllerHelper {
     return buildPost;
   }
 
-  async buildShareFilePost(options: {
-    fromPost: Post;
-    itemIds: number[];
-    targetGroupId: number;
-  }) {
+  async buildShareItemPost(
+    options: {
+      fromPost: Post;
+      itemIds: number[];
+      targetGroupId: number;
+    },
+    getItemById: (id: number) => Promise<Item>,
+  ) {
     const { fromPost, itemIds, targetGroupId } = options;
     const now = Date.now();
     const vers = versionHash();
@@ -109,9 +111,7 @@ class SendPostControllerHelper {
     );
     const noLinkIds = _.difference(itemIds, linkIds);
     const mapToLinks = async (id: number) => {
-      const item = await ServiceLoader.getInstance<ItemService>(
-        ServiceConfig.ITEM_SERVICE,
-      ).getById(id);
+      const item = await getItemById(id);
       return item
         ? {
             url: item.url,

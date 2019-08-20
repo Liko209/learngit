@@ -250,11 +250,13 @@ class SendPostController implements ISendPostController {
     if (post.deactivated) {
       throw new JSdkError(ERROR_CODES_SDK.POST_DEACTIVATED, 'post deactivated');
     }
-    const buildPost = await this._helper.buildShareFilePost({
+    const buildPost = await this._helper.buildShareItemPost({
       targetGroupId,
       fromPost: post,
       itemIds: [itemId],
-    });
+    }, async (id) => (await ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    ).getById(id))!);
     await this._checkSharePermission(targetGroupId);
     try {
       await this.sendPostToServer(buildPost);
@@ -308,9 +310,10 @@ class SendPostController implements ISendPostController {
       throw new JSdkError(ERROR_CODES_SDK.GROUP_DEACTIVATED, 'deactivated');
     }
     if (
-      targetGroup.is_team &&
-      !this.groupService.getTeamUserPermissionFlags(targetGroup.permissions!)
-        .TEAM_POST
+      !this.groupService.isCurrentUserHasPermission(
+        PERMISSION_ENUM.TEAM_POST,
+        targetGroup,
+      )
     ) {
       throw new JSdkError(
         ERROR_CODES_SDK.GROUP_NO_PERMISSION,
