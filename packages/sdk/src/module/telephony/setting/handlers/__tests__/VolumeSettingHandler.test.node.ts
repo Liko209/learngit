@@ -219,7 +219,7 @@ describe('VolumeSettingHandler', () => {
       cleanUp();
     });
 
-    it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
+    it('JPT-2094 Show "Audio sources" section with meeting/call/conference permission', async () => {
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
