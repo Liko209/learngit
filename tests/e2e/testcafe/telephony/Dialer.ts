@@ -238,7 +238,7 @@ test.meta(<ITestMeta>{
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(loginUser).init();
-  // await h(t).platform(loginUser).updateDevices(() => E911Address);
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).platform(callee).init();
 
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
