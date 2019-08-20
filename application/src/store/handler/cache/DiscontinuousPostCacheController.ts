@@ -49,7 +49,7 @@ class DiscontinuousPostCacheController extends PostCacheController {
     if (this.shouldPreFetch(id, QUERY_DIRECTION.NEWER)) {
       const foc = this.get(id);
       await foc.fetchData(QUERY_DIRECTION.NEWER);
-      mainLogger.info(this.name(), 'doPrefetch done - ', id);
+      mainLogger.tags(this.name()).info('doPrefetch done - ', id);
     }
   }
 

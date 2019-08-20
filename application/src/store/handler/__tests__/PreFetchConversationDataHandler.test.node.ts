@@ -118,16 +118,21 @@ describe('PreFetchConversationDataHandler', () => {
       setUp();
     });
 
-    it('should add processor to sequence queue', () => {
+    it('should add processor to sequence queue', done => {
       sequenceProcessorHandler.addProcessor = jest
         .fn()
         .mockImplementation(async (processor: PreFetchPostProcessor) => {
           await processor.process();
         });
 
-      preFetchConversationDataHandler['_preFetchAtMention']();
-      preFetchConversationDataHandler['_preFetchAtMention']();
-      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalledTimes(1);
+      preFetchConversationDataHandler.addProcessor(AT_MENTION_ID);
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(atMentionCacheController.doPreFetch).toHaveBeenCalledWith(
+          AT_MENTION_ID,
+        );
+        done();
+      }, 10);
     });
   });
 
@@ -137,16 +142,21 @@ describe('PreFetchConversationDataHandler', () => {
       setUp();
     });
 
-    it('should add processor to sequence queue', () => {
+    it('should add processor to sequence queue', done => {
       sequenceProcessorHandler.addProcessor = jest
         .fn()
         .mockImplementation(async (processor: PreFetchPostProcessor) => {
           await processor.process();
         });
 
-      preFetchConversationDataHandler['_preFetchBookmark']();
-      preFetchConversationDataHandler['_preFetchBookmark']();
-      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalledTimes(1);
+      preFetchConversationDataHandler.addProcessor(BOOKMARK_ID);
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(bookmarkCacheController.doPreFetch).toHaveBeenCalledWith(
+          BOOKMARK_ID,
+        );
+        done();
+      }, 10);
     });
   });
 

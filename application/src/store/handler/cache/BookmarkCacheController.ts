@@ -23,10 +23,11 @@ class BookmarkCacheController extends DiscontinuousPostCacheController {
     const store = storeManager.getEntityMapStore(
       ENTITY_NAME.PROFILE,
     ) as SingleEntityMapStore<any, any>;
-    const result = store.get('favoritePostIds');
-    const r = (result && result.slice(0, DEFAULT_PAGE_SIZE)) || [];
-    console.error('bookmark:', r, 'result:', result);
-    return r;
+    const favoritePostIds = store.get('favoritePostIds');
+    if (Array.isArray(favoritePostIds)) {
+      return favoritePostIds.slice(0, DEFAULT_PAGE_SIZE);
+    }
+    return [];
   }
 
   isInRange(groupId: number): boolean {

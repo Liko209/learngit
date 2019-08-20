@@ -17,19 +17,17 @@ import { Profile } from 'sdk/src/module/profile/entity';
 import ProfileModel from '../models/Profile';
 import { getSingleEntity } from '../utils';
 import { ENTITY_NAME } from '..';
-import { reaction } from 'mobx';
+import { autorun } from 'mobx';
 import { MyState } from 'sdk/src/module/state';
 import MyStateModel from '../models/MyState';
+import { mainLogger } from 'foundation/log';
 
+const LOG_TAG = '[PreFetchConversationDataHandler]';
 class PreFetchConversationDataHandler {
-  private static _instance:
-    | PreFetchConversationDataHandler
-    | undefined = undefined;
+  private static _instance: PreFetchConversationDataHandler;
   private _cachedGroupIds: Set<number>;
   private _preFetchControllers: IPreFetchController[] = [];
   private _preFetchQueueHandler: SequenceProcessorHandler;
-  private _isAtMentionFetched: boolean = false;
-  private _isBookmarkFetched: boolean = false;
 
   constructor(preFetchControllers: IPreFetchController[]) {
     this._cachedGroupIds = new Set();
@@ -56,45 +54,42 @@ class PreFetchConversationDataHandler {
   }
 
   private _subscribeNotification() {
-    reaction(
-      () => {
-        const favoritePostIds = getSingleEntity<Profile, ProfileModel>(
-          ENTITY_NAME.PROFILE,
-          'favoritePostIds',
-        );
-        return favoritePostIds || [];
-      },
-      () => this._preFetchBookmark(),
-    );
-    reaction(
-      () => {
-        const atMentionPostIds = getSingleEntity<MyState, MyStateModel>(
-          ENTITY_NAME.MY_STATE,
-          'atMentionPostIds',
-        );
-        return atMentionPostIds || [];
-      },
-      () => this._preFetchAtMention(),
-    );
+    autorun(reaction => {
+      const favoritePostIds = getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoritePostIds',
+      );
+      if (favoritePostIds) {
+        this.addProcessor(BOOKMARK_ID);
+        reaction.dispose();
+        mainLogger
+          .tags(LOG_TAG)
+          .info(
+            '_subscribeNotification() prefetch bookmark then dispose autorun',
+          );
+      }
+    });
+
+    autorun(reaction => {
+      const atMentionPostIds = getSingleEntity<MyState, MyStateModel>(
+        ENTITY_NAME.MY_STATE,
+        'atMentionPostIds',
+      );
+      if (atMentionPostIds) {
+        this.addProcessor(AT_MENTION_ID);
+        reaction.dispose();
+        mainLogger
+          .tags(LOG_TAG)
+          .info(
+            '_subscribeNotification() prefetch atMention then dispose autorun',
+          );
+      }
+    });
   }
 
   addProcessor(groupId: number) {
     this._cachedGroupIds.add(groupId);
     this._addProcessor(groupId);
-  }
-
-  private _preFetchAtMention() {
-    if (!this._isAtMentionFetched) {
-      this._isAtMentionFetched = true;
-      this.addProcessor(AT_MENTION_ID);
-    }
-  }
-
-  private _preFetchBookmark() {
-    if (!this._isBookmarkFetched) {
-      this._isBookmarkFetched = true;
-      this.addProcessor(BOOKMARK_ID);
-    }
   }
 
   private _onNetWorkChanged(onLine: boolean) {

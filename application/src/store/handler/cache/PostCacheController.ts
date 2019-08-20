@@ -17,10 +17,9 @@ import ItemModel from '@/store/models/Item';
 import { IPreFetchController } from '@/store/handler/cache/interface/IPreFetchController';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PostUsedItemCache } from './PostUsedItemCache';
-import { ModelIdType } from 'sdk/src/framework/model';
 
 abstract class PostCacheController implements IPreFetchController {
-  protected _cacheMap: Map<ModelIdType, FetchSortableDataListHandler<Post>>;
+  protected _cacheMap: Map<number, FetchSortableDataListHandler<Post>>;
   protected _currentGroupId: number = 0;
   protected _postUsedItemCache = new PostUsedItemCache();
 
