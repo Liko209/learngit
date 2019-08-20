@@ -84,7 +84,7 @@ describe('PostController', () => {
       expect(result instanceof PostActionController).toBe(true);
       expect(buildEntitySourceController).toHaveBeenCalledTimes(3);
       expect(buildPartialModifyController).toHaveBeenCalledTimes(1);
-      expect(buildRequestController).toHaveBeenCalledTimes(1);
+      expect(buildRequestController).toHaveBeenCalledTimes(3);
     });
   });
 

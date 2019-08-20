@@ -250,13 +250,17 @@ class SendPostController implements ISendPostController {
     if (post.deactivated) {
       throw new JSdkError(ERROR_CODES_SDK.POST_DEACTIVATED, 'post deactivated');
     }
-    const buildPost = await this._helper.buildShareItemPost({
-      targetGroupId,
-      fromPost: post,
-      itemIds: [itemId],
-    }, async (id) => (await ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    ).getById(id))!);
+    const buildPost = await this._helper.buildShareItemPost(
+      {
+        targetGroupId,
+        fromPost: post,
+        itemIds: [itemId],
+      },
+      async id =>
+        (await ServiceLoader.getInstance<ItemService>(
+          ServiceConfig.ITEM_SERVICE,
+        ).getById(id))!,
+    );
     await this._checkSharePermission(targetGroupId);
     try {
       await this.sendPostToServer(buildPost);

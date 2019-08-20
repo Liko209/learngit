@@ -60,6 +60,7 @@ class PostService extends EntityBaseService<Post> {
       this.postController = new PostController(
         this._groupService,
         this._groupConfigService,
+        this.getEntitySource(),
       );
     }
     return this.postController;

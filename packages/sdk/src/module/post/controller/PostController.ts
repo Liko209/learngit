@@ -28,7 +28,7 @@ import { IGroupService } from '../../group/service/IGroupService';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PostItemController } from './implementation/PostItemController';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
-import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySourceController';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 
 class PostController {
   private _actionController: PostActionController;
@@ -39,10 +39,10 @@ class PostController {
   private _postDataController: PostDataController;
   private _postSearchController: PostSearchManagerController;
   private _postItemController: PostItemController;
-  private _entitySourceController: EntitySourceController<Post, number>;
   constructor(
     private _groupService: IGroupService,
     private _groupConfigService: IGroupConfigService,
+    private _entitySourceController: IEntitySourceController<Post, number>,
   ) {}
 
   getPostActionController(): PostActionController {
@@ -53,14 +53,14 @@ class PostController {
       });
 
       const partialModifyController = buildPartialModifyController<Post>(
-        this._getEntitySourceController(),
+        this._entitySourceController,
       );
 
       this._actionController = new PostActionController(
         this.getPostDataController(),
         partialModifyController,
         requestController,
-        this._getEntitySourceController(),
+        this._entitySourceController,
       );
     }
     return this._actionController;
@@ -73,7 +73,7 @@ class PostController {
         this._getPreInsertController(),
         this.getPostDataController(),
         this._groupService,
-        this._getEntitySourceController(),
+        this._entitySourceController,
       );
     }
     return this._sendController;
@@ -163,27 +163,6 @@ class PostController {
     return this._preInsertController;
   }
 
-  private _getEntitySourceController() {
-    if (!this._entitySourceController) {
-      const requestController = buildRequestController<Post>({
-        basePath: '/post',
-        networkClient: Api.glipNetworkClient,
-      });
-
-      const persistentController = buildEntityPersistentController<Post>(
-        daoManager.getDao(PostDao),
-      );
-      this._entitySourceController = buildEntitySourceController<Post>(
-        persistentController,
-        {
-          requestController,
-          canSaveRemoteData: false,
-          canRequest: () => true,
-        },
-      );
-    }
-    return this._entitySourceController;
-  }
 }
 
 export { PostController };
