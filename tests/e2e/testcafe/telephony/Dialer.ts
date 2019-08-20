@@ -260,7 +260,6 @@ test.meta(<ITestMeta>{
 
   const telephonyDialog = app.homePage.telephonyDialog;
 
-
   await h(t).withLog('Then display the dialer', async () => {
     await telephonyDialog.ensureLoaded();
     await t.expect(telephonyDialog.self.exists).ok();
