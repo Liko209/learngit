@@ -20,10 +20,10 @@ class PrivacyViewComponent extends Component<Props> {
     server: 'people.prompt.changeTeamPrivateTypeErrorForServerIssue',
   })
   onClickPrivacy = async () => {
-    const { handlePrivacy, isPublic } = this.props;
+    const { handlePrivacy, isPublic, analysisSource } = this.props;
     analyticsCollector.toggleTeamVisibility(
       isPublic ? 'publicToPrivate' : 'privateToPublic',
-      'profileDialog',
+      analysisSource,
     );
     await handlePrivacy();
   };

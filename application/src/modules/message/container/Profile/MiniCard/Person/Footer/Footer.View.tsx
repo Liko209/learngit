@@ -17,6 +17,7 @@ import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { IMessageStore } from '@/modules/message/interface';
 import { ProfileDialogPerson } from '@/modules/message/container/Profile/Dialog/Person';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
@@ -25,6 +26,7 @@ class ProfileMiniCardPersonFooter extends Component<
   @IMessageStore private _messageStore: IMessageStore;
 
   onClickMessage = () => {
+    analyticsCollector.goToConversation('miniProfile', '1:1 conversation');
     const { id } = this.props;
     const result = goToConversationWithLoading({ id });
     if (result) {
