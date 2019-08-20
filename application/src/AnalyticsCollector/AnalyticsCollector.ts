@@ -217,9 +217,9 @@ class AnalyticsCollector {
   }
 
   // for global hot keys
-  shortcuts(source: string) {
+  shortcuts(shortcut: string) {
     dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
-      source,
+      shortcut,
     });
   }
 }
