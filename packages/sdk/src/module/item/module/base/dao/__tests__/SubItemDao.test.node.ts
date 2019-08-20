@@ -29,7 +29,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe.skip('Event Item Dao', () => {
+describe('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
 
   function setUp() {
@@ -317,7 +317,7 @@ describe.skip('Event Item Dao', () => {
     it('should update items when input is array', async () => {
       const oldItem5 = await dao.get(item5.id);
       expect(oldItem5).toEqual(item5);
-      await dao.update([newItem5]);
+      await dao.bulkUpdate([newItem5]);
       const newItem5FromDB = await dao.get(item5.id);
       expect(newItem5FromDB).toEqual({
         ...newItem5,

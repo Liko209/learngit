@@ -79,7 +79,7 @@ describe('PhoneLinkView', () => {
         <PhoneLink text="123-123-12-211">123-123-12-211</PhoneLink>,
       );
       await wrapper.update();
-      const link = wrapper.find('a[href="javascript:;"]');
+      const link = wrapper.find('a[href=""]');
       expect(link.exists()).toBe(true);
       link.simulate('click', { preventDefault: jest.fn() });
       expect(telephonyService.directCall).toHaveBeenCalled();
