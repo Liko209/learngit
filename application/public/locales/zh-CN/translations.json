@@ -759,7 +759,8 @@
     }
   },
   "meeting": {
-    "Meetings": "会议"
+    "Meetings": "会议",
+    "Meet": "会议"
   },
   "integration": "",
   "setting": {

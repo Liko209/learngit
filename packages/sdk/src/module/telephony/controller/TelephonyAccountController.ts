@@ -27,7 +27,7 @@ import {
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
 } from '../types';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';

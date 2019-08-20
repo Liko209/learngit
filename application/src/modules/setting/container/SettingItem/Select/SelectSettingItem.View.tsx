@@ -6,7 +6,7 @@
 
 import React, { Component, ChangeEvent } from 'react';
 import { observer } from 'mobx-react';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { JuiBoxSelect } from 'jui/components/Selects';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';

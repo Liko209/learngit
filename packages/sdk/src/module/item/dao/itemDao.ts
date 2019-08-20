@@ -6,7 +6,7 @@
 
 import { BaseDao } from '../../../framework/dao';
 import { Item } from '../entity';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { daoManager } from '../../../dao';
 import { FileItemDao } from '../module/file/dao';
 import { TaskItemDao } from '../module/task/dao';
@@ -129,14 +129,9 @@ class ItemDao extends BaseDao<Item> {
     );
   }
 
-  async put(item: Item | Item[]): Promise<void> {
+  async put(item: Item): Promise<void> {
     await this.doInTransaction(async () => {
-      await Promise.all([
-        super.put(item),
-        Array.isArray(item)
-          ? this._bulkPutItemViews(item)
-          : this._putItemView(item),
-      ]);
+      await Promise.all([super.put(item), this._putItemView(item)]);
     });
   }
 
@@ -146,13 +141,11 @@ class ItemDao extends BaseDao<Item> {
     });
   }
 
-  async update(partialItem: Partial<Item> | Partial<Item>[]): Promise<void> {
+  async update(partialItem: Partial<Item>): Promise<void> {
     await this.doInTransaction(async () => {
       await Promise.all([
         super.update(partialItem),
-        Array.isArray(partialItem)
-          ? this._bulkUpdateItemViews(partialItem)
-          : this._updateItemView(partialItem),
+        this._updateItemView(partialItem),
       ]);
     });
   }
@@ -189,7 +182,9 @@ class ItemDao extends BaseDao<Item> {
         const items = filterResult.get(typeId) as Item[];
         const viewDao = this._getItemViewDaoByTypeId(typeId);
         if (viewDao) {
-          const sanitizedItems = items.map((item: Item) => viewDao.toSanitizedItem(item));
+          const sanitizedItems = items.map((item: Item) =>
+            viewDao.toSanitizedItem(item),
+          );
           return viewDao.bulkPut(sanitizedItems);
         }
         return Promise.resolve();
@@ -222,7 +217,9 @@ class ItemDao extends BaseDao<Item> {
         const viewDao = this._getItemViewDaoByTypeId(typeId);
         if (viewDao) {
           const items = filterResult.get(typeId) as Item[];
-          const sanitizedItems = items.map((partialItem: Item) => viewDao.toPartialSanitizedItem(partialItem));
+          const sanitizedItems = items.map((partialItem: Item) =>
+            viewDao.toPartialSanitizedItem(partialItem),
+          );
           return viewDao.bulkUpdate(sanitizedItems);
         }
         return Promise.resolve();

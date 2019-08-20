@@ -7,8 +7,9 @@ import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import {
- sdk, LogControlManager, service, powerMonitor
+ sdk, service, LogControlManager
 } from 'sdk';
+import { powerMonitor } from 'foundation/utils';
 import { AbstractModule } from 'framework/AbstractModule';
 import { inject } from 'framework/ioc';
 import config from '@/config';

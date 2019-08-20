@@ -1,4 +1,4 @@
-import { Container } from 'foundation';
+import { Container } from 'foundation/ioc';
 import { AccountManager, GLIP_LOGIN_STATUS } from '../AccountManager';
 import {
   IAuthenticator,
@@ -10,6 +10,7 @@ import { AbstractAccount } from '../AbstractAccount';
 import * as helper from '../helper';
 import * as dao from '../../../dao';
 import { AppEnvSetting } from '../../../module/env/index';
+
 jest.mock('../../../module/env/index');
 
 class MyAccount extends AbstractAccount {
@@ -143,8 +144,8 @@ describe('AccountManager', () => {
       accountManager['_handleAuthResponse'] = jest.fn();
       await accountManager.login(MyAuthenticator.name);
 
-      expect(accountManager.makeSureUserInWhitelist).toBeCalled();
-      expect(accountManager['_handleAuthResponse']).toBeCalled();
+      expect(accountManager.makeSureUserInWhitelist).toHaveBeenCalled();
+      expect(accountManager['_handleAuthResponse']).toHaveBeenCalled();
     });
 
     it('should throw error when failed', async () => {
@@ -157,8 +158,8 @@ describe('AccountManager', () => {
         expect(error).toEqual(Error('Auth fail'));
       });
 
-      expect(accountManager.makeSureUserInWhitelist).not.toBeCalled();
-      expect(accountManager['_handleAuthResponse']).not.toBeCalled();
+      expect(accountManager.makeSureUserInWhitelist).not.toHaveBeenCalled();
+      expect(accountManager['_handleAuthResponse']).not.toHaveBeenCalled();
     });
   });
 

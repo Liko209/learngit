@@ -2,8 +2,9 @@ import {
   OAuthTokenHandler,
   NETWORK_METHOD,
   NetworkRequestBuilder,
-} from 'foundation';
+} from 'foundation/network';
 import HandleByUpload from '../HandleByUpload';
+
 const handler = new OAuthTokenHandler(HandleByUpload, null);
 
 // jest.mock('../../api');
@@ -66,12 +67,10 @@ describe('HandleByUpload', () => {
     const decoration = HandleByUpload.requestDecoration(null);
     const request = postRequest();
     request.needAuth = jest.fn().mockImplementation(() => true);
-    expect(decoration).toThrowError();
+    expect(decoration).toThrow();
   });
 });
 // import _ from 'lodash';
-
-// import { IRequest, OAuthTokenHandler, ITokenHandler, AbstractHandleType } from 'foundation';
 
 // const HandleByUpload = new class extends AbstractHandleType {
 //   survivalModeSupportable = true;

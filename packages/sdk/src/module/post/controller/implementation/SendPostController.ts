@@ -3,12 +3,10 @@
  * @Date: 2019-01-14 08:54:37
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  DEFAULT_RETRY_COUNT,
-  mainLogger,
-  REQUEST_PRIORITY,
-  Performance,
-} from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { DEFAULT_RETRY_COUNT, REQUEST_PRIORITY } from 'foundation/network';
+import { Performance } from 'foundation/performance';
+
 import _ from 'lodash';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';

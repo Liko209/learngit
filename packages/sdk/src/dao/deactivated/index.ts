@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseDao } from '../../framework/dao';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { ModelIdType } from '../../framework/model';
 
 class DeactivatedDao extends BaseDao<any, ModelIdType> {

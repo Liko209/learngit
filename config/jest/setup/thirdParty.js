@@ -21,8 +21,8 @@ jest.mock('moize', () => {
 
 jest.mock('react-quill');
 jest.mock('quill');
-jest.mock('jui/pattern/MessageInput/MessageInput');
-jest.mock('jui/pattern/MessageInput/Mention');
+// jest.mock('jui/pattern/MessageInput/MessageInput');
+// jest.mock('jui/pattern/MessageInput/Mention');
 
 jest.mock('pubnub', () => {
   const mock = {

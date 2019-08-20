@@ -8,7 +8,7 @@ import {
   IToken,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
-} from 'foundation';
+} from 'foundation/network';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 /* eslint-disable */
 const HandleByRingCentral = new class extends AbstractHandleType {

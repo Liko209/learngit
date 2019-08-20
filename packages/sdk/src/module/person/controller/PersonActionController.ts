@@ -10,7 +10,7 @@ import { Person } from '../entity';
 import { EditablePersonInfo, HeadShotInfo } from '../types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
 import { Raw } from 'sdk/framework/model';
 import { ItemService } from 'sdk/module/item';

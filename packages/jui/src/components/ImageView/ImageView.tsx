@@ -10,10 +10,8 @@ import React, {
   SyntheticEvent,
 } from 'react';
 
-import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
-import { withDelay } from '../../hoc/withDelay';
 import _ from 'lodash';
 
 const StyledLoadingPage = styled.div`
@@ -38,8 +36,6 @@ const HiddenImage = styled.img`
   visibility: hidden;
   display: none;
 `;
-
-const DelayLoadingPage = withDelay(StyledLoadingPage);
 
 type JuiImageProps = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
@@ -66,8 +62,6 @@ type JuiImageState = {
     thumbnail?: boolean;
   };
 };
-
-const DELAY_SHOW_LOADING_TIME = 500;
 
 function isThumbnailMode(props: JuiImageProps) {
   return props.thumbnailSrc && props.thumbnailSrc !== props.src;
@@ -114,14 +108,6 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   getImageRef = (): RefObject<HTMLImageElement> =>
     this.props.imageRef || this._imageRef;
 
-  private _loadingView() {
-    return (
-      <DelayLoadingPage delay={DELAY_SHOW_LOADING_TIME}>
-        <RuiCircularProgress />
-      </DelayLoadingPage>
-    );
-  }
-
   private _errorView() {
     return (
       <StyledLoadingPage>
@@ -145,15 +131,13 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
       ...rest
     } = this.props;
     const currentShowSrc = currentShow === 'raw' ? src : thumbnailSrc;
-    const loading = _.values(loadings).every((status: boolean) => status);
     const error = _.values(errors).every((status: boolean) => status);
     return (
       <>
-        {loading && this._loadingView()}
         <StyledImage
           ref={this.getImageRef() as any}
           src={currentShowSrc}
-          visibility={loading || error ? 'hidden' : 'visible'}
+          visibility={error ? 'hidden' : 'visible'}
           onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
             if (currentShow === 'raw') {
               const { naturalWidth, naturalHeight } = event.currentTarget;

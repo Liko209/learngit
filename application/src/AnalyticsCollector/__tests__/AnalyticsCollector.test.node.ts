@@ -5,13 +5,13 @@
  */
 
 import { analyticsCollector } from '../index';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { ENTITY_NAME } from '@/store/constants';
 import * as utils from '@/store/utils';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 
 jest.mock('@/store/utils');
-jest.mock('sdk');
+jest.mock('foundation/analysis');
 jest.mock('@/containers/VersionInfo/helper');
 
 jest.mock('@/config', () => ({

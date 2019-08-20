@@ -13,7 +13,7 @@ import { transform } from '../../../service/utils';
 import _ from 'lodash';
 import { daoManager, DeactivatedDao } from '../../../dao';
 import { PostDao } from '../dao';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const LOG_TAG = '[DiscontinuousPostController]';

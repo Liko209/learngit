@@ -6,7 +6,7 @@ import {
   AbstractHandleType,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
-} from 'foundation';
+} from 'foundation/network';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
 const HandleByGlip = new class extends AbstractHandleType {
@@ -44,7 +44,7 @@ const HandleByGlip = new class extends AbstractHandleType {
       return;
     }
     this.platformHandleDelegate.onRefreshTokenFailure(forceLogout);
-  }
+  };
 }();
 
 export default HandleByGlip;

@@ -19,7 +19,7 @@ import notificationCenter, {
   NotificationEntityReplacePayload,
   NotificationEntityReloadPayload,
 } from 'sdk/service/notificationCenter';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { SortUtils } from 'sdk/framework/utils';
 import { IdModel } from 'sdk/framework/model';

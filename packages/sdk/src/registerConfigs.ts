@@ -3,7 +3,8 @@
  * @Date: 2018-07-08 07:52:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { Container, NetworkManager, OAuthTokenManager } from 'foundation';
+import { Container } from 'foundation/ioc';
+import { NetworkManager, OAuthTokenManager } from 'foundation/network';
 import { GlipAccount, RCAccount } from './account';
 import {
   AutoAuthenticator,

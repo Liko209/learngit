@@ -5,7 +5,7 @@
  */
 
 import { RCInfoApi } from '../RCInfoApi';
-import { NETWORK_VIA, HA_PRIORITY, REQUEST_PRIORITY } from 'foundation';
+import { NETWORK_VIA, HA_PRIORITY, REQUEST_PRIORITY } from 'foundation/network';
 import { RINGCENTRAL_API } from '../constants';
 import {
   IDeviceRequest,

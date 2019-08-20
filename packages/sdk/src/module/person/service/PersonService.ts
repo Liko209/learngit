@@ -29,7 +29,7 @@ import { IPersonService } from './IPersonService';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { PerformanceTracer } from 'foundation';
+import { PerformanceTracer } from 'foundation/performance';
 import { EditablePersonInfo, HeadShotInfo } from '../types';
 
 class PersonService extends EntityBaseService<Person>

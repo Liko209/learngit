@@ -14,7 +14,7 @@ import { ControllerUtils } from '../../../../framework/controller/ControllerUtil
 import { PROGRESS_STATUS } from '../../../progress';
 import PreInsertIdController from './PreInsertIdController';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const LOG_TAG = '[PreInsertController]';
 const UNIQUE_ID = 'unique_id';
@@ -53,7 +53,7 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     ]);
     const preInsertKey = this._getPreInsertKey(entity);
     if (preInsertKey && !this.isInPreInsert(preInsertKey)) {
-      this.dao && (await this.dao.update([entity]));
+      this.dao && (await this.dao.update(entity));
     } else {
       mainLogger
         .tags(LOG_TAG)
