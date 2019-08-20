@@ -427,17 +427,27 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   mute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      direction === RTC_CALL_ACTION_DIRECTION.LOCAL
-        ? this._session.mute()
-        : this.toggleRemoteMute(true);
+      if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
+        rtcLogger.info(LOG_TAG, 'Mute Local media steams success');
+        this._session.mute();
+        return;
+      }
+      rtcLogger.info(LOG_TAG, 'Mute Remote media steams success');
+      this.toggleRemoteMute(true);
+      return;
     }
   }
 
   unmute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      direction === RTC_CALL_ACTION_DIRECTION.LOCAL
-        ? this._session.unmute()
-        : this.toggleRemoteMute(false);
+      if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
+        rtcLogger.info(LOG_TAG, 'Unmute Local media steams success');
+        this._session.mute();
+        return;
+      }
+      rtcLogger.info(LOG_TAG, 'Unmute Remote media steams success');
+      this.toggleRemoteMute(true);
+      return;
     }
   }
 
