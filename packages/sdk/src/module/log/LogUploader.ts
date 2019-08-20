@@ -26,7 +26,6 @@ export class LogUploader implements ILogUploader {
     }
   }
   async upload(logs: LogEntity[], emergencyMode?: boolean): Promise<void> {
-    console.log('TCL: LogUploader -> upload');
     const userInfo = await this._getUserInfo();
     const sessionId = logs[0].sessionId;
     const { server, uniqueHttpCollectorCode } = Api.httpConfig.sumologic;

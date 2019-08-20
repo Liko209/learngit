@@ -27,8 +27,8 @@ export function extractLogMessageLine(log: LogEntity) {
 
 export const getClientId = (() => {
   let clientId: string;
-  return function() {
-    if (clientId) return clientId;
+  return function(disableCache?: boolean) {
+    if (clientId && !disableCache) return clientId;
     if (LogGlobalConfig.getClientId()) {
       clientId = LogGlobalConfig.getClientId();
     } else {
