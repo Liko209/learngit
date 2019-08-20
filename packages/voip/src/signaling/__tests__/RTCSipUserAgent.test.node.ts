@@ -250,5 +250,25 @@ describe('RTCSipUserAgent', () => {
         },
       );
     });
+
+    it('Should call the invite function of WebPhone without extra header when UserAgent makeCall without header args. [JPT-2715]', async () => {
+      setupMakeCall();
+      const options: RTCCallOptions = {};
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+        phoneNumber,
+        { homeCountryId: '1' },
+      );
+    });
+
+    it('Should call the invite function of WebPhone with access code header when UserAgent makeCall with accessCode. [JPT-2716]', async () => {
+      setupMakeCall();
+      const options: RTCCallOptions = { accessCode: '100' };
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+        phoneNumber,
+        { extraHeaders: ['rc-tap: rcc;accessCode=100'], homeCountryId: '1' },
+      );
+    });
   });
 });
