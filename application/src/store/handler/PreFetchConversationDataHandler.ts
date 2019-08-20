@@ -10,11 +10,26 @@ import { SequenceProcessorHandler } from 'sdk/framework/processor';
 import PreFetchPostProcessor from '@/store/handler/cache/PreFetchPostProcessor';
 import pinnedPostCacheController from './cache/PinnedPostCacheController';
 import conversationPostCacheController from './cache/ConversationPostCacheController';
+import bookmarkCacheController from './cache/BookmarkCacheController';
+import atMentionCacheController from './cache/AtMentionCacheController';
+import { AT_MENTION_ID, BOOKMARK_ID } from './constant';
+import { Profile } from 'sdk/src/module/profile/entity';
+import ProfileModel from '../models/Profile';
+import { getSingleEntity } from '../utils';
+import { ENTITY_NAME } from '..';
+import { reaction } from 'mobx';
+import { MyState } from 'sdk/src/module/state';
+import MyStateModel from '../models/MyState';
 
 class PreFetchConversationDataHandler {
+  private static _instance:
+    | PreFetchConversationDataHandler
+    | undefined = undefined;
   private _cachedGroupIds: Set<number>;
   private _preFetchControllers: IPreFetchController[] = [];
   private _preFetchQueueHandler: SequenceProcessorHandler;
+  private _isAtMentionFetched: boolean = false;
+  private _isBookmarkFetched: boolean = false;
 
   constructor(preFetchControllers: IPreFetchController[]) {
     this._cachedGroupIds = new Set();
@@ -22,10 +37,45 @@ class PreFetchConversationDataHandler {
     this._preFetchQueueHandler = new SequenceProcessorHandler({
       name: 'PreFetchConversationDataHandler',
     });
-
+    this._subscribeNotification();
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this._onNetWorkChanged(onLine);
     });
+  }
+
+  static getInstance() {
+    if (!this._instance) {
+      this._instance = new PreFetchConversationDataHandler([
+        conversationPostCacheController,
+        pinnedPostCacheController,
+        bookmarkCacheController,
+        atMentionCacheController,
+      ]);
+    }
+    return this._instance;
+  }
+
+  private _subscribeNotification() {
+    reaction(
+      () => {
+        const favoritePostIds = getSingleEntity<Profile, ProfileModel>(
+          ENTITY_NAME.PROFILE,
+          'favoritePostIds',
+        );
+        return favoritePostIds || [];
+      },
+      () => this._preFetchBookmark(),
+    );
+    reaction(
+      () => {
+        const atMentionPostIds = getSingleEntity<MyState, MyStateModel>(
+          ENTITY_NAME.MY_STATE,
+          'atMentionPostIds',
+        );
+        return atMentionPostIds || [];
+      },
+      () => this._preFetchAtMention(),
+    );
   }
 
   addProcessor(groupId: number) {
@@ -33,9 +83,25 @@ class PreFetchConversationDataHandler {
     this._addProcessor(groupId);
   }
 
+  private _preFetchAtMention() {
+    if (!this._isAtMentionFetched) {
+      this._isAtMentionFetched = true;
+      this.addProcessor(AT_MENTION_ID);
+    }
+  }
+
+  private _preFetchBookmark() {
+    if (!this._isBookmarkFetched) {
+      this._isBookmarkFetched = true;
+      this.addProcessor(BOOKMARK_ID);
+    }
+  }
+
   private _onNetWorkChanged(onLine: boolean) {
     if (onLine) {
-      this._preFetchControllers.map(controller => this._preFetchUnCachedGroupData(controller));
+      this._preFetchControllers.map(controller =>
+        this._preFetchUnCachedGroupData(controller),
+      );
     }
   }
 
@@ -79,11 +145,15 @@ class PreFetchConversationDataHandler {
   }
 
   setCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller => controller.setCurrentCacheConversation(groupId));
+    this._preFetchControllers.forEach(controller =>
+      controller.setCurrentCacheConversation(groupId),
+    );
   }
 
   releaseCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller => controller.releaseCurrentConversation(groupId));
+    this._preFetchControllers.forEach(controller =>
+      controller.releaseCurrentConversation(groupId),
+    );
   }
 
   removeCache(groupId: number) {
@@ -97,10 +167,4 @@ class PreFetchConversationDataHandler {
   }
 }
 
-const preFetchConversationDataHandler = new PreFetchConversationDataHandler([
-  conversationPostCacheController,
-  pinnedPostCacheController,
-]);
-
-export default preFetchConversationDataHandler;
 export { PreFetchConversationDataHandler };

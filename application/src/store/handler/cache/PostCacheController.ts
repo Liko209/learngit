@@ -17,9 +17,10 @@ import ItemModel from '@/store/models/Item';
 import { IPreFetchController } from '@/store/handler/cache/interface/IPreFetchController';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PostUsedItemCache } from './PostUsedItemCache';
+import { ModelIdType } from 'sdk/src/framework/model';
 
 abstract class PostCacheController implements IPreFetchController {
-  protected _cacheMap: Map<number, FetchSortableDataListHandler<Post>>;
+  protected _cacheMap: Map<ModelIdType, FetchSortableDataListHandler<Post>>;
   protected _currentGroupId: number = 0;
   protected _postUsedItemCache = new PostUsedItemCache();
 
@@ -118,16 +119,23 @@ abstract class PostCacheController implements IPreFetchController {
   }
 
   protected shouldPreFetch(groupId: number, direction: QUERY_DIRECTION) {
-    if (this.hasCache(groupId)) {
-      const foc = this.get(groupId);
-      return foc.hasMore(direction) && foc.listStore.size === 0;
+    if (this.isInRange(groupId)) {
+      if (this.hasCache(groupId)) {
+        const foc = this.get(groupId);
+        return foc.hasMore(direction) && foc.listStore.size === 0;
+      }
+      return true;
     }
-    return true;
+    return false;
   }
 
   protected removeInternal(groupId: number) {
     this.get(groupId).dispose();
     this._cacheMap.delete(groupId);
+  }
+
+  isInRange(groupId: number): boolean {
+    return groupId > 0;
   }
 }
 
