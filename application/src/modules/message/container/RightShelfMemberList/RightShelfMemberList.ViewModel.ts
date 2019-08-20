@@ -209,8 +209,8 @@ class RightShelfMemberListViewModel
 
   @computed
   get shouldHide() {
-    const { group: _group } = this;
-    return !_group || _group.isMocked || _group.type === CONVERSATION_TYPES.ME;
+    const { group } = this;
+    return !group || group.isMocked || group.type === CONVERSATION_TYPES.ME;
   }
 
   @computed
