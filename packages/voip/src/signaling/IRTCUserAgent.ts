@@ -10,11 +10,12 @@ import { ProvisionDataOptions } from './types';
 interface IRTCUserAgent extends EventEmitter2 {
   restartUA(
     provisionData: RTCSipProvisionInfo,
-    options: ProvisionDataOptions
+    options: ProvisionDataOptions,
   ): void;
   reRegister(): void;
   unregister(): void;
   makeCall(phoneNumber: string, options: RTCCallOptions): any;
+  getStatusCode(): number;
 }
 
 export { IRTCUserAgent };

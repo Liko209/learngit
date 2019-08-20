@@ -40,6 +40,16 @@ export type FsmStatusCategory =
   | 'unholding'
   | 'disconnected';
 
+export enum CallEventCategory {
+  InviteError = 'InviteError',
+  RegistrationError = 'RegistrationError',
+  WebRTCError = 'WebRTCError',
+  MediaEvent = 'MediaEvent',
+  NetworkEvent = 'NetworkEvent',
+  CallAction = 'CallAction',
+  CallActionResult = 'CallActionResult',
+}
+
 export type Establishment = Partial<{
   // out
   startTime: number;
@@ -57,16 +67,23 @@ export type Establishment = Partial<{
 
 export type FsmStatus = {
   name: FsmStatusCategory;
-  timestamp: number;
+  timestamp: string;
 };
 
-export interface ICall {
+export type CallEvent = {
+  name: CallEventCategory;
+  info: string;
+  timestamp: string;
+};
+
+export interface ICallReport {
   id: string;
   createTime: Date | null;
   sessionId: string;
   ua: any;
   direction: 'incoming' | 'outgoing' | '';
   establishment: Establishment;
+  events: CallEvent[];
   fsmStatus: FsmStatus[];
   media: MediaReportOutCome | null;
 }
@@ -99,13 +116,13 @@ export type MediaReportItem<T> = {
 export type MediaReportItemType = MediaReportItem<number>;
 
 export type MediaReportOutCome = MediaReportItem<
-MediaReportOutcomeItem<number>
+  MediaReportOutcomeItem<number>
 >;
 
 export type MediaStatusReport = {
   inboundRtpReport: Pick<
-  MediaReportItemType,
-  'packetsReceived' | 'bytesReceived' | 'packetsLost' | 'jitter'
+    MediaReportItemType,
+    'packetsReceived' | 'bytesReceived' | 'packetsLost' | 'jitter'
   >;
   outboundRtpReport: Pick<MediaReportItemType, 'packetsSent' | 'bytesSent'>;
 };

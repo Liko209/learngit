@@ -26,7 +26,7 @@ import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
 import { CallReport } from '../report/Call';
-import { CALL_REPORT_PROPS } from '../report/types';
+import { CALL_REPORT_PROPS, CallEventCategory } from '../report/types';
 import { kRTCGetStatsInterval } from '../account/constants';
 import { RTCMediaStatsManager } from './RTCMediaStatsManager';
 
@@ -37,6 +37,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
   private _inviteResponse: any = null;
   private _uuid: string = '';
+  private _report: CallReport;
   private _mediaElement: RTCMediaElement | null;
   private _mediaStatsManager: RTCMediaStatsManager;
   private _referClientContext: any = null;
@@ -48,9 +49,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._setAudioOutputDevice(deviceId);
   };
 
-  constructor(uuid: string) {
+  constructor(uuid: string, report: CallReport) {
     super();
     this._uuid = uuid;
+    this._report = report;
     this._mediaElement = RTCMediaElementManager.instance().createMediaElement(
       this._uuid,
     );
@@ -108,8 +110,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
       this._onSessionDisconnected();
     });
-    this._session.on(WEBPHONE_SESSION_STATE.FAILED, () => {
-      this._onSessionError();
+    this._session.on(WEBPHONE_SESSION_STATE.FAILED, (response: any) => {
+      this._onSessionError(response);
     });
     this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
@@ -131,6 +133,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
       this._onSessionReinviteFailed(session);
     });
+    this._session.on(
+      WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_STATE_CHANGED,
+      (state: any) => {
+        this._onMediaConnectionStateChange(state);
+      },
+    );
     RTCMediaDeviceManager.instance().on(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
       this._onInputDeviceChanged,
@@ -139,7 +147,6 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
       this._onOutputDeviceChanged,
     );
-    this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
 
   private _initAudioDeviceChannel() {
@@ -181,7 +188,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this.emit(CALL_SESSION_STATE.DISCONNECTED);
   }
 
-  private _onSessionError() {
+  private _onSessionError(response: any) {
+    this._report.updateCallEvent(
+      CallEventCategory.InviteError,
+      `${response.statusCode} ${response.reasonPhrase}`,
+    );
     this.emit(CALL_SESSION_STATE.ERROR);
   }
 
@@ -272,14 +283,15 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this.emit(CALL_SESSION_STATE.REINVITE_FAILED, session);
   }
 
-  private _onMediaConnectionStateChange(session: any, event: any) {
+  private _onMediaConnectionStateChange(event: any) {
     rtcLogger.debug(LOG_TAG, `WebRTC media connection state = ${event}`);
+    this._report.updateCallEvent(CallEventCategory.MediaEvent, event);
     switch (event) {
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_FAILED:
         rtcLogger.error(LOG_TAG, `Reconnecting media. State = ${event}`);
         break;
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_CONNECTED:
-        CallReport.instance().updateEstablishment(
+        this._report.updateEstablishment(
           CALL_REPORT_PROPS.MEDIA_CONNECTED_TIME,
         );
         break;

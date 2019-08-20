@@ -94,7 +94,8 @@ interface IRTCCallFsmTableDependency {
 }
 
 class RTCCallFsmTable extends StateMachine {
-  constructor(dependency: IRTCCallFsmTableDependency) {
+  private _report: CallReport;
+  constructor(dependency: IRTCCallFsmTableDependency, report: CallReport) {
     super({
       init: CallFsmState.IDLE,
       transitions: [
@@ -551,9 +552,8 @@ class RTCCallFsmTable extends StateMachine {
       ],
       methods: {
         onTransition(lifecycle) {
-          CallReport.instance().updateFsmStatus(
-            lifecycle.to as FsmStatusCategory,
-          );
+          this._report &&
+            this._report.updateFsmStatus(lifecycle.to as FsmStatusCategory);
           rtcLogger.debug(
             'RTC_Call_FSM',
             `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${
@@ -576,6 +576,7 @@ class RTCCallFsmTable extends StateMachine {
         },
       },
     });
+    this._report = report;
   }
 }
 

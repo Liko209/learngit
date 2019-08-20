@@ -12,6 +12,7 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_CALL_ACTION_ERROR_CODE,
 } from '../api/types';
+import { CallReport } from '../report/Call';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
@@ -50,9 +51,9 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _callFsmTable: RTCCallFsmTable;
   private _eventQueue: any;
 
-  constructor() {
+  constructor(report: CallReport) {
     super();
-    this._callFsmTable = new RTCCallFsmTable(this);
+    this._callFsmTable = new RTCCallFsmTable(this, report);
     this._eventQueue = async.queue((task: any, callback: any) => {
       callback(task.params);
     });
