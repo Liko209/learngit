@@ -122,7 +122,7 @@ describe('RTCSipUserAgent', () => {
       jest.spyOn(userAgent, 'makeCall');
     }
 
-    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall [JPT-973] [JPT-975]', async () => {
+    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall [JPT-973] [JPT-975],[JPT-2781]', async () => {
       setupMakeCall();
       const options: RTCCallOptions = {};
       userAgent.makeCall(phoneNumber, options);
@@ -132,7 +132,7 @@ describe('RTCSipUserAgent', () => {
       );
     });
 
-    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall [JPT-xxx]', () => {
+    it('Should call invite api of WebPhone with input audio deviceId if get current audio input deviceId succeed when UserAgent makeCall [JPT-2782]', () => {
       setupMakeCall();
       const options: RTCCallOptions = {};
       const sessionDescriptionHandlerOptions = {
