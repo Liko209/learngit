@@ -1,8 +1,9 @@
 {
   "on_merge": {
     "fixtures": [
-      "telephony/phoneSetting/GeneralSettings.ts"
+      "fixtures/FileViewer/Zoom.ts"
     ],
+    
     "browsers": [
       "selenium:chrome"
     ]
