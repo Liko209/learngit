@@ -24,7 +24,7 @@ type TitleType = {
 };
 interface IViewerView {
   pages?: {
-    url: string;
+    url?: string;
     viewport?: {
       origHeight: number;
       origWidth: number;
@@ -35,6 +35,8 @@ interface IViewerView {
   currentPageIdx: number;
   currentScale: number;
   onUpdate: (opts: UpdateParamsType) => void;
+  onContentLoad?: () => void;
+  onContentError?: () => void;
 }
 
 export { IViewerView, UpdateParamsType, TitleType };

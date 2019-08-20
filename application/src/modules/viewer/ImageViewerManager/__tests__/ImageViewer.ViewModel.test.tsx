@@ -4,41 +4,357 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '@/store/utils';
-import { FileViewerViewModel } from '../ImageViewer.ViewModel';
+import { getEntity, getSingleEntity } from '@/store/utils';
+import { ImageViewerViewModel } from '../ImageViewer.ViewModel';
+import { VIEWER_ITEM_TYPE } from '../constants';
 import { Notification } from '@/containers/Notification';
 import { ENTITY_NAME } from '@/store';
 import * as mobx from 'mobx';
+import { ItemListDataSource } from '../Viewer.DataSource';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import { EVENT_TYPES, notificationCenter } from 'sdk/service';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+import * as module from 'sdk/module/item';
+import * as utils from '../utils';
 
 jest.mock('@/store/utils');
+// jest.mock('sdk/service');
 jest.mock('@/containers/Notification');
 jest.mock('@/utils/error');
 const dismiss = jest.fn();
+const props = {
+  // groupId: 1,
+  postId: 1,
+  initialOptions: {},
+  dismiss: () => dismiss(),
+  // itemId: 2,
+  groupId: 123,
+  // type: VIEWER_ITEM_TYPE.IMAGE_FILES,
+  itemId: 111,
+  type: VIEWER_ITEM_TYPE.IMAGE_FILES,
+  isNavigation: false,
+}
 function getVM() {
-  const vm = new FileViewerViewModel(1, 2, dismiss);
+  const vm = new ImageViewerViewModel(props);
   return vm;
 }
 
-describe('FileViewerViewModel', () => {
+jest.mock('../Viewer.DataSource', () => {
+  const dataSource: ItemListDataSource = {
+    loadInitialData: jest.fn(),
+    getIds: jest.fn().mockReturnValue([]),
+    dispose: jest.fn(),
+    fetchData: jest.fn(),
+    getFilterFunc: jest.fn().mockReturnValue(true),
+    isExpectedItemOfThisGroup: jest.fn().mockReturnValue(true),
+    fetchIndexInfo: jest.fn(),
+  };
+  return {
+    ItemListDataSource: () => dataSource,
+  };
+});
+
+function createDataSource() {
+  return new ItemListDataSource();
+}
+
+describe('Viewer.ViewModel', () => {
+
+  let itemService: any = {
+    getItemIndexInfo: jest.fn().mockResolvedValue({}),
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
-    const fileItem = {
-      latestVersion: { pages: [1, 2] },
+    itemService = {
+      getItemIndexInfo: jest.fn().mockResolvedValue({}),
+    };
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
+    const item = {
+      versionUrl: '',
+      origWidth: 1,
+      origHeight: 2,
+      deactivated: false,
+      isArchived: false,
       getDirectRelatedPostInGroup: jest.fn(() => ({})),
     };
-    (getEntity as jest.Mock).mockReturnValue(fileItem);
+    (getEntity as jest.Mock).mockReturnValue(item);
+    (getSingleEntity as jest.Mock).mockReturnValue(item);
+  });
+  describe('constructor()', () => {
+    it('should successfully construct', () => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([1, 2]);
+      const vm = getVM();
+      vm.setOnCurrentItemDeletedCb(() => {});
+      vm.setOnItemSwitchCb(() => {});
+      vm.isLoadingMore;
+      vm.switchToNext;
+      vm.switchToPrevious;
+      expect(vm.currentItemId).toEqual(props.itemId);
+      vm.updateCurrentItemIndex(0, 1);
+      expect(vm.isLoadingMore).toEqual(false);
+      expect(vm).toHaveProperty('props');
+      expect(vm.currentIndex).toEqual(0);
+      expect(vm.currentItemId).toEqual(1);
+      expect(vm.getCurrentIndex()).toEqual(0);
+      expect(vm.getCurrentItemId()).toEqual(1);
+      expect(vm.total).toEqual(-1);
+      expect(vm.ids).toEqual([1, 2]);
+      vm.dispose();
+    });
+    it('should listen item change', () => {
+      const notificationOn = jest.spyOn(notificationCenter, 'on');
+      const vm = getVM();
+      expect(notificationOn).toBeCalled();
+      notificationOn.mockRestore();
+      vm.dispose();
+    });
+  });
+  describe('hasPrevious', () => {
+    it('should hasPrevious', () => {
+      const vm = getVM();
+      vm.total = 2;
+      vm.updateCurrentItemIndex(1, 1);
+      expect(vm.hasPrevious).toBeTruthy();
+    });
+    it('should not hasPrevious', () => {
+      const vm = getVM();
+      vm.total = 2;
+      vm.updateCurrentItemIndex(1, 1);
+      expect(vm.hasPrevious).toBeTruthy();
+    });
+  });
+  describe('hasNext', () => {
+    it('should hasNext', () => {
+      const vm = getVM();
+      vm.total = 2;
+      vm.updateCurrentItemIndex(0, 1);
+      expect(vm.hasNext).toBeTruthy();
+    });
+    it('should not hasNext', () => {
+      const vm = getVM();
+      vm.total = 2;
+      vm.updateCurrentItemIndex(1, 1);
+      expect(vm.hasNext).toBeFalsy();
+    });
+  });
+  describe('updateCurrentItemIndex()', () => {
+    it('should currentIndex, currentItemId has default value when not set', () => {
+      const vm = getVM();
+      expect(vm.currentIndex).toEqual(-1);
+      expect(vm.currentItemId).toEqual(props.itemId);
+      vm.dispose();
+    });
+    it('should updateCurrentItemIndex correctly', () => {
+      const vm = getVM();
+      vm.updateCurrentItemIndex(1, 2);
+      expect(vm.currentIndex).toEqual(1);
+      expect(vm.currentItemId).toEqual(2);
+      vm.dispose();
+    });
+  });
+  describe('init()', () => {
+    it('should loadInitialData and refresh itemIndexInfo', async (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.fetchIndexInfo.mockResolvedValue({
+        index: 11,
+        totalCount: 22,
+      });
+      const vm = getVM();
+      await vm.init();
+      setTimeout(() => {
+        expect(dataSource.loadInitialData).toBeCalled();
+        expect(dataSource.fetchIndexInfo).toBeCalledWith(props.itemId);
+
+        expect(vm.total).toEqual(22);
+        expect(vm.currentIndex).toEqual(11);
+        vm.dispose();
+        done();
+      });
+    });
+  });
+  describe('dispose()', () => {
+    it('should dispose dataSource & notification', () => {
+      const dataSource = createDataSource();
+      const notificationOff = jest.spyOn(notificationCenter, 'off');
+      const vm = getVM();
+      vm.dispose();
+      expect(notificationOff).toBeCalled();
+      expect(dataSource.dispose).toBeCalled();
+    });
+  });
+  describe('fetchData()', () => {
+    it('should dispose dataSource & notification', () => {
+      const dataSource = createDataSource();
+      const vm = getVM();
+      vm.loadMore(QUERY_DIRECTION.NEWER);
+      expect(dataSource.fetchData).lastCalledWith(QUERY_DIRECTION.NEWER, 20);
+      vm.dispose();
+    });
+  });
+  describe('switchToPrevious()', () => {
+    it('should load data then switch to previous', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
+      const vm = new ImageViewerViewModel({ ...props, itemId: 2 });
+      // vm.updateCurrentItemIndex(1, props.itemId);
+      vm.currentIndex = 1;
+      vm.total = 3;
+      const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce([1]);
+      const fn2 = jest.spyOn(vm, 'switchToPrevious');
+      expect(vm.hasPrevious).toBeTruthy();
+      vm.switchToPrevious();
+      expect(loadMore).toBeCalledWith(QUERY_DIRECTION.OLDER);
+      expect(fn2).toBeCalledTimes(1);
+      setTimeout(() => {
+        expect(fn2).toBeCalledTimes(2);
+        done();
+      });
+    });
+    it('should not switch if load not more data', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
+      const vm = new ImageViewerViewModel({ ...props, itemId: 2 });
+      vm.currentIndex = 1;
+      vm.total = 3;
+      const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce(null);
+      const fn2 = jest.spyOn(vm, 'switchToPrevious');
+      expect(vm.hasPrevious).toBeTruthy();
+      vm.switchToPrevious();
+      expect(loadMore).toBeCalledWith(QUERY_DIRECTION.OLDER);
+      expect(fn2).toBeCalledTimes(1);
+      setTimeout(() => {
+        expect(fn2).toBeCalledTimes(1);
+        done();
+      });
+    });
+    it('should update index directly when ids has pre image', () => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([1, 2]);
+      const vm = new ImageViewerViewModel({ ...props, itemId: 2 });
+      vm.currentIndex = 1;
+      vm.total = 2;
+      const updateCurrentItemIndex = jest.spyOn(vm, 'updateCurrentItemIndex');
+      expect(vm.hasPrevious).toBeTruthy();
+      vm.switchToPrevious();
+      expect(updateCurrentItemIndex).toBeCalled();
+    });
+  });
+  describe('switchToNext()', () => {
+    it('should load data then switch to NextImage', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
+      const vm = new ImageViewerViewModel({ ...props, itemId: 2 });
+      vm.currentIndex = 1;
+      vm.total = 3;
+      const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce([3]);
+      const fn2 = jest.spyOn(vm, 'switchToNext');
+      expect(vm.hasNext).toBeTruthy();
+      vm.switchToNext();
+      expect(loadMore).toBeCalledWith(QUERY_DIRECTION.NEWER);
+      expect(fn2).toBeCalledTimes(1);
+      setTimeout(() => {
+        expect(fn2).toBeCalledTimes(2);
+        done();
+      });
+    });
+    it('should not switch image if load not more data', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
+      const vm = new ImageViewerViewModel({ ...props, itemId: 2 });
+      vm.currentIndex = 1;
+      vm.total = 3;
+      vm.updateCurrentItemIndex(1, props.itemId);
+      const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce(null);
+      const fn2 = jest.spyOn(vm, 'switchToNext');
+      expect(vm.hasNext).toBeTruthy();
+      vm.switchToNext();
+      expect(loadMore).toBeCalledWith(QUERY_DIRECTION.NEWER);
+      expect(fn2).toBeCalledTimes(1);
+      setTimeout(() => {
+        expect(fn2).toBeCalledTimes(1);
+        done();
+      });
+    });
+
+    it('should update index directly when ids has next image', () => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2, 3]);
+      const vm = new ImageViewerViewModel({ ...props, itemId: 2 });
+      vm.currentIndex = 1;
+      vm.total = 3;
+      const updateCurrentItemIndex = jest.spyOn(vm, 'updateCurrentItemIndex');
+      expect(vm.hasNext).toBeTruthy();
+      vm.switchToNext();
+      expect(updateCurrentItemIndex).toBeCalled();
+    });
+  });
+  describe('user delete item', () => {
+    it('should call getNextItemToDisplay [JPT-2033]', async done => {
+      const itemNotificationKey = 'key';
+      jest
+        .spyOn(module.ItemNotification, 'getItemNotificationKey')
+        .mockReturnValue(itemNotificationKey);
+
+      const getNextItemToDisplaySpy = jest
+        .spyOn(utils, 'getNextItemToDisplay')
+        .mockReturnValue({ index: 2, itemId: 123 });
+      jest.spyOn(utils, 'isExpectedItemOfThisGroup').mockReturnValue(true);
+      const dataSource = createDataSource();
+      dataSource.fetchIndexInfo.mockReturnValue({ totalCount: 1, index: -1 });
+
+      const vm = new ImageViewerViewModel({ ...props, itemId: 1 });
+      vm.currentIndex = 1;
+      vm.total = 3;
+      notificationCenter.emit(itemNotificationKey, {
+        type: EVENT_TYPES.UPDATE,
+        body: { entities: [{}] },
+      });
+      setImmediate(() => {
+        expect(getNextItemToDisplaySpy).toHaveBeenCalled();
+        done();
+      });
+    });
+  });
+});
+
+describe('dispose reactions', () => {
+  it('should dispose all reactions when dispose vm', () => {
+    const disposer1 = jest.fn();
+    const disposer2 = jest.fn();
+    const disposer3 = jest.fn();
+    jest.spyOn(mobx, 'reaction').mockReturnValueOnce(disposer1);
+    jest.spyOn(mobx, 'reaction').mockReturnValueOnce(disposer2);
+    jest.spyOn(mobx, 'reaction').mockReturnValueOnce(disposer3);
+    const vm = getVM();
+    vm.dispose();
+    expect(disposer1).toHaveBeenCalled();
+    expect(disposer2).toHaveBeenCalled();
+    expect(disposer3).toHaveBeenCalled();
+  });
+});
+
+
+
+describe('ImageViewerViewModel', () => {
+  beforeEach(() => {
+    // jest.resetAllMocks();
+    const itemFun = {
+      getDirectRelatedPostInGroup: jest.fn(() => ({})),
+    };
     Notification.flashToast = jest.fn();
+    (getEntity as jest.Mock).mockReturnValue(itemFun);
   });
   describe('viewerDestroyer()', () => {
     it('should dismiss be call when call viewerDestroyer function', () => {
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [] },
         getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
-      const vm = new FileViewerViewModel(1, 2, dismiss);
+      const vm = getVM();
       vm.viewerDestroyer();
-      expect(dismiss).toBeCalled();
+      expect(dismiss).toHaveBeenCalled();
     });
   });
 
@@ -49,77 +365,34 @@ describe('FileViewerViewModel', () => {
       const vm = getVM();
       expect(vm._sender).toBe(null);
       expect(vm._createdAt).toBe(null);
-      expect(autoRunSpy).toBeCalledWith(vm.updateSenderInfo, undefined);
+      expect(autoRunSpy).toHaveBeenCalledWith(vm.updateSenderInfo, undefined);
       autoRunSpy.mockRestore();
     });
   });
 
   describe('pages()', () => {
-    it('should be return undefined when pages undefined', () => {
+    it('should be return undefined when type not image ', () => {
       (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: undefined },
-        getDirectRelatedPostInGroup: jest.fn(() => ({})),
+        type: 'file',
       });
       const vm = getVM();
-
-      expect(vm.pages).toEqual(undefined);
+      expect(vm.pages).toEqual([
+        {
+          url: undefined,
+          viewport: {
+            origHeight: 0,
+            origWidth: 0,
+          },
+        },
+      ]);
     });
     it('should be return not undefined when pages not undefined', () => {
       (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: [1, 2] },
-        getDirectRelatedPostInGroup: jest.fn(() => ({})),
+        type: 'jpg',
       });
       const vm = getVM();
-
-      expect(vm.pages && vm.pages.length).toEqual(2);
-    });
-  });
-
-  describe('update()', () => {
-    it('should _currentPageIdx be 1 when pageIdx =1 and _currentPageIdx = 1 ', () => {
-      const data = { scale: 1, pageIdx: 1 };
-      (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: undefined },
-        getDirectRelatedPostInGroup: jest.fn(() => ({})),
-      });
-      const vm = getVM();
-      vm['_currentPageIdx '] = 1;
-      vm.onUpdate(data);
-      expect(vm['_currentPageIdx']).toEqual(1);
-    });
-    it('should _currentPageIdx be 2 when pageIdx =1 and _currentPageIdx = 2', () => {
-      const data = { scale: 1, pageIdx: 2 };
-      (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: undefined },
-        getDirectRelatedPostInGroup: jest.fn(() => ({})),
-      });
-      const vm = getVM();
-      vm['_currentPageIdx '] = 1;
-      vm.onUpdate(data);
-      expect(vm['_currentPageIdx']).toEqual(2);
-    });
-
-    it('should _currentScale be 1 when pageIdx =1 and _currentScale = 1 ', () => {
-      const data = { scale: 0.5, pageIdx: 1 };
-      (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: undefined },
-        getDirectRelatedPostInGroup: jest.fn(() => ({})),
-      });
-      const vm = getVM();
-      vm['_currentScale '] = 0.5;
-      vm.onUpdate(data);
-      expect(vm['_currentScale']).toEqual(0.5);
-    });
-    it('should _currentScale be 2 when pageIdx =1 and _currentScale = 2', () => {
-      const data = { scale: 1, pageIdx: 1 };
-      (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: undefined },
-        getDirectRelatedPostInGroup: jest.fn(() => ({})),
-      });
-      const vm = getVM();
-      vm['_currentScale '] = 0.5;
-      vm.onUpdate(data);
-      expect(vm['_currentScale']).toEqual(1);
+      vm['_largeRawImageURL'] = 'url';
+      expect(vm.pages && vm.pages[0].url).toEqual('url');
     });
   });
 
@@ -134,25 +407,6 @@ describe('FileViewerViewModel', () => {
     });
   });
 
-  describe('handleTextFieldChange()', () => {
-    it('should be return 2  when call input 2 length 2', () => {
-      const vm = getVM();
-      vm.handleTextFieldChange({ target: { value: '2' } });
-      expect(vm['_textFieldValue']).toEqual(2);
-    });
-    it('should be return 2  when call input 3 length 2', () => {
-      const vm = getVM();
-      vm.handleTextFieldChange({ target: { value: '3' } });
-      expect(vm['_textFieldValue']).toEqual(2);
-    });
-
-    it('should be return 1 when call input -1 length 2', () => {
-      const vm = getVM();
-      vm.handleTextFieldChange({ target: { value: '-1' } });
-      expect(vm['_textFieldValue']).toEqual(1);
-    });
-  });
-
   describe('updateSenderInfo()', () => {
     it('should get post from item.getDirectRelatedPostInGroup', async (done: any) => {
       const fileItem = {
@@ -164,7 +418,7 @@ describe('FileViewerViewModel', () => {
 
       await vm.updateSenderInfo();
 
-      expect(fileItem.getDirectRelatedPostInGroup).toBeCalled();
+      expect(fileItem.getDirectRelatedPostInGroup).toHaveBeenCalled();
 
       done();
     });
@@ -179,7 +433,7 @@ describe('FileViewerViewModel', () => {
 
       await vm.updateSenderInfo();
 
-      expect(getEntity).toBeCalledWith(ENTITY_NAME.PERSON, 123);
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.PERSON, 123);
 
       done();
     });

@@ -38,7 +38,7 @@ describe('FileViewerViewModel', () => {
       });
       const vm = new FileViewerViewModel(1, 2, dismiss);
       vm.viewerDestroyer();
-      expect(dismiss).toBeCalled();
+      expect(dismiss).toHaveBeenCalled();
     });
   });
 
@@ -49,7 +49,7 @@ describe('FileViewerViewModel', () => {
       const vm = getVM();
       expect(vm._sender).toBe(null);
       expect(vm._createdAt).toBe(null);
-      expect(autoRunSpy).toBeCalledWith(vm.updateSenderInfo, undefined);
+      expect(autoRunSpy).toHaveBeenCalledWith(vm.updateSenderInfo, undefined);
       autoRunSpy.mockRestore();
     });
   });
@@ -164,7 +164,7 @@ describe('FileViewerViewModel', () => {
 
       await vm.updateSenderInfo();
 
-      expect(fileItem.getDirectRelatedPostInGroup).toBeCalled();
+      expect(fileItem.getDirectRelatedPostInGroup).toHaveBeenCalled();
 
       done();
     });
@@ -179,7 +179,7 @@ describe('FileViewerViewModel', () => {
 
       await vm.updateSenderInfo();
 
-      expect(getEntity).toBeCalledWith(ENTITY_NAME.PERSON, 123);
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.PERSON, 123);
 
       done();
     });

@@ -41,17 +41,20 @@ import { Item } from 'sdk/module/item/entity';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { getLargeRawImageURL } from '@/common/getThumbnailURL';
 import { dateFormatter } from '@/utils/date';
+import {
+  IViewerView,
+} from '@/modules/viewer/container/ViewerView/interface';
 import { isExpectedItemOfThisGroup, getNextItemToDisplay } from './utils';
-import { ViewerProps } from './type';
+import { ImageViewerViewModuleProps } from './type';
 
 const PAGE_SIZE = 20;
 
-class ImageViewerViewModel extends AbstractViewModel<any> {
+class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps> implements IViewerView  {
   @observable _sender: PersonModel | null;
   @observable _createdAt: number | null;
   @observable private _largeRawImageURL?: string;
-  @observable thumbnailSrc: string;
-  @observable originElement: HTMLElement;
+  @observable thumbnailSrc?: string;
+  @observable originElement?: HTMLElement;
   @observable
   isLoadingMore: boolean = false;
   @observable
@@ -75,9 +78,12 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
 
   private _preloadController: PreloadController;
 
-  constructor(props: ViewerProps) {
+  constructor(props: ImageViewerViewModuleProps) {
     super(props);
     const { groupId, type, itemId, postId, isNavigation, initialOptions } = props;
+
+    this._sender = null;
+    this._createdAt = null;
 
     this.thumbnailSrc = initialOptions.thumbnailSrc;
     this.originElement = initialOptions.originElement;
@@ -161,6 +167,8 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
       },
       { fireImmediately: true },
     );
+
+    this.autorun(this.updateSenderInfo);
   }
 
   @computed
@@ -226,7 +234,7 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
 
   getCurrentIndex = () => this.currentIndex;
 
-  setOnCurrentItemDeletedCb = (callback: () => void) => {
+  setOnCurrentItemDeletedCb = (callback: (nextItemId: number) => void) => {
     this._onCurrentItemDeletedCb = callback;
   };
 
@@ -318,7 +326,7 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
   private _updateIndexInfo = async () => {
     const itemId = this.currentItemId;
     const info = await this._itemListDataSource.fetchIndexInfo(itemId);
-    console.log('looper', info)
+    console.log('xxx', {itemId, info})
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {
@@ -401,10 +409,23 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
         }
       });
     }
+    console.log('eneee', needRefreshIndex, payload)
     if (needRefreshIndex) {
       this._updateIndexInfo();
     }
   };
+
+  @computed
+  get imageWidth() {
+    const { viewport: {origWidth} } = this.pages[0];
+    return origWidth || this.props.initialOptions.initialWidth;
+  }
+
+  @computed
+  get imageHeight() {
+    const { viewport: {origHeight} } = this.pages[0];
+    return origHeight || this.props.initialOptions.initialHeight;
+  }
 
   updateSenderInfo = async () => {
     const { groupId } = this.props;
@@ -432,21 +453,21 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
   get pages() {
     const { origHeight, origWidth } = this._item;
     if (FileItemUtils.isSupportPreview(this._item)) {
-      return {
+      return [{
         url: this._largeRawImageURL,
         viewport: {
           origHeight,
           origWidth,
         },
-      };
+      }];
     }
-    return {
+    return [{
       url: undefined,
       viewport: {
         origHeight: 0,
         origWidth: 0,
       },
-    };
+    }];
   }
 
   @computed
@@ -479,7 +500,7 @@ class ImageViewerViewModel extends AbstractViewModel<any> {
 
   @computed
   get currentPageIdx() {
-    return 0;
+    return this.currentIndex;
   }
 
   @computed

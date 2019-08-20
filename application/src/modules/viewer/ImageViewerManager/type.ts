@@ -4,25 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import FileItemModel from '@/store/models/FileItem';
-import { ReactElement } from 'react';
 import { Item } from 'sdk/module/item/entity';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { VIEWER_ITEM_TYPE } from './constants';
-import { Post } from 'sdk/module/post/entity';
 
-type ViewerProps = {
-  contentLeftRender: (props: Partial<ViewerViewProps>) => ReactElement;
-  viewerDestroyer: Function;
+type ImageViewerViewModuleProps = {
   groupId: number;
   itemId: number; // imageId || fileId || otherItemId
   isNavigation?: boolean;
   postId?: number;
   type: VIEWER_ITEM_TYPE;
+  initialOptions: ImageViewerOptions;
+  dismiss: () => void;
 };
 
-type ViewerViewProps = ViewerProps & {
-  init: () => Promise<void>;
+type ImageViewerViewModule = {
+  init: () => void;
   currentItemId: number;
   currentIndex: number;
   getCurrentItemId: () => number;
@@ -36,13 +33,17 @@ type ViewerViewProps = ViewerProps & {
   switchToPrevious: () => void;
   switchToNext: () => void;
   stopPreload: () => void;
-  loadMore: (direction: QUERY_DIRECTION) => Promise<Item[]>;
+  loadMore: (direction: QUERY_DIRECTION) => Promise<Item[] | null>;
   setOnCurrentItemDeletedCb: (callback: (nextItemId: number) => void) => void;
   setOnItemSwitchCb: (callback: (itemId: number) => void) => void;
   deleteItem?: boolean;
-  directRelatedPost: Post;
-  onContentLoad?: () => {};
-  onContentError?: () => {};
+  onContentLoad?: () => void;
+  onContentError?: () => void;
+
+  originElement?: HTMLElement;
+  imageWidth?: number;
+  imageHeight?: number;
+  thumbnailSrc?: string;
 };
 
 type ImageViewerOptions = {
@@ -51,18 +52,8 @@ type ImageViewerOptions = {
   initialWidth?: number;
   initialHeight?: number;
 };
-type ImageViewerProps = ViewerViewProps & {
-  initialOptions: ImageViewerOptions;
-};
-
-type ImageViewerViewProps = ImageViewerProps & {
-  item: FileItemModel;
-  isLoadingMore: boolean;
-  imageUrl: string;
-  imageWidth?: number;
-  imageHeight?: number;
+type ImageViewerProps = ImageViewerViewModule & {
   thumbnailSrc?: string;
-  closeViewer: () => void;
 };
 
 type ImageViewerBuild = {
@@ -74,5 +65,9 @@ type ImageViewerBuild = {
 };
 
 export {
-  ImageViewerProps, ImageViewerViewProps, ImageViewerOptions, ImageViewerBuild
+  ImageViewerViewModuleProps,
+  ImageViewerViewModule,
+  ImageViewerProps,
+  ImageViewerOptions,
+  ImageViewerBuild,
 };

@@ -158,6 +158,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       hasPrevious,
       hasNext,
     } = dataModule;
+    const page = pages[0];
     const padding = 32;
     return (
       <ViewerContext.Consumer>
@@ -180,9 +181,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     wheel: true,
                     padding: [padding, padding, padding, padding],
                   }}
-                  zoomInText={t('viewer.ZoomIn')}
-                  zoomOutText={t('viewer.ZoomOut')}
-                  zoomResetText={t('viewer.ZoomReset')}
                   onAutoFitContentRectChange={this._onZoomImageContentChange}
                 >
                   {({
@@ -204,7 +202,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         data-test-automation-id={'previewerCanvas'}
                         key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
-                        src={accelerateURL(pages && pages.url)}
+                        src={accelerateURL(page && page.url)}
                         width={fitWidth || imageWidth}
                         height={fitHeight || imageHeight}
                         style={imageStyle}

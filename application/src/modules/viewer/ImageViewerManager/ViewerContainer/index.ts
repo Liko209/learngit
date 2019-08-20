@@ -3,5 +3,5 @@
  * @Date: 2019-03-04 15:28:41
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './ImageViewer';
+export * from './ImageViewer.View';
 export * from './types';

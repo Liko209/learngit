@@ -25,7 +25,7 @@ import {
 } from 'jui/components/Animation';
 import { JuiViewerSidebar, isSameScale } from 'jui/pattern/Viewer';
 import ViewerContext, { ViewerContextType } from './ViewerContext';
-// import { IViewerView } from './interface';
+import { IViewerView } from './interface';
 
 import { VIEWER_PERFORMANCE_KEYS } from '../../performanceKeys';
 import _ from 'lodash';
@@ -45,10 +45,11 @@ enum LAYOUT {
 }
 
 type ViewerViewType = {
-  dataModule: any;
+  dataModule: IViewerView;
   TitleRenderer: ComponentType<any>;
   PageRenderer: ComponentType<any>;
   layout?: LAYOUT;
+  unNeedZoomButtonGroup?: boolean;
 };
 
 const LeftResponsive = withResponsive(
@@ -103,6 +104,7 @@ class ViewerViewComponent extends Component<
         setDeleteItem: this.setDeleteItem,
         setLoading: this.setLoading,
       },
+      initialScale: 0,
       deleteItem: false,
       loading: false,
     };
@@ -280,7 +282,14 @@ class ViewerViewComponent extends Component<
   };
 
   render() {
-    const { t, dataModule, TitleRenderer, layout, PageRenderer } = this.props;
+    const {
+      t,
+      dataModule,
+      TitleRenderer,
+      layout,
+      PageRenderer,
+      unNeedZoomButtonGroup,
+    } = this.props;
     const { currentScale } = dataModule;
     const { show } = this.state.contextValue;
     const { initialScale } = this.state;
@@ -316,48 +325,50 @@ class ViewerViewComponent extends Component<
                       handleScaleChanged={this._handleScaleChanged}
                       handlePageIdxChanged={this._handlePageIdxChanged}
                     />
-                    <JuiZoomButtonGroup
-                      className="zoomGroup"
-                      resetMode={true}
-                      data-test-automation-id="ViewerZoomButtonGroup"
-                      centerText={this._getScaleDisplayString()}
-                      ZoomOut={
-                        <JuiIconButton
-                          variant="plain"
-                          tooltipTitle={t('viewer.ZoomOut')}
-                          ariaLabel={t('viewer.ZoomOut')}
-                          data-test-automation-id="ViewerZoomOutButton"
-                          disabled={currentScale === MIN_SCALE}
-                          onClick={() => this._handleZoomOut()}
-                        >
-                          zoom_out
-                        </JuiIconButton>
-                      }
-                      ZoomIn={
-                        <JuiIconButton
-                          variant="plain"
-                          tooltipTitle={t('viewer.ZoomIn')}
-                          ariaLabel={t('viewer.ZoomIn')}
-                          data-test-automation-id="ViewerZoomInButton"
-                          disabled={currentScale === MAX_SCALE}
-                          onClick={() => this._handleZoomIn()}
-                        >
-                          zoom_in
-                        </JuiIconButton>
-                      }
-                      ZoomReset={
-                        <JuiIconButton
-                          variant="plain"
-                          tooltipTitle={t('viewer.ZoomReset')}
-                          ariaLabel={t('viewer.ZoomReset')}
-                          data-test-automation-id="ViewerResetButton"
-                          disabled={currentScale === initialScale}
-                          onClick={() => this._handleReset()}
-                        >
-                          reset_zoom
-                        </JuiIconButton>
-                      }
-                    />
+                    {!unNeedZoomButtonGroup && (
+                      <JuiZoomButtonGroup
+                        className="zoomGroup"
+                        resetMode={true}
+                        data-test-automation-id="ViewerZoomButtonGroup"
+                        centerText={this._getScaleDisplayString()}
+                        ZoomOut={
+                          <JuiIconButton
+                            variant="plain"
+                            tooltipTitle={t('viewer.ZoomOut')}
+                            ariaLabel={t('viewer.ZoomOut')}
+                            data-test-automation-id="ViewerZoomOutButton"
+                            disabled={currentScale === MIN_SCALE}
+                            onClick={() => this._handleZoomOut()}
+                          >
+                            zoom_out
+                          </JuiIconButton>
+                        }
+                        ZoomIn={
+                          <JuiIconButton
+                            variant="plain"
+                            tooltipTitle={t('viewer.ZoomIn')}
+                            ariaLabel={t('viewer.ZoomIn')}
+                            data-test-automation-id="ViewerZoomInButton"
+                            disabled={currentScale === MAX_SCALE}
+                            onClick={() => this._handleZoomIn()}
+                          >
+                            zoom_in
+                          </JuiIconButton>
+                        }
+                        ZoomReset={
+                          <JuiIconButton
+                            variant="plain"
+                            tooltipTitle={t('viewer.ZoomReset')}
+                            ariaLabel={t('viewer.ZoomReset')}
+                            data-test-automation-id="ViewerResetButton"
+                            disabled={currentScale === initialScale}
+                            onClick={() => this._handleReset()}
+                          >
+                            reset_zoom
+                          </JuiIconButton>
+                        }
+                      />
+                    )}
                   </>
                 }
               />

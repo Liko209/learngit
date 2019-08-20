@@ -17,7 +17,7 @@ import { ViewerView, LAYOUT } from '../container/ViewerView';
 import { ViewerTitleView } from '../common/Title.View';
 import { ViewerDocument } from '../FileViewerManager/ViewerContainer.View';
 
-import { ImageViewerView } from '../ImageViewerManager/ViewerContainer/ImageViewer.View';
+import { ImageViewerView } from '../ImageViewerManager/ViewerContainer';
 
 class ViewerService implements IViewerService {
   open = ({ itemId, groupId }: FileViewerBuild) => {
@@ -58,6 +58,7 @@ class ViewerService implements IViewerService {
             isNavigation: mode === 'navigation',
           })
         }
+        unNeedZoomButtonGroup
         TitleRenderer={ViewerTitleView}
         PageRenderer={ImageViewerView}
       />,

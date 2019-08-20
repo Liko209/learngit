@@ -6,13 +6,13 @@
 
 import React from 'react';
 
-type ViewerContextType = {
+export type ViewerContextType = {
   show: boolean;
-  closeViewer?: () => {};
-  onTransitionExited?: () => {};
-  onTransitionEntered?: () => {};
-  onContentLoad?: () => {};
-  onContentError?: () => {};
+  closeViewer?: () => void;
+  onTransitionExited?: () => void;
+  onTransitionEntered?: () => void;
+  onContentLoad?: () => void;
+  onContentError?: () => void;
   isAnimating: boolean;
   setDeleteItem: (value: boolean) => void;
   deleteItem?: boolean;
