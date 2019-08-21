@@ -10,6 +10,7 @@ enum CALL_STATE {
   IDLE = 'idle',
   CONNECTING = 'connecting',
   CONNECTED = 'connected',
+  DISCONNECTING = 'disconnecting',
   DISCONNECTED = 'disconnected',
 }
 
