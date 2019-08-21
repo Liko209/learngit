@@ -239,53 +239,65 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
 }
 
 <div
-  className="c0"
+  style={
+    Object {
+      "display": "flex",
+      "flex-direction": "column",
+      "height": "100%",
+      "outline": 0,
+    }
+  }
+  tabIndex={-1}
 >
-  <div>
-    <span
-      onMouseDown={[Function]}
-    >
-      <button
-        aria-label=""
-        className="MuiButtonBase-root MuiIconButton-root c1"
-        data-test-automation-id="conversation-chatbar-emoji-button"
-        disabled={false}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onDragLeave={[Function]}
-        onFocus={[Function]}
-        onKeyDown={[Function]}
-        onKeyUp={[Function]}
+  <div
+    className="c0"
+  >
+    <div>
+      <span
         onMouseDown={[Function]}
-        onMouseLeave={[Function]}
-        onMouseUp={[Function]}
-        onTouchEnd={[Function]}
-        onTouchMove={[Function]}
-        onTouchStart={[Function]}
-        tabIndex={0}
-        type="button"
-        variant="round"
       >
-        <span
-          className="MuiIconButton-label"
+        <button
+          aria-label=""
+          className="MuiButtonBase-root MuiIconButton-root c1"
+          data-test-automation-id="conversation-chatbar-emoji-button"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+          variant="round"
         >
           <span
-            className="c2 emoji icon c3"
-            size="medium"
+            className="MuiIconButton-label"
           >
-            <svg
-              className="c4"
-              role="img"
+            <span
+              className="c2 emoji icon c3"
+              size="medium"
             >
-              <use
-                href="#icon-emoji"
-                xlinkHref="#icon-emoji"
-              />
-            </svg>
+              <svg
+                className="c4"
+                role="img"
+              >
+                <use
+                  href="#icon-emoji"
+                  xlinkHref="#icon-emoji"
+                />
+              </svg>
+            </span>
           </span>
-        </span>
-      </button>
-    </span>
+        </button>
+      </span>
+    </div>
   </div>
 </div>
 `;
