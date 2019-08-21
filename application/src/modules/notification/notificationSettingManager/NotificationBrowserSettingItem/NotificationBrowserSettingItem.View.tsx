@@ -46,13 +46,11 @@ class NotificationBrowserSettingItemViewComponent extends Component<
   }
 
   private _onNotificationDenied = () => {
-    this._promptPermissionDenied();
+    Notification.flagWarningToast('notification.notificationPermissionBlocked');
+
     dataAnalysis.track('Jup_Web/DT_settings_notification_blocked', {
       endPoint: 'web',
     });
-  };
-  private _promptPermissionDenied = async () => {
-    Notification.flagWarningToast('notification.notificationPermissionBlocked');
   };
 
   private _showEnabledNotification = async () => {
