@@ -24,6 +24,9 @@ type ImageViewerViewProps = ImageViewerProps & {
   imageHeight?: number;
   thumbnailSrc?: string;
   closeViewer: () => void;
+  setOnImageSwitchCb: (
+    callback: (imgInfo: { width: number; height: number }) => void,
+  ) => void;
 };
 
 export { ImageViewerProps, ImageViewerViewProps, ImageViewerOptions };

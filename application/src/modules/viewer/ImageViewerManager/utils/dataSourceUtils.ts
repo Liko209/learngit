@@ -17,10 +17,11 @@ function getTypeId(type: VIEWER_ITEM_TYPE) {
 function getFilterFunc(groupId: number, type: VIEWER_ITEM_TYPE) {
   switch (type) {
     case VIEWER_ITEM_TYPE.IMAGE_FILES:
-      return (file: Item) => (
-        ItemUtils.imageFilter(groupId)(file) &&
+      return (file: Item) => {
+        if(!file) return;
+        return ItemUtils.imageFilter(groupId)(file) &&
           FileItemUtils.isSupportPreview(file)
-      );
+      };
     default:
       return undefined;
   }

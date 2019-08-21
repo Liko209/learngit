@@ -158,6 +158,7 @@ class ViewerViewComponent extends Component<
     ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
       window.removeEventListener(v, this._handlerScroll);
     });
+    this.props.dataModule.dispose && this.props.dataModule.dispose();
   }
   /* eslint-disable react/no-access-state-in-setstate */
   closeViewer = () => {

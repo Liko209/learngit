@@ -6,7 +6,7 @@
 
 import { computed, observable, action, transaction } from 'mobx';
 import moment from 'moment';
-import { PreloadController } from '@/modules/viewer/container/Viewer/Preload';
+import { PreloadController } from './Preload';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
@@ -21,7 +21,7 @@ import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { ItemListDataSource } from './Viewer.DataSource';
 
 import { ItemListDataSourceByPost } from './Viewer.DataSourceByPost';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { Group } from 'sdk/module/group';
 import { Profile } from 'sdk/module/profile/entity';
 import { Notification } from '@/containers/Notification';
@@ -44,39 +44,36 @@ import { dateFormatter } from '@/utils/date';
 import {
   IViewerView,
 } from '@/modules/viewer/container/ViewerView/interface';
+import { PerformanceTracer } from 'foundation/performance';
+import { VIEWER_PERFORMANCE_KEYS } from '../performanceKeys';
 import { isExpectedItemOfThisGroup, getNextItemToDisplay } from './utils';
 import { ImageViewerViewModuleProps } from './type';
 
 const PAGE_SIZE = 20;
 
 class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps> implements IViewerView  {
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
   @observable _sender: PersonModel | null;
   @observable _createdAt: number | null;
   @observable private _largeRawImageURL?: string;
   @observable thumbnailSrc?: string;
+  @observable private _initialWidth?: number;
+  @observable private _initialHeight?: number;
   @observable originElement?: HTMLElement;
-  @observable
-  isLoadingMore: boolean = false;
-  @observable
-  currentIndex: number = -1;
-  @observable
-  currentItemId: number;
+  @observable isLoadingMore: boolean = false;
+  @observable currentIndex: number = -1;
+  @observable currentItemId: number;
   private _itemListDataSource: ItemListDataSource | ItemListDataSourceByPost;
   private _onCurrentItemDeletedCb: (nextItemId: number) => void;
-  private _onItemSwitchCb: (
-    itemId: number,
-    index: number,
-    type: 'previous' | 'next',
-  ) => void;
 
   @observable
   total: number = -1;
-
   historyIds: number[] | null = null;
-
   toBeDeletedItem: Set<number> = new Set();
 
   private _preloadController: PreloadController;
+
+  onImageSwitchCb: (imgInfo: { width: number; height: number }) => void;
 
   constructor(props: ImageViewerViewModuleProps) {
     super(props);
@@ -84,6 +81,9 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
 
     this._sender = null;
     this._createdAt = null;
+
+    this._initialWidth = props.initialOptions.initialWidth;
+    this._initialHeight = props.initialOptions.initialHeight;
 
     this.thumbnailSrc = initialOptions.thumbnailSrc;
     this.originElement = initialOptions.originElement;
@@ -193,7 +193,33 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
     this._preloadController.stop();
   };
 
+  setOnImageSwitchCb = (
+    cb: (imgInfo: { width: number; height: number }) => void,
+  ) => {
+    this.onImageSwitchCb = cb;
+  };
+
+  private _clearThumbnailInfo = () => {
+    this.thumbnailSrc = undefined;
+    this._initialWidth = undefined;
+    this._initialHeight = undefined;
+  };
+
+  private _onItemSwitchCb = () => {
+    this._clearThumbnailInfo();
+
+    this.onImageSwitchCb &&
+      this.onImageSwitchCb({
+        width: this._item.origWidth,
+        height: this._item.origHeight,
+      });
+  };
+
   onContentLoad = () => {
+    this._performanceTracer.end({
+      key: VIEWER_PERFORMANCE_KEYS.UI_IMAGE_VIEWER_PAGE_RENDER,
+      infos: this.props.itemId
+    });
     this.enablePreload();
   };
 
@@ -215,6 +241,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
     );
     notificationCenter.off(itemNotificationKey, this._onItemDataChange);
     this._itemListDataSource.dispose();
+    this._preloadController.dispose();
   }
 
   @computed
@@ -238,7 +265,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
     this._onCurrentItemDeletedCb = callback;
   };
 
-  setOnItemSwitchCb = (callback: (itemId: number) => void) => {
+  setOnItemSwitchCb = (callback: () => void) => {
     this._onItemSwitchCb = callback;
   };
 
@@ -276,7 +303,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
       itemId && this.updateCurrentItemIndex(index, itemId);
       itemId &&
         this._onItemSwitchCb &&
-        this._onItemSwitchCb(itemId, index, 'previous');
+        this._onItemSwitchCb();
     }
   };
 
@@ -303,7 +330,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
       itemId && this.updateCurrentItemIndex(index, itemId);
       itemId &&
         this._onItemSwitchCb &&
-        this._onItemSwitchCb(itemId, index, 'next');
+        this._onItemSwitchCb();
     }
   };
 
@@ -326,7 +353,6 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
   private _updateIndexInfo = async () => {
     const itemId = this.currentItemId;
     const info = await this._itemListDataSource.fetchIndexInfo(itemId);
-    console.log('xxx', {itemId, info})
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {
@@ -409,7 +435,6 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
         }
       });
     }
-    console.log('eneee', needRefreshIndex, payload)
     if (needRefreshIndex) {
       this._updateIndexInfo();
     }
@@ -418,13 +443,13 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
   @computed
   get imageWidth() {
     const { viewport: {origWidth} } = this.pages[0];
-    return origWidth || this.props.initialOptions.initialWidth;
+    return origWidth || this._initialWidth;
   }
 
   @computed
   get imageHeight() {
     const { viewport: {origHeight} } = this.pages[0];
-    return origHeight || this.props.initialOptions.initialHeight;
+    return origHeight || this._initialHeight;
   }
 
   updateSenderInfo = async () => {

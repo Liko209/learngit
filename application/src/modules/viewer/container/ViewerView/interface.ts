@@ -37,6 +37,7 @@ interface IViewerView {
   onUpdate: (opts: UpdateParamsType) => void;
   onContentLoad?: () => void;
   onContentError?: () => void;
+  dispose?: () => void;
 }
 
 export { IViewerView, UpdateParamsType, TitleType };

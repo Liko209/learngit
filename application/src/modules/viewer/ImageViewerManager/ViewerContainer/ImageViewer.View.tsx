@@ -25,12 +25,15 @@ import ViewerContext from '../../container/ViewerView/ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
 import { accelerateURL } from '@/common/accelerateURL';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { VIEWER_PERFORMANCE_KEYS } from '@/modules/viewer/performanceKeys';
 
 type ImageViewerProps = WithTranslation & ImageViewerViewProps;
 
 @observer
 class ImageViewerComponent extends Component<ImageViewerProps, any> {
+  private _performanceTracer: PerformanceTracer;
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
   private _animateRef: RefObject<ZoomElementAnimation> = createRef();
@@ -39,53 +42,16 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     super(props);
     props.dataModule.setOnCurrentItemDeletedCb &&
       props.dataModule.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
+    props.dataModule.setOnImageSwitchCb &&
+      props.dataModule.setOnImageSwitchCb(this._onImageSwitch);
     this.state = {
       switched: false,
       imageInited: false,
     };
   }
 
-  _handlerKeydown = (event: KeyboardEvent) => {
-    // 107 Num Key  +
-    // 109 Num Key  -
-    // 173 Min Key  hyphen/underscor Hey
-    // 61 Plus key  +/= key
-    if (
-      event.ctrlKey &&
-      (event.which === 61 ||
-        event.which === 107 ||
-        event.which === 173 ||
-        event.which === 109 ||
-        event.which === 187 ||
-        event.which === 189)
-    ) {
-      event.preventDefault();
-    }
-  };
-
-  _handlerScroll = (event: MouseEvent) => {
-    if (event.ctrlKey) {
-      event.preventDefault();
-    }
-  };
-
   async componentDidMount() {
-    window.addEventListener('keydown', this._handlerKeydown, {
-      passive: false,
-    });
-    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
-      window.addEventListener(v, this._handlerScroll, {
-        passive: false,
-      });
-    });
     await this.props.dataModule.init();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this._handlerKeydown);
-    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
-      window.removeEventListener(v, this._handlerScroll);
-    });
   }
 
   switchPreImage = () => {
@@ -128,6 +94,12 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     this.context();
   };
 
+  private _onImageSwitch = (imgInfo: { width: number; height: number }) => {
+    if (imgInfo.width && imgInfo.height && this._zoomRef.current) {
+      this._zoomRef.current.updateContentSize(imgInfo.width, imgInfo.height);
+    }
+  };
+
   private _onZoomImageContentChange = () => {
     if (!this.state.imageInited) {
       this.setState({
@@ -144,6 +116,18 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   private _canSwitchNext = () => {
     const { hasNext, isLoadingMore } = this.props.dataModule;
     return !isLoadingMore && hasNext;
+  };
+
+  performanceTracerStart = () => {
+    this._performanceTracer = PerformanceTracer.start();
+  };
+
+  performanceTracerEnd = () => {
+    this._performanceTracer &&
+      this._performanceTracer.end({
+        key: VIEWER_PERFORMANCE_KEYS.UI_IMAGE_VIEWER_IMAGE_RENDER,
+        infos: this.props.currentItemId,
+      });
   };
 
   render() {
@@ -201,6 +185,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                       <JuiImageView
                         data-test-automation-id={'previewerCanvas'}
                         key={`image-${currentItemId}`}
+                        performanceTracerStart={this.performanceTracerStart}
+                        performanceTracerEnd={this.performanceTracerEnd}
                         imageRef={this._imageRef}
                         src={accelerateURL(page && page.url)}
                         width={fitWidth || imageWidth}
