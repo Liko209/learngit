@@ -64,16 +64,14 @@ class BaseConfigService extends AbstractService {
     }
   }
 
-  clear() {
+  clear(filter?: (key: string) => boolean) {
     const st = store.namespace(`${this._ns}`);
     /* eslint-disable no-constant-condition */
-    do {
-      const arr = st.keys();
-      if (arr.length === 0) {
-        break;
-      }
-      st.clear();
-    } while (true);
+    st.keys()
+      .filter(key => (filter ? filter(key) : true))
+      .forEach(key => {
+        st.remove(key);
+      });
     // TODO clearAll notification FIJI-3770
   }
 }

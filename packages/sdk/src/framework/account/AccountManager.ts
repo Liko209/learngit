@@ -48,6 +48,11 @@ class AccountManager extends EventEmitter2 {
 
   async syncLogin(authType: string, params?: any) {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
+    console.log(
+      'TCL: AccountManager -> syncLogin -> authType',
+      authType,
+      params,
+    );
     const resp = authenticator.authenticate(params);
     if (resp.success) {
       await this.emitAsync(START_LOGIN);

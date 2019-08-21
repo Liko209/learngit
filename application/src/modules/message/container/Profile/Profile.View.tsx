@@ -26,8 +26,17 @@ const MappingComponent = {
   },
 };
 
+let wantCrash = true;
+(window as any)._wantCrash = (v: boolean) => {
+  wantCrash = v;
+};
+
 const factory = (id: number, type: PROFILE_TYPE, typeId: number) => {
   const Component = MappingComponent[type][typeId];
+  if (wantCrash) {
+    const Comp: any = undefined;
+    return <Comp />;
+  }
   if (!Component) {
     return null;
   }

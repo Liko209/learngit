@@ -38,6 +38,7 @@ import {
 } from 'sdk/module/permission';
 import { jobScheduler } from './framework/utils/jobSchedule';
 import { UserConfigService } from './module/config';
+import { CrashManager } from './module/crash';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -57,7 +58,9 @@ class Sdk {
     public networkManager: NetworkManager,
     public syncService: SyncService,
     public permissionService: PermissionService,
-  ) {}
+  ) {
+    CrashManager.getInstance().monitor();
+  }
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
@@ -209,6 +212,7 @@ class Sdk {
   }
 
   async onLogout() {
+    console.log('TCL: Sdk -> onLogout -> onLogout');
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     mainLogger.tags(LOG_TAG).info('onLogout() delete database');
@@ -218,6 +222,7 @@ class Sdk {
     ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
+    CrashManager.getInstance().dispose();
   }
 
   updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
