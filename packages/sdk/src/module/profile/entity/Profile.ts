@@ -13,7 +13,20 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
+  AUDIO_SOUNDS_INFO,
+  SOUNDS_TYPE,
 } from '../constants';
+
+type CONVERSATION_NOTIFICATIONS_MODEL = {
+  muted?: boolean;
+  desktop_notifications?: boolean;
+  push_notifications?: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+  email_notifications?: EMAIL_NOTIFICATION_OPTIONS;
+};
+type SOUND_NOTIFICATIONS = {
+  gid: number;
+  sound: SOUNDS_TYPE;
+};
 
 type Profile = ExtendedBaseModel & {
   person_id?: number;
@@ -21,7 +34,6 @@ type Profile = ExtendedBaseModel & {
   favorite_post_ids: number[];
   skip_close_conversation_confirmation?: boolean;
   me_tab: boolean;
-  conversation_level_notifications?: object;
 
   // call settings
   [SETTING_KEYS.CALL_OPTION]?: CALLING_OPTIONS;
@@ -50,9 +62,18 @@ type Profile = ExtendedBaseModel & {
 
   // conversation settings
   [SETTING_KEYS.MAX_LEFTRAIL_GROUP]?: string;
+  [SETTING_KEYS.CONVERSATION_NOTIFICATION]?: object;
+  [SETTING_KEYS.CONVERSATION_SOUND]?: SOUND_NOTIFICATIONS[];
   // meetings
   video_service?: string;
   rcv_beta?: boolean;
 };
+type ConversationPreference = {
+  muted: boolean;
+  desktop_notifications: boolean;
+  sound_notifications: AUDIO_SOUNDS_INFO;
+  push_notifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+  email_notifications: EMAIL_NOTIFICATION_OPTIONS;
+};
 
-export { Profile };
+export { Profile, ConversationPreference };

@@ -8,10 +8,18 @@ import { Profile } from '../../entity';
 import { MockEntitySourceController } from './MockEntitySourceController';
 import { buildEntityCacheController } from 'sdk/framework/controller';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from '../../constants';
-import { SettingService } from 'sdk/module/setting';
+import {
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  SoundsList,
+  SoundsListWithDefault,
+  MOBILE_TEAM_NOTIFICATION_OPTIONS,
+  EMAIL_NOTIFICATION_OPTIONS,
+  SOUNDS_TYPE,
+} from '../../constants';
+import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import GroupService from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ProfileService } from '../../service/ProfileService';
 
 jest.mock('../../../../api/glip/profile');
 jest.mock('sdk/framework/controller/interface/IEntitySourceController');
@@ -253,5 +261,141 @@ describe('ProfileDataController', () => {
       const result = await profileDataController.isNotificationMute(groupId);
       expect(result).toEqual(true);
     });
+  });
+
+  describe.only('getByGroupId', () => {
+    const desktopNotifications = true;
+    const soundNotifications = SoundsListWithDefault[2];
+    const mobileNotifications =
+      MOBILE_TEAM_NOTIFICATION_OPTIONS.FIRST_UNREAD_ONLY;
+    const emailNotifications = EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE;
+    const muted = true;
+    const globalEmail = EMAIL_NOTIFICATION_OPTIONS.OFF;
+    const globalMobile = MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF;
+    const globalSound = SoundsListWithDefault[1];
+    const globalDesktop = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+    beforeEach(() => {
+      settingService.getById = jest.fn().mockImplementation(id => {
+        if (id === SettingEntityIds.Notification_NewMessages) {
+          return { value: globalDesktop };
+        }
+        if (id === SettingEntityIds.Audio_TeamMessages) {
+          return { value: globalSound };
+        }
+        if (id === SettingEntityIds.Notification_Teams) {
+          return { value: globalEmail };
+        }
+        if (id === SettingEntityIds.MOBILE_Team) {
+          return { value: globalMobile };
+        }
+        if (id === SettingEntityIds.Audio_DirectMessage) {
+          return { value: globalSound };
+        }
+        if (id === SettingEntityIds.Notification_DirectMessages) {
+          return { value: globalEmail };
+        }
+        if (id === SettingEntityIds.MOBILE_DM) {
+          return { value: globalMobile };
+        }
+      });
+    });
+    it('should return globalValue when conversation is team and conversation preference is undefined', async () => {
+      const groupId = 1;
+      groupService.getById = jest.fn().mockReturnValue({ is_team: true });
+      profileDataController.getProfile = jest.fn().mockReturnValue({
+        conversation_level_notifications: {
+          [groupId]: undefined,
+        },
+      });
+      const result = await profileDataController.getByGroupId(groupId);
+      expect(result).toEqual({
+        muted: false,
+        desktop_notifications: false,
+        email_notifications: globalEmail,
+        sound_notifications: globalSound,
+        push_notifications: globalMobile,
+      });
+    });
+    it('should return globalValue when conversation is direct message and conversation preference is undefined', async () => {
+      const groupId = 1;
+      groupService.getById = jest.fn().mockReturnValue({ is_team: false });
+      profileDataController.getProfile = jest.fn().mockReturnValue({
+        conversation_level_notifications: {
+          [groupId]: undefined,
+        },
+      });
+      const result = await profileDataController.getByGroupId(groupId);
+      expect(result).toEqual({
+        muted: false,
+        desktop_notifications: true,
+        email_notifications: globalEmail,
+        sound_notifications: globalSound,
+        push_notifications: globalMobile,
+      });
+    });
+    it('should return value when conversation preference is not undefined', async () => {
+      const groupId = 1;
+      groupService.getById = jest.fn().mockReturnValue({ is_team: false });
+      profileDataController.getProfile = jest.fn().mockReturnValue({
+        conversation_level_notifications: {
+          [groupId]: {
+            desktop_notifications: desktopNotifications,
+            email_notifications: emailNotifications,
+          },
+        },
+      });
+      const result = await profileDataController.getByGroupId(groupId);
+      expect(result).toEqual({
+        muted: false,
+        desktop_notifications: desktopNotifications,
+        email_notifications: emailNotifications,
+        sound_notifications: globalSound,
+        push_notifications: globalMobile,
+      });
+    });
+    it.each`
+      sound                       | isTeam   | expectRes
+      ${undefined}                | ${true}  | ${globalSound}
+      ${undefined}                | ${false} | ${globalSound}
+      ${SOUNDS_TYPE.Default}      | ${true}  | ${globalSound}
+      ${SOUNDS_TYPE.Default}      | ${false} | ${globalSound}
+      ${SOUNDS_TYPE.Double_Beeps} | ${false} | ${SoundsListWithDefault[1]}
+    `(
+      'should return $expectRes when isTeam is $isTeam and backend is $sound',
+      async ({ sound, isTeam, expectRes }) => {
+        const groupId = 1;
+        groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
+        profileDataController.getProfile = jest.fn().mockReturnValue({
+          conversation_level_notifications: {
+            [groupId]: {
+              sound_notifications: sound,
+            },
+          },
+        });
+        const result = await profileDataController.getByGroupId(groupId);
+        expect(result.sound_notifications).toEqual(expectRes);
+      },
+    );
+    it.each`
+      desktop      | isTeam   | expectRes
+      ${undefined} | ${true}  | ${false}
+      ${undefined} | ${false} | ${true}
+      ${true}      | ${false} | ${true}
+    `(
+      'should return desktop_notification is $expectRes when isTeam is $isTeam and backend is $desktop',
+      async ({ desktop, isTeam, expectRes }) => {
+        const groupId = 1;
+        groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
+        profileDataController.getProfile = jest.fn().mockReturnValue({
+          conversation_level_notifications: {
+            [groupId]: {
+              desktop_notifications: desktop,
+            },
+          },
+        });
+        const result = await profileDataController.getByGroupId(groupId);
+        expect(result.desktop_notifications).toEqual(expectRes);
+      },
+    );
   });
 });

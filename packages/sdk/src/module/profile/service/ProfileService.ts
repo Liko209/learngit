@@ -22,6 +22,7 @@ import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
 import { VIDEO_SERVICE_OPTIONS } from '../constants';
+import { ConversationPreferenceModel } from 'sdk/module/setting/entity';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -168,6 +169,19 @@ class ProfileService extends EntityBaseService<Profile>
     return this.getProfileController()
       .getProfileDataController()
       .isVideoServiceEnabled(option);
+  }
+
+  async getByGroupId(id: number): Promise<ConversationPreferenceModel> {
+    console.log(id);
+    return {} as ConversationPreferenceModel;
+  }
+
+  async updateConversationPreference(
+    id: number,
+    model: Partial<ConversationPreferenceModel>,
+  ): Promise<void> {
+    // todo
+    console.log(id, model);
   }
 
   private get profileSetting() {

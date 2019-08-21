@@ -11,6 +11,7 @@ import { Profile } from '../entity';
 import { NOTIFICATION_OPTIONS, SETTING_KEYS } from '../constants';
 import { SettingOption } from '../types';
 import { ProfileDataController } from './ProfileDataController';
+import { ConversationPreference } from '../entity/Profile';
 
 class SettingsActionController {
   constructor(
@@ -57,6 +58,35 @@ class SettingsActionController {
           await this._requestController.put(newProfile),
       });
     }
+  }
+
+  async updateSettingByGroupId(
+    cid: number,
+    model: Partial<ConversationPreference>,
+  ) {
+    const profile = await this._profileDataController.getProfile();
+    const { sound_notifications, ...notification } = model;
+    const allNotification =
+      (profile && profile.conversation_level_notifications) || {};
+    const allSound =
+      (profile && profile.team_specific_audio_notifications) || [];
+    allNotification[cid] = notification;
+    const data = [
+      { key: SETTING_KEYS.CONVERSATION_NOTIFICATION, value: allNotification },
+      {
+        key: SETTING_KEYS.CONVERSATION_SOUND,
+        value: allSound.map(item => {
+          if (
+            item.gid === cid &&
+            sound_notifications &&
+            sound_notifications.id
+          ) {
+            item.sound = sound_notifications.id;
+          }
+        }),
+      },
+    ];
+    this.updateSettingOptions(data);
   }
 }
 

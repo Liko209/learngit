@@ -129,7 +129,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
         setting_key: SETTING_KEYS.EMAIL_TODAY,
       }),
       [SettingEntityIds.MOBILE_DM]: new ProfileSubscribeEntityHandler<
-        NOTIFICATION_OPTIONS
+        MOBILE_TEAM_NOTIFICATION_OPTIONS
       >(this._profileService, {
         id: SettingEntityIds.MOBILE_DM,
         setting_key: SETTING_KEYS.MOBILE_DM,

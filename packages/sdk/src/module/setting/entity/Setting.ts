@@ -5,11 +5,6 @@
  */
 
 import { BaseSettingEntity } from 'sdk/framework/model/setting';
-import {
-  SOUNDS_TYPE,
-  MOBILE_TEAM_NOTIFICATION_OPTIONS,
-  EMAIL_NOTIFICATION_OPTIONS,
-} from 'sdk/module/profile';
 
 enum ModuleSettingTypes {
   GENERAL,
@@ -35,17 +30,4 @@ type UserSettingEntity<T = any> = BaseSettingEntity & {
   valueSetter?: (value: T) => Promise<void> | void;
 };
 
-type ConversationPreferenceModel = {
-  muteAll: boolean;
-  desktopNotification: boolean;
-  soundNotification: SOUNDS_TYPE;
-  mobileNotification: MOBILE_TEAM_NOTIFICATION_OPTIONS;
-  emailNotification: EMAIL_NOTIFICATION_OPTIONS;
-};
-
-export {
-  UserSettingEntity,
-  ESettingValueType,
-  ModuleSettingTypes,
-  ConversationPreferenceModel,
-};
+export { UserSettingEntity, ESettingValueType, ModuleSettingTypes };
