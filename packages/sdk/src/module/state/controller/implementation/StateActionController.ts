@@ -25,6 +25,25 @@ class StateActionController {
     this._partialModifyController = new PartialModifyController<GroupState>(
       this._entitySourceController,
     );
+
+    // todo fixme  just for test
+    (window as any).generateTeamCursorDirtyData = async (
+      teamId: number,
+      count: number = -2,
+    ) => {
+      const state = await this._entitySourceController.get(teamId);
+      mainLogger
+        .tags('[FIX-TEAM-UMI]')
+        .debug(
+          `generateTeamCursorDirtyData team count: ${count}, state:`,
+          state,
+        );
+      this._entitySourceController.update({
+        ...state,
+        marked_as_unread: true,
+        unread_team_mentions_count: count,
+      });
+    };
   }
 
   async updateReadStatus(

@@ -70,7 +70,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
     const group: GroupModel = getEntity(ENTITY_NAME.GROUP, this.props.id);
     const totalUnreadMentionCount =
       (groupState.unreadMentionsCount || 0) +
-      (groupState.unreadTeamMentionsCount || 0);
+      Math.max(0, groupState.unreadTeamMentionsCount || 0);
     const unreadCount =
       (group.isTeam && this._onlyIncludeTeamMention
         ? totalUnreadMentionCount

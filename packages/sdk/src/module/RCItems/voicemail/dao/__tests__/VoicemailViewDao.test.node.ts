@@ -37,7 +37,7 @@ describe('VoicemailViewDao', () => {
         lastModifiedTime: '123123',
         to: { phoneNumber: '123', location: 'loc' },
       };
-      const result = voicemailViewDao.toVoicemailView(data);
+      const result = voicemailViewDao.toViewItem(data);
       expect(result).toEqual(expectedData);
     });
   });
@@ -63,7 +63,7 @@ describe('VoicemailViewDao', () => {
         },
         __timestamp: 123,
       };
-      const result = voicemailViewDao.toPartialVoicemailView(data);
+      const result = voicemailViewDao.toPartialViewItem(data);
       expect(result).toEqual(expectedData);
     });
   });
@@ -113,6 +113,12 @@ describe('VoicemailViewDao', () => {
         anchorId: 1,
       });
       expect(result).toEqual([2, 3]);
+    });
+  });
+
+  describe('getCollection', () => {
+    it('should return collection of db', () => {
+      expect(voicemailViewDao.getCollection()).toEqual(expect.anything());
     });
   });
 });
