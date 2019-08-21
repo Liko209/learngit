@@ -25,7 +25,7 @@ class EntityPersistentController<
     this._subscribeEntityChange();
   }
 
-  async put(item: T | T[]): Promise<void> {
+  async put(item: T): Promise<void> {
     if (this.dao) {
       await this.dao.put(item);
     }
@@ -71,7 +71,7 @@ class EntityPersistentController<
     }
   }
 
-  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+  async update(item: Partial<T>): Promise<void> {
     if (this.dao) {
       await this.dao.update(item);
     }

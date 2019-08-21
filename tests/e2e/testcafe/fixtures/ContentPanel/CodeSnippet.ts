@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { formalName } from '../../libs/filter';
 import * as _ from 'lodash';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
 import { v4 as uuid } from 'uuid';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 function getCodeString(lineNumber: number) {
   let code = '';
@@ -33,7 +33,9 @@ fixture('ContentPanel/CodeSnippet')
   .afterEach(teardownCase());
 
 
-test(formalName('Display the default mode of code snippet', ['JPT-950', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'], caseIds: ['JPT-950'], maintainers: ['Wayne.Zhou'], keywords: ['CodeSnippetItem']
+})('Display the default mode of code snippet', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -43,37 +45,45 @@ test(formalName('Display the default mode of code snippet', ['JPT-950', 'P1', 'W
     title: uuid()
   }
 
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser]
+  }
+
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let conversation;
   await h(t).withLog('Given I have an extension with one conversation', async () => {
-    conversation = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId],
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I sent one code snippet with {lineNumber1} lines in the conversation`, async (step) => {
+    step.setMetadata('lineNumber1', lineNumber1.toString());
+    await h(t).glip(loginUser).createSimpleCodeSnippet(team.glipId, codeSnippet1.body, codeSnippet1.title)
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
     });
-  });
-
-  await h(t).withLog(`And I sent one code snippet with ${lineNumber1} lines in the conversation`, async () => {
-    await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet1.body, codeSnippet1.title)
-  });
-
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
+
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversation).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const snippet1 = conversationPage.nthPostItem(-1);
-  await h(t).withLog(`Then I should see the first code snippet with ${lineNumber1} lines`, async () => {
+  await h(t).withLog(`Then I should see the first code snippet with {lineNumber1} lines`, async (step) => {
+    step.setMetadata('lineNumber1', lineNumber1.toString());
     await t.expect(snippet1.body.find('span').withText(codeSnippet1.title).exists).ok();
     await t.expect(await snippetHeightCorrect(snippet1, lineNumber1)).ok();
   });
@@ -88,7 +98,9 @@ test(formalName('Display the default mode of code snippet', ['JPT-950', 'P1', 'W
   })
 })
 
-test(formalName('The preview of code snippet if the code is longer than 15 lines (<200 lines)', ['JPT-954', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-954'], priority: ['P1'], maintainers: ['Wayne.Zhou'], keywords: ['CodeSnippetItem']
+})('The preview of code snippet if the code is longer than 15 lines (<200 lines)', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -101,21 +113,27 @@ test(formalName('The preview of code snippet if the code is longer than 15 lines
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let conversation;
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser]
+  }
+
   await h(t).withLog('Given I have an extension with one conversation', async () => {
-    conversation = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId],
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I sent a code snippet with ${snippetLineNumber} lines in the conversation`, async (step) => {
+    step.setMetadata('snippetLineNumber', snippetLineNumber.toString());
+    await h(t).glip(loginUser).createSimpleCodeSnippet(team.glipId, codeSnippet.body, codeSnippet.title)
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
     });
-  });
-
-  await h(t).withLog(`And I sent a code snippet with ${snippetLineNumber} lines in the conversation`, async () => {
-    await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet.body, codeSnippet.title)
-  });
-
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -123,13 +141,14 @@ test(formalName('The preview of code snippet if the code is longer than 15 lines
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversation).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const snippet = conversationPage.nthPostItem(-1);
 
-  await h(t).withLog(`Then I should see expand button with total line of ${snippetLineNumber}`, async () => {
+  await h(t).withLog(`Then I should see expand button with total line of {snippetLineNumber}`, async (step) => {
+    step.setMetadata('snippetLineNumber', snippetLineNumber.toString());
     await t.expect(snippet.body.find('span').withText(`Expand (${snippetLineNumber} lines)`)).ok();
   })
 
@@ -155,7 +174,9 @@ test(formalName('The preview of code snippet if the code is longer than 15 lines
   })
 })
 
-test(formalName('The preview of code snippet if the code is longer than 200 lines ', ['JPT-955', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-955'], priority: ['P1'], maintainers: ['Wayne.Zhou'], keywords: ['CodeSnippetItem']
+})('The preview of code snippet if the code is longer than 200 lines ', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -168,29 +189,36 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let conversation;
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser]
+  }
+
   await h(t).withLog('Given I have an extension with one conversation', async () => {
-    conversation = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId],
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I sent a code snippet with {lineNumber} lines in the conversation`, async (step) => {
+    step.setMetadata('lineNumber', lineNumber.toString());
+    await h(t).glip(loginUser).createSimpleCodeSnippet(team.glipId, codeSnippet.body, codeSnippet.title)
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
     });
-  });
-
-  await h(t).withLog(`And I sent a code snippet with ${lineNumber} lines in the conversation`, async () => {
-    await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet.body, codeSnippet.title)
-  });
-
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
+
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversation).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -206,7 +234,8 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
     await t.expect(snippet.body.find('span').withText('Collapse').exists).ok()
   })
 
-  await h(t).withLog(`And I should see a "download to see the rest ${lineNumber} lines" button`, async () => {
+  await h(t).withLog(`And I should see a "download to see the rest {lineNumber} lines" button`, async (step) => {
+    step.setMetadata('lineNumber', lineNumber.toString());
     await t.expect(snippet.body.find('span').withText(`Download to see the rest ${lineNumber - 200} lines`).exists).ok()
   })
 
@@ -221,21 +250,24 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
   })
 })
 
-test(formalName('This change of code snippet should be synced to backend and all clients', ['JPT-958', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-958'], priority: ['P1'], maintainers: ['Wayne.Zhou'], keywords: ['CodeSnippetItem']
+})('This change of code snippet should be synced to backend and all clients', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let conversation;
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser]
+  }
+
   await h(t).withLog('Given I have an extension with one conversation', async () => {
-    conversation = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   const codeSnippet = {
@@ -245,19 +277,24 @@ test(formalName('This change of code snippet should be synced to backend and all
 
   let sentSnippetId;
   await h(t).withLog('And I sent a code snippet with 10 lines in the conversation', async () => {
-    const sentSnippet = await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet.body, codeSnippet.title)
+    const sentSnippet = await h(t).glip(loginUser).createSimpleCodeSnippet(team.glipId, codeSnippet.body, codeSnippet.title)
     sentSnippetId = sentSnippet.data._id;
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
+
   await h(t).withLog('And enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversation).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -277,11 +314,14 @@ test(formalName('This change of code snippet should be synced to backend and all
   })
 })
 
-test(formalName('The limitation of code lines display for code snippet', ['JPT-953', 'P2', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-953'], priority: ['P1'], maintainers: ['Wayne.Zhou'], keywords: ['CodeSnippetItem']
+})('The limitation of code lines display for code snippet', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const lineNumber1 = 14;
+
   const codeSnippet1 = {
     body: getCodeString(lineNumber1),
     title: uuid()
@@ -300,36 +340,46 @@ test(formalName('The limitation of code lines display for code snippet', ['JPT-9
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let conversation;
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser]
+  }
+
   await h(t).withLog('Given I have an extension with one conversation', async () => {
-    conversation = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId],
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I sent two code snippet with {lineNumber1}, {lineNumber2}, {lineNumber3} lines in the conversation`, async (step) => {
+    step.initMetadata({
+      lineNumber1: lineNumber1.toString(),
+      lineNumber2: lineNumber2.toString(),
+      lineNumber3: lineNumber3.toString(),
+    })
+    await h(t).glip(loginUser).createSimpleCodeSnippet(team.glipId, codeSnippet1.body, codeSnippet1.title)
+    await h(t).glip(loginUser).createSimpleCodeSnippet(team.glipId, codeSnippet2.body, codeSnippet2.title)
+    await h(t).glip(loginUser).createSimpleCodeSnippet(team.glipId, codeSnippet3.body, codeSnippet3.title)
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
     });
-  });
-
-  await h(t).withLog(`And I sent two code snippet with ${lineNumber1},${lineNumber2},${lineNumber3} lines in the conversation`, async () => {
-    await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet1.body, codeSnippet1.title)
-    await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet2.body, codeSnippet2.title)
-    await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet3.body, codeSnippet3.title)
-  });
-
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversation).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog(`Then I should see the first code snippet shown with ${lineNumber1} lines`, async () => {
+  await h(t).withLog(`Then I should see the first code snippet shown with {lineNumber1} lines`, async (step) => {
+    step.setMetadata('lineNumber1', lineNumber1.toString());
     const snippet1 = conversationPage.nthPostItem(-3);
     await t.expect(snippet1.body.find('span').withText(codeSnippet1.title).exists).ok();
     await t.expect(await snippetHeightCorrect(snippet1, lineNumber1)).ok();
