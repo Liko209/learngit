@@ -40,7 +40,7 @@ class ProfileDialogPersonTitleViewComponent extends Component<
               edit
             </JuiIconButton>
           )}
-          <Favorite id={id} size="medium" />
+          <Favorite id={id} size="medium" dataTrackingProps={{ source: 'profileDialog', conversationType: '1:1 conversation' }} />
           <JuiIconButton
             onClick={this.onClick}
             tooltipTitle={t('common.dialog.close')}

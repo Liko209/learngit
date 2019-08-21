@@ -120,6 +120,7 @@ class InstantSearchViewComponent extends Component<Props> {
           down: onKeyDown,
           enter: onEnter,
         }}
+        global
       >
         <JuiInstantSearch data-test-automation-id="search-results">
           {this.searchResultList}

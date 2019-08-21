@@ -50,7 +50,7 @@ class ProfileMiniCardPersonHeaderView extends Component<
           </JuiProfileMiniCardPersonTitle>
         </JuiProfileMiniCardHeaderMiddle>
         <JuiProfileMiniCardHeaderRight>
-          <Favorite id={id} size="small" />
+          <Favorite id={id} size="small" dataTrackingProps={{ source: 'miniProfile', conversationType: '1:1 conversation' }} />
         </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );

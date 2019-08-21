@@ -153,6 +153,7 @@ class ItemListViewComponent extends Component<Props> {
           down: this.onKeyDown,
           enter: this.onEnter,
         }}
+        global
       >
         <DataList
           ref={this._dataList}
