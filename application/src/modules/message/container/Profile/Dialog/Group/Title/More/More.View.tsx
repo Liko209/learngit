@@ -14,6 +14,7 @@ import { MoreViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import copy from 'copy-to-clipboard';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 @observer
 class More extends React.Component<WithTranslation & MoreViewProps> {
@@ -34,11 +35,13 @@ class More extends React.Component<WithTranslation & MoreViewProps> {
   onClickCopyUrl = () => {
     const { url } = this.props;
     copy(url);
+    analyticsCollector.copyTeamURL();
   };
 
   onClickCopyEmail = async () => {
     const { email } = this.props;
     copy(email);
+    analyticsCollector.copyTeamEmail();
   };
 
   render() {
