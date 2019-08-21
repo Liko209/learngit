@@ -34,7 +34,6 @@ test.meta(<ITestMeta>{
   const fileNames = ['1.png', '1.txt'];
   const postText = uuid();
   const url = 'http://google.com';
-  const sitTitle = `Google`
   const postText1 = uuid();
 
   let team = <IGroup>{
@@ -86,14 +85,21 @@ test.meta(<ITestMeta>{
   });
 
   let toBeCheckedPostId;
-  await h(t).withLog('When I send a post with a image and a file', async () => {
+  await h(t).withLog('When I send a post with a image and a link', async () => {
     await conversationPage.uploadFilesToMessageAttachment(filesPath);
     await conversationPage.sendMessage(`${postText1} ${url}`);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
     toBeCheckedPostId = await conversationPage.nthPostItem(-1).postId;
   });
 
-  await h(t).withLog('And I pin the text post', async () => {
+  let siteTitle;
+  await h(t).withLog(`Then I can find the link title {siteTitle}`, async (step) => {
+    const linkIds = await h(t).glip(loginUser).getLinksIdsFromPostId(toBeCheckedPostId);
+    siteTitle = await h(t).glip(loginUser).getLink(linkIds[0]).then(res => res.data.title || url);
+    step.setMetadata('siteTitle', siteTitle);
+  });
+
+  await h(t).withLog('When I pin the text post', async () => {
     postIds.unshift(Number(toBeCheckedPostId));
     await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": postIds
@@ -109,7 +115,7 @@ test.meta(<ITestMeta>{
     await pinnedTab.nthItem(0).postTextShouldBe(reg);
     await pinnedTab.nthItem(0).shouldHasFileOrImage(fileNames[0]);
     await pinnedTab.nthItem(0).shouldHasFileOrImage(fileNames[1]);
-    await pinnedTab.nthItem(0).shouldHasAttachmentsText(sitTitle);
+    await pinnedTab.nthItem(0).shouldHasAttachmentsText(siteTitle);
   });
 });
 

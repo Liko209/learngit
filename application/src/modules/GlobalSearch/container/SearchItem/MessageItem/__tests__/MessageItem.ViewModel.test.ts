@@ -17,6 +17,7 @@ import { SearchService } from 'sdk/module/search';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { getGlobalValue, getEntity } from '@/store/utils';
 
+jest.mock('sdk/module/config');
 jest.mock('@/utils/i18nT');
 jest.mock('@/store/utils');
 

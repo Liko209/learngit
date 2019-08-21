@@ -8,7 +8,6 @@ import { AccountService } from 'sdk/module/account';
 import { computed, observable, action } from 'mobx';
 import * as H from 'history';
 import { parse } from 'qs';
-import { service } from 'sdk';
 import { mainLogger } from 'foundation/log';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -16,8 +15,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/history';
 import { ProfileService } from 'sdk/module/profile';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-
-const { SERVICE } = service;
+import { SERVICE } from 'sdk/service';
 
 class TokenRouteViewModel extends StoreViewModel {
   private _LoggedInHandled: boolean = false;

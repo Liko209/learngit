@@ -337,7 +337,6 @@ test.meta(<ITestMeta>{
   }
 
   const url1 = 'https://www.google.com';
-  // const url2 = 'https://www.baidu.com';
 
   await h(t).withLog(`Given I have 1:1 chat`, async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
@@ -369,48 +368,45 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then There should be text 'shared a link' `, async () => {
     await t.expect(lastPostItem.itemCardActivity.textContent).eql('shared a link');
     const postId = await lastPostItem.postId;
-    await h(t).glip(loginUser).init();
     const linkIds = await h(t).glip(loginUser).getLinksIdsFromPostId(postId);
     linkData = await h(t).glip(loginUser).getLink(linkIds[0]).then(res => res.data);
   });
 
   const title = linkData.title || linkData.url;
-  // todo: automation id for link card
 
+  const linkCard = lastPostItem.nthLinkCard(0);
   await h(t).withLog(`And display link card: title "{title}" with link "{url1}"`, async (step) => {
     step.initMetadata({ title, url1 });
-    await t.expect(lastPostItem.self.find('a').nth(1).textContent).eql(title);
-    await t.expect(lastPostItem.self.find('a').nth(1).getAttribute('href')).eql(url1);
+    await t.expect(linkCard.title.textContent).eql(title);
+    await t.expect(linkCard.href).eql(url1);
   });
 
   if (linkData.summary) {
     await h(t).withLog(`And display link card: summary of url`, async () => {
-      await t.expect(lastPostItem.self.find('p').withText(linkData.summary).exists).ok();
+      await t.expect(linkCard.summary.textContent).eql(linkData.summary);
     });
   }
 
   // todo logo Icon
 
-
   await h(t).withLog(`When I click remove button of the link card`, async () => {
-    await t.click(lastPostItem.getSelectorByIcon('close', lastPostItem.self));
+    await linkCard.clickCloseButton();
   });
 
   await h(t).withLog(`Then Can remove a link card from the message card.`, async () => {
-    await t.expect(lastPostItem.self.find('a').count).eql(1);
+    await t.expect(lastPostItem.linkCardDiv.exists).notOk();
   });
 });
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-2596'],
-  maintainers: ['alvin.huang'],
-  keywords: ['itemCard','cardPreview'],
-})('Check the permission of close the link/video card', async (t: TestController) => {
+  caseIds: ['JPT-2827'],
+  maintainers: ['andy.hu'],
+  keywords: ['link preview'],
+})('Check the show link previews settings is implemented immediately', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
-
   await h(t).glip(loginUser).init()
   await h(t).scenarioHelper.resetProfile(loginUser);
 
@@ -418,6 +414,83 @@ test.meta(<ITestMeta>{
     type: "DirectMessage",
     owner: loginUser,
     members: [loginUser, otherUser]
+  }
+
+  const url1 = 'https://www.google.com';
+
+  await h(t).withLog(`Given I have 1:1 chat`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter the chat conversation`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  });
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const lastPostItem = conversationPage.lastPostItem;
+
+  await h(t).withLog(`When I send one link {url1}`, async (step) => {
+    step.setMetadata('url1', url1);
+    await conversationPage.sendMessage(url1);
+    await lastPostItem.waitForPostToSend();
+  });
+
+  await h(t).withLog(`When I turn off link preview`, async (step) => {
+    await h(t).glip(loginUser).updateProfile({
+      show_link_previews:false
+    });
+  });
+
+  await h(t).withLog(`And there is no link preview"`, async (step) => {
+    await t.expect (lastPostItem.linkPreviewCard.exists).notOk()
+  });
+
+  await h(t).withLog(`When I send one link {url1}`, async (step) => {
+    step.setMetadata('url1', url1);
+    await conversationPage.sendMessage(url1);
+    await lastPostItem.waitForPostToSend();
+  });
+
+  await h(t).withLog(`And there is no link preview"`, async (step) => {
+    await t.expect (lastPostItem.linkPreviewCard.exists).notOk()
+  });
+
+  await h(t).withLog(`When I turn on link preview`, async (step) => {
+    await h(t).glip(loginUser).updateProfile({
+      show_link_previews:true
+    });
+  });
+  await h(t).withLog(`And display link card: title "{title}" with link "{url1}"`, async (step) => {
+    await t.expect (lastPostItem.linkPreviewCard.exists).ok()
+  });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2596'],
+  maintainers: ['alvin.huang'],
+  keywords: ['itemCard', 'cardPreview'],
+})('Check the permission of close the link/video card', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+
+  await h(t).glip(loginUser).init()
+  await h(t).scenarioHelper.resetProfile(loginUser);
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, anotherUser]
   }
 
   const NORMAL_LINK = 'https://www.baidu.com';
@@ -437,14 +510,14 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  const chatEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
   await h(t).withLog(`And I enter the chat conversation`, async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+    await chatEntry.enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const lastPostItem = conversationPage.lastPostItem;
-  const linkPreviewCloseBtn = lastPostItem.getSelectorByAutomationId('linkPreviewCloseBtn');
-  const linkItemsWrapper = lastPostItem.getSelectorByAutomationId('linkItemsWrapper')
+
 
   await h(t).withLog(`When I send one normal link {NORMAL_LINK}`, async (step) => {
     step.setMetadata('NORMAL_LINK', NORMAL_LINK);
@@ -452,13 +525,22 @@ test.meta(<ITestMeta>{
     await lastPostItem.waitForPostToSend();
   });
 
+  const linkCard = lastPostItem.nthLinkCard(0);
   await h(t).withLog(`When I click close button of the link card`, async () => {
-    await t.click(linkPreviewCloseBtn);
+    await linkCard.clickCloseButton();
   });
 
-  await h(t).withLog(`Then even reload page I can remove a link card from the message card.`, async () => {
+  await h(t).withLog(`Then the link card should be removed`, async () => {
+    await t.expect(lastPostItem.linkCardDiv.exists).notOk();
+  });
+
+  await h(t).withLog(`When even I reload page`, async () => {
     await app.reload();
-    await t.expect(linkItemsWrapper.count).eql(0);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`Then the link card still does not exist`, async () => {
+    await t.expect(lastPostItem.linkCardDiv.exists).notOk();
   });
 
   await h(t).withLog(`When I send one video link {VIDEO_LINK}`, async (step) => {
@@ -466,29 +548,45 @@ test.meta(<ITestMeta>{
     await conversationPage.sendMessage(VIDEO_LINK);
     await lastPostItem.waitForPostToSend();
   });
+
   await h(t).withLog(`When I click close button of the link card`, async () => {
-    await t.click(linkPreviewCloseBtn);
+    await linkCard.clickCloseButton();
   });
 
-  await h(t).withLog(`Then even reload page I can remove a link card from the message card.`, async () => {
+  await h(t).withLog(`Then the link card still does not exist`, async () => {
+    await t.expect(lastPostItem.linkCardDiv.exists).notOk();
+  });
+
+  await h(t).withLog(`When even I reload page`, async () => {
     await app.reload();
-    await t.expect(linkItemsWrapper.count).eql(0);
+    await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I send two link`, async (step) => {
-    step.setMetadata('NORMAL_LINK', NORMAL_LINK);
-    step.setMetadata('VIDEO_LINK', VIDEO_LINK);
+  await h(t).withLog(`Then the link card still does not exist`, async () => {
+    await t.expect(lastPostItem.linkCardDiv.exists).notOk();
+  });
+
+  await h(t).withLog(`When I send two links {NORMAL_LINK} and {VIDEO_LINK}`, async (step) => {
+    step.initMetadata({ NORMAL_LINK, VIDEO_LINK });
     await conversationPage.sendMessage(NORMAL_LINK);
     await conversationPage.sendMessage(VIDEO_LINK);
     await lastPostItem.waitForPostToSend();
   });
-  await h(t).withLog(`Given I logout and login Jupiter with another user ${otherUser.company.number}#${otherUser.extension}`, async () => {
-    await app.homePage.logoutThenLoginWithUser(SITE_URL, otherUser);
+  await h(t).withLog(`And I login out and login Jupiter with anotherUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: anotherUser.company.number,
+      extension: anotherUser.extension,
+    });
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, anotherUser);
   });
+
   await h(t).withLog(`And I enter the chat conversation`, async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+    await chatEntry.enter();
+    await t.expect(conversationPage.posts.count).gte(2);
   });
+
   await h(t).withLog(`Then I can not remove a link card from the message card.`, async () => {
-    await t.expect(linkPreviewCloseBtn.count).eql(0);
+    await t.expect(conversationPage.lastPostItem.nthLinkCard(0).closeButton.exists).notOk();
+    await t.expect(conversationPage.nthPostItem(-2).nthLinkCard(0).closeButton.exists).notOk();
   });
 });

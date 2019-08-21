@@ -20,6 +20,11 @@ class ProfileMiniCardGroupFooterViewModel extends ProfileMiniCardGroupViewModel
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return this.group.members.includes(currentUserId);
   }
+
+  @computed
+  get analysisType() {
+    return this.group.analysisType;
+  }
 }
 
 export { ProfileMiniCardGroupFooterViewModel };
