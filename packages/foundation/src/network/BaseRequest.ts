@@ -25,7 +25,7 @@ abstract class BaseRequest implements IRequest {
   priority: REQUEST_PRIORITY;
   via: NETWORK_VIA;
   retryCount: number;
-  needNetwork: boolean;
+  ignoreNetwork: boolean;
   host: string;
   timeout: number;
   requestConfig: object;
@@ -50,7 +50,7 @@ abstract class BaseRequest implements IRequest {
     this.requestConfig = builder.requestConfig;
     this.timeout = builder.timeout;
     this.retryCount = builder.retryCount;
-    this.needNetwork = builder.needNetwork;
+    this.ignoreNetwork = builder.ignoreNetwork;
     this.priority = builder.priority;
     this.HAPriority = builder.HAPriority;
     this.via = builder.via;

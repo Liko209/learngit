@@ -109,7 +109,7 @@ interface IRequest<T = any> extends IBaseRequest<T> {
   HAPriority: HA_PRIORITY;
   via: NETWORK_VIA;
   retryCount: number;
-  needNetwork: boolean;
+  ignoreNetwork: boolean;
   timeout: number;
   requestConfig: object;
   readonly authFree: boolean;

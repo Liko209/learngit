@@ -31,7 +31,7 @@ export type IBaseQuery = {
   params?: object;
   authFree?: boolean;
   retryCount?: number;
-  needNetwork?: boolean;
+  ignoreNetwork?: boolean;
   requestConfig?: object;
   priority?: REQUEST_PRIORITY;
   HAPriority?: HA_PRIORITY;
@@ -195,7 +195,7 @@ export default class NetworkClient {
       authFree,
       requestConfig,
       retryCount,
-      needNetwork,
+      ignoreNetwork,
       priority = REQUEST_PRIORITY.NORMAL,
       HAPriority = HA_PRIORITY.BASIC,
       timeout,
@@ -219,7 +219,7 @@ export default class NetworkClient {
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
       .setRetryCount(retryCount || 0)
-      .setNeedNetwork(needNetwork === undefined ? true : needNetwork)
+      .setIgnoreNetwork(!!ignoreNetwork)
       .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)

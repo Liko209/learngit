@@ -56,9 +56,9 @@ describe('NetworkRequestBuilder', () => {
     expect(request).toBeInstanceOf(SocketRequest);
   });
 
-  it('should set needNetwork correctly', () => {
-    builder.setNeedNetwork(false);
-    expect(builder.needNetwork).toBeFalsy();
+  it('should set ignoreNetwork correctly', () => {
+    builder.setIgnoreNetwork(false);
+    expect(builder.ignoreNetwork).toBeFalsy();
   });
 
   describe('options()', () => {
@@ -69,7 +69,7 @@ describe('NetworkRequestBuilder', () => {
       data: {},
       headers: {},
       authFree: true,
-      needNetwork: false,
+      ignoreNetwork: true,
     };
     builder.options(request);
     expect(builder.host).toEqual(request.host);
@@ -78,6 +78,6 @@ describe('NetworkRequestBuilder', () => {
     expect(builder.data).toEqual(request.data);
     expect(builder.headers).toEqual(request.headers);
     expect(builder.authFree).toEqual(request.authFree);
-    expect(builder.needNetwork).toEqual(request.needNetwork);
+    expect(builder.ignoreNetwork).toEqual(request.ignoreNetwork);
   });
 });

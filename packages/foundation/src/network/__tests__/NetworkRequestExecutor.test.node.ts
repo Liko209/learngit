@@ -102,9 +102,9 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor.retryStrategy.cancel();
     });
 
-    it('should retry when receive network error and needNetwork is false', () => {
+    it('should retry when receive network error and ignoreNetwork is true', () => {
       const networkExecutor: NetworkRequestExecutor = setupExecutor();
-      networkExecutor.request.needNetwork = false;
+      networkExecutor.request.ignoreNetwork = true;
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       networkExecutor.retryCount = 3;
       networkExecutor.retryCounter = 0;
