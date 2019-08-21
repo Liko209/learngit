@@ -26,6 +26,8 @@ import {
   RingsList,
   RINGS_TYPE,
   SOUNDS_TYPE,
+  MOBILE_TEAM_NOTIFICATION_LIST,
+  MOBILE_TEAM_NOTIFICATION_OPTIONS,
 } from '../constants';
 import { AudioMessageSoundsSettingHandler } from './itemHandler/AudioMessageSoundsSettingHandler';
 
@@ -46,6 +48,12 @@ type HandlerMap = {
   >;
   [SettingEntityIds.Notification_DailyDigest]: ProfileSubscribeEntityHandler<
     NOTIFICATION_OPTIONS
+  >;
+  [SettingEntityIds.MOBILE_DM]: ProfileSubscribeEntityHandler<
+    NOTIFICATION_OPTIONS
+  >;
+  [SettingEntityIds.MOBILE_Team]: ProfileSubscribeEntityHandler<
+    MOBILE_TEAM_NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.Audio_TeamMessages]: AudioTeamMessagesSettingHandler;
   [SettingEntityIds.Audio_DirectMessage]: AudioMessageSoundsSettingHandler;
@@ -119,6 +127,19 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
       >(this._profileService, {
         id: SettingEntityIds.Notification_DailyDigest,
         setting_key: SETTING_KEYS.EMAIL_TODAY,
+      }),
+      [SettingEntityIds.MOBILE_DM]: new ProfileSubscribeEntityHandler<
+        NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.MOBILE_DM,
+        setting_key: SETTING_KEYS.MOBILE_DM,
+      }),
+      [SettingEntityIds.MOBILE_Team]: new ProfileSubscribeEntityHandler<
+        MOBILE_TEAM_NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.MOBILE_Team,
+        setting_key: SETTING_KEYS.MOBILE_TEAM,
+        source: MOBILE_TEAM_NOTIFICATION_LIST,
       }),
       [SettingEntityIds.Audio_TeamMessages]: new AudioTeamMessagesSettingHandler(
         this._profileService,
