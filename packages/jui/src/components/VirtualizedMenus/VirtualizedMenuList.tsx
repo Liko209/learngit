@@ -12,7 +12,8 @@ import {
   JuiVirtualizedListHandles,
 } from '../VirtualizedList';
 import { withAutoSizer } from '../AutoSizer';
-import styled from 'styled-components';
+import styled from '../../foundation/styled-components';
+import { height } from '../../foundation/utils/styles';
 
 const DEFAULT_MENU_ITEM_HEIGHT = 32;
 const List = withAutoSizer(JuiVirtualizedList);
@@ -25,6 +26,10 @@ type JuiVirtualizedMenuListProps = {
   children: JSX.Element[];
   menuItemHeight?: number;
 };
+
+const PaddingComponent = styled.div`
+  height: ${height(2)};
+`
 
 const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
   const {
@@ -100,10 +105,6 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
       },
     });
   });
-
-  const PaddingComponent = styled.div`
-    height: 8px;
-  `
 
   const renderPadding = () => {
     return <PaddingComponent />;
