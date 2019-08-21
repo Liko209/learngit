@@ -11,6 +11,7 @@ import {
   typography,
   grey,
   width,
+  height,
 } from '../../foundation/utils/styles';
 
 type Props = {
@@ -67,6 +68,11 @@ const StyledTime = styled.div`
   }
 `;
 
+const StyledSelectedItemIcon = styled.div`
+  height: ${height(5)};
+  text-align: center;
+`;
+
 const JuiRecentCalls = React.forwardRef((props: Props, ref: RefObject<any>) => {
   const { children } = props;
   return <StyledRecentCalls ref={ref}>{children}</StyledRecentCalls>;
@@ -79,4 +85,5 @@ export {
   StyledContactWrapper,
   StyledCallLogStatusWrapper,
   StyledTime,
+  StyledSelectedItemIcon,
 };

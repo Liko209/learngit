@@ -28,7 +28,13 @@ import {
   SvgSymbol,
 } from '../../../foundation/Iconography';
 
-type IconButtonSize = 'small' | 'medium' | 'large' | 'midLarge' | 'moreLarge';
+type IconButtonSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'midLarge'
+  | 'moreLarge'
+  | 'smallMedium';
 
 // TODO: remove iconname prop
 type ButtonProps = {
@@ -58,14 +64,15 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   children: React.ReactNode;
 };
 
-type Size = 'small' | 'medium' | 'large' | 'moreLarge';
-type ButtonSize = Size | 'midLarge';
+type Size = 'small' | 'medium' | 'large' | 'moreLarge' | 'smallMedium';
+type ButtonSize = Size | 'midLarge' | 'smallMedium';
 
 const buttonSizes: { [k in ButtonSize]: number } = {
   moreLarge: 16,
   midLarge: 14,
   large: 15,
   medium: 8,
+  smallMedium: 7,
   small: 5,
 };
 
@@ -73,6 +80,7 @@ const buttonShadows: { [k in Size]: number } = {
   moreLarge: 16,
   large: 16,
   medium: 1,
+  smallMedium: 1,
   small: 1,
 };
 
@@ -81,6 +89,7 @@ const iconSizesMap: { [k in Size]: IconSize } = {
   moreLarge: 'moreLarge',
   medium: 'small',
   small: 'extraSmall',
+  smallMedium: 'small',
 };
 
 const touchRippleClasses = {
