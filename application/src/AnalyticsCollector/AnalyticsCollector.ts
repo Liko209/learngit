@@ -217,6 +217,13 @@ class AnalyticsCollector {
     });
   }
 
+  // for global hot keys
+  shortcuts(shortcut: string) {
+    dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+      shortcut,
+    });
+  }
+
   profileDialog(category: string, source: string) {
     dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
       category,
