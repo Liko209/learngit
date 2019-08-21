@@ -3,7 +3,7 @@
  * @Date: 2019-03-04 16:12:23
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { ElectronService } from '@/modules/electron';
 import { IClientService, InvokeAppOpts } from '../interface';
 

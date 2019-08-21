@@ -5,7 +5,7 @@
  */
 
 import { observable, action, comparer } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import storeManager from '@/store/base/StoreManager';
 import { SearchService } from 'sdk/module/search';
 import { GroupService } from 'sdk/module/group';

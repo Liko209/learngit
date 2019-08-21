@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { BaseDao } from '../../../framework/dao';
 import { PostViewDao } from './PostViewDao';
 import { Post, PostView, UnreadPostQuery } from '../entity';

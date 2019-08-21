@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { CommonGlobalConfig } from '../../common/config';
+import { CommonGlobalConfig } from 'sdk/module/common/config';
 import { CONFIG_KEYS } from './configKeys';
 
 class SyncGlobalConfig extends CommonGlobalConfig {

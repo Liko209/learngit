@@ -1,5 +1,4 @@
 // / <reference path="../../../../__tests__/types.d.ts" />
-// import { NetworkManager, OAuthTokenManager } from 'foundation';
 import _ from 'lodash';
 
 import { groupFactory } from '../../../../__tests__/factories';

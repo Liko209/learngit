@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractHandleType, NETWORK_HANDLE_TYPE } from 'foundation';
+import { AbstractHandleType, NETWORK_HANDLE_TYPE } from 'foundation/network';
 
 const HandleByCustom = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.CUSTOM;

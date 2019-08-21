@@ -8,22 +8,26 @@ import {
   DBManager,
   DexieDB,
   IDatabase,
-  mainLogger,
-} from 'foundation';
+  LokiDB,
+  DatabaseType,
+} from 'foundation/db';
+import { mainLogger } from 'foundation/log';
 import DaoManager from '../DaoManager';
-import { BaseDao, BaseKVDao } from '../../framework/dao';
-import Dexie from 'dexie';
-import { IdModel } from '../../framework/model';
+import { BaseDao, BaseKVDao } from 'sdk/framework/dao';
+import Loki from 'lokijs';
+import { IdModel } from 'sdk/framework/model';
 import { DaoGlobalConfig } from '../config';
-import { AccountGlobalConfig } from '../../module/account/config';
-import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
+import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import Dexie from 'dexie';
 
-jest.mock('../../module/env/index');
+jest.mock('sdk/module/env/index');
 
 // Using manual mock to improve mock priority.
-jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
-jest.mock('../../framework/dao');
+// jest.mock('foundation/F', () => jest.genMockFromModule<any>('foundation'));
+jest.mock('foundation/db');
+jest.mock('sdk/framework/dao');
 jest.mock('../schema', () => ({
   name: 'DB',
   version: 1,
@@ -115,7 +119,25 @@ describe('DaoManager', () => {
         expect(clearFunc).toHaveBeenCalled();
       });
 
-      it('should set callback for when db is open', async () => {
+      it('should not call db.on when db type is lokiDB', async () => {
+        const clearFunc = jest.fn();
+        const db = new LokiDB({
+          name: 'db',
+          version: 1,
+          schema: {},
+        });
+        db.db = new Loki('');
+        jest.spyOn(db.db, 'on');
+        DBManager.mock.instances[0].getDatabaseType = jest
+          .fn()
+          .mockReturnValue(DatabaseType.LokiDB);
+        DBManager.mock.instances[0].getDatabase.mockReturnValue(db);
+        await daoManager.initDatabase(clearFunc);
+        expect(db.db.on).not.toHaveBeenCalled();
+        expect(clearFunc).toHaveBeenCalled();
+      });
+
+      it('should set callback and call db.on when db dexiDB', async () => {
         const clearFunc = jest.fn();
         const db = new DexieDB({
           name: 'db',

@@ -581,6 +581,10 @@ export class ContactSearchList extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0)).exists;
   }
 
+  async clickDirectDialIcon() {
+    await this.t.click(this.directDialIcon);
+  }
+
   get hasDirectDial() {
     return !!(this.searchResults[0] && this.searchResults.nth(0).find('div:nth-child(2)>button').exists);
   }

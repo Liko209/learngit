@@ -12,7 +12,7 @@ import {
   IReactionDisposer,
   action,
 } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -29,7 +29,7 @@ import {
 import { SearchService } from 'sdk/module/search';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { debounce } from 'lodash';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 const INITIAL_PAGE_SIZE = 10;
 const ONE_FRAME = 1000 / 60;
@@ -133,7 +133,7 @@ export class ContactSearchListViewModel
 
   @action
   onEnter = () => {
-    if (!this.dialerInputFocused) {
+    if (!this.dialerInputFocused || this.isSearching) {
       return;
     }
     const res = this.searchResult[this.focusIndex];

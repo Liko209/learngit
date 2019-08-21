@@ -20,7 +20,7 @@ import {
   buildEntityCacheSearchController,
   buildEntityNotificationController,
 } from '../controller';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
 import { IEntityNotificationController } from '../controller/interface/IEntityNotificationController';

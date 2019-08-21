@@ -6,7 +6,9 @@
 import _ from 'lodash';
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { Voicemail, VoicemailView } from '../entity';
-import { IDatabase, mainLogger, PerformanceTracer } from 'foundation';
+import { IDatabase } from 'foundation/db';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { SortUtils } from 'sdk/framework/utils';
 import { FetchDataOptions } from '../../types';
@@ -76,13 +78,18 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     const performanceTracer = PerformanceTracer.start();
 
     const sortedIds = allVMs
-      .filter((view: VoicemailView) => !filterFunc || filterFunc(this._translate2VMForFilter(view)))
-      .sort((vmA: VoicemailView, vmB: VoicemailView) => SortUtils.sortModelByKey<VoicemailView, number>(
-        vmA,
-        vmB,
-        ['__timestamp'],
-        false,
-      ))
+      .filter(
+        (view: VoicemailView) =>
+          !filterFunc || filterFunc(this._translate2VMForFilter(view)),
+      )
+      .sort((vmA: VoicemailView, vmB: VoicemailView) =>
+        SortUtils.sortModelByKey<VoicemailView, number>(
+          vmA,
+          vmB,
+          ['__timestamp'],
+          false,
+        ),
+      )
       .map((value: VoicemailView) => value.id);
 
     const voicemailIds = ArrayUtils.sliceIdArray(

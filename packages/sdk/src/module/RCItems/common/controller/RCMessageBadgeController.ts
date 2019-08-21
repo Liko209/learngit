@@ -13,7 +13,8 @@ import {
   MESSAGE_AVAILABILITY,
   BADGE_STATUS,
 } from '../../constants';
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { RCMessage } from '../../types';
 import { RC_ITEMS_POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
@@ -81,7 +82,7 @@ class RCMessageBadgeController<T extends RCMessage> {
     } else if (payload.type === EVENT_TYPES.RELOAD) {
       this.handleVoicemailReload();
     }
-  }
+  };
 
   async handleVoicemailReload() {
     this.reset();
@@ -132,7 +133,10 @@ class RCMessageBadgeController<T extends RCMessage> {
   private _registerBadge() {
     ServiceLoader.getInstance<BadgeService>(
       ServiceConfig.BADGE_SERVICE,
-    ).registerBadge(this.badgeId, () => ({ id: this.badgeId, unreadCount: this._unreadCount }));
+    ).registerBadge(this.badgeId, () => ({
+      id: this.badgeId,
+      unreadCount: this._unreadCount,
+    }));
   }
 }
 

@@ -5,7 +5,7 @@
  */
 
 import { AllCallLogFetchController } from '../AllCallLogFetchController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { CALL_RESULT, LOCAL_INFO_TYPE } from '../../constants';
 import { RCItemApi } from 'sdk/api';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';

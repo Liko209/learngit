@@ -5,7 +5,7 @@
  */
 
 import StateMachine from 'ts-javascript-state-machine';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 const logTag = '[Call_Window_FSM]';
 

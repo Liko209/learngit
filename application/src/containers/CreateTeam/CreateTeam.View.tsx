@@ -21,7 +21,7 @@ import {
 } from 'jui/pattern/ListToggleButton';
 import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { DialogContext } from '@/containers/Dialog';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { ViewProps, INIT_ITEMS } from './types';
 import {
   ToastType,

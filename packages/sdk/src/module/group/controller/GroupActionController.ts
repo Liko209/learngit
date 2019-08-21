@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';

@@ -20,7 +20,7 @@ import {
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IRCInfoService } from './IRCInfoService';
 import { RcInfoSettings } from '../setting';
 import { IdModel } from '../../../framework/model';

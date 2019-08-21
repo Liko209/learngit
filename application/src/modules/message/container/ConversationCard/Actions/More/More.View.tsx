@@ -7,7 +7,7 @@ import React, { MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
-import { JuiMenuList } from 'jui/components';
+import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Quote } from '../Quote';

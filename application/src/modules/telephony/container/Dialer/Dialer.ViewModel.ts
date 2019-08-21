@@ -5,7 +5,7 @@
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed, action } from 'mobx';
 import { i18nP } from '@/utils/i18nT';
 import { DialerProps, DialerViewProps } from './types';

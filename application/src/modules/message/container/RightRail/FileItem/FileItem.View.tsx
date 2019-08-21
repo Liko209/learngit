@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import {
   JuiListItemText,
   JuiListItemWithHover,

@@ -5,7 +5,7 @@
  */
 
 import { IdModel, Raw, ModelIdType } from '../../model';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import _ from 'lodash';
 import { IPartialEntitySourceController } from '../interface/IPartialEntitySourceController';
 import notificationCenter from '../../../service/notificationCenter';

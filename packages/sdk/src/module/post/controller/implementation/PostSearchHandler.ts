@@ -21,7 +21,8 @@ import {
 } from 'sdk/api/glip/search';
 import { transformAll } from 'sdk/service/utils';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import {
   ERROR_TYPES,
   ErrorParserHolder,

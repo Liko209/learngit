@@ -10,7 +10,7 @@ import { MeetingsService } from 'sdk/module/meetings';
 import { MEETING_ACTION } from 'sdk/module/meetings/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { promisedComputed } from 'computed-async-mobx';
 import { computed } from 'mobx';
 import { Group } from 'sdk/module/group/entity';

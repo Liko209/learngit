@@ -14,7 +14,7 @@ import { ControllerUtils } from '../../../../framework/controller/ControllerUtil
 import { PROGRESS_STATUS } from '../../../progress';
 import PreInsertIdController from './PreInsertIdController';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const LOG_TAG = '[PreInsertController]';
 const UNIQUE_ID = 'unique_id';

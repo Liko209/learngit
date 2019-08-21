@@ -3,7 +3,9 @@
  * @Date: 2019-01-08 17:08:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, inject, Jupiter } from 'framework';
+import { AbstractModule} from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { IHomeService } from './interface/IHomeService';
 import { config } from './home.config';
 import { service } from 'sdk';

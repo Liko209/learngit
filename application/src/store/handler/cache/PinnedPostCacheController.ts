@@ -11,7 +11,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { PinnedPostListHandler } from '../PinnedPostListHandler';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { Post } from 'sdk/module/post/entity';
 
 const LOG_TAG = 'PinnedPostCacheController';

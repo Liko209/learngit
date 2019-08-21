@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import StoreViewModel from '@/store/ViewModel';

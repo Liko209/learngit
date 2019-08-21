@@ -3,6 +3,10 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
+jest.unmock('@/common/emojiHelpers/map/mapAscii');
+jest.unmock('@/common/emojiHelpers/map/mapEmojiOne');
+jest.unmock('@/common/emojiHelpers/map/mapUnicode');
+
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';

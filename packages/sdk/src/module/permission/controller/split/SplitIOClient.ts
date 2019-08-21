@@ -6,7 +6,7 @@
 
 import { UserPermissionType } from 'sdk/module/permission';
 import { SplitFactory } from '@splitsoftware/splitio';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 type SplitIOClientParams = {
   prefix: string;

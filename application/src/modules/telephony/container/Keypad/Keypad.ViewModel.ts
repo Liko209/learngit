@@ -6,7 +6,7 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { KeypadProps, KeypadViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 
 class KeypadViewModel extends StoreViewModel<KeypadProps> implements KeypadViewProps {

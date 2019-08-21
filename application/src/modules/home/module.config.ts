@@ -3,7 +3,7 @@
  * @Date: 2019-01-09 12:36:13
  * Copyright © RingCentral. All rights reserved.
  */
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 import { HomeService } from './service';
 import { HomeStore } from './store';
 import { HomeModule } from './HomeModule';

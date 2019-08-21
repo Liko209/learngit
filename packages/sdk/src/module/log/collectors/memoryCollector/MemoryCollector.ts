@@ -3,7 +3,7 @@
  * @Date: 2019-04-13 19:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILogCollector, LogEntity } from 'foundation';
+import { ILogCollector, LogEntity } from 'foundation/log';
 import { FixSizeMemoryLogCollection } from '../FixSizeMemoryLogCollection';
 import { configManager } from '../../config';
 import { ZipLogZipItemProvider } from '../../ZipLogZipItemProvider';

@@ -7,7 +7,9 @@ import _ from 'lodash';
 import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import { observable, runInAction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger, PerformanceTracer, dataAnalysis } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -31,7 +33,7 @@ import {
   ItemWrapper,
   ScrollInfo,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
+import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';

@@ -1,4 +1,4 @@
-import { jupiter } from 'framework/src';
+import { jupiter } from 'framework/Jupiter';
 import { IMediaService, IMedia } from '@/interface/media';
 import SettingModel from '@/store/models/UserSetting';
 import { getEntity } from '@/store/utils';

@@ -6,7 +6,7 @@
 
 import { observable, action, IObservableArray } from 'mobx';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { HasMore } from './types';
 

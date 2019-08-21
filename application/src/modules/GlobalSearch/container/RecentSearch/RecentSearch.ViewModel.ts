@@ -3,7 +3,7 @@
  * @Date: 2019-03-31 21:49:32
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { Group } from 'sdk/module/group/entity';

@@ -15,6 +15,7 @@ import { TelephonyAccountController } from '../TelephonyAccountController';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 
 jest.mock('../../../config');
+jest.unmock('ua-parser-js');
 
 const mockIsVoipCallingAvailable = jest.fn();
 const mockGetRCBrandId = jest.fn();

@@ -9,7 +9,7 @@ import { JuiTopBannerContainer } from 'jui/pattern/TopBanner';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
 import { TopBannerViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { AppStore } from '../../store';
 
 @observer

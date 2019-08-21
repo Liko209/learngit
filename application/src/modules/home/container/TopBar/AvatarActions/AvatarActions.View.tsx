@@ -8,7 +8,7 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
-import { JuiMenuList } from 'jui/components';
+import { JuiMenuList } from 'jui/components/Menus';
 import {
   JuiAvatarActions,
   JuiStyledDropdown,
@@ -17,7 +17,7 @@ import {
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { PresenceMenu } from '../PresenceMenu';
 import { OpenProfile } from '@/common/OpenProfile';
 import { DropdownContactInfo } from '../DropdownContactInfo';

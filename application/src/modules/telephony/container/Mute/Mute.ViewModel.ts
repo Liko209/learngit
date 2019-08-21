@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { MuteProps, MuteViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed } from 'mobx';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 

@@ -13,7 +13,49 @@ import {
   IResponse as IJResponse,
 } from 'foundation/network/network';
 import { Nullable } from 'sdk/types';
+import { GlipInitialDataHelper, GlipDataHelper } from './mocks/glip/data/data';
+import { InitialData } from './mocks/glip/types';
+import { MockSocketServer } from './server/MockSocketServer';
+import { BaseScenario } from 'shield/sdk/BaseScenario';
 
+type ItContext = {
+  // ACCOUNT user info
+  userContext: {
+    glipUserId: () => number;
+    glipCompanyId: () => number;
+  };
+  // ACCOUNT data template
+  template: {
+    BASIC: InitialData;
+    STANDARD: InitialData;
+  };
+  // some useful helper for  test
+  helper: {
+    // apply template
+    useInitialData: (initialData: InitialData) => GlipInitialDataHelper;
+    // model build helper
+    glipDataHelper: () => GlipDataHelper;
+    mockResponse: MockResponse;
+    // mock api response
+    mockApi: MockApi;
+    // glip socketServer, use to send message to client.
+    socketServer: MockSocketServer;
+    clearMocks: () => void;
+    useScenario: <
+      T extends BaseScenario<any>,
+      P = T extends BaseScenario<infer P> ? P : object,
+      Props extends P = P
+    >(
+      scenarioClass: { new (...arg: any): T },
+      props?: Props,
+    ) => Promise<T>;
+  };
+  // sdk setup/cleanUp
+  sdk: {
+    setup: (mode?: 'glip' | 'rc') => Promise<void>;
+    cleanUp: () => Promise<void>;
+  };
+};
 interface IApiPath<T extends IApiContract> {
   host: T['host'];
   method: T['method'];
@@ -144,6 +186,7 @@ interface IRequestResponse<Req = any, Res = any>
 
 interface IMockRequestResponse<Req = any, Res = any> extends IRequestResponse {
   pathRegexp: RegExp;
+  pathRegexpString: string;
   mapper?: (
     request: IJRequest,
     mockRequestResponse: IMockRequestResponse,
@@ -167,6 +210,7 @@ interface IScenarioDataHelper<T> {
 }
 
 export {
+  ItContext,
   IJRequest,
   IJResponse,
   IBaseRequest,

@@ -3,7 +3,7 @@
  * @Date: 2019-07-25 10:00:14
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 // import { globalStore } from 'shield/integration-test';
 // import { mockEntity } from 'shield/application';
 // import { mockService } from 'shield/sdk';

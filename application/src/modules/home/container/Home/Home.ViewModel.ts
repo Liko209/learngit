@@ -3,7 +3,7 @@
  * @Date: 2018-10-11 19:12:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import historyStack from '@/common/HistoryStack';
 import history from '@/history';
 import { StoreViewModel } from '@/store/ViewModel';

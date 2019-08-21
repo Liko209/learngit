@@ -5,7 +5,7 @@
  */
 
 import { IProcessor } from 'sdk/framework/processor/IProcessor';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 class SilentSyncProcessor implements IProcessor {
   constructor(

@@ -5,7 +5,7 @@
  */
 import { computed, observable, action } from 'mobx';
 import i18next from 'i18next';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { formatSeconds } from '@/utils/date';
 import { DialerTitleBarProps } from './types';
