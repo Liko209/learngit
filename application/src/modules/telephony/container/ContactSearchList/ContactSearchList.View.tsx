@@ -119,6 +119,7 @@ class ContactSearchListViewComponent extends Component<
               down: this.onDownKeyDown,
               enter: onEnter,
             }}
+            global
           >
             <StyledList data-test-automation-id="telephony-contact-search-list">
               <JuiInfiniteList
