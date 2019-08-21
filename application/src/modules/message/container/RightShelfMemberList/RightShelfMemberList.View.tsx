@@ -30,6 +30,7 @@ import { AddMembers } from '../Profile/Dialog/Group/Content/AddMembers';
 import { ANALYTICS_KEY } from '../Profile/Dialog/Group/Content/Members/constants';
 import { MiniCard } from '../MiniCard';
 import { Profile, PROFILE_TYPE } from '../Profile';
+import moize from 'moize';
 
 type Props = WithTranslation & RightShelfMemberListViewProps;
 
@@ -109,7 +110,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     NewConversation.show({ group });
   }
 
-  onAvatarClick = (id: number) => async (
+  onAvatarClick = moize((id: number) => async (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     const anchor = event.currentTarget as HTMLElement;
@@ -117,12 +118,18 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       anchor,
     });
     analyticsCollector.openMiniProfile(ANALYTICS_KEY);
-  };
+  });
+  
+  buildPresence = moize((id: number) => {
+    return <Presence uid={id} borderSize="medium" />
+  })
 
-  renderAvatar(id: number) {
+
+  renderAvatar = (id: number) => {
     const {
       membersData: { personNameMap },
     } = this.props;
+
     return (
       <Avatar
         data-test-automation-id="rightShelfMemberListAvatar"
@@ -131,7 +138,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
         tooltip={personNameMap[id]}
         aria-label={personNameMap[id]}
         uid={id}
-        presence={<Presence uid={id} borderSize="medium" />}
+        presence={this.buildPresence(id)}
         onClick={this.onAvatarClick(id)}
       />
     );
