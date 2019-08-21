@@ -16,7 +16,7 @@ fixture('Call/ConfirmEmergencyAddress')
       await h(t).directLoginWithUser(SITE_URL, loginUser);
     });
 
-    await h(t).withLog(`Then emergency confirm from entry is displayed`, async () => {
+    await h(t).withLog('Then emergency confirm from entry is displayed', async () => {
       await t.expect(app.homePage.emergencyConfirmFromEntry.exists).ok();
     });
     await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_Call_ConfirmEmergencyAddressToast' });

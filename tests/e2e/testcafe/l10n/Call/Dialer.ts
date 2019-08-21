@@ -21,7 +21,7 @@ fixture('Call/Dialer')
       await app.homePage.openDialer();
     });
 
-    await h(t).withLog(`And I type a character in the input field`, async () => {
+    await h(t).withLog('And I type a character in the input field', async () => {
       await telephonyDialog.typeTextInDialer("17013170001#701");
     });
 
@@ -29,7 +29,6 @@ fixture('Call/Dialer')
       await app.homePage.telephonyDialog.hitEnterToMakeCall();
     });
     await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Call_CallMakeCallFailAlert' });
-
   });
 
 test(formalName('Check Dialer popup',['P2','Call', 'Dialer', 'V1.6', 'Jenny.Cai']),async (t) => {
