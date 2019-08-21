@@ -21,13 +21,13 @@ test(formalName('Check the "presence" in profile', ['P2', 'TopBar', 'Profile','V
     await avatar.showTooltip('Available');
   });
 
-  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_AvailablePresenceSubMenu'})
+  await h(t).log('And I take screenshot', {  screenshotPath:'Jupiter_TopBar_AvailablePresenceSubMenu'});
 
   await h(t).withLog('When I hover avatar in "available" Presence', async() => {
     await settingMenu.clickPresenceSubMenuAvailableButton();
     await avatar.hoverTopBarAvatar();
   });
-  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_AvailablePresence'})
+  await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_TopBar_AvailablePresence' });
 
   await h(t).withLog('When I change presence to "Invisible"', async() => {
     await app.homePage.openSettingMenu();
@@ -38,17 +38,18 @@ test(formalName('Check the "presence" in profile', ['P2', 'TopBar', 'Profile','V
   await h(t).withLog('Then check the presence change to "Invisible" ' , async () => {
     await avatar.hoverTopBarAvatar();
     await avatar.showTooltip('Offline');
-  await h(t).withLog('And I open presence menu', async() =>{
+  });
+  await h(t).withLog('And I open presence menu', async() => {
     await app.homePage.openSettingMenu();
     await settingMenu.hoverPresenceMenuButton();
   });
-  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresenceSubMenu'})
+  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresenceSubMenu'});
 
   await h(t).withLog('When I hover avatar in "Invisible" Presence', async() => {
     await settingMenu.clickPresenceSubMenuInvisibleButton();
     await avatar.hoverTopBarAvatar();
   });
-  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresence'})
+  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_InvisiblePresence'});
 
   await h(t).withLog('When I change presence to "Do Not Disturb" and hover current presence', async() => {
     await app.homePage.openSettingMenu();
@@ -59,6 +60,7 @@ test(formalName('Check the "presence" in profile', ['P2', 'TopBar', 'Profile','V
   await h(t).withLog('Then check the presence change to "Do Not Disturb" ' , async () => {
     await avatar.hoverTopBarAvatar();
     await avatar.showTooltip("Do not disturb");
+  });
   await h(t).withLog('And I open presence menu' , async () => {
     await app.homePage.openSettingMenu();
     await settingMenu.hoverPresenceMenuButton();
@@ -91,7 +93,6 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_SettingMenu'});
 
   const profileDialog = app.homePage.profileDialog;
-
   await h(t).withLog('When I click "Profile" button', async() => {
     await settingMenu.clickDropMenuViewProfile();
   });
@@ -101,7 +102,6 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_ProfilePage'});
 
   const favoriteButton = profileDialog.favoriteButton;
-
   await h(t).withLog('When I hover "Favorites" button', async() => {
     if(favoriteButton.exists){
       await profileDialog.hoverFavoriteButton();
@@ -142,12 +142,4 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
     await settingMenu.clickAboutButton();
   });
   await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_TopBar_AboutPage' });
-
-  await h(t).withLog('When I change presence to "Available"', async() => {
-    await app.homePage.openSettingMenu();
-    await settingMenu.hoverPresenceMenuButton();
-    await settingMenu.clickPresenceSubMenuAvailableButton();
-  });
 });
-
-
