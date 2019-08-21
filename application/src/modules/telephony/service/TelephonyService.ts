@@ -833,7 +833,7 @@ class TelephonyService {
     return this._serverTelephonyService.dtmf(this._callEntityId, digits);
   };
 
-  getComponent = () => import('../container/Call');
+  getComponent = () => [import('../container/AudioConference'), import('../container/Call')];
 
   setCallerPhoneNumber = (phoneNumber?: string) => {
     if (

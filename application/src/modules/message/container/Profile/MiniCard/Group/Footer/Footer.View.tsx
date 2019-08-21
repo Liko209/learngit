@@ -18,18 +18,19 @@ import { TypeDictionary } from 'sdk/utils';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { ProfileDialogGroup } from '@/modules/message/container/Profile/Dialog/Group';
+import { AudioConference } from '@/modules/telephony/container/AudioConference';
 
 @observer
 class ProfileMiniCardGroupFooter extends Component<
   WithTranslation & ProfileMiniCardGroupFooterViewProps
-  > {
+> {
   onClickMessage = () => {
     const { id } = this.props;
     const result = goToConversationWithLoading({ id });
     if (result) {
       portalManager.dismissLast();
     }
-  }
+  };
 
   getAriaLabelKey = () => {
     const { typeId } = this.props;
@@ -38,16 +39,14 @@ class ProfileMiniCardGroupFooter extends Component<
       [TypeDictionary.TYPE_ID_GROUP]: 'ariaGoToGroup',
     };
     return mapping[typeId];
-  }
+  };
 
   handleCloseMiniCard = () => {
     portalManager.dismissLast();
-  }
+  };
 
   render() {
-    const {
-      id, t, showMessage, group,
-    } = this.props;
+    const { id, t, showMessage, group } = this.props;
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
@@ -74,6 +73,12 @@ class ProfileMiniCardGroupFooter extends Component<
               chat
             </JuiIconButton>
           )}
+          <AudioConference
+            groupId={id}
+            variant="plain"
+            size="medium"
+            color="primary"
+          />
         </JuiProfileMiniCardFooterRight>
       </>
     );

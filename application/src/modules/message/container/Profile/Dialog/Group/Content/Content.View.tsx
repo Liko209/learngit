@@ -24,6 +24,7 @@ import portalManager from '@/common/PortalManager';
 import { renderButton } from './common/button';
 import { ProfileContext } from '../types';
 import RO from 'resize-observer-polyfill';
+import { AudioConference } from '@/modules/telephony/container/AudioConference';
 
 // padding for `Summary`
 const PADDING_FIX = 20 + 20;
@@ -100,6 +101,11 @@ class ProfileDialogGroupContentViewComponent extends Component<
                   this.props,
                   this.messageAfterClick,
                 )}
+              <AudioConference
+                groupId={group.id}
+                variant="text"
+                size="medium"
+              />
               {showJoinTeam &&
                 renderButton(
                   'add_member',

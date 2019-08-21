@@ -11,6 +11,7 @@ import { GroupAvatar } from '@/containers/Avatar';
 import { JuiIconButton, JuiRoundButton } from 'jui/components/Buttons';
 
 import { ViewProps } from './types';
+import { AudioConference } from '@/modules/telephony';
 
 type GroupItemProps = ViewProps & WithTranslation & { automationId?: string };
 
@@ -49,18 +50,10 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
   };
 
   private get _conversationActions() {
-    const { t } = this.props;
+    const { t, group, analysisSource } = this.props;
 
     return (
       <>
-        <JuiIconButton
-          tooltipTitle={t('phone.startConference')}
-          onClick={this.handleStartConference}
-          variant="plain"
-          size="small"
-        >
-          conference
-        </JuiIconButton>
         <JuiIconButton
           data-test-automation-id="goToConversationIcon"
           tooltipTitle={t('message.message')}
@@ -70,6 +63,12 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         >
           messages
         </JuiIconButton>
+        <AudioConference
+          groupId={group.id}
+          variant="plain"
+          size="small"
+          analysisSource={`Global search>${analysisSource}`}
+        />
       </>
     );
   }
