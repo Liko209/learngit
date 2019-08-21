@@ -560,35 +560,55 @@ export class SoundsSection extends BaseWebComponent {
   }
   get audioSpeakerButton(){
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-soundDirectMessages-2Beep"
-    )
+      "settingItemSelectBoxItem-soundDirectMessages-LogDrum2.wav"
+    ).find('*[data-test-automation-id^="audio-speaker-btn"');
   }
   async hoverAudioSpeakerButton(){
     await this.t.hover(this.audioSpeakerButton);
   }
+
+  get soundDirectMessagesSelectBoxItem(){
+    return this.getSelectorByAutomationId(
+      "settingItemSelectBoxItem-soundDirectMessages-0"
+    );
+  }
+  async hoverSoundDirectMessagesSelectBoxItem(){
+    await this.t.hover(this.soundDirectMessagesSelectBoxItem);
+  }
+
   // Sound Incoming voice calls
   get incomingVoiceCalls(){
     return this.getSelectorByAutomationId(
       "settingItemSelectBox-soundIncomingCall"
   );
   }
+  async clickIncomingVoiceCalls(){
+    await this.t.click(this.incomingVoiceCalls);
+  }
   get incomingVoiceCallsLabel(){
     return this.getSelectorByAutomationId(
       "settingItemLabel-soundIncomingCall"
   );
   }
-  async clickIncomingVoiceCallsLable(){
+  async clickIncomingVoiceCallsLabel(){
     await this.t.click(this.incomingVoiceCallsLabel);
   }
-  async clickIncomingVoiceCalls(){
-    await this.t.click(this.incomingVoiceCalls);
+  get incomingVoiceCallsSelectBoxItemTop(){
+    return this.getSelectorByAutomationId(
+      "settingItemSelectBoxItem-soundIncomingCall-PhoneRing.wav"
+    );
   }
-  get incomingVoiceCallsSelectBoxItem(){
+  async hoverIncomingVoiceCallsSelectBoxItemTop(){
+    await this.t.hover(this.incomingVoiceCallsSelectBoxItemTop);
+  }
+
+
+  get incomingVoiceCallsSelectBoxItemOff(){
     return this.getSelectorByAutomationId(
       "settingItemSelectBoxItem-soundIncomingCall-0"
     );
   }
-  async hoverIncomingVoiceCallsSelectBoxItem(){
-    await this.t.hover(this.incomingVoiceCallsSelectBoxItem);
+  async hoverIncomingVoiceCallsSelectBoxItemOff(){
+    await this.t.hover(this.incomingVoiceCallsSelectBoxItemOff);
   }
 }
