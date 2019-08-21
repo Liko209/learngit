@@ -80,7 +80,7 @@ const StyledMenuItem = styled(FilteredMenuItem)`
     }
 
     &:hover {
-      background-color: ${highlightedStyle};
+      ${highlightedStyle};
     }
 
     ${({ highlighted }) => (highlighted ? highlightedStyle : '')}
