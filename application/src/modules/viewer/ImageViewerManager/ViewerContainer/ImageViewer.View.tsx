@@ -166,6 +166,9 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     wheel: true,
                     padding: [padding, padding, padding, padding],
                   }}
+                  zoomInText={t('viewer.ZoomIn')}
+                  zoomOutText={t('viewer.ZoomOut')}
+                  zoomResetText={t('viewer.ZoomReset')}
                   onAutoFitContentRectChange={this._onZoomImageContentChange}
                 >
                   {({
