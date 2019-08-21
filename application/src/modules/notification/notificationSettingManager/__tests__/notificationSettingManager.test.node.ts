@@ -1,13 +1,9 @@
-import {
-  SETTING_SECTION__DESKTOP_NOTIFICATIONS,
-  SETTING_SECTION__EMAIL_NOTIFICATIONS,
-  SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
-} from '@/modules/notification/notificationSettingManager/constant';
+import { SETTING_SECTION } from '@/modules/notification/notificationSettingManager/constant';
 import { NotificationSettingManager } from '../notificationSettingManager';
 
 describe(NotificationSettingManager.name, () => {
-  let manager = new NotificationSettingManager();
-  let mockedSettingService = {
+  const manager = new NotificationSettingManager();
+  const mockedSettingService = {
     registerSection: jest.fn(),
     registerItem: jest.fn(),
   };
@@ -21,9 +17,9 @@ describe(NotificationSettingManager.name, () => {
         i => i[2].id,
       );
       const sectionAllRegistered = [
-        SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
-        SETTING_SECTION__EMAIL_NOTIFICATIONS,
-        SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+        SETTING_SECTION.DESKTOP_NOTIFICATIONS,
+        SETTING_SECTION.OTHER_NOTIFICATION_SETTINGS,
+        SETTING_SECTION.EMAIL_NOTIFICATIONS,
       ].some(i => !args.includes(i));
       expect(sectionAllRegistered).toBeFalsy();
     });

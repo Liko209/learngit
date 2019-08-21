@@ -10,7 +10,7 @@ import {
   SETTING_ITEM_TYPE,
   SelectSettingItem,
 } from '@/interface/setting';
-import { MESSAGE_SETTING_SECTION } from '@/modules/notification/notificationSettingManager/constant';
+import { SETTING_SECTION } from '@/modules/notification/notificationSettingManager/constant';
 import {
   MESSAGE_SETTING_SCOPE,
   MESSAGE_SETTING_ITEM,
@@ -37,6 +37,7 @@ import {
   EmailNotificationSelectDataTrackingOption,
 } from './dataTrackingTransformer';
 import { SETTING_PAGE__MESSAGES } from '@/modules/setting/manager/placeholder/constant';
+import { MESSAGE_SETTING_SECTION } from './constant';
 
 const NewMessageSelectDataTrackingOption: {
   [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
@@ -53,7 +54,7 @@ class MessageSettingManager implements IMessageSettingManager {
     this.registerMessageSettingPage();
     this._settingService.registerItem(
       MESSAGE_SETTING_SCOPE,
-      MESSAGE_SETTING_SECTION.DESKTOP_NOTIFICATIONS,
+      SETTING_SECTION.DESKTOP_NOTIFICATIONS,
       {
         id: MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
         automationId: 'newMessages',
@@ -131,7 +132,7 @@ class MessageSettingManager implements IMessageSettingManager {
     emailNotificationSettingItems.forEach(i =>
       this._settingService.registerItem(
         MESSAGE_SETTING_SCOPE,
-        MESSAGE_SETTING_SECTION.EMAIL_NOTIFICATIONS,
+        SETTING_SECTION.EMAIL_NOTIFICATIONS,
         i,
       ),
     );
@@ -147,7 +148,7 @@ class MessageSettingManager implements IMessageSettingManager {
         id: MESSAGE_SETTING_SECTION.CONVERSATION_LIST,
         title: 'setting.Messages.conversationList.title',
         weight: 100,
-        automationId: 'Conversation list',
+        automationId: 'conversationList',
         items: [
           {
             id: MESSAGE_SETTING_ITEM.MAX_CONVERSATIONS,
@@ -188,24 +189,20 @@ class MessageSettingManager implements IMessageSettingManager {
         id: MESSAGE_SETTING_SECTION.MESSAGE_THREAD,
         title: 'setting.Messages.messageThread.title',
         weight: 200,
-        automationId: 'Message thread',
-        items: [],
-      },
-    );
-
-    this._settingService.registerItem(
-      MESSAGE_SETTING_SCOPE,
-      MESSAGE_SETTING_SECTION.MESSAGE_THREAD,
-      {
-        id: MESSAGE_SETTING_ITEM.SHOW_LINK_PREVIEWS,
-        automationId: 'showLinkPreviews',
-        ...titleBodyBuilder('linkPreviews'),
-        type: SETTING_ITEM_TYPE.TOGGLE,
-        dataTracking: {
-          name: 'linkPreview',
-          type: 'messages',
-        },
-        weight: 100,
+        automationId: 'messageThread',
+        items: [
+          {
+            id: MESSAGE_SETTING_ITEM.SHOW_LINK_PREVIEWS,
+            automationId: 'showLinkPreviews',
+            ...titleBodyBuilder('linkPreviews'),
+            type: SETTING_ITEM_TYPE.TOGGLE,
+            dataTracking: {
+              name: 'linkPreview',
+              type: 'messages',
+            },
+            weight: 100,
+          },
+        ],
       },
     );
   }
