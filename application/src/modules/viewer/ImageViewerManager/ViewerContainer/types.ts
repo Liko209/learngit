@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import FileItemModel from '@/store/models/FileItem';
-import { ViewerViewProps } from '../../types';
+import { ImageViewerViewModule } from '../type';
 
 type ImageViewerOptions = {
   originElement?: HTMLElement;
@@ -12,7 +12,7 @@ type ImageViewerOptions = {
   initialWidth?: number;
   initialHeight?: number;
 };
-type ImageViewerProps = ViewerViewProps & {
+type ImageViewerProps = ImageViewerViewModule & {
   initialOptions: ImageViewerOptions;
 };
 
