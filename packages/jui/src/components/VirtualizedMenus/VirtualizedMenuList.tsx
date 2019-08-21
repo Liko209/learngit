@@ -12,6 +12,7 @@ import {
   JuiVirtualizedListHandles,
 } from '../VirtualizedList';
 import { withAutoSizer } from '../AutoSizer';
+import styled from 'styled-components';
 
 const DEFAULT_MENU_ITEM_HEIGHT = 32;
 const List = withAutoSizer(JuiVirtualizedList);
@@ -100,12 +101,22 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
     });
   });
 
+  const PaddingComponent = styled.div`
+    height: 8px;
+  `
+
+  const renderPadding = () => {
+    return <PaddingComponent />;
+  }
+
   return (
     <List
       ref={listRef as any}
       onKeyDown={handleKeyDown}
       minRowHeight={menuItemHeight}
       tabIndex={autoFocus ? 0 : -1}
+      before={renderPadding}
+      after={renderPadding}
     >
       {children}
     </List>
