@@ -5,6 +5,7 @@
  */
 import FileItemModel from '@/store/models/FileItem';
 import { ImageViewerViewModule } from '../types';
+import { IViewerView } from '../../container/ViewerView/interface';
 
 type ImageViewerOptions = {
   originElement?: HTMLElement;
@@ -28,7 +29,8 @@ type ImageViewerViewProps = {
     setOnImageSwitchCb: (
       callback: (imgInfo: { width: number; height: number }) => void,
     ) => void;
-  } & ImageViewerProps;
+  } & ImageViewerProps &
+    IViewerView;
 };
 
 export { ImageViewerProps, ImageViewerViewProps, ImageViewerOptions };
