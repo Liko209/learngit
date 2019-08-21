@@ -12,6 +12,7 @@ import { MenuProps, MenuViewProps } from './types';
 import { JuiMenuList, JuiMenuItem, JuiSubMenu } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { ConvertToTeam } from '@/containers/ConvertToTeam';
+import { NotificationPreferences } from '@/containers/NotificationPreferences';
 import { CONVERSATION_TYPES } from '@/constants';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { teamActionHandler } from '@/common/handleTeamAction';
@@ -30,11 +31,29 @@ class MenuComponent extends React.Component<
     </OpenProfileDialog>
   );
 
+  renderNotificationPreferences = () => {
+    const { t } = this.props;
+    return (
+      <JuiMenuItem
+        onClick={this.onNotificationPreferences}
+        data-test-automation-id="notificationPreferencesEntry"
+      >
+        {t('setting.conversationPreferences.entry')}
+      </JuiMenuItem>
+    );
+  };
+
+  onNotificationPreferences = () =>
+    NotificationPreferences.show({ groupId: this.props.id });
+
   renderPeopleMenu = () => {
     const { t } = this.props;
 
     return (
-      <JuiMenuList>{this.renderProfile(t('people.team.profile'))}</JuiMenuList>
+      <JuiMenuList>
+        {this.renderProfile(t('people.team.profile'))}
+        {this.renderNotificationPreferences()}
+      </JuiMenuList>
     );
   };
 
@@ -44,6 +63,7 @@ class MenuComponent extends React.Component<
     return (
       <JuiMenuList>
         {this.renderProfile(t('people.team.profile'))}
+        {this.renderNotificationPreferences()}
         <JuiMenuItem onClick={this.onConvertToTeam}>
           {t('people.team.convertToTeam')}
         </JuiMenuItem>
@@ -72,6 +92,7 @@ class MenuComponent extends React.Component<
     return (
       <JuiMenuList>
         {this.renderProfile(t('people.team.teamDetails'))}
+        {this.renderNotificationPreferences()}
         {isAdmin && !isCompanyTeam ? adminActions : null}
       </JuiMenuList>
     );

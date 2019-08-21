@@ -12,7 +12,7 @@ import {
   JuiConversationPageHeaderSubtitle,
 } from 'jui/pattern/ConversationPageHeader';
 import { JuiButtonBar } from 'jui/components/Buttons';
-import { Favorite, Privacy, Member } from '@/containers/common';
+import { Favorite, Privacy, Member, Mute } from '@/containers/common';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 import { IMessageStore } from '@/modules/message/interface';
@@ -76,6 +76,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
             <Privacy id={groupId} size="medium" />
           ) : null}
           <Member id={groupId} />
+          <Mute groupId={groupId} />
         </JuiButtonBar>
       </JuiConversationPageHeaderSubtitle>
     );

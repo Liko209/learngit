@@ -28,7 +28,7 @@ import {
 } from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
-import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
+import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSourceItem.View';
 import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
 import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
 import {
@@ -42,7 +42,7 @@ import {
 } from './dataTrackingTransformer';
 
 const NewMessageSelectDataTrackingOption: {
-  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string;
+  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
 } = {
   always: 'All new messages',
   mentions_or_dms: 'Direct messages and mentions',

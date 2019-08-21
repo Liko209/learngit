@@ -26,6 +26,7 @@ class SettingService extends AbstractService {
 
   async getByGroupId(id: number): Promise<ConversationPreferenceModel> {
     // todo
+    console.log(id);
     return {} as ConversationPreferenceModel;
   }
 

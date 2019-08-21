@@ -14,6 +14,7 @@ import {
 } from 'jui/components/Dialog';
 import { Favorite } from '@/containers/common/Favorite';
 import { Privacy } from '@/containers/common/Privacy';
+import { Mute } from '@/containers/common/Mute';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
 import { TeamSettingButton } from '@/containers/common/TeamSettingButton';
@@ -22,7 +23,7 @@ import { DialogContext } from '@/containers/Dialog';
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
   WithTranslation & ProfileDialogGroupTitleViewProps
-  > {
+> {
   static contextType = DialogContext;
 
   dismiss = this.context;
@@ -33,6 +34,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
       <>
         <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
         <JuiDialogHeaderActions>
+          <Mute groupId={id} />
           <Privacy id={id} size="medium" />
           <Favorite id={id} size="medium" />
           {group.isMember && <TeamSettingButton id={id} size="medium" />}

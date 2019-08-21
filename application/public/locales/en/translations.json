@@ -1133,7 +1133,19 @@
     },
     "conversationPreferences": {
       "entry": "Notification preferences",
-      "title": "Conversation notification preferences"
+      "title": "Conversation notification preferences",
+      "muteAll": "Mute all notifications everywhere",
+      "desktopNotification": "Enable desktop notifications",
+      "soundNotification": "Enable desktop sound notifications",
+      "mobileNotification": "Enable mobile notifications",
+      "emailNotification": "Enable email notifications",
+      "options": {
+        "mobileNotification": {
+          "0": "Off",
+          "1": "Every Message",
+          "firstonly": "First new message only"
+        }
+      }
     }
   },
   "viewer": {
