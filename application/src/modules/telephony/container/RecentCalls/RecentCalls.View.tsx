@@ -152,6 +152,7 @@ class RecentCallsComponent extends React.Component<Props, State> {
           down: this.onKeyDown,
           enter: this.onEnter,
         }}
+        global
       >
         <JuiRecentCalls ref={this._containerRef}>
           {isError ? (

@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
-import { service } from 'sdk';
 import { mainLogger } from 'foundation/log';
 import { IdModel, ModelIdType, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
@@ -11,9 +10,9 @@ import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import IUsedCache from './IUsedCache';
 import { EntityBaseService } from 'sdk/framework/service';
+import { EVENT_TYPES } from 'sdk/service/constants';
 
 const modelProvider = new ModelProvider();
-const { EVENT_TYPES } = service;
 /* eslint-disable */
 export default class MultiEntityMapStore<
   T extends IdModel<IdType>,
