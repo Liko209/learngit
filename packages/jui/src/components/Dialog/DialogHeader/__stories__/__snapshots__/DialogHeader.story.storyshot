@@ -974,6 +974,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   opacity: 0.76;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;

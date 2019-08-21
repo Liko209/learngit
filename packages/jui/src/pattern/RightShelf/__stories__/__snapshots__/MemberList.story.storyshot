@@ -256,6 +256,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   opacity: 0.76;
 }
 
+.c11:focus {
+  outline: none;
+}
+
 .c11 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -485,19 +489,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
       className="c9"
     >
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -511,19 +515,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -537,19 +541,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -563,19 +567,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -589,19 +593,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -615,19 +619,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -641,19 +645,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -667,19 +671,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -693,19 +697,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -719,19 +723,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -762,19 +766,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
       className="c9"
     >
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -788,19 +792,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -814,19 +818,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>
@@ -840,19 +844,19 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         </div>
       </div>
       <div
-        aria-describedby={null}
         className="c10"
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onTouchEnd={[Function]}
-        onTouchStart={[Function]}
         size="medium"
-        title={null}
       >
         <div
+          aria-haspopup={true}
+          aria-owns={null}
           className="MuiAvatar-root c11 MuiAvatar-colorDefault"
           color="lake"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           size="medium"
+          tabIndex={0}
         >
           SH
         </div>

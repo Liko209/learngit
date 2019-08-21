@@ -287,6 +287,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   opacity: 0.76;
 }
 
+.c12:focus {
+  outline: none;
+}
+
 .c12 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;

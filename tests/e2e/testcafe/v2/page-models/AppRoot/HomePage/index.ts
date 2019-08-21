@@ -181,7 +181,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverSettingMenu() {
-    await this.t.hover(this.topBarAvatar);
+    await this.t.hover(this.topBarAvatar, {speed: 0.1});
   }
 
   async openDialer(closeE911Prompt: boolean = true) {

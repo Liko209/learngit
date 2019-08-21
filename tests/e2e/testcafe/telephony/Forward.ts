@@ -257,6 +257,7 @@ test.meta(<ITestMeta>{
 
   const alertText = 'Your call was forwarded successfully.'
   await h(t).withLog(`Then there should be fail flash toast (short = 2s) displayed "${alertText}"`, async () => {
+    await t.debug();
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
 

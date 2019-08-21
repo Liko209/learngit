@@ -183,6 +183,10 @@ Array [
   opacity: 0.76;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -674,6 +678,10 @@ Array [
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
