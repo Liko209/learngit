@@ -148,7 +148,6 @@ describe('TelephonyNotificationManager', () => {
 
     it.each`
       CALL_STATE
-      ${CALL_STATE.DISCONNECTED}
       ${CALL_STATE.CONNECTING}
       ${CALL_STATE.CONNECTED}
       ${CALL_STATE.IDLE}

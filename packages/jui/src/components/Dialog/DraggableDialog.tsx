@@ -17,6 +17,7 @@ type PaperProps = {
   x: number;
   y: number;
   open: boolean;
+  position: { x: number; y: number };
   dragRef?: React.RefObject<any>;
   onStart?: DraggableEventHandler;
   onStop?: DraggableEventHandler;
@@ -41,12 +42,14 @@ const PaperComponent = ({
   onStop,
   onDrag,
   handle,
+  position,
   TransitionComponent = JuiFade,
   ...rest
 }: PaperProps) => (
   <Draggable
     bounds="body"
-    defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
+    // defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
+    position={position}
     ref={dragRef}
     onStart={onStart}
     onStop={onStop}
@@ -102,6 +105,8 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       dragRef,
       onStart,
       onStop,
+      onDrag,
+      position,
       handle,
       PaperProps,
       open,
@@ -116,6 +121,8 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       y,
       open,
       dragRef,
+      position,
+      onDrag,
       TransitionComponent,
       ...PaperProps,
     } as PaperProps;
