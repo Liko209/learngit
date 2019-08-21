@@ -312,6 +312,7 @@ class RTCCall {
   }
 
   warmTransfer(callUuid: string): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'warm transfer');
     const targetCall = this._account.getCallByUuid(callUuid);
     if (!targetCall || !targetCall.getCallSession()) {
       rtcLogger.warn(
