@@ -112,16 +112,14 @@ describe('Notification', () => {
 
     it('should call the private method by calling flagWarningToast', () => {
       const spy = jest.spyOn(Notification as any, 'flagToast');
-      const toastData: NotificationProps = {
-        message: 'aaa',
-      };
-      Notification.flagWarningToast(toastData);
+      const message: 'aaa';
+      Notification.flagWarningToast(message);
       expect(spy).toHaveBeenCalledTimes(1);
-      Notification.flagSuccessToast(toastData);
+      Notification.flagSuccessToast(message);
       expect(spy).toHaveBeenCalledTimes(2);
-      Notification.flagErrorToast(toastData);
+      Notification.flagErrorToast(message);
       expect(spy).toHaveBeenCalledTimes(3);
-      Notification.flagInfoToast(toastData);
+      Notification.flagInfoToast(message);
       expect(spy).toHaveBeenCalledTimes(4);
     });
   });
