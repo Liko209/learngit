@@ -5,7 +5,7 @@
  */
 
 // Replace ${deployHost} with real deployHost
-import { AppEnvSetting } from 'sdk/module/env/settings/AppEnvSetting';
+import { AppEnvSetting } from 'sdk/module/env';
 import { ConfigMap } from './types';
 import { loadFileConfigs, getEnvArray, get, set } from './utils';
 
