@@ -16,17 +16,19 @@ type ImageViewerProps = ImageViewerViewModule & {
   initialOptions: ImageViewerOptions;
 };
 
-type ImageViewerViewProps = { dataModule: ImageViewerProps } & {
-  item: FileItemModel;
-  isLoadingMore: boolean;
-  imageUrl: string;
-  imageWidth?: number;
-  imageHeight?: number;
-  thumbnailSrc?: string;
-  closeViewer: () => void;
-  setOnImageSwitchCb: (
-    callback: (imgInfo: { width: number; height: number }) => void,
-  ) => void;
+type ImageViewerViewProps = {
+  dataModule: {
+    item: FileItemModel;
+    isLoadingMore: boolean;
+    imageUrl: string;
+    imageWidth?: number;
+    imageHeight?: number;
+    thumbnailSrc?: string;
+    closeViewer: () => void;
+    setOnImageSwitchCb: (
+      callback: (imgInfo: { width: number; height: number }) => void,
+    ) => void;
+  } & ImageViewerProps;
 };
 
 export { ImageViewerProps, ImageViewerViewProps, ImageViewerOptions };
