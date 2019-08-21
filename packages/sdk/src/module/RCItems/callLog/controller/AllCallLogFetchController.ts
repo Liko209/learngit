@@ -35,8 +35,8 @@ class AllCallLogFetchController extends AbstractFetchController {
   protected async handleDataAndSave(
     data: RCItemSyncResponse<CallLog>,
   ): Promise<CallLog[]> {
-    const updateResult: CallLog[] = [];
-    const deleteResult: string[] = [];
+    const updateResults: CallLog[] = [];
+    const deleteResults: string[] = [];
     const replaceResult: Map<string, CallLog> = new Map();
     const pseudos = (await this._userConfig.getPseudoCallLogInfo()) || {};
 
@@ -55,42 +55,44 @@ class AllCallLogFetchController extends AbstractFetchController {
           (callLog.__localInfo =
             callLog.__localInfo | LOCAL_INFO_TYPE.IS_INBOUND);
       }
-
+      callLog.deleted = !!callLog.deleted;
       callLog.__timestamp = Date.parse(callLog.startTime);
-      callLog.__deactivated = false;
       const pseudoInfo = pseudos[callLog.sessionId];
       if (pseudoInfo) {
-        deleteResult.push(pseudoInfo.id);
-        updateResult.push(callLog);
+        deleteResults.push(pseudoInfo.id);
         replaceResult.set(pseudoInfo.id, callLog);
         delete pseudos[callLog.sessionId];
+      }
+
+      if (callLog.deleted) {
+        deleteResults.push(callLog.id);
       } else {
-        updateResult.push(callLog);
+        updateResults.push(callLog);
       }
     });
 
-    mainLogger
-      .tags(SYNC_NAME)
-      .info(
-        'handleDataAndSave, updateLength:',
-        updateResult.length,
-        'deleteLength:',
-        deleteResult.length,
-        'pseudoInfo:',
-        pseudos,
-      );
-
-    deleteResult.length &&
-      (await this.sourceController.bulkDelete(deleteResult));
-    updateResult.length &&
-      (await this.sourceController.bulkPut(updateResult));
+    deleteResults.length &&
+      (await this.sourceController.bulkDelete(deleteResults));
+    updateResults.length &&
+      (await this.sourceController.bulkPut(updateResults));
     await this._userConfig.setPseudoCallLogInfo(pseudos);
     replaceResult.size &&
       notificationCenter.emitEntityReplace(
         this.sourceController.getEntityNotificationKey(),
         replaceResult,
       );
-    return updateResult;
+    const needNotifyResults = data.records.filter((x: CallLog) => {
+      return !replaceResult.has(x.id);
+    });
+
+    mainLogger.tags(SYNC_NAME).info('handleDataAndSave', {
+      updateLength: updateResults.length,
+      deleteLength: deleteResults.length,
+      needNotifyResultsLen: needNotifyResults.length,
+      pseudoInfo: pseudos,
+    });
+
+    return needNotifyResults;
   }
 
   protected async sendSyncRequest(
@@ -102,6 +104,7 @@ class AllCallLogFetchController extends AbstractFetchController {
       syncType,
       recordCount,
       syncToken,
+      showDeleted: syncType !== SYNC_TYPE.FSYNC,
     });
   }
 
