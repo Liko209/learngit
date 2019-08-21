@@ -54,7 +54,7 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'EditProfile', 'V1.7', 
 
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_TopBar_EditProfileDialog' });
 
-  await h(t).withLog(`When I click "Edit profile photo" button`, async () => {
+  await h(t).withLog('When I click "Edit profile photo" button', async () => {
     await editProfileDialog.clickAvatarEditDiv();
   });
 
