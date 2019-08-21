@@ -720,7 +720,6 @@ describe('TelephonyCallController', () => {
     });
 
     it('should resolve transfer success when type is BLIND_TRANSFER', async (done: jest.DoneCallback) => {
-      expect.assertions(1);
       const options = '';
       expect(
         callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
@@ -729,7 +728,10 @@ describe('TelephonyCallController', () => {
         RTC_CALL_ACTION.TRANSFER,
         options as RTCCallActionSuccessOptions,
       );
-      done();
+      setTimeout(() => {
+        expect(rtcCall.transfer).toHaveBeenCalledWith('123');
+        done();
+      });
     });
     it('should reject fail when type is BLIND_TRANSFER', (done: jest.DoneCallback) => {
       expect.assertions(1);
@@ -740,18 +742,15 @@ describe('TelephonyCallController', () => {
       callController.onCallActionFailed(RTC_CALL_ACTION.TRANSFER, options);
       done();
     });
-    it('should reject fail when number can not e164', (done: jest.DoneCallback) => {
+    it('should reject fail when number can not e164', async (done: jest.DoneCallback) => {
       expect.assertions(1);
-      const options = -1;
       phoneNumberService.getE164PhoneNumber = jest.fn().mockResolvedValue('');
-      expect(
+      await expect(
         callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
-      ).rejects.toEqual('');
-      callController.onCallActionFailed(RTC_CALL_ACTION.TRANSFER, options);
+      ).rejects.toEqual(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
       done();
     });
     it('should resolve to voicemail success when type is TO_VOICEMAIL', async (done: jest.DoneCallback) => {
-      expect.assertions(1);
       const options = '';
       expect(
         callController.transfer(TRANSFER_TYPE.TO_VOICEMAIL, toNum),
@@ -760,7 +759,10 @@ describe('TelephonyCallController', () => {
         RTC_CALL_ACTION.TRANSFER,
         options as RTCCallActionSuccessOptions,
       );
-      done();
+      setTimeout(() => {
+        expect(rtcCall.transfer).toHaveBeenCalledWith('*0123');
+        done();
+      });
     });
   });
 });
