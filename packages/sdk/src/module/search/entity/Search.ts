@@ -45,9 +45,6 @@ enum PersonSortingOrder {
   FirstNameMatching = 3,
 }
 
-// const kSortingRateWithFirstMatched: number = 1;
-// const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-
 export {
   RecentSearchModel,
   RecentSearchTypes,

@@ -254,22 +254,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     );
   }
 
-  async getGroups(
-    filterFunc?: (group: Group) => boolean,
-    sortFunc?: (
-      groupA: SortableModel<Group>,
-      groupB: SortableModel<Group>,
-    ) => number,
-  ) {
-    const sortableGroups = await this.doFuzzySearchAllGroups(undefined, {
-      fetchAllIfSearchKeyEmpty: true,
-      additionalFilterFunc: filterFunc,
-      sortFunc,
-    });
-
-    return sortableGroups.sortableModels;
-  }
-
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     return await this._groupFetchDataController.getGroupsByIds(ids, order);
   }
