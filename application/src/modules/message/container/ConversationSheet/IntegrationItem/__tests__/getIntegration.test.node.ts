@@ -28,7 +28,7 @@ describe('getIntegration', () => {
     @mockService({ activity: 'integration' })
     t2() {
       const post = { itemIds: [1, 2] } as PostModel;
-      expect(getIntegration(post, 'name', false)).toBe('name 18');
+      expect(getIntegration(post, 'name', false)).toBe('18');
     }
 
     @test('should return null when there is no integration items')
