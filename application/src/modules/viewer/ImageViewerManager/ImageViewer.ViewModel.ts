@@ -47,7 +47,7 @@ import {
 import { PerformanceTracer } from 'foundation/performance';
 import { VIEWER_PERFORMANCE_KEYS } from '../performanceKeys';
 import { isExpectedItemOfThisGroup, getNextItemToDisplay } from './utils';
-import { ImageViewerViewModuleProps } from './type';
+import { ImageViewerViewModuleProps } from './types';
 
 const PAGE_SIZE = 20;
 
