@@ -75,7 +75,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   };
 
   onCurrentItemDeleted = (nextItemId: number) => {
-    const { t, deleteItem } = this.props;
+    const { t, dataModule } = this.props;
+    const { deleteItem } = dataModule;
     if (deleteItem) {
       if (nextItemId === -1) {
         this.context();
@@ -126,7 +127,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     this._performanceTracer &&
       this._performanceTracer.end({
         key: VIEWER_PERFORMANCE_KEYS.UI_IMAGE_VIEWER_IMAGE_RENDER,
-        infos: this.props.currentItemId,
+        infos: this.props.dataModule.currentItemId,
       });
   };
 
@@ -142,7 +143,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       hasPrevious,
       hasNext,
     } = dataModule;
-    const page = pages[0];
+    const page = pages && pages[0];
     const padding = 32;
     return (
       <ViewerContext.Consumer>
@@ -225,7 +226,9 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
             {this._imageRef.current && this.state.imageInited && (
               <JuiZoomElement
                 ref={this._animateRef}
-                originalElement={this.state.switched ? null : originElement}
+                originalElement={
+                  this.state.switched ? null : originElement || null
+                }
                 targetElement={this._imageRef.current}
                 show={value.show}
                 duration="standard"
