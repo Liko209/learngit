@@ -78,6 +78,32 @@ describe('PersonActionController', () => {
     setUp();
   });
 
+  describe('setCustomStatus', () => {
+    it('should set status correctly', async () => {
+      partialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (params: {
+            entityId: number;
+            preHandlePartialEntity: any;
+            doUpdateEntity: any;
+          }) => {
+            const data = params.preHandlePartialEntity({ id: params.entityId });
+            params.doUpdateEntity(data);
+          },
+        );
+
+      const mockId = 123;
+      const mockStatus = 'in meeting';
+      await personActionController.setCustomStatus(mockId, mockStatus);
+      expect(partialModifyController.updatePartially).toHaveBeenCalled();
+      expect(requestController.put).toHaveBeenCalledWith({
+        id: mockId,
+        away_status: mockStatus,
+      });
+    });
+  });
+
   describe('editPersonalInfo', () => {
     it('should return when can not get current person', async () => {
       requestController.put = jest.fn();

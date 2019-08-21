@@ -9,14 +9,19 @@ import { observer } from 'mobx-react';
 import { JuiConversationPageMember } from 'jui/pattern/ConversationPageMember';
 import { MemberViewProps } from './types';
 import { OpenProfile } from '@/common/OpenProfile';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 @observer
 class Member extends React.Component<MemberViewProps & WithTranslation> {
   openProfile = () => {
+    analyticsCollector.profileDialog(
+      this.props.isTeam ? 'Team' : 'Group',
+      'conversationHeader_memberIcon',
+    );
     OpenProfile.show(this.props.groupId, null, null, {
       disableRestoreFocus: true,
     });
-  }
+  };
 
   render() {
     const { membersCount, showMembersCount, t } = this.props;

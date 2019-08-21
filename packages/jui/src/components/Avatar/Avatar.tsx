@@ -170,4 +170,4 @@ JuiAvatar.defaultProps = {
 };
 JuiAvatar.displayName = 'JuiAvatar';
 
-export { JuiAvatarProps, JuiAvatar };
+export { JuiAvatarProps, JuiAvatar, StyledAvatar };

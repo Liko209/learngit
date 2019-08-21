@@ -249,6 +249,9 @@ export default class GroupModel extends Base<Group> {
       case CONVERSATION_TYPES.NORMAL_ONE_TO_ONE:
         result = '1:1 conversation';
         break;
+      case CONVERSATION_TYPES.ME:
+        result = '1:1 conversation';
+        break;
       case CONVERSATION_TYPES.NORMAL_GROUP:
         result = 'Group conversation';
         break;

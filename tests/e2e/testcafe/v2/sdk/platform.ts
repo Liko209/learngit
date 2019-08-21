@@ -16,6 +16,10 @@ export class RcPlatformSdk {
 
   async retryRequestOnException(cb: () => Promise<any>) {
     return await MiscUtils.retryAsync(cb, async (err: AxiosError) => {
+      if (err.request) {
+        logger.error('retry failed: ', err.config);
+        return false;
+      }
       if (!err.response) {
         logger.error('retry failed: ', err);
         return false;
@@ -228,10 +232,6 @@ export class RcPlatformSdk {
     return await this.createPostWithTextAndFiles(groupId, filePaths, text, fileNames).then(res => res.data.id);
   }
 
-  // deprecated
-  async createAndGetGroupId(data: any) {
-    return await this.createGroup(data).then(res => res.data.id);
-  }
 
   async sentAndGetTextPostId(text: string, groupId: string): Promise<string> {
     return await this.sendTextPost(text, groupId).then(res => res.data.id);

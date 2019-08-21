@@ -14,6 +14,7 @@ import { MissedCallLogFetchController } from '../MissedCallLogFetchController';
 import { CallLogBadgeController } from '../CallLogBadgeController';
 import { CallLogUserConfig } from '../../config/CallLogUserConfig';
 import { CallLogHandleDataController } from '../CallLogHandleDataController';
+import { EntityNotificationController } from 'sdk/framework/controller/impl/EntityNotificationController';
 
 jest.mock('../../../../config');
 jest.mock('sdk/framework/controller/impl/EntitySourceController');
@@ -29,6 +30,8 @@ describe('CallLogController', () => {
   let entitySourceController: EntitySourceController<CallLog, string>;
   let allConfig: CallLogUserConfig;
   let missedConfig: RCItemUserConfig;
+  let notificationController: EntityNotificationController<CallLog>;
+
   function setUp() {
     entitySourceController = new EntitySourceController(
       null as any,
@@ -36,10 +39,12 @@ describe('CallLogController', () => {
     );
     allConfig = new CallLogUserConfig('all');
     missedConfig = new RCItemUserConfig('missed');
+    notificationController = new EntityNotificationController();
     callLogController = new CallLogController(
       entitySourceController,
       allConfig,
       missedConfig,
+      notificationController,
     );
   }
   beforeEach(() => {

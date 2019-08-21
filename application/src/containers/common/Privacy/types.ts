@@ -9,6 +9,7 @@ import { IconButtonSize } from 'jui/components/Buttons';
 type PrivacyProps = {
   id: number; // teamId
   size?: IconButtonSize;
+  analysisSource: string;
 };
 
 type PrivacyViewProps = {
