@@ -10,7 +10,7 @@ fixture('ContentPanel/InputBox')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase())
 
-test(formalName('Check the GetStarted page ', ['P2', 'ContentPanel','InputBox', 'V1.7', 'Hanny.Han']),
+test(formalName('Check @Team Notify Everyone display ', ['P2', 'ContentPanel','InputBox', 'V1.7', 'Hanny.Han']),
 async(t: TestController) => {
   const app = new AppRoot(t);
 	const users = h(t).rcData.mainCompany.users;

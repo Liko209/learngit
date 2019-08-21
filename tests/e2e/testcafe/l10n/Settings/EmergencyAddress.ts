@@ -7,7 +7,7 @@ import { h } from "../../v2/helpers";
 fixture('Settings/EmergencyAddress')
   .beforeEach(setupCase(BrandTire.DID_WITH_MULTI_REGIONS))
   .afterEach(teardownCase());
-test(formalName('Check Phone Settings', ['P2', 'Settings', 'EmergencyAddress', 'V1.7','Hanny.han']), async (t) => {
+test(formalName('Check Emergency Address Settings', ['P2', 'Settings', 'EmergencyAddress', 'V1.7','Hanny.han']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
@@ -22,8 +22,7 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'EmergencyAddress', '
     await app.homePage.leftPanel.settingsEntry.enter();
     await settingTab.phoneEntry.enter();
     await phoneSetting.clickEmergencyAddressSettingEditButton();
-
   });
-  await h(t).log('Then I capture screenshot', { screenshotPath: 'Jupiter_Settings_EmergencyEdit' });
+  await h(t).log('Then I capture screenshot', { screenshotPath: 'Jupiter_Settings_EmergencyEdit_01' });
 
 })

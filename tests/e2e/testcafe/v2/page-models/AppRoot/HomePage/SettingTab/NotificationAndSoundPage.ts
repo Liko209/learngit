@@ -558,14 +558,6 @@ export class SoundsSection extends BaseWebComponent {
   async clickSoundDirectMessages(){
     await this.t.click(this.soundDirectMessages);
   }
-  get audioSpeakerButton(){
-    return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-soundDirectMessages-LogDrum2.wav"
-    ).find('*[data-test-automation-id^="audio-speaker-btn"');
-  }
-  async hoverAudioSpeakerButton(){
-    await this.t.hover(this.audioSpeakerButton);
-  }
 
   get soundDirectMessagesSelectBoxItem(){
     return this.getSelectorByAutomationId(
@@ -580,7 +572,7 @@ export class SoundsSection extends BaseWebComponent {
   get incomingVoiceCalls(){
     return this.getSelectorByAutomationId(
       "settingItemSelectBox-soundIncomingCall"
-  );
+    );
   }
   async clickIncomingVoiceCalls(){
     await this.t.click(this.incomingVoiceCalls);
@@ -588,7 +580,7 @@ export class SoundsSection extends BaseWebComponent {
   get incomingVoiceCallsLabel(){
     return this.getSelectorByAutomationId(
       "settingItemLabel-soundIncomingCall"
-  );
+    );
   }
   async clickIncomingVoiceCallsLabel(){
     await this.t.click(this.incomingVoiceCallsLabel);
@@ -601,7 +593,6 @@ export class SoundsSection extends BaseWebComponent {
   async hoverIncomingVoiceCallsSelectBoxItemTop(){
     await this.t.hover(this.incomingVoiceCallsSelectBoxItemTop);
   }
-
 
   get incomingVoiceCallsSelectBoxItemOff(){
     return this.getSelectorByAutomationId(

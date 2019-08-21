@@ -27,35 +27,26 @@ test(
       members: [loginUser, guestUser1]
     }
 
-    await h(t).withLog(
-      `Given I have a team conversation: "${team.name}"`,
-      async () => {
+    await h(t).withLog(`Given I have a team conversation: "${team.name}"`,async () => {
         await h(t).scenarioHelper.createTeam(team);
-      },
-    );
-    await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,
-      async () => {
+    });
+    await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async () => {
         await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
-      },
-    );
+    });
 
     const rightRail = app.homePage.messageTab.rightRail;
-    await h(t).withLog('When I open the created team conversation and hover "Add team members" icon on right rail',
-      async () => {
+    await h(t).withLog('When I open the created team conversation and hover "Add team members" icon on right rail',async () => {
         const teamsSection = app.homePage.messageTab.teamsSection;
         await teamsSection.conversationEntryById(team.glipId).enter();
         await t.hover(rightRail.memberListSection.addMemberButton);
-      },
-    );
+    });
     await h(t).log('Then I take screenshot', {screenshotPath: 'Jupiter_RightRail_AddTeamMembersIcon'});
+
     await h(t).withLog('When I hover "More" icon on right rail',async () => {
         await rightRail.hoverMoreButton();
-      },
-    );
-    await h(t).log('Then I take screenshot', {
-      screenshotPath: 'Jupiter_RightRail_MoreIcon',
     });
+    await h(t).log('Then I take screenshot', {screenshotPath: 'Jupiter_RightRail_MoreIcon'});
 
     await h(t).withLog('When I click "More" icon on right rail', async () => {
       await rightRail.clickMoreButton();
@@ -63,23 +54,16 @@ test(
     await h(t).withLog('And "More" list should be displayed', async () => {
       await t.expect(rightRail.eventsEntry.exists).ok();
     });
-    await h(t).log('Then I take screenshot', {
-      screenshotPath: 'Jupiter_RightRail_MoreList',
-    });
+    await h(t).log('Then I take screenshot', {screenshotPath: 'Jupiter_RightRail_MoreList'});
 
-    await h(t).withLog(
-      'When I hover "Hide detail" icon on right rail',
-      async () => {
+    await h(t).withLog('When I hover "Hide detail" icon on right rail',async () => {
         await rightRail.clickMoreButton();
         await rightRail.hoverExpandStatusButton();
-      },
-    );
+    });
     // await h(t).withLog('And text "Hide details" should be displayed', async () => {
     //   await t.expect(rightRail.expandStatusButton.exists).ok();
     // });
-    await h(t).log('Then I take screenshot', {
-      screenshotPath: 'Jupiter_RightRail_HideDetails',
-    });
+    await h(t).log('Then I take screenshot', {screenshotPath: 'Jupiter_RightRail_HideDetails'});
 
     await h(t).withLog(
       'When I click "Hide details" button and hover "Show details" button on right rail',

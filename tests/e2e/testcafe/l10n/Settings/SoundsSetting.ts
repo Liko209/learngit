@@ -9,7 +9,7 @@ fixture('Settings/SoundsSetting')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-  test(formalName('Check Phone Settings', ['P2', 'SoundsSetting', 'NotificationAudioSources', 'V1.7', 'Hanny.han']), async (t) => {
+  test(formalName('Check Sounds Settings', ['P2', 'SoundsSetting', 'NotificationAndSounds', 'V1.7', 'Hanny.han']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   const app = new AppRoot(t);
 

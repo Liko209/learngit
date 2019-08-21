@@ -3,9 +3,6 @@ import { BrandTire, SITE_URL } from "../../config";
 import { formalName } from "../../libs/filter";
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { h } from "../../v2/helpers";
-import { v4 as uuid } from 'uuid';
-import * as _ from "lodash";
-import { IGroup } from "../../v2/models";
 
 fixture('ContentPanel/GetStartedCompanyTeam')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -35,14 +32,8 @@ async(t: TestController) => {
 
   const firstConversationResult = searchDialog.instantPage.nthConversation(0);
   const rightRail=app.homePage.messageTab.rightRail;
-  await h(t).withLog('And I click "Team RingCentral Inc." ', async () => {
+  await h(t).withLog('And I click "Team RingCentral Inc."', async () => {
     await t.click(firstConversationResult.self);
-    try{
-      await  rightRail.clickExpandStatusButton();
-    }
-    catch(e){
-      console.log("needn't click show detail");
-     }
   });
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_GetStartedCompanyTeam'});
 });

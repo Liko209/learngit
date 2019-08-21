@@ -12,7 +12,6 @@ test(formalName('Check add people button on direct messages page', ['P2','RightR
 	const users = h(t).rcData.mainCompany.users;
 	const loginUser = users[4];
 	const otherUser = users[5];
-
 	const chat: IGroup = {
 		name: 'AddPeopleTest',
 		type: 'DirectMessage',

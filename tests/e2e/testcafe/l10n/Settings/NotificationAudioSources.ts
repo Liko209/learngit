@@ -9,7 +9,7 @@ fixture('Settings/NotificationAudioSources')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check Phone Settings', ['P2', 'Settings', 'NotificationAudioSources', 'V1.6','Knight.Shen']), async (t) => {
+test(formalName('Check Phone Settings', ['P2', 'Settings', 'NotificationAudioSources', 'V1.6', 'Knight.Shen']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   const app = new AppRoot(t);
 
@@ -26,16 +26,16 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'NotificationAudioSou
     await notificationAndSoundsSettingPage.hoverAudioSourcesVolumeControlLabel();
   });
 
-  await h(t).withLog('When I click Microphone source select box', async () => {
+  await h(t).withLog('And I click Microphone source select box', async () => {
     await notificationAndSoundsSettingPage.clickMicrophoneSourceSelectBox();
     await notificationAndSoundsSettingPage.hoverRingerSourceSelectBox();
   });
 
-  await h(t).withLog('And I can see Use system default item in select list', async () => {
+  await h(t).withLog('Then I can see Use system default item in select list', async () => {
     await t.expect(notificationAndSoundsSettingPage.microphoneSourceDefaultItem.exists).ok();
   });
 
-  await h(t).log('Then I capture screenshot', { screenshotPath: 'Jupiter_Settings_NotificationMicrophoneSource' });
+  await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Settings_NotificationMicrophoneSource' });
 
   await h(t).withLog('When I click Ringer source select box', async () => {
     await notificationAndSoundsSettingPage.hoverAudioSourcesVolumeControlLabel();
@@ -44,10 +44,10 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'NotificationAudioSou
     await notificationAndSoundsSettingPage.hoverRingSourceSelectBoxOffItem();
   });
 
-  await h(t).withLog('And I can see All audio sources item in select list', async () => {
+  await h(t).withLog('Then I can see All audio sources item in select list', async () => {
     await t.expect(notificationAndSoundsSettingPage.ringerSourceAllAudioSourcesItem.exists).ok();
   });
 
-  await h(t).log('Then I capture screenshot', { screenshotPath: 'Jupiter_Settings_NotificationRingerSource' });
+  await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Settings_NotificationRingerSource' });
 
 })
