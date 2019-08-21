@@ -871,6 +871,7 @@
     "noMatchesFound": "No matches found",
     "noCallLogAvailable": "No call logs",
     "noVoicemailAvailable": "No voicemail records",
+    "startConference": "Start conference call",
     "prompt": {
       "numberHasBeenBlocked": "The number has been blocked",
       "numberHasBeenUnblocked": "The number has been unblocked",

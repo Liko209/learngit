@@ -44,6 +44,36 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
     this.goToConversation();
   };
 
+  handleStartConference = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
+  };
+
+  private get _conversationActions() {
+    const { t } = this.props;
+
+    return (
+      <>
+        <JuiIconButton
+          tooltipTitle={t('phone.startConference')}
+          onClick={this.handleStartConference}
+          variant="plain"
+          size="small"
+        >
+          conference
+        </JuiIconButton>
+        <JuiIconButton
+          data-test-automation-id="goToConversationIcon"
+          tooltipTitle={t('message.message')}
+          onClick={this.handleGoToConversation}
+          variant="plain"
+          size="small"
+        >
+          messages
+        </JuiIconButton>
+      </>
+    );
+  }
+
   render() {
     const {
       t,
@@ -63,6 +93,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
     if (shouldHidden) {
       return null;
     }
+
     const joinTeamBtn = (
       <JuiRoundButton
         data-test-automation-id="joinButton"
@@ -71,17 +102,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         {t('people.team.joinButtonTitle')}
       </JuiRoundButton>
     );
-    const goToConversationIcon = (
-      <JuiIconButton
-        data-test-automation-id="goToConversationIcon"
-        tooltipTitle={t('message.message')}
-        onClick={this.handleGoToConversation}
-        variant="plain"
-        size="small"
-      >
-        messages
-      </JuiIconButton>
-    );
+
     return (
       <JuiSearchItem
         onMouseEnter={onMouseEnter}
@@ -92,7 +113,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         value={displayName}
         terms={terms}
         data-test-automation-id={automationId}
-        Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
+        Actions={canJoinTeam ? joinTeamBtn : this._conversationActions}
         isPrivate={isPrivate}
         isJoined={isJoined}
         joinedStatusText={t('people.team.joinedStatus')}
