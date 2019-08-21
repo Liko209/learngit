@@ -216,7 +216,7 @@
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
     },
-    "sharedItems": "shared items",
+    "sharedItems": "{{userName}} shared items",
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",
