@@ -68,7 +68,7 @@ class EntityCacheController<
     });
   }
 
-  async update(item: Partial<T> ): Promise<void> {
+  async update(item: Partial<T>): Promise<void> {
     this._updatePartially(item);
   }
 
@@ -120,13 +120,7 @@ class EntityCacheController<
   ): Promise<T[]> {
     let values = await this.getAll();
     if (filterFunc) {
-      const filterEntities: T[] = [];
-      values.forEach((entity: T) => {
-        if (filterFunc(entity)) {
-          filterEntities.push(entity);
-        }
-      });
-      values = filterEntities;
+      values = values.filter(entity => filterFunc(entity));
     }
 
     if (sortFunc && values.length) {
