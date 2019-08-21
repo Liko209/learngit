@@ -9,6 +9,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('ImageViewer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -23,22 +24,28 @@ test(formalName('Close the viewer and toast popup when the image being viewed is
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have an extension with 1 team', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   await h(t).withLog('When I open a team and upload a image file', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
@@ -69,7 +76,8 @@ test(formalName('Close the viewer and toast popup when the image being viewed is
   });
 
   const alertText = 'Sorry, the image you were viewing is deleted.'
-  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
+  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "{alertText}"`, async (step) => {
+    step.setMetadata('alertText', alertText);
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
 });
@@ -83,22 +91,28 @@ test(formalName('Go to blank page and show a toast when the team was deleted', [
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have an extension with 1 team', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   await h(t).withLog('When I open a team and upload a image file', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
@@ -119,7 +133,7 @@ test(formalName('Go to blank page and show a toast when the team was deleted', [
   });
 
   await h(t).withLog('When I delete team', async () => {
-    await h(t).platform(loginUser).deleteTeam(teamId);
+    await h(t).platform(loginUser).deleteTeam(team.glipId);
   });
 
   await h(t).withLog('Then the dialog should be close', async () => {
@@ -127,7 +141,8 @@ test(formalName('Go to blank page and show a toast when the team was deleted', [
   });
 
   const alertText = 'The team was deleted. To know more, contact the team administrator.'
-  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
+  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "{alertText}"`, async (step) => {
+    step.setMetadata('alertText', alertText);
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
 
@@ -145,22 +160,28 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have an extension with 1 team', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   await h(t).withLog('When I open a team and upload a image file', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
@@ -181,7 +202,7 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
   });
 
   await h(t).withLog('When I archive team', async () => {
-    await h(t).platform(loginUser).archiveTeam(teamId);
+    await h(t).platform(loginUser).archiveTeam(team.glipId);
   });
 
   await h(t).withLog('Then the dialog should be close', async () => {
@@ -189,7 +210,8 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
   });
 
   const alertText = 'This team was archived. To know more, contact the team administrator.'
-  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
+  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "{alertText}"`, async (step) => {
+    step.setMetadata('alertText', alertText);
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
 
@@ -207,22 +229,28 @@ test(formalName('Go to blank page and show a toast when the team was closed', ['
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have an extension with 1 team', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   await h(t).withLog('When I open a team and upload a image file', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
@@ -244,7 +272,7 @@ test(formalName('Go to blank page and show a toast when the team was closed', ['
 
   await h(t).withLog('When I close the team', async () => {
     await h(t).glip(loginUser).updateProfile({
-      [`hide_group_${teamId}`]: true,
+      [`hide_group_${team.glipId}`]: true,
     });
   });
 
@@ -253,7 +281,8 @@ test(formalName('Go to blank page and show a toast when the team was closed', ['
   });
 
   const alertText = 'You removed the conversation.'
-  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
+  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "{alertText}"`, async (step) => {
+    step.setMetadata('alertText', alertText);
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
 

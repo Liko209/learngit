@@ -7,7 +7,7 @@
 import { AbstractModule } from 'framework/AbstractModule';
 import { container } from 'framework/ioc';
 import { ContextInfoZipItemProvider } from './ContextInfoZipItemProvider';
-import { LogControlManager } from 'sdk';
+import { LogControlManager } from 'sdk/module/log';
 import { mainLogger } from 'foundation/log';
 import { debugLog } from 'sdk/module/debug/log';
 import { UploadRecentLogs } from './container/UploadRecentLogs';

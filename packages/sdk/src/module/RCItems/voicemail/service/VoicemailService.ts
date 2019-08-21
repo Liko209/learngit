@@ -24,6 +24,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SUBSCRIPTION.MESSAGE_STORE]: this._syncImmediately,
+        [SUBSCRIPTION.VOICEMAIL]: this._handleVoicemailEvent,
       }),
     );
   }
@@ -106,6 +107,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
       this._voicemailController = new VoicemailController(
         this.getEntitySource(),
         this.userConfig,
+        this.getEntityNotificationController(),
       );
     }
     return this._voicemailController;
@@ -116,6 +118,12 @@ class VoicemailService extends EntityBaseService<Voicemail> {
       false,
       SYNC_DIRECTION.NEWER,
       true,
+    );
+  };
+
+  private _handleVoicemailEvent = async (payload: Voicemail) => {
+    await this._getVoicemailController().voicemailHandleDataController.handleVoicemailEvent(
+      payload,
     );
   };
 

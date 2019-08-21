@@ -19,7 +19,7 @@ function handleHrefAttribute(attr: {
 }) {
   const { canUseTelephony, content } = attr;
   return isSupportWebRTC() && canUseTelephony
-    ? 'javascript:;'
+    ? ''
     : `rcmobile://call?number=${content}`;
 }
 export { isSupportWebRTC, handleHrefAttribute };

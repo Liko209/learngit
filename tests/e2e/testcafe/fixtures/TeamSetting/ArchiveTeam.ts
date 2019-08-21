@@ -23,22 +23,26 @@ test(formalName(`Archive team successfully after clicking Archive button.`, ['P1
   await h(t).glip(adminUser).init();
 
   const alertText = "Team archived successfully.";
-  const teamName = uuid();
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser]
+  };
 
   await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -46,7 +50,7 @@ test(formalName(`Archive team successfully after clicking Archive button.`, ['P1
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open unopened Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -81,7 +85,7 @@ test(formalName(`Archive team successfully after clicking Archive button.`, ['P1
   });
 
   await h(t).withLog(`And the team still in the team list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).ok();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).ok();
   });
 
   await h(t).withLog(`When I open Archive team confirmation again`, async () => {
@@ -105,7 +109,7 @@ test(formalName(`Archive team successfully after clicking Archive button.`, ['P1
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).notOk();
   });
 
   await h(t).withLog(`And send to the empty conversation screen`, async () => {
@@ -113,7 +117,7 @@ test(formalName(`Archive team successfully after clicking Archive button.`, ['P1
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).notOk();
   });
 });
 
@@ -131,13 +135,15 @@ test.meta(<ITestMeta>{
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser]
+  };
+
   await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [adminUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`And I login Jupiter with adminUser: {number}#{extension}`, async (step) => {
@@ -152,7 +158,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -189,16 +195,22 @@ test(formalName(`The Archive Team dialog display correctly after clicking 'Archi
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser]
+  };
+
   await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [adminUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -206,7 +218,7 @@ test(formalName(`The Archive Team dialog display correctly after clicking 'Archi
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -267,7 +279,11 @@ test.meta(<ITestMeta>{
   const profileDialog = app.homePage.profileDialog;
   const ArchiveTeamDialog = app.homePage.archiveTeamDialog;
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -308,7 +324,11 @@ test.meta(<ITestMeta>{
     await t.expect(searchDialog.instantPage.teams.withText(team.name).exists).notOk()
   }, true);
 
-  await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
+  await h(t).withLog(`When I login Jupiter with team member: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: memberUser.company.number,
+      extension: memberUser.extension,
+    });
     await searchDialog.quitByPressEsc();
     await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
   });
@@ -343,24 +363,29 @@ test(formalName(`Can't create team that team name is same as the archived team`,
   const ArchiveTeamDialog = app.homePage.archiveTeamDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
 
-  let teamId;
+  let team = <IGroup>{
+    name: teamName,
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser],
+  }
+
   await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
-
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -377,7 +402,7 @@ test(formalName(`Can't create team that team name is same as the archived team`,
   });
 
   await h(t).withLog(`Then the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).notOk();
   });
 
   await h(t).withLog(`When I create a team with the same name via "new actions" entry`, async () => {
