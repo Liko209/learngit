@@ -14,7 +14,7 @@ import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GroupSearchProps, SelectedMember } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { SearchService } from 'sdk/src/module/search/service';
+import { SearchService } from 'sdk/module/search/service';
 
 class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
   @observable existMembers: number[] = [];
