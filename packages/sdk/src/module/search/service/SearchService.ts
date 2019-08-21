@@ -20,6 +20,9 @@ import { ConfigChangeHistory } from 'sdk/framework/config/types';
 import { Nullable } from 'sdk/types';
 import { configMigrator } from 'sdk/framework/config';
 import { SearchConfigHistory } from '../config/ConfigHistory';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import GroupService, { Group } from 'sdk/module/group';
+import { SortUtils } from 'sdk/framework/utils';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {
@@ -118,6 +121,33 @@ class SearchService extends AbstractService
     return await this.searchPersonController.doFuzzySearchPhoneContacts(
       options,
     );
+  }
+
+  async doFuzzySearchAllGroups(
+    searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+    myGroupsOnly?: boolean,
+    recentFirst?: boolean,
+    sortFunc?: (
+      groupA: SortableModel<Group>,
+      groupB: SortableModel<Group>,
+    ) => number,
+  ) {
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    const option = {
+      fetchAllIfSearchKeyEmpty,
+      myGroupsOnly,
+      recentFirst,
+      sortFunc: sortFunc
+        ? sortFunc
+        : (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
+            return SortUtils.compareSortableModel<Group>(groupA, groupB);
+          },
+    };
+
+    return groupService.doFuzzySearchAllGroups(searchKey, option);
   }
 }
 
