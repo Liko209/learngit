@@ -60,13 +60,13 @@ describe('CallLogActionController', () => {
         .mockResolvedValue([{ id: '1' }, { id: '2' }, { id: '3' }]);
 
       await callLogActionController.deleteCallLogs(ids);
-      expect(RCItemApi.deleteCallLog).toBeCalledWith(ids);
-      expect(notificationCenter.emitEntityUpdate).toBeCalledWith(entityKey, [
-        { __deactivated: true, id: '1' },
-        { __deactivated: true, id: '2' },
-        { __deactivated: true, id: '3' },
+      expect(RCItemApi.deleteCallLog).toHaveBeenCalledWith(ids);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledWith(entityKey, [
+        { deleted: true, id: '1' },
+        { deleted: true, id: '2' },
+        { deleted: true, id: '3' },
       ]);
-      expect(entitySourceController.bulkDelete).toBeCalledWith(ids);
+      expect(entitySourceController.bulkDelete).toHaveBeenCalledWith(ids);
     });
   });
 
@@ -80,7 +80,7 @@ describe('CallLogActionController', () => {
         queryNewestTimestamp: jest.fn().mockReturnValue(13),
       });
       await callLogActionController.clearUnreadMissedCall();
-      expect(mockUpdateSettingOptions).toBeCalledWith([
+      expect(mockUpdateSettingOptions).toHaveBeenCalledWith([
         {
           key: SETTING_KEYS.LAST_READ_MISSED,
           value: 13,
@@ -97,7 +97,7 @@ describe('CallLogActionController', () => {
         queryNewestTimestamp: jest.fn().mockReturnValue(null),
       });
       await callLogActionController.clearUnreadMissedCall();
-      expect(mockUpdateSettingOptions).not.toBeCalled();
+      expect(mockUpdateSettingOptions).not.toHaveBeenCalled();
     });
   });
 });

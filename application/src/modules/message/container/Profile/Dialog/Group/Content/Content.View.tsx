@@ -25,6 +25,7 @@ import { renderButton } from './common/button';
 import { ProfileContext } from '../types';
 import RO from 'resize-observer-polyfill';
 import { AudioConference } from '@/modules/telephony/container/AudioConference';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 // padding for `Summary`
 const PADDING_FIX = 20 + 20;
@@ -65,7 +66,8 @@ class ProfileDialogGroupContentViewComponent extends Component<
   };
 
   messageAfterClick = async () => {
-    const { destinationId } = this.props;
+    const { destinationId, analysisType } = this.props;
+    analyticsCollector.goToConversation('profileDialog', analysisType);
     await goToConversationWithLoading({ id: destinationId });
     portalManager.dismissLast();
   };

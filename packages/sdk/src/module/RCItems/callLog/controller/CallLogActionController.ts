@@ -32,7 +32,7 @@ class CallLogActionController {
         false,
       );
       callLogs.forEach((value: CallLog) => {
-        value.__deactivated = true;
+        value.deleted = true;
       });
       await RCItemApi.deleteCallLog(entityIds);
       performanceTracer.trace({

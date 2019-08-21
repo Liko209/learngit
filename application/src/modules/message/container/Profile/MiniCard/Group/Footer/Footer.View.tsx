@@ -19,12 +19,14 @@ import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { ProfileDialogGroup } from '@/modules/message/container/Profile/Dialog/Group';
 import { AudioConference } from '@/modules/telephony/container/AudioConference';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 @observer
 class ProfileMiniCardGroupFooter extends Component<
   WithTranslation & ProfileMiniCardGroupFooterViewProps
 > {
   onClickMessage = () => {
+    analyticsCollector.goToConversation('miniProfile', this.props.analysisType);
     const { id } = this.props;
     const result = goToConversationWithLoading({ id });
     if (result) {
@@ -41,6 +43,15 @@ class ProfileMiniCardGroupFooter extends Component<
     return mapping[typeId];
   };
 
+  getDataTrackingCategory() {
+    const { typeId } = this.props;
+    const mapping = {
+      [TypeDictionary.TYPE_ID_TEAM]: 'Team',
+      [TypeDictionary.TYPE_ID_GROUP]: 'Group',
+    };
+    return mapping[typeId];
+  }
+
   handleCloseMiniCard = () => {
     portalManager.dismissLast();
   };
@@ -54,6 +65,10 @@ class ProfileMiniCardGroupFooter extends Component<
             id={id}
             profileDialog={ProfileDialogGroup}
             beforeClick={this.handleCloseMiniCard}
+            dataTrackingProps={{
+              category: this.getDataTrackingCategory(),
+              source: 'miniProfile',
+            }}
           >
             <JuiButton variant="text" color="primary">
               {t('people.team.profile')}
