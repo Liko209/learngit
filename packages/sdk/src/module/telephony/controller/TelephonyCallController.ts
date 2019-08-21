@@ -116,7 +116,6 @@ class TelephonyCallController implements IRTCCallDelegate {
   }
 
   private _setSwitchCallInfo(callEntity: Call, callOption: CallOptions) {
-
     const isOutbound = callOption.callDirection === CALL_DIRECTION.OUTBOUND;
     if (isOutbound) {
       callEntity.to_num = callOption.replaceNumber || '';
@@ -129,37 +128,65 @@ class TelephonyCallController implements IRTCCallDelegate {
     callEntity.direction = CALL_DIRECTION.OUTBOUND;
   }
 
+  private _handleCallDisconnectingState(call: Call) {
+    if (
+      call.call_state !== CALL_STATE.DISCONNECTED &&
+      call.call_state !== CALL_STATE.DISCONNECTING
+    ) {
+      call.call_state = CALL_STATE.DISCONNECTING;
+      notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+    }
+  }
+
+  private _handleCallDisconnectedState(call: Call) {
+    call.call_state = CALL_STATE.DISCONNECTED;
+    if (!call.disconnectTime) {
+      call.disconnectTime = Date.now();
+    }
+    this._setSipData(call);
+    notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+  }
+
+  private _handleCallConnectedState(call: Call) {
+    call.call_state = CALL_STATE.CONNECTED;
+    call.hold_state = HOLD_STATE.IDLE;
+    call.record_state = RECORD_STATE.IDLE;
+    call.connectTime = Date.now();
+    call.session_id = this._rtcCall.getCallInfo().sessionId;
+    notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+  }
+
+  private _handleCallConnectingState(call: Call) {
+    call.call_state = CALL_STATE.CONNECTING;
+    notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+  }
+
   private _getCallEntity() {
     const originalCall = this._entityCacheController.getSynchronously(
       this._entityId,
     );
     return originalCall ? _.cloneDeep(originalCall) : null;
   }
-  private _handleCallStateChanged(state: RTC_CALL_STATE) {
+
+  private _handleCallStateChanged(state: CALL_STATE) {
     const call = this._getCallEntity();
     if (call) {
       switch (state) {
-        case RTC_CALL_STATE.CONNECTING:
-          call.call_state = CALL_STATE.CONNECTING;
+        case CALL_STATE.CONNECTING:
+          this._handleCallConnectingState(call);
           break;
-        case RTC_CALL_STATE.CONNECTED:
-          call.call_state = CALL_STATE.CONNECTED;
-          call.hold_state = HOLD_STATE.IDLE;
-          call.record_state = RECORD_STATE.IDLE;
-          call.connectTime = Date.now();
-          call.session_id = this._rtcCall.getCallInfo().sessionId;
+        case CALL_STATE.CONNECTED:
+          this._handleCallConnectedState(call);
           break;
-        case RTC_CALL_STATE.DISCONNECTED:
-          call.call_state = CALL_STATE.DISCONNECTED;
-          if (!call.disconnectTime) {
-            call.disconnectTime = Date.now();
-          }
-          this._setSipData(call);
+        case CALL_STATE.DISCONNECTING:
+          this._handleCallDisconnectingState(call);
+          break;
+        case CALL_STATE.DISCONNECTED:
+          this._handleCallDisconnectedState(call);
           break;
         default:
           break;
       }
-      notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
     } else {
       telephonyLogger.warn(`No entity is found for call: ${this._entityId}`);
     }
@@ -173,8 +200,28 @@ class TelephonyCallController implements IRTCCallDelegate {
     callEntity.to_tag = this._rtcCall.getCallInfo().toTag || callEntity.to_tag;
   }
 
+  private _convertCallState(state: RTC_CALL_STATE) {
+    switch (state) {
+      case RTC_CALL_STATE.CONNECTED:
+        return CALL_STATE.CONNECTED;
+      case RTC_CALL_STATE.IDLE:
+        return CALL_STATE.IDLE;
+      case RTC_CALL_STATE.CONNECTING:
+        return CALL_STATE.CONNECTING;
+      case RTC_CALL_STATE.DISCONNECTED:
+        return CALL_STATE.DISCONNECTED;
+      default:
+        return CALL_STATE.IDLE;
+    }
+  }
+
   async onCallStateChange(state: RTC_CALL_STATE) {
-    this._handleCallStateChanged(state);
+    const callState: CALL_STATE = this._convertCallState(state);
+
+    state === RTC_CALL_STATE.DISCONNECTED &&
+      this._handleCallStateChanged(CALL_STATE.DISCONNECTING);
+
+    this._handleCallStateChanged(callState);
   }
 
   private _handleHoldAction(isSuccess: boolean) {
@@ -343,7 +390,7 @@ class TelephonyCallController implements IRTCCallDelegate {
   }
 
   hangUp() {
-    this._handleCallStateChanged(RTC_CALL_STATE.DISCONNECTED);
+    this._handleCallStateChanged(CALL_STATE.DISCONNECTING);
     this._rtcCall.hangup();
   }
 

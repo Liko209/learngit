@@ -86,7 +86,7 @@ describe('TelephonyCallController', () => {
       callController._handleCallStateChanged = jest.fn();
       callController.hangUp();
       expect(callController._handleCallStateChanged).toHaveBeenCalledWith(
-        RTC_CALL_STATE.DISCONNECTED,
+        CALL_STATE.DISCONNECTING,
       );
       expect(rtcCall.hangup).toHaveBeenCalled();
     });
@@ -397,7 +397,7 @@ describe('TelephonyCallController', () => {
     it('should pass the idle state to call controller', () => {
       const spy = jest.spyOn(callController, '_handleCallStateChanged');
       callController.onCallStateChange(RTC_CALL_STATE.IDLE);
-      expect(spy).toHaveBeenCalledWith(RTC_CALL_STATE.IDLE);
+      expect(spy).toHaveBeenCalledWith(CALL_STATE.IDLE);
     });
   });
 
@@ -431,7 +431,7 @@ describe('TelephonyCallController', () => {
       Date.now = jest.fn().mockReturnValue(1);
       callController._getCallEntity = jest.fn().mockReturnValue({});
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._handleCallStateChanged(RTC_CALL_STATE.CONNECTED);
+      callController._handleCallStateChanged(CALL_STATE.CONNECTED);
       expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
         {
           call_state: CALL_STATE.CONNECTED,
@@ -445,7 +445,7 @@ describe('TelephonyCallController', () => {
     it('should update call state and hold when state is connecting', () => {
       callController._getCallEntity = jest.fn().mockReturnValue({});
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._handleCallStateChanged(RTC_CALL_STATE.CONNECTING);
+      callController._handleCallStateChanged(CALL_STATE.CONNECTING);
       expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
         {
           call_state: CALL_STATE.CONNECTING,
@@ -463,7 +463,7 @@ describe('TelephonyCallController', () => {
       });
       callController._getCallEntity = jest.fn().mockReturnValue(call);
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._handleCallStateChanged(RTC_CALL_STATE.DISCONNECTED);
+      callController._handleCallStateChanged(CALL_STATE.DISCONNECTED);
       expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
         {
           call_state: CALL_STATE.DISCONNECTED,
