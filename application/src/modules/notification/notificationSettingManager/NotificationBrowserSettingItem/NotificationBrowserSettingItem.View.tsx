@@ -17,10 +17,6 @@ import {
 } from '@/modules/notification/interface';
 import { jupiter } from 'framework/Jupiter';
 import { Notification } from '@/containers/Notification';
-import {
-  ToastMessageAlign,
-  ToastType,
-} from '@/containers/ToastWrapper/Toast/types';
 import i18nT from '@/utils/i18nT';
 import { dataAnalysis } from 'foundation/analysis';
 import { catchError } from '@/common/catchError';
@@ -56,13 +52,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     });
   };
   private _promptPermissionDenied = async () => {
-    Notification.flagToast({
-      message: await i18nT('notification.notificationPermissionBlocked'),
-      type: ToastType.WARN,
-      messageAlign: ToastMessageAlign.LEFT,
-      fullWidth: false,
-      dismissible: true,
-    });
+    Notification.flagWarningToast('notification.notificationPermissionBlocked');
   };
 
   private _showEnabledNotification = async () => {

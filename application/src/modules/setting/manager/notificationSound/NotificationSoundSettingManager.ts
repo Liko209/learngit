@@ -25,12 +25,7 @@ import {
   DEFAULT_AUDIO_OUTPUT_DEVICES,
 } from './audioSource/constant';
 import { Notification } from '@/containers/Notification';
-import {
-  ToastMessageAlign,
-  ToastType,
-} from '@/containers/ToastWrapper/Toast/types';
 import { dataAnalysis } from 'foundation/analysis';
-import i18nT from '@/utils/i18nT';
 import { mainLogger } from 'foundation/log';
 
 const logTag = '[Settings][Audio]';
@@ -43,13 +38,9 @@ class NotificationSoundSettingManager {
 
   init() {
     const onPermissionDenied = async () => {
-      Notification.flagToast({
-        message: await i18nT('setting.audioSource.microphonePermissionBlocked'),
-        type: ToastType.WARN,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: true,
-      });
+      Notification.flagWarningToast(
+        'setting.audioSource.microphonePermissionBlocked',
+      );
 
       dataAnalysis.track('Jup_Web/DT_settings_microphone_blocked', {
         endPoint: 'web',

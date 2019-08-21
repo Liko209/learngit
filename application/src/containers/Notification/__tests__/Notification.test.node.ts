@@ -3,8 +3,13 @@
  * @Date: 2018-12-10 09:28:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { Notification, NotificationProps, notificationData } from './../Notification';
+import {
+  Notification,
+  NotificationProps,
+  notificationData,
+} from '../Notification';
 import { ToastType, ToastMessageAlign } from '../../ToastWrapper/Toast/types';
+
 describe('Notification', () => {
   describe('_showNotification', () => {
     beforeEach(() => {
@@ -88,7 +93,7 @@ describe('Notification', () => {
       dismiss && dismiss();
       setImmediate(() => {
         expect(Notification._buffer).toHaveLength(0);
-      })
+      });
     });
 
     it('should call the private method by calling flashToast or flagToast', () => {
@@ -103,6 +108,21 @@ describe('Notification', () => {
       expect(spy).toHaveBeenCalledTimes(1);
       Notification.flagToast(toastData);
       expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should call the private method by calling flagWarningToast', () => {
+      const spy = jest.spyOn(Notification as any, 'flagToast');
+      const toastData: NotificationProps = {
+        message: 'aaa',
+      };
+      Notification.flagWarningToast(toastData);
+      expect(spy).toHaveBeenCalledTimes(1);
+      Notification.flagSuccessToast(toastData);
+      expect(spy).toHaveBeenCalledTimes(2);
+      Notification.flagErrorToast(toastData);
+      expect(spy).toHaveBeenCalledTimes(3);
+      Notification.flagInfoToast(toastData);
+      expect(spy).toHaveBeenCalledTimes(4);
     });
   });
 });
