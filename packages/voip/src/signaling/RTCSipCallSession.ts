@@ -430,11 +430,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
         rtcLogger.info(LOG_TAG, 'Mute Local media steams success');
         this._session.mute();
-        return;
+      } else {
+        rtcLogger.info(LOG_TAG, 'Mute Remote media steams success');
+        this.toggleRemoteMute(true);
       }
-      rtcLogger.info(LOG_TAG, 'Mute Remote media steams success');
-      this.toggleRemoteMute(true);
-      return;
     }
   }
 
@@ -442,12 +441,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (this._session) {
       if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
         rtcLogger.info(LOG_TAG, 'Unmute Local media steams success');
-        this._session.mute();
-        return;
+        this._session.unmute();
+      } else {
+        rtcLogger.info(LOG_TAG, 'Unmute Remote media steams success');
+        this.toggleRemoteMute(false);
       }
-      rtcLogger.info(LOG_TAG, 'Unmute Remote media steams success');
-      this.toggleRemoteMute(true);
-      return;
     }
   }
 
