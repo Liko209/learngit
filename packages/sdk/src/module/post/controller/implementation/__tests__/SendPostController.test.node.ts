@@ -29,6 +29,7 @@ import { GroupService } from 'sdk/module/group/service';
 import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySourceController';
 import { MAX_PERMISSION_LEVEL, DEFAULT_USER_PERMISSION_LEVEL, PERMISSION_ENUM } from 'sdk/module/group/constants';
 import { ERROR_CODES_SDK, ERROR_TYPES, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import { ItemService } from 'sdk/module/item';
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
 
@@ -94,6 +95,7 @@ describe('SendPostController', () => {
   let postDataController: PostDataController;
   let postActionController: PostActionController;
   let mockEntitySourceController: EntitySourceController<Post>;
+  let itemService: ItemService;
   const groupConfigService: GroupConfigService = new GroupConfigService();
   const postDao = new PostDao(null);
   const accountDao = new AccountDao(null);
@@ -116,6 +118,9 @@ describe('SendPostController', () => {
     mockEntitySourceController = {
       get: jest.fn()
     } as any;
+    itemService = {
+      getById: jest.fn(),
+    } as any;
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((config: string) => {
@@ -124,6 +129,9 @@ describe('SendPostController', () => {
         }
         if (config === ServiceConfig.ACCOUNT_SERVICE) {
           return { userConfig: AccountUserConfig.prototype };
+        }
+        if (config === ServiceConfig.ITEM_SERVICE) {
+          return itemService;
         }
       });
     sendPostController = new SendPostController(
@@ -542,6 +550,8 @@ describe('SendPostController', () => {
             }
           }
         })
+        itemService.getById.mockResolvedValue({
+        });
         AccountUserConfig.prototype.getGlipUserId = jest
           .fn()
           .mockReturnValue(4);
@@ -554,7 +564,7 @@ describe('SendPostController', () => {
       expect(sendPostController.sendPostToServer).toBeCalled();
     })
 
-    it('should throw post deactivated error', async () => {
+    it('should throw post deactivated error [JPT-2816]', async () => {
       prepareShareItemData();
       mockEntitySourceController.get.mockResolvedValue({
         deactivated: true,
@@ -565,7 +575,7 @@ describe('SendPostController', () => {
       }))
     })
 
-    it('should throw GROUP_NOT_MEMBER error', async () => {
+    it('should throw GROUP_NOT_MEMBER error when not in group members [JPT-2816]', async () => {
       prepareShareItemData();
       groupService.getById.mockResolvedValue({
         id: 2,
@@ -584,7 +594,7 @@ describe('SendPostController', () => {
         code: ERROR_CODES_SDK.GROUP_NOT_MEMBER
       }))
     })
-    it('should throw GROUP_NOT_MEMBER error', async () => {
+    it('should throw GROUP_NOT_MEMBER error when NOT_AUTHORIZED to group [JPT-2816]', async () => {
       prepareShareItemData();
       groupService.getById.mockRejectedValue(new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, ''))
       await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
@@ -592,7 +602,7 @@ describe('SendPostController', () => {
         code: ERROR_CODES_SDK.GROUP_NOT_MEMBER
       }))
     })
-    it('should throw GROUP_ARCHIVED error', async () => {
+    it('should throw GROUP_ARCHIVED error when group is archived [JPT-2816]', async () => {
       prepareShareItemData();
       groupService.getById.mockResolvedValue({
         id: 2,
@@ -611,7 +621,7 @@ describe('SendPostController', () => {
         code: ERROR_CODES_SDK.GROUP_ARCHIVED
       }))
     })
-    it('should throw GROUP_DEACTIVATED error', async () => {
+    it('should throw GROUP_DEACTIVATED error group is deactivated [JPT-2816]', async () => {
       prepareShareItemData();
       groupService.getById.mockResolvedValue({
         id: 2,
@@ -630,12 +640,22 @@ describe('SendPostController', () => {
         code: ERROR_CODES_SDK.GROUP_DEACTIVATED
       }))
     })
-    it('should throw GROUP_NO_PERMISSION error', async () => {
+    it('should throw GROUP_NO_PERMISSION error when uer post permission is disabled [JPT-2816]', async () => {
       prepareShareItemData();
       groupService.isCurrentUserHasPermission.mockReturnValue(false);
       await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
         type: ERROR_TYPES.SDK,
         code: ERROR_CODES_SDK.GROUP_NO_PERMISSION
+      }))
+    })
+    it('should throw ITEM_DEACTIVATED error when item is deactivated [JPT-2832]', async () => {
+      prepareShareItemData();
+      itemService.getById.mockResolvedValue({
+        deactivated: true,
+      });
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.ITEM_DEACTIVATED
       }))
     })
   })

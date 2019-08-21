@@ -19,6 +19,8 @@ import { Raw } from '../../../../framework/model';
 import { transform } from '../../../../service/utils';
 import _ from 'lodash';
 import { Item } from 'sdk/module/item/entity';
+import { JSdkError, ERROR_CODES_SDK } from 'sdk/error';
+import { Nullable } from 'sdk/types';
 
 export type LinksArray = { url: string }[];
 
@@ -101,7 +103,7 @@ class SendPostControllerHelper {
       itemIds: number[];
       targetGroupId: number;
     },
-    getItemById: (id: number) => Promise<Item>,
+    getItemById: (id: number) => Promise<Nullable<Item>>,
   ) {
     const { fromPost, itemIds, targetGroupId } = options;
     const now = Date.now();
@@ -112,14 +114,15 @@ class SendPostControllerHelper {
     const noLinkIds = _.difference(itemIds, linkIds);
     const mapToLinks = async (id: number) => {
       const item = await getItemById(id);
-      return item
-        ? {
-            url: item.url,
-            source: 'streamPostLink',
-            history: [{ url: item.url }],
-            do_not_render: false,
-          }
-        : null;
+      if (!item || item.deactivated) {
+        throw new JSdkError(ERROR_CODES_SDK.ITEM_DEACTIVATED, 'item deactivated.');
+      }
+      return {
+        url: item.url,
+        source: 'streamPostLink',
+        history: [{ url: item.url }],
+        do_not_render: false,
+      };
     };
     const links = await Promise.all(
       linkIds.map(mapToLinks).filter(item => !!item),

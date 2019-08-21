@@ -250,6 +250,13 @@ class SendPostController implements ISendPostController {
     if (post.deactivated) {
       throw new JSdkError(ERROR_CODES_SDK.POST_DEACTIVATED, 'post deactivated');
     }
+    const item = await ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    ).getById(itemId);
+
+    if (!item || item.deactivated) {
+      throw new JSdkError(ERROR_CODES_SDK.ITEM_DEACTIVATED, 'item deactivated.');
+    }
     const buildPost = await this._helper.buildShareItemPost(
       {
         targetGroupId,
@@ -257,9 +264,9 @@ class SendPostController implements ISendPostController {
         itemIds: [itemId],
       },
       async id =>
-        (await ServiceLoader.getInstance<ItemService>(
+        await ServiceLoader.getInstance<ItemService>(
           ServiceConfig.ITEM_SERVICE,
-        ).getById(id))!,
+        ).getById(id),
     );
     await this._checkSharePermission(targetGroupId);
     try {
