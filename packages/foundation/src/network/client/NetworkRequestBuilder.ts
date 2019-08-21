@@ -29,6 +29,7 @@ class NetworkRequestBuilder implements IRequest {
   requestConfig: object = {};
   params: any;
   retryCount: number = 0;
+  needNetwork: boolean = true;
   authFree: boolean;
   timeout: number = config.timeout;
   handlerType: IHandleType;
@@ -53,6 +54,8 @@ class NetworkRequestBuilder implements IRequest {
       requestConfig,
       HAPriority,
       channel,
+      retryCount,
+      needNetwork,
     } = options;
 
     this.headers = headers || {};
@@ -66,6 +69,8 @@ class NetworkRequestBuilder implements IRequest {
     this.requestConfig = requestConfig || {};
     this.HAPriority = HAPriority || HA_PRIORITY.BASIC;
     this.channel = channel || '';
+    this.retryCount = retryCount || 0;
+    this.needNetwork = needNetwork === undefined ? true : needNetwork;
     return this;
   }
 
@@ -127,6 +132,15 @@ class NetworkRequestBuilder implements IRequest {
    */
   public setRetryCount(value: number) {
     this.retryCount = value;
+    return this;
+  }
+
+  /**
+   * Setter needNetwork
+   * @param {boolean} value
+   */
+  public setNeedNetwork(value: boolean) {
+    this.needNetwork = value;
     return this;
   }
 

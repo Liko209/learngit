@@ -198,6 +198,7 @@ class SendPostController implements ISendPostController {
         {
           priority: REQUEST_PRIORITY.HIGH,
           retryCount: DEFAULT_RETRY_COUNT,
+          needNetwork: false,
         },
       );
       return await this.handleSendPostSuccess(result, post);
