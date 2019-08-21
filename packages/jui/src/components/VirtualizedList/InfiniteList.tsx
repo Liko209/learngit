@@ -3,7 +3,14 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useState, memo, forwardRef, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  memo,
+  forwardRef,
+  useRef,
+  useCallback,
+  useEffect,
+} from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {
@@ -14,6 +21,7 @@ import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
 import { IndexRange, ScrollInfo } from './types';
 import { useMountState } from './hooks';
 import { DIRECTION } from '../Lists';
+import { JuiVirtualizedMenuList } from '../VirtualizedMenus';
 
 type JuiInfiniteListProps = {
   height?: number;
@@ -38,6 +46,7 @@ type JuiInfiniteListProps = {
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   onBottomStatusChange?: (atBottom: boolean) => void;
+  highlightedIndex?: number;
 };
 
 const JuiInfiniteList = (
@@ -67,6 +76,7 @@ const JuiInfiniteList = (
     contentStyle,
     stickToLastPosition,
     onBottomStatusChange,
+    highlightedIndex,
   }: JuiInfiniteListProps,
   forwardRef: React.RefObject<JuiVirtualizedListHandles> | null,
 ) => {
@@ -91,6 +101,12 @@ const JuiInfiniteList = (
   if (!height) {
     return null;
   }
+
+  useEffect(() => {
+    if (ref.current && highlightedIndex !== undefined) {
+      ref.current.scrollIntoViewIfNeeded(highlightedIndex);
+    }
+  }, [highlightedIndex]);
 
   return (
     <JuiDataLoader

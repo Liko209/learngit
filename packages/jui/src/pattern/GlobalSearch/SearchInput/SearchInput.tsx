@@ -3,23 +3,12 @@
  * @Date: 2019-04-01 12:43:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, {
-  memo,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-} from 'react';
-import {
-  JuiOutlineTextField,
-  JuiOutlineTextFieldRef,
-  JuiOutlineTextFieldProps,
-} from '../../../components/Forms/OutlineTextField';
+import { JuiOutlineTextFieldRef } from '../../../components/Forms/OutlineTextField';
 import styled from '../../../foundation/styled-components';
-import {
-  spacing, grey, typography, radius,
-} from '../../../foundation/utils';
+import { grey, radius } from '../../../foundation/utils';
+import { JuiSearchInput } from '../../SearchBar/SearchInput';
 
-const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
+const StyledJuiOutlineTextField = styled(JuiSearchInput)`
   display: flex;
   justify-content: space-between;
   border-top: 0;
@@ -30,62 +19,6 @@ const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   border-color: ${grey('300')};
 `;
 
-const ClearButton = styled.span`
-  width: auto;
-  text-align: right;
-  padding: ${spacing(0, 3)};
-  color: ${grey('600')};
-  border-right: 1px solid ${grey('400')};
-  ${typography('caption1')};
-  cursor: pointer;
-`;
-
-type JuiGlobalSearchInputProps = {
-  clearText: string;
-  showClear: boolean;
-  onClear: () => void;
-  onClose: () => void;
-} & JuiOutlineTextFieldProps;
-
-const JuiGlobalSearchInput = memo(forwardRef((props: JuiGlobalSearchInputProps, ref) => {
-  const {
-    showClear, onClear, onClose, clearText, ...rest
-  } = props;
-
-  const inputRef = useRef<JuiOutlineTextFieldRef>(null);
-
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      inputRef.current && inputRef.current.focus();
-    }
-  }));
-
-  const baseOnClear = () => {
-    inputRef.current && inputRef.current.focus();
-    onClear();
-  };
-
-  return (
-    <StyledJuiOutlineTextField
-      radiusType="rectangle"
-      iconName={['search', 'close']}
-      iconPosition="both"
-      onClickIconRight={onClose}
-      size="large"
-      ref={inputRef as any}
-      inputAfter={
-        showClear && (
-          <ClearButton
-            data-test-automation-id="global-search-clear"
-            onClick={baseOnClear}
-          >
-            {clearText}
-          </ClearButton>
-        )
-      }
-      {...rest}
-    />
-  );
-}));
+const JuiGlobalSearchInput = StyledJuiOutlineTextField;
 
 export { JuiGlobalSearchInput, JuiOutlineTextFieldRef };

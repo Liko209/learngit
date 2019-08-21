@@ -7,7 +7,7 @@ import React from 'react';
 import MuiListItem, {
   ListItemProps as MuiListItemProps,
 } from '@material-ui/core/ListItem';
-import styled from '../../foundation/styled-components';
+import styled, { css } from '../../foundation/styled-components';
 import { spacing, width, palette } from '../../foundation/utils';
 import { Palette } from '../../foundation/theme/theme';
 
@@ -35,6 +35,7 @@ type JuiListItemProps = MuiListItemPropsFixed & {
    * listItem use this color to calc hover, pressed, selected, disabled  background color, default to black
    */
   baseColor?: BaseColor;
+  highlighted?: boolean;
 };
 
 const WrappedListItem = React.memo(
@@ -47,9 +48,9 @@ const WrappedListItem = React.memo(
   }: JuiListItemProps) => <MuiListItem {...rests} />,
 );
 
-const StyledListItem = styled<JuiListItemProps>(({ baseColor, ...rest }) => (
-  <WrappedListItem {...rest} />
-))`
+const StyledListItem = styled<JuiListItemProps>(
+  ({ baseColor, highlighted, ...rest }) => <WrappedListItem {...rest} />,
+)`
   && {
     padding: ${spacing(2)};
     width: ${props => (props.width ? width(props.width) : '100%')};
@@ -71,6 +72,17 @@ const StyledListItem = styled<JuiListItemProps>(({ baseColor, ...rest }) => (
           theme,
         })};
     }
+
+    ${({ highlighted }) =>
+      highlighted
+        ? css`
+            background-color: ${({ baseColor = 'black', theme }) =>
+              palette(colorMap[baseColor][0], colorMap[baseColor][1], 0.05)({
+                theme,
+              })};
+          `
+        : ''};
+
     .rippleVisible {
       background-color: ${({ baseColor = 'black', theme }) =>
         palette(colorMap[baseColor][0], colorMap[baseColor][1], 0.05)({
