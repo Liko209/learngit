@@ -18,7 +18,7 @@ import {
   IUpdateLineRequest,
   ERCServiceFeaturePermission,
 } from 'sdk/module/rcInfo/types';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { notificationCenter } from 'sdk/service';
 import { SERVICE, RC_INFO } from 'sdk/service/eventKey';
 
@@ -26,7 +26,6 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   EmergencyServiceAddress
 > {
   id = SettingEntityIds.Phone_E911;
-  private _isGlipLogin = false;
   private _isSipReady = false;
   private _e911UpdateEmitted = false;
 
@@ -40,7 +39,7 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   };
 
   private _e911Updated = async () => {
-    if (!(this._isGlipLogin && this._isSipReady)) {
+    if (!this._isSipReady) {
       return;
     }
     const telephonyService = ServiceLoader.getInstance<TelephonyService>(
@@ -67,11 +66,6 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
     this._e911Updated();
   };
 
-  private _onGlipLogin = async () => {
-    this._isGlipLogin = true;
-    this._e911Updated();
-  };
-
   private _onEAUpdated = () => {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
@@ -92,7 +86,6 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
       this._emergencyAddressChanged();
       this._e911Updated();
     });
-    notificationCenter.on(SERVICE.GLIP_LOGIN, this._onGlipLogin);
     telephonyService.subscribeSipProvReceived(this._onSipProvReceived);
   }
 

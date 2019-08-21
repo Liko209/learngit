@@ -34,7 +34,7 @@ class PostListPageViewModel extends AbstractViewModel {
     }
     const atMentionPostIds = store.get('atMentionPostIds');
     if (Array.isArray(atMentionPostIds)) {
-      return atMentionPostIds.sort((a: number, b: number) => b - a);
+      return atMentionPostIds.slice().sort((a: number, b: number) => b - a);
     }
     return [];
   }

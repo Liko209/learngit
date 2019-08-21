@@ -1,11 +1,12 @@
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import { Profile } from 'sdk/module/profile/entity';
 import {
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
-  CALLING_OPTIONS
+  CALLING_OPTIONS,
+  VIDEO_SERVICE_OPTIONS,
 } from 'sdk/module/profile';
 import Base from './Base';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
@@ -69,20 +70,23 @@ export default class ProfileModel extends Base<Profile> {
   desktopVoicemailOption: boolean;
 
   @observable
-  maxLeftRailGroup: number;
-
-  @observable
   lastReadMissed: number | undefined;
 
   @observable
   newMessageBadges: string;
+
+  @observable
+  videoService: string;
+
+  @observable
+  rcvBeta: boolean;
 
   constructor(data: Profile) {
     super(data);
     const {
       favorite_post_ids: favoritePostIds = [],
       favorite_group_ids: favoriteGroupIds = [],
-      skip_close_conversation_confirmation: skipCloseConversationConfirmation = false
+      skip_close_conversation_confirmation: skipCloseConversationConfirmation = false,
     } = data;
 
     this.favoritePostIds = favoritePostIds;
@@ -98,8 +102,7 @@ export default class ProfileModel extends Base<Profile> {
     });
 
     this.hiddenGroupIds = hiddenGroupIds;
-    this.maxLeftRailGroup = Number(data.max_leftrail_group_tabs2) || 0;
-
+    // TODO, refactor these default value, should move them into a map or standalone file
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;
     this.newMessageBadges =
@@ -132,6 +135,17 @@ export default class ProfileModel extends Base<Profile> {
     this.desktopVoicemailOption =
       data.desktop_notifications_new_voicemails === NOTIFICATION_OPTIONS.ON;
     this.lastReadMissed = data.last_read_missed;
+    // video_service
+    this.videoService =
+      data.video_service || VIDEO_SERVICE_OPTIONS.RINGCENTRAL_MEETINGS;
+    this.rcvBeta = !!data.rcv_beta;
+  }
+
+  @computed
+  get isRCVService() {
+    return (
+      this.videoService === VIDEO_SERVICE_OPTIONS.RINGCENTRAL_VIDEO_EMBEDDED
+    );
   }
 
   static fromJS(data: Profile) {

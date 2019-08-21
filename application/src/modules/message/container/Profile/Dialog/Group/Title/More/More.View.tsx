@@ -11,9 +11,10 @@ import { JuiIconButton } from 'jui/components/Buttons';
 // import copy from 'copy-to-clipboard';
 // import { accessHandler } from '../../AccessHandler';
 import { MoreViewProps } from './types';
-import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import copy from 'copy-to-clipboard';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 @observer
 class More extends React.Component<WithTranslation & MoreViewProps> {
@@ -29,17 +30,19 @@ class More extends React.Component<WithTranslation & MoreViewProps> {
         more_horiz
       </JuiIconButton>
     );
-  }
+  };
 
   onClickCopyUrl = () => {
     const { url } = this.props;
     copy(url);
-  }
+    analyticsCollector.copyTeamURL();
+  };
 
   onClickCopyEmail = async () => {
     const { email } = this.props;
     copy(email);
-  }
+    analyticsCollector.copyTeamEmail();
+  };
 
   render() {
     const { t } = this.props;

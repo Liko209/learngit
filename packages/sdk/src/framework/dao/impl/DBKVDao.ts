@@ -5,7 +5,7 @@
  */
 
 import { IKVDao } from '../interface/IKVDao';
-import { IDatabaseCollection, IDatabase } from 'foundation';
+import { IDatabaseCollection, IDatabase } from 'foundation/db';
 import { errorHandler } from '../errors/handler';
 
 type DBKeyValue = {

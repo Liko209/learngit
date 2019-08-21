@@ -10,13 +10,14 @@ import { Person } from '../entity';
 import { EditablePersonInfo, HeadShotInfo } from '../types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
 import { Raw } from 'sdk/framework/model';
 import { ItemService } from 'sdk/module/item';
 import { HeadShotData } from '../entity/Person';
 import _ from 'lodash';
 import { transform } from 'sdk/service/utils';
+import { Nullable } from 'sdk/types';
 
 const MODULE_NAME = 'PersonActionController';
 
@@ -25,6 +26,26 @@ class PersonActionController {
     private _partialModifyController: IPartialModifyController<Person>,
     private _entitySourceController: IEntitySourceController<Person>,
   ) {}
+
+  setCustomStatus(personId: number, status: string): Promise<Nullable<Person>> {
+    if (!personId) {
+      return Promise.resolve(null);
+    }
+    return this._partialModifyController.updatePartially({
+      entityId: personId,
+      preHandlePartialEntity: (partialEntity: Partial<Raw<Person>>) => {
+        return {
+          ...partialEntity,
+          away_status: status,
+        };
+      },
+      doUpdateEntity: (updatedEntity: Person) => {
+        const requestController = this._entitySourceController.getRequestController()!;
+        return requestController.put(updatedEntity);
+      },
+      saveLocalFirst: false,
+    });
+  }
 
   async editPersonalInfo(
     incomingInfo?: EditablePersonInfo,

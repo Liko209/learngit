@@ -24,7 +24,7 @@ import { REGISTRATION_FSM_STATE, RTC_PROV_EVENT } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 import { kProvisioningInfoKey } from '../../utils/constants';
-import { ITelephonyDaoDelegate } from 'foundation';
+import { ITelephonyDaoDelegate } from 'foundation/telephony';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { RTCCall } from '../RTCCall';
 
@@ -375,90 +375,6 @@ describe('RTCAccount', () => {
       expect(call).not.toBe(null);
       expect(mockListener.onReceiveIncomingCall).not.toHaveBeenCalled();
       done();
-    });
-  });
-
-  it("should do nothing when receive wake up from sleep mode and there's active call. [JPT-1765]", done => {
-    setupAccount();
-    jest.spyOn(account._regManager, 'reRegister');
-    const listener = new MockCallListener();
-    account.makeCall('123', listener);
-    account._onWakeUpFromSleepMode();
-    setImmediate(() => {
-      expect(account._regManager.reRegister).not.toHaveBeenCalled();
-      done();
-    });
-  });
-
-  it('should transition from ready state to in progress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1767]', done => {
-    setupAccount();
-    jest.spyOn(account._regManager, 'reRegister');
-    jest.spyOn(account._regManager._userAgent, 'reRegister');
-    setImmediate(() => {
-      expect(account._regManager._fsm.state).toBe(
-        REGISTRATION_FSM_STATE.IN_PROGRESS,
-      );
-      ua.mockSignal(UA_EVENT.REG_SUCCESS);
-      setImmediate(() => {
-        expect(account._regManager._fsm.state).toBe(
-          REGISTRATION_FSM_STATE.READY,
-        );
-        account._onWakeUpFromSleepMode();
-        setImmediate(() => {
-          expect(account._regManager.reRegister).toHaveBeenCalled();
-          expect(account._regManager._fsm.state).toBe(
-            REGISTRATION_FSM_STATE.IN_PROGRESS,
-          );
-          expect(account._regManager._userAgent.reRegister).toHaveBeenCalled();
-          done();
-        });
-      });
-    });
-  });
-
-  it('should transition from inprogress state to inprogress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1766]', done => {
-    setupAccount();
-    jest.spyOn(account._regManager, 'reRegister');
-    jest.spyOn(account._regManager._userAgent, 'reRegister');
-    setImmediate(() => {
-      expect(account._regManager._fsm.state).toBe(
-        REGISTRATION_FSM_STATE.IN_PROGRESS,
-      );
-      account._onWakeUpFromSleepMode();
-      setImmediate(() => {
-        expect(account._regManager.reRegister).toHaveBeenCalled();
-        expect(account._regManager._fsm.state).toBe(
-          REGISTRATION_FSM_STATE.IN_PROGRESS,
-        );
-        expect(account._regManager._userAgent.reRegister).toHaveBeenCalled();
-        done();
-      });
-    });
-  });
-
-  it('should transition from failed state to in progress state and trigger reregister when receive wakeupFromSleepMode event. [JPT-1768]', done => {
-    setupAccount();
-    jest.spyOn(account._regManager._userAgent, 'reRegister');
-    jest.spyOn(account._regManager, 'reRegister');
-    setImmediate(() => {
-      expect(account._regManager._fsm.state).toBe(
-        REGISTRATION_FSM_STATE.IN_PROGRESS,
-      );
-      ua.mockSignal(UA_EVENT.REG_FAILED);
-      setImmediate(() => {
-        expect(account._regManager._fsm.state).toBe(
-          REGISTRATION_FSM_STATE.FAILURE,
-        );
-        account._onWakeUpFromSleepMode();
-        setImmediate(() => {
-          expect(account._regManager.reRegister).toHaveBeenCalled();
-          expect(account._regManager._fsm.state).toBe(
-            REGISTRATION_FSM_STATE.IN_PROGRESS,
-          );
-          expect(account._regManager._userAgent.reRegister).toHaveBeenCalled();
-          done();
-        });
-      });
     });
   });
 
@@ -898,11 +814,11 @@ describe('RTCAccount', () => {
 
   describe('refreshProv', () => {
     const cause = 'connection error';
-    const response = { status_code: 401 };
+    const response = { statusCode: 401 };
     it('Should not call refreshProv api if error code is not 401/403/407 when register failed [JPT-1182]', done => {
       setupAccount();
       jest.spyOn(account, '_refreshProv');
-      ua.mockSignal(UA_EVENT.REG_FAILED, { status_code: 402 }, cause);
+      ua.mockSignal(UA_EVENT.REG_FAILED, { statusCode: 402 }, cause);
       setImmediate(() => {
         expect(account._refreshProv).not.toHaveBeenCalled();
         done();

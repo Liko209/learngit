@@ -6,7 +6,8 @@
 import { ComponentType } from 'react';
 import { RouteProps } from 'react-router-dom';
 import _ from 'lodash';
-import { inject, Jupiter } from 'framework';
+import { inject } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { HomeStore, SubModuleConfig } from '../store';
 import { config } from '../home.config';
 import { IHomeService } from '../interface/IHomeService';

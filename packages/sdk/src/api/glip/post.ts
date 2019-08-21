@@ -6,7 +6,7 @@ import Api from '../api';
 import { Raw } from '../../framework/model';
 import { Post } from '../../module/post/entity';
 import { Item } from '../../module/item/entity';
-import { DEFAULT_RETRY_COUNT } from 'foundation';
+import { DEFAULT_RETRY_COUNT } from 'foundation/network';
 
 export interface IPostsModel {
   posts: Raw<Post>[];
@@ -26,30 +26,33 @@ class PostAPI extends Api {
    */
   static basePath = '/post';
   static requestPosts(params: object) {
-    return this.glipNetworkClient.get<IPostsModel>({ params, path: '/posts' });
+    return PostAPI.glipNetworkClient.get<IPostsModel>({
+      params,
+      path: '/posts',
+    });
   }
 
   /**
    *  /api/post
    */
   static sendPost(data: object) {
-    return this.postData<Post>(data, {
+    return PostAPI.postData<Post>(data, {
       retryCount: DEFAULT_RETRY_COUNT,
     });
   }
 
   static requestById(id: number) {
-    return this.getDataById<Post>(id);
+    return PostAPI.getDataById<Post>(id);
   }
 
   static editPost(id: number, data: object) {
-    return this.putDataById<Post>(id, data, {
+    return PostAPI.putDataById<Post>(id, data, {
       retryCount: DEFAULT_RETRY_COUNT,
     });
   }
 
   static requestByIds(ids: number[]) {
-    return this.glipNetworkClient.get<IPostsModel>({
+    return PostAPI.glipNetworkClient.get<IPostsModel>({
       path: '/posts_items_by_ids',
       params: {
         post_ids: ids.join(','),

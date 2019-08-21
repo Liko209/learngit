@@ -20,7 +20,7 @@ import {
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IRCInfoService } from './IRCInfoService';
 import { RcInfoSettings } from '../setting';
 import { IdModel } from '../../../framework/model';
@@ -39,7 +39,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.RC_LOGIN]: this.requestRCInfo,
+        [SERVICE.RC_LOGIN]: this.onRCLogin,
       }),
     );
   }
@@ -54,7 +54,6 @@ class RCInfoService extends EntityBaseService<IdModel>
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.rcInfoSettings);
     this.getRCInfoController().blockNumberController.init();
-    this.getRCInfoController().rcPresenceController.start();
   }
 
   protected onStopped() {
@@ -93,6 +92,11 @@ class RCInfoService extends EntityBaseService<IdModel>
     }
     return this._DBConfig;
   }
+
+  onRCLogin = () => {
+    this.requestRCInfo();
+    this.getRCInfoController().rcPresenceController.start();
+  };
 
   requestRCInfo = () => {
     this.getRCInfoController()

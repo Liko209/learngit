@@ -4,11 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger, DEFAULT_BEFORE_EXPIRED, JError } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { JError } from 'foundation/error';
+import { IToken } from 'foundation/network';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';
-import { IPlatformHandleDelegate, ITokenModel, RCAuthApi } from '../../../api';
+import {
+  IPlatformHandleDelegate,
+  ITokenModel,
+  RCAuthApi,
+  HandleByRingCentral,
+} from '../../../api';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, SOCKET } from '../../../service/eventKey';
 import { ProfileService } from '../../profile';
@@ -27,7 +34,7 @@ import {
   GLIP_LOGIN_STATUS,
 } from '../../../framework';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { Nullable } from '../../../types';
+import { Nullable, UndefinedAble } from '../../../types';
 import { ISubscribeController } from 'sdk/framework/controller/interface/ISubscribeController';
 import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
 
@@ -167,22 +174,9 @@ class AccountService extends AbstractService
     return newRcToken;
   }
 
-  async getRCToken() {
-    let rcToken = this.authUserConfig.getRCToken();
-    if (rcToken && this._isRCTokenExpired(rcToken)) {
-      rcToken = await this.refreshRCToken().catch(() => null);
-    }
-
-    return rcToken;
-  }
-
-  private _isRCTokenExpired(rcToken: ITokenModel) {
-    const accessTokenExpireInMillisecond = rcToken.expires_in * 1000;
-    const lastValidTime =
-      rcToken.timestamp +
-      accessTokenExpireInMillisecond -
-      DEFAULT_BEFORE_EXPIRED;
-    return Date.now() > lastValidTime;
+  async getRCToken(): Promise<UndefinedAble<IToken>> {
+    const tokenManager = RCAuthApi.networkManager.getTokenManager();
+    return tokenManager && tokenManager.getOAuthToken(HandleByRingCentral);
   }
 
   async onBoardingPreparation() {

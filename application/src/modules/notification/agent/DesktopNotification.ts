@@ -3,7 +3,7 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { isSafari } from '@/common/isUserAgent';
 import { CLIENT_SERVICE, IClientService } from '@/modules/common/interface';
 import { NotificationOpts } from '../interface';

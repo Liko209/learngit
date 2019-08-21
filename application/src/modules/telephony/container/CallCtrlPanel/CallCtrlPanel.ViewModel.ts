@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { CallCtrlPanelProps, CallCtrlPanelViewProps } from './types';

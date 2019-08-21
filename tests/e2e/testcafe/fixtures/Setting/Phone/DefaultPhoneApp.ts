@@ -13,7 +13,7 @@ import { teardownCase, setupCase } from '../../../init';
 import { WebphoneSession } from 'webphone-client';
 
 fixture('Settings/DefaultPhoneApp')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -23,9 +23,9 @@ test.meta(<ITestMeta>{
   keywords: ['telephony', 'default Phone app']
 })('Check the incoming and outbound calls when the user switch between "Use RingCentral Phone" and "Use RingCentral App".', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
-  const yetAnotherUser = users[6];
+  const loginUser = users[1]
+  const anotherUser = users[2];
+  const yetAnotherUser = users[3];
 
   const app = new AppRoot(t);
   const { company: { number } } = anotherUser;
@@ -44,6 +44,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('And I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let conversationPage;
@@ -97,6 +101,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When I type phone number in the input field`, async () => {
     await app.homePage.telephonyDialog.typeTextInDialer(number);
+    await t.wait(2e3);
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
@@ -279,8 +284,8 @@ test.meta(<ITestMeta>{
   keywords: ['GeneralSettings']
 })('Check the settings changes when the user switch between "Use RingCentral Phone" and "Use RingCentral App"', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
 
   const app = new AppRoot(t);
   const { company: { number } } = anotherUser;

@@ -8,7 +8,8 @@ import { shallow, mount } from 'enzyme';
 import { NotificationEnableBannerView } from '../NotificationEnableBanner.View';
 import { ThemeProvider } from 'styled-components';
 import { theme } from 'shield/utils';
-import { Jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { config } from '@/modules/notification/module.config';
 
 const jupiter = container.get(Jupiter);

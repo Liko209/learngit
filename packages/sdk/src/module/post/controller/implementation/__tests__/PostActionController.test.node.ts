@@ -252,4 +252,15 @@ describe('PostActionController', () => {
       expect(itemService.deleteItem).toHaveBeenCalledWith(1);
     });
   });
+
+  describe('deletePostsByGroupIds', () => {
+    it('should called bulkDelete to delete all posts', async () => {
+      daoManager.getDao.mockReturnValueOnce(postDao);
+      postDao.queryPostIdsByGroupId.mockResolvedValueOnce([1, 2]);
+      postDao.queryPostIdsByGroupId.mockResolvedValueOnce([3, 4]);
+
+      await postActionController.deletePostsByGroupIds([9, 10], true);
+      expect(postDao.bulkDelete).toHaveBeenCalledWith([1, 2, 3, 4]);
+    });
+  });
 });

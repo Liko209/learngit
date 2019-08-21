@@ -3,7 +3,8 @@ import { EntityCacheController } from '../../controller/impl/EntityCacheControll
 import { IdModel } from '../../model';
 import { IRequestController } from 'sdk/framework/controller/interface/IRequestController';
 
-export class TestEntitySourceController<T extends IdModel = IdModel> implements IEntitySourceController<T> {
+export class TestEntitySourceController<T extends IdModel = IdModel>
+  implements IEntitySourceController<T> {
   getRequestController(): IRequestController<T, number> | null {
     throw new Error('Method not implemented.');
   }
@@ -14,23 +15,47 @@ export class TestEntitySourceController<T extends IdModel = IdModel> implements 
     this.entityCache = new EntityCacheController();
   }
 
-  get = jest.fn().mockImplementation(async (id: number) => await this.entityCache.get(id));
+  get = jest
+    .fn()
+    .mockImplementation(async (id: number) => await this.entityCache.get(id));
 
-  getEntityLocally = jest.fn().mockImplementation(async (id: number) => await this.entityCache.get(id));
+  getEntityLocally = jest
+    .fn()
+    .mockImplementation(async (id: number) => await this.entityCache.get(id));
 
-  getEntitiesLocally = jest.fn().mockImplementation(async (ids: number[]) => await this.entityCache.getEntities((entity: T) => ids.includes(entity.id)));
+  getEntitiesLocally = jest
+    .fn()
+    .mockImplementation(
+      async (ids: number[]) =>
+        await this.entityCache.getEntities((entity: T) =>
+          ids.includes(entity.id),
+        ),
+    );
 
-  getEntityNotificationKey = jest.fn().mockImplementation(() => this.entityCache.getEntityName());
+  getEntityNotificationKey = jest
+    .fn()
+    .mockImplementation(() => this.entityCache.getEntityName());
 
-  getEntities = jest.fn().mockImplementation(async (filterFunc?: ((entity: T) => boolean) | undefined) => await this.entityCache.getEntities(filterFunc));
+  getEntities = jest
+    .fn()
+    .mockImplementation(
+      async (filterFunc?: ((entity: T) => boolean) | undefined) =>
+        await this.entityCache.getEntities(filterFunc),
+    );
 
-  getAll = jest.fn().mockImplementation(async () => await this.entityCache.getAll());
+  getAll = jest
+    .fn()
+    .mockImplementation(async () => await this.entityCache.getAll());
 
-  getTotalCount = jest.fn().mockImplementation(async () => await this.entityCache.getTotalCount());
+  getTotalCount = jest
+    .fn()
+    .mockImplementation(async () => await this.entityCache.getTotalCount());
 
-  getEntityName = jest.fn().mockImplementation(() => this.entityCache.getEntityName());
+  getEntityName = jest
+    .fn()
+    .mockImplementation(() => this.entityCache.getEntityName());
 
-  put = jest.fn().mockImplementation(async (item: T | T[]) => {
+  put = jest.fn().mockImplementation(async (item: T) => {
     await this.entityCache.put(item);
   });
 
@@ -53,15 +78,22 @@ export class TestEntitySourceController<T extends IdModel = IdModel> implements 
     await this.entityCache.bulkDelete(ids);
   });
 
-  update = jest.fn().mockImplementation(async (item: Partial<T> | Partial<T>[]) => {
-    await this.entityCache.update(item);
-  });
+  update = jest
+    .fn()
+    .mockImplementation(async (item: Partial<T> | Partial<T>[]) => {
+      await this.entityCache.update(item);
+    });
 
   bulkUpdate = jest.fn().mockImplementation(async (array: Partial<T>[]) => {
     await this.entityCache.bulkUpdate(array);
   });
 
-  batchGet = jest.fn().mockImplementation(async (ids: number[], order?: boolean) => await this.entityCache.batchGet(ids, order));
+  batchGet = jest
+    .fn()
+    .mockImplementation(
+      async (ids: number[], order?: boolean) =>
+        await this.entityCache.batchGet(ids, order),
+    );
   // get = jest.fn().mockImplementation((id: number) => {
   //   return this.getEntityLocally(id);
   // });
@@ -88,7 +120,7 @@ export class TestEntitySourceController<T extends IdModel = IdModel> implements 
   //   this.locals.push(item);
   // });
 
-  // put = jest.fn().mockImplementation((item: T | T[]) => {
+  // put = jest.fn().mockImplementation((item: T) => {
   //   if (Array.isArray(item)) {
   //     this.bulkPut(item);
   //   } else {

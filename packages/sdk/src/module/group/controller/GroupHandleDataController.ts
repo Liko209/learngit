@@ -3,7 +3,7 @@
  * @Date: 2018-04-16 09:35:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import _ from 'lodash';
 
 import GroupAPI from '../../../api/glip/group';
@@ -202,9 +202,9 @@ class GroupHandleDataController {
     try {
       if (deactivatedData.length) {
         daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
-        this.entitySourceController.bulkDelete(
-          deactivatedData.map(item => item.id),
-        );
+        const deleteIds = deactivatedData.map(item => item.id);
+        this.entitySourceController.bulkDelete(deleteIds);
+        mainLogger.tags(LOG_TAG).info('operateGroupDao() ids:', deleteIds);
       }
       if (normalData.length) {
         this.entitySourceController.bulkUpdate(normalData);
@@ -214,10 +214,7 @@ class GroupHandleDataController {
     }
   };
 
-  extractGroupCursor(
-    groups: Group[],
-    changeMap?: Map<string, ChangeModel>,
-  ) {
+  extractGroupCursor(groups: Group[], changeMap?: Map<string, ChangeModel>) {
     const groupCursors = _.cloneDeep(groups);
     if (groupCursors.length) {
       if (changeMap) {
@@ -229,15 +226,22 @@ class GroupHandleDataController {
       }
     }
     return groups.map((group: Group) => {
-      return _.omit(group, [
-        'post_cursor',
-        'post_drp_cursor',
-        'last_author_id',
-        'team_mention_cursor',
-        'team_mention_cursor_offset',
-        'removed_cursors_team_mention',
-      ]);
+      return this.removeCursorsFromGroup(group);
     });
+  }
+
+  removeCursorsFromGroup<T extends Raw<Group> | Group>(group: T) {
+    return _.omit(group, [
+      'post_cursor',
+      'post_drp_cursor',
+      'last_author_id',
+      'team_mention_cursor',
+      'team_mention_cursor_offset',
+      'removed_cursors_team_mention',
+      'admin_mention_cursor',
+      'admin_mention_cursor_offset',
+      'removed_cursors_admin_mention',
+    ]);
   }
 
   saveDataAndDoNotification = async (

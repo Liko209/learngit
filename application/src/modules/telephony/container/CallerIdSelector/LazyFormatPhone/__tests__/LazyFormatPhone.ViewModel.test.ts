@@ -6,7 +6,7 @@
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { LazyFormatPhoneViewModel } from '../LazyFormatPhone.ViewModel';
 
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore } from '../../../../store';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import i18next from 'i18next';

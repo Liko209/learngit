@@ -7,7 +7,7 @@
 import { TelephonyDataCollectionInfoConfigType } from '../types';
 import { getCurrentTime } from 'sdk/utils/jsUtils';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { traceData } from 'sdk/api/glip/dataCollection';
 
 import { RTCNoAudioStateEvent, RTCNoAudioDataEvent } from 'voip';

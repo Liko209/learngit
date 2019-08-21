@@ -7,7 +7,7 @@
 // import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 
 class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {

@@ -1,6 +1,6 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { DialerPanelProps, DialerPanelViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
@@ -12,7 +12,6 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
   );
-
   @action
   makeCall = async (val: string) => {
     // make sure `this._telephonyStore.dialerCall()` run before `this._telephonyStore.end()`
@@ -22,7 +21,6 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
       });
       this._telephonyStore.end();
     }
-    this._telephonyStore.enterFirstLetterThroughKeypadForInputString();
   };
 
   onAfterDialerOpen = () => this._telephonyService.onAfterDialerOpen();

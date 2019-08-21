@@ -7,7 +7,7 @@ type PseudoOptionsProps = {
   languageToPseudo: string;
 };
 
-export default class Pseudo {
+class Pseudo {
   name: string;
   type: string;
   pseudoString: string;
@@ -72,8 +72,7 @@ export default class Pseudo {
    */
   process(src: string, key: string, options: any, translator: any) {
     if (
-      (translator.language &&
-        this.options.languageToPseudo !== translator.language) ||
+      (translator.language && this.options.languageToPseudo !== translator.language) ||
       !this.options.enabled
     ) {
       return src;
@@ -87,3 +86,5 @@ export default class Pseudo {
       .increaseStringLength();
   }
 }
+
+module.exports = Pseudo;

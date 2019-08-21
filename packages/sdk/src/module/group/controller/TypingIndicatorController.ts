@@ -11,7 +11,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { AccountService } from '../../account';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 type GroupTypingParams = {
   group_id: number;

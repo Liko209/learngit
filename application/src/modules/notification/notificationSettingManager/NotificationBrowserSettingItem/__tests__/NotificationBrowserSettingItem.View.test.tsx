@@ -16,7 +16,8 @@ import {
   ERROR_CODES_SERVER,
 } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
-import { Jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { config } from '../../../module.config';
 
 jest.mock('@/containers/Notification');

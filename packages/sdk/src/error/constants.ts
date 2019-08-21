@@ -1,4 +1,4 @@
-import { ERROR_CODES_NETWORK, ErrorCondition } from 'foundation';
+import { ERROR_CODES_NETWORK, ErrorCondition } from 'foundation/error';
 import { ERROR_TYPES } from './types';
 import { ERROR_CODES_SERVER } from './server';
 

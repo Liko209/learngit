@@ -256,6 +256,23 @@ describe('TelephonyAccountController', () => {
       expect(callControllerList.size).toBe(1);
     });
 
+    it('should start a call with access code', async () => {
+      const code = '123456';
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      await accountController.makeCall(toNum, { accessCode: code });
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith(
+        toNum,
+        expect.any(Object),
+        { accessCode: code },
+      );
+    });
+
     it('should return error when rtc make call fail', async () => {
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
         voipCountryBlocked: false,
@@ -490,6 +507,25 @@ describe('TelephonyAccountController', () => {
         .mockReturnValueOnce(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
       spyOn(mockAcc, 'onReceiveIncomingCall');
       await accountController.onReceiveIncomingCall(null);
+      expect(mockAcc.onReceiveIncomingCall).not.toHaveBeenCalled();
+    });
+
+    it('should return when call is disconnected before notifying UX', async () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
+        isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
+      });
+      accountController._checkVoipStatus = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      spyOn(mockAcc, 'onReceiveIncomingCall');
+      const call = new RTCCall();
+      call.getCallState = jest
+        .fn()
+        .mockReturnValue(RTC_CALL_STATE.DISCONNECTED);
+      call.getCallInfo = jest.fn().mockReturnValue({
+        uuid: 'test',
+      });
+      await accountController.onReceiveIncomingCall(call);
       expect(mockAcc.onReceiveIncomingCall).not.toHaveBeenCalled();
     });
 

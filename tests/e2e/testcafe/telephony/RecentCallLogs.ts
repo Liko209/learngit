@@ -24,10 +24,11 @@ test.meta(<ITestMeta>{
   const telephonyDialog = app.homePage.telephonyDialog;
   const tooltipText = 'Recent calls'
 
-  await h(t).withLog('Given I have the call permission', async () => {
-  });
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -62,10 +63,11 @@ test.meta(<ITestMeta>{
   const telephonyDialog = app.homePage.telephonyDialog;
   const tooltipText = 'Back to dialer'
 
-  await h(t).withLog('Given I have the call permission', async () => {
-  });
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -102,10 +104,11 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const telephonyDialog = app.homePage.telephonyDialog;
 
-  await h(t).withLog('Given I have the call permission', async () => {
-  });
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -142,10 +145,11 @@ test.meta(<ITestMeta>{
   const telephonyDialog = app.homePage.telephonyDialog;
   const callerWebPhone = await h(t).newWebphoneSession(caller);
 
-  await h(t).withLog('Given I have the call permission', async () => {
-  });
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -193,10 +197,11 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const telephonyDialog = app.homePage.telephonyDialog;
 
-  await h(t).withLog('Given I have the call permission', async () => {
-  });
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -235,10 +240,11 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const telephonyDialog = app.homePage.telephonyDialog;
 
-  await h(t).withLog('Given I have the call permission', async () => {
-  });
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -276,8 +282,7 @@ test.meta(<ITestMeta>{
   });
 });
 
-//Exist bug FIJI-7204
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   caseIds: ['JPT-2328'],
   priority: ['P2'],
   maintainers: ['Yilia.Hong'],
@@ -287,10 +292,11 @@ test.skip.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const telephonyDialog = app.homePage.telephonyDialog;
 
-  await h(t).withLog('Given I have the call permission', async () => {
-  });
-
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -302,7 +308,6 @@ test.skip.meta(<ITestMeta>{
 
   await h(t).withLog('Then display the dialer', async () => {
     await telephonyDialog.ensureLoaded();
-    await t.expect(telephonyDialog.self.exists).ok();
   });
 
   await h(t).withLog('When I open recent call log', async () => {
@@ -311,7 +316,8 @@ test.skip.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I select item via keyboard', async () => {
-    await telephonyDialog.selectItemByKeyboard();
+    await t.pressKey('down');
+    await t.wait(1e3);
     await telephonyDialog.hitEnterToMakeCall();
   });
 

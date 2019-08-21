@@ -10,7 +10,7 @@ import {
   LDClient,
 } from 'launchdarkly-js-client-sdk';
 import { UserPermissionType } from 'sdk/module/permission';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 type Options = {
   clientId: string;

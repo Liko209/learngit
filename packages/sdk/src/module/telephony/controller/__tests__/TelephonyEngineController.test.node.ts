@@ -15,6 +15,7 @@ import { TelephonyAccountController } from '../TelephonyAccountController';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 
 jest.mock('../../../config');
+jest.unmock('ua-parser-js');
 
 const mockIsVoipCallingAvailable = jest.fn();
 const mockGetRCBrandId = jest.fn();
@@ -150,6 +151,23 @@ describe('TelephonyEngineController', () => {
         .mockReturnValue('test');
       const res = engineController.getRemoteEmergencyAddress();
       expect(res).toBe('test');
+    });
+  });
+
+  describe('hasActiveDL', () => {
+    it('should return true when getRemoteEmergencyAddress return not empty', () => {
+      engineController.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('test');
+      const res = engineController.hasActiveDL();
+      expect(res).toBeTruthy();
+    });
+    it('should return false when getRemoteEmergencyAddress return empty', () => {
+      engineController.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('');
+      const res = engineController.hasActiveDL();
+      expect(res).toBeFalsy();
     });
   });
 

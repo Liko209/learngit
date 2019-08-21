@@ -2,7 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 11:05:46
  */
-import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
+import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation/log';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { ENTITY, SERVICE, WINDOW, DOCUMENT } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
@@ -15,11 +15,11 @@ import {
   FixSizeMemoryLogCollection,
 } from './collectors';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { IZipItemProvider, ZipItemLevel, IZipWorker } from './types';
+import { IZipItemProvider, ZipItemLevel, IZip } from './types';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
 import { HealthStatusItemProvider } from './HealthStatusItemProvider';
-import { createWorker } from './utils';
+import { Zip } from './Zip';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -31,7 +31,7 @@ export class LogControlManager implements IAccessor {
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
-  worker: IZipWorker;
+  worker: IZip = new Zip();
 
   private constructor() {
     this._isOnline = window.navigator.onLine;
@@ -184,10 +184,6 @@ export class LogControlManager implements IAccessor {
     const zipItems = result.reduce((previousValue, currentValue) =>
       previousValue.concat(currentValue),
     );
-    if (!this.worker) {
-      const zipWorker = (await import('./zip.worker')) as any;
-      this.worker = createWorker(zipWorker.default);
-    }
     return this.worker.zip(zipItems);
   };
 }

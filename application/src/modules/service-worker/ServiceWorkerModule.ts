@@ -1,4 +1,5 @@
-import { AbstractModule, inject } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
 import registerServiceWorker from './registerServiceWorker';
 import { Upgrade } from './upgrade';
 

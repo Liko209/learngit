@@ -2,10 +2,11 @@ import { CommonResponseParser } from '../CommonResponseParser';
 import {
   HttpResponse,
   HttpResponseBuilder,
-  JNetworkError,
-  ERROR_CODES_NETWORK,
   RESPONSE_STATUS_CODE,
-} from 'foundation';
+} from 'foundation/network';
+
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation/error';
+
 function createResponse(obj: any): HttpResponse {
   const builder = new HttpResponseBuilder();
   Object.assign(builder, obj);

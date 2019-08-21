@@ -11,44 +11,52 @@ import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
 import { TASK_DATA_TYPE, GROUP_STATE_KEY, GROUP_KEY } from '../../constants';
-import { StateHandleTask, GroupCursorHandleTask } from '../../types';
+import {
+  StateHandleTask,
+  GroupCursorHandleTask,
+  StateAndGroupCursorHandleTask,
+} from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { StateFetchDataController } from './StateFetchDataController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { AccountService } from '../../../account/service';
 import { StateService } from '../../service';
 import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { StateActionController } from './StateActionController';
+import { UndefinedAble } from 'sdk/types';
+import { IGroupService } from 'sdk/module/group';
 
-type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
+type DataHandleTask =
+  | StateHandleTask
+  | GroupCursorHandleTask
+  | StateAndGroupCursorHandleTask;
 const LOG_TAG = 'StateDataHandleController';
 const GROUP_STATE_KEYS = [
-  GROUP_STATE_KEY.deactivated_post_cursor,
-  GROUP_STATE_KEY.group_missed_calls_count,
-  GROUP_STATE_KEY.group_tasks_count,
-  GROUP_STATE_KEY.last_read_through,
-  GROUP_STATE_KEY.unread_mentions_count,
-  GROUP_STATE_KEY.read_through,
-  GROUP_STATE_KEY.marked_as_unread,
-  GROUP_STATE_KEY.post_cursor,
-  GROUP_STATE_KEY.previous_post_cursor,
-  GROUP_STATE_KEY.unread_deactivated_count,
-  GROUP_STATE_KEY.team_mention_cursor,
+  GROUP_STATE_KEY.DEACTIVATED_POST_CURSOR,
+  GROUP_STATE_KEY.GROUP_MISSED_CALLS_COUNT,
+  GROUP_STATE_KEY.GROUP_TASKS_COUNT,
+  GROUP_STATE_KEY.LAST_READ_THROUGH,
+  GROUP_STATE_KEY.UNREAD_MENTIONS_COUNT,
+  GROUP_STATE_KEY.READ_THROUGH,
+  GROUP_STATE_KEY.MARKED_AS_UNREAD,
+  GROUP_STATE_KEY.POST_CURSOR,
+  GROUP_STATE_KEY.PREVIOUS_POST_CURSOR,
+  GROUP_STATE_KEY.UNREAD_DEACTIVATED_COUNT,
+  GROUP_STATE_KEY.TEAM_MENTION_CURSOR,
   // 'unread_count', this field is generated in new UMI implementation
 ];
 const STATE_REGEXP = new RegExp(`^(${GROUP_STATE_KEYS.join('|')}):(\\d+)`);
 
 class StateDataHandleController {
-  private _taskArray: DataHandleTask[];
+  private _taskArray: (() => Promise<void>)[];
   private _ignoredIdSet: Set<number>;
 
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
-    private _stateFetchDataController: StateFetchDataController,
     private _actionController: StateActionController,
+    private _groupService: IGroupService,
   ) {
     this._taskArray = [];
     this._ignoredIdSet = new Set<number>();
@@ -69,38 +77,74 @@ class StateDataHandleController {
 
   async handleState(
     states: Partial<State>[],
-    source: SYNC_SOURCE,
+    source?: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
-    const ignoreCursorValidate = [
-      SYNC_SOURCE.INDEX,
-      SYNC_SOURCE.INITIAL,
-      SYNC_SOURCE.REMAINING,
-    ].includes(source);
-    const stateTask: DataHandleTask = {
+    const ignoreCursorValidate =
+      source &&
+      [SYNC_SOURCE.INDEX, SYNC_SOURCE.INITIAL, SYNC_SOURCE.REMAINING].includes(
+        source,
+      );
+    const task: DataHandleTask = {
       ignoreCursorValidate,
       type: TASK_DATA_TYPE.STATE,
       data: states,
     };
-    this._taskArray.push(stateTask);
-    if (this._taskArray.length === 1) {
-      await this._startDataHandleTask(this._taskArray[0], source, changeMap);
-    }
+    return this._appendTask(task, source, changeMap);
   }
 
   async handleGroupCursor(
     groups: Partial<Group>[],
-    ignoreCursorValidate?: boolean,
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
-    const groupTask: DataHandleTask = {
+    const ignoreCursorValidate =
+      source &&
+      [SYNC_SOURCE.INDEX, SYNC_SOURCE.INITIAL, SYNC_SOURCE.REMAINING].includes(
+        source,
+      );
+    const task: DataHandleTask = {
       ignoreCursorValidate,
       type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
     };
-    this._taskArray.push(groupTask);
-    if (this._taskArray.length === 1) {
-      await this._startDataHandleTask(this._taskArray[0]);
-    }
+    return this._appendTask(task, source, changeMap);
+  }
+
+  async handleStateAndGroupCursor(
+    states: Partial<State>[],
+    groups: Partial<Group>[],
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ): Promise<void> {
+    const ignoreCursorValidate =
+      source &&
+      [SYNC_SOURCE.INDEX, SYNC_SOURCE.INITIAL, SYNC_SOURCE.REMAINING].includes(
+        source,
+      );
+    const task: DataHandleTask = {
+      ignoreCursorValidate,
+      type: TASK_DATA_TYPE.STATE_AND_GROUP_CURSOR,
+      data: { states, groups },
+    };
+    return this._appendTask(task, source, changeMap);
+  }
+
+  private async _appendTask(
+    task: DataHandleTask,
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) {
+    // should append task and keep promise
+    return new Promise<void>(resolve => {
+      this._taskArray.push(async () => {
+        await this._startDataHandleTask(task, source, changeMap);
+        resolve();
+      });
+      if (this._taskArray.length === 1) {
+        this._taskArray[0]();
+      }
+    });
   }
 
   private async _startDataHandleTask(
@@ -109,11 +153,25 @@ class StateDataHandleController {
     changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
     try {
-      let transformedState: TransformedState;
-      if (task.type === TASK_DATA_TYPE.STATE) {
-        transformedState = this._transformStateData(task.data);
-      } else {
-        transformedState = this._transformGroupData(task.data);
+      const transformedState: TransformedState = {
+        groupStates: {},
+      };
+      switch (task.type) {
+        case TASK_DATA_TYPE.STATE: {
+          this._transformStateData(task.data, transformedState);
+          break;
+        }
+        case TASK_DATA_TYPE.GROUP_CURSOR: {
+          this._transformGroupData(task.data, transformedState);
+          break;
+        }
+        case TASK_DATA_TYPE.STATE_AND_GROUP_CURSOR: {
+          this._transformStateData(task.data.states, transformedState);
+          this._transformGroupData(task.data.groups, transformedState);
+          break;
+        }
+        default:
+          break;
       }
       transformedState.ignoreCursorValidate = task.ignoreCursorValidate;
       const updatedState = await this._generateUpdatedState(transformedState);
@@ -128,14 +186,14 @@ class StateDataHandleController {
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
-      this._startDataHandleTask(this._taskArray[0]);
+      this._taskArray[0]();
     }
   }
 
-  private _transformGroupData(groupArray: any): TransformedState {
-    const transformedState: TransformedState = {
-      groupStates: [],
-    };
+  private _transformGroupData(
+    groupArray: any,
+    transformedState: TransformedState,
+  ): void {
     let groups = groupArray;
     if (groups && groups.body) {
       if (groups.body.partials) {
@@ -145,70 +203,76 @@ class StateDataHandleController {
       }
     }
 
-    transformedState.groupStates = _.compact(
-      groups.map((group: Partial<Group>) => {
-        const groupId = group._id || group.id;
-        if (!groupId) {
-          return;
-        }
-        const groupState: GroupState = { id: groupId };
-        /* eslint-disable */
-        Object.keys(group).forEach((key: string) => {
-          switch (key) {
-            case GROUP_KEY['__trigger_ids']: {
-              const triggerIds = group[key];
-              const userConfig = ServiceLoader.getInstance<AccountService>(
-                ServiceConfig.ACCOUNT_SERVICE,
-              ).userConfig;
-              const currentUserId: number = userConfig.getGlipUserId();
-              if (
-                triggerIds &&
-                currentUserId &&
-                triggerIds.includes(currentUserId)
-              ) {
-                transformedState.isSelf = true;
-              }
-              break;
-            }
-            case GROUP_KEY.post_cursor: {
-              groupState.group_post_cursor = group[key];
-              break;
-            }
-            case GROUP_KEY.post_drp_cursor: {
-              groupState.group_post_drp_cursor = group[key];
-              break;
-            }
-            case GROUP_KEY.last_author_id: {
-              groupState.last_author_id = group[key];
-              break;
-            }
-            case GROUP_KEY.team_mention_cursor_offset: {
-              groupState.team_mention_cursor_offset = group[key];
-              break;
-            }
-            case GROUP_KEY.team_mention_cursor: {
-              groupState.group_team_mention_cursor = group[key];
-              break;
-            }
-            case GROUP_KEY.removed_cursors_team_mention: {
-              groupState.removed_cursors_team_mention = group[key];
-              break;
-            }
-          }
-        });
-        return groupState;
-      }),
-    );
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const currentUserId: number = userConfig.getGlipUserId();
 
-    return transformedState;
+    groups.forEach((group: Partial<Group>) => {
+      const groupId = group._id || group.id;
+      if (!groupId) {
+        return;
+      }
+      const groupState: GroupState = { id: groupId };
+
+      if (group[GROUP_KEY.__TRIGGER_IDS]) {
+        const triggerIds: UndefinedAble<number[]> =
+          group[GROUP_KEY.__TRIGGER_IDS];
+        if (_.includes(triggerIds, currentUserId)) {
+          transformedState.isSelf = true;
+        }
+      }
+      const keyPairs = [
+        [GROUP_STATE_KEY.GROUP_POST_CURSOR, GROUP_KEY.POST_CURSOR],
+        [GROUP_STATE_KEY.GROUP_POST_DRP_CURSOR, GROUP_KEY.POST_DRP_CURSOR],
+        [GROUP_STATE_KEY.LAST_AUTHOR_ID, GROUP_KEY.LAST_AUTHOR_ID],
+        [
+          GROUP_STATE_KEY.TEAM_MENTION_CURSOR_OFFSET,
+          GROUP_KEY.TEAM_MENTION_CURSOR_OFFSET,
+        ],
+        [
+          GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
+          GROUP_KEY.TEAM_MENTION_CURSOR,
+        ],
+        [
+          GROUP_STATE_KEY.REMOVED_CURSORS_TEAM_MENTION,
+          GROUP_KEY.REMOVED_CURSORS_TEAM_MENTION,
+        ],
+        [
+          GROUP_STATE_KEY.ADMIN_MENTION_CURSOR_OFFSET,
+          GROUP_KEY.ADMIN_MENTION_CURSOR_OFFSET,
+        ],
+        [
+          GROUP_STATE_KEY.GROUP_ADMIN_MENTION_CURSOR,
+          GROUP_KEY.ADMIN_MENTION_CURSOR,
+        ],
+        [
+          GROUP_STATE_KEY.REMOVED_CURSORS_ADMIN_MENTION,
+          GROUP_KEY.REMOVED_CURSORS_ADMIN_MENTION,
+        ],
+      ].filter(([, groupKey]) =>
+        Object.prototype.hasOwnProperty.call(group, groupKey),
+      );
+      keyPairs.forEach(([stateKey, groupKey]) => {
+        groupState[stateKey] = group[groupKey];
+      });
+      const hasValidData = !!keyPairs.length;
+
+      if (hasValidData) {
+        if (transformedState.groupStates[groupId]) {
+          _.merge(transformedState.groupStates[groupId], groupState);
+        } else {
+          transformedState.groupStates[groupId] = groupState;
+        }
+      }
+    });
   }
 
-  private _transformStateData(states: Partial<State>[]): TransformedState {
-    const transformedState: TransformedState = {
-      groupStates: [],
-    };
+  private _transformStateData(
+    states: Partial<State>[],
+    transformedState: TransformedState,
+  ): void {
     const myState: Partial<State> = {};
-    const groupStates = {};
     const groupIds = new Set<string>();
     states.forEach((state: Partial<State>) => {
       Object.keys(state).forEach((key: string) => {
@@ -224,12 +288,12 @@ class StateDataHandleController {
           const groupStateKey = matches[1];
           const groupId = matches[2];
           const value = state[key];
-          if (!groupStates[groupId]) {
-            groupStates[groupId] = {
+          if (!transformedState.groupStates[groupId]) {
+            transformedState.groupStates[groupId] = {
               id: Number(groupId),
             };
           }
-          groupStates[groupId][groupStateKey] = value;
+          transformedState.groupStates[groupId][groupStateKey] = value;
           groupIds.add(groupId);
           return;
         }
@@ -239,36 +303,34 @@ class StateDataHandleController {
     if (myState.id !== undefined && myState.id > 0) {
       transformedState.myState = myState as State;
     }
-    transformedState.groupStates = Array.from(groupIds).map(
-      id => groupStates[id],
-    );
-    return transformedState;
   }
 
   private async _generateUpdatedState(
     transformedState: TransformedState,
   ): Promise<TransformedState> {
     const updatedState: TransformedState = {
-      groupStates: [],
+      groupStates: {},
       myState: transformedState.myState,
     };
-    if (transformedState.groupStates.length > 0) {
-      const groupStates = transformedState.groupStates;
-      const ids = _.map(groupStates, 'id');
-      const localGroupStates =
-        (await this._stateFetchDataController.getAllGroupStatesFromLocal(
-          ids,
-        )) || [];
+
+    const ids: number[] = Object.keys(transformedState.groupStates).map(Number);
+    if (ids.length > 0) {
+      const localStates = await this._fixOldStatesData(
+        (await this._entitySourceController.getEntitiesLocally(ids, false)) ||
+          [],
+      );
+
+      const localStatesMap = new Map(
+        localStates.map(state => [state.id, state]),
+      );
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig;
       const currentUserId: number = userConfig.getGlipUserId();
-      updatedState.groupStates = _.compact(
-        groupStates.map((groupState: GroupState) => {
+      Object.values(transformedState.groupStates).forEach(
+        (groupState: GroupState) => {
           let stateChanged: boolean = false;
-          const localGroupState = _.find(localGroupStates, {
-            id: groupState.id,
-          });
+          const localGroupState = localStatesMap.get(groupState.id);
           if (localGroupState) {
             if (
               !transformedState.ignoreCursorValidate &&
@@ -287,15 +349,18 @@ class StateDataHandleController {
             currentUserId,
           );
           if (updateUnread !== resultGroupState.unread_count) {
-            mainLogger
-              .tags(LOG_TAG)
-              .info(
-                `umi:${resultGroupState.unread_count}->${updateUnread}, id:${
-                  groupState.id
-                }, lastPoster:${resultGroupState.last_author_id}, mark:${
-                  resultGroupState.marked_as_unread
-                }`,
-              );
+            resultGroupState.unread_count &&
+              mainLogger
+                .tags(LOG_TAG)
+                .info(
+                  `UMI:${resultGroupState.unread_count}->${updateUnread}, id:${
+                    groupState.id
+                  }, lastPoster:${resultGroupState.last_author_id}, mark:${
+                    resultGroupState.marked_as_unread
+                  }, G:${resultGroupState.group_post_cursor}, D:${
+                    resultGroupState.group_post_drp_cursor
+                  }, S:${resultGroupState.post_cursor}`,
+                );
             resultGroupState.unread_count = updateUnread;
             stateChanged = true;
           }
@@ -308,22 +373,31 @@ class StateDataHandleController {
             updateTeamMentionUnread !==
             resultGroupState.unread_team_mentions_count
           ) {
-            mainLogger
-              .tags(LOG_TAG)
-              .info(
-                `team mention umi:${
-                  resultGroupState.unread_team_mentions_count
-                }->${updateTeamMentionUnread}, id:${
-                  groupState.id
-                }, lastPoster:${resultGroupState.last_author_id}, mark:${
-                  resultGroupState.marked_as_unread
-                }`,
-              );
+            resultGroupState.unread_team_mentions_count &&
+              mainLogger
+                .tags(LOG_TAG)
+                .info(
+                  `T_UMI:${
+                    resultGroupState.unread_team_mentions_count
+                  }->${updateTeamMentionUnread}, id:${groupState.id}, G:${
+                    resultGroupState.group_team_mention_cursor
+                  }, S:${resultGroupState.team_mention_cursor}`,
+                );
             resultGroupState.unread_team_mentions_count = updateTeamMentionUnread;
             stateChanged = true;
           }
-          return stateChanged ? resultGroupState : undefined;
-        }),
+
+          if (stateChanged) {
+            if (updatedState.groupStates[groupState.id]) {
+              _.merge(
+                updatedState.groupStates[groupState.id],
+                resultGroupState,
+              );
+            } else {
+              updatedState.groupStates[groupState.id] = resultGroupState;
+            }
+          }
+        },
       );
     }
     return updatedState;
@@ -342,24 +416,10 @@ class StateDataHandleController {
         (localState.group_post_cursor || 0) +
           (localState.group_post_drp_cursor || 0)
       ) {
-        mainLogger
-          .tags(LOG_TAG)
-          .info(
-            `invalid GCursor:${updateState.group_post_cursor}, DCursor:${
-              updateState.group_post_drp_cursor
-            }, id:${updateState.id}`,
-          );
         return true;
       }
     } else if (updateState.group_post_cursor !== undefined) {
       if (updateState.group_post_cursor < (localState.group_post_cursor || 0)) {
-        mainLogger
-          .tags(LOG_TAG)
-          .info(
-            `invalid GCursor:${updateState.group_post_cursor}, id:${
-              updateState.id
-            }`,
-          );
         return true;
       }
     } else if (updateState.group_post_drp_cursor !== undefined) {
@@ -367,13 +427,6 @@ class StateDataHandleController {
         updateState.group_post_drp_cursor <
         (localState.group_post_drp_cursor || 0)
       ) {
-        mainLogger
-          .tags(LOG_TAG)
-          .info(
-            `invalid DCursor:${updateState.group_post_drp_cursor}, id:${
-              updateState.id
-            }`,
-          );
         return true;
       }
     }
@@ -382,11 +435,6 @@ class StateDataHandleController {
       updateState.post_cursor < (localState.post_cursor || 0) &&
       !updateState.marked_as_unread
     ) {
-      mainLogger
-        .tags(LOG_TAG)
-        .info(
-          `invalid SCursor:${updateState.post_cursor}, id:${updateState.id}`,
-        );
       return true;
     }
     return false;
@@ -402,54 +450,24 @@ class StateDataHandleController {
       (updateState.group_post_cursor !== localState.group_post_cursor ||
         updateState.group_post_drp_cursor !== localState.group_post_drp_cursor)
     ) {
-      mainLogger
-        .tags(LOG_TAG)
-        .info(
-          `GCursor:${localState.group_post_cursor}->${
-            updateState.group_post_cursor
-          }, DCursor: ${localState.group_post_drp_cursor}->${
-            updateState.group_post_drp_cursor
-          }, id:${updateState.id}`,
-        );
       return true;
     }
     if (
       updateState.group_post_cursor !== undefined &&
       updateState.group_post_cursor !== localState.group_post_cursor
     ) {
-      mainLogger
-        .tags(LOG_TAG)
-        .info(
-          `GCursor:${localState.group_post_cursor}->${
-            updateState.group_post_cursor
-          }, id:${updateState.id}`,
-        );
       return true;
     }
     if (
       updateState.group_post_drp_cursor !== undefined &&
       updateState.group_post_drp_cursor !== localState.group_post_drp_cursor
     ) {
-      mainLogger
-        .tags(LOG_TAG)
-        .info(
-          `DCursor:${localState.group_post_drp_cursor}->${
-            updateState.group_post_drp_cursor
-          }, id:${updateState.id}`,
-        );
       return true;
     }
     if (
       updateState.post_cursor !== undefined &&
       updateState.post_cursor !== localState.post_cursor
     ) {
-      mainLogger
-        .tags(LOG_TAG)
-        .info(
-          `SCursor:${localState.post_cursor}->${updateState.post_cursor}, id:${
-            updateState.id
-          }`,
-        );
       return true;
     }
     if (
@@ -547,7 +565,7 @@ class StateDataHandleController {
         const config = ServiceLoader.getInstance<StateService>(
           ServiceConfig.STATE_SERVICE,
         ).myStateConfig;
-        await config.setMyStateId(myState.id);
+        config.setMyStateId(myState.id);
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);
       }
@@ -564,13 +582,14 @@ class StateDataHandleController {
         );
       }
     }
-    if (transformedState.groupStates.length > 0) {
-      await this._entitySourceController.bulkUpdate(
-        transformedState.groupStates,
-      );
+
+    const groupStates = Object.values(transformedState.groupStates);
+    if (groupStates.length > 0) {
+      // never remove the await!!! sequence problem!!!
+      await this._entitySourceController.bulkUpdate(groupStates);
 
       // should set umi = 0 when conversation is ignored
-      const GroupStatesForNotify = transformedState.groupStates.filter(
+      const GroupStatesForNotify = groupStates.filter(
         (groupState: GroupState) => {
           if (this._ignoredIdSet.has(groupState.id)) {
             this._actionController.updateReadStatus(groupState.id, false, true);
@@ -595,6 +614,57 @@ class StateDataHandleController {
         }
       }
     }
+  }
+
+  // todo remove it after db upgrade
+  private async _fixOldStatesData(
+    localStates: GroupState[],
+  ): Promise<GroupState[]> {
+    const fixKeyPairs = [
+      [
+        GROUP_STATE_KEY.TEAM_MENTION_CURSOR_OFFSET,
+        GROUP_KEY.TEAM_MENTION_CURSOR_OFFSET,
+      ],
+      [
+        GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
+        GROUP_KEY.TEAM_MENTION_CURSOR,
+      ],
+      [
+        GROUP_STATE_KEY.REMOVED_CURSORS_TEAM_MENTION,
+        GROUP_KEY.REMOVED_CURSORS_TEAM_MENTION,
+      ],
+    ];
+    const needFix = (localState: GroupState) =>
+      !Object.prototype.hasOwnProperty.call(
+        localState,
+        GROUP_STATE_KEY.GROUP_TEAM_MENTION_CURSOR,
+      ) ||
+      (localState.group_team_mention_cursor &&
+        localState.group_team_mention_cursor < 0) ||
+      (localState.unread_team_mentions_count &&
+        localState.unread_team_mentions_count < 0);
+    return localStates.map(localState => {
+      if (
+        needFix(localState) &&
+        this._groupService.getSynchronously(localState.id)
+      ) {
+        const group = this._groupService.getSynchronously(localState.id)!;
+        group[GROUP_KEY.TEAM_MENTION_CURSOR] &&
+          mainLogger
+            .tags('[FIX-TEAM-UMI]')
+            .info(
+              `fix groupState:${localState.id} cursor from ${
+                localState.group_team_mention_cursor
+              } => ${group[GROUP_KEY.TEAM_MENTION_CURSOR]}`,
+            );
+        fixKeyPairs.forEach(([stateKey, groupKey]) => {
+          if (Object.prototype.hasOwnProperty.call(group, groupKey)) {
+            localState[stateKey] = group![groupKey];
+          }
+        });
+      }
+      return localState;
+    });
   }
 }
 

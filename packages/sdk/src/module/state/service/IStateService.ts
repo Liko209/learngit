@@ -9,7 +9,7 @@ import { Group } from '../../group/entity';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { GroupBadge } from '../types';
-import { SYNC_SOURCE } from '../../sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { UndefinedAble } from 'sdk/types';
 
 interface IStateService {
@@ -29,11 +29,16 @@ interface IStateService {
 
   getMyStateId(): number;
 
-  handleState(states: Partial<State>[], source: SYNC_SOURCE): Promise<void>;
+  handleState(
+    states: Partial<State>[],
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ): Promise<void>;
 
   handleGroupCursor(
     groups: Partial<Group>[],
-    ignoreCursorValidate?: boolean,
+    source?: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
   ): Promise<void>;
 
   handleGroupChangeForTotalUnread(

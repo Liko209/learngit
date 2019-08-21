@@ -5,7 +5,7 @@
  */
 import { IZipItemProvider, ZipItem, ZipItemLevel } from './types';
 import _ from 'lodash';
-import { HealthModuleManager } from 'foundation';
+import { HealthModuleManager } from 'foundation/health';
 import { toText } from 'sdk/utils';
 
 export class HealthStatusItemProvider implements IZipItemProvider {
@@ -13,7 +13,7 @@ export class HealthStatusItemProvider implements IZipItemProvider {
   getZipItems = async () => {
     const modules = HealthModuleManager.getInstance().getAll();
     const results = await Promise.all(
-      modules.flatMap(_module => [
+      _.flatMap(modules, _module => [
         `=========== ${_module.name} ==========\n`,
         ..._module.getAll().map(item => {
           const result = item.getStatus();

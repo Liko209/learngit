@@ -40,17 +40,17 @@ test.meta(<ITestMeta>{
   const callHistoryPage = app.homePage.phoneTab.callHistoryPage;
   await h(t).withLog('When I click Phone entry of leftPanel and click call log entry', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();
+    const telephoneDialog = app.homePage.telephonyDialog;
+    if (await telephoneDialog.exists) {
+      await app.homePage.closeE911Prompt()
+      await telephoneDialog.clickMinimizeButton();
+    }
     await app.homePage.phoneTab.callHistoryEntry.enter();
   });
 
   await h(t).withLog('Then call history page should be open', async () => {
     await callHistoryPage.ensureLoaded();
   });
-
-  const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  }
 
   await ensuredOneMissCallLog(t, caller, callee, app);
 

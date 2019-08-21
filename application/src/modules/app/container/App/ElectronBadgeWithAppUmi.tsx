@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { ElectronBadge } from '@/modules/electron/container/ElectronBadge';
 import { AppStore } from '../../store';
 

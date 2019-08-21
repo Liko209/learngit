@@ -1,7 +1,7 @@
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { SITE_URL, BrandTire } from '../../config';
+import { SITE_URL, BrandTire, SITE_ENV } from '../../config';
 import { ITestMeta } from '../../v2/models';
 import * as assert from 'assert';
 import { AvatarEditDialog } from '../../v2/page-models/AppRoot/HomePage/AvatarEditDialog';
@@ -59,8 +59,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -106,12 +116,15 @@ test.meta(<ITestMeta>{
 })('Check the custom avatar if the user has set the photo', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const avatarData = {
-    "creator_id": 90996739,
+    // "creator_id": 90996739,
     "url": "https://glipasialabnet-glpci1xmn.s3.amazonaws.com/web/customer_files/72507404/1.jpg?Expires=2075494478&AWSAccessKeyId=AKIAJTSETWOUUVBJDLCA&Signature=5lupBH7xxLX6qYhMPaIjDLYqWtg%3D",
     "offset": "43x0",
     "crop": "172x172",
   }
 
+  if (SITE_ENV === 'XMN-UP') {
+    avatarData['url'] = 'https://glipasialabnet-xmnup.s3.amazonaws.com/web/customer_files/2891251724/download.png?Expires=2075494478&AWSAccessKeyId=AKIAIV55VIWRKLRZEYSA&Signature=Aij%2FJGSfmBoZJvllvKApk4c003w%3D';
+  }
 
   await h(t).withLog('Given I have a extension has avatar photo in backend', async () => {
     await h(t).glip(loginUser).init();
@@ -143,8 +156,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -223,8 +246,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -293,7 +326,7 @@ test.meta(<ITestMeta>{
   });
 
 
-  // gif 
+  // gif
 
   await h(t).withLog('And I upload a gif photo', async () => {
     await avatarEditDialog.uploadFile(gifPath);
@@ -372,8 +405,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -457,8 +500,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
@@ -543,8 +596,18 @@ test.meta(<ITestMeta>{
     await app.homePage.settingMenu.ensureLoaded();
   });
 
-  await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
-    await app.homePage.settingMenu.clickEditYourProfile();
+  await h(t).withLog('When I click view profile in setting menu', async () => {
+    await app.homePage.settingMenu.clickDropMenuViewProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+
+  await h(t).withLog('Then user profile should be opened in viewer mode', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+  await h(t).withLog('When I click "Edit profile" button in viewer mode', async () => {
+    await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;

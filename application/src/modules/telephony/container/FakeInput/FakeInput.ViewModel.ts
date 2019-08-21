@@ -7,7 +7,7 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { FakeInputProps, FakeInputViewProps } from './types';
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 
 class FakeInputViewModel extends StoreViewModel<FakeInputProps>

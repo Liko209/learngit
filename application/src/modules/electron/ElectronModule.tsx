@@ -1,10 +1,10 @@
-import { AbstractModule } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ElectronZipItemProvider } from './ElectronZipItemProvider';
 import { ElectronCacheItemProvider } from './ElectronCacheItemProvider';
 import { LogControlManager } from 'sdk/module/log';
-import { logManager } from 'sdk';
+import { logManager } from 'foundation/log';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { PermissionService } from 'sdk/module/permission';

@@ -7,7 +7,7 @@ import {
   AbstractHandleType,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
-} from 'foundation';
+} from 'foundation/network';
 
 const HandleByUpload = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.UPLOAD;

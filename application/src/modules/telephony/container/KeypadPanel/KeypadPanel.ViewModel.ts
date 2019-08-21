@@ -6,7 +6,7 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { KeypadPanelProps, KeypadPanelViewProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed } from 'mobx';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';

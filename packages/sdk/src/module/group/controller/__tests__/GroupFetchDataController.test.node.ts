@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
+import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation/error';
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
 import GroupAPI from '../../../../api/glip/group';
@@ -308,8 +308,7 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      console.info('result1', result1);
-      expect(result1).toEqual({data: mock, hasMore: false});
+      expect(result1).toEqual({ data: mock, hasMore: false });
 
       const result22 = await groupFetchDataController.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
@@ -331,7 +330,33 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(result3).toEqual({data: mock, hasMore: false});
+      expect(result3).toEqual({ data: mock, hasMore: false });
+    });
+
+    it('should return the correct has more for get groups by type', async () => {
+      const mock = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }];
+      testEntitySourceController.getEntities = jest
+        .fn()
+        .mockResolvedValue(mock);
+      groupFetchDataController.groupHandleDataController.filterGroups = jest
+        .fn().mockResolvedValue(
+        mock,
+      );
+      const result1 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.TEAM,
+        0,
+        2,
+        5,
+      );
+      expect(result1).toEqual({ data: mock, hasMore: true });
+
+      const result22 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        2,
+        5,
+      );
+      expect(result22).toEqual({ data: mock, hasMore: false });
     });
 
     it('getGroupsByIds()', async () => {
@@ -1372,7 +1397,7 @@ describe('GroupFetchDataController', () => {
     });
   });
 
-  describe('getMembersAndGuestIds', () => {
+  describe('getMemberAndGuestIds', () => {
     it('should return sorted ids when onlineFirst is true, JPT-2686', async () => {
       groupFetchDataController.entitySourceController.getEntityLocally = jest
         .fn()
@@ -1380,7 +1405,7 @@ describe('GroupFetchDataController', () => {
           members: [123, 234, 345, 456, 567],
           guest_user_company_ids: [333, 444],
         });
-      personService.getPersonsByIds = jest.fn().mockResolvedValue([
+      personService.batchGetSynchronously = jest.fn().mockReturnValue([
         {
           id: 123,
           company_id: 666,
@@ -1416,8 +1441,17 @@ describe('GroupFetchDataController', () => {
           return person.name;
         });
 
-      const result = await groupFetchDataController.getMembersAndGuestIds(1235, true);
-      expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234, 567] });
+      const result = await groupFetchDataController.getMemberAndGuestIds(
+        1235,
+        1,
+        1,
+        true,
+      );
+      expect(result).toEqual({
+        realMemberIds: [123, 234],
+        guestIds: [456, 345],
+        optionalIds: [567],
+      });
     });
   });
 });

@@ -6,70 +6,13 @@
 
 import { GroupConfigDao } from '../GroupConfigDao';
 import { setup } from '../../../../dao/__tests__/utils';
-import { QUERY_DIRECTION } from '../../../../dao/constants';
 
 describe('groupConfig Dao', () => {
   let groupConfigDao: GroupConfigDao;
 
-  function getMockHasMore({
-    older = true,
-    newer = true,
-    both = true,
-  }: {
-    older?: boolean;
-    newer?: boolean;
-    both?: boolean;
-  }) {
-    return { older, newer, both };
-  }
-
   beforeAll(() => {
     const { database } = setup();
     groupConfigDao = new GroupConfigDao(database);
-  });
-
-  describe('hasMoreRemotePost', () => {
-    it('has more because of this object does not exit', async () => {
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
-      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
-    });
-
-    it('has more because of has_more does not exit', async () => {
-      const mock = {
-        id: 123,
-      };
-      await groupConfigDao.update(mock);
-      const obj = await groupConfigDao.get(123);
-      expect(obj).toEqual(mock);
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
-      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
-    });
-
-    it('has more because of has_more is true', async () => {
-      const mock = {
-        id: 123,
-        has_more_older: true,
-      };
-      await groupConfigDao.update(mock);
-      const obj = await groupConfigDao.get(123);
-      expect(obj).toEqual(mock);
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
-      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
-    });
-
-    it('does not has more because of has_more is false', async () => {
-      const mock = {
-        id: 123,
-        has_more_older: false,
-      };
-      await groupConfigDao.update(mock);
-      const obj = await groupConfigDao.get(123);
-      expect(obj).toEqual(mock);
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
-      expect(hasMoreRemotePost).toEqual(
-        getMockHasMore({ older: false, both: false }),
-      );
-    });
   });
 
   describe('isNewestSaved', () => {

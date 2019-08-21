@@ -6,6 +6,7 @@
 
 import { computed, observable, action, Reaction } from 'mobx';
 import { catchError } from '@/common/catchError';
+import { EMOJI_UNICODE_REGEX } from '@/common/postParser/utils';
 import { AbstractViewModel } from '@/base';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
@@ -17,7 +18,7 @@ import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Markdown } from 'glipdown';
 import portalManager from '@/common/PortalManager';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import {
   EditProfileProps,
   EditProfileViewModelProps,
@@ -122,7 +123,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
       this.homepageError = false;
     }
     if (key === 'firstName' || key === 'lastName') {
-      value = value.replace(/\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g, '');
+      value = value.replace(new RegExp(EMOJI_UNICODE_REGEX, 'gi'), '');
     }
     this[key] = value;
   };

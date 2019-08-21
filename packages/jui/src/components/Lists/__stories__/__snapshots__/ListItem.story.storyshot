@@ -284,6 +284,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c2.c2 .c3,
@@ -576,6 +577,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
 .c6.c6 .c7,

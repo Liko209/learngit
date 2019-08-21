@@ -12,7 +12,7 @@ import {
 } from '@/interface/media';
 import { Sound } from './Sound';
 import { Utils } from './Utils';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 class MediaTrack {
   private _src: string[] = [];
@@ -255,7 +255,7 @@ class MediaTrack {
 
   private _createOriginSound(options?: { currentTime: number }): Sound {
     return this._createSound({
-      id: `${this._id}_originSound`,
+      id: `${this._mediaId}-[originSound]`,
       seek: (options && options.currentTime) || 0,
       muted: true,
       volume: 0,
@@ -268,7 +268,7 @@ class MediaTrack {
   ): Sound[] {
     return devices.map(device =>
       this._createSound({
-        id: `${this._id}_${device}`,
+        id: `${this._mediaId}-[${device}]`,
         outputDevice: device,
         seek: (options && options.currentTime) || 0,
         isDeviceSound: true,

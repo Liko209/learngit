@@ -21,7 +21,7 @@ import { ENTITY, APPLICATION } from 'sdk/service';
 import { Pal } from 'sdk/pal';
 import { AccountService } from 'sdk/module/account';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   DesktopNotificationsSettingModel

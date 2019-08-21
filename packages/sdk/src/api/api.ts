@@ -7,7 +7,7 @@ import NetworkClient, { INetworkRequests, IBaseQuery } from './NetworkClient';
 import { ApiConfig, HttpConfigType, BaseConfig } from '../types';
 import { Raw } from '../framework/model';
 
-import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
+import { IHandleType, NetworkSetup, NetworkManager } from 'foundation/network';
 import {
   HandleByGlip,
   HandleByRingCentral,
@@ -34,7 +34,7 @@ class Api {
   }
 
   static setupHandlers(networkManager: NetworkManager) {
-    this._networkManager = networkManager;
+    Api._networkManager = networkManager;
 
     types.forEach(type => NetworkSetup.setup(type, networkManager));
     // This explicit set rc handler accessToken as the RC token provider for glip handler

@@ -5,7 +5,8 @@
  */
 import notificationCenter from '../notificationCenter';
 import { SOCKET } from '../eventKey';
-import { mainLogger, SocketClient } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { SocketClient } from 'foundation/network';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
 import { GlipPingPong } from './GlipPingPong';

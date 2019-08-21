@@ -7,7 +7,9 @@ import _ from 'lodash';
 import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import { observable, runInAction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger, PerformanceTracer, dataAnalysis } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -31,7 +33,7 @@ import {
   ItemWrapper,
   ScrollInfo,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
+import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
@@ -61,8 +63,9 @@ class StreamViewComponent extends Component<Props> {
     { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
   );
 
-  @observable
-  private _isAboveScrollToLatestCheckPoint = false;
+  @observable private _isAboveScrollToLatestCheckPoint = false;
+  // use isAtBottom is null to indicate mounting state
+  @observable private _isAtBottom: null | boolean = null;
 
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
@@ -146,6 +149,10 @@ class StreamViewComponent extends Component<Props> {
         key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
         count: postIds.length,
       });
+    }
+
+    if (this._isAtBottom === null && this._listRef.current) {
+      this._isAtBottom = this._listRef.current.isAtBottom();
     }
   }
 
@@ -284,6 +291,9 @@ class StreamViewComponent extends Component<Props> {
     } = this.props;
     const listEl = this._listRef.current;
     const lastPostVisible = stopIndex === items.length - 1;
+
+    this._isAtBottom = lastPostVisible;
+
     if (lastPostVisible) {
       this._isAboveScrollToLatestCheckPoint = false;
     } else if (!this._isAboveScrollToLatestCheckPoint) {
@@ -294,9 +304,11 @@ class StreamViewComponent extends Component<Props> {
 
     if (startIndex === -1 || stopIndex === -1 || !listEl) return;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
+
     if (this._historyViewed) {
       return;
     }
+
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;
     if (firstPostItem) {
       const i = firstPostItem.value;
@@ -347,11 +359,11 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, updateHistoryHandler } = this.props;
+    const { loadInitialPosts, markAsRead, updateHistoryHandler } = this.props;
     await loadInitialPosts();
     runInAction(() => {
       updateHistoryHandler();
-      this._updateIgnoredStatus(true);
+      markAsRead();
     });
     this._loadMoreStrategy.updatePreloadCount(this.props.historyUnreadCount);
     requestAnimationFrame(() => {
@@ -370,9 +382,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _focusHandler = () => {
-    const atBottom =
-      this._listRef.current && this._listRef.current.isAtBottom();
-    if (atBottom) {
+    if (this._isAtBottom) {
       this.props.disableNewMessageSeparatorHandler();
       this._updateIgnoredStatus(true);
     }
@@ -448,16 +458,17 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread,
       historyUnreadCount,
     } = this.props;
+
     const anchorButtonProps = {
       jumpToLatest: this._jumpToLatest,
-
       firstHistoryUnreadInPage,
       hasHistoryUnread,
       historyUnreadCount,
       historyViewed: this._historyViewed,
       jumpToFirstUnreadLoading: this._jumpToFirstUnreadLoading,
       jumpToFirstUnread: this._jumpToFirstUnread,
-      hasMore,
+      hasMoreDown: hasMore(DIRECTION.DOWN),
+      isAtBottom: this._isAtBottom,
       isAboveScrollToLatestCheckPoint: this._isAboveScrollToLatestCheckPoint,
     };
     const initialPosition = this.props.jumpToPostId

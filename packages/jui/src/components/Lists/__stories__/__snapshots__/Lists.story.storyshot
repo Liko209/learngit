@@ -39,6 +39,11 @@ exports[`Storyshots Components/Lists List Button Items: Components/Lists List Bu
   background-color: #fff;
 }
 
+.c0.c0.MuiListItem-button {
+  -webkit-transition: none;
+  transition: none;
+}
+
 .c0.c0:hover {
   background-color: rgba(97,97,97,0.05);
 }
@@ -257,6 +262,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .c3.c3 .c4,

@@ -13,11 +13,11 @@ import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
-import 'jui/pattern/MessageInput/Mention';
 import { CONVERSATION_TYPES } from '@/constants';
 import { TEAM_TEXT, TEAM_MENTION_ID } from './constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { isTeamId } from '../helper';
+import 'jui/pattern/MessageInput/Mention';
 
 const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
   return !(vm.membersId.length && vm.open);
@@ -73,7 +73,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     this.reaction(
       () => ({ searchTerm: this.searchTerm, memberIds: this._memberIds }),
       (data: { searchTerm?: string; memberIds: number[] }) => {
-        if (this._canDoFuzzySearch || this.isEditMode) {
+        if ((this._canDoFuzzySearch || this.isEditMode) && this.open) {
           this._doFuzzySearchPersons(data);
         }
         this._canDoFuzzySearch = true;

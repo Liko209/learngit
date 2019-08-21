@@ -36,6 +36,13 @@ enum DESKTOP_MESSAGE_NOTIFICATION_OPTIONS {
   OFF = 'never',
 }
 
+enum VIDEO_SERVICE_OPTIONS {
+  RINGCENTRAL_MEETINGS = 'ringcentral_meetings',
+  RINGCENTRAL_MEETINGS_EMBEDDED = 'ringcentral_meetings_embedded',
+  RINGCENTRAL_VIDEO = 'ringcentral_video',
+  RINGCENTRAL_VIDEO_EMBEDDED = 'ringcentral_video_embedded',
+}
+
 enum RINGS_TYPE {
   Phone_Ring = 'PhoneRing.wav',
   Air_Raid = 'air-raid-ring.wav',
@@ -129,6 +136,13 @@ const RingsList = ringsTypeList.map(id => ({
   url: `${AudioSourceUrl}${id}`,
 }));
 
+const MAX_LEFTRAIL_GROUP_MAX_VALUE = 59;
+const MAX_LEFTRAIL_GROUP_DEFAULT_VALUE = 10;
+const MAX_LEFTRAIL_GROUP_VALUE_LIST: number[] = Array.from(
+  { length: MAX_LEFTRAIL_GROUP_MAX_VALUE },
+  (v, k) => k + 2,
+);
+
 enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
@@ -157,6 +171,7 @@ enum SETTING_KEYS {
   // conversation settings
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
   NEW_MESSAGE_BADGES = 'new_message_badges',
+  SHOW_LINK_PREVIEWS = 'show_link_previews',
 
   // sound settings
   AUDIO_TEAM_MESSAGES = 'want_audio_notifications',
@@ -186,4 +201,7 @@ export {
   SOUNDS_TYPE,
   RingsList,
   SoundsList,
+  VIDEO_SERVICE_OPTIONS,
+  MAX_LEFTRAIL_GROUP_DEFAULT_VALUE,
+  MAX_LEFTRAIL_GROUP_VALUE_LIST,
 };

@@ -4,9 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  JuiVirtualizedListHandles,
-} from 'jui/components/VirtualizedList';
+import { JuiVirtualizedListHandles } from 'jui/components/VirtualizedList';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import React, { Component } from 'react';
@@ -21,18 +19,13 @@ import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
 
-import { PerformanceTracer } from 'sdk';
+import { PerformanceTracer } from 'foundation/performance';
 import { GLOBAL_SEARCH_PERFORMANCE_KEYS } from '../../performanceKeys';
-import {
-  MAX_COUNT,
-  ITEM_HEIGHT,
-  MAX_HEIGHT,
-  LOADING_DELAY,
-} from './config';
+import { MAX_COUNT, ITEM_HEIGHT, MAX_HEIGHT, LOADING_DELAY } from './config';
 
 type Props = ItemListProps &
-ItemListViewProps &
-WithTranslation & { terms: string[] };
+  ItemListViewProps &
+  WithTranslation & { terms: string[] };
 
 @observer
 class ItemListViewComponent extends Component<Props> {
@@ -46,7 +39,7 @@ class ItemListViewComponent extends Component<Props> {
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<
-  JuiVirtualizedListHandles
+    JuiVirtualizedListHandles
   > = React.createRef();
   private _dataList = React.createRef<DataList>();
 
@@ -63,15 +56,15 @@ class ItemListViewComponent extends Component<Props> {
     return fnMap.get(fnKey);
   };
 
-  hoverHighlight = (index: number) => this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
+  hoverHighlight = (index: number) =>
+    this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
 
   // if search item removed need update selectIndex
-  selectIndexChange = (index: number) => this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
+  selectIndexChange = (index: number) =>
+    this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
 
   scrollToView = () => {
-    const {
-      selectIndex, startIndex, stopIndex, setRangeIndex,
-    } = this.props;
+    const { selectIndex, startIndex, stopIndex, setRangeIndex } = this.props;
     if (selectIndex >= stopIndex) {
       this._dataList.current &&
         this._dataList.current.loadMore('down', MAX_COUNT);
@@ -138,11 +131,12 @@ class ItemListViewComponent extends Component<Props> {
   private _renderItems() {
     const { listHandler, type } = this.props;
     return listHandler.sortableListStore.getIds.map(
-      (id: number, index: number) => this.createSearchItem({
-        id,
-        type,
-        index,
-      }),
+      (id: number, index: number) =>
+        this.createSearchItem({
+          id,
+          type,
+          index,
+        }),
     );
   }
 

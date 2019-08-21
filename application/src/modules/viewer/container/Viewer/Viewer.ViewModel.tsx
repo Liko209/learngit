@@ -22,7 +22,7 @@ import { ViewerViewProps } from './types';
 import { ItemListDataSource } from './Viewer.DataSource';
 
 import { ItemListDataSourceByPost } from './Viewer.DataSourceByPost';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { Group } from 'sdk/module/group';
 import { Profile } from 'sdk/module/profile/entity';
 import { Notification } from '@/containers/Notification';
@@ -36,11 +36,14 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import StoreViewModel from '@/store/ViewModel';
+import { VIEWER_PERFORMANCE_KEYS } from '../../performanceKeys';
 import { isExpectedItemOfThisGroup, getNextItemToDisplay } from './Utils';
+import { PerformanceTracer } from 'foundation/performance';
 
 const PAGE_SIZE = 20;
 
 class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
   @observable
   isLoadingMore: boolean = false;
   @observable
@@ -162,6 +165,10 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   };
 
   onContentLoad = () => {
+    this._performanceTracer.end({
+      key: VIEWER_PERFORMANCE_KEYS.UI_IMAGE_VIEWER_PAGE_RENDER,
+      infos: this.props.itemId
+    });
     this.enablePreload();
   };
 

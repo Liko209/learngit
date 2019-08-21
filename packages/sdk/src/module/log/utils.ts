@@ -3,11 +3,11 @@
  * @Date: 2019-05-05 16:33:26
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
-import { LogEntity } from 'foundation';
+import { LogEntity } from 'foundation/log';
 
 export function createWorker(worker: any) {
-  return _.isFunction(worker) ? worker() : null;
+  const Worker = worker.default ? worker.default : worker;
+  return new Worker();
 }
 
 export function countBy<T>(collection: T[], counter: (item: T) => number) {

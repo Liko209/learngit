@@ -11,7 +11,7 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get headerTitle() {
-    return this.getSelectorByAutomationId('conversation-page-header-title');
+    return this.getSelectorByAutomationId('conversation-page-header-title', this.header);
   }
 
   get generalSection() {
@@ -157,6 +157,10 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async clickDefaultAppSelectBox() {
     await this.t.click(this.defaultAppSelectBox);
+  }
+
+  async hoverRingCentralPhone() {
+    await this.t.hover(this.ringCentralPhoneItem);
   }
 
   async clickRingCentralPhone() {

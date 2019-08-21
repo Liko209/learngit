@@ -3,17 +3,17 @@
  * @Date: 2018-12-26 15:21:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogEntity, LOG_LEVEL } from 'foundation';
+import { LogEntity, LOG_LEVEL } from 'foundation/log';
 import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
 import StateMachine from 'ts-javascript-state-machine';
 import { configManager } from '../config';
 import { randomInt } from 'sdk/utils';
-import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { ILogProducer, ILogConsumer } from '../collectors';
 import { IAccessor } from './types';
+import _ from 'lodash';
 
 /* eslint-disable */
 
@@ -66,7 +66,7 @@ const transform = {
       startTime: logEntities[0].timestamp,
       endTime: logEntities[logEntities.length - 1].timestamp,
       logs: logEntities,
-      size: sumBy(logEntities, log => log.size),
+      size: _.sumBy(logEntities, log => log.size),
     };
     return target;
   },
@@ -376,7 +376,8 @@ export class LogUploadConsumer implements ILogConsumer {
     if (this._uploadTaskQueueLoop.size() > 0) {
       await this._uploadTaskQueueLoop.abortAll();
     }
-    const uploadingLogs = ((await this._logPersistent.getAll()) || []).flatMap(
+    const uploadingLogs = _.flatMap(
+      (await this._logPersistent.getAll()) || [],
       item => {
         return transform.toLogEntity(item);
       },

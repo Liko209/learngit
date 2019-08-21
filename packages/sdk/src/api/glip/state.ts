@@ -16,7 +16,7 @@ class StateAPI extends Api {
    */
   static basePath = '/state';
   static saveStatePartial(id: number, state: Partial<State>) {
-    return this.glipNetworkClient.put<Raw<MyState>>({
+    return StateAPI.glipNetworkClient.put<Raw<MyState>>({
       path: `/save_state_partial/${id}`,
       data: state,
     });

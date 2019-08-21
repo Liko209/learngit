@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import {
@@ -70,7 +70,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
     const group: GroupModel = getEntity(ENTITY_NAME.GROUP, this.props.id);
     const totalUnreadMentionCount =
       (groupState.unreadMentionsCount || 0) +
-      (groupState.unreadTeamMentionsCount || 0);
+      Math.max(0, groupState.unreadTeamMentionsCount || 0);
     const unreadCount =
       (group.isTeam && this._onlyIncludeTeamMention
         ? totalUnreadMentionCount

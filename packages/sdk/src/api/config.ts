@@ -11,11 +11,11 @@ class ApiConfiguration {
   private static _apiConfig: ApiConfig = defaultConfig;
 
   static get apiConfig() {
-    return this._apiConfig;
+    return ApiConfiguration._apiConfig;
   }
 
   static setApiConfig(config: DeepPartial<ApiConfig>) {
-    this._apiConfig = _.merge({}, defaultConfig, config);
+    ApiConfiguration._apiConfig = _.merge({}, defaultConfig, config);
   }
 }
 

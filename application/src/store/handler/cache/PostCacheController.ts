@@ -9,7 +9,7 @@ import { Post } from 'sdk/module/post/entity';
 import storeManager from '@/store/base/StoreManager';
 import { ENTITY_NAME } from '@/store';
 import { Item } from 'sdk/module/item/entity';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
 import _ from 'lodash';
@@ -76,7 +76,9 @@ abstract class PostCacheController implements IPreFetchController {
     if (this._currentGroupId !== groupId) {
       if (this.hasCache(this._currentGroupId)) {
         mainLogger.debug(
-          `PostCacheController: setCurrentCacheConversation original =>  ${this._currentGroupId}`,
+          `PostCacheController: setCurrentCacheConversation original =>  ${
+            this._currentGroupId
+          }`,
         );
         this.get(this._currentGroupId).maintainMode = true;
       }
@@ -94,7 +96,6 @@ abstract class PostCacheController implements IPreFetchController {
 
   releaseCurrentConversation(groupId: number) {
     if (this._currentGroupId === groupId) {
-      this.removeInternal(groupId);
       this._currentGroupId = 0;
     } else if (this.hasCache(groupId)) {
       mainLogger.debug(

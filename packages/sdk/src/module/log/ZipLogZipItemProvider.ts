@@ -10,11 +10,11 @@ import {
   UploadedZip,
   IZipProducer,
   ZipItemLevel,
-  IZipWorker,
+  IZip,
 } from './types';
-import { LogEntity, SessionManager } from 'foundation';
+import { LogEntity, SessionManager } from 'foundation/log';
 import { ZipConsumer } from './ZipConsumer';
-import { createWorker } from './utils';
+import { Zip } from './Zip';
 
 const DEFAULT_LIMIT = 5;
 
@@ -24,7 +24,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
   index: number = 0;
   uploaded: UploadedZip[] = [];
   zipConsumer: ZipConsumer;
-  worker: IZipWorker;
+  worker: IZip = new Zip();
   limit: number = DEFAULT_LIMIT;
 
   constructor() {
@@ -44,7 +44,10 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
       content: zip.blob,
     }));
     const uploadedContent = this.uploaded
-      .map(item => `index: ${item.index}\nfileId: ${item.fileId}\nurl: ${item.url}`)
+      .map(
+        item =>
+          `index: ${item.index}\nfileId: ${item.fileId}\nurl: ${item.url}`,
+      )
       .join('\n');
     uploadedContent &&
       zipItems.push({
@@ -64,9 +67,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
     const index = this.index;
     this.index += 1;
     const zipName = `RC_LOG_${SessionManager.getInstance().getSession()}_${index}`;
-    const logContent = logs
-      .map(log => log.message)
-      .join('\n');
+    const logContent = logs.map(log => log.message).join('\n');
     const zipItems: ZipItem[] = [
       {
         type: '.txt',
@@ -74,10 +75,6 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
         content: logContent,
       },
     ];
-    if (!this.worker) {
-      const zipWorker = await (import('./zip.worker') as any);
-      this.worker = createWorker(zipWorker.default);
-    }
 
     const zipBlob = await this.worker.zip(zipItems);
     this.zips.push({

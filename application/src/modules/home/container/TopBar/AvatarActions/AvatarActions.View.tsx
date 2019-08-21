@@ -8,7 +8,7 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
-import { JuiMenuList } from 'jui/components';
+import { JuiMenuList } from 'jui/components/Menus';
 import {
   JuiAvatarActions,
   JuiStyledDropdown,
@@ -17,7 +17,7 @@ import {
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { PresenceMenu } from '../PresenceMenu';
 import { OpenProfile } from '@/common/OpenProfile';
 import { DropdownContactInfo } from '../DropdownContactInfo';
@@ -42,6 +42,18 @@ class AvatarActionsComponent extends React.Component<Props> {
     return <Presence uid={currentUserId} size="large" borderSize="large" />;
   }
 
+  private get title() {
+    const { t, presence } = this.props;
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
+      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
+    };
+    return t(i18nMap[presence] || 'presence.offline');
+  }
+
   private get _tooltip() {
     const { t, presence } = this.props;
     const i18nMap = {
@@ -53,7 +65,7 @@ class AvatarActionsComponent extends React.Component<Props> {
     return t(i18nMap[presence] || 'presence.offline');
   }
 
-  private _Anchor() {
+  private _Anchor = observer(() => {
     const { currentUserId } = this.props;
     return (
       <Avatar
@@ -64,7 +76,7 @@ class AvatarActionsComponent extends React.Component<Props> {
         tooltip={this._tooltip}
       />
     );
-  }
+  });
 
   private _DropdownAvatar() {
     const { currentUserId } = this.props;
@@ -73,10 +85,6 @@ class AvatarActionsComponent extends React.Component<Props> {
 
   openProfile = () => {
     OpenProfile.show(this.props.currentUserId);
-  };
-
-  handleOpenEditProfile = () => {
-    this.props.handleOpen();
   };
 
   handleDropdown = () => {
@@ -105,14 +113,13 @@ class AvatarActionsComponent extends React.Component<Props> {
       >
         <JuiStyledDropdown>
           <DropdownContactInfo
-            handleClick={this.openProfile}
             Avatar={this._DropdownAvatar()}
-            openEditProfile={this.handleOpenEditProfile}
-            name={person.displayName}
-            content={t('home.editProfile')}
+            openEditProfile={this.openProfile}
+            name={person.userDisplayName}
+            content={t('home.viewProfile')}
           />
           <JuiMenuList data-test-automation-id="avatarMenu">
-            <PresenceMenu presence={presence} title={this._tooltip} />
+            <PresenceMenu presence={presence} title={this.title} />
             <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}
               aria-label={t('home.aboutRingCentral')}

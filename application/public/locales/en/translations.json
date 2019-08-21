@@ -4,7 +4,7 @@
       "ariaToggleOn": "On, click to turn off",
       "ariaToggleOff": "Off, click to turn on",
       "tryAgain": "Try again",
-      "unblock": "Unblock"
+      "turnOff": "Turn off"
     },
     "dialog": {
       "OK": "OK",
@@ -92,7 +92,7 @@
     "offline": "Offline",
     "invisible": "Invisible",
     "prompt": {
-      "topBannerInfoWhenDnd": "All incoming calls and notifications are blocked.",
+      "topBannerInfoWhenDnd": "Do Not Disturb is ON.",
       "updatePresenceFailedForServerIssue": "Sorry, something went wrong on our end, we weren't able to update your presence. Try again later.",
       "updatePresenceFailedForNetworkIssue": "Sorry, we weren't able to update your presence. Check your network connection, then try again."
     }
@@ -121,7 +121,7 @@
     "openDialer": "Open the dialer",
     "confirmAddressNow": "Confirm address now.",
     "confirmEmergencyAddress": "To enable outbound calls outside your organization, confirm your emergency address.",
-    "editProfile": "Edit profile"
+    "viewProfile": "View profile"
   },
   "globalSearch": {
     "search": "Search",
@@ -616,7 +616,8 @@
       "conversationArchived": "This team was archived. To know more, contact the team administrator.",
       "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator.",
       "newConversationTitle": "New conversation",
-      "newConversationTip": "Adding people will start a new conversation without the current message history. If you'd like to keep the history, you can <0>convert to a team</0> instead.",
+      "newConversationBaseTip": "Adding people will start a new conversation without the current message history.",
+      "newConversationGroupTip": "If you'd like to keep the history, you can <0>convert to a team</0> instead.",
       "newConversationBackendError": "Sorry, something went wrong on our end and we weren't able to add people. Try again later.",
       "newConversationNetworkError": "Sorry, we weren't able to add people. Check your network connection, then try again."
     }
@@ -772,7 +773,8 @@
       },
       "prompt": {
         "backendError": "Sorry, something went wrong on our end, we weren't able to save the update. Try again later.",
-        "networkError": "Sorry, we weren't able to save the update. Check your network connection, then try again."
+        "networkError": "Sorry, we weren't able to save the update. Check your network connection, then try again.",
+        "errorCode201": "Validation errors occurred. Check the address and try again."
       },
       "fields": {
         "Address": "Address",
@@ -921,7 +923,8 @@
     }
   },
   "meeting": {
-    "Meetings": "Meetings"
+    "Meetings": "Meetings",
+    "Meet": "Meet"
   },
   "integration": {},
   "setting": {

@@ -15,11 +15,12 @@ import {
 import { JuiButton } from 'jui/components/Buttons/Button';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
-import { JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components/Menus';
 import dialogContext from '@/containers/Dialog/DialogContext';
 import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
 import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';
 import { RuiCheckbox } from 'rcui/components/Checkbox';
+import { Loading } from 'jui/hoc/withLoading';
 
 import { E911ViewProps, Country, State, FieldItem, CheckBox } from './types';
 
@@ -151,7 +152,12 @@ class E911ViewComponent extends Component<Props> {
 
   onSubmit = async () => {
     const { onSubmit, closeE911 } = this.props;
-    await onSubmit();
+    const success = await onSubmit();
+
+    if (!success) {
+      return;
+    }
+    
     this.context();
     // we should ensure only have one E911 dialog
     closeE911(false);
@@ -171,12 +177,14 @@ class E911ViewComponent extends Component<Props> {
       value,
       disabled,
       fields,
+      loading,
+      getCountryList,
     } = this.props;
 
     const { countryName, customerName } = value;
 
     return (
-      <>
+      <Loading loading={loading} alwaysComponentShow delay={100}>
         <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
           {t('telephony.e911.title')}
         </JuiDialogTitle>
@@ -203,6 +211,7 @@ class E911ViewComponent extends Component<Props> {
             label={`${t('common.country')} *`}
             automationId="e911-country-select"
             value={countryName}
+            onClick={getCountryList}
           >
             {/* TODO: need use VL */}
             {countryList.map((item: Country) => (
@@ -245,7 +254,7 @@ class E911ViewComponent extends Component<Props> {
             {t('common.dialog.confirm')}
           </JuiButton>
         </JuiDialogActions>
-      </>
+      </Loading>
     );
   }
 }

@@ -3,7 +3,7 @@
  * @Date: 2019-03-31 21:49:32
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { Group } from 'sdk/module/group/entity';
@@ -50,7 +50,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     const selectIndex = this.selectIndex;
     const len = this.recentRecord.length - 1;
     this.selectIndex = selectIndex === len ? len : selectIndex + 1;
-  }
+  };
 
   // if search item removed need update selectIndex
   @action
@@ -64,7 +64,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     if (index < this.selectIndex) {
       this.setSelectIndex(this.selectIndex - 1);
     }
-  }
+  };
 
   get currentItemValue() {
     return this.recentRecord[this.selectIndex].value;
@@ -99,7 +99,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
 
     this.onSelectItem(e, currentItemValue, currentItemType, params);
     this.addRecentRecord(currentItemValue, params);
-  }
+  };
 
   addRecentRecord = (value: number | string, params?: { groupId: number }) => {
     const type = changeToRecordTypes(this.currentItemType);
@@ -107,7 +107,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
       ServiceConfig.SEARCH_SERVICE,
     );
     searchService.addRecentSearchRecord(type, value, params ? params : {});
-  }
+  };
 
   @action
   clearRecent = () => {
@@ -116,7 +116,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     );
     searchService.clearRecentSearchRecords();
     this.recentRecord = [];
-  }
+  };
 
   isValidGroup(value?: number) {
     if (!value) {
@@ -124,11 +124,10 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     }
     try {
       const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, value);
-      const {
-        isMember, deactivated, isArchived, isTeam, privacy,
-      } = group;
+      const { isMember, deactivated, isArchived, isTeam, privacy } = group;
       const isPrivate = isTeam && privacy === 'private';
-      const shouldHidden = deactivated || isArchived || (!isMember && isPrivate);
+      const shouldHidden =
+        deactivated || isArchived || (!isMember && isPrivate);
       return shouldHidden !== undefined && !shouldHidden;
     } catch {
       return false;
@@ -141,7 +140,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
       return this.isValidGroup(typeof value === 'string' ? undefined : value);
     }
     return true;
-  }
+  };
 
   @action
   fetchRecent = async () => {
@@ -160,7 +159,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
         };
       })
       .filter(this.isValidRecord);
-  }
+  };
 }
 
 export { RecentSearchViewModel };

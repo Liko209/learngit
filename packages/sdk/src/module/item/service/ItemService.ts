@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Item, ItemFile } from '../entity';
+import { Item, ItemFile, ConferenceItem } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ItemServiceController } from '../controller/ItemServiceController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
@@ -20,7 +20,8 @@ import { IItemService } from './IItemService';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ChangeModel } from '../../sync/types';
 import { NoteItemService } from '../module/note/service';
@@ -287,6 +288,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       file,
       progressCallback,
       requestHolder,
+    );
+  }
+
+  async startConference(groupId: number): Promise<ConferenceItem> {
+    return this.itemServiceController.itemActionController.startConference(
+      groupId,
     );
   }
 }

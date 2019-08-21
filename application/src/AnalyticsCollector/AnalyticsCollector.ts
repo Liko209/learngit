@@ -3,7 +3,7 @@
  * @Date: 2019-04-08 15:28:50
  * Copyright © RingCentral. All rights reserved.
  */
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
@@ -89,7 +89,7 @@ class AnalyticsCollector {
     source: string,
     postType: string,
     destination: string,
-    atTeam='no',
+    atTeam = 'no',
   ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
       source,
@@ -176,9 +176,10 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_phone_dialer_callHistory');
   }
 
-  phoneGoToConversation(source: string) {
+  goToConversation(source: string, conversationType?: string) {
     dataAnalysis.track('Jup_Web/DT_msg_goToConversation', {
       source,
+      conversationType,
     });
   }
 
@@ -213,6 +214,54 @@ class AnalyticsCollector {
   confirmCallSwitch(source: string) {
     dataAnalysis.track('Jup_Web/DT_confirmCallSwitch', {
       source,
+    });
+  }
+
+  profileDialog(category: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
+      category,
+      source,
+    });
+  }
+
+  addOrRemoveFavorite(
+    source: string,
+    action: string,
+    conversationType: string,
+  ) {
+    dataAnalysis.track('Jup_Web/DT_profile_addOrRemoveFavorite', {
+      source,
+      action,
+      conversationType,
+    });
+  }
+
+  copyProfileField(field: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_copyProfileField', {
+      field,
+    });
+  }
+
+  toggleTeamVisibility(toggle: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_toggleTeamVisibility', {
+      toggle,
+      source,
+    });
+  }
+
+  copyTeamURL() {
+    dataAnalysis.track('Jup_Web/DT_profile_copyTeamURL');
+  }
+
+  copyTeamEmail() {
+    dataAnalysis.track('Jup_Web/DT_profile_copyTeamEmail');
+  }
+  // [FIJI-7395]
+  toggleLeftNavPanel(isExpanded: boolean) {
+    const state = isExpanded ? 'expanded' : 'collapsed';
+
+    dataAnalysis.track('Jup_Web/DT_general_toggleLeftNavigationPanel', {
+      state,
     });
   }
 }

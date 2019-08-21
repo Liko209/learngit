@@ -10,32 +10,32 @@ export class SettingMenu extends BaseWebComponent {
     return this.getSelectorByAutomationId('signOut', this.self);
   }
 
-  get editProfileButton() {
-    return this.getSelectorByAutomationId('avatarEditProfile');
-  }
-
   get viewYourProfileButton() {
     return this.getSelectorByAutomationId('viewYourProfile', this.self);
   }
 
-  get dropMenuEditProfile() {
-    return this.getSelectorByAutomationId('dropMenuEditProfile');
+  get dropMenuViewProfile() {
+    return this.getSelectorByAutomationId('dropMenuViewProfile');
   }
 
-  async clickDropMenuEditProfile() {
-    await this.t.click(this.dropMenuEditProfile);
-  }
-
-  async clickEditYourProfile() {
-    await this.t.click(this.editProfileButton);
+  async clickDropMenuViewProfile() {
+    await this.t.click(this.dropMenuViewProfile);
   }
 
   get aboutButton() {
     return this.getSelectorByAutomationId('aboutPage', this.self);
   }
 
+  get sendFeedbackButton() {
+    return this.getSelectorByAutomationId('sendFeedback', this.self);
+  }
+
   async clickAboutButton() {
     await this.t.click(this.aboutButton);
+  }
+
+  async clickSendFeedbackButton() {
+    await this.t.click(this.sendFeedbackButton);
   }
 
   async clickLogout() {

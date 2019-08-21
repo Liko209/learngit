@@ -40,9 +40,12 @@ test(formalName('No "Show all #" link for 1:1 conversation & Can show the underl
   }
 
   await h(t).withLog(`Given I have a 1:1 chat, a group chat and a team named ${team.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-    await h(t).scenarioHelper.createOrOpenChat(groupChat);
-    await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeamsOrChats([chat, groupChat, team]);
+  });
+
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', groupChat, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -135,15 +138,18 @@ test(formalName('Check whether guest section is showed on the right shelf of con
   }
 
   await h(t).withLog(`Given I have a 1:1 chat, a group chat and a team named ${team.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-    await h(t).scenarioHelper.createOrOpenChat(group);
-    await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeamsOrChats([chat,group, team]);
   });
 
   await h(t).withLog(`Given I have a 1:1 chat with guest, a group chat with guest and a team with guest named ${teamWithGuest.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chatWithGuest);
-    await h(t).scenarioHelper.createOrOpenChat(groupChatWithGuest);
-    await h(t).scenarioHelper.createTeam(teamWithGuest);
+    await h(t).scenarioHelper.createTeamsOrChats([chatWithGuest,groupChatWithGuest,teamWithGuest]);
+  });
+
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', group, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chatWithGuest, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', groupChatWithGuest, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -241,9 +247,12 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   }
 
   await h(t).withLog(`Given I have a 1:1 chat, a group chat and a team named ${team.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-    await h(t).scenarioHelper.createOrOpenChat(group);
-    await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeamsOrChats([chat, group, team]);
+  });
+
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', group, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -413,14 +422,14 @@ test(formalName('Check the maximum rows of members/guests are displayed on the r
   });
 
   const AVATAR_HEIGHT = 40;
-  await h(t).withLog('Then the team member section should have 4 rows of member avatars', async () => {
-    await t.expect(rightRail.memberListSection.members.clientHeight).eql(AVATAR_HEIGHT * 4);
+  await h(t).withLog('Then the team member section should have 3 rows of member avatars', async () => {
+    await t.expect(rightRail.memberListSection.members.clientHeight).eql(AVATAR_HEIGHT * 3);
   })
 
-  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListAvatar"]');
-  const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListAvatar"]')
-  const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListAvatar"]');
+  const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListAvatar"]')
+  const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
   await h(t).withLog('And the count number should be the number of not displayed members', async () => {
     const showAllText = await rightRail.memberListSection.showAllLink.innerText;
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
@@ -472,8 +481,8 @@ test(formalName('Check the maximum rows of members/guests are displayed on the r
   const app = new AppRoot(t);
   const rightRail = app.homePage.messageTab.rightRail;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListAvatar"]');
-  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListAvatar"]')
+  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListAvatar"]');
+  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListAvatar"]')
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -579,8 +588,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
   const app = new AppRoot(t);
   const rightRail = app.homePage.messageTab.rightRail;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListAvatar"]');
-  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListAvatar"]')
+  const memberAvatars = rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListAvatar"]');
+  const guestAvatars = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListAvatar"]')
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -657,8 +666,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
     const displayedMemberCount = await memberAvatars.count;
     const displayedGuestCount = await guestAvatars.count;
-    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
     const restMemberText = await memberMore.textContent;
     const restMemberCount = Number(restMemberText.substring(1));
     const restGuestText = await guestMore.textContent;
@@ -686,8 +695,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
     const displayedMemberCount = await memberAvatars.count;
     const displayedGuestCount = await guestAvatars.count;
-    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
     const restMemberText = await memberMore.textContent;
     const restMemberCount = Number(restMemberText.substring(1));
     const restGuestText = await guestMore.textContent;
@@ -709,8 +718,8 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     const allCount = Number(showAllText.slice(showAllText.search(/\d+/g)));
     const displayedMemberCount = await memberAvatars.count;
     const displayedGuestCount = await guestAvatars.count;
-    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShellMemberListMore"]')
-    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShellMemberListMore"]')
+    const memberMore = await rightRail.memberListSection.members.find('[data-test-automation-id="rightShelfMemberListMore"]')
+    const guestMore = await rightRail.memberListSection.guests.find('[data-test-automation-id="rightShelfMemberListMore"]')
     const restMemberText = await memberMore.textContent;
     const restMemberCount = Number(restMemberText.substring(1));
     const restGuestText = await guestMore.textContent;
