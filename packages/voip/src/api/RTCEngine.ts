@@ -3,7 +3,7 @@
  * @Date: 2018-12-05 10:41:15
  * Copyright © RingCentral. All rights reserved.
  */
-import { ITelephonyNetworkDelegate, ITelephonyDaoDelegate } from 'foundation';
+import { ITelephonyNetworkDelegate, ITelephonyDaoDelegate } from 'foundation/telephony';
 import { RTCUserInfo } from './types';
 import { RTCAccount } from './RTCAccount';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';

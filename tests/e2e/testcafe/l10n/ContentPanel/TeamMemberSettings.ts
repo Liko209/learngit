@@ -45,7 +45,6 @@ test(formalName('Check team member settings and leave team button are displayed 
 
   await h(t).withLog('When I open a team and tap Members icon', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
-    app.homePage.messageTab.rightRail.fold();
     await conversationPage.clickMemberCountIcon();
   });
 

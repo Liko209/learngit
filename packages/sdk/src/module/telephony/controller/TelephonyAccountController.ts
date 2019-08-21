@@ -27,7 +27,7 @@ import {
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
 } from '../types';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
 import { ERCServiceFeaturePermission } from '../../rcInfo/types';
@@ -456,6 +456,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   getCallCount() {
     return this._rtcAccount.callCount();
+  }
+
+  getCallIdList() {
+    return [...this._callControllerList.keys()];
   }
 
   onReceiveSipProv(

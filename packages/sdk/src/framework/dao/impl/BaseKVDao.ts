@@ -2,7 +2,7 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-27 21:44:43
  */
-import { KVStorage } from 'foundation';
+import { KVStorage } from 'foundation/db';
 import { IKVDao } from '../interface/IKVDao';
 
 class BaseKVDao implements IKVDao {

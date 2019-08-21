@@ -5,7 +5,10 @@
  */
 /* eslint-disable spaced-comment */
 /// <reference path="./types.d.ts" />
-import { Foundation, NetworkManager, mainLogger } from 'foundation';
+import { NetworkManager } from 'foundation/network';
+import { mainLogger } from 'foundation/log';
+import Foundation from 'foundation/Foundation';
+
 import Sdk from '../Sdk';
 import { Api, HandleByRingCentral, HandleByGlip } from '../api';
 import { daoManager } from '../dao';

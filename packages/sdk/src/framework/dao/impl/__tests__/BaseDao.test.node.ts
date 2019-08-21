@@ -3,7 +3,7 @@
  * @Date: 2018-03-01 14:31:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { DBManager, IDatabase, DatabaseType } from 'foundation';
+import { DBManager, IDatabase, DatabaseType } from 'foundation/db';
 import BaseDao from '../BaseDao';
 import Query from '../Query';
 
@@ -17,11 +17,32 @@ class Dao extends BaseDao<RandomItem> {
     super('mock', db);
   }
 }
-const dbManager = new DBManager();
-let dao: Dao;
 
 describe('BaseDao', () => {
-  beforeAll(async () => {
+  let dbManager: DBManager;
+  let dao: Dao;
+
+  async function fillData() {
+    await dao.bulkPut([
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+      {
+        id: 3,
+        name: 'name3',
+        boolean: false,
+      },
+    ]);
+  }
+  beforeEach(async () => {
+    dbManager = new DBManager();
     await dbManager.initDatabase(
       {
         name: 'DB',
@@ -62,14 +83,6 @@ describe('BaseDao', () => {
       name: 'name1',
       boolean: true,
     });
-  });
-
-  it('should call bulkPut if put receive array', async () => {
-    jest.spyOn(dao, 'bulkPut');
-    const data = [{ id: 2323, name: 'asfasf' }];
-    await dao.put(data);
-    expect(dao.bulkPut).toHaveBeenCalledWith(data);
-    jest.restoreAllMocks();
   });
 
   it('should bulkPut items', async () => {
@@ -132,23 +145,7 @@ describe('BaseDao', () => {
   });
 
   it('should batch get one of item', async () => {
-    await dao.bulkPut([
-      {
-        id: 1,
-        name: 'name1',
-        boolean: false,
-      },
-      {
-        id: 2,
-        name: 'name2',
-        boolean: false,
-      },
-      {
-        id: 3,
-        name: 'name3',
-        boolean: false,
-      },
-    ]);
+    await fillData();
 
     const result = await dao.batchGet([2]);
     expect(result.length).toBe(1);
@@ -157,46 +154,14 @@ describe('BaseDao', () => {
   });
 
   it('should batch get none of item', async () => {
-    await dao.bulkPut([
-      {
-        id: 1,
-        name: 'name1',
-        boolean: false,
-      },
-      {
-        id: 2,
-        name: 'name2',
-        boolean: false,
-      },
-      {
-        id: 3,
-        name: 'name3',
-        boolean: false,
-      },
-    ]);
+    await fillData();
 
     const result = await dao.batchGet([4]);
     expect(result.length).toBe(0);
   });
 
   it('should batch get some of item', async () => {
-    await dao.bulkPut([
-      {
-        id: 1,
-        name: 'name1',
-        boolean: false,
-      },
-      {
-        id: 2,
-        name: 'name2',
-        boolean: false,
-      },
-      {
-        id: 3,
-        name: 'name3',
-        boolean: false,
-      },
-    ]);
+    await fillData();
 
     const result = await dao.batchGet([1, 4]);
     expect(result.length).toBe(1);
@@ -257,41 +222,6 @@ describe('BaseDao', () => {
     expect(result.length).toBe(0);
   });
 
-  it('should update item', async () => {
-    await dao.update({
-      id: 1,
-      name: 'NAME1',
-    });
-    await expect(dao.get(1)).resolves.toMatchObject({
-      id: 1,
-      name: 'NAME1',
-      boolean: false,
-    });
-  });
-
-  it('should update items', async () => {
-    await dao.update([
-      {
-        id: 1,
-        name: 'NAME1',
-      },
-      {
-        id: 2,
-        name: 'NAME2',
-      },
-    ]);
-    await expect(dao.get(1)).resolves.toMatchObject({
-      id: 1,
-      name: 'NAME1',
-      boolean: false,
-    });
-    await expect(dao.get(2)).resolves.toMatchObject({
-      id: 2,
-      name: 'NAME2',
-      boolean: false,
-    });
-  });
-
   it('should put if updating item not exists', async () => {
     await dao.update({
       id: -1,
@@ -304,10 +234,12 @@ describe('BaseDao', () => {
   });
 
   it('should get all in table', async () => {
-    await expect(dao.getAll()).resolves.toHaveLength(5);
+    await fillData();
+    await expect(dao.getAll()).resolves.toHaveLength(3);
   });
 
   it('should delete item', async () => {
+    await fillData();
     await expect(dao.get(3)).resolves.not.toBeFalsy();
     await dao.delete(3);
     await expect(dao.get(3)).resolves.toBeFalsy();
@@ -330,12 +262,65 @@ describe('BaseDao', () => {
     expect(dao.createQuery().criteria).toEqual([]);
   });
 
-  it('do in transation', async () => {
+  it('do in transaction', async () => {
     dao.doInTransaction(async () => {
       await dao.put({ id: 1000, name: 'transaction' });
       const result = await dao.get(1000);
       expect(result).not.toBeNull();
       expect((result as RandomItem).name).toBe('transaction');
+    });
+  });
+
+  describe('update and bulk update', () => {
+    beforeEach(async () => {
+      await fillData();
+    });
+
+    it('should update item', async () => {
+      await dao.update({
+        id: 1,
+        name: 'NAME1',
+      });
+      await expect(dao.get(1)).resolves.toMatchObject({
+        id: 1,
+        name: 'NAME1',
+        boolean: false,
+      });
+    });
+
+    it('should bulk update items', async () => {
+      await expect(dao.get(1)).resolves.toEqual({
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      });
+
+      await dao.bulkUpdate([
+        {
+          id: 1,
+          name: 'NAME1',
+        },
+      ]);
+
+      const item = await dao.get(1);
+      expect(item).toEqual({
+        id: 1,
+        name: 'NAME1',
+        boolean: false,
+      });
+    });
+
+    it('should not do put when update a not exist item and set not do put', async () => {
+      await dao.bulkUpdate(
+        [
+          {
+            id: 11,
+            name: 'NAME1',
+          },
+        ],
+        false,
+      );
+      await expect(dao.get(11)).resolves.toEqual(null);
     });
   });
 });

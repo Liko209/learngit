@@ -18,7 +18,8 @@ import { ItemService } from '../../../item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { DEFAULT_RETRY_COUNT, mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { DEFAULT_RETRY_COUNT } from 'foundation/network';
 import { PostDataController } from '../PostDataController';
 
 class PostActionController implements IPostActionController {

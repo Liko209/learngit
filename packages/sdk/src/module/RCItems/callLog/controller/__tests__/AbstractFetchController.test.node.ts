@@ -6,7 +6,7 @@
 
 import { AbstractFetchController } from '../AbstractFetchController';
 import { ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { RCItemApi } from 'sdk/api';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { RCItemSyncController } from 'sdk/module/RCItems/sync';

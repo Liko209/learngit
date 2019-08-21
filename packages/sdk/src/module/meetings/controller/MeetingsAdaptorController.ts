@@ -11,7 +11,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { AccountService, isInBeta, EBETA_FLAG } from 'sdk/module/account';
 import { ProfileService, VIDEO_SERVICE_OPTIONS } from 'sdk/module/profile';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { MEETING_TAG } from '../constants';
 import { IMeetingAdaptorController } from '../modules/controller/IMeetingAdaptorController';
 import { ZOOM_MEETING_DIAL_IN_NUMBER } from './MeetingsUtils';

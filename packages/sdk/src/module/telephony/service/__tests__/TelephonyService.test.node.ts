@@ -335,4 +335,11 @@ describe('TelephonyService', () => {
       expect(r).toEqual(retData);
     });
   });
+
+  describe('getCallIdList', () => {
+    it('should call account controller to get call id list', () => {
+      telephonyService.getCallIdList();
+      expect(accountController.getCallIdList).toHaveBeenCalled();
+    });
+  });
 });

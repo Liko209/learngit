@@ -1,7 +1,8 @@
 import { GlipResponseParser } from '../GlipResponseParser';
-import { HttpResponse, HttpResponseBuilder } from 'foundation';
+import { HttpResponse, HttpResponseBuilder } from 'foundation/network';
 
 import { JServerError, ERROR_CODES_SERVER } from '../../../error';
+
 function createResponse(obj: any): HttpResponse {
   const builder = new HttpResponseBuilder().setRequest({
     handlerType: {
