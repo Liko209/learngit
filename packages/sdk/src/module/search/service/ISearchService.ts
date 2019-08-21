@@ -13,6 +13,7 @@ import {
 import { SearchUserConfig } from '../config/SearchUserConfig';
 import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/framework/model';
+import { Group } from 'sdk/module/group/entity';
 
 interface ISearchService {
   addRecentSearchRecord(
@@ -41,6 +42,20 @@ interface ISearchService {
   ): Promise<{
     terms: string[];
     phoneContacts: PhoneContactEntity[];
+  }>;
+
+  doFuzzySearchAllGroups(
+    searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+    myGroupsOnly?: boolean,
+    recentFirst?: boolean,
+    sortFunc?: (
+      groupA: SortableModel<Group>,
+      groupB: SortableModel<Group>,
+    ) => number,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
   }>;
 }
 

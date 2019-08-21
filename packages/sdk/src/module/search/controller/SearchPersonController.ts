@@ -49,10 +49,18 @@ class SearchPersonController {
   }> {
     const performanceTracer = PerformanceTracer.start();
 
-    const persons = await this._doFuzzySearchPersons({
-      ...options,
-      ignoreEmail: true,
-    });
+    const sortFunc =
+      !options.asIdsOrder || options.recentFirst
+        ? this._sortByKeyFunc
+        : undefined;
+
+    const persons = await this._doFuzzySearchPersons(
+      {
+        ...options,
+        ignoreEmail: true,
+      },
+      sortFunc,
+    );
 
     const phoneContacts: PhoneContactEntity[] = [];
     const results = { phoneContacts, terms: persons.terms.searchKeyTerms };
@@ -124,7 +132,12 @@ class SearchPersonController {
     sortableModels: SortableModel<Person>[];
   }> {
     const performanceTracer = PerformanceTracer.start();
-    const result = await this._doFuzzySearchPersons(options);
+
+    const sortFunc =
+      !options.asIdsOrder || options.recentFirst
+        ? this._sortByKeyFunc
+        : undefined;
+    const result = await this._doFuzzySearchPersons(options, sortFunc);
     performanceTracer.end({ key: SEARCH_PERFORMANCE_KEYS.SEARCH_PERSON });
     return {
       terms: result.terms.searchKeyTerms,
@@ -145,29 +158,68 @@ class SearchPersonController {
       terms: [],
       sortableModels: [],
     };
-    const persons = await this.doFuzzySearchPersons(options);
+
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+
+    const [persons, groups] = await Promise.all([
+      this.doFuzzySearchPersons(options),
+      groupService.doFuzzySearchAllGroups(options.searchKey, {
+        fetchAllIfSearchKeyEmpty: true,
+        myGroupsOnly: options.excludeSelf,
+        recentFirst: true,
+      }),
+    ]);
+
     result.terms = persons.terms;
-    result.sortableModels = persons.sortableModels;
-    if (options.searchKey) {
-      const groupService = ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      );
-      const groups = await groupService.doFuzzySearchALlGroups(
-        options.searchKey,
-        true,
-        true,
-        true,
-      );
-      result.sortableModels = [
-        ...result.sortableModels,
-        ...groups.sortableModels,
-      ];
-    }
+
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    let hasMeGroup: boolean = false;
+
+    const excludeContactsIds = new Set<number>();
+    groups.sortableModels.forEach((sortableModel: SortableModel<Group>) => {
+      result.sortableModels.push(sortableModel);
+      if (!sortableModel.entity.is_team) {
+        if (sortableModel.entity.members.length === 2) {
+          sortableModel.entity.members.forEach(id => {
+            excludeContactsIds.add(id);
+          });
+        } else if (
+          sortableModel.entity.members.length === 1 &&
+          sortableModel.entity.members[0] === userConfig.getGlipUserId()
+        ) {
+          hasMeGroup = true;
+        }
+      }
+    });
+
+    persons.sortableModels.forEach(sortableModel => {
+      if (!excludeContactsIds.has(sortableModel.id)) {
+        result.sortableModels.push(sortableModel);
+      } else if (
+        !hasMeGroup &&
+        sortableModel.id === userConfig.getGlipUserId()
+      ) {
+        result.sortableModels.push(sortableModel);
+      }
+    });
+
+    result.sortableModels.sort((groupA, groupB) => {
+      return SortUtils.compareSortableModel<IdModel>(groupA, groupB);
+    });
+
     return result;
   }
 
   private async _doFuzzySearchPersons(
     options: FuzzySearchPersonOptions,
+    sortFunc?: (
+      personA: SortableModel<Person>,
+      personB: SortableModel<Person>,
+    ) => number,
   ): Promise<{
     terms: Terms;
     sortableModels: SortableModel<Person>[];
@@ -177,13 +229,10 @@ class SearchPersonController {
       excludeSelf,
       arrangeIds,
       fetchAllIfSearchKeyEmpty,
-      asIdsOrder,
       recentFirst,
       ignoreEmail,
     } = options;
 
-    const sortFunc =
-      !asIdsOrder || recentFirst ? this._sortByKeyFunc : undefined;
     const toSortableModelFunc = await this._getTransFromPersonToSortableModelFunc(
       excludeSelf,
       fetchAllIfSearchKeyEmpty,
@@ -389,6 +438,10 @@ class SearchPersonController {
           matchedNumbers = matchedInfo.matchedNumbers;
           if (matchedInfo.isMatched) {
             if (matchedInfo.nameMatched) {
+              const splitNames = SearchUtils.getTermsFromText(
+                personNameLowerCase,
+              );
+              /*
               sortValue = PersonSortingOrder.FullNameMatching;
               if (
                 person.first_name &&
@@ -408,6 +461,11 @@ class SearchPersonController {
               ) {
                 sortValue += PersonSortingOrder.LastNameMatching;
               }
+              */
+              sortValue = SearchUtils.getMatchedWeight(
+                splitNames,
+                terms.searchKeyTerms,
+              );
             }
           } else if (
             !ignoreEmail &&

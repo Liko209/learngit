@@ -9,6 +9,10 @@ import { SearchServiceController } from '../../controller/SearchServiceControlle
 import { RecentSearchTypes } from '../../entity';
 import { SearchUserConfig } from '../../config/SearchUserConfig';
 import { SearchPersonController } from '../../controller/SearchPersonController';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { SortableModel } from 'sdk/framework/model';
+import { Group } from 'sdk/module/group';
+import { SortUtils } from 'sdk/framework/utils';
 
 jest.mock('../../config/SearchUserConfig');
 jest.mock('../../controller/SearchServiceController');
@@ -37,7 +41,7 @@ describe('SearchService', () => {
   describe('userConfig', () => {
     it('should create userConfig', () => {
       searchService.userConfig;
-      expect(SearchUserConfig).toBeCalled();
+      expect(SearchUserConfig).toHaveBeenCalled();
     });
   });
 
@@ -57,18 +61,16 @@ describe('SearchService', () => {
     it('addRecentSearchRecord', () => {
       const theType: any = 'people';
       searchService.addRecentSearchRecord(theType, 123);
-      expect(recentSearchRecordController.addRecentSearchRecord).toBeCalledWith(
-        theType,
-        123,
-        {},
-      );
+      expect(
+        recentSearchRecordController.addRecentSearchRecord,
+      ).toHaveBeenCalledWith(theType, 123, {});
     });
 
     it('clearRecentSearchRecords', () => {
       searchService.clearRecentSearchRecords();
       expect(
         recentSearchRecordController.clearRecentSearchRecords,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
 
     it('getRecentSearchRecords', async () => {
@@ -77,7 +79,9 @@ describe('SearchService', () => {
         .fn()
         .mockResolvedValue(models);
       const res = await searchService.getRecentSearchRecords();
-      expect(recentSearchRecordController.getRecentSearchRecords).toBeCalled();
+      expect(
+        recentSearchRecordController.getRecentSearchRecords,
+      ).toHaveBeenCalled();
       expect(res).toEqual(models);
     });
 
@@ -86,14 +90,14 @@ describe('SearchService', () => {
       searchService.removeRecentSearchRecords(idSet);
       expect(
         recentSearchRecordController.removeRecentSearchRecords,
-      ).toBeCalledWith(idSet);
+      ).toHaveBeenCalledWith(idSet);
     });
 
     it('getRecentSearchRecordsByType', () => {
       searchService.getRecentSearchRecordsByType(RecentSearchTypes.GROUP);
       expect(
         recentSearchRecordController.getRecentSearchRecordsByType,
-      ).toBeCalledWith(RecentSearchTypes.GROUP);
+      ).toHaveBeenCalledWith(RecentSearchTypes.GROUP);
     });
   });
 
@@ -115,7 +119,7 @@ describe('SearchService', () => {
         excludeSelf: true,
       };
       searchService.doFuzzySearchPersons(options);
-      expect(searchPersonController.doFuzzySearchPersons).toBeCalledWith({
+      expect(searchPersonController.doFuzzySearchPersons).toHaveBeenCalledWith({
         searchKey: 'test keys',
         excludeSelf: true,
       });
@@ -142,7 +146,7 @@ describe('SearchService', () => {
       searchService.doFuzzySearchPersonsAndGroups(options);
       expect(
         searchPersonController.doFuzzySearchPersonsAndGroups,
-      ).toBeCalledWith({
+      ).toHaveBeenCalledWith({
         searchKey: 'test keys',
         excludeSelf: true,
       });
@@ -166,10 +170,65 @@ describe('SearchService', () => {
         excludeSelf: true,
       };
       searchService.doFuzzySearchPhoneContacts(options);
-      expect(searchPersonController.doFuzzySearchPhoneContacts).toBeCalledWith({
+      expect(
+        searchPersonController.doFuzzySearchPhoneContacts,
+      ).toHaveBeenCalledWith({
         searchKey: 'test keys',
         excludeSelf: true,
       });
+    });
+  });
+
+  describe('doFuzzySearchAllGroups', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', async () => {
+      const sortFunc = (
+        groupA: SortableModel<Group>,
+        groupB: SortableModel<Group>,
+      ) => {
+        return SortUtils.compareSortableModel<Group>(groupA, groupB);
+      };
+
+      const option = {
+        fetchAllIfSearchKeyEmpty: true,
+        myGroupsOnly: true,
+        recentFirst: true,
+        sortFunc,
+      };
+
+      const searchKey: string = 'test keys';
+      const fetchAllIfSearchKeyEmpty: boolean = true;
+      const myGroupsOnly: boolean = true;
+      const recentFirst: boolean = true;
+
+      const groupService = {
+        doFuzzySearchAllGroups: jest.fn(),
+      };
+
+      ServiceLoader.getInstance = jest.fn().mockImplementation(() => {
+        return groupService;
+      });
+
+      await searchService.doFuzzySearchAllGroups(
+        searchKey,
+        fetchAllIfSearchKeyEmpty,
+        myGroupsOnly,
+        recentFirst,
+        sortFunc,
+      );
+      expect(groupService.doFuzzySearchAllGroups).toHaveBeenCalledWith(
+        searchKey,
+        option,
+      );
     });
   });
 });
