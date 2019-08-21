@@ -15,9 +15,9 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'EmergencyAddress', '
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   })
+
   const settingTab = app.homePage.settingTab;
   const phoneSetting = settingTab.phoneSettingPage;
-
   await h(t).withLog('When I open Phone tab and setting Region, click Emergency Address Edit button', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
     await settingTab.phoneEntry.enter();
@@ -25,6 +25,5 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'EmergencyAddress', '
 
   });
   await h(t).log('Then I capture screenshot', { screenshotPath: 'Jupiter_Settings_EmergencyEdit' });
-
 
 })
