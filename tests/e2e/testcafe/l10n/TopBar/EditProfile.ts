@@ -4,8 +4,6 @@ import { formalName } from "../../libs/filter";
 import { h } from '../../v2/helpers';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 
-
-
 fixture('TopBar/EditProfile')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
@@ -14,7 +12,6 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'EditProfile', 'V1.7', 
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[5];
   const avatarData = {
-    "creator_id": 90996739,
     "url": "https://glipasialabnet-glpci1xmn.s3.amazonaws.com/web/customer_files/72507404/1.jpg?Expires=2075494478&AWSAccessKeyId=AKIAJTSETWOUUVBJDLCA&Signature=5lupBH7xxLX6qYhMPaIjDLYqWtg%3D",
     "offset": "43x0",
     "crop": "172x172",
@@ -38,7 +35,7 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'EditProfile', 'V1.7', 
 
   const settingMenu = app.homePage.settingMenu;
   const profileDialog = app.homePage.profileDialog;
-  await h(t).withLog(`And I view profile and hover "edit" button`, async () => {
+  await h(t).withLog('And I view profile and hover "edit" button', async () => {
     await app.homePage.openSettingMenu();
     await settingMenu.clickDropMenuViewProfile();
     await profileDialog.hoverEditProfile();
@@ -46,12 +43,12 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'EditProfile', 'V1.7', 
 
   await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_TopBar_ProfileEditButton' });
 
-  await h(t).withLog(`When I enter "edit profile" dialog`, async () => {
+  await h(t).withLog('When I enter "edit profile" dialog', async () => {
     await profileDialog.clickEditProfile();
   });
 
   const editProfileDialog = app.homePage.profileEditDialog;
-  await h(t).withLog(`Then "edit profile" dialog should be displayed`, async () => {
+  await h(t).withLog('Then "edit profile" dialog should be displayed', async () => {
     await editProfileDialog.ensureLoaded();
   });
 
@@ -62,7 +59,7 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'EditProfile', 'V1.7', 
   });
 
   const AvatarEditDialog = app.homePage.AvatarEditDialog;
-  await h(t).withLog(`Then "Edit profile photo" dialog should be displayed`, async() => {
+  await h(t).withLog('Then "Edit profile photo" dialog should be displayed', async() => {
     await AvatarEditDialog.ensureLoaded();
   });
 
