@@ -502,7 +502,6 @@ class TelephonyCallController implements IRTCCallDelegate {
         let number = await phoneNumberService.getE164PhoneNumber(transferTo);
         if (!number) {
           reject(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
-          return;
         }
         if (type === TRANSFER_TYPE.TO_VOICEMAIL) {
           number = this._handleNumberToVoicemail(number);
