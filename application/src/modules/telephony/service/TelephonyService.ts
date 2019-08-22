@@ -662,6 +662,20 @@ class TelephonyService {
     }
   };
 
+  endAndAnswer = () => {
+    if (this._callEntityId) {
+      const endCallId = this._telephonyStore.ids.find(id => id !== this._callEntityId);
+
+      if (!endCallId) return;
+
+      mainLogger.info(
+        `${TelephonyService.TAG}end and answer end call id=${endCallId}, answer call id=${this._callEntityId}`,
+      );
+      this._serverTelephonyService.hangUp(endCallId);
+      this._serverTelephonyService.answer(this._callEntityId);
+    }
+  };
+
   sendToVoiceMail = () => {
     if (this._callEntityId) {
       mainLogger.info(

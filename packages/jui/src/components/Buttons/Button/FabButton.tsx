@@ -28,7 +28,13 @@ import {
   SvgSymbol,
 } from '../../../foundation/Iconography';
 
-type IconButtonSize = 'small' | 'medium' | 'large' | 'midLarge' | 'moreLarge';
+type IconButtonSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'midLarge'
+  | 'moreLarge'
+  | 'mediumLarge';
 
 // TODO: remove iconname prop
 type ButtonProps = {
@@ -59,12 +65,13 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
 };
 
 type Size = 'small' | 'medium' | 'large' | 'moreLarge';
-type ButtonSize = Size | 'midLarge';
+type ButtonSize = Size | 'midLarge' | 'mediumLarge';
 
 const buttonSizes: { [k in ButtonSize]: number } = {
   moreLarge: 16,
   midLarge: 14,
   large: 15,
+  mediumLarge: 12,
   medium: 8,
   small: 5,
 };

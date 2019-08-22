@@ -21,3 +21,4 @@ export * from './RecentCalls';
 export * from './RecentCallBtn';
 export * from './EmptyPage';
 export * from './CallSwitch';
+export * from './StyledActionText';

@@ -653,7 +653,12 @@
       "customForward": "Custom...",
       "flip": "Flip",
       "recentCall": "Recent calls",
-      "backToDialer": "Back to dialer"
+      "backToDialer": "Back to dialer",
+      "ignore": "Ignore",
+      "voicemail": "To Voicemail",
+      "answer": "Answer",
+      "more": "More",
+      "endAndAnswer": "End & Answer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",

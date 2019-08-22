@@ -1,23 +1,23 @@
 /*
- * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
- * @Date: 2018-11-08 14:50:05
+ * @Author: Spike.Yang
+ * @Date: 2019-08-22 17:01:23
  * Copyright © RingCentral. All rights reserved.
  */
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { AnswerViewProps } from './types';
+import { EndAndAnswerViewProps } from './types';
 import { JuiFabButton } from 'jui/components/Buttons';
 import { StyledActionText } from 'jui/pattern/Dialer';
 
-type Props = AnswerViewProps & WithTranslation;
+type Props = EndAndAnswerViewProps & WithTranslation;
 
 @observer
-class AnswerViewComponent extends Component<Props> {
+class EndAndAnswerViewComponent extends Component<Props> {
   private _handleAnswer = async () => {
-    const { ignore } = this.props;
-    ignore();
+    const { endAndAnswer } = this.props;
+    endAndAnswer();
   };
 
   render() {
@@ -34,12 +34,16 @@ class AnswerViewComponent extends Component<Props> {
           onClick={this._handleAnswer}
           data-test-automation-id="telephony-answer-btn"
         />
-        <StyledActionText>{t('telephony.action.answer')}</StyledActionText>
+        <StyledActionText>
+          {t('telephony.action.endAndAnswer')}
+        </StyledActionText>
       </>
     );
   }
 }
 
-const AnswerView = withTranslation('translations')(AnswerViewComponent);
+const EndAndAnswerView = withTranslation('translations')(
+  EndAndAnswerViewComponent,
+);
 
-export { AnswerView };
+export { EndAndAnswerView };

@@ -12,57 +12,66 @@ import { JuiDraggableDialog } from '../../../components/Dialog';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
 import { boolean } from '@storybook/addon-knobs';
 
-import { JuiIncomingCall, JuiDialer } from '..';
+import { JuiIncomingCall, JuiDialer, StyledActionText } from '..';
 
 const Ignore = () => (
-  <JuiFabButton
-    color='common.white'
-    size='small'
-    iconName='close'
-    tooltipTitle='Close'
-  />
+  <>
+    <JuiFabButton
+      color="grey.200"
+      size="medium"
+      iconName="minimize"
+      showShadow={false}
+    />
+    <StyledActionText>Ignore</StyledActionText>
+  </>
 );
 
 const VoiceMail = () => (
-  <JuiFabButton
-    color='semantic.negative'
-    size='moreLarge'
-    showShadow={false}
-    tooltipPlacement='top'
-    iconName='hand_up'
-    tooltipTitle='End'
-  />
+  <>
+    <JuiFabButton
+      color="semantic.negative"
+      size="mediumLarge"
+      showShadow={false}
+      tooltipPlacement="top"
+      iconName="hand_up"
+    />
+    <StyledActionText>To Voicemail</StyledActionText>
+  </>
 );
 
 VoiceMail.displayName = 'VoiceMail';
 
 const Answer = () => (
-  <JuiFabButton
-    color='semantic.positive'
-    size='moreLarge'
-    showShadow={false}
-    tooltipPlacement='top'
-    iconName='phone'
-    tooltipTitle='Answer'
-  />
+  <>
+    <JuiFabButton
+      color="semantic.positive"
+      size="mediumLarge"
+      showShadow={false}
+      tooltipPlacement="top"
+      iconName="phone"
+    />
+    <StyledActionText>Answer</StyledActionText>
+  </>
 );
 
 Answer.displayName = 'Answer';
 
 const More = () => (
-  <JuiFabButton
-    color='grey.200'
-    size='moreLarge'
-    showShadow={false}
-    tooltipPlacement='top'
-    iconName='call_more'
-    tooltipTitle='More'
-  />
+  <>
+    <JuiFabButton
+      color="grey.200"
+      size="medium"
+      showShadow={false}
+      tooltipPlacement="top"
+      iconName="call_more"
+    />
+    <StyledActionText>More</StyledActionText>
+  </>
 );
 
 More.displayName = 'More';
 
-const Actions = [VoiceMail, Answer, More];
+const Actions = [Ignore, More, VoiceMail, Answer];
 
 const knobs = {
   open: () => boolean('open', false),
@@ -74,7 +83,7 @@ const Avatar = () => (
     src={knobs.img() ? avatarImg : null}
     cover
     imgProps={{ draggable: false }}
-    color='blueberry'
+    color="blueberry"
   >
     <span>JH</span>
   </JuiAvatar>
@@ -84,10 +93,9 @@ storiesOf('Pattern', module).add('Incoming Call', () => {
   return (
     <JuiDialer>
       <JuiIncomingCall
-        name='Terry Webster'
-        phone='(650) 555-1234'
+        name="Terry Webster"
+        phone="(650) 555-1234"
         Actions={Actions}
-        Ignore={Ignore}
         Avatar={Avatar}
       />
     </JuiDialer>
