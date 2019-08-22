@@ -56,6 +56,7 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
         onClose={onClose}
         disablePortal
         fixedAtTop
+        enableEscapeClose={open}
       >
         {children}
       </StyledGlobalSearch>
