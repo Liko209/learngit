@@ -17,12 +17,15 @@ import { IMeetingAdaptorController } from '../modules/controller/IMeetingAdaptor
 import { ZOOM_MEETING_DIAL_IN_NUMBER } from './MeetingsUtils';
 import { Api } from 'sdk/api';
 import _ from 'lodash';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class MeetingsAdaptorController {
-  private _meetingController: IMeetingAdaptorController;
+  private _zoomController: IMeetingAdaptorController;
+  private _rcvController: IMeetingAdaptorController;
   constructor() {}
   async startMeeting(groupIds: number[]): Promise<StartMeetingResultType> {
-    const controller = await this._getSuitableMeetingController();
+    const type = await this.getMeetingServiceType();
+    const controller = this._getSuitableMeetingController(type);
     return controller.startMeeting(groupIds);
   }
 
@@ -50,6 +53,17 @@ class MeetingsAdaptorController {
     return MEETING_SERVICE_TYPE.ZOOM;
   }
 
+  cancelMeeting(meetingId: number): Promise<void> {
+    const type = GlipTypeUtil.isExpectedType(
+      meetingId,
+      TypeDictionary.TYPE_ID_RC_VIDEO,
+    )
+      ? MEETING_SERVICE_TYPE.RCV
+      : MEETING_SERVICE_TYPE.ZOOM;
+    const controller = this._getSuitableMeetingController(type);
+    return controller.cancelMeeting(meetingId);
+  }
+
   private async _hasRCVService() {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
@@ -72,22 +86,18 @@ class MeetingsAdaptorController {
     return userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC;
   }
 
-  private async _getSuitableMeetingController() {
-    const type = await this.getMeetingServiceType();
+  private _getSuitableMeetingController(type: MEETING_SERVICE_TYPE) {
     if (type === MEETING_SERVICE_TYPE.RCV) {
-      // rc video
-      if (!this._meetingController || !this._meetingController.isRCVideo()) {
-        this._meetingController = new RCVAdaptorController();
+      if (!this._rcvController) {
+        this._rcvController = new RCVAdaptorController();
       }
-    } else if (
-      !this._meetingController ||
-      this._meetingController.isRCVideo()
-    ) {
-      // for zoom
-      this._meetingController = new ZoomAdaptorController();
+      return this._rcvController;
     }
 
-    return this._meetingController;
+    if (!this._zoomController) {
+      this._zoomController = new ZoomAdaptorController();
+    }
+    return this._zoomController;
   }
 }
 
