@@ -20,7 +20,7 @@ type CallViewProps = {
   phoneNumber: string;
   call: () => void;
   trackCall: (analysisSource?: string) => void;
-  showIcon: PromisedComputedValue<boolean>;
+  showIcon: boolean;
 };
 
 export { CallProps, CallViewProps };
