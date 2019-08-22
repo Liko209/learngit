@@ -409,6 +409,14 @@ describe('TelephonyCallController', () => {
       callController.onCallStateChange(RTC_CALL_STATE.IDLE);
       expect(spy).toHaveBeenCalledWith(CALL_STATE.IDLE);
     });
+
+    it('should handle disconnecting when call is disconnected', () => {
+      callController['_handleCallStateChanged'] = jest.fn();
+      callController.onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
+      expect(callController._handleCallStateChanged).toHaveBeenCalledWith(
+        CALL_STATE.DISCONNECTED,
+      );
+    });
   });
 
   describe('_updateCallHoldState', () => {
@@ -463,6 +471,19 @@ describe('TelephonyCallController', () => {
       ]);
     });
 
+    it('should update call state when state is disconnecting', () => {
+      callController._getCallEntity = jest
+        .fn()
+        .mockReturnValue({ call_state: CALL_STATE.CONNECTED });
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._handleCallStateChanged(CALL_STATE.DISCONNECTING);
+      expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
+        {
+          call_state: CALL_STATE.DISCONNECTING,
+        },
+      ]);
+    });
+
     it('should update call state and save sip data and hold when state is disconnected', () => {
       const call = {};
       jest.spyOn(rtcCall, 'getCallInfo').mockReturnValue({
@@ -479,7 +500,7 @@ describe('TelephonyCallController', () => {
           call_state: CALL_STATE.DISCONNECTED,
           disconnectTime: 1,
           call_id: '1',
-          call_state: 'disconnected',
+          call_state: 'Disconnected',
           disconnectTime: 1,
           from_tag: 'f',
           to_tag: 't',
@@ -488,7 +509,7 @@ describe('TelephonyCallController', () => {
       expect(call).toEqual(
         expect.objectContaining({
           call_id: '1',
-          call_state: 'disconnected',
+          call_state: 'Disconnected',
           disconnectTime: 1,
           from_tag: 'f',
           to_tag: 't',

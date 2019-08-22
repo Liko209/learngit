@@ -208,23 +208,8 @@ class TelephonyCallController implements IRTCCallDelegate {
     callEntity.to_tag = this._rtcCall.getCallInfo().toTag || callEntity.to_tag;
   }
 
-  private _convertCallState(state: RTC_CALL_STATE) {
-    switch (state) {
-      case RTC_CALL_STATE.CONNECTED:
-        return CALL_STATE.CONNECTED;
-      case RTC_CALL_STATE.IDLE:
-        return CALL_STATE.IDLE;
-      case RTC_CALL_STATE.CONNECTING:
-        return CALL_STATE.CONNECTING;
-      case RTC_CALL_STATE.DISCONNECTED:
-        return CALL_STATE.DISCONNECTED;
-      default:
-        return CALL_STATE.IDLE;
-    }
-  }
-
   async onCallStateChange(state: RTC_CALL_STATE) {
-    const callState: CALL_STATE = this._convertCallState(state);
+    const callState: CALL_STATE = (state as string) as CALL_STATE;
 
     state === RTC_CALL_STATE.DISCONNECTED &&
       this._handleCallStateChanged(CALL_STATE.DISCONNECTING);
