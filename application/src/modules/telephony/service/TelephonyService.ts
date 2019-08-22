@@ -444,7 +444,6 @@ class TelephonyService {
     this._callStateDisposer = reaction(
       () => this._telephonyStore.callState,
       callState => {
-        console.info('111111 callState', callState);
         if (callState === CALL_STATE.DISCONNECTING) {
           this._telephonyStore.end();
           this._resetCallState();
@@ -455,7 +454,6 @@ class TelephonyService {
     this._callEntityIdDisposer = reaction(
       () => this._telephonyStore.call && this._telephonyStore.call.id,
       callId => {
-        console.info('1111111 reaction callId', callId);
         this._callEntityId = callId;
       }
     );
