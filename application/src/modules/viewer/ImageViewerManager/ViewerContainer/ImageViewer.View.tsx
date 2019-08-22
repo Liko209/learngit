@@ -76,7 +76,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
 
   onCurrentItemDeleted = (nextItemId: number) => {
     const { t, deleteItem } = this.props;
-    console.log('looper1', deleteItem);
     if (deleteItem) {
       if (nextItemId === -1) {
         // use to close dialog
