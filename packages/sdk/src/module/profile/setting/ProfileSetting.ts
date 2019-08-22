@@ -26,7 +26,7 @@ import {
   RingsList,
   RINGS_TYPE,
   SOUNDS_TYPE,
-  MOBILE_TEAM_NOTIFICATION_LIST,
+  mobileTeamNotificationList,
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   MAX_LEFTRAIL_GROUP_VALUE_LIST,
   MAX_LEFTRAIL_GROUP_DEFAULT_VALUE,
@@ -143,7 +143,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
       >(this._profileService, {
         id: SettingEntityIds.MOBILE_Team,
         setting_key: SETTING_KEYS.MOBILE_TEAM,
-        source: MOBILE_TEAM_NOTIFICATION_LIST,
+        source: mobileTeamNotificationList,
       }),
       [SettingEntityIds.Audio_TeamMessages]: new AudioTeamMessagesSettingHandler(
         this._profileService,
