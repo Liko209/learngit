@@ -6,12 +6,12 @@
 
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { IProfileService } from './IProfileService';
-import { Profile } from '../entity/Profile';
+import { Profile, ConversationPreference } from '../entity/Profile';
 import { daoManager } from '../../../dao';
 import { ProfileDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SOCKET, SERVICE } from '../../../service/eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
@@ -22,7 +22,6 @@ import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
 import { VIDEO_SERVICE_OPTIONS } from '../constants';
-import { ConversationPreferenceModel } from 'sdk/module/setting/entity';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -36,9 +35,10 @@ class ProfileService extends EntityBaseService<Profile>
 
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.PROFILE]: this.handleIncomingData,
+        [SOCKET.PROFILE]: this.handleProfileChange,
         [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this
           .handleGroupIncomesNewPost,
+        [ENTITY.USER_SETTING]: this.getByGroupId,
       }),
     );
 
@@ -64,6 +64,17 @@ class ProfileService extends EntityBaseService<Profile>
 
     super.onStopped();
   }
+  handleProfileChange = async (
+    profile: Raw<Profile> | null,
+    source: SYNC_SOURCE,
+    changeMap?: Map<string, ChangeModel>,
+  ) => {
+    await this.handleIncomingData(profile, source, changeMap);
+    // await this.handleConversationPreferenceChange();
+  };
+  // handleConversationPreferenceChange = async (a, b, c) => {
+  //   console.log('vicky', a, b, c);
+  // };
 
   handleIncomingData = async (
     profile: Raw<Profile> | null,
@@ -171,14 +182,15 @@ class ProfileService extends EntityBaseService<Profile>
       .isVideoServiceEnabled(option);
   }
 
-  async getByGroupId(id: number): Promise<ConversationPreferenceModel> {
-    console.log(id);
-    return {} as ConversationPreferenceModel;
+  async getByGroupId(cid: number): Promise<ConversationPreference> {
+    return this.getProfileController()
+      .getProfileDataController()
+      .getByGroupId(cid);
   }
 
   async updateConversationPreference(
     id: number,
-    model: Partial<ConversationPreferenceModel>,
+    model: Partial<ConversationPreference>,
   ): Promise<void> {
     // todo
     console.log(id, model);

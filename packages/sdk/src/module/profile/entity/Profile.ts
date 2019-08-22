@@ -16,6 +16,7 @@ import {
   AUDIO_SOUNDS_INFO,
   SOUNDS_TYPE,
 } from '../constants';
+import { IdModel } from 'sdk/framework/model';
 
 type CONVERSATION_NOTIFICATIONS_MODEL = {
   muted?: boolean;
@@ -68,7 +69,7 @@ type Profile = ExtendedBaseModel & {
   video_service?: string;
   rcv_beta?: boolean;
 };
-type ConversationPreference = {
+type ConversationPreference = IdModel<number> & {
   muted: boolean;
   desktop_notifications: boolean;
   sound_notifications: AUDIO_SOUNDS_INFO;

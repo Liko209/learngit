@@ -157,11 +157,11 @@ const ENTITY_SETTING = {
     event: [ENTITY.CONVERSATION_PREFERENCE],
     service: () => ({
       getById: (id: number) =>
-        ServiceLoader.getInstance<SettingService>(
-          ServiceConfig.SETTING_SERVICE,
+        ServiceLoader.getInstance<ProfileService>(
+          ServiceConfig.PROFILE_SERVICE,
         ).getByGroupId(id),
     }),
-    type: HANDLER_TYPE.SINGLE_ENTITY,
+    type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PHONE_NUMBER]: {

@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable } from 'mobx';
 import Base from './Base';
 import { ConversationPreference } from 'sdk/module/profile/entity/Profile';
 import {
@@ -11,10 +11,10 @@ export default class ConversationPreferenceModel extends Base<
   ConversationPreference
 > {
   @observable muteAll: boolean;
-  @observable desktopNotifications: boolean;
-  @observable soundNotifications: AUDIO_SOUNDS_INFO;
-  @observable pushNotifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
-  @observable emailNotifications: EMAIL_NOTIFICATION_OPTIONS;
+  @observable desktopNotification: boolean;
+  @observable soundNotification: AUDIO_SOUNDS_INFO;
+  @observable pushNotification: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+  @observable emailNotification: EMAIL_NOTIFICATION_OPTIONS;
 
   constructor(data: ConversationPreference) {
     super(data);
@@ -27,10 +27,10 @@ export default class ConversationPreferenceModel extends Base<
     } = data;
 
     this.muteAll = muted;
-    this.desktopNotifications = desktop_notifications;
-    this.soundNotifications = sound_notifications;
-    this.pushNotifications = push_notifications;
-    this.emailNotifications = email_notifications;
+    this.desktopNotification = desktop_notifications;
+    this.soundNotification = sound_notifications;
+    this.pushNotification = push_notifications;
+    this.emailNotification = email_notifications;
   }
 
   static fromJS(data: ConversationPreference) {

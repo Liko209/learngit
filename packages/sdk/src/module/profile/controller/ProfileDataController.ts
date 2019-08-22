@@ -34,7 +34,8 @@ class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
-  ) {}
+  ) {
+  }
 
   get settingService() {
     return ServiceLoader.getInstance<SettingService>(
