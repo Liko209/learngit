@@ -3,7 +3,14 @@
  * @Date: 2019-08-20 16:25:33
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { memo, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  memo,
+  useMemo,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useCallback,
+} from 'react';
 import {
   JuiOutlineTextField,
   JuiOutlineTextFieldRef,
@@ -35,6 +42,9 @@ type JuiSearchInputProps = {
   size?: 'medium' | 'large';
 } & JuiOutlineTextFieldProps;
 
+const TWO_ICON = ['search', 'close'];
+const ONE_ICON = ['search'];
+
 const JuiSearchInput = memo(
   forwardRef((props: JuiSearchInputProps, ref) => {
     const {
@@ -56,29 +66,32 @@ const JuiSearchInput = memo(
       element: inputRef.current && inputRef.current.element,
     }));
 
-    const baseOnClear = () => {
+    const handleClearClick = useCallback(() => {
       inputRef.current && inputRef.current.focus();
       onClear();
-    };
+    }, [inputRef]);
+
+    const MemoClearButton = useMemo(
+      () => (
+        <ClearButton
+          data-test-automation-id="global-search-clear"
+          onClick={handleClearClick}
+          withCloseIcon={withCloseIcon}
+        >
+          {clearText}
+        </ClearButton>
+      ),
+      [handleClearClick, withCloseIcon, clearText],
+    );
 
     return (
       <JuiOutlineTextField
-        iconName={withCloseIcon ? ['search', 'close'] : ['search']}
+        iconName={withCloseIcon ? TWO_ICON : ONE_ICON}
         iconPosition={withCloseIcon ? 'both' : 'left'}
         onClickIconRight={withCloseIcon ? onClose : undefined}
         size={size}
         ref={inputRef as any}
-        inputAfter={
-          showClear && (
-            <ClearButton
-              data-test-automation-id="global-search-clear"
-              onClick={baseOnClear}
-              withCloseIcon={withCloseIcon}
-            >
-              {clearText}
-            </ClearButton>
-          )
-        }
+        inputAfter={showClear && MemoClearButton}
         {...rest}
       />
     );

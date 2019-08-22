@@ -66,6 +66,7 @@ const StyledListItem = styled<JuiListItemProps>(
           theme,
         })};
     }
+
     &:hover {
       background-color: ${({ baseColor = 'black', theme }) =>
         palette(colorMap[baseColor][0], colorMap[baseColor][1], 0.05)({

@@ -105,7 +105,7 @@ const JuiInfiniteList = (
 
   let result = null;
 
-  if (true && height) {
+  if (height) {
     result = (
       <JuiDataLoader
         hasMore={hasMore}
