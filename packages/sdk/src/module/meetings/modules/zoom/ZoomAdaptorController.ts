@@ -21,6 +21,11 @@ class ZoomAdaptorController implements IMeetingAdaptorController {
     return false;
   }
 
+  cancelMeeting(meetingId: number): Promise<void> {
+    const controller = this.getSuitableController();
+    return controller.cancelMeeting(meetingId);
+  }
+
   private getSuitableController() {
     // TODO, should depends on condition to choose DeepLink or Embedded
     return this.zoomDeepLinkController;

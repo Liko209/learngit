@@ -7,6 +7,7 @@
 import { IMeetingController } from '../controller/IMeetingController';
 import { StartMeetingResultType, MEETING_ACTION } from '../../types';
 import { Api } from 'sdk/api';
+import ItemAPI from 'sdk/api/glip/item';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import _ from 'lodash';
@@ -34,6 +35,10 @@ class RCVDeepLinkController implements IMeetingController {
       action: MEETING_ACTION.ERROR,
       link: 'Invalid server host or tk or group id',
     };
+  }
+
+  async cancelMeeting(meetingId: number): Promise<void> {
+    await ItemAPI.cancelRCV(meetingId);
   }
 }
 

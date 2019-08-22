@@ -111,11 +111,13 @@ describe('MeetingsAdaptorController', () => {
     function innerSetup(meetingType: MEETING_SERVICE_TYPE) {
       const controller = new MeetingsAdaptorController();
       Object.assign(controller, {
-        _meetingController: {
+        _zoomController: {
           startMeeting: jest.fn(),
-          isRCVideo: jest
-            .fn()
-            .mockReturnValue(MEETING_SERVICE_TYPE.RCV === meetingType),
+          isRCVideo: jest.fn().mockReturnValue(false),
+        },
+        _rcvController: {
+          startMeeting: jest.fn(),
+          isRCVideo: jest.fn().mockReturnValue(true),
         },
       });
       jest
@@ -131,14 +133,14 @@ describe('MeetingsAdaptorController', () => {
     it('should call rcv startMeeting', async () => {
       const controller = innerSetup(MEETING_SERVICE_TYPE.RCV);
       await controller.startMeeting([]);
-      expect(controller['_meetingController'].startMeeting).toHaveBeenCalled();
-      expect(controller['_meetingController'].isRCVideo()).toBeTruthy();
+      expect(controller['_zoomController'].startMeeting).not.toHaveBeenCalled();
+      expect(controller['_rcvController'].startMeeting).toHaveBeenCalled();
     });
     it('should call zoom startMeeting', async () => {
       const controller = innerSetup(MEETING_SERVICE_TYPE.ZOOM);
       await controller.startMeeting([]);
-      expect(controller['_meetingController'].startMeeting).toHaveBeenCalled();
-      expect(controller['_meetingController'].isRCVideo()).toBeFalsy();
+      expect(controller['_zoomController'].startMeeting).toHaveBeenCalled();
+      expect(controller['_rcvController'].startMeeting).not.toHaveBeenCalled();
     });
   });
 });

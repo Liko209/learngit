@@ -22,6 +22,10 @@ class MeetingsController {
     return this.meetingsAdaptorController.getMeetingServiceType();
   }
 
+  cancelMeeting(meetingId: number): Promise<boolean> {
+    return  this.meetingsAdaptorController.cancelMeeting(meetingId);
+  }
+
   protected get meetingsAdaptorController() {
     if (!this._meetingsAdaptorController) {
       this._meetingsAdaptorController = new MeetingsAdaptorController();
