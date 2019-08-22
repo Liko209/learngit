@@ -5,7 +5,6 @@
  */
 
 import { mainLogger, powerMonitor } from 'sdk';
-import { ItemService } from 'sdk/module/item/service';
 import { SyncService } from 'sdk/module/sync/service';
 import { TelephonyService } from 'sdk/module/telephony';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
