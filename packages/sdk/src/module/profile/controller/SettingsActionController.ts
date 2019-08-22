@@ -83,6 +83,7 @@ class SettingsActionController {
           ) {
             item.sound = sound_notifications.id;
           }
+          return item;
         }),
       },
     ];

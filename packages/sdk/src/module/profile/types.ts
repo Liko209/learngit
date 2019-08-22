@@ -13,6 +13,10 @@ import {
   SOUNDS_TYPE,
 } from './constants';
 import { SettingEntityIds } from '../setting';
+import {
+  CONVERSATION_NOTIFICATIONS_VALUE,
+  AUDIO_NOTIFICATIONS,
+} from './entity/Profile';
 
 type SettingValue =
   | number
@@ -22,7 +26,9 @@ type SettingValue =
   | EMAIL_NOTIFICATION_OPTIONS
   | MOBILE_TEAM_NOTIFICATION_OPTIONS
   | DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
-  | SOUNDS_TYPE;
+  | SOUNDS_TYPE
+  | CONVERSATION_NOTIFICATIONS_VALUE
+  | AUDIO_NOTIFICATIONS[];
 
 type SettingOption = {
   key: SETTING_KEYS;

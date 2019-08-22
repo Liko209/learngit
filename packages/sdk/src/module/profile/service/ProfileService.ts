@@ -182,18 +182,19 @@ class ProfileService extends EntityBaseService<Profile>
       .isVideoServiceEnabled(option);
   }
 
-  async getByGroupId(cid: number): Promise<ConversationPreference> {
-    return this.getProfileController()
+  getByGroupId = async (cid: number): Promise<ConversationPreference> => {
+    return await this.getProfileController()
       .getProfileDataController()
       .getByGroupId(cid);
-  }
+  };
 
   async updateConversationPreference(
     id: number,
     model: Partial<ConversationPreference>,
   ): Promise<void> {
-    // todo
-    console.log(id, model);
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateSettingByGroupId(id, model);
   }
 
   private get profileSetting() {

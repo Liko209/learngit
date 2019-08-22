@@ -15,18 +15,22 @@ import {
   NEW_MESSAGE_BADGES_OPTIONS,
   AUDIO_SOUNDS_INFO,
   SOUNDS_TYPE,
+  RINGS_TYPE,
 } from '../constants';
 import { IdModel } from 'sdk/framework/model';
 
-type CONVERSATION_NOTIFICATIONS_MODEL = {
-  muted?: boolean;
-  desktop_notifications?: boolean;
-  push_notifications?: MOBILE_TEAM_NOTIFICATION_OPTIONS;
-  email_notifications?: EMAIL_NOTIFICATION_OPTIONS;
+type CONVERSATION_NOTIFICATIONS_VALUE = {
+  [groupId: number]: {
+    muted?: boolean;
+    desktop_notifications?: boolean;
+    push_notifications?: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+    email_notifications?: EMAIL_NOTIFICATION_OPTIONS;
+  };
 };
-type SOUND_NOTIFICATIONS = {
+
+type AUDIO_NOTIFICATIONS = {
   gid: number;
-  sound: SOUNDS_TYPE;
+  sound: SOUNDS_TYPE | RINGS_TYPE;
 };
 
 type Profile = ExtendedBaseModel & {
@@ -63,8 +67,8 @@ type Profile = ExtendedBaseModel & {
 
   // conversation settings
   [SETTING_KEYS.MAX_LEFTRAIL_GROUP]?: string;
-  [SETTING_KEYS.CONVERSATION_NOTIFICATION]?: object;
-  [SETTING_KEYS.CONVERSATION_SOUND]?: SOUND_NOTIFICATIONS[];
+  [SETTING_KEYS.CONVERSATION_NOTIFICATION]?: CONVERSATION_NOTIFICATIONS_VALUE;
+  [SETTING_KEYS.CONVERSATION_SOUND]?: AUDIO_NOTIFICATIONS[];
   [SETTING_KEYS.SHOW_LINK_PREVIEWS]: boolean;
 
   // meetings
@@ -79,4 +83,9 @@ type ConversationPreference = IdModel<number> & {
   email_notifications: EMAIL_NOTIFICATION_OPTIONS;
 };
 
-export { Profile, ConversationPreference };
+export {
+  Profile,
+  ConversationPreference,
+  CONVERSATION_NOTIFICATIONS_VALUE,
+  AUDIO_NOTIFICATIONS,
+};

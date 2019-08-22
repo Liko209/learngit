@@ -34,8 +34,7 @@ class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
-  ) {
-  }
+  ) {}
 
   get settingService() {
     return ServiceLoader.getInstance<SettingService>(
@@ -205,19 +204,17 @@ class ProfileDataController {
       (profile && profile.team_specific_audio_notifications) ||
       []
     ).find(item => item.gid === cid);
-    let model: ConversationPreference = {
+    let model = {
       ...notification,
       muted: (notification && notification.muted) || false,
       sound_notifications:
         sound && SoundsList.find(item => item.id === sound.sound),
-    };
+    } as ConversationPreference;
     if (this._isTeam(cid)) {
       model = await this._getTeamSetting(model);
     } else {
       model = await this._getDMSetting(model);
     }
-    // 0 is string or number
-
     return model;
   }
 
@@ -228,7 +225,7 @@ class ProfileDataController {
 
   private async _getTeamSetting(model: ConversationPreference) {
     if (
-      !model.sound_notifications ||
+      model.sound_notifications === undefined ||
       model.sound_notifications.id === SOUNDS_TYPE.Default
     ) {
       model.sound_notifications = await this._getSettingValue(
@@ -242,12 +239,12 @@ class ProfileDataController {
       model.desktop_notifications =
         value === DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE;
     }
-    if (!model.email_notifications) {
+    if (model.email_notifications === undefined) {
       model.email_notifications = await this._getSettingValue(
         SettingEntityIds.Notification_Teams,
       );
     }
-    if (!model.push_notifications) {
+    if (model.push_notifications === undefined) {
       model.push_notifications = await this._getSettingValue(
         SettingEntityIds.MOBILE_Team,
       );
@@ -271,12 +268,12 @@ class ProfileDataController {
       model.desktop_notifications =
         value !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF;
     }
-    if (!model.email_notifications) {
+    if (model.email_notifications === undefined) {
       model.email_notifications = await this._getSettingValue(
         SettingEntityIds.Notification_DirectMessages,
       );
     }
-    if (!model.push_notifications) {
+    if (model.push_notifications === undefined) {
       model.push_notifications = await this._getSettingValue(
         SettingEntityIds.MOBILE_DM,
       );
