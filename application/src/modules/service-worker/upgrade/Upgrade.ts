@@ -376,13 +376,6 @@ class Upgrade {
       return false;
     }
 
-    if (this._isInFileUploading()) {
-      mainLogger.info(
-        `${logTag}[${triggerSource}] Forbidden to reload due to file uploading`,
-      );
-      return false;
-    }
-
     // TO-DO in future, disallow reload when there is any meeting.
     return true;
   }
@@ -399,13 +392,6 @@ class Upgrade {
       ServiceConfig.SYNC_SERVICE,
     );
     return service.isDataSyncing();
-  }
-
-  private _isInFileUploading() {
-    const service = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    return service.hasUploadingFiles();
   }
 
   private _appInFocus() {
