@@ -10,11 +10,11 @@ import {
 export default class ConversationPreferenceModel extends Base<
   ConversationPreference
 > {
-  @observable muteAll: boolean;
-  @observable desktopNotification: boolean;
-  @observable soundNotification: AUDIO_SOUNDS_INFO;
-  @observable pushNotification: MOBILE_TEAM_NOTIFICATION_OPTIONS;
-  @observable emailNotification: EMAIL_NOTIFICATION_OPTIONS;
+  @observable muted: boolean;
+  @observable desktopNotifications: boolean;
+  @observable soundNotifications: AUDIO_SOUNDS_INFO;
+  @observable pushNotifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+  @observable emailNotifications: EMAIL_NOTIFICATION_OPTIONS;
 
   constructor(data: ConversationPreference) {
     super(data);
@@ -26,11 +26,11 @@ export default class ConversationPreferenceModel extends Base<
       email_notifications,
     } = data;
 
-    this.muteAll = muted;
-    this.desktopNotification = desktop_notifications;
-    this.soundNotification = sound_notifications;
-    this.pushNotification = push_notifications;
-    this.emailNotification = email_notifications;
+    this.muted = muted;
+    this.desktopNotifications = desktop_notifications;
+    this.soundNotifications = sound_notifications;
+    this.pushNotifications = push_notifications;
+    this.emailNotifications = email_notifications;
   }
 
   static fromJS(data: ConversationPreference) {
