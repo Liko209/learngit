@@ -13,9 +13,7 @@ import styled from '../../../../foundation/styled-components';
 import star from '../../../../assets/jupiter-icon/icon-star.svg';
 
 const Wrapper = styled.div`
-  .iconButtonWrapper {
-    margin-right: 20px;
-  }
+  margin-right: 20px;
 `;
 
 const knobs = {
@@ -41,6 +39,7 @@ const knobs = {
   invisible: () => boolean('invisible', false),
   awake: () => boolean('awake', true),
   disabled: () => boolean('disabled', false),
+  alwaysEnableTooltip: () => boolean('alwaysEnableTooltip', false),
 };
 storiesOf('Components/Buttons/IconButtons', module)
   .addDecorator(alignCenterDecorator)
@@ -48,13 +47,13 @@ storiesOf('Components/Buttons/IconButtons', module)
     return (
       <Wrapper>
         <JuiIconButton
-          className="iconButtonWrapper"
           variant="plain"
           color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
+          alwaysEnableTooltip={knobs.alwaysEnableTooltip()}
           tooltipTitle="add"
           symbol={star}
         />
@@ -65,13 +64,13 @@ storiesOf('Components/Buttons/IconButtons', module)
     return (
       <Wrapper>
         <JuiIconButton
-          className="iconButtonWrapper"
           variant="round"
           color={knobs.color()}
           size={knobs.size()}
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
+          alwaysEnableTooltip={knobs.alwaysEnableTooltip()}
           tooltipTitle="I'm a star"
           symbol={star}
         />

@@ -62,6 +62,7 @@ const props = {
   shouldHide: false,
   loadingH: 100,
   dispose: jest.fn(),
+  canAddMembers: true,
 };
 let wrapper;
 describe('RightShelfMemberList.View', () => {
