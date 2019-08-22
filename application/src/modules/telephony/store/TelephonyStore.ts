@@ -601,7 +601,7 @@ class TelephonyStore {
 
   @computed
   get activeCallDirection() {
-    if (!this.call) return false;
+    if (!this.call) return undefined;
     return this.call && this.call.direction;
   }
 
