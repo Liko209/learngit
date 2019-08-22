@@ -77,9 +77,12 @@ class StateActionController {
       return;
     }
 
-    const lastPostId = group.most_recent_post_id;
+    const lastPostId = Math.max(
+      group.most_recent_post_id || 0,
+      groupState.read_through || 0,
+    );
     const myStateId = this._stateFetchDataController.getMyStateId();
-    if (lastPostId && myStateId > 0) {
+    if (myStateId > 0) {
       await this._partialModifyController.updatePartially({
         entityId: groupId,
         preHandlePartialEntity: (
@@ -97,7 +100,6 @@ class StateActionController {
           return {
             ...partialEntity,
             read_through: lastPostId,
-            last_read_through: lastPostId,
             team_mention_cursor: originEntity.group_team_mention_cursor,
             unread_count: 0,
             unread_mentions_count: 0,
