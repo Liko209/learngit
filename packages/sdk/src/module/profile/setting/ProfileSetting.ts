@@ -52,7 +52,7 @@ type HandlerMap = {
     NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.MOBILE_DM]: ProfileSubscribeEntityHandler<
-    NOTIFICATION_OPTIONS
+    MOBILE_TEAM_NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.MOBILE_Team]: ProfileSubscribeEntityHandler<
     MOBILE_TEAM_NOTIFICATION_OPTIONS
