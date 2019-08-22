@@ -121,6 +121,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
     );
     return (
       <JuiModal
+        onCancel={onCancel}
         open={showDuplicateFiles}
         title={title}
         footer={footer}

@@ -29,7 +29,7 @@ type JuiModalProps = {
   cancelBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void | Promise<boolean> | Promise<void>;
-  onCancel?(event?: React.MouseEvent): void;
+  onCancel?(event: React.MouseEvent): void;
   content?: string | JSX.Element;
   fillContent?: boolean;
   loading?: boolean;
@@ -108,10 +108,11 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       contentAfter,
       modalProps,
       fillContent,
+      onCancel,
     } = this.props;
 
     return (
-      <JuiDialog open={open!} size={size} {...modalProps}>
+      <JuiDialog onClose={onCancel} open={open!} size={size} {...modalProps}>
         {typeof title === 'string' ? (
           <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
             {title}

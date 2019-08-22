@@ -13,7 +13,7 @@ type StyledDialogProps = MuiDialogProps & {
 
 type JuiDialogProps = StyledDialogProps & {
   enableEscapeClose?: boolean;
-  onClose?: (event: KeyboardEvent) => void;
+  onClose?: (event: KeyboardEvent | React.MouseEvent) => void;
 };
 
 const FilteredMuiDialog = ({ fixedAtTop, ...rest }: StyledDialogProps) => (
@@ -38,7 +38,7 @@ const StyledDialog = styled(FilteredMuiDialog)`
 
 const WrapDialog = (props: JuiDialogProps) => {
   const {
-    enableEscapeClose = false,
+    enableEscapeClose = true,
     disableEscapeKeyDown,
     onClose,
     size = 'medium',

@@ -17,9 +17,9 @@ function modal(
 ) {
   const Component = component;
   const Dialog = () => (
-      <JuiDialog {...props}>
-        {Component instanceof Function ? <Component /> : Component}
-      </JuiDialog>
+    <JuiDialog {...props} onClose={() => portalManager.dismissLast()}>
+      {Component instanceof Function ? <Component /> : Component}
+    </JuiDialog>
   );
 
   const { dismiss, show } = portalManager.wrapper(Dialog);
