@@ -74,7 +74,7 @@ class SettingsActionController {
     const data = [
       { key: SETTING_KEYS.CONVERSATION_NOTIFICATION, value: allNotification },
       {
-        key: SETTING_KEYS.CONVERSATION_SOUND,
+        key: SETTING_KEYS.CONVERSATION_AUDIO,
         value: allSound.map(item => {
           if (
             item.gid === cid &&

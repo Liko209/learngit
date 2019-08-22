@@ -35,7 +35,7 @@ class ProfileService extends EntityBaseService<Profile>
 
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.PROFILE]: this.handleProfileChange,
+        [SOCKET.PROFILE]: this.handleIncomingData,
         [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this
           .handleGroupIncomesNewPost,
         [ENTITY.USER_SETTING]: this.getByGroupId,
@@ -64,17 +64,6 @@ class ProfileService extends EntityBaseService<Profile>
 
     super.onStopped();
   }
-  handleProfileChange = async (
-    profile: Raw<Profile> | null,
-    source: SYNC_SOURCE,
-    changeMap?: Map<string, ChangeModel>,
-  ) => {
-    await this.handleIncomingData(profile, source, changeMap);
-    // await this.handleConversationPreferenceChange();
-  };
-  // handleConversationPreferenceChange = async (a, b, c) => {
-  //   console.log('vicky', a, b, c);
-  // };
 
   handleIncomingData = async (
     profile: Raw<Profile> | null,
