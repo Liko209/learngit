@@ -131,7 +131,7 @@ function isPasteImageFromFileSystem(files: FileList, types: string[]) {
     files &&
     files.length === 1 &&
     types.length === 2 &&
-    types[0] === 'text/plain' &&
+    // types[0] === 'text/plain' &&
     types[1] === 'Files'
   );
 }
