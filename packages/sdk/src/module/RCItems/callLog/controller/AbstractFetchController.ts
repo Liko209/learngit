@@ -47,7 +47,7 @@ string
         callLog.result === CALL_RESULT.MISSED ||
         callLog.result === CALL_RESULT.VOICEMAIL;
       return (
-        !callLog.__deactivated &&
+        !callLog.deleted &&
         (callLogSource === CALL_LOG_SOURCE.ALL ? true : isMissedCall) &&
         filterFunc(callLog)
       );

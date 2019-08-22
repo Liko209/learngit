@@ -589,7 +589,7 @@ class SyncController {
       }
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
     } catch (error) {
-      mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
+      mainLogger.warn(`sync/handleData: ${error}`);
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
