@@ -336,7 +336,7 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   });
 
   await h(t).withLog('When I hover on the add button', async () => {
-    await t.hover(rightRail.memberListSection.header);
+    await t.hover(rightRail.memberListSection.body);
     await t.hover(rightRail.memberListSection.addMemberButton, {speed: 0.1});
   });
 
