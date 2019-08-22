@@ -3,18 +3,17 @@
  * @Date: 2019-08-20 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import React, {
-  ComponentType,
-  createRef,
-  RefObject,
-  SyntheticEvent,
-} from 'react';
-
+import React, { useState } from 'react';
 import { JuiIconography } from '../../../foundation/Iconography';
+import { grey, palette } from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
-import _ from 'lodash';
 
-const StyledLoadingPage = styled.div`
+const StyledImage = styled.img<{ visibility: string }>`
+  visibility: ${({ visibility }) => visibility};
+  width: 100%;
+`;
+
+const StyledLoadingPage = styled.div<{ whiteBackground?: boolean }>`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -23,188 +22,52 @@ const StyledLoadingPage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: ${({ whiteBackground }) =>
+    whiteBackground ? palette('common', 'white') : grey('100')};
 `;
 
-const StyledImage = styled.img<{ visibility: string }>`
-  display: block;
-  box-shadow: ${({ theme }) => theme.shadows[7]};
-  visibility: ${({ visibility }) => visibility};
-  user-select: none;
-`;
+// const StyleContainer = styled.div`
+//   height: 100%;
+// `;
 
-const HiddenImage = styled.img`
-  visibility: hidden;
-  display: none;
-`;
-
-type JuiImageProps = React.DetailedHTMLProps<
-  React.ImgHTMLAttributes<HTMLImageElement>,
-  HTMLImageElement
-> & {
-  imageRef?: RefObject<HTMLImageElement>;
-  loadingPlaceHolder?: ComponentType<any>;
-  thumbnailSrc?: string;
-  onSizeLoad?: (naturalWidth: number, naturalHeight: number) => void;
-  onLoad?: () => void;
-  onError?: () => void;
-  performanceTracerStart?: () => void;
-  performanceTracerEnd?: () => void;
+type JuiImageWithStatusProps = {
+  src: string;
+  whiteBackground?: boolean;
 };
 
-type JuiImageState = {
-  currentShow: 'raw' | 'thumbnail';
-  loadings: {
-    raw: boolean;
-    thumbnail?: boolean;
-  };
-  errors: {
-    raw: boolean;
-    thumbnail?: boolean;
-  };
-};
-
-function isThumbnailMode(props: JuiImageProps) {
-  return props.thumbnailSrc && props.thumbnailSrc !== props.src;
+enum Status {
+  loading,
+  done,
+  error,
 }
 
-class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
-  static initState: JuiImageState = {
-    loadings: {
-      raw: true,
-    },
-    errors: {
-      raw: false,
-    },
-    currentShow: 'raw',
-  };
-  static initThumbnailModeState: JuiImageState = {
-    loadings: {
-      raw: true,
-      thumbnail: true,
-    },
-    errors: {
-      raw: false,
-      thumbnail: false,
-    },
-    currentShow: 'thumbnail',
-  };
+function JuiImageWithStatusView({
+  src,
+  whiteBackground,
+}: JuiImageWithStatusProps) {
+  const [status, setStatus] = useState<Status>(Status['loading']);
 
-  private _imageRef: RefObject<HTMLImageElement> = createRef();
-
-  constructor(props: JuiImageProps) {
-    super(props);
-    const { performanceTracerStart } = this.props;
-    performanceTracerStart && performanceTracerStart();
-    this.state = this.getInitState(props);
-    const { width, height, onSizeLoad } = this.props;
-    width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
-  }
-  getInitState(props: JuiImageProps): JuiImageState {
-    if (isThumbnailMode(props)) {
-      return _.cloneDeep(JuiImageView.initThumbnailModeState);
-    }
-    return _.cloneDeep(JuiImageView.initState);
-  }
-  getImageRef = (): RefObject<HTMLImageElement> =>
-    this.props.imageRef || this._imageRef;
-
-  private _errorView() {
-    return (
-      <StyledLoadingPage>
-        <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
-          image_broken
-        </JuiIconography>
-      </StyledLoadingPage>
-    );
-  }
-
-  render() {
-    const { loadings, errors, currentShow } = this.state;
-    const {
-      onSizeLoad,
-      onLoad,
-      onError,
-      loadingPlaceHolder,
-      imageRef: viewRef,
-      thumbnailSrc,
-      src,
-      ...rest
-    } = this.props;
-    const currentShowSrc = currentShow === 'raw' ? src : thumbnailSrc;
-    const error = _.values(errors).every((status: boolean) => status);
-    return (
-      <>
-        <StyledImage
-          ref={this.getImageRef() as any}
-          src={currentShowSrc}
-          visibility={error ? 'hidden' : 'visible'}
-          onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
-            if (currentShow === 'raw') {
-              const { naturalWidth, naturalHeight } = event.currentTarget;
-              onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
-              onLoad && onLoad();
-              const { performanceTracerEnd } = this.props;
-              performanceTracerEnd && performanceTracerEnd();
-            }
-            this.setState({
-              loadings: {
-                ...loadings,
-                [currentShow]: false,
-              },
-            });
-          }}
-          onError={() => {
-            if (currentShow === 'raw') {
-              onError && onError();
-            }
-            this.setState({
-              loadings: {
-                ...loadings,
-                [currentShow]: false,
-              },
-              errors: {
-                ...errors,
-                [currentShow]: true,
-              },
-            });
-            onError && onError();
-          }}
-          {...rest}
-        />
-        {/* raw image loader */}
-        {currentShow !== 'raw' && (
-          <HiddenImage
-            src={src}
-            onLoad={(event: SyntheticEvent<HTMLImageElement>) => {
-              if (src === thumbnailSrc) {
-                const { naturalWidth, naturalHeight } = event.currentTarget;
-                onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
-              }
-              this.setState({
-                loadings: {
-                  ...loadings,
-                  raw: false,
-                },
-                currentShow: 'raw',
-              });
-            }}
-            onError={() => {
-              this.setState({
-                loadings: {
-                  ...loadings,
-                  raw: false,
-                },
-                errors: {
-                  ...errors,
-                  raw: true,
-                },
-              });
-            }}
-          />
-        )}
-        {error && this._errorView()}
-      </>
-    );
-  }
+  const handleOnLoad = () => setStatus(Status['done']);
+  const handleOnError = () => setStatus(Status['error']);
+  return (
+    <>
+      <StyledImage
+        src={src}
+        onLoad={handleOnLoad}
+        onError={handleOnError}
+        visibility={Status[status] === 'error' ? 'hidden' : 'visible'}
+      />
+      {(Status[status] === 'error' || Status[status] === 'loading') && (
+        <StyledLoadingPage whiteBackground={whiteBackground}>
+          {Status[status] === 'error' && (
+            <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
+              image_broken
+            </JuiIconography>
+          )}
+        </StyledLoadingPage>
+      )}
+    </>
+  );
 }
-export { JuiImageView };
+
+export { JuiImageWithStatusView };
