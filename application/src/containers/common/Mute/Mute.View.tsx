@@ -18,7 +18,7 @@ type Props = MuteViewProps & WithTranslation & MuteProps;
 class MuteViewComponent extends Component<Props> {
   onClickMute = async () => {
     portalManager.dismissLast();
-    NotificationPreferences.show({ groupId: this.props.id });
+    NotificationPreferences.show({ groupId: this.props.groupId });
   };
 
   render() {
