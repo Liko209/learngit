@@ -203,6 +203,7 @@ class PostActionController implements IPostActionController {
       doPartialNotify: this._doPartialNotify.bind(this),
     });
   }
+
 }
 
 export { PostActionController };

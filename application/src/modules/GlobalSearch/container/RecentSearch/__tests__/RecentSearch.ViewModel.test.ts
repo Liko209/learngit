@@ -14,6 +14,7 @@ import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 import history from '../../../../../history';
 
+jest.mock('sdk/module/config');
 jest.mock('@/containers/Notification');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');

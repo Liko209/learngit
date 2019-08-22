@@ -55,6 +55,8 @@ enum SettingEntityIds {
   Audio_Mentions,
   Audio_IncomingCalls,
   Audio_NewVoicemail,
+  Max_Conversations,
+  Link_Preview,
 }
 
 export { IUserSettingHandler, SettingEntityIds, IModuleSetting };

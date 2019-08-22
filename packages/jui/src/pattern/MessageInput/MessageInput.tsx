@@ -94,7 +94,7 @@ const StyledError = styled.div`
   }
 `;
 
-const formats = ['mention'];
+const formats = ['mention', 'span'];
 
 type eventHandler = (range: RangeStatic, source: Sources) => void;
 

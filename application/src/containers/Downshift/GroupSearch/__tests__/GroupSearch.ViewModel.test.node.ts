@@ -9,8 +9,8 @@ import { GroupSearchViewModel } from '../GroupSearch.ViewModel';
 
 jest.mock('@/store/utils');
 
-const groupService = {
-  doFuzzySearchALlGroups() {
+const searchService = {
+  doFuzzySearchAllGroups() {
     return {
       terms: [],
       sortableModels: [{ id: 3 }],
@@ -28,7 +28,7 @@ describe('GroupSearchVM', () => {
     it('List shows/no if enter text matched/no matched any team conversation in posted in input filed [JPT-1555]', async () => {
       const groupSearchViewModel = new GroupSearchViewModel(props);
       let value = 'aaa';
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
       await expect(groupSearchViewModel.fetchGroups(value)).resolves.toEqual([
         { id: 3 },
       ]);

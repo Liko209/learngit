@@ -8,6 +8,7 @@ import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiTypography } from '../../foundation/Typography';
 import { JuiMenuItem } from '../../components/Menus';
+import { StyledAvatar } from '../../components/Avatar';
 import { spacing, width, typography, ellipsis } from '../../foundation/utils';
 
 type JuiDropdownContactInfoProps = {
@@ -27,6 +28,14 @@ const StyledContactWrapper = styled('div')`
   align-items: center;
   padding: ${spacing(3, 4)};
   background: ${({ theme }) => theme.palette.grey['100']};
+
+  ${StyledAvatar} {
+    :hover,
+    :active {
+      cursor: default;
+      opacity: 1;
+    }
+  }
 `;
 
 const JuiStyledDropdownMenuItem = styled(JuiMenuItem)`
@@ -41,6 +50,7 @@ const StyledContactInfoWrapper = styled('div')`
   margin-left: ${spacing(4)};
   overflow: hidden;
 `;
+
 const StyledContactInfoName = styled(JuiTypography)`
   && {
     ${typography('subheading2')};

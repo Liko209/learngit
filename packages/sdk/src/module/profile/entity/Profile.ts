@@ -65,6 +65,8 @@ type Profile = ExtendedBaseModel & {
   [SETTING_KEYS.MAX_LEFTRAIL_GROUP]?: string;
   [SETTING_KEYS.CONVERSATION_NOTIFICATION]?: object;
   [SETTING_KEYS.CONVERSATION_SOUND]?: SOUND_NOTIFICATIONS[];
+  [SETTING_KEYS.SHOW_LINK_PREVIEWS]: boolean;
+
   // meetings
   video_service?: string;
   rcv_beta?: boolean;

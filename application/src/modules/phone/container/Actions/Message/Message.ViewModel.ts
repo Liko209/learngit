@@ -16,7 +16,7 @@ class MessageViewModel extends StoreViewModel<MessageProps> {
     const tabName = this.props.tabName;
     if (person) {
       analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.MESSAGE);
-      analyticsCollector.phoneGoToConversation(
+      analyticsCollector.goToConversation(
         this.props.entity === ENTITY_TYPE.CALL_LOG
           ? 'callHistory'
           : 'voicemailList',

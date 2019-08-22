@@ -18,37 +18,46 @@ fixture('ContentPanel/PageHeader')
 
 test.skip(formalName('When update custom status, can sync dynamically in page header', ['JPT-252', 'P2', 'ConversationStream',]),
   async (t: TestController) => {
-    const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).glip(loginUser).init();
 
-    const otherUser = users[5];
-    await h(t).glip(otherUser).init();
+    const anotherUser = users[5];
+    await h(t).glip(anotherUser).init();
 
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const chat = <IGroup>{
+      type: 'DirectMessage',
+      owner: loginUser,
+      members: [loginUser, anotherUser]
+    }
 
-    let chatId;
     await h(t).withLog('Given I have an extension with a private chat with user5', async () => {
-      chatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, users[5].rcId],
-      });
+      await h(t).scenarioHelper.createOrOpenChat(chat);
+    });
+
+    await h(t).withLog('And send a post to ensure this chat in list', async () => {
+      await h(t).scenarioHelper.sendTextPost(uuid(), chat, loginUser);
     });
 
     await h(t).withLog('Given user5 have custom status "In a meeting"', async () => {
-      await h(t).glip(otherUser).updatePerson({ away_status: 'In a meeting' });
+      await h(t).glip(anotherUser).updatePerson({ away_status: 'In a meeting' });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, loginUser);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    const app = new AppRoot(t);
 
-    await h(t).withLog('Then I open the private chat with user5', async () => {
-      await directMessagesSection.conversationEntryById(chatId).enter();
+    await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+      step.initMetadata({
+        number: loginUser.company.number,
+        extension: loginUser.extension,
+      })
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+
+    await h(t).withLog('When I open the private chat with user5', async () => {
+      await directMessagesSection.conversationEntryById(chat.glipId).enter();
       await conversationPage.waitUntilPostsBeLoaded();
     });
 
@@ -59,7 +68,7 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     });
 
     await h(t).withLog('Then I modify user5\'s custom status to "content of user modify"', async () => {
-      await h(t).glip(otherUser).updatePerson({
+      await h(t).glip(anotherUser).updatePerson({
         away_status: 'content of user modify',
       });
     });
@@ -69,7 +78,7 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     }, true);
 
     await h(t).withLog("Then I delete user5's custom status", async () => {
-      await h(t).glip(otherUser).updatePerson({
+      await h(t).glip(anotherUser).updatePerson({
         away_status: null,
       });
     });
