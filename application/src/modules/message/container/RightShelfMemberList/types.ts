@@ -18,6 +18,7 @@ type RightShelfMemberListViewProps = RightShelfMemberListProps & {
   fullGuestIds: number[];
   shownMemberIds: number[];
   shownGuestIds: number[];
+  canAddMembers: boolean;
   allMemberLength?: number;
   isTeam?: boolean;
   personNameMap: { [id: string]: string };
