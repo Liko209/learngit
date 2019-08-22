@@ -60,14 +60,17 @@ describe('ProfileDialogGroupViewModel', () => {
       expect(vm.destinationId).toEqual(10);
     });
     it('should use original id if group only has empty convertedToTeam', () => {
+      const analysisType = '1';
       const data = {
         id: 123,
         dismiss: jest.fn(),
         convertedToTeam: {},
+        analysisType,
       };
       (getEntity as jest.Mock).mockReturnValue(data);
       vm = new ProfileDialogGroupContentViewModel(props);
       expect(vm.destinationId).toEqual(123);
+      expect(vm.analysisType).toEqual(analysisType);
     });
   });
 });
