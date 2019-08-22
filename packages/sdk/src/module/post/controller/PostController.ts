@@ -28,6 +28,7 @@ import { IGroupService } from '../../group/service/IGroupService';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PostItemController } from './implementation/PostItemController';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 
 class PostController {
   private _actionController: PostActionController;
@@ -41,6 +42,7 @@ class PostController {
   constructor(
     private _groupService: IGroupService,
     private _groupConfigService: IGroupConfigService,
+    private _entitySourceController: IEntitySourceController<Post, number>,
   ) {}
 
   getPostActionController(): PostActionController {
@@ -50,27 +52,15 @@ class PostController {
         networkClient: Api.glipNetworkClient,
       });
 
-      const persistentController = buildEntityPersistentController<Post>(
-        daoManager.getDao(PostDao),
-      );
-      const entitySourceController = buildEntitySourceController<Post>(
-        persistentController,
-        {
-          requestController,
-          canSaveRemoteData: false,
-          canRequest: () => true,
-        },
-      );
-
       const partialModifyController = buildPartialModifyController<Post>(
-        entitySourceController,
+        this._entitySourceController,
       );
 
       this._actionController = new PostActionController(
         this.getPostDataController(),
         partialModifyController,
         requestController,
-        entitySourceController,
+        this._entitySourceController,
       );
     }
     return this._actionController;
@@ -83,6 +73,7 @@ class PostController {
         this._getPreInsertController(),
         this.getPostDataController(),
         this._groupService,
+        this._entitySourceController,
       );
     }
     return this._sendController;
@@ -171,6 +162,7 @@ class PostController {
     }
     return this._preInsertController;
   }
+
 }
 
 export { PostController };

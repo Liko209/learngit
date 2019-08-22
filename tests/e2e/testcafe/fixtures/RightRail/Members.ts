@@ -375,7 +375,112 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
 
   await checkTooltip();
   await checkMiniProfile();
-})
+});
+
+
+
+
+
+
+
+test(formalName('Check whether "add team members" icon is showed on right shelf when no permission.', ['Windy.Yao', 'P2', 'JPT-2785']), async t => {
+  const app = new AppRoot(t)
+  const adminUser = h(t).rcData.mainCompany.users[4];
+  const memberUser = h(t).rcData.mainCompany.users[5];
+  const guestUser = h(t).rcData.guestCompany.users[0];
+  await h(t).glip(memberUser).init();
+  await h(t).platform(adminUser).init();
+  await h(t).glip(guestUser).init();
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: adminUser,
+    members: [adminUser, memberUser, guestUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+
+  const rightRail = app.homePage.messageTab.rightRail;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const teamItem = teamsSection.conversationEntryById(team.glipId);
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const profileDialog = app.homePage.profileDialog;
+  const teamSettingDialog = app.homePage.teamSettingDialog;
+
+  await h(t).withLog(`And memberUser login Jupiter with ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, memberUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then memberUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+  await h(t).withLog('The "Add team members" icon is showed.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).ok()
+  });
+
+
+  await h(t).withLog(`When memberUser logout and login  with guestUser ${guestUser.company.number}#${guestUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, guestUser);
+  });
+  await h(t).withLog('Then guestUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+
+  await h(t).withLog('The "Add team members" icon is hidden.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).notOk()
+  });
+
+
+  await h(t).withLog(`When guestUser logout and login  with adminUser ${adminUser.company.number}#${adminUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, adminUser);
+  });
+  await h(t).withLog('Then adminUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+  await h(t).withLog('The "Add team members" icon is showed.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).ok()
+  });
+
+
+  await h(t).withLog(`And adminUser set Add team member permission toggle is "off" on team settings page`, async () => {
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
+    await profileDialog.clickSetting();
+    await teamSettingDialog.notAllowAddTeamMember();
+    await teamSettingDialog.save();
+  });
+
+  await h(t).withLog(`When adminUser logout and login  with memberUser ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
+  });
+  await h(t).withLog('Then memberUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+
+  await h(t).withLog('The "Add team members" icon is hidden.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).notOk()
+  });
+
+  await h(t).withLog(`When adminUser logout and login  with guestUser ${guestUser.company.number}#${guestUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, guestUser);
+  });
+  await h(t).withLog('Then guestUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+
+  await h(t).withLog('The "Add team members" icon is hidden.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).notOk()
+  });
+
+
+
+});
+
 
 fixture('RightRail')
   .beforeEach(setupCase(BrandTire.MAIN_50_WITH_GUEST_20))
@@ -731,3 +836,4 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     await t.expect(restGuestCount).eql(5)
   }, true);
 })
+

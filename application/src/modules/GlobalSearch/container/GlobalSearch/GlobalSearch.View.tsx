@@ -12,6 +12,7 @@ import {
   JuiGlobalSearchInput,
   JuiOutlineTextFieldRef,
 } from 'jui/pattern/GlobalSearch';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 import { GlobalSearchViewProps, SEARCH_VIEW } from './types';
 import { FullSearch } from '../FullSearch';
@@ -45,7 +46,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
     if (!open) {
       return null;
     }
-
+    analyticsCollector.showGlobalDialog();
     const componentMap = {
       [SEARCH_VIEW.FULL_SEARCH]: FullSearch,
       [SEARCH_VIEW.INSTANT_SEARCH]: InstantSearch,

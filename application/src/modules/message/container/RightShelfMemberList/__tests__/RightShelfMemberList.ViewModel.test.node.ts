@@ -296,4 +296,82 @@ describe('RightShelfMemberListViewModel', () => {
       expect(vm.reaction).toHaveBeenCalledTimes(3);
     });
   });
+
+  describe('canAddMembers', () => {
+    it('should show entry when user is the team admin [JPT-2785]', () => {
+      jest.spyOn(utils, 'getEntity').mockImplementation(type => {
+        if (type === ENTITY_NAME.GROUP) {
+          return {
+            isThePersonGuest: jest.fn().mockReturnValue(false),
+            isTeam: true,
+            isAdmin: true,
+          };
+        }
+      });
+
+      groupService.getTeamUserPermissionFlags = jest.fn().mockReturnValue({
+        TEAM_ADD_MEMBER: false,
+      });
+
+      const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+
+      expect(vm.canAddMembers).toBeTruthy();
+    });
+
+    it('should show entry when user is a team member and allow to add members [JPT-2785]', () => {
+      jest.spyOn(utils, 'getEntity').mockImplementation(type => {
+        if (type === ENTITY_NAME.GROUP) {
+          return {
+            isThePersonGuest: jest.fn().mockReturnValue(false),
+            isTeam: true,
+            isAdmin: false,
+          };
+        }
+      });
+
+      groupService.getTeamUserPermissionFlags = jest.fn().mockReturnValue({
+        TEAM_ADD_MEMBER: true,
+      });
+
+      const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+
+      expect(vm.canAddMembers).toBeTruthy();
+    });
+
+    it('should not show entry when the user is a team member but not allow to add members [JPT-2785]', () => {
+      jest.spyOn(utils, 'getEntity').mockImplementation(type => {
+        if (type === ENTITY_NAME.GROUP) {
+          return {
+            isThePersonGuest: jest.fn().mockReturnValue(false),
+            isTeam: true,
+            isAdmin: false,
+          };
+        }
+      });
+
+      groupService.getTeamUserPermissionFlags = jest.fn().mockReturnValue({
+        TEAM_ADD_MEMBER: false,
+      });
+
+      const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+
+      expect(vm.canAddMembers).toBeFalsy();
+    });
+
+    it('should not show entry when the user is a team guest [JPT-2785]', () => {
+      jest.spyOn(utils, 'getEntity').mockImplementation(type => {
+        if (type === ENTITY_NAME.GROUP) {
+          return {
+            isThePersonGuest: jest.fn().mockReturnValue(true),
+            isTeam: true,
+            isAdmin: false,
+          };
+        }
+      });
+
+      const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+
+      expect(vm.canAddMembers).toBeFalsy();
+    });
+  });
 });

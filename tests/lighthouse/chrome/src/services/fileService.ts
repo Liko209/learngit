@@ -200,7 +200,7 @@ class FileService {
   }
 
   /**
-  * @description: save dashboard into disk
+  * @description: save heap into disk
   */
   static async saveHeapIntoDisk(heap: string): Promise<string> {
     if (Config.takeHeapSnapshot) {
@@ -211,6 +211,41 @@ class FileService {
     } else {
       return '';
     }
+  }
+
+  /**
+   * @description: save heap int disk
+   */
+  static async trackingHeapObjects(driver): Promise<string> {
+    let heapPath = path.join(HEAP_DIR_PATH, `${uuid()}.heapsnapshot`);
+
+    if (!Config.takeHeapSnapshot) {
+      return heapPath;
+    }
+
+    logger.info('tracking heap object...');
+
+    const listener = (data) => {
+      if (data.chunk) {
+        fs.appendFileSync(heapPath, data.chunk);
+      }
+    }
+
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.enable');
+
+    driver.on('HeapProfiler.addHeapSnapshotChunk', listener);
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.startTrackingHeapObjects');
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.stopTrackingHeapObjects');
+
+    driver.off('HeapProfiler.addHeapSnapshotChunk', listener);
+
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.disable');
+
+    return heapPath;
   }
 }
 

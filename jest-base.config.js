@@ -10,6 +10,7 @@ module.exports = {
     `!${process.env.APP}/src/**/*.d.ts`,
     `!${process.env.APP}/src/**/*.View.tsx`,
     `!${process.env.APP}/src/**/index.(ts|tsx)`,
+    `!${process.env.App}/src/**/AnalyticsCollector.ts`,
     '!<rootDir>/packages/jui/**/*',
     '!<rootDir>/packages/rcui/**/*',
     '!<rootDir>/tests/shield/**/*',

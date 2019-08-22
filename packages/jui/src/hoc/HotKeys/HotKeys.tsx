@@ -102,7 +102,7 @@ class HotKeys extends PureComponent<HotKeysProps, {}> {
       ...base,
       display: 'flex',
       height: '100%',
-      'flex-direction': 'column',
+      flexDirection: 'column',
     };
   }
 
