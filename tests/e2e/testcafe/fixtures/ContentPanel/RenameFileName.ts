@@ -237,6 +237,7 @@ test.meta(<ITestMeta>{
     const isIndexZero = i === 0
 
     await h(t).withLog(`When I am on hover more icon`, async () => {
+      await t.hover(app.homePage.self);
       await t.hover(moreActionOnFile.self, {speed: 0.1});
     });
 
