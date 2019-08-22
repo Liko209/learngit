@@ -24,14 +24,23 @@ import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   VIDEO_SERVICE_OPTIONS,
+  SOUNDS_TYPE,
+  SoundsList,
 } from '../constants';
 import GroupService from 'sdk/module/group';
+import { ConversationPreference } from '../entity/Profile';
 
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
   ) {}
+
+  get settingService() {
+    return ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    );
+  }
 
   async profileHandleData(
     profile: Raw<Profile> | null,
@@ -105,7 +114,7 @@ class ProfileDataController {
     const group = await groupService.getById(conversationId);
     return !!(group && group.is_team);
   }
-  async _getGlobalSetting(conversationId: number) {
+  async _getGlobalDesktopNotification(conversationId: number) {
     const settingService = ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     );
@@ -136,13 +145,13 @@ class ProfileDataController {
       profile.conversation_level_notifications &&
       profile.conversation_level_notifications[conversationId];
     if (!notification) {
-      return this._getGlobalSetting(conversationId);
+      return this._getGlobalDesktopNotification(conversationId);
     }
     if (notification.muted) {
       return true;
     }
     if (notification.desktop_notifications === undefined) {
-      return this._getGlobalSetting(conversationId);
+      return this._getGlobalDesktopNotification(conversationId);
     }
     return !notification.desktop_notifications;
   }
@@ -183,6 +192,93 @@ class ProfileDataController {
       mainLogger.warn(`handleProfile error:${e}`);
       return null;
     }
+  }
+
+  async getByGroupId(cid: number): Promise<ConversationPreference> {
+    const profile = await this.getProfile();
+    const notification =
+      profile &&
+      profile.conversation_level_notifications &&
+      profile.conversation_level_notifications[cid];
+    const sound = (
+      (profile && profile.team_specific_audio_notifications) ||
+      []
+    ).find(item => item.gid === cid);
+    let model = {
+      ...notification,
+      muted: (notification && notification.muted) || false,
+      sound_notifications:
+        sound && SoundsList.find(item => item.id === sound.sound),
+    } as ConversationPreference;
+    if (this._isTeam(cid)) {
+      model = await this._getTeamSetting(model);
+    } else {
+      model = await this._getDMSetting(model);
+    }
+    return model;
+  }
+
+  private async _getSettingValue<T>(settingId: SettingEntityIds) {
+    const model = await this.settingService.getById<T>(settingId);
+    return (model && model.value)!;
+  }
+
+  private async _getTeamSetting(model: ConversationPreference) {
+    if (
+      model.sound_notifications === undefined ||
+      model.sound_notifications.id === SOUNDS_TYPE.Default
+    ) {
+      model.sound_notifications = await this._getSettingValue(
+        SettingEntityIds.Audio_TeamMessages,
+      );
+    }
+    if (!model.desktop_notifications) {
+      const value = await this._getSettingValue(
+        SettingEntityIds.Notification_NewMessages,
+      );
+      model.desktop_notifications =
+        value === DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE;
+    }
+    if (model.email_notifications === undefined) {
+      model.email_notifications = await this._getSettingValue(
+        SettingEntityIds.Notification_Teams,
+      );
+    }
+    if (model.push_notifications === undefined) {
+      model.push_notifications = await this._getSettingValue(
+        SettingEntityIds.MOBILE_Team,
+      );
+    }
+    return model;
+  }
+
+  private async _getDMSetting(model: ConversationPreference) {
+    if (
+      !model.sound_notifications ||
+      model.sound_notifications.id === SOUNDS_TYPE.Default
+    ) {
+      model.sound_notifications = await this._getSettingValue(
+        SettingEntityIds.Audio_DirectMessage,
+      );
+    }
+    if (!model.desktop_notifications) {
+      const value = await this._getSettingValue(
+        SettingEntityIds.Notification_NewMessages,
+      );
+      model.desktop_notifications =
+        value !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF;
+    }
+    if (model.email_notifications === undefined) {
+      model.email_notifications = await this._getSettingValue(
+        SettingEntityIds.Notification_DirectMessages,
+      );
+    }
+    if (model.push_notifications === undefined) {
+      model.push_notifications = await this._getSettingValue(
+        SettingEntityIds.MOBILE_DM,
+      );
+    }
+    return model;
   }
 }
 

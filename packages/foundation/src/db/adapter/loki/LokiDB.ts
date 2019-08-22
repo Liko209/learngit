@@ -53,9 +53,9 @@ class LokiDB implements IDatabase {
   async getTransaction(
     mode: string | void,
     collections: IDatabaseCollection<any, DatabaseKeyType>[] | void,
-    callback: () => {},
+    callback: () => Promise<void>,
   ): Promise<void> {
-    callback();
+    await callback();
   }
 
   private _initSchema(schema: ISchema) {

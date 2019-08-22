@@ -35,8 +35,15 @@ class ProfileDialogGroupTitleViewComponent extends Component<
         <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
         <JuiDialogHeaderActions>
           <Mute groupId={id} />
-          <Privacy id={id} size="medium" />
-          <Favorite id={id} size="medium" />
+          <Privacy id={id} size="medium" analysisSource="profileDialog" />
+          <Favorite
+            id={id}
+            size="medium"
+            dataTrackingProps={{
+              source: 'profileDialog',
+              conversationType: group.analysisType,
+            }}
+          />
           {group.isMember && <TeamSettingButton id={id} size="medium" />}
           {group.isTeam && <More id={id} size="medium" />}
           <JuiIconButton

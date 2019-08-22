@@ -216,7 +216,7 @@
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
     },
-    "sharedItems": "shared items",
+    "sharedItems": "{{userName}} shared items",
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",
@@ -1125,8 +1125,6 @@
     "allDevices": "All audio sources",
     "off": "Off",
     "microphone": "Microphone",
-    "builtInMicrophone": "Built-in microphone",
-    "builtInSpeaker": "Built-in speaker",
     "prompt": {
       "updateRegionalSettingsBackendError": "Sorry, something went wrong on our end and we weren't able to save your region settings. Try again later.",
       "updateRegionalSettingsNetworkError": "Sorry, we weren't able to save your region settings due to a poor network connection. Try again."

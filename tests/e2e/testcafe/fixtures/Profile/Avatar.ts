@@ -12,6 +12,7 @@ fixture('Profile/Avatar')
   .afterEach(teardownCase());
 
 
+const filePath = '../../sources/avatar.jpg';
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-2581'],
@@ -78,8 +79,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -87,8 +88,8 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('And The zoom control is hidden.', async () => {
-    await t.expect(avatarEditDialog.zoomControl.exists).notOk();
+  await h(t).withLog('And The zoom control is showed.', async () => {
+    await t.expect(avatarEditDialog.zoomControl.exists).ok();
   });
 
   await h(t).withLog('And "Upload photo" button is displayed.', async () => {
@@ -175,8 +176,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -184,8 +185,8 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('And The zoom control is hidden.', async () => {
-    await t.expect(avatarEditDialog.zoomControl.exists).notOk();
+  await h(t).withLog('And The zoom control is show.', async () => {
+    await t.expect(avatarEditDialog.zoomControl.exists).ok();
   });
 
   await h(t).withLog('And "Upload photo" button is displayed.', async () => {
@@ -212,9 +213,9 @@ test.meta(<ITestMeta>{
     await t.drag(avatarEditDialog.image, 30, 0)
   });
 
-  await h(t).withLog('Then the photo is not  moved ', async () => {
+  await h(t).withLog('Then the photo is moved ', async () => {
     const currentLeft = await avatarEditDialog.image.getBoundingClientRectProperty('left');
-    assert.ok(currentLeft == leftValue, "avatar photo moved...")
+    assert.ok(currentLeft !== leftValue, "avatar photo moved...")
   });
 
 });
@@ -265,8 +266,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -274,8 +275,8 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await avatarEditDialog.uploadFile(filePath);
   });
 
   // jpg
@@ -424,8 +425,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -519,8 +520,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -528,7 +529,7 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I upload a jpg photo', async () => {
+  await h(t).withLog('When I upload a photo', async () => {
     await avatarEditDialog.uploadFile(filePath);
   });
 
@@ -615,8 +616,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -643,7 +644,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I open "Edit Profile Photo" again and upload a jpg photo', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+    await editProfileDialog.uploadFile(filePath);
     await avatarEditDialog.ensureLoaded();
     await avatarEditDialog.uploadFile(firstFilePath);
   });

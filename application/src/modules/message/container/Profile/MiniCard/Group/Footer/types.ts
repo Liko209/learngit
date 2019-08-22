@@ -13,6 +13,7 @@ type ProfileMiniCardGroupFooterProps = ProfileMiniCardGroupProps;
 
 type ProfileMiniCardGroupFooterViewProps = ProfileMiniCardGroupViewProps & {
   showMessage: boolean;
+  analysisType: string;
 };
 
 export { ProfileMiniCardGroupFooterProps, ProfileMiniCardGroupFooterViewProps };

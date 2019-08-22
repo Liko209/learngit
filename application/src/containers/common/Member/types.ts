@@ -10,6 +10,7 @@ type MemberProps = {
 };
 
 type MemberViewProps = {
+  isTeam: boolean;
   groupId: number;
   membersCount: number;
   showMembersCount: boolean;

@@ -26,6 +26,11 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
   }
 
   @computed
+  get needFocus() {
+    return this._globalSearchStore.needFocus;
+  }
+
+  @computed
   get currentView() {
     return this._globalSearchStore.currentView;
   }
@@ -38,7 +43,12 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
   @action
   onClear = () => {
     this._globalSearchStore.clearSearchKey();
-  }
+  };
+
+  @action
+  onBlur = () => {
+    this._globalSearchStore.setFocus(false);
+  };
 
   @action
   onChange = (searchKey: string) => {
@@ -48,12 +58,12 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
       key === '' ? SEARCH_VIEW.RECENT_SEARCH : SEARCH_VIEW.INSTANT_SEARCH;
     store.setCurrentView(currentView);
     store.setSearchKey(searchKey);
-  }
+  };
 
   @action
   onClose = () => {
     this._globalSearchStore.setOpen(false);
-  }
+  };
 }
 
 export { GlobalSearchViewModel };

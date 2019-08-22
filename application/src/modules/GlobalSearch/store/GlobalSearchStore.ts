@@ -14,6 +14,7 @@ class GlobalSearchStore {
   @observable searchKey: string = '';
   @observable currentTab: TAB_TYPE;
   @observable groupId: number;
+  @observable needFocus: boolean = false;
 
   @observable currentView: SEARCH_VIEW = SEARCH_VIEW.FULL_SEARCH;
   @observable searchScope: SEARCH_SCOPE;
@@ -26,6 +27,11 @@ class GlobalSearchStore {
     }
 
     this.open = open;
+  }
+
+  @action
+  setFocus(focus: boolean) {
+    this.needFocus = focus;
   }
 
   @action

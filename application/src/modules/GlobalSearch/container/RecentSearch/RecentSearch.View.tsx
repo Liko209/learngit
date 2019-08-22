@@ -71,6 +71,7 @@ class RecentSearchViewComponent extends Component<Props> {
         id={typeof value === 'string' ? null : value}
         key={typeof value === 'string' ? `${value}${index}` : value}
         params={queryParams}
+        dataTrackingDomain="globalSearch"
       />
     );
   };
@@ -118,6 +119,7 @@ class RecentSearchViewComponent extends Component<Props> {
           down: onKeyDown,
           enter: onEnter,
         }}
+        global
       >
         <JuiRecentSearch data-test-automation-id="search-records">
           {this.searchRecordList}

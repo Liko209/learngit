@@ -11,6 +11,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { v4 as uuid } from 'uuid';
 import { SITE_URL, BrandTire } from '../../config';
 import * as assert from 'assert';
+import { IGroup } from '../../v2/models';
 
 fixture('Profile/MiniProfile')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -28,19 +29,20 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
   const miniProfile = app.homePage.miniProfile;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  let teamId, myPost, otherUserPost;
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  let myPost, otherUserPost;
   await h(t).withLog('Given I have one team, one post which I send, one post which other user send ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
+    const myPostId = await h(t).platform(loginUser).sentAndGetTextPostId(`My post ${uuid()}`, team.glipId);
+    myPost = conversationPage.postItemById(myPostId);
 
-    const myPostId = await h(t).platform(loginUser).sentAndGetTextPostId(`My post ${uuid()}`, teamId);
-    myPost = await conversationPage.postItemById(myPostId);
-
-    const otherUserPostId = await h(t).platform(otherUser).sentAndGetTextPostId(`Other post ${uuid()}`, teamId);
+    const otherUserPostId = await h(t).platform(otherUser).sentAndGetTextPostId(`Other post ${uuid()}`, team.glipId);
     otherUserPost = conversationPage.postItemById(otherUserPostId);
   });
 
@@ -49,7 +51,11 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
     otherPost: otherUserPost
   }
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -58,7 +64,7 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
     const post = postList[key];
     let top, left, postUserName;
     await h(t).withLog(`When I enter the create team and then click ${key} avatar`, async () => {
-      await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+      await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
       top = await post.avatar.getBoundingClientRectProperty('top');
       left = await post.avatar.getBoundingClientRectProperty('left');
       postUserName = await post.name.textContent;
@@ -101,29 +107,33 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId, meMentionPost, contactMentionPost, teamMentionPost;
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+
+  let meMentionPost, contactMentionPost, teamMentionPost;
   await h(t).withLog('Given I have one team with some mention posts ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
+
     const meMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `Hi AtMention, ![:Person](${loginUser.rcId})`,
-      teamId,
+      team.glipId,
     );
     meMentionPost = conversationPage.postItemById(meMentionPostId);
 
     const contactMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
       `Hi AtMention, ![:Person](${otherUser.rcId})`,
-      teamId,
+      team.glipId,
     );
     contactMentionPost = conversationPage.postItemById(contactMentionPostId);
 
     const teamMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
-      `Hi AtMention, ![:Team](${teamId})`,
-      teamId
+      `Hi AtMention, ![:Team](${team.glipId})`,
+      team.glipId
     );
     teamMentionPost = conversationPage.postItemById(teamMentionPostId);
   });
@@ -134,10 +144,17 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
     teamMention: teamMentionPost,
   }
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}, and enter the created team`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+  });
+
+  await h(t).withLog(`And enter the created team`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   for (const key in postList) {
@@ -187,28 +204,31 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
   const conversationPage = app.homePage.messageTab.conversationPage;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
 
-  let pvtChatId, teamId, contactMentionPost, teamMentionPost;
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+  const chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  let contactMentionPost, teamMentionPost;
   await h(t).withLog('Given I an extension with 1 private chat and one team with some mention posts ', async () => {
-    pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
-    });
+    await h(t).scenarioHelper.createTeamsOrChats([team, chat]);
 
     const contactMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
       `Hi AtMention, ![:Person](${otherUser.rcId})`,
-      teamId,
+      team.glipId,
     );
     contactMentionPost = conversationPage.postItemById(contactMentionPostId);
 
     const teamMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
-      `Hi AtMention, ![:Team](${teamId})`,
-      teamId
+      `Hi AtMention, ![:Team](${team.glipId})`,
+      team.glipId
     );
     teamMentionPost = conversationPage.postItemById(teamMentionPostId);
   });
@@ -218,14 +238,21 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     teamMention: teamMentionPost,
   }
   const groupIdList = {
-    contactMention: pvtChatId,
-    teamMention: teamId,
+    contactMention: chat.glipId,
+    teamMention: team.glipId,
   }
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}, and enter the created team`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+  });
+
+  await h(t).withLog(`And enter the created team`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   for (const key in postList) {

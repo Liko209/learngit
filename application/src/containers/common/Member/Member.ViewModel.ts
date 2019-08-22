@@ -25,6 +25,11 @@ class MemberViewModel extends StoreViewModel<MemberProps>
   }
 
   @computed
+  get isTeam() {
+    return this._group.isTeam || false;
+  }
+
+  @computed
   private get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
