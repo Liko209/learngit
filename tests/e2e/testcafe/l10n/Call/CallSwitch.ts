@@ -37,7 +37,7 @@ test(formalName('Check call switch for an active call', ['P2', 'Call', 'CallSwit
 
   await h(t).log('And I take screenshot', { screenshotPath:"Jupiter_Call_SwitchCallToast" });
 
-  await h(t).withLog('When I click the "Switch call to this device" in the green top hat', async () => {
+  await h(t).withLog('When I click the "Switch call to this device" in the top toast', async () => {
     await telephonyDialog.clickSwitchToptap();
   });
 
