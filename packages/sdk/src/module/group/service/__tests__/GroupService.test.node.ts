@@ -395,10 +395,16 @@ describe('GroupService', () => {
     });
 
     it('should call getGroupFetchDataController when call doFuzzySearchALlGroups  ', async () => {
-      await groupService.doFuzzySearchALlGroups('123', true, false, true);
+      const option = {
+        fetchAllIfSearchKeyEmpty: true,
+        myGroupsOnly: false,
+        recentFirst: true,
+      };
+
+      await groupService.doFuzzySearchAllGroups('123', option);
       expect(
         mockGroupFetchDataController.doFuzzySearchAllGroups,
-      ).toHaveBeenCalledWith('123', true, false, true);
+      ).toHaveBeenCalledWith('123', option);
     });
 
     it('should call getGroupFetchDataController when call doFuzzySearchGroups  ', async () => {

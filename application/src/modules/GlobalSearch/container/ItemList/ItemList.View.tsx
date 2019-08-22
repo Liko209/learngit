@@ -118,6 +118,7 @@ class ItemListViewComponent extends Component<Props> {
         id={id}
         key={id}
         analysisSource="full search results page"
+        dataTrackingDomain="fullSearch"
       />
     );
   };

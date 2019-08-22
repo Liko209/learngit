@@ -72,6 +72,7 @@ class RecentSearchViewComponent extends Component<Props> {
         key={typeof value === 'string' ? `${value}${index}` : value}
         params={queryParams}
         analysisSource="recent searched list"
+        dataTrackingDomain="globalSearch"
       />
     );
   };

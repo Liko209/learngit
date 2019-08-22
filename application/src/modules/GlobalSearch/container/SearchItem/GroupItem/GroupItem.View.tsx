@@ -12,6 +12,7 @@ import { JuiIconButton, JuiRoundButton } from 'jui/components/Buttons';
 
 import { ViewProps } from './types';
 import { AudioConference } from '@/modules/telephony';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type GroupItemProps = ViewProps & WithTranslation & { automationId?: string };
 
@@ -20,9 +21,17 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const { handleJoinTeam, group, addRecentRecord } = this.props;
+    const {
+      handleJoinTeam,
+      group,
+      addRecentRecord,
+      dataTrackingDomain,
+    } = this.props;
     addRecentRecord();
     await handleJoinTeam(group);
+    analyticsCollector.joinPublicTeamFromSearch(
+      `${dataTrackingDomain}_publicTeam`,
+    );
   };
 
   goToConversation = async () => {
@@ -31,10 +40,15 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
   };
 
   onClick = async (event: React.MouseEvent) => {
-    const { canJoinTeam } = this.props;
+    const { canJoinTeam, group, dataTrackingDomain } = this.props;
     if (canJoinTeam) {
       return await this.handleJoinTeam(event);
     }
+    analyticsCollector.gotoConversationFromSearch(
+      group.isTeam
+        ? `${dataTrackingDomain}_teamRow`
+        : `${dataTrackingDomain}_groupRow`,
+    );
     return await this.handleGoToConversation(event);
   };
 
@@ -72,6 +86,15 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
       </>
     );
   }
+  private _gotoConversationFromHover = (evt: React.MouseEvent) => {
+    const { group, dataTrackingDomain } = this.props;
+    analyticsCollector.gotoConversationFromSearch(
+      group.isTeam
+        ? `${dataTrackingDomain}_teamHoverMessage`
+        : `${dataTrackingDomain}_groupHoverMessage`,
+    );
+    this.handleGoToConversation(evt);
+  };
 
   render() {
     const {
@@ -101,7 +124,6 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         {t('people.team.joinButtonTitle')}
       </JuiRoundButton>
     );
-
     return (
       <JuiSearchItem
         onMouseEnter={onMouseEnter}
