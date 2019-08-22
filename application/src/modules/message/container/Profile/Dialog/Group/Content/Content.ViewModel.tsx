@@ -43,6 +43,11 @@ class ProfileDialogGroupContentViewModel extends ProfileDialogGroupViewModel
   get typeId(): number {
     return GlipTypeUtil.extractTypeId(this.id);
   }
+
+  @computed
+  get analysisType() {
+    return this.group.analysisType;
+  }
 }
 
 export { ProfileDialogGroupContentViewModel };

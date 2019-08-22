@@ -46,11 +46,12 @@ import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { SortUtils } from 'sdk/framework/utils';
 import { PresenceService } from 'sdk/module/presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
+import { GroupSearchOption } from '../entity/Group';
+import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
+import { UndefinedAble } from 'sdk/types';
 
 const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
-const kSortingRateWithFirstMatched: number = 1;
-const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 const DEFAULT_PAGE_SIZE = 20;
 
 function buildNewGroupInfo(members: number[]) {
@@ -339,26 +340,19 @@ export class GroupFetchDataController {
   }
 
   async doFuzzySearchAllGroups(
-    searchKey: string,
-    fetchAllIfSearchKeyEmpty?: boolean,
-    myGroupsOnly?: boolean,
-    recentFirst?: boolean,
+    searchKey: UndefinedAble<string>,
+    option: GroupSearchOption,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   }> {
     const performanceTracer = PerformanceTracer.start();
-
     const result = await this.entityCacheSearchController.searchEntities(
-      await this._getTransformAllGroupFunc(
-        fetchAllIfSearchKeyEmpty,
-        myGroupsOnly,
-        recentFirst,
-      ),
+      await this._getTransformAllGroupFunc(option),
       undefined,
       searchKey,
       undefined,
-      this._sortGroupFunc,
+      option.sortFunc,
     );
     performanceTracer.end({ key: GROUP_PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
     return {
@@ -443,7 +437,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        const keyWeight = this._getSplitKeyWeight(
+        const keyWeight = SearchUtils.getMatchedWeight(
           memberNames.map(x => x.toLowerCase()),
           searchKeyTerms,
         );
@@ -514,14 +508,10 @@ export class GroupFetchDataController {
     return result;
   }
 
-  private async _getTransformAllGroupFunc(
-    fetchAllIfSearchKeyEmpty?: boolean,
-    myGroupsOnly?: boolean,
-    recentFirst?: boolean,
-  ) {
+  private async _getTransformAllGroupFunc(option: GroupSearchOption) {
     const groupConfigService = this._groupConfigService;
 
-    const recentSearchedGroups = recentFirst
+    const recentSearchedGroups = option.recentFirst
       ? await this._getRecentSearchGroups([
           RecentSearchTypes.GROUP,
           RecentSearchTypes.TEAM,
@@ -539,16 +529,21 @@ export class GroupFetchDataController {
           break;
         }
 
-        const isValidGroup = myGroupsOnly
+        let isValidGroup = option.myGroupsOnly
           ? group.members.includes(currentUserId)
           : !group.is_team || this._isPublicTeamOrIncludeUser(group);
         if (!isValidGroup) {
           break;
         }
 
+        if (option.additionalFilterFunc && !option.additionalFilterFunc(group)) {
+          isValidGroup = false;
+          break;
+        }
+
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const shouldFetchAll =
-          fetchAllIfSearchKeyEmpty! && searchKeyTerms.length === 0;
+        option.fetchAllIfSearchKeyEmpty! && searchKeyTerms.length === 0;
         isMatched = shouldFetchAll && isValidGroup;
         if (isMatched || searchKeyTerms.length === 0) {
           break;
@@ -599,7 +594,7 @@ export class GroupFetchDataController {
       } while (false);
 
       if (isMatched) {
-        const mostRecentViewTime = recentFirst
+        const mostRecentViewTime = option.recentFirst
           ? this._getMostRecentViewTime(
               group.id,
               groupConfigService,
@@ -618,39 +613,11 @@ export class GroupFetchDataController {
     };
   }
 
-  private _getSplitKeyWeight(
-    lowerCaseSplitNames: string[],
-    searchKeyTerms: string[],
-  ) {
-    let sortValue = 0;
-
-    const setKeyMatched: Set<string> = new Set();
-    for (let i = 0; i < lowerCaseSplitNames.length; ++i) {
-      for (let j = 0; j < searchKeyTerms.length; ++j) {
-        if (
-          !setKeyMatched.has(searchKeyTerms[j]) &&
-          this.entityCacheSearchController.isStartWithMatched(
-            lowerCaseSplitNames[i],
-            [searchKeyTerms[j]],
-          )
-        ) {
-          setKeyMatched.add(searchKeyTerms[j]);
-          sortValue +=
-            i === j
-              ? kSortingRateWithFirstAndPositionMatched
-              : kSortingRateWithFirstMatched;
-        }
-      }
-    }
-
-    return sortValue;
-  }
-
   private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[]) {
     const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
       lowerCaseName,
     );
-    return this._getSplitKeyWeight(splitNames, searchKeyTerms);
+    return SearchUtils.getMatchedWeight(splitNames, searchKeyTerms);
   }
 
   // The search results should be ranked as follows: perfect match>start with> fuzzy search> Soundex search

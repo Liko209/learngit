@@ -74,7 +74,6 @@ describe('MissedCallLogFetchController', () => {
             LOCAL_INFO_TYPE.IS_MISSED |
             LOCAL_INFO_TYPE.IS_MISSED_SOURCE,
           __timestamp: Date.parse(mockTime1),
-          __deactivated: false,
         },
       ]);
     });

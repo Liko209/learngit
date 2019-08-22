@@ -46,6 +46,7 @@ import { TelephonyDataCollectionController } from './TelephonyDataCollectionCont
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { E911Controller } from './E911Controller';
+import { TRANSFER_TYPE } from '../entity/types';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
@@ -344,6 +345,11 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   async forward(callId: number, phoneNumber: string) {
     const callController = this._getCallControllerById(callId);
     return callController && (await callController.forward(phoneNumber));
+  }
+
+  async transfer(callId: number, type: TRANSFER_TYPE, transferTo: string) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.transfer(type, transferTo));
   }
 
   ignore(callId: number) {
