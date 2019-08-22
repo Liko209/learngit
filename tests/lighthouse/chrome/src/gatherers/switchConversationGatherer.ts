@@ -45,7 +45,7 @@ class SwitchConversationGatherer extends DebugGatherer {
 
     const driver = passContext.driver;
 
-    let filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(driver));
+    let filePath = await FileService.trackingHeapObjects(driver);
     globals.pushMemoryFilePath(filePath);
 
     await PptrUtils.collectGarbage(driver);
@@ -63,7 +63,7 @@ class SwitchConversationGatherer extends DebugGatherer {
 
     globals.stopCollectProcessInfo();
 
-    filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(driver));
+    filePath = await FileService.trackingHeapObjects(driver);
     globals.pushMemoryFilePath(filePath);
 
     let result = {};
@@ -73,7 +73,7 @@ class SwitchConversationGatherer extends DebugGatherer {
         ui: []
       };
     }
-    
+
     return result;
   }
 
@@ -110,14 +110,14 @@ class SwitchConversationGatherer extends DebugGatherer {
       if (needGC && index > halfCount) {
         globals.stopCollectProcessInfo();
 
-        let filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(driver));
+        let filePath = await FileService.trackingHeapObjects(driver);
         globals.pushMemoryFilePath(filePath);
 
         await PptrUtils.collectGarbage(driver);
 
         needGC = false;
 
-        filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(driver));
+        filePath = await FileService.trackingHeapObjects(driver);
         globals.pushMemoryFilePath(filePath);
 
         await bluebird.delay(2000);

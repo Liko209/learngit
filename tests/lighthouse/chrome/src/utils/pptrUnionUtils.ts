@@ -9,15 +9,18 @@ import { LogUtils } from "./logUtils";
 import { FunctionUtils } from "./functionUtils";
 import { MockClient, BrowserInitDto } from 'mock-client';
 import { Config } from '../config';
-import * as bluebird from 'bluebird';
+import { Builder, By, Actions, WebDriver } from "selenium-webdriver";
+import * as chrome from "selenium-webdriver/chrome";
+import * as bluebird from "bluebird";
 
 const MAX_TRY_COUNT = 10;
 
 const browsers = new Map<string, Browser>();
+const drivers = new Map<string, WebDriver>();
 
 const logger = LogUtils.getLogger(__filename);
 
-class PptrUtils {
+class PptrUnionUtils {
   static async trackingHeapObjects(driver): Promise<string> {
     const memory = [];
     if (Config.takeHeapSnapshot) {
@@ -68,13 +71,15 @@ class PptrUtils {
   }
 
   static async scrollBy(page: Page, selector: string, x: number, y: number, options = {}): Promise<boolean> {
-    if (!(await PptrUtils.waitForSelector(page, selector, options))) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector, options))) {
       return false;
     }
 
-    await page.$eval(selector, (node, x, y) => {
-      node.scrollBy(x, y);
-    }, x, y);
+    const driver = await PptrUnionUtils.getDriver(page);
+    await driver.executeScript((selector, x, y) => {
+      const element = document.querySelector(selector);
+      element.scrollBy(x, y);
+    }, selector, x, y);
 
     return true;
   }
@@ -87,14 +92,21 @@ class PptrUtils {
     selector: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
+    const driver = await PptrUnionUtils.getDriver(page);
+
+    let opt = Object.assign({ timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
-    opt["timeout"] = opt["timeout"] / cnt;
+    let time = opt["timeout"] / cnt;
+    let elements;
 
     while (cnt-- > 0) {
       try {
-        await page.waitForSelector(selector, opt);
+        elements = await driver.findElements(By.css(selector));
+        if (elements.length === 0) {
+          return true;
+        }
+        await bluebird.delay(time);
       } catch (error) {
         return true;
       }
@@ -110,22 +122,29 @@ class PptrUtils {
     selector: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
+    const driver = await PptrUnionUtils.getDriver(page);
+
+    let opt = Object.assign({ timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
-    opt["timeout"] = opt["timeout"] / cnt;
+    let time = opt["timeout"] / cnt;
+    let elements;
 
     while (cnt-- > 0) {
       try {
-        await page.waitForSelector(selector, opt);
-        return true;
-      } catch (error) { }
+        elements = await driver.findElements(By.css(selector));
+        if (elements && elements.length > 0) {
+          return true;
+        }
+        await bluebird.delay(time);
+      } catch (error) {
+      }
     }
     return false;
   }
 
   static async exist(page: Page, selector: string, options = {}) {
-    return await PptrUtils.waitForSelector(page, selector, options);
+    return await PptrUnionUtils.waitForSelector(page, selector, options);
   }
 
   /**
@@ -138,43 +157,16 @@ class PptrUtils {
     check: boolean = true,
     options = {}
   ): Promise<boolean> {
-    let typeOpt = Object.assign({ delay: 50 }, options);
-
-    if (!(await PptrUtils.waitForSelector(page, selector, options))) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector, options))) {
       return false;
     }
 
-    await page.type(selector, text, typeOpt);
+    const driver = await PptrUnionUtils.getDriver(page);
 
-    if (!check) {
-      return true;
-    }
+    const element = await driver.findElement(By.css(selector));
+    await element.sendKeys(text);
 
-    let cnt = MAX_TRY_COUNT,
-      res;
-    while (cnt-- > 0) {
-      try {
-        res = await page.$eval(
-          selector,
-          (node, args) => {
-            let result = node.value === args[0];
-            if (!result) {
-              // clear text
-              node.value = "";
-            }
-            return result;
-          },
-          [text]
-        );
-        if (res) {
-          return true;
-        }
-
-        await page.type(selector, text, typeOpt);
-      } catch (error) { }
-    }
-
-    return false;
+    return true;
   }
 
   static async setText(
@@ -184,70 +176,45 @@ class PptrUtils {
     check: boolean = true,
     options = {}
   ): Promise<boolean> {
-    if (!(await PptrUtils.waitForSelector(page, selector, options))) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector, options))) {
       return false;
     }
 
-    await page.$eval(selector, (node, args) => {
-      // clear text
-      node.value = "";
-    });
+    const driver = await PptrUnionUtils.getDriver(page);
+    await driver.executeScript((selector) => {
+      const element = document.querySelector(selector);
+      element.value = "";
+    }, selector);
 
-    await page.type(selector, text, options);
-    if (!check) {
-      return true;
-    }
+    const element = await driver.findElement(By.css(selector));
+    await element.sendKeys(text);
 
-    let cnt = MAX_TRY_COUNT,
-      res;
-    while (cnt-- > 0) {
-      try {
-        res = await page.$eval(
-          selector,
-          (node, args) => {
-            let result = node.value === args[0];
-            if (!result) {
-              // clear text
-              node.value = "";
-            }
-            return result;
-          },
-          [text]
-        );
-        if (res) {
-          return true;
-        }
-        await page.type(selector, text, options);
-      } catch (error) { }
-    }
-
-    return false;
+    return true;
   }
 
   /**
    * @description: wait for element appear and click
    */
   static async click(page: Page, selector: string, options = {}): Promise<boolean> {
-    if (!(await PptrUtils.waitForSelector(page, selector, options))) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector, options))) {
       return false;
     }
 
-    let opt = Object.assign(
-      { button: "left", clickCount: 1, delay: 0 },
-      options
-    );
-
-    await page.click(selector, opt);
+    const driver = await PptrUnionUtils.getDriver(page);
+    const element = await driver.findElement(By.css(selector));
+    await element.click();
 
     return true;
   }
 
   static async hover(page: Page, selector: string, options = {}): Promise<boolean> {
-    if (!(await PptrUtils.waitForSelector(page, selector, options))) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector, options))) {
       return false;
     }
 
-    await page.hover(selector);
+    const driver = await PptrUnionUtils.getDriver(page);
+    const element = await driver.findElement(By.css(selector));
+    driver.actions().move({ duration: 500, origin: element }).perform();
 
     return true;
   }
@@ -256,17 +223,19 @@ class PptrUtils {
    * @description: get element text
    */
   static async text(page: Page, selector: string, options = {}): Promise<any> {
-    if (!(await PptrUtils.waitForSelector(page, selector, options))) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector, options))) {
       return false;
     }
 
-    let text = await page.$eval(selector, node => {
-      let text = node.value;
+    const driver = await PptrUnionUtils.getDriver(page);
+    const text = await driver.executeScript((selector) => {
+      const element = document.querySelector(selector);
+      let text = element.value;
       if (text) {
         return text;
       }
-      return node.innerHTML;
-    });
+      return element.innerHTML;
+    }, selector);
 
     return text;
   }
@@ -293,9 +262,9 @@ class PptrUtils {
 
     await context.overridePermissions(Config.jupiterHost, ['notifications', 'microphone']);
 
-    await PptrUtils.injectMockServer(browser);
+    await PptrUnionUtils.injectMockServer(browser);
 
-    const wsEndpoint = PptrUtils.toEndpoint(browser.wsEndpoint());
+    const wsEndpoint = PptrUnionUtils.toEndpoint(browser.wsEndpoint());
 
     logger.info(
       `launch chrome success, wsEndpoint: ${wsEndpoint}, options: ${JSON.stringify(
@@ -305,12 +274,22 @@ class PptrUtils {
 
     browsers.set(wsEndpoint, browser);
 
+    const host = new URL(wsEndpoint).host;
+    const chromeOptions = new chrome.Options();
+    chromeOptions['options_']['debuggerAddress'] = host;
+    const driver = new Builder()
+      .forBrowser('chrome')
+      .setChromeOptions(chromeOptions)
+      .build();
+
+    drivers.set(wsEndpoint, driver);
+
     return browser;
   }
 
   static async connect(wsEndpoint: string): Promise<Browser> {
     try {
-      wsEndpoint = PptrUtils.toEndpoint(wsEndpoint);
+      wsEndpoint = PptrUnionUtils.toEndpoint(wsEndpoint);
       let browser = browsers.get(wsEndpoint);
       if (browser) {
         logger.info(`get chrome connection from cache, wsEndpoint: ${wsEndpoint}`);
@@ -323,13 +302,23 @@ class PptrUtils {
         ignoreHTTPSErrors: true
       });
 
-      await PptrUtils.injectMockServer(browser);
+      await PptrUnionUtils.injectMockServer(browser);
 
-      wsEndpoint = PptrUtils.toEndpoint(wsEndpoint);
+      wsEndpoint = PptrUnionUtils.toEndpoint(wsEndpoint);
 
       logger.info(`connect chrome success, wsEndpoint: ${wsEndpoint}`);
 
       browsers.set(wsEndpoint, browser);
+
+      const host = new URL(wsEndpoint).host;
+      const chromeOptions = new chrome.Options();
+      chromeOptions['options_']['debuggerAddress'] = host;
+      const driver = new Builder()
+        .forBrowser('chrome')
+        .setChromeOptions(chromeOptions)
+        .build();
+
+      drivers.set(wsEndpoint, driver);
 
       return browser;
     } catch (err) { }
@@ -338,11 +327,17 @@ class PptrUtils {
 
   static async close(browser: Browser) {
     if (browser) {
-      const wsEndpoint = browser.wsEndpoint();
+      const wsEndpoint = PptrUnionUtils.toEndpoint(browser.wsEndpoint());
 
-      browsers.delete(PptrUtils.toEndpoint(wsEndpoint));
 
-      await browser.close();
+      browsers.delete(wsEndpoint);
+      drivers.delete(wsEndpoint);
+
+      if (browser.isConnected()) {
+        logger.info(`close chrome connection, wsEndpoint: ${wsEndpoint}`);
+
+        await browser.close();
+      }
     }
   }
 
@@ -351,7 +346,8 @@ class PptrUtils {
     browsers.forEach(async (browser, wsEndpoint) => {
       try {
         logger.info(`close chrome connection, wsEndpoint: ${wsEndpoint}`);
-        if (browser) {
+        drivers.delete(wsEndpoint);
+        if (browser && browser.isConnected()) {
           await browser.close();
         }
       } catch (err) {
@@ -364,6 +360,26 @@ class PptrUtils {
 
   private static toEndpoint(wsEndpoint: string) {
     return wsEndpoint.replace('localhost', '127.0.0.1');
+  }
+
+  private static async getDriver(page: Page): Promise<WebDriver> {
+    const browser = page.browser();
+    const target = page.target();
+    const endPoint = PptrUnionUtils.toEndpoint(browser.wsEndpoint());
+    const driver = drivers.get(endPoint);
+    const targetWindow = `CDwindow-${target._targetId}`;
+    let currentWindow, shouldSwitch;
+    try {
+      currentWindow = await driver.getWindowHandle();
+      shouldSwitch = currentWindow != targetWindow;
+    } catch (err) {
+      shouldSwitch = true;
+    }
+
+    if (shouldSwitch) {
+      await driver.switchTo().window(targetWindow);
+    }
+    return driver;
   }
 
   private static async injectMockServer(browser: Browser) {
@@ -393,7 +409,7 @@ class PptrUtils {
 
     browser.mockClient = client;
 
-    FunctionUtils.bindEvent(browser, 'targetcreated', async target => {
+    FunctionUtils.bindEvent(browser, 'targetchanged', async target => {
       let page = await target.page();
       if (page) {
         await page.setExtraHTTPHeaders({ "x-mock-request-id": requestId });
@@ -402,4 +418,4 @@ class PptrUtils {
   }
 }
 
-export { PptrUtils };
+export { PptrUnionUtils };
