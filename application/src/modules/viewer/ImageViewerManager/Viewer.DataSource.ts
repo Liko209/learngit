@@ -19,7 +19,7 @@ import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-import { getTypeId, isExpectedItemOfThisGroup, getFilterFunc } from './Utils';
+import { getTypeId, isExpectedItemOfThisGroup, getFilterFunc } from './utils';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -74,10 +74,11 @@ class ItemListDataSource {
     );
   }
 
-  private _transformFunc = (model: Item) => ({
-    id: model.id,
-    sortValue: FileItemUtils.getLatestPostId(model),
-  } as ISortableModelWithData<Item>)
+  private _transformFunc = (model: Item) =>
+    ({
+      id: model.id,
+      sortValue: FileItemUtils.getLatestPostId(model),
+    } as ISortableModelWithData<Item>);
 
   @action
   private _buildSortableMemberListHandler(
@@ -88,9 +89,8 @@ class ItemListDataSource {
   ) {
     const typeId = getTypeId(type);
 
-    const isMatchFunc = (model: Item) => (model
-      ? isExpectedItemOfThisGroup(groupId, type, model, false)
-      : false);
+    const isMatchFunc = (model: Item) =>
+      model ? isExpectedItemOfThisGroup(groupId, type, model, false) : false;
 
     const sortFunc = (
       lhs: ISortableModelWithData<Item>,

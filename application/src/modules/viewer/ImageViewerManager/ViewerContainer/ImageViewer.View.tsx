@@ -21,7 +21,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ImageViewerViewProps } from './types';
 import { JuiZoomElement, ZoomElementAnimation } from 'jui/components/Animation';
-import ViewerContext from '../../ViewerContext';
+import ViewerContext from '../../container/ViewerView/ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
 import { accelerateURL } from '@/common/accelerateURL';
@@ -40,60 +40,24 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   static contextType = DialogContext;
   constructor(props: ImageViewerProps) {
     super(props);
-    props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
-    props.setOnImageSwitchCb(this._onImageSwitch);
+    props.dataModule.setOnCurrentItemDeletedCb &&
+      props.dataModule.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
+    props.dataModule.setOnImageSwitchCb &&
+      props.dataModule.setOnImageSwitchCb(this._onImageSwitch);
     this.state = {
       switched: false,
       imageInited: false,
     };
   }
 
-  _handlerKeydown = (event: KeyboardEvent) => {
-    // 107 Num Key  +
-    // 109 Num Key  -
-    // 173 Min Key  hyphen/underscor Hey
-    // 61 Plus key  +/= key
-    if (
-      event.ctrlKey &&
-      (event.which === 61 ||
-        event.which === 107 ||
-        event.which === 173 ||
-        event.which === 109 ||
-        event.which === 187 ||
-        event.which === 189)
-    ) {
-      event.preventDefault();
-    }
-  };
-
-  _handlerScroll = (event: MouseEvent) => {
-    if (event.ctrlKey) {
-      event.preventDefault();
-    }
-  };
-
-  componentDidMount() {
-    window.addEventListener('keydown', this._handlerKeydown, {
-      passive: false,
-    });
-    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
-      window.addEventListener(v, this._handlerScroll, {
-        passive: false,
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this._handlerKeydown);
-    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
-      window.removeEventListener(v, this._handlerScroll);
-    });
+  async componentDidMount() {
+    await this.props.dataModule.init();
   }
 
   switchPreImage = () => {
     if (this._canSwitchPrevious()) {
       this._zoomRef.current!.reset();
-      this.props.switchToPrevious();
+      this.props.dataModule.switchToPrevious();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -103,7 +67,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   switchNextImage = () => {
     if (this._canSwitchNext()) {
       this._zoomRef.current!.reset();
-      this.props.switchToNext();
+      this.props.dataModule.switchToNext();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -111,7 +75,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   };
 
   onCurrentItemDeleted = (nextItemId: number) => {
-    const { t, deleteItem } = this.props;
+    const { t, dataModule } = this.props;
+    const { deleteItem } = dataModule;
     if (deleteItem) {
       if (nextItemId === -1) {
         this.context();
@@ -145,12 +110,12 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   };
 
   private _canSwitchPrevious = () => {
-    const { hasPrevious, isLoadingMore } = this.props;
+    const { hasPrevious, isLoadingMore } = this.props.dataModule;
     return !isLoadingMore && hasPrevious;
   };
 
   private _canSwitchNext = () => {
-    const { hasNext, isLoadingMore } = this.props;
+    const { hasNext, isLoadingMore } = this.props.dataModule;
     return !isLoadingMore && hasNext;
   };
 
@@ -162,21 +127,23 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     this._performanceTracer &&
       this._performanceTracer.end({
         key: VIEWER_PERFORMANCE_KEYS.UI_IMAGE_VIEWER_IMAGE_RENDER,
-        infos: this.props.currentItemId,
+        infos: this.props.dataModule.currentItemId,
       });
   };
 
   render() {
+    const { dataModule, t } = this.props;
     const {
-      imageUrl,
-      t,
+      pages,
       thumbnailSrc,
+      originElement,
       imageWidth,
       imageHeight,
       currentItemId,
       hasPrevious,
       hasNext,
-    } = this.props;
+    } = dataModule;
+    const page = pages && pages[0];
     const padding = 32;
     return (
       <ViewerContext.Consumer>
@@ -221,11 +188,11 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     return (
                       <JuiImageView
                         data-test-automation-id={'previewerCanvas'}
+                        key={`image-${currentItemId}`}
                         performanceTracerStart={this.performanceTracerStart}
                         performanceTracerEnd={this.performanceTracerEnd}
-                        key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
-                        src={accelerateURL(imageUrl)}
+                        src={accelerateURL(page && page.url)}
                         width={fitWidth || imageWidth}
                         height={fitHeight || imageHeight}
                         style={imageStyle}
@@ -263,9 +230,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
               <JuiZoomElement
                 ref={this._animateRef}
                 originalElement={
-                  this.state.switched
-                    ? null
-                    : this.props.initialOptions.originElement!
+                  this.state.switched ? null : originElement || null
                 }
                 targetElement={this._imageRef.current}
                 show={value.show}

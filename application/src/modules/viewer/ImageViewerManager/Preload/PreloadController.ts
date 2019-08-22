@@ -37,6 +37,10 @@ class PreloadController implements IImageDownloadedListener {
     );
   }
 
+  dispose() {
+    this._downloader.destroy();
+  }
+
   replacePreload(itemIds: number[], currentIndex: number) {
     const ids = this._generatePreloadIds(itemIds, currentIndex);
     this._logger.info(`Replace with ${ids}`);

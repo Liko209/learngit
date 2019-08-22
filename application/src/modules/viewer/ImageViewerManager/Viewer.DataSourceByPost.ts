@@ -13,7 +13,7 @@ import { ItemService } from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
 import { VIEWER_ITEM_TYPE } from './constants';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { getFilterFunc } from './Utils';
+import { getFilterFunc } from './utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type ItemListDataSourceByPostProps = {

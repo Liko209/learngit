@@ -1,26 +1,25 @@
 /*
  * @Author: looper Wang (looper.wang@ringcentral.com)
- * @Date: 2019-02-26 14:40:39
+ * @Date: 2019-07-10 09:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactElement } from 'react';
+
 import { Item } from 'sdk/module/item/entity';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { VIEWER_ITEM_TYPE } from './constants';
-import { Post } from 'sdk/module/post/entity';
 
-type ViewerProps = {
-  contentLeftRender: (props: Partial<ViewerViewProps>) => ReactElement;
-  viewerDestroyer: Function;
+type ImageViewerViewModuleProps = {
   groupId: number;
   itemId: number; // imageId || fileId || otherItemId
   isNavigation?: boolean;
   postId?: number;
   type: VIEWER_ITEM_TYPE;
+  initialOptions: ImageViewerOptions;
+  dismiss: () => void;
 };
 
-type ViewerViewProps = ViewerProps & {
-  init: () => Promise<void>;
+type ImageViewerViewModule = {
+  init: () => void;
   currentItemId: number;
   currentIndex: number;
   getCurrentItemId: () => number;
@@ -34,13 +33,41 @@ type ViewerViewProps = ViewerProps & {
   switchToPrevious: () => void;
   switchToNext: () => void;
   stopPreload: () => void;
-  loadMore: (direction: QUERY_DIRECTION) => Promise<Item[]>;
+  loadMore: (direction: QUERY_DIRECTION) => Promise<Item[] | null>;
   setOnCurrentItemDeletedCb: (callback: (nextItemId: number) => void) => void;
   setOnItemSwitchCb: (callback: (itemId: number) => void) => void;
   deleteItem?: boolean;
-  directRelatedPost: Post;
-  onContentLoad?: () => {};
-  onContentError?: () => {};
+  onContentLoad?: () => void;
+  onContentError?: () => void;
+
+  originElement?: HTMLElement;
+  imageWidth?: number;
+  imageHeight?: number;
+  thumbnailSrc?: string;
 };
 
-export { ViewerProps, ViewerViewProps };
+type ImageViewerOptions = {
+  originElement?: HTMLElement;
+  thumbnailSrc?: string;
+  initialWidth?: number;
+  initialHeight?: number;
+};
+type ImageViewerProps = ImageViewerViewModule & {
+  thumbnailSrc?: string;
+};
+
+type ImageViewerBuild = {
+  groupId: number;
+  imageId: number;
+  initialOptions: ImageViewerOptions;
+  mode?: string;
+  postId?: number;
+};
+
+export {
+  ImageViewerViewModuleProps,
+  ImageViewerViewModule,
+  ImageViewerProps,
+  ImageViewerOptions,
+  ImageViewerBuild,
+};
