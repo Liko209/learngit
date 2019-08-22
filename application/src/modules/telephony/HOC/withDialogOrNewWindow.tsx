@@ -334,7 +334,7 @@ function withDialogOrNewWindow<T>(
           TransitionComponent={DialerTransitionComponent}
           onStart={this._handleStart}
           onStop={this._handleStop}
-          onDrag={this._handleDrag as any}
+          handlerDrag={this._handleDrag}
           ref={this._containerRef}
           onEntered={this._handleEntered}
           onExited={this._handleExited}

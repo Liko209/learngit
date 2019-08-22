@@ -19,7 +19,7 @@ type PaperProps = {
   dragRef?: React.RefObject<any>;
   onStart?: DraggableEventHandler;
   onStop?: DraggableEventHandler;
-  onDrag?: DraggableEventHandler;
+  handlerDrag?: DraggableEventHandler;
   handle?: string;
   TransitionComponent?: React.ComponentType<TransitionProps | any>;
 } & JuiPaperProps;
@@ -36,7 +36,7 @@ const PaperComponent = ({
   dragRef,
   onStart,
   onStop,
-  onDrag,
+  handlerDrag,
   handle,
   position,
   TransitionComponent = JuiFade,
@@ -48,7 +48,7 @@ const PaperComponent = ({
     ref={dragRef}
     onStart={onStart}
     onStop={onStop}
-    onDrag={onDrag}
+    onDrag={handlerDrag}
     handle={handle}
   >
     <div>
@@ -98,7 +98,7 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       dragRef,
       onStart,
       onStop,
-      onDrag,
+      handlerDrag,
       position,
       handle,
       PaperProps,
@@ -113,7 +113,7 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       open,
       dragRef,
       position,
-      onDrag,
+      handlerDrag,
       TransitionComponent,
       ...PaperProps,
     } as PaperProps;
