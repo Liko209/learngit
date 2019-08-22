@@ -47,18 +47,18 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get phoneAppDropDownItems() {
-    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+    return this.getSelectorByAutomationClass('selectBoxItem');
   }
 
   get ringCentralAppItem() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBoxItem-defaultPhoneApp-glip',
+      'selectBoxItem-defaultPhoneApp-glip',
     );
   }
 
   get ringCentralPhoneItem() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBoxItem-defaultPhoneApp-ringcentral',
+      'selectBoxItem-defaultPhoneApp-ringcentral',
     );
   }
 
@@ -89,7 +89,7 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDDropDownItems() {
-    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+    return this.getSelectorByAutomationClass('selectBoxItem');
   }
 
   get updateRegionDialog() {

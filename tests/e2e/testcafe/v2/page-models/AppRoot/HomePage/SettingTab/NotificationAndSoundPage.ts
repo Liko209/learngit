@@ -40,7 +40,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get microphoneSourceItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   get speakerSourceLabel() {
@@ -58,7 +58,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get speakerSourceItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   get ringerSourceSelectBox() {
@@ -66,7 +66,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get ringerSourceItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   get ringerSourceLabel() {
@@ -103,13 +103,13 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get microphoneSourceDefaultItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-microphoneSource-default"
+      "selectBoxItem-microphoneSource-default"
     );
   }
 
   get ringerSourceAllAudioSourcesItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-ringerSource-all"
+      "selectBoxItem-ringerSource-all"
     );
   }
 
@@ -119,7 +119,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get ringSourceSelectBoxOffItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-ringerSource-off"
+      "selectBoxItem-ringerSource-off"
     );
   }
 
@@ -329,12 +329,12 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get newMessageItemSelectOff() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-newMessages-never"
+      "selectBoxItem-newMessages-never"
     );
   }
 
   get newMessageDropDownItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   async hoverNewMessageItemSelectOff() {
@@ -429,7 +429,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get newMessageBadgeCount() {
     return this.getSelector(
-      `*[data-test-automation-id^="settingItemSelectBoxItem-newMessageBadgeCount-"`
+      `*[data-test-automation-id^="selectBoxItem-newMessageBadgeCount-"`
     );
   }
 
@@ -454,7 +454,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get directMessagesOffItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-notificationDirectMessages-0"
+      "selectBoxItem-notificationDirectMessages-0"
     );
   }
 
@@ -477,13 +477,13 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get directMessagesAndMentionsOnlyItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-newMessageBadgeCount-groups_and_mentions"
+      "selectBoxItem-newMessageBadgeCount-groups_and_mentions"
     );
   }
 
   get allNewMessagesItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-newMessageBadgeCount-all"
+      "selectBoxItem-newMessageBadgeCount-all"
     );
   }
 
