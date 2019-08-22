@@ -14,11 +14,18 @@ import {
 import PreFetchPostProcessor from '@/store/handler/cache/PreFetchPostProcessor';
 import { notificationCenter } from 'sdk/service';
 import { WINDOW } from 'sdk/service/eventKey';
+import { BOOKMARK_ID, AT_MENTION_ID } from '../constant';
+import { BookmarkCacheController } from '../cache/BookmarkCacheController';
+import { AtMentionCacheController } from '../cache/AtMentionCacheController';
+import { getSingleEntity } from '@/store/utils';
 
 jest.mock('sdk/framework/processor/SequenceProcessorHandler');
 jest.mock('../cache/PinnedPostCacheController');
+jest.mock('../cache/BookmarkCacheController');
+jest.mock('../cache/AtMentionCacheController');
 jest.mock('../cache/ConversationPostCacheController');
 jest.mock('sdk/service/notificationCenter');
+jest.mock('@/store/utils');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -28,6 +35,8 @@ function clearMocks() {
 
 describe('PreFetchConversationDataHandler', () => {
   let pinnedPostCacheController: PinnedPostCacheController;
+  let bookmarkCacheController: BookmarkCacheController;
+  let atMentionCacheController: AtMentionCacheController;
   let conversationPostCacheController: ConversationPostCacheController;
   let preFetchConversationDataHandler: PreFetchConversationDataHandler;
   let sequenceProcessorHandler: SequenceProcessorHandler;
@@ -37,11 +46,15 @@ describe('PreFetchConversationDataHandler', () => {
     );
     pinnedPostCacheController = new PinnedPostCacheController();
     conversationPostCacheController = new ConversationPostCacheController();
+    bookmarkCacheController = new BookmarkCacheController();
+    atMentionCacheController = new AtMentionCacheController();
     preFetchConversationDataHandler = new PreFetchConversationDataHandler([
       pinnedPostCacheController,
       conversationPostCacheController,
+      bookmarkCacheController,
+      atMentionCacheController,
     ]);
-
+    (getSingleEntity as jest.Mock).mockReturnValue([6, 8, 10]);
     Object.assign(preFetchConversationDataHandler, {
       _preFetchQueueHandler: sequenceProcessorHandler,
     });
@@ -64,7 +77,7 @@ describe('PreFetchConversationDataHandler', () => {
         conversationPostCacheController,
       ]);
 
-      expect(notificationCenter.on).toBeCalledWith(
+      expect(notificationCenter.on).toHaveBeenCalledWith(
         WINDOW.ONLINE,
         expect.anything(),
       );
@@ -86,11 +99,61 @@ describe('PreFetchConversationDataHandler', () => {
 
       const groupId = 1;
       preFetchConversationDataHandler.addProcessor(groupId);
-      expect(sequenceProcessorHandler.addProcessor).toBeCalled();
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalled();
       setTimeout(() => {
-        expect(pinnedPostCacheController.doPreFetch).toBeCalledWith(groupId);
-        expect(conversationPostCacheController.doPreFetch).toBeCalledWith(
+        expect(pinnedPostCacheController.doPreFetch).toHaveBeenCalledWith(
           groupId,
+        );
+        expect(conversationPostCacheController.doPreFetch).toHaveBeenCalledWith(
+          groupId,
+        );
+        done();
+      }, 10);
+    });
+  });
+
+  describe('preFetchAtMention', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should add processor to sequence queue', done => {
+      sequenceProcessorHandler.addProcessor = jest
+        .fn()
+        .mockImplementation(async (processor: PreFetchPostProcessor) => {
+          await processor.process();
+        });
+
+      preFetchConversationDataHandler.addProcessor(AT_MENTION_ID);
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(atMentionCacheController.doPreFetch).toHaveBeenCalledWith(
+          AT_MENTION_ID,
+        );
+        done();
+      }, 10);
+    });
+  });
+
+  describe('preFetchBookmark', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should add processor to sequence queue', done => {
+      sequenceProcessorHandler.addProcessor = jest
+        .fn()
+        .mockImplementation(async (processor: PreFetchPostProcessor) => {
+          await processor.process();
+        });
+
+      preFetchConversationDataHandler.addProcessor(BOOKMARK_ID);
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalled();
+      setTimeout(() => {
+        expect(bookmarkCacheController.doPreFetch).toHaveBeenCalledWith(
+          BOOKMARK_ID,
         );
         done();
       }, 10);
@@ -110,7 +173,7 @@ describe('PreFetchConversationDataHandler', () => {
 
       networkChangeFn(false);
 
-      expect(sequenceProcessorHandler.addProcessor).not.toBeCalled();
+      expect(sequenceProcessorHandler.addProcessor).not.toHaveBeenCalled();
     });
 
     it('should do pre fetch for un cached groups when network changed to online', () => {
@@ -123,25 +186,31 @@ describe('PreFetchConversationDataHandler', () => {
       conversationPostCacheController.getUnCachedGroupIds = jest
         .fn()
         .mockReturnValue([2, 3]);
+      atMentionCacheController.getUnCachedGroupIds = jest
+        .fn()
+        .mockReturnValue([AT_MENTION_ID]);
+      bookmarkCacheController.getUnCachedGroupIds = jest
+        .fn()
+        .mockReturnValue([BOOKMARK_ID]);
 
       networkChangeFn(true);
 
-      expect(sequenceProcessorHandler.addProcessor).toBeCalledTimes(4);
-      expect(sequenceProcessorHandler.addProcessor).nthCalledWith(
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenCalledTimes(6);
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenNthCalledWith(
         1,
         (1, expect.any(PreFetchPostProcessor)),
       );
-      expect(sequenceProcessorHandler.addProcessor).nthCalledWith(
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenNthCalledWith(
         2,
         (2, expect.any(PreFetchPostProcessor)),
       );
-      expect(sequenceProcessorHandler.addProcessor).nthCalledWith(
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenNthCalledWith(
         3,
-        (2, expect.any(PreFetchPostProcessor)),
-      );
-      expect(sequenceProcessorHandler.addProcessor).nthCalledWith(
-        4,
         (3, expect.any(PreFetchPostProcessor)),
+      );
+      expect(sequenceProcessorHandler.addProcessor).toHaveBeenNthCalledWith(
+        4,
+        (4, expect.any(PreFetchPostProcessor)),
       );
     });
 
@@ -181,10 +250,10 @@ describe('PreFetchConversationDataHandler', () => {
       preFetchConversationDataHandler.setCurrentConversation(1);
       expect(
         pinnedPostCacheController.setCurrentCacheConversation,
-      ).toBeCalledWith(1);
+      ).toHaveBeenCalledWith(1);
       expect(
         conversationPostCacheController.setCurrentCacheConversation,
-      ).toBeCalledWith(1);
+      ).toHaveBeenCalledWith(1);
     });
   });
 
@@ -198,10 +267,10 @@ describe('PreFetchConversationDataHandler', () => {
       preFetchConversationDataHandler.releaseCurrentConversation(1);
       expect(
         pinnedPostCacheController.releaseCurrentConversation,
-      ).toBeCalledWith(1);
+      ).toHaveBeenCalledWith(1);
       expect(
         conversationPostCacheController.releaseCurrentConversation,
-      ).toBeCalledWith(1);
+      ).toHaveBeenCalledWith(1);
     });
   });
 
@@ -213,8 +282,8 @@ describe('PreFetchConversationDataHandler', () => {
 
     it('remove cache in all cache controller', () => {
       preFetchConversationDataHandler.removeCache(1);
-      expect(pinnedPostCacheController.remove).toBeCalledWith(1);
-      expect(conversationPostCacheController.remove).toBeCalledWith(1);
+      expect(pinnedPostCacheController.remove).toHaveBeenCalledWith(1);
+      expect(conversationPostCacheController.remove).toHaveBeenCalledWith(1);
     });
   });
 });

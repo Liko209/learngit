@@ -30,7 +30,10 @@ import {
   GroupCanBeShownResponse,
 } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
-import { GROUP_CAN_NOT_SHOWN_REASON, TEAM_ADDITION_MOVE_PROPERTIES } from '../constants';
+import {
+  GROUP_CAN_NOT_SHOWN_REASON,
+  TEAM_ADDITION_MOVE_PROPERTIES,
+} from '../constants';
 import { AccountService } from '../../account/service';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { GroupHandleDataController } from './GroupHandleDataController';
@@ -435,7 +438,7 @@ export class GroupActionController {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
-    isIncludeSelf = group.members.includes(currentUserId);
+    isIncludeSelf = group.members && group.members.includes(currentUserId);
 
     if (!isValid) {
       if (group.deactivated) {
