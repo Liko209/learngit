@@ -34,8 +34,8 @@ import {
   emailNotificationList,
 } from 'sdk/module/profile/constants';
 import { i18nP } from '@/utils/i18nT';
-import { EmailNotificationTimeSourceItem } from 'src/modules/message/MessageSettingManager/EmailNotificationTimeSelectSourceItem.View';
 import { notificationPreferencesShown } from './dataTrackings';
+import { EmailNotificationTimeSourceItem } from '@/modules/message/MessageSettingManager/EmailNotificationTimeSelectSourceItem.View';
 
 type NotificationPreferencesProps = Props & ViewProps & WithTranslation;
 

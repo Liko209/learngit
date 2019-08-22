@@ -99,6 +99,7 @@ describe('messageNotificationManager', () => {
 
   const mockedProfileService = {
     isNotificationMute: jest.fn().mockReturnValue(false),
+    getByGroupId: () => conversationPreferences
   };
 
   const mockedCompanyService = {
@@ -110,7 +111,9 @@ describe('messageNotificationManager', () => {
     value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
   };
   const conversationPreferences = {
-    soundNotification: SOUNDS_TYPE.Default
+    sound_notifications: {
+      id: SOUNDS_TYPE.Default
+    }
   }
   function mockSettingItemValue(value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS) {
     settingItem.value = value;
@@ -130,7 +133,7 @@ describe('messageNotificationManager', () => {
         case ServiceConfig.COMPANY_SERVICE:
           return mockedCompanyService;
         case ServiceConfig.SETTING_SERVICE:
-          return { getById: () => settingItem, getByGroupId: () => conversationPreferences };
+          return { getById: () => settingItem };
         default:
           return { userConfig: { getGlipUserId: () => userId } };
       }
@@ -500,9 +503,9 @@ sfdasfasd`);
       const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.DIRECT_MESSAGE, new GroupModel(group));
       expect(soundSetting).toBe(SOUNDS_TYPE.Triple_Beeps)
     })
-    it.only('should be Alert when global setting for sound is Triple_Beeps but current conversation preference for sound is Alert', async () => {
+    it('should be Alert when global setting for sound is Triple_Beeps but current conversation preference for sound is Alert', async () => {
       settingItem.value = {id: SOUNDS_TYPE.Triple_Beeps};
-      conversationPreferences.soundNotification = SOUNDS_TYPE.Alert;
+      conversationPreferences.sound_notifications.id = SOUNDS_TYPE.Alert;
       const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.DIRECT_MESSAGE, new GroupModel(group));
       expect(soundSetting).toBe(SOUNDS_TYPE.Alert)
     })

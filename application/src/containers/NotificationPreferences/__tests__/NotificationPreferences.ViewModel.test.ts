@@ -63,7 +63,7 @@ describe('NotificationPreferencesViewModel', () => {
 
   @testable
   class _groupType {
-    @mockService(SettingService, [{ method: 'getByGroupId' }])
+    @mockService(ProfileService, [{ method: 'getByGroupId' }])
     beforeEach() {}
     @test('should be team when group.is_team is true')
     @mockService(GroupService, [
@@ -111,8 +111,8 @@ describe('NotificationPreferencesViewModel', () => {
     ])
     beforeEach() {}
 
-    @test('should be true when muteAll is true')
-    @mockService(SettingService, 'getByGroupId', { muteAll: true })
+    @test('should be true when muted is true')
+    @mockService(ProfileService, 'getByGroupId', { muted: true })
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
       await notificationPreferencesVM.init();
@@ -120,11 +120,11 @@ describe('NotificationPreferencesViewModel', () => {
     }
 
     @test(
-      'should be true when muteAll is false and desktopNotification is false',
+      'should be true when muted is false and desktop_notifications is false',
     )
-    @mockService(SettingService, 'getByGroupId', {
-      muteAll: false,
-      desktopNotification: false,
+    @mockService(ProfileService, 'getByGroupId', {
+      muted: false,
+      desktop_notifications: false,
     })
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
@@ -133,11 +133,11 @@ describe('NotificationPreferencesViewModel', () => {
     }
 
     @test(
-      'should be false when muteAll is false and desktopNotification is true',
+      'should be false when muted is false and desktop_notifications is true',
     )
-    @mockService(SettingService, 'getByGroupId', {
-      muteAll: false,
-      desktopNotification: true,
+    @mockService(ProfileService, 'getByGroupId', {
+      muted: false,
+      desktop_notifications: true,
     })
     async t3() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
@@ -152,24 +152,24 @@ describe('NotificationPreferencesViewModel', () => {
       { method: 'getById' },
       { method: 'isIndividualGroup' },
     ])
-    @mockService(SettingService, 'getByGroupId', { muteAll: false })
+    @mockService(ProfileService, 'getByGroupId', { muted: false })
     beforeEach() {}
 
     @test('should be true when default is false and current is undefined')
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
       await notificationPreferencesVM.init();
-      notificationPreferencesVM.handleCheckboxChange('muteAll')();
-      expect(notificationPreferencesVM.value['muteAll']).toBeTruthy();
+      notificationPreferencesVM.handleCheckboxChange('muted')();
+      expect(notificationPreferencesVM.value['muted']).toBeTruthy();
     }
 
     @test('should be false when default is false and current is true')
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
       await notificationPreferencesVM.init();
-      notificationPreferencesVM.value['muteAll'] = true;
-      notificationPreferencesVM.handleCheckboxChange('muteAll')();
-      expect(notificationPreferencesVM.value['muteAll']).toBeFalsy();
+      notificationPreferencesVM.value['muted'] = true;
+      notificationPreferencesVM.handleCheckboxChange('muted')();
+      expect(notificationPreferencesVM.value['muted']).toBeFalsy();
     }
   }
 });

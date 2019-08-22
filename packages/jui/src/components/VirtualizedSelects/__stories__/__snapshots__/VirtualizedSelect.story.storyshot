@@ -4,7 +4,6 @@ exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Componen
 .c1 {
   width: 100%;
   text-align: left;
-  padding-bottom: 12px;
   max-width: 232px;
 }
 
@@ -39,6 +38,7 @@ exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Componen
   line-height: 20px;
   color: #212121;
   width: 200px;
+  height: 32px;
   height: 40px;
 }
 
