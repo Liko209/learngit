@@ -33,7 +33,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('ProfileDataController', () => {
+describe.skip('ProfileDataController', () => {
   let profileDataController: ProfileDataController;
   let mockEntitySourceController: MockEntitySourceController;
   let mockEntityCacheController: IEntityCacheController<Profile>;
@@ -263,7 +263,7 @@ describe('ProfileDataController', () => {
     });
   });
 
-  describe.only('getByGroupId', () => {
+  describe.skip('getByGroupId', () => {
     const desktopNotifications = true;
     const soundNotifications = SoundsListWithDefault[2];
     const mobileNotifications =
