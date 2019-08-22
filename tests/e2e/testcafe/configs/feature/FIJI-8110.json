@@ -1,6 +1,6 @@
 {
   "on_merge": {
-  "fixtures": ["./fixtures/Setting/AudioSources.ts", "./fixtures/Setting/DesktopNotifications.ts"],
+  "fixtures": ["./fixtures/Setting/NotificationAndSounds/AudioSources.ts", "./fixtures/Setting/NotificationAndSounds/DesktopNotifications.ts"],
   "browsers": ["selenium:chrome"]
   }
 }
