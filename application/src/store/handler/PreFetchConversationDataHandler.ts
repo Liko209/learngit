@@ -13,12 +13,12 @@ import conversationPostCacheController from './cache/ConversationPostCacheContro
 import bookmarkCacheController from './cache/BookmarkCacheController';
 import atMentionCacheController from './cache/AtMentionCacheController';
 import { AT_MENTION_ID, BOOKMARK_ID } from './constant';
-import { Profile } from 'sdk/src/module/profile/entity';
+import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '../models/Profile';
 import { getSingleEntity } from '../utils';
 import { ENTITY_NAME } from '..';
 import { autorun } from 'mobx';
-import { MyState } from 'sdk/src/module/state';
+import { MyState } from 'sdk/module/state';
 import MyStateModel from '../models/MyState';
 import { mainLogger } from 'foundation/log';
 

@@ -414,7 +414,7 @@ class PptrUnionUtils {
       if (page) {
         await page.setExtraHTTPHeaders({ "x-mock-request-id": requestId });
       }
-    })
+    });
   }
 }
 

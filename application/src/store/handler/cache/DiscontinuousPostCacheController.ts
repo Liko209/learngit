@@ -6,7 +6,7 @@
 
 import { PostCacheController } from './PostCacheController';
 import { FetchSortableDataListHandler } from '@/store/base';
-import { Post } from 'sdk/src/module/post/entity';
+import { Post } from 'sdk/module/post/entity';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'foundation/log';
 import { DiscontinuousPosListHandler } from '../DiscontinuousPosListHandler';
