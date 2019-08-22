@@ -6,7 +6,7 @@
 
 import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MEETING_TITLE } from './types';
 import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
@@ -17,8 +17,17 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import RCVideoMeetingItemModel from '@/store/models/RCVideoMeetingItem';
 import { MeetingsService } from 'sdk/module/meetings';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+// import { ElectronService } from '@/modules/electron';
+// import { container } from 'framework/ioc';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { MEETING_ACTION } from 'sdk/src/module/meetings/types';
+import { mainLogger } from 'foundation/log';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
+  // private get _electronService() {
+  //   return container.get(ElectronService);
+  // }
+
   @computed
   get meetingStrategy(): {
     [x: number]:
@@ -78,6 +87,27 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     return a;
   };
 
+  joinMeeting = () => {
+    // this._electronService.openWindow({ url: this.joinUrl });
+  };
+
+  callbackMeeting = async () => {
+    const id = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const result = await ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).startMeeting([id]);
+    if (result.action === MEETING_ACTION.DEEP_LINK) {
+      window.open(result.link);
+    } else {
+      // show alert
+      mainLogger.info(result.reason || 'start video error');
+    }
+  };
+
+  cancelMeeting = () => {
+    
+  }
+
   @computed
   get meetingTitle() {
     const status = this.meetingItem.meetingStatus;
@@ -93,6 +123,10 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
       return statusMap[status];
     }
     return '';
+  }
+  @computed
+  get joinUrl() {
+    return this.meetingItem.joinUrl;
   }
   @computed
   get duration() {
