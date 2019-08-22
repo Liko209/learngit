@@ -1,8 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "fixtures/Profile/ProfileToggle.ts",
-      "fixtures/ConversationList/CloseConversation.ts"
+      "telephony/phoneSetting/GeneralSettings.ts"
     ],
     "browsers": [
       "selenium:chrome"

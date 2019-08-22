@@ -60,6 +60,7 @@ describe('CallLogService', () => {
       null as any,
       null as any,
       null as any,
+      null as any,
     );
     callLogService = new CallLogService();
   }

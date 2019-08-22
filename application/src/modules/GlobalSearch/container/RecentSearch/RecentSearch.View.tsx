@@ -118,6 +118,7 @@ class RecentSearchViewComponent extends Component<Props> {
           down: onKeyDown,
           enter: onEnter,
         }}
+        global
       >
         <JuiRecentSearch data-test-automation-id="search-records">
           {this.searchRecordList}
