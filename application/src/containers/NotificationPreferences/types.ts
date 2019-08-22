@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ConversationPreferenceModel } from 'sdk/module/setting/entity';
+import ConversationPreferenceModel from '@/store/models/ConversationPreference';
 
 type Props = {
   groupId: number;
