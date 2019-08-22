@@ -450,11 +450,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     );
   }
 
-  get newMessageBadgeCountSelectBox() {
-    return this.getSelectorByAutomationId(
-      "settingItemSelectBox-newMessageBadgeCount"
-    );
-  }
+
 
   get directMessagesAndMentionsOnlyItem() {
     return this.getSelectorByAutomationId(
@@ -476,9 +472,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     await this.t.hover(this.otherNotificationSettingsTitle);
   }
 
-  async clickNewMessageBadgeCountSelectBox() {
-    await this.t.click(this.newMessageBadgeCountSelectBox);
-  }
+
   // sounds section
   get soundsSection() {
     return this.getComponent(SoundsSection);

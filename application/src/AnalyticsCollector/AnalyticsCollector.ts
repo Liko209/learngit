@@ -217,6 +217,63 @@ class AnalyticsCollector {
     });
   }
 
+  // FIJI-7829
+  showGlobalDialog() {
+    dataAnalysis.track('Jup_Web/DT_search_globalSearchDialog');
+  }
+
+  showFullMessageSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullMessageSearchDialog');
+  }
+
+  showFullPeopleSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullPeopleSearchDialog');
+  }
+
+  showFullGroupSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullGroupSearchDialog');
+  }
+
+  showFullTeamSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullTeamSearchDialog');
+  }
+
+  clearSearchHistory() {
+    dataAnalysis.track('Jup_Web/DT_search_clearHistory');
+  }
+
+  gotoConversationFromSearch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_goToConversation', { source });
+  }
+
+  jumpToPostInConversation(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_jumpToPostInConversation', { source });
+  }
+
+  outboundCallFromPeople(source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_outboundCall', { source });
+  }
+
+  joinPublicTeamFromSearch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_joinPublicTeam', { source });
+  }
+
+  filterContentSearchResultByType(type: string) {
+    dataAnalysis.track('Jup_Web/DT_search_filterMessageByType', { type });
+  }
+
+  filterContentSearchResultByTime(time: string) {
+    dataAnalysis.track('Jup_Web/DT_search_filterMessageByTimePosted', { time });
+  }
+  // end FIJI-7829
+
+  // for global hot keys
+  shortcuts(shortcut: string) {
+    dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+      shortcut,
+    });
+  }
+
   profileDialog(category: string, source: string) {
     dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
       category,
@@ -256,6 +313,7 @@ class AnalyticsCollector {
   copyTeamEmail() {
     dataAnalysis.track('Jup_Web/DT_profile_copyTeamEmail');
   }
+
   // [FIJI-7395]
   toggleLeftNavPanel(isExpanded: boolean) {
     const state = isExpanded ? 'expanded' : 'collapsed';

@@ -43,7 +43,7 @@ export class MessageSettingPage extends BaseWebComponent {
 
   get newMessageBadgeCountDropDown() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-newMessageBadgeCount"
+      "settingItemSelectBox-newMessageBadgeCount", this.conversationListSection
     );
   }
 
