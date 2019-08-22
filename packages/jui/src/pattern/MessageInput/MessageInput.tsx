@@ -117,14 +117,32 @@ type Props = {
   hasFocused?: boolean;
 };
 
+// user try to paste image after snapshot
+function isPasteImageFromMemory(files: FileList, types: string[]) {
+  return (
+    files && files.length === 1 && types.length === 1 && types[0] === 'Files'
+  );
+}
+
+// user copy image in native filesystem, then try to paste into message input
+// even user copied more than 1 image, only the last one will be pasted into web
+function isPasteImageFromFileSystem(files: FileList, types: string[]) {
+  return (
+    files &&
+    files.length === 1 &&
+    types.length === 2 &&
+    types[0] === 'text/plain' &&
+    types[1] === 'Files'
+  );
+}
+
 function isPasteImageEvent(event: ClipboardEvent) {
   if (event.clipboardData) {
     const { files, types } = event.clipboardData;
+    // will get error in compiled time if use keyword `readonly`, so make copy of `types`
+    const t: string[] = types ? [...types] : [];
     return (
-      files &&
-      files.length > 0 &&
-      types[0] === 'text/plain' &&
-      types[1] === 'Files'
+      isPasteImageFromFileSystem(files, t) || isPasteImageFromMemory(files, t)
     );
   }
   return false;
