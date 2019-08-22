@@ -1,8 +1,6 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-02-18 17:51:37
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-08-09 15:11:00
  */
 
 import * as assert from 'assert';
@@ -343,7 +341,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I hover "i" icon beside the 'Delete team' button`, async () => {
-    await t.hover(teamSettingDialog.deleteTeamButtonInfoIcon);
+    await t.hover(teamSettingDialog.deleteTeamButtonInfoIcon, {speed: 0.1});
   });
 
   await h(t).withLog(`Then there should be tooltip displayed: "{tooltipText}"`, async (step) => {
