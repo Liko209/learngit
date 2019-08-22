@@ -17,7 +17,6 @@ const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
 const IDLE_THRESHOLD = 3 * 60 * 1000;
 const BACKGROUND_TIMER_INTERVAL = IDLE_THRESHOLD / 2;
 const USER_ACTION_EVENT_DEBOUNCE = 500;
-const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 type SWMessageData = {
   type?: string;
@@ -70,10 +69,6 @@ class Upgrade {
       `${logTag}setServiceWorkerURL: ${swURL}, hasWaitingWorker: ${hasWaitingWorker}`,
     );
     this._swURL = swURL;
-
-    if (!hasWaitingWorker) {
-      this._removeWorkingWorkerFlag();
-    }
   }
 
   public onNewContentAvailable(
@@ -83,17 +78,6 @@ class Upgrade {
     mainLogger.info(
       `${logTag}onNewContentAvailable. hasFocus: ${this._appInFocus()}, controller: ${isCurrentPageInControl}, byWaitingWorker: ${isByWaitingWorker}`,
     );
-    if (isByWaitingWorker) {
-      const workingWorkerFlag = this._getWorkingWorkerFlag();
-      if (workingWorkerFlag) {
-        mainLogger.info(
-          `${logTag} Ignore upgrade due to there's waiting worker flag: ${workingWorkerFlag}`,
-        );
-        return;
-      }
-
-      this._setWorkingWorkerFlag();
-    }
 
     this._hasNewVersion = true;
 
@@ -190,19 +174,6 @@ class Upgrade {
 
       this._reloadApp();
     }
-  }
-
-  private _getWorkingWorkerFlag() {
-    return window.sessionStorage.getItem(WAITING_WORKER_FLAG);
-  }
-  private _setWorkingWorkerFlag() {
-    window.sessionStorage.setItem(
-      WAITING_WORKER_FLAG,
-      new Date().toISOString(),
-    );
-  }
-  private _removeWorkingWorkerFlag() {
-    window.sessionStorage.removeItem(WAITING_WORKER_FLAG);
   }
 
   private _queryIfHasNewVersion = async () => {
