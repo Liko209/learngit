@@ -5,7 +5,9 @@
  */
 
 import { SearchUtils } from '../SearchUtils';
+
 const soundex = require('soundex-code');
+
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -137,5 +139,36 @@ describe('SearchUtils', () => {
         expect(SearchUtils.isSpecialChar(srcStr)).toBe(expectRes);
       },
     );
+  });
+
+  describe('getMatchedWeight', () => {
+    it('should return max matched-weight', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora', 'bruce'],
+      );
+      expect(result).toBe(2.2);
+    });
+
+    it('should return one max-matched-weight when only key with start-with matched', () => {
+      const result = SearchUtils.getMatchedWeight(['dora', 'bruce'], ['dora']);
+      expect(result).toBe(1.1);
+    });
+
+    it('should return one max-matched-weight when only one start-with matched', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora', 'uce'],
+      );
+      expect(result).toBe(1.1);
+    });
+
+    it('should return zero when on one start-with matched', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['ora', 'uce'],
+      );
+      expect(result).toBe(0);
+    });
   });
 });

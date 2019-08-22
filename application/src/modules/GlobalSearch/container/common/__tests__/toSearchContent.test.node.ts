@@ -12,6 +12,7 @@ import { toSearchContent } from '../toSearchContent';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
 import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../../types';
+jest.mock('sdk/module/config');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

@@ -240,6 +240,10 @@ class TelephonyEngineController {
     return this._accountController.getRemoteEmergencyAddress();
   }
 
+  hasActiveDL() {
+    return !!this.getRemoteEmergencyAddress();
+  }
+
   isEmergencyAddrConfirmed() {
     return this._accountController.isEmergencyAddrConfirmed();
   }

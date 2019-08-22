@@ -30,6 +30,7 @@ describe('GlobalSearchService', () => {
       globalSearchStore.setSearchKey('');
       globalSearchService.openGlobalSearch();
       expect(globalSearchStore.open).toBeTruthy();
+      expect(globalSearchStore.needFocus).toBeTruthy();
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.RECENT_SEARCH);
     });
     it('if search key is not empty should be open instant search', () => {
@@ -43,6 +44,7 @@ describe('GlobalSearchService', () => {
     it('global search store open should be false', () => {
       globalSearchService.closeGlobalSearch();
       expect(globalSearchStore.open).toBeFalsy();
+      expect(globalSearchStore.needFocus).toBeFalsy();
     });
   });
   describe('registerExtension()', () => {

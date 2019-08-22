@@ -14,17 +14,20 @@ import { SortUtils } from 'sdk/framework/utils';
 import { FetchDataOptions } from '../../types';
 import { DEFAULT_FETCH_SIZE, MESSAGE_AVAILABILITY } from '../../constants';
 import { VOICEMAIL_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { IViewDao } from 'sdk/module/base/dao/IViewDao';
+import { RCItemUtils } from '../../utils';
 
 const LOG_TAG = 'VoicemailViewDao';
 
-class VoicemailViewDao extends BaseDao<VoicemailView> {
+class VoicemailViewDao extends BaseDao<VoicemailView>
+  implements IViewDao<number, Voicemail, VoicemailView> {
   static COLLECTION_NAME = 'voicemailView';
 
   constructor(db: IDatabase) {
     super(VoicemailViewDao.COLLECTION_NAME, db);
   }
 
-  toVoicemailView(vm: Voicemail): VoicemailView {
+  toViewItem(vm: Voicemail): VoicemailView {
     return {
       id: vm.id,
       from: this._getFromView(vm),
@@ -32,9 +35,7 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     };
   }
 
-  toPartialVoicemailView(
-    partialVM: Partial<Voicemail>,
-  ): Partial<VoicemailView> {
+  toPartialViewItem(partialVM: Partial<Voicemail>): Partial<VoicemailView> {
     return _.pickBy(
       {
         id: partialVM.id,
@@ -45,10 +46,12 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     );
   }
 
+  getCollection() {
+    return this.getDb().getCollection<VoicemailView, number>(this.modelName);
+  }
+
   private _getFromView(vm: Partial<Voicemail> | Voicemail) {
-    return vm
-      ? { ..._.pick(vm.from, 'name', 'phoneNumber', 'extensionNumber') }
-      : undefined;
+    return RCItemUtils.toCallerView(vm.from);
   }
 
   async queryVoicemails(options: FetchDataOptions<Voicemail>) {

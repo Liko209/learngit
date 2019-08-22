@@ -1,6 +1,7 @@
 import { QuillOptionsStatic, RangeStatic, DeltaStatic, Sources } from 'quill';
 import { Quill } from 'react-quill';
 import './blots/mention';
+import './blots/span';
 import Keys from '../keys';
 
 export type KeyboardEventHandler = {
@@ -75,7 +76,7 @@ class Mention {
         'silent',
       );
       this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'api');
-      this._quill.insertText(this._mentionCharPos + 1, ' ', 'api');
+      this._quill.insertText(this._mentionCharPos + 1, ' ', 'span', 'api');
       if (this.hasTeamMention()) {
         this.doRemoveStyleForMemberMention();
       }

@@ -18,18 +18,20 @@ import { TypeDictionary } from 'sdk/utils';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { ProfileDialogGroup } from '@/modules/message/container/Profile/Dialog/Group';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 @observer
 class ProfileMiniCardGroupFooter extends Component<
   WithTranslation & ProfileMiniCardGroupFooterViewProps
-  > {
+> {
   onClickMessage = () => {
+    analyticsCollector.goToConversation('miniProfile', this.props.analysisType);
     const { id } = this.props;
     const result = goToConversationWithLoading({ id });
     if (result) {
       portalManager.dismissLast();
     }
-  }
+  };
 
   getAriaLabelKey = () => {
     const { typeId } = this.props;
@@ -38,16 +40,23 @@ class ProfileMiniCardGroupFooter extends Component<
       [TypeDictionary.TYPE_ID_GROUP]: 'ariaGoToGroup',
     };
     return mapping[typeId];
+  };
+
+  getDataTrackingCategory() {
+    const { typeId } = this.props;
+    const mapping = {
+      [TypeDictionary.TYPE_ID_TEAM]: 'Team',
+      [TypeDictionary.TYPE_ID_GROUP]: 'Group',
+    };
+    return mapping[typeId];
   }
 
   handleCloseMiniCard = () => {
     portalManager.dismissLast();
-  }
+  };
 
   render() {
-    const {
-      id, t, showMessage, group,
-    } = this.props;
+    const { id, t, showMessage, group } = this.props;
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
@@ -55,6 +64,10 @@ class ProfileMiniCardGroupFooter extends Component<
             id={id}
             profileDialog={ProfileDialogGroup}
             beforeClick={this.handleCloseMiniCard}
+            dataTrackingProps={{
+              category: this.getDataTrackingCategory(),
+              source: 'miniProfile',
+            }}
           >
             <JuiButton variant="text" color="primary">
               {t('people.team.profile')}

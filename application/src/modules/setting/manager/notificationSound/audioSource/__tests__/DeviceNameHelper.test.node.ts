@@ -10,88 +10,95 @@ const DEVICE_2 = 'DEVICE_2';
 
 const fakeT = (str: any) => str;
 
+const buildFakeDevice = (device: {
+  deviceId: string;
+  label: string;
+  kind: MediaDeviceKind;
+  groupId?: string;
+}) => {
+  return {
+    ...device,
+    groupId: '0',
+    toJSON() {
+      return JSON.stringify(this);
+    },
+  };
+};
+
 describe('DeviceNameHelper', () => {
   describe('getDeviceName()', () => {
-    it('should return setting.builtInMicrophone for a built-in audio input device', () => {
-      const device: MediaDeviceInfo = {
+    it('should return original label for a built-in audio input device [JPT-2798]', () => {
+      const device = buildFakeDevice({
         deviceId: DEVICE_1,
-        groupId: '0',
         label: 'Microphone (built-in)',
         kind: 'audioinput',
-      };
+      });
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
-      expect(result).toBe('setting.builtInMicrophone');
+      expect(result).toBe('Microphone (built-in)');
     });
 
-    it('should return setting.builtInSpeaker for a built-in audio output device', () => {
-      const device: MediaDeviceInfo = {
+    it('should return original label for a built-in audio output device [JPT-2798]', () => {
+      const device = buildFakeDevice({
         deviceId: DEVICE_1,
-        groupId: '0',
         label: 'Speaker (built-in)',
         kind: 'audiooutput',
-      };
+      });
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
-      expect(result).toBe('setting.builtInSpeaker');
+      expect(result).toBe('Speaker (built-in)');
     });
 
     it('should return setting.useDefault for a default device', () => {
-      const device: MediaDeviceInfo = {
+      const device = buildFakeDevice({
         deviceId: 'default',
-        groupId: '0',
         label: 'Speaker (built-in)',
         kind: 'audiooutput',
-      };
+      });
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
       expect(result).toBe('setting.useDefault');
     });
 
     it('should return setting.useDefault for a device with label that contains "default"', () => {
-      const device: MediaDeviceInfo = {
+      const device = buildFakeDevice({
         deviceId: DEVICE_1,
-        groupId: '0',
         label: 'Default speaker (built-in)',
         kind: 'audiooutput',
-      };
+      });
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
       expect(result).toBe('setting.useDefault');
     });
 
     it('should return setting.useDefault for the special "No Devices" device [JPT-2098]', () => {
-      const device: MediaDeviceInfo = {
+      const device = buildFakeDevice({
         deviceId: '',
-        groupId: '0',
         label: 'no devices',
         kind: 'audiooutput',
-      };
+      });
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
       expect(result).toBe('setting.noDevices');
     });
 
     it('should return label of the device when device.label not match any special rules', () => {
-      const device: MediaDeviceInfo = {
+      const device = buildFakeDevice({
         deviceId: DEVICE_1,
-        groupId: '0',
         label: 'BeatsStudio Wireless',
         kind: 'audiooutput',
-      };
+      });
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
       expect(result).toBe('BeatsStudio Wireless');
     });
 
     describe('when device.label is empty [JPT-2418]', () => {
       it('should return device order', () => {
-        const speaker1: MediaDeviceInfo = {
+        const speaker1 = buildFakeDevice({
           deviceId: DEVICE_1,
-          groupId: '0',
           label: '',
           kind: 'audiooutput',
-        };
-        const speaker2: MediaDeviceInfo = {
+        });
+        const speaker2 = buildFakeDevice({
           deviceId: DEVICE_2,
-          groupId: '0',
           label: '',
           kind: 'audiooutput',
-        };
+        });
         const allSpeakers = [speaker1, speaker2];
         expect(
           DeviceNameHelper.getDeviceName(speaker1, allSpeakers, fakeT),
@@ -102,24 +109,21 @@ describe('DeviceNameHelper', () => {
       });
 
       it('should ignore default device when counting devices', () => {
-        const speaker1: MediaDeviceInfo = {
+        const speaker1 = buildFakeDevice({
           deviceId: DEVICE_1,
-          groupId: '0',
           label: '',
           kind: 'audiooutput',
-        };
-        const defaultSpeaker: MediaDeviceInfo = {
+        });
+        const defaultSpeaker = buildFakeDevice({
           deviceId: 'default',
-          groupId: '0',
           label: 'Default speaker (built-in)',
           kind: 'audiooutput',
-        };
-        const speaker2: MediaDeviceInfo = {
+        });
+        const speaker2 = buildFakeDevice({
           deviceId: DEVICE_2,
-          groupId: '0',
           label: '',
           kind: 'audiooutput',
-        };
+        });
         const allSpeakers = [speaker1, defaultSpeaker, speaker2];
         expect(
           DeviceNameHelper.getDeviceName(speaker1, allSpeakers, fakeT),
