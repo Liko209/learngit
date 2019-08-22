@@ -136,6 +136,32 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     );
   }
 
+  private get _renderAddMembers() {
+    const { t, canAddMembers, isTeam } = this.props;
+
+    if (!canAddMembers) {
+      return null;
+    }
+
+    const addButtonTip = isTeam
+      ? t('people.team.addTeamMembers')
+      : t('people.group.addPeople');
+
+    return (
+      <JuiIconButton
+        variant="plain"
+        color="grey.500"
+        size="small"
+        tooltipTitle={addButtonTip}
+        aria-label={addButtonTip}
+        onClick={this.onAddMemberButtonClick}
+        data-test-automation-id="rightShelfMemberListHeaderAddButton"
+      >
+        addmember_border
+      </JuiIconButton>
+    );
+  }
+
   render() {
     const {
       t,
@@ -147,17 +173,15 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       shownMemberIds,
       shownGuestIds,
       allMemberLength,
-      isTeam,
       shouldHide,
     } = this.props;
-    const addButtonTip = isTeam
-      ? t('people.team.addTeamMembers')
-      : t('people.group.addPeople');
+
     const showLink = ![
       CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
       CONVERSATION_TYPES.ME,
       CONVERSATION_TYPES.SMS,
     ].includes(group.type);
+
     return shouldHide ? null : (
       <>
         <MemberListHeader
@@ -176,17 +200,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
               </JuiLink>
             ) : null}
           </div>
-          <JuiIconButton
-            variant="plain"
-            color="grey.500"
-            size="small"
-            tooltipTitle={addButtonTip}
-            aria-label={addButtonTip}
-            onClick={this.onAddMemberButtonClick}
-            data-test-automation-id="rightShelfMemberListHeaderAddButton"
-          >
-            addmember_border
-          </JuiIconButton>
+          {this._renderAddMembers}
         </MemberListHeader>
         <MemberListBody
           loading={isLoading}
