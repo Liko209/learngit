@@ -14,9 +14,7 @@ type BaseType = {
 } & JuiModalProps;
 
 const BaseDialogComponent = (props: BaseType & WithTranslation) => {
-  const {
-    isAlert, loading, t, ...newConfig
-  } = props;
+  const { isAlert, loading, t, ...newConfig } = props;
   const defaultBtnText = {
     okText: t('common.dialog.OK'),
     cancelText: t('common.dialog.cancel'),
@@ -37,13 +35,9 @@ const BaseDialogComponent = (props: BaseType & WithTranslation) => {
 const BaseDialog = withTranslation('translations')(BaseDialogComponent);
 
 function dialog(config: BaseType) {
-  const {
-    onOK, onCancel, isAlert, ...newConfig
-  } = config;
+  const { onOK, onCancel, isAlert, ...newConfig } = config;
 
-  const {
-    dismiss, show, startLoading, stopLoading,
-  } = portalManager.wrapper(
+  const { dismiss, show, startLoading, stopLoading } = portalManager.wrapper(
     BaseDialog,
   );
 
@@ -57,8 +51,8 @@ function dialog(config: BaseType) {
         dismiss();
       }
     },
-    onCancel() {
-      onCancel && onCancel();
+    onCancel(event: React.MouseEvent) {
+      onCancel && onCancel(event);
       dismiss();
     },
   };
