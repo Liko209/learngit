@@ -8,6 +8,7 @@ import { action, computed } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 
 import { AbstractViewModel } from '@/base';
+import { analyticsCollector } from '@/AnalyticsCollector';
 import storeManager from '@/store/base/StoreManager';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -32,6 +33,8 @@ class TopBarViewModel extends AbstractViewModel {
   updateLeftNavState = () => {
     const isLeftNavOpen = !globalStore.get(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLeftNavOpen);
+
+    analyticsCollector.toggleLeftNavPanel(isLeftNavOpen);
   };
 
   @computed

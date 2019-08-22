@@ -360,11 +360,11 @@ class MetricService {
     const release = isRelease ? 1 : 0;
     const versionName = isDevelop ? "develop" : version.name;
 
-    let dtos = await LoadingTimeItemDto.sequelize.query("select i.*, s.start_time from t_loading_time_summary ss  join t_scene s on s.id=ss.scene_id join t_loading_time_item i on i.summary_id=ss.id where ss.name=? and s.name=? and s.app_version=? and s.is_release=?",
+    let dtos = await LoadingTimeItemDto.sequelize['query']("select i.*, s.start_time from t_loading_time_summary ss  join t_scene s on s.id=ss.scene_id join t_loading_time_item i on i.summary_id=ss.id where ss.name=? and s.name=? and s.app_version=? and s.is_release=?",
       {
         replacements: [summary.name, sceneDto.name, sceneDto.appVersion, release],
         raw: true,
-        type: Sequelize.QueryTypes.SELECT
+        type: Sequelize['QueryTypes']['SELECT']
       });
 
     if (!dtos || dtos.length === 0) {

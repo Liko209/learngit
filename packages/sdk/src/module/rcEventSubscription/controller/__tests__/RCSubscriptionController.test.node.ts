@@ -52,6 +52,7 @@ describe('RCSubscriptionController', () => {
     eventFilters: [
       '/restapi/v1.0/account/37439510/extension/1428352020/message-store',
       '/restapi/v1.0/account/37439510/extension/1428352020/missed-calls',
+      '/restapi/v1.0/account/37439510/extension/1428352020/voicemail',
       '/restapi/v1.0/account/37439510/extension/1428352020/presence?detailedTelephonyState=true&sipData=true',
     ],
     expirationTime: '2999-06-30T01:03:22.973Z',
@@ -192,6 +193,7 @@ describe('RCSubscriptionController', () => {
               '/restapi/v1.0/account/~/extension/~/message-store',
               '/restapi/v1.0/account/~/extension/~/missed-calls',
               '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
+              '/restapi/v1.0/account/~/extension/~/voicemail',
             ],
           },
         );
@@ -239,6 +241,7 @@ describe('RCSubscriptionController', () => {
             '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
             '/restapi/v1.0/account/~/extension/~/message-store',
             '/restapi/v1.0/account/~/extension/~/missed-calls',
+            '/restapi/v1.0/account/~/extension/~/voicemail',
           ],
         });
         expect(RcSubscriptionApi.updateSubscription).not.toHaveBeenCalled();

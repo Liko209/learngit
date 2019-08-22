@@ -55,7 +55,8 @@
     "make-pseudo": "node ./scripts/make-pseudo.js",
     "networkDataToFileTree": "node ./scripts/networkDataToFileTree.js",
     "reactTypeWorkAround": "cp ./scripts/react-type/index.d.ts ./node_modules/@types/react",
-    "releaseToSentry": "node ./scripts/releaseToSentry.js"
+    "releaseToSentry": "node ./scripts/releaseToSentry.js",
+    "config:e2e": "cd tests/e2e/testcafe && npm run config"
   },
   "devDependencies": {
     "@jest-runner/electron": "2.0.1",
@@ -97,8 +98,8 @@
     "mkdirp": "0.5.1",
     "plop": "2.1.0",
     "raf": "3.4.1",
-    "react": "16.8.6",
-    "react-dom": "16.8.6",
+    "react": "16.9.0",
+    "react-dom": "16.9.0",
     "resize-observer-polyfill": "1.5.1",
     "resolve": "1.8.1",
     "rimraf": "2.6.2",

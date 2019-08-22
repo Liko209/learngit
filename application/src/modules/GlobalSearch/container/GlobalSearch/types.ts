@@ -15,6 +15,8 @@ type GlobalSearchViewProps = {
   onChange: (value: string) => void;
   onClear: () => void;
   showClear: boolean;
+  needFocus: boolean;
+  onBlur: () => void;
 };
 
 export { GlobalSearchProps, GlobalSearchViewProps, SEARCH_VIEW };

@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Route, withRouter } from 'react-router-dom';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
-import { service, GLIP_LOGIN_STATUS } from 'sdk';
+import { notificationCenter, SERVICE } from 'sdk/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import portalManager from '@/common/PortalManager';
 
 import { MessageRouter } from './MessageRouter';
 import { MessageViewProps } from './types';
+import { GLIP_LOGIN_STATUS } from 'sdk/framework/account';
 
 type Props = MessageViewProps & WithTranslation;
 type State = {
@@ -43,12 +44,10 @@ class MessageComponent extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    const { notificationCenter, SERVICE } = service;
     notificationCenter.on(SERVICE.GLIP_LOGIN, this._handleGlipLogin);
   }
 
   componentWillUnmount() {
-    const { notificationCenter, SERVICE } = service;
     notificationCenter.off(SERVICE.GLIP_LOGIN, this._handleGlipLogin);
     portalManager.dismissAll();
   }
