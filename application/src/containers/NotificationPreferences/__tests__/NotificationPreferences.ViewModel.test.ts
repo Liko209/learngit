@@ -16,7 +16,7 @@ import { SettingService } from 'sdk/module/setting';
 import { mockService } from 'shield/sdk/mockService';
 import { GroupService } from 'sdk/module/group';
 import { testable, test } from 'shield';
-import { ProfileService } from 'sdk/src/module/profile';
+import { ProfileService } from 'sdk/module/profile';
 
 const mockBackendError = new JServerError(ERROR_CODES_SERVER.GENERAL, '');
 const mockNetworkError = new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');

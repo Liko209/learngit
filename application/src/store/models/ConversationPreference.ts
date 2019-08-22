@@ -5,7 +5,7 @@ import {
   AUDIO_SOUNDS_INFO,
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
-} from 'sdk/src/module/profile';
+} from 'sdk/module/profile';
 
 export default class ConversationPreferenceModel extends Base<
   ConversationPreference
