@@ -324,6 +324,7 @@ class ViewerViewComponent extends Component<
                   <>
                     <PageRenderer
                       dataModule={dataModule}
+                      deleteItem={this.state.deleteItem}
                       handleScaleChanged={this._handleScaleChanged}
                       handlePageIdxChanged={this._handlePageIdxChanged}
                     />
