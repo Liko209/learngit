@@ -49,25 +49,11 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
-import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
-jest.mock('@/store/base/fetch/FetchSortableDataListHandler', () => {
-  const handler: FetchSortableDataListHandler<any> = {
-    fetchData: jest.fn(),
-    getIds: jest.fn().mockReturnValue([1]),
-    hasMore: jest.fn(),
-    dispose: jest.fn(),
-    sortableListStore: { getIds: [1] },
-  };
-  return {
-    FetchSortableDataListHandler: () => {
-      return handler;
-    },
-  };
-});
 
 const mockedDelay = 10;
 const testProcedureWaitingTime = 100;

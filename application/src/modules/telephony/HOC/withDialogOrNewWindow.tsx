@@ -7,6 +7,7 @@
 import React, { ComponentType, ComponentClass } from 'react';
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
+import { DraggableData, DraggableEvent } from 'react-draggable';
 import { JuiDraggableDialog } from 'jui/components/Dialog';
 import { container } from 'framework/ioc';
 import { TelephonyStore } from '../store';
@@ -118,6 +119,7 @@ function withDialogOrNewWindow<T>(
     private _dragRef = React.createRef<any>();
     private _containerRef = React.createRef<any>();
     private _handleResize = () => {};
+    private _timer: NodeJS.Timeout;
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
@@ -147,11 +149,14 @@ function withDialogOrNewWindow<T>(
     private _backdrop = this._createBackdrop();
 
     private _backToDefaultPos = () => {
-      const { changeBackToDefaultPos } = this._telephonyStore;
+      const {
+        changeBackToDefaultPos,
+        isBackToDefaultPos,
+      } = this._telephonyStore;
       this.setState(
         { controlledPosition: { x: defaultX, y: defaultY } },
         () => {
-          changeBackToDefaultPos(false);
+          isBackToDefaultPos && changeBackToDefaultPos(false);
         },
       );
     };
@@ -194,7 +199,7 @@ function withDialogOrNewWindow<T>(
       document.body.appendChild(this._backdrop);
     };
 
-    private _handleDrag = (e: Event, position: any) => {
+    private _handleDrag = (e: DraggableEvent, position: DraggableData) => {
       const { x, y } = position;
       this.setState({ controlledPosition: { x, y } });
     };
@@ -232,21 +237,25 @@ function withDialogOrNewWindow<T>(
       }
     };
 
-    componentDidUpdate() {
-      const {
-        startMinimizeAnimation,
-        isBackToDefaultPos,
-      } = this._telephonyStore;
+    componentWillUpdate() {
+      const { isBackToDefaultPos, callWindowState } = this._telephonyStore;
+      const open =
+        callWindowState === CALL_WINDOW_STATUS.MINIMIZED ? false : true;
 
-      console.info('111111 isBackToDefaultPos', isBackToDefaultPos);
+      const isPosChange =
+        this.state.controlledPosition.x !== defaultX ||
+        this.state.controlledPosition.y !== defaultY;
 
-      if (
-        isBackToDefaultPos &&
-        (this.state.controlledPosition.x !== defaultX ||
-          this.state.controlledPosition.y !== defaultY)
-      ) {
-        this._backToDefaultPos();
+      if ((!open || isBackToDefaultPos) && isPosChange) {
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+          this._backToDefaultPos();
+        }, 100);
       }
+    }
+
+    componentDidUpdate() {
+      const { startMinimizeAnimation } = this._telephonyStore;
 
       const dragEl = ReactDOM.findDOMNode(
         this._dragRef.current,
@@ -286,6 +295,7 @@ function withDialogOrNewWindow<T>(
       window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
       window.removeEventListener(BLUR, this._onBlur);
       window.removeEventListener(RESIZE, this._handleResize);
+      clearTimeout(this._timer);
     }
 
     componentDidMount() {
@@ -320,13 +330,11 @@ function withDialogOrNewWindow<T>(
           container={container}
           position={controlledPosition}
           open={open}
-          x={defaultX}
-          y={defaultY}
           dragRef={this._dragRef}
           TransitionComponent={DialerTransitionComponent}
           onStart={this._handleStart}
           onStop={this._handleStop}
-          onDrag={this._handleDrag}
+          onDrag={this._handleDrag as any}
           ref={this._containerRef}
           onEntered={this._handleEntered}
           onExited={this._handleExited}

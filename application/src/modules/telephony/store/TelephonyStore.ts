@@ -45,9 +45,6 @@ class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
   private _intervalReplyId?: NodeJS.Timeout;
   private _history: Set<CALL_DIRECTION | typeof DIALING> = new Set();
-
-  private _historyIds: number[] = [];
-
   /**
    * foc
    */
@@ -157,9 +154,6 @@ class TelephonyStore {
   @observable
   currentCallId: number | undefined = undefined;
 
-  @observable
-  endCallId: number | undefined = undefined;
-
   // only exist one e911 dialog
   @observable
   hasShowE911: boolean = false;
@@ -229,39 +223,12 @@ class TelephonyStore {
     );
 
     reaction(
-      () => this.ids,
-      ids => {
-        if (ids.length === 2) {
-          this.changeBackToDefaultPos(true);
-        }
-
-        // remove
-        let index;
-        this._historyIds.forEach((id, idx) => {
-          if (!ids.includes(id)) {
-            this._onCallEnd(id);
-            index = idx;
-          }
-        });
-
-        typeof index === 'number' && this._historyIds.splice(index, 1);
-
-        // add
-        ids.forEach(id => {
-          if (!this._historyIds.includes(id)) {
-            this._historyIds.push(id);
-          }
-        });
-
-        console.info('11111 ids change', ids);
-        console.info('11111 _historyIds change', this._historyIds);
+      () => this.isMultipleCall,
+      isMultipleCall => {
+        if (isMultipleCall) this.changeBackToDefaultPos(true);
       },
     );
   }
-
-  _onCallEnd = (id: number) => {
-    this.endCallId = id;
-  };
 
   @computed
   get person() {
@@ -386,7 +353,8 @@ class TelephonyStore {
     const history = this._history;
 
     switch (true) {
-      case !!this.call:
+      case this.isMultipleCall:
+        this.endMultipleIncomingCall();
         break;
       case history.has(CALL_DIRECTION.INBOUND) &&
         history.has(DIALING) &&
@@ -411,11 +379,6 @@ class TelephonyStore {
     this.isContactMatched = false;
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
-
-    // for TelephonyNotificationManger can get call disconnected state.
-    Promise.resolve().then(() => {
-      this.endCallId = undefined;
-    });
   };
 
   @action
@@ -561,7 +524,11 @@ class TelephonyStore {
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
-    return !this.call || this.incomingState === INCOMING_STATE.FORWARD;
+    return (
+      !this.call ||
+      this.callDisconnected ||
+      this.incomingState === INCOMING_STATE.FORWARD
+    );
   }
 
   @computed
@@ -572,9 +539,6 @@ class TelephonyStore {
   // TODO: it should current call
   @computed
   get call(): CallModel | undefined {
-    console.info('111111calls', this._rawCalls);
-    console.info('111111ids', this.ids);
-
     if (!this._rawCalls.length) return undefined;
 
     // for transfer call switch current call
@@ -585,8 +549,6 @@ class TelephonyStore {
     }
     // The latest call
     return reverse(sortBy(this._rawCalls, ['startTime']))[0];
-
-    // return getEntity<Call, CallModel>(ENTITY_NAME.CALL, 0);
   }
 
   @computed
@@ -643,22 +605,16 @@ class TelephonyStore {
     return this.call && this.call.direction;
   }
 
-  // @computed
-  // get callDisconnected(): boolean {
-  //   return this.callState === CALL_STATE.DISCONNECTED;
-  // }
+  @computed
+  get callDisconnected(): boolean {
+    return this.callState === CALL_STATE.DISCONNECTING;
+  }
 
   @computed
   get uuid() {
     if (!this.call) return '';
     return this.call.uuid;
   }
-
-  // @computed
-  // get endCallUuid() {
-  //   if (!this.endCallId) return '';
-  //   return getEntity<Call, CallModel>(ENTITY_NAME.CALL, this.endCallId).uuid;
-  // }
 
   // TODO: should change the prop's name since it's isomorphic to `CALL_DIRECTION`
   @computed
@@ -744,7 +700,6 @@ class TelephonyStore {
 
   @computed
   private get _rawCalls() {
-    console.info('111111ids', this.ids);
     return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
   }
 
@@ -752,6 +707,17 @@ class TelephonyStore {
   changeBackToDefaultPos = (status: boolean) => {
     this.isBackToDefaultPos = status;
   };
+
+  @action
+  endMultipleIncomingCall() {
+    if (!this.isMultipleCall) return;
+    this.isBackToDefaultPos = true;
+  }
+
+  @computed
+  get isMultipleCall() {
+    return this.ids.length > 1;
+  }
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE };

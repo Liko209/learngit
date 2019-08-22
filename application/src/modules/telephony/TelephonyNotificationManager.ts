@@ -67,7 +67,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         } else {
           const shouldCloseNotification = [
             CALL_STATE.IDLE,
-            CALL_STATE.DISCONNECTED,
+            CALL_STATE.DISCONNECTING,
             CALL_STATE.CONNECTING,
             CALL_STATE.CONNECTED,
           ];

@@ -14,8 +14,6 @@ import { JuiFade } from '../Animation';
 import { TransitionProps } from '@material-ui/core/transitions/transition';
 
 type PaperProps = {
-  x: number;
-  y: number;
   open: boolean;
   position: { x: number; y: number };
   dragRef?: React.RefObject<any>;
@@ -34,8 +32,6 @@ type JuiDraggableDialogProps = PaperProps &
   };
 
 const PaperComponent = ({
-  x,
-  y,
   open,
   dragRef,
   onStart,
@@ -48,7 +44,6 @@ const PaperComponent = ({
 }: PaperProps) => (
   <Draggable
     bounds="body"
-    // defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
     position={position}
     ref={dragRef}
     onStart={onStart}
@@ -100,8 +95,6 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
 
   render(): React.ReactNode {
     const {
-      x,
-      y,
       dragRef,
       onStart,
       onStop,
@@ -117,8 +110,6 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       ...rest
     } = this.props;
     const paperProps = {
-      x,
-      y,
       open,
       dragRef,
       position,

@@ -17,6 +17,7 @@ import {
 } from 'sdk/module/telephony/entity';
 
 jest.mock('@/store/utils');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
   matchContactByPhoneNumber: jest.fn(),

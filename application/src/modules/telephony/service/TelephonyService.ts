@@ -61,6 +61,9 @@ import { ISoundNotification } from '@/modules/notification/interface';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
+import {
+  CALL_STATE,
+} from 'sdk/module/telephony/entity';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -439,9 +442,10 @@ class TelephonyService {
     );
 
     this._callStateDisposer = reaction(
-      () => this._telephonyStore.endCallId,
-      endCallId => {
-        if (endCallId) {
+      () => this._telephonyStore.callState,
+      callState => {
+        console.info('111111 callState', callState);
+        if (callState === CALL_STATE.DISCONNECTING) {
           this._telephonyStore.end();
           this._resetCallState();
         }
@@ -476,7 +480,7 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
-    if (this._telephonyStore.endCallId) {
+    if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
   }
@@ -642,7 +646,6 @@ class TelephonyService {
   };
 
   hangUp = () => {
-    console.info('111111_callEntityId', this._callEntityId);
     if (this._callEntityId) {
       mainLogger.info(
         `${TelephonyService.TAG}Hang up call id=${this._callEntityId}`,
