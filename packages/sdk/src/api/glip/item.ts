@@ -18,6 +18,7 @@ import {
   StoredFile,
   NoteItem,
   ZoomMeetingItem,
+  ConferenceItem,
 } from '../../module/item/entity';
 
 import { RequestHolder } from '../requestHolder';
@@ -149,6 +150,13 @@ class ItemAPI extends Api {
     return this.glipNetworkClient.post<Raw<ZoomMeetingItem>>({
       data,
       path: '/meeting',
+    });
+  }
+
+  static startRCConference(data: any) {
+    return this.glipNetworkClient.post<Raw<ConferenceItem>>({
+      data,
+      path: '/conference',
     });
   }
 }

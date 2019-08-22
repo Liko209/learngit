@@ -33,7 +33,7 @@ function clearMocks() {
 // Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
 // Make IDBKeyRange global so your code can create key ranges.
 
-describe.skip('Item Dao', () => {
+describe('Item Dao', () => {
   let itemDao: ItemDao;
   Dexie.dependencies.indexedDB = require('fake-indexeddb');
   Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');

@@ -13,6 +13,7 @@ import { RCItemUserConfig } from '../../config';
 import { CallLogBadgeController } from './CallLogBadgeController';
 import { CallLogHandleDataController } from './CallLogHandleDataController';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
+import { IEntityNotificationController } from 'sdk/framework/controller/interface/IEntityNotificationController';
 
 class CallLogController {
   private _callLogActionController: CallLogActionController;
@@ -24,6 +25,7 @@ class CallLogController {
     private _entitySourceController: IEntitySourceController<CallLog, string>,
     private _userConfig: CallLogUserConfig,
     private _missedCallUserConfig: RCItemUserConfig,
+    private _notificationController: IEntityNotificationController<CallLog>,
   ) {}
 
   get callLogActionController() {
@@ -75,6 +77,7 @@ class CallLogController {
       this._callLogHandleDataController = new CallLogHandleDataController(
         this._userConfig,
         this._entitySourceController,
+        this._notificationController,
       );
     }
 

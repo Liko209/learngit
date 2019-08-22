@@ -6,9 +6,11 @@
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import {
- sdk, service, LogControlManager
-} from 'sdk';
+import { sdk } from 'sdk';
+
+import { LogControlManager } from 'sdk/module/log';
+
+import { notificationCenter, SOCKET, SERVICE, CONFIG } from 'sdk/service';
 import { powerMonitor } from 'foundation/utils';
 import { AbstractModule } from 'framework/AbstractModule';
 import { inject } from 'framework/ioc';
@@ -94,10 +96,6 @@ class AppModule extends AbstractModule {
     Pal.instance.setApplicationInfo({
       appVersion: deployedVersion,
     } as IApplicationInfo);
-
-    const {
- notificationCenter, SOCKET, SERVICE, CONFIG
-} = service;
 
     if (window.jupiterElectron) {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {

@@ -70,9 +70,6 @@ export default class ProfileModel extends Base<Profile> {
   desktopVoicemailOption: boolean;
 
   @observable
-  maxLeftRailGroup: number;
-
-  @observable
   lastReadMissed: number | undefined;
 
   @observable
@@ -84,18 +81,22 @@ export default class ProfileModel extends Base<Profile> {
   @observable
   rcvBeta: boolean;
 
+  @observable
+  showLinkPreviews: boolean;
+
   constructor(data: Profile) {
     super(data);
     const {
       favorite_post_ids: favoritePostIds = [],
       favorite_group_ids: favoriteGroupIds = [],
       skip_close_conversation_confirmation: skipCloseConversationConfirmation = false,
+      show_link_previews = true,
     } = data;
 
     this.favoritePostIds = favoritePostIds;
     this.favoriteGroupIds = favoriteGroupIds;
     this.skipCloseConversationConfirmation = skipCloseConversationConfirmation;
-
+    this.showLinkPreviews = show_link_previews;
     const hiddenGroupIds: number[] = [];
     Object.keys(data).forEach((key: string) => {
       const m = key.match(new RegExp(`(${'hide_group'})_(\\d+)`));
@@ -105,8 +106,6 @@ export default class ProfileModel extends Base<Profile> {
     });
 
     this.hiddenGroupIds = hiddenGroupIds;
-    this.maxLeftRailGroup = Number(data.max_leftrail_group_tabs2) || 0;
-
     // TODO, refactor these default value, should move them into a map or standalone file
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;

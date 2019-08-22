@@ -66,14 +66,26 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   private _SubTitle() {
-    const { type, groupId } = this.props;
+    const { type, groupId, analysisSource } = this.props;
 
     return (
       <JuiConversationPageHeaderSubtitle>
         <JuiButtonBar overlapSize={2}>
-          <Favorite key={groupId} id={groupId} size="medium" />
+          <Favorite
+            key={groupId}
+            id={groupId}
+            size="medium"
+            dataTrackingProps={{
+              source: 'conversationHeader: another entry',
+              conversationType: analysisSource,
+            }}
+          />
           {type === CONVERSATION_TYPES.TEAM ? (
-            <Privacy id={groupId} size="medium" />
+            <Privacy
+              id={groupId}
+              size="medium"
+              analysisSource="conversationHeader"
+            />
           ) : null}
           <Member id={groupId} />
         </JuiButtonBar>
