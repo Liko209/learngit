@@ -20,6 +20,7 @@ import GlobalStore from '@/store/base/GlobalStore';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { getGlobalValue } from '@/store/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { dataAnalysis } from 'foundation/analysis';
 
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
@@ -78,6 +79,10 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   toggleUnread = (evt: any, checked: boolean) => {
     this._globalStore.set(GLOBAL_KEYS.UNREAD_TOGGLE_ON, checked);
     this._accountService.setUnreadToggleSetting(checked);
+
+    dataAnalysis.track('Jup_Web/DT_msg_showUnreadToggle', {
+      state: checked ? 'on' : 'off'
+    });
   };
 
   sections: SECTION_TYPE[] = [

@@ -48,12 +48,12 @@ class RecentCallLogsHandler {
 
     const filterFunc = (model: CallLogModel) => {
       const poneNumber = this._getPhoneNumber(model);
-      return !!(poneNumber && !model.deactivated);
+      return !!(poneNumber && !model.deleted);
     };
 
     const isMatchFunc = (entity: CallLog) => {
       const poneNumber = this._getPhoneNumber(entity);
-      return !!(poneNumber && !entity.__deactivated && this._recentCallIds.includes(entity.id));
+      return !!(poneNumber && !entity.deleted && this._recentCallIds.includes(entity.id));
     };
 
     this._idListHandler = new IdListPaginationHandler(this._recentCallIds, {
@@ -146,7 +146,7 @@ class RecentCallLogsHandler {
     let needUpdate = false;
     let needReload = false;
     for (const call of entities) {
-      needReload = call.__deactivated;
+      needReload = !!call.deleted;
       if (needReload) {
         break;
       }

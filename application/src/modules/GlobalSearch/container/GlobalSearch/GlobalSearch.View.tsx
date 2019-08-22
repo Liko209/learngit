@@ -63,15 +63,28 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
 
   componentDidUpdate({ open: preOpen }: GlobalSearchViewProps) {
     const inputEl = this.state.ref.current;
-    const open = this.props.open;
-
-    if (!preOpen && open && inputEl) {
+    const { open, needFocus } = this.props;
+    if (!inputEl) {
+      return;
+    }
+    if (!preOpen && open) {
+      inputEl.focus();
+    }
+    if (needFocus) {
       inputEl.focus();
     }
   }
 
   render() {
-    const { open, onClose, searchKey, onClear, showClear, t } = this.props;
+    const {
+      open,
+      onClose,
+      onBlur,
+      searchKey,
+      onClear,
+      showClear,
+      t,
+    } = this.props;
 
     return (
       <JuiGlobalSearch open={open} onClose={onClose}>
@@ -86,6 +99,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
             'data-test-automation-id': 'global-search-close',
           }}
           InputProps={{
+            onBlur,
             autoFocus: true,
             inputProps: {
               'data-test-automation-id': 'global-search-input',

@@ -166,7 +166,7 @@ describe('RecentCallLogsHandler', () => {
 
     it('should redo init when a call become deactivated', (done: any) => {
       recentCallLogsHandler['_recentCallIds'] = ['1-update', '2-update'];
-      const cpCallLog = { ..._.cloneDeep(callLog), __deactivated: true };
+      const cpCallLog = { ..._.cloneDeep(callLog), deleted: true };
       const payload: NotificationEntityUpdatePayload<CallLog, string> = {
         type: EVENT_TYPES.UPDATE,
         body: {

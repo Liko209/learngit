@@ -7,6 +7,7 @@
 import { VoicemailDao } from '../VoicemailDao';
 import { VoicemailViewDao } from '../VoicemailViewDao';
 import { setup } from '../../../../../dao/__tests__/utils';
+import { daoManager } from 'sdk/dao';
 
 jest.mock('../VoicemailViewDao');
 
@@ -21,9 +22,18 @@ describe('VoicemailDao', () => {
   let voicemailViewDao: VoicemailViewDao;
   function setUp() {
     const { database } = setup();
-    voicemailDao = new VoicemailDao(database);
     voicemailViewDao = new VoicemailViewDao(database);
-    voicemailDao['_voicemailViewDao'] = voicemailViewDao;
+    daoManager.getDao = jest.fn().mockImplementation(x => {
+      switch (x) {
+        case VoicemailViewDao:
+          return voicemailViewDao;
+        default:
+          break;
+      }
+      return undefined;
+    });
+
+    voicemailDao = new VoicemailDao(database);
   }
 
   beforeEach(() => {
@@ -38,59 +48,49 @@ describe('VoicemailDao', () => {
   describe('put', () => {
     it('should do in both dao and view dao', async () => {
       await voicemailDao.put(data);
-      expect(voicemailViewDao.put).toBeCalled();
-    });
-
-    it('should do in both dao and view dao when is array', async () => {
-      await voicemailDao.put([data]);
-      expect(voicemailViewDao.bulkPut).toBeCalled();
+      expect(voicemailViewDao.put).toHaveBeenCalled();
     });
   });
 
   describe('bulkPut', () => {
     it('should do in both dao and view dao ', async () => {
-      await voicemailDao.put([data]);
-      expect(voicemailViewDao.bulkPut).toBeCalled();
+      await voicemailDao.bulkPut([data]);
+      expect(voicemailViewDao.bulkPut).toHaveBeenCalled();
     });
   });
 
   describe('update', () => {
     it('should do in both dao and view dao ', async () => {
       await voicemailDao.update(data);
-      expect(voicemailViewDao.update).toBeCalled();
-    });
-
-    it('should do in both dao and view dao when is array ', async () => {
-      await voicemailDao.update([data]);
-      expect(voicemailViewDao.bulkUpdate).toBeCalled();
+      expect(voicemailViewDao.update).toHaveBeenCalled();
     });
   });
 
   describe('bulkUpdate', () => {
     it('should do in both dao and view dao ', async () => {
       await voicemailDao.bulkUpdate([data]);
-      expect(voicemailViewDao.bulkUpdate).toBeCalled();
+      expect(voicemailViewDao.bulkUpdate).toHaveBeenCalled();
     });
   });
 
   describe('delete', () => {
     it('should do in both dao and view dao ', async () => {
       await voicemailDao.delete(data.id);
-      expect(voicemailViewDao.delete).toBeCalled();
+      expect(voicemailViewDao.delete).toHaveBeenCalled();
     });
   });
 
   describe('bulkDelete', () => {
     it('should do in both dao and view dao ', async () => {
       await voicemailDao.bulkDelete([data.id]);
-      expect(voicemailViewDao.bulkDelete).toBeCalled();
+      expect(voicemailViewDao.bulkDelete).toHaveBeenCalled();
     });
   });
 
   describe('clear', () => {
     it('should do in both dao and view dao ', async () => {
       await voicemailDao.clear();
-      expect(voicemailViewDao.clear).toBeCalled();
+      expect(voicemailViewDao.clear).toHaveBeenCalled();
     });
   });
 
@@ -103,12 +103,12 @@ describe('VoicemailDao', () => {
         direction: 1 as any,
         anchorId: 2,
       });
-      expect(voicemailViewDao.queryVoicemails).toBeCalledWith({
+      expect(voicemailViewDao.queryVoicemails).toHaveBeenCalledWith({
         limit: 123,
         direction: 1 as any,
         anchorId: 2,
       });
-      expect(voicemailDao['batchGet']).toBeCalledWith([1], true);
+      expect(voicemailDao['batchGet']).toHaveBeenCalledWith([1], true);
     });
   });
 });
