@@ -8,9 +8,10 @@ import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { MuteProps } from './types';
 import { IconButtonSize } from 'jui/components/Buttons';
-// import { ConversationPreferenceModel } from 'sdk/src/module/setting/entity';
-// import { ENTITY_NAME } from '@/store';
-// import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
+import { ConversationPreference } from 'sdk/module/profile/entity/Profile';
+import ConversationPreferenceModel from '@/store/models/ConversationPreference';
 
 class MuteViewModel extends AbstractViewModel<MuteProps> {
   @computed
@@ -20,13 +21,11 @@ class MuteViewModel extends AbstractViewModel<MuteProps> {
 
   @computed
   get isMuted() {
-    // ALEX TODO: 取消下方注释
-    // const { muteAll } = getEntity<
-    //   ConversationPreference,
-    //   ConversationPreferenceModel
-    // >(ENTITY_NAME.CONVERSATION_PREFERENCE, this.props.groupId);
-    // return muteAll;
-    return true;
+    const { muteAll } = getEntity<
+      ConversationPreference,
+      ConversationPreferenceModel
+    >(ENTITY_NAME.CONVERSATION_PREFERENCE, this.props.groupId);
+    return muteAll;
   }
 }
 

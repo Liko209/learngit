@@ -13,7 +13,7 @@ export default class ConversationPreferenceModel extends Base<
   @observable muteAll: boolean;
   @observable desktopNotification: boolean;
   @observable soundNotification: AUDIO_SOUNDS_INFO;
-  @observable pushNotification: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+  @observable mobileNotification: MOBILE_TEAM_NOTIFICATION_OPTIONS;
   @observable emailNotification: EMAIL_NOTIFICATION_OPTIONS;
 
   constructor(data: ConversationPreference) {
@@ -29,7 +29,7 @@ export default class ConversationPreferenceModel extends Base<
     this.muteAll = muted;
     this.desktopNotification = desktop_notifications;
     this.soundNotification = sound_notifications;
-    this.pushNotification = push_notifications;
+    this.mobileNotification = push_notifications;
     this.emailNotification = email_notifications;
   }
 

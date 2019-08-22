@@ -24,15 +24,14 @@ import {
   SoundSourceItem,
   SoundSourcePlayerRenderer,
 } from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
-// ALEX TODO: 下面从 mobileList 替换成 sdk 的
 import {
   SoundsListWithDefault,
   AUDIO_SOUNDS_INFO,
   EMAIL_NOTIFICATION_OPTIONS,
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
-  mobileList,
-  mobileTeamList,
-  emailList,
+  mobileDMNotificationList,
+  mobileTeamNotificationList,
+  emailNotificationList,
 } from 'sdk/module/profile/constants';
 import { i18nP } from '@/utils/i18nT';
 import { EmailNotificationTimeSourceItem } from 'src/modules/message/MessageSettingManager/EmailNotificationTimeSelectSourceItem.View';
@@ -106,7 +105,7 @@ class NotificationPreferencesComponent extends React.Component<
     };
     const disabled = currentValue[MUTE_ALL];
     return this._renderSelect<MOBILE_TEAM_NOTIFICATION_OPTIONS>(
-      isTeam ? mobileTeamList : mobileList,
+      isTeam ? mobileTeamNotificationList : mobileDMNotificationList,
       config,
       { disabled },
     );
@@ -119,9 +118,13 @@ class NotificationPreferencesComponent extends React.Component<
       sourceRenderer: EmailNotificationTimeSourceItem,
     };
     const disabled = currentValue[MUTE_ALL];
-    return this._renderSelect<EMAIL_NOTIFICATION_OPTIONS>(emailList, config, {
-      disabled,
-    });
+    return this._renderSelect<EMAIL_NOTIFICATION_OPTIONS>(
+      emailNotificationList,
+      config,
+      {
+        disabled,
+      },
+    );
   };
 
   componentDidMount() {

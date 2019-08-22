@@ -16,6 +16,7 @@ import { SettingService } from 'sdk/module/setting';
 import { mockService } from 'shield/sdk/mockService';
 import { GroupService } from 'sdk/module/group';
 import { testable, test } from 'shield';
+import { ProfileService } from 'sdk/src/module/profile';
 
 const mockBackendError = new JServerError(ERROR_CODES_SERVER.GENERAL, '');
 const mockNetworkError = new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
@@ -30,7 +31,7 @@ describe('NotificationPreferencesViewModel', () => {
     @test(
       'should display flash toast notification when updateConversationPreference failed for server issue [JPT-2838]',
     )
-    @mockService.reject(SettingService, [
+    @mockService.reject(ProfileService, [
       { method: 'updateConversationPreference', data: mockBackendError },
     ])
     async t1() {
@@ -46,7 +47,7 @@ describe('NotificationPreferencesViewModel', () => {
     @test(
       'should display flash toast notification when updateConversationPreference failed for network issue [JPT-2837]',
     )
-    @mockService.reject(SettingService, [
+    @mockService.reject(ProfileService, [
       { method: 'updateConversationPreference', data: mockNetworkError },
     ])
     async t2() {

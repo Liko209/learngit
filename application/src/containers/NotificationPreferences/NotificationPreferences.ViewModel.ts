@@ -8,25 +8,26 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { catchError } from '@/common/catchError';
 import portalManager from '@/common/PortalManager';
 import { Props } from './types';
-import { ConversationPreferenceModel } from 'sdk/module/setting/entity';
 import moize from 'moize';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupService from 'sdk/module/group';
-import { SettingService } from 'sdk/module/setting';
+import { ProfileService } from 'sdk/module/profile';
 import { eventsDict } from './dataTrackings';
 import { ConversationType } from 'src/AnalyticsCollector/types';
+import ConversationPreferenceModel from '@/store/models/ConversationPreference';
+import { TO_CAMEL_DICT } from './constant';
 
 class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   private _groupService = ServiceLoader.getInstance<GroupService>(
     ServiceConfig.GROUP_SERVICE,
   );
 
-  private _settingService = ServiceLoader.getInstance<SettingService>(
-    ServiceConfig.SETTING_SERVICE,
+  private _profileService = ServiceLoader.getInstance<ProfileService>(
+    ServiceConfig.PROFILE_SERVICE,
   );
 
   @observable
-  private _initialValue: ConversationPreferenceModel;
+  private _initialValue: ConversationPreferenceModel = {} as ConversationPreferenceModel;
   @observable
   isTeam: boolean;
   private _groupType: ConversationType;
@@ -37,9 +38,14 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   }
 
   init = async () => {
-    this._initialValue = await this._settingService.getByGroupId(
+    const initialValue = await this._profileService.getByGroupId(
       this.props.groupId,
     );
+    for (const key in initialValue) {
+      if (Object.prototype.hasOwnProperty.call(initialValue, key)) {
+        this._initialValue[TO_CAMEL_DICT[key]] = initialValue[key];
+      }
+    }
     const group = await this._groupService.getById(this.props.groupId);
     if (group) {
       const isOne2One = await this._groupService.isIndividualGroup(group);
@@ -101,7 +107,7 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
       }
       if (hasUpdated) {
         this.loading = true;
-        await this._settingService.updateConversationPreference(
+        await this._profileService.updateConversationPreference(
           this.props.groupId,
           updateValue,
         );
