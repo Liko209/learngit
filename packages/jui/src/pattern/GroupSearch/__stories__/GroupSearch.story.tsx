@@ -38,7 +38,7 @@ const InfiniteListDemo = props => {
         <JuiListItem
           key={k}
           highlighted={k === props.highlightedIndex}
-          {...props.getItemProps({ item: { id: k } })}
+          {...props.getItemProps({ index: k, item: { id: k } })}
         >
           list item {k}
         </JuiListItem>

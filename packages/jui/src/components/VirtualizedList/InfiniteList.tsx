@@ -21,7 +21,6 @@ import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
 import { IndexRange, ScrollInfo } from './types';
 import { useMountState } from './hooks';
 import { DIRECTION } from '../Lists';
-import { JuiVirtualizedMenuList } from '../VirtualizedMenus';
 
 type JuiInfiniteListProps = {
   height?: number;

@@ -97,8 +97,10 @@ export function JuiGroupSearch<T extends SelectItem>({
   return (
     <Downshift
       defaultHighlightedIndex={0}
+      initialHighlightedIndex={0}
       stateReducer={stateReducer}
       onChange={onSelectChange}
+      initialIsOpen
     >
       {({ getInputProps, getItemProps, highlightedIndex, getRootProps }) => {
         return (
