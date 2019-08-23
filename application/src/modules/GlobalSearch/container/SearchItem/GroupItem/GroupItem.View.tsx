@@ -86,15 +86,6 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
       </>
     );
   }
-  private _gotoConversationFromHover = (evt: React.MouseEvent) => {
-    const { group, dataTrackingDomain } = this.props;
-    analyticsCollector.gotoConversationFromSearch(
-      group.isTeam
-        ? `${dataTrackingDomain}_teamHoverMessage`
-        : `${dataTrackingDomain}_groupHoverMessage`,
-    );
-    this.handleGoToConversation(evt);
-  };
 
   render() {
     const {
