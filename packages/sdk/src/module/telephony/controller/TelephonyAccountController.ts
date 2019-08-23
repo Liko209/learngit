@@ -18,6 +18,8 @@ import {
   RTCSipEmergencyServiceAddr,
   RTCSipProvisionInfo,
   RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
 } from 'voip';
 import { TelephonyCallController } from './TelephonyCallController';
 import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
@@ -26,6 +28,7 @@ import {
   LogoutCallback,
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
+  CallDelegate,
 } from '../types';
 import { telephonyLogger } from 'foundation/log';
 import { MakeCallController } from './MakeCallController';
@@ -48,7 +51,7 @@ import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { E911Controller } from './E911Controller';
 import { TRANSFER_TYPE } from '../entity/types';
 
-class TelephonyAccountController implements IRTCAccountDelegate {
+class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
   private _rtcAccount: RTCAccount;
   private _makeCallController: MakeCallController;
@@ -241,6 +244,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
           }
         }
       }
+
       telephonyLogger.debug('Place a call', { finalOptions });
       call = this._rtcAccount.makeCall(
         e164ToNumber,
@@ -269,7 +273,25 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return result;
   }
 
+  private _holdActiveCall() {
+    this._callControllerList.forEach(
+      (callController: TelephonyCallController) => {
+        if (!callController.isOnHold()) {
+          telephonyLogger.debug(
+            `Trying to hold active call: ${callController.getEntityId()}`,
+          );
+          callController.hold();
+        }
+      },
+    );
+  }
+
   async makeCall(toNumber: string, options?: CallOptions) {
+    // hold active call first if there is any
+    // just for warm transfer right now
+    if (options && !!options.extraCall) {
+      this._holdActiveCall();
+    }
     return await this._makeCallInternal(toNumber, false, options);
   }
 
@@ -303,6 +325,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   async unhold(callId: number) {
+    this._holdActiveCall();
     const callController = this._getCallControllerById(callId);
     return callController && (await callController.unhold());
   }
@@ -377,6 +400,34 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     callController && callController.replyWithPattern(pattern, time, timeUnit);
   }
 
+  onCallStateChange(callId: number, state: RTC_CALL_STATE) {}
+
+  onCallActionSuccess(
+    callId: number,
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) {}
+
+  onCallActionFailed(
+    callId: number,
+    callAction: RTC_CALL_ACTION,
+    code: number,
+  ) {
+    //For multiple call, should mute call if call hold is failed
+    if (
+      callAction === RTC_CALL_ACTION.HOLD &&
+      this._callControllerList.size > 1
+    ) {
+      const call = this._callControllerList.get(callId);
+      if (call) {
+        telephonyLogger.info(
+          `mute call: ${callId} due to the failure of call hold`,
+        );
+        call.muteAll();
+      }
+    }
+  }
+
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
 
   onNoAudioStateEvent(uuid: string, noAudioStateEvent: RTCNoAudioStateEvent) {
@@ -421,6 +472,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     callOption?: CallOptions,
   ) {
     callController.setRtcCall(call, isSwitchCall, callOption);
+    callController.setCallDelegate(this);
     call.setCallDelegate(callController);
     this._addControllerToList(callController.getEntityId(), callController);
   }

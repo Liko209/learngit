@@ -14,13 +14,18 @@ import {
   RTC_CALL_ACTION_ERROR_CODE,
   RECORD_STATE as RTC_RECORD_STATE,
   RTCCallActionSuccessOptions,
+  RTC_CALL_ACTION_DIRECTION,
 } from 'voip';
 import { HOLD_STATE, CALL_STATE, RECORD_STATE, MUTE_STATE } from '../../entity';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { ToggleController } from '../ToggleController';
-import { CALL_ACTION_ERROR_CODE, MAKE_CALL_ERROR_CODE } from '../../types';
-import { TRANSFER_TYPE } from '../../entity/types';
+import {
+  CALL_ACTION_ERROR_CODE,
+  CallDelegate,
+  MAKE_CALL_ERROR_CODE,
+  TRANSFER_TYPE,
+} from '../../types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
@@ -35,6 +40,20 @@ describe('TelephonyCallController', () => {
   class MockEntitySource {
     put() {}
     update() {}
+  }
+
+  class MockCallDelegate implements CallDelegate {
+    onCallStateChange(callId: number, state: RTC_CALL_STATE) {}
+    onCallActionSuccess(
+      callId: number,
+      callAction: RTC_CALL_ACTION,
+      options: RTCCallActionSuccessOptions,
+    ) {}
+    onCallActionFailed(
+      callId: number,
+      callAction: RTC_CALL_ACTION,
+      code: number,
+    ) {}
   }
 
   class MockEntityCache {
@@ -56,7 +75,9 @@ describe('TelephonyCallController', () => {
   const toNum = '123';
   let holdToggle: ToggleController;
   let recordToggle: ToggleController;
+  let mockCallDelegate: MockCallDelegate;
   let phoneNumberService: PhoneNumberService;
+
   function setup() {
     mockDelegate = new MockDelegate();
     mockEntitySource = new MockEntitySource();
@@ -71,12 +92,15 @@ describe('TelephonyCallController', () => {
     rtcCall = new RTCCall(false, '', null, null, null);
     holdToggle = new ToggleController();
     recordToggle = new ToggleController();
+    mockCallDelegate = new MockCallDelegate();
+
     phoneNumberService = new PhoneNumberService();
     ServiceLoader.getInstance = jest.fn().mockImplementation(config => {
       if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
         return phoneNumberService;
       }
     });
+
     Object.assign(callController, {
       _rtcCall: rtcCall,
       _holdToggle: holdToggle,
@@ -129,9 +153,11 @@ describe('TelephonyCallController', () => {
   describe('hold', () => {
     it('should resolve when call is held successfully', (done: jest.DoneCallback) => {
       const options = '';
-      expect.assertions(4);
+      expect.assertions(5);
       callController._updateCallHoldState = jest.fn();
       callController._updateCallRecordState = jest.fn();
+      mockCallDelegate.onCallActionSuccess = jest.fn();
+      callController.setCallDelegate(mockCallDelegate);
       rtcCall.getRecordState = jest
         .fn()
         .mockReturnValue(RTC_RECORD_STATE.RECORDING);
@@ -147,14 +173,17 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallRecordState).toHaveBeenCalledWith(
         RECORD_STATE.RECORDING_DISABLED,
       );
+      expect(mockCallDelegate.onCallActionSuccess).toHaveBeenCalled();
       expect(holdToggle.onSuccess).toHaveBeenCalled();
     });
 
     it('should reject when call hold is failed', (done: jest.DoneCallback) => {
       callController._updateCallHoldState = jest.fn();
       callController._updateCallRecordState = jest.fn();
+      mockCallDelegate.onCallActionFailed = jest.fn();
+      callController.setCallDelegate(mockCallDelegate);
       rtcCall.getRecordState = jest.fn().mockReturnValue(RTC_RECORD_STATE.IDLE);
-      expect.assertions(4);
+      expect.assertions(5);
       callController
         .hold()
         .then(result => {
@@ -174,6 +203,23 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallRecordState).toHaveBeenCalledWith(
         RECORD_STATE.IDLE,
       );
+      expect(mockCallDelegate.onCallActionFailed).toHaveBeenCalled();
+    });
+  });
+
+  describe('isOnHold', () => {
+    it('should return true when call is on hold', () => {
+      callController['_getCallEntity'] = jest.fn().mockReturnValue({
+        hold_state: HOLD_STATE.HELD,
+      });
+      const res = callController.isOnHold();
+      expect(res).toBeTruthy();
+    });
+
+    it('should return false when no call entity', () => {
+      callController['_getCallEntity'] = jest.fn().mockReturnValue(null);
+      const res = callController.isOnHold();
+      expect(res).toBeFalsy();
     });
   });
 
@@ -288,6 +334,19 @@ describe('TelephonyCallController', () => {
         RECORD_STATE.IDLE,
       );
       expect(recordToggle.onFailure).toHaveBeenCalled();
+    });
+  });
+
+  describe('muteAll', () => {
+    it('should mute two direction', () => {
+      callController['_updateCallMuteState'] = jest.fn();
+      callController.muteAll();
+      expect(rtcCall.mute).toHaveBeenCalledWith(
+        RTC_CALL_ACTION_DIRECTION.LOCAL,
+      );
+      expect(rtcCall.mute).toHaveBeenCalledWith(
+        RTC_CALL_ACTION_DIRECTION.REMOTE,
+      );
     });
   });
 
