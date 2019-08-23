@@ -222,7 +222,7 @@ describe('ProfileDataController', () => {
       muted: false,
       desktop_notifications: false,
       email_notifications: globalEmail,
-      sound_notifications: globalSound,
+      audio_notifications: globalSound,
       push_notifications: globalMobile,
     };
     beforeEach(() => {
@@ -304,12 +304,12 @@ describe('ProfileDataController', () => {
         profileDataController.getProfile = jest.fn().mockReturnValue({
           conversation_level_notifications: {
             [groupId]: {
-              sound_notifications: sound,
+              audio_notifications: sound,
             },
           },
         });
         const result = await profileDataController.getByGroupId(groupId);
-        expect(result.sound_notifications).toEqual(expectRes);
+        expect(result.audio_notifications).toEqual(expectRes);
       },
     );
     it.each`

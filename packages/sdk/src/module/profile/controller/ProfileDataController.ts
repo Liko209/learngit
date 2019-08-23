@@ -244,7 +244,7 @@ class ProfileDataController {
     let model = {
       ...notification,
       muted: (notification && notification.muted) || false,
-      sound_notifications:
+      audio_notifications:
         sound && SoundsList.find(item => item.id === sound.sound),
     } as ConversationPreference;
     if (await this._isTeam(cid)) {
@@ -265,10 +265,10 @@ class ProfileDataController {
 
   private async _getTeamSetting(model: ConversationPreference) {
     if (
-      model.sound_notifications === undefined ||
-      model.sound_notifications.id === SOUNDS_TYPE.Default
+      model.audio_notifications === undefined ||
+      model.audio_notifications.id === SOUNDS_TYPE.Default
     ) {
-      model.sound_notifications = await this._getSettingValue(
+      model.audio_notifications = await this._getSettingValue(
         SettingEntityIds.Audio_TeamMessages,
       );
     }
@@ -294,10 +294,10 @@ class ProfileDataController {
 
   private async _getDMSetting(model: ConversationPreference) {
     if (
-      !model.sound_notifications ||
-      model.sound_notifications.id === SOUNDS_TYPE.Default
+      !model.audio_notifications ||
+      model.audio_notifications.id === SOUNDS_TYPE.Default
     ) {
-      model.sound_notifications = await this._getSettingValue(
+      model.audio_notifications = await this._getSettingValue(
         SettingEntityIds.Audio_DirectMessage,
       );
     }

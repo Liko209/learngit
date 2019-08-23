@@ -65,7 +65,7 @@ class SettingsActionController {
     model: Partial<ConversationPreference>,
   ) {
     const profile = await this._profileDataController.getProfile();
-    const { sound_notifications, ...notification } = model;
+    const { audio_notifications, ...notification } = model;
     const allNotification =
       (profile && profile.conversation_level_notifications) || {};
     const allSound =
@@ -78,10 +78,10 @@ class SettingsActionController {
         value: allSound.map(item => {
           if (
             item.gid === cid &&
-            sound_notifications &&
-            sound_notifications.id
+            audio_notifications &&
+            audio_notifications.id
           ) {
-            item.sound = sound_notifications.id;
+            item.sound = audio_notifications.id;
           }
           return item;
         }),

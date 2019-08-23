@@ -21,14 +21,14 @@ export default class ConversationPreferenceModel extends Base<
     const {
       muted,
       desktop_notifications,
-      sound_notifications,
+      audio_notifications,
       push_notifications,
       email_notifications,
     } = data;
 
     this.muted = muted;
     this.desktopNotifications = desktop_notifications;
-    this.soundNotifications = sound_notifications;
+    this.soundNotifications = audio_notifications;
     this.pushNotifications = push_notifications;
     this.emailNotifications = email_notifications;
   }
