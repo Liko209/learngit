@@ -86,7 +86,7 @@ class HotKeys extends PureComponent<HotKeysProps, {}> {
     this._mousetrap.trigger(key, action);
   };
 
-  get style() {
+  get style(): React.CSSProperties {
     const { customStyle } = this.props;
     const base = {
       outline: 0,
@@ -102,7 +102,7 @@ class HotKeys extends PureComponent<HotKeysProps, {}> {
       ...base,
       display: 'flex',
       height: '100%',
-      'flex-direction': 'column',
+      flexDirection: 'column',
     };
   }
 

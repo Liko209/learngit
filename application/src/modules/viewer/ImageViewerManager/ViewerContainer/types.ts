@@ -31,6 +31,7 @@ type ImageViewerViewProps = {
     ) => void;
   } & ImageViewerProps &
     IViewerView;
+  deleteItem: boolean;
 };
 
 export { ImageViewerProps, ImageViewerViewProps, ImageViewerOptions };

@@ -75,10 +75,10 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   };
 
   onCurrentItemDeleted = (nextItemId: number) => {
-    const { t, dataModule } = this.props;
-    const { deleteItem } = dataModule;
+    const { t, deleteItem } = this.props;
     if (deleteItem) {
       if (nextItemId === -1) {
+        // use to close dialog
         this.context();
       }
       return;

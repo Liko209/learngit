@@ -4,11 +4,13 @@
  */
 require('dotenv').config();
 
+type Dialect = 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'mariadb';
 class ConfigWrapper {
   /* basic config */
   public loggerLevel: string;
   public reportUri: string;
   public dashboardUrl: string;
+  public jiraUrl: string;
   public fileServerUrl: string;
   public fileUpload: boolean;
   public sceneRepeatCount: number;
@@ -48,7 +50,7 @@ class ConfigWrapper {
   public dbPassword: string;
   public dbHost: string;
   public dbPort: number;
-  public dbDialect: string;
+  public dbDialect: Dialect;
   public dbPoolMax: number;
   public dbPoolMin: number;
   public dbPoolAcquire: number;
@@ -69,6 +71,7 @@ class ConfigWrapper {
     this.loggerLevel = this.getValue("LOGGER_NAME", "info");
     this.reportUri = this.getValue("REPORT_URI", "reports");
     this.dashboardUrl = this.getValue("DASHBOARD_URL", "http://xmn145.rcoffice.ringcentral.com:9005/dashboard/15");
+    this.jiraUrl = this.getValue("JIRA_LINK", "https://jira.ringcentral.com/issues/?filter=57746");
     this.fileUpload = this.getValue("FILE_UPLOAD", "true").toLowerCase() === 'true';
     this.fileServerUrl = this.getValue("FILE_SERVER_URL", "http://xmn02-i01-mck01.lab.nordigy.ru:9000");
     this.sceneRepeatCount = parseInt(this.getValue("SCENE_REPEAT_COUNT", "100"));
@@ -108,7 +111,7 @@ class ConfigWrapper {
     this.dbPassword = this.getValue("DB_PASSWORD", "123456");
     this.dbHost = this.getValue("DB_HOST", "127.0.0.1");
     this.dbPort = parseInt(this.getValue("DB_PORT", "3306"));
-    this.dbDialect = this.getValue("DB_DIALECT", "mysql");
+    this.dbDialect = this.getValue("DB_DIALECT", "mysql") as Dialect;
     this.dbPoolMax = parseInt(this.getValue("DB_POOL_MAX", "5"));
     this.dbPoolMin = parseInt(this.getValue("DB_POOL_MIN", "0"));
     this.dbPoolAcquire = parseInt(this.getValue("DB_POOL_ACQUIRE", "60000"));
@@ -119,7 +122,7 @@ class ConfigWrapper {
     this.includeScene = this.getArray("INCLUDE_SCENE", "");
     this.includeTags = this.getArray("INCLUDE_TAGS", "");
     this.excludeTags = this.getArray("EXCLUDE_TAGS", "");
-    this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "2288713734,2288697350");
+    this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "4591173638,4591181830");
     this.searchKeywords = this.getArray("SEARCH_KEYWORD", "a,b,c,d");
     this.searchPhones = this.getArray("SEARCH_PHONE", "1,2,3,4,5,6,7,8,9,0");
     /* scene config */

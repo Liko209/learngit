@@ -8,7 +8,8 @@ import {
 } from 'sequelize-typescript';
 
 
-@Table({
+import { IDefineOptions } from 'sequelize-typescript/lib/interfaces/IDefineOptions';
+@Table(<IDefineOptions>{
   modelName: 't_memory_summary',
   indexes: [{
     unique: false,
@@ -96,7 +97,7 @@ class MemorySummaryDto extends Model<MemorySummaryDto> {
   version: string;
 }
 
-@Table({
+@Table(<IDefineOptions>{
   modelName: "t_memory",
   indexes: [{
     unique: false,

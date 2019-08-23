@@ -22,6 +22,7 @@ import {
   RecentSearchModel,
 } from './types';
 import { SearchCellViewModel } from '../common/SearchCell.ViewModel';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
   implements RecentSearchViewProps {
@@ -111,6 +112,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
 
   @action
   clearRecent = () => {
+    analyticsCollector.clearSearchHistory();
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
