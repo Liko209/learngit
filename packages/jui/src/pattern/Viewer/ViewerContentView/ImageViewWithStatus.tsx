@@ -13,7 +13,7 @@ const StyledImage = styled.img<{ visibility: string }>`
   width: 100%;
 `;
 
-const StyledLoadingPage = styled.div<{ whiteBackground?: boolean }>`
+const StyledLoadingPage = styled.div<{ background?: 'paper' }>`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -22,17 +22,13 @@ const StyledLoadingPage = styled.div<{ whiteBackground?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ whiteBackground }) =>
-    whiteBackground ? palette('common', 'white') : grey('100')};
+  background-color: ${({ background }) =>
+    background === 'paper' ? palette('common', 'white') : grey('100')};
 `;
-
-// const StyleContainer = styled.div`
-//   height: 100%;
-// `;
 
 type JuiImageWithStatusProps = {
   src: string;
-  whiteBackground?: boolean;
+  background?: 'paper';
 };
 
 enum Status {
@@ -41,10 +37,7 @@ enum Status {
   error,
 }
 
-function JuiImageWithStatusView({
-  src,
-  whiteBackground,
-}: JuiImageWithStatusProps) {
+function JuiImageWithStatusView({ src, background }: JuiImageWithStatusProps) {
   const [status, setStatus] = useState<Status>(Status['loading']);
 
   const handleOnLoad = () => setStatus(Status['done']);
@@ -58,7 +51,7 @@ function JuiImageWithStatusView({
         visibility={Status[status] === 'error' ? 'hidden' : 'visible'}
       />
       {(Status[status] === 'error' || Status[status] === 'loading') && (
-        <StyledLoadingPage whiteBackground={whiteBackground}>
+        <StyledLoadingPage background={background}>
           {Status[status] === 'error' && (
             <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
               image_broken

@@ -43,7 +43,7 @@ const ViewerDocument = (props: Type) => {
       return {
         cmp: (
           <JuiImageWithStatusView
-            whiteBackground
+            background={'paper'}
             src={page.url}
             key={page.url}
           />
