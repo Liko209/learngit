@@ -32,7 +32,7 @@ const StyleVoicemailSummary = styled<VoicemailSummaryProps>(Wrapper)`
     }
     &:hover {
       background-color: ${({ isUnread, theme }) => (isUnread
-    ? tinycolor(palette('primary', '600')({ theme }))
+    ? tinycolor(palette('primary', 'main')({ theme }))
       .setAlpha(opacity('05')({ theme }))
       .toRgbString()
     : tinycolor(grey('900')({ theme }))
@@ -41,7 +41,7 @@ const StyleVoicemailSummary = styled<VoicemailSummaryProps>(Wrapper)`
     }
     &:active {
       background-color: ${({ isUnread, theme }) => (isUnread
-    ? tinycolor(palette('primary', '600')({ theme }))
+    ? tinycolor(palette('primary', 'main')({ theme }))
       .setAlpha(opacity('1')({ theme }))
       .toRgbString()
     : tinycolor(grey('900')({ theme }))

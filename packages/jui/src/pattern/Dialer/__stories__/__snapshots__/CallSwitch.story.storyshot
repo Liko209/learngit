@@ -2,8 +2,6 @@
 
 exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
 .c1.c1 {
-  min-width: 104px;
-  padding: 10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;

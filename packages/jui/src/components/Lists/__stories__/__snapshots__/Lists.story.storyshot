@@ -54,7 +54,7 @@ exports[`Storyshots Components/Lists List Button Items: Components/Lists List Bu
 
 .c0.c0.c0:focus,
 .c0.c0.c0.selected {
-  background-color: #4475fd;
+  background-color: #0684bd;
   border: none;
 }
 

@@ -2,8 +2,6 @@
 
 exports[`Storyshots Pattern ConversationInitialPost: Pattern ConversationInitialPost 1`] = `
 .c11.c11 {
-  min-width: 104px;
-  padding: 10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
