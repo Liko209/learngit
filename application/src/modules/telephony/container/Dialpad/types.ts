@@ -15,7 +15,7 @@ type ViewProps = {
   id: string;
   canUseTelephony: boolean;
   startMinimizeAnimation: boolean;
-  direction: CALL_DIRECTION | undefined;
+  direction?: CALL_DIRECTION;
 };
 
 export { Props, ViewProps };

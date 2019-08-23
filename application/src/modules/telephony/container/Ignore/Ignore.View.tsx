@@ -15,7 +15,7 @@ type Props = IgnoreViewProps & WithTranslation;
 
 @observer
 class IgnoreViewComponent extends Component<Props> {
-  private _handleIgnore = async () => {
+  private _handleIgnore = () => {
     const { ignore } = this.props;
     ignore();
   };

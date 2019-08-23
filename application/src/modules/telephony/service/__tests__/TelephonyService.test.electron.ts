@@ -48,7 +48,6 @@ import { MediaService } from '@/modules/media/service';
 
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
-import { isCurrentUserDND } from '@/modules/notification/utils';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -271,7 +270,7 @@ describe('TelephonyService', () => {
       const callEntityId = v4();
       await (telephonyService as TelephonyService).makeCall(callEntityId);
       telephonyService._callEntityId = callEntityId;
-      
+
       call.holdState = HOLD_STATE.DISABLED;
 
       // expect(telephonyService).toBe(undefined);
@@ -434,7 +433,7 @@ describe('TelephonyService', () => {
 
     it('Start recording if the call is connected [JPT-1600]', async () => {
       mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
-      
+
       const callEntityId = v4();
       await (telephonyService as TelephonyService).makeCall(callEntityId);
       telephonyService._callEntityId = callEntityId;
@@ -576,7 +575,7 @@ describe('TelephonyService', () => {
       mockedServerTelephonyService.startRecord = jest
         .fn()
         .mockImplementation(() => Promise.reject(-8));
-      
+
       const callEntityId = v4();
       await (telephonyService as TelephonyService).makeCall(callEntityId);
       telephonyService._callEntityId = callEntityId;
@@ -765,7 +764,7 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    
+
     const incomingId = v4();
     telephonyService._onReceiveIncomingCall({
       fromName: 'test',
@@ -885,7 +884,7 @@ describe('TelephonyService', () => {
   });
 
   it("Should Can't make outbound call when call permission is disabled [JPT-2381]", async () => {
-    
+
     mockedRCInfoService.isVoipCallingAvailable = jest
       .fn()
       .mockReturnValue(false);
@@ -1213,5 +1212,62 @@ describe('TelephonyService', () => {
       await telephonyService.switchCall(caller as any);
       expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
     })
+  })
+
+  describe.only('multiple calls', () => {
+    it('Can NOT make call when user on a call. [JPT-2772]', async () => {
+      mockedServerTelephonyService.getAllCallCount = jest.fn().mockReturnValue(2);
+      telephonyService.makeCall = jest.fn();
+      const ret = await telephonyService.directCall(v4());
+      expect(ret).toBeTruthy();
+      expect(telephonyService.makeCall).toHaveBeenCalledTimes(0);
+    });
+
+    it('The third call would be ignored when there exist incoming call. [JPT-2775]', async done => {
+      (telephonyService as any)._telephonyStore.incomingCall = jest.fn();
+
+      await (telephonyService as any)._onReceiveIncomingCall();
+      expect(
+        (telephonyService as any)._telephonyStore.incomingCall,
+      ).toHaveBeenCalled();
+      done();
+
+      // @ts-ignore
+      telephonyService._telephonyStore._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+      await (telephonyService as any)._onReceiveIncomingCall();
+      expect(
+        (telephonyService as any)._telephonyStore.incomingCall,
+      ).toHaveBeenCalled();
+      done();
+
+
+      // @ts-ignore
+      telephonyService._telephonyStore._sortableListHandler.sortableListStore = { getIds: [1, 2, 3] };
+      await (telephonyService as any)._onReceiveIncomingCall();
+      expect(
+        (telephonyService as any)._telephonyStore.incomingCall,
+      ).not.toHaveBeenCalled();
+      done();
+    });
+
+    it('Keep current state when click [End&Answer] button failed. [JPT-2779]', () => {
+      call.callState = CALL_STATE.CONNECTED;
+
+      telephonyService.endAndAnswer();
+      mockedServerTelephonyService.hangUp = jest.fn();
+      mockedServerTelephonyService.answer = jest.fn();
+
+      expect(mockedServerTelephonyService.hangUp).toHaveBeenCalledTimes(0);
+      expect(mockedServerTelephonyService.answer).toHaveBeenCalledTimes(0);
+      expect(call.callState).toBe(CALL_STATE.CONNECTED);
+
+      (telephonyService as any)._callEntityId = 1;
+      // @ts-ignore
+      telephonyService._telephonyStore._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+      telephonyService.endAndAnswer();
+      expect(mockedServerTelephonyService.hangUp).toHaveBeenCalledTimes(1);
+      expect(mockedServerTelephonyService.answer).toHaveBeenCalledTimes(1);
+      expect(call.callState).toBe(CALL_STATE.CONNECTED);
+    });
   })
 });

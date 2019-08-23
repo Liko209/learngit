@@ -91,7 +91,7 @@ class TelephonyService {
   @ISoundNotification
   private _soundNotification: ISoundNotification;
 
-  private _callEntityId: number | undefined = undefined;
+  private _callEntityId?: number;
   private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
@@ -125,12 +125,10 @@ class TelephonyService {
   };
 
   private _onReceiveIncomingCall = async () => {
-    const shouldIgnore = !(await this._isJupiterDefaultApp()) || isCurrentUserDND();
+    const shouldIgnore = !(await this._isJupiterDefaultApp()) || isCurrentUserDND() || this._telephonyStore.isThirdCall;
     if (shouldIgnore) {
       return;
     }
-    // this._telephonyStore.id = id;
-    // this._callEntityId = id;
 
     this._telephonyStore.incomingCall();
     // need factor in new module design

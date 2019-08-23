@@ -20,11 +20,10 @@ import { Forward } from '../Forward';
 import { INCOMING_STATE } from '../../store';
 import { getDisplayName } from '../../helpers';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 const More = (props: CallActionsProps) => (
-  <>
-    <CallActions showLabel={false} {...props} shouldPersistBg />
-  </>
+  <CallActions showLabel={false} {...props} shouldPersistBg />
 );
 
 More.displayName = 'more';
@@ -47,6 +46,12 @@ class IncomingViewComponent extends Component<Props> {
       <Avatar uid={uid} displayName={name} cover imgProps={this._imgProps} />
     );
   });
+
+  componentDidMount() {
+    const { isMultipleCall } = this.props;
+    const type = isMultipleCall ? 'singleCall' : 'multiCall';
+    analyticsCollector.seeIncomingCallPage(type);
+  }
 
   render() {
     const {

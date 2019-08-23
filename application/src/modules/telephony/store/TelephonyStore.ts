@@ -152,7 +152,7 @@ class TelephonyStore {
 
   // TODO: current call id
   @observable
-  currentCallId: number | undefined = undefined;
+  currentCallId?: number;
 
   // only exist one e911 dialog
   @observable
@@ -689,7 +689,7 @@ class TelephonyStore {
   };
 
   @action
-  switchCurrentCall = (callId: number | undefined = undefined) => {
+  switchCurrentCall = (callId?: number) => {
     this.currentCallId = callId;
   };
 
@@ -717,6 +717,11 @@ class TelephonyStore {
   @computed
   get isMultipleCall() {
     return this.ids.length > 1;
+  }
+
+  @computed
+  get isThirdCall() {
+    return this.ids.length > 2;
   }
 }
 

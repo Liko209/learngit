@@ -15,7 +15,7 @@ type Props = AnswerViewProps & WithTranslation;
 
 @observer
 class AnswerViewComponent extends Component<Props> {
-  private _handleAnswer = async () => {
+  private _handleAnswer = () => {
     const { ignore } = this.props;
     ignore();
   };

@@ -15,7 +15,7 @@ type Props = VoiceMailViewProps & WithTranslation;
 
 @observer
 class VoiceMailViewComponent extends Component<Props> {
-  private _handleVoiceMail = async () => {
+  private _handleVoiceMail = () => {
     const { sendToVoiceMail } = this.props;
     sendToVoiceMail();
   };

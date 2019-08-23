@@ -10,14 +10,17 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { EndAndAnswerViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { StyledActionText } from 'jui/pattern/Dialer';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type Props = EndAndAnswerViewProps & WithTranslation;
 
 @observer
 class EndAndAnswerViewComponent extends Component<Props> {
-  private _handleEndAndAnswer = async () => {
+  private _handleEndAndAnswer = () => {
     const { endAndAnswer } = this.props;
     endAndAnswer();
+
+    analyticsCollector.endAndAnswerCall();
   };
 
   render() {
