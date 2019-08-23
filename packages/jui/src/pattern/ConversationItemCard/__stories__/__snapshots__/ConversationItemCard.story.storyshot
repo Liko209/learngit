@@ -735,18 +735,35 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c26.c26 .c9,
 .c26.c26 .c9 svg {
-  font-size: 20px;
+  font-size: 48px;
 }
 
 .c26.c26:hover .c9 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c26.c26:active .c9 {
-  color: #fff;
+  color: #9e9e9e;
 }
 
 .c26.c26.c26.c26.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c9,
+.c27.c27 .c9 svg {
+  font-size: 20px;
+}
+
+.c27.c27:hover .c9 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c27.c27:active .c9 {
+  color: #fff;
+}
+
+.c27.c27.c27.c27.disabled .c9 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -800,18 +817,18 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   pointer-events: none;
 }
 
-.c17.lozengeButtonLoading .c27 {
+.c17.lozengeButtonLoading .c28 {
   margin-left: 4px;
 }
 
-.c17 .c28 {
+.c17 .c29 {
   margin-left: 8px;
 }
 
+.c17.lozengeButtonLoading .c29,
+.c17.lozengeButtonWithArrow .c29,
 .c17.lozengeButtonLoading .c28,
 .c17.lozengeButtonWithArrow .c28,
-.c17.lozengeButtonLoading .c27,
-.c17.lozengeButtonWithArrow .c27,
 .c17.lozengeButtonLoading span,
 .c17.lozengeButtonWithArrow span {
   vertical-align: middle;
@@ -1471,18 +1488,35 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c31.c31 .c21,
 .c31.c31 .c21 svg {
-  font-size: 20px;
+  font-size: 48px;
 }
 
 .c31.c31:hover .c21 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c31.c31:active .c21 {
-  color: #fff;
+  color: #9e9e9e;
 }
 
 .c31.c31.c31.c31.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c32.c32 .c21,
+.c32.c32 .c21 svg {
+  font-size: 20px;
+}
+
+.c32.c32:hover .c21 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c32.c32:active .c21 {
+  color: #fff;
+}
+
+.c32.c32.c32.c32.disabled .c21 {
   color: rgba(0,0,0,0.12);
 }
 

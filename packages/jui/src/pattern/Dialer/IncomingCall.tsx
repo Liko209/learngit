@@ -52,7 +52,7 @@ const StyledAction = styled('div')`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: ${spacing(18)};
+  width: ${spacing(18.5)};
   margin: ${spacing(0, 2, 6, 0)};
 
   &&:nth-child(even) {

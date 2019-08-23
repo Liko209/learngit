@@ -7,12 +7,14 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiFabButton } from '../../../components/Buttons';
+import { JuiFabButton, JuiIconButton } from '../../../components/Buttons';
 import { JuiDraggableDialog } from '../../../components/Dialog';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
 import { boolean } from '@storybook/addon-knobs';
 
 import { JuiIncomingCall, JuiDialer, StyledActionText } from '..';
+
+import endAndAnswer from '../../../assets/jupiter-icon/icon-end--answer.svg';
 
 const Ignore = () => (
   <>
@@ -56,6 +58,15 @@ const Answer = () => (
 
 Answer.displayName = 'Answer';
 
+const EndAndAnswer = () => (
+  <>
+    <JuiIconButton variant="plain" size="xxxlarge" symbol={endAndAnswer} />
+    <StyledActionText>End & Answer</StyledActionText>
+  </>
+);
+
+EndAndAnswer.displayName = 'EndAndAnswer';
+
 const More = () => (
   <>
     <JuiFabButton
@@ -72,6 +83,7 @@ const More = () => (
 More.displayName = 'More';
 
 const Actions = [Ignore, More, VoiceMail, Answer];
+const MultipleActions = [Ignore, More, EndAndAnswer, VoiceMail];
 
 const knobs = {
   open: () => boolean('open', false),
@@ -96,6 +108,19 @@ storiesOf('Pattern', module).add('Incoming Call', () => {
         name="Terry Webster"
         phone="(650) 555-1234"
         Actions={Actions}
+        Avatar={Avatar}
+      />
+    </JuiDialer>
+  );
+});
+
+storiesOf('Pattern', module).add('Multiple Incoming Call', () => {
+  return (
+    <JuiDialer>
+      <JuiIncomingCall
+        name="Terry Webster"
+        phone="(650) 555-1234"
+        Actions={MultipleActions}
         Avatar={Avatar}
       />
     </JuiDialer>

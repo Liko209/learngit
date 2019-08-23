@@ -22,7 +22,13 @@ import { TooltipProps } from '@material-ui/core/Tooltip';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type IconButtonVariant = 'round' | 'plain';
-type IconButtonSize = 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
+type IconButtonSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'xlarge'
+  | 'xxlarge'
+  | 'xxxlarge';
 
 type JuiIconButtonProps = {
   shouldPersistBg?: boolean;
@@ -49,6 +55,7 @@ type JuiIconButtonProps = {
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
 const iconSizes = {
+  xxxlarge: 12,
   xxlarge: 8,
   xlarge: 7,
   large: 6,

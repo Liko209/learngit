@@ -26,8 +26,10 @@ const BLUR = 'blur';
 const SYNC_DIALER_ENTERED = 300;
 const RESIZE = 'resize';
 
-const defaultX = (document.body.clientWidth - 344) / 2;
-const defaultY = (document.body.clientHeight - 552) / 2;
+const getDefaultPos = () => ({
+  x: (document.body.clientWidth - 344) / 2,
+  y: (document.body.clientHeight - 552) / 2,
+});
 
 /*eslint-disable*/
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
@@ -127,8 +129,8 @@ function withDialogOrNewWindow<T>(
 
     state = {
       controlledPosition: {
-        x: defaultX,
-        y: defaultY,
+        x: getDefaultPos().x,
+        y: getDefaultPos().y,
       },
     };
 
@@ -153,12 +155,11 @@ function withDialogOrNewWindow<T>(
         changeBackToDefaultPos,
         isBackToDefaultPos,
       } = this._telephonyStore;
-      this.setState(
-        { controlledPosition: { x: defaultX, y: defaultY } },
-        () => {
-          isBackToDefaultPos && changeBackToDefaultPos(false);
-        },
-      );
+      const { x, y } = getDefaultPos();
+
+      this.setState({ controlledPosition: { x, y } }, () => {
+        isBackToDefaultPos && changeBackToDefaultPos(false);
+      });
     };
 
     private _createWindow = () => {
@@ -238,19 +239,27 @@ function withDialogOrNewWindow<T>(
     };
 
     componentWillUpdate() {
-      const { isBackToDefaultPos, callWindowState } = this._telephonyStore;
+      const { isBackToDefaultPos, callWindowState, ids } = this._telephonyStore;
       const open =
         callWindowState === CALL_WINDOW_STATUS.MINIMIZED ? false : true;
+
+      const { x: defaultX, y: defaultY } = getDefaultPos();
 
       const isPosChange =
         this.state.controlledPosition.x !== defaultX ||
         this.state.controlledPosition.y !== defaultY;
 
-      if ((!open || isBackToDefaultPos) && isPosChange) {
+      // Init state and Avoid animation when closed
+      if (!open && ids.length === 0 && isPosChange) {
         clearTimeout(this._timer);
         this._timer = setTimeout(() => {
           this._backToDefaultPos();
-        }, 100);
+        }, 200);
+        return;
+      }
+
+      if (isBackToDefaultPos && isPosChange) {
+        this._backToDefaultPos();
       }
     }
 

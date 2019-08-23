@@ -8,14 +8,14 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EndAndAnswerViewProps } from './types';
-import { JuiFabButton } from 'jui/components/Buttons';
+import { JuiIconButton } from 'jui/components/Buttons';
 import { StyledActionText } from 'jui/pattern/Dialer';
 
 type Props = EndAndAnswerViewProps & WithTranslation;
 
 @observer
 class EndAndAnswerViewComponent extends Component<Props> {
-  private _handleAnswer = async () => {
+  private _handleEndAndAnswer = async () => {
     const { endAndAnswer } = this.props;
     endAndAnswer();
   };
@@ -24,16 +24,15 @@ class EndAndAnswerViewComponent extends Component<Props> {
     const { t } = this.props;
     return (
       <>
-        <JuiFabButton
-          color="semantic.positive"
-          size="mediumLarge"
-          showShadow={false}
-          tooltipPlacement="top"
-          iconName="answer"
-          aria-label={t('telephony.answerTheCall')}
-          onClick={this._handleAnswer}
-          data-test-automation-id="telephony-answer-btn"
-        />
+        <JuiIconButton
+          size="xxxlarge"
+          variant="plain"
+          aria-label={t('telephony.endAndAnswerTheCall')}
+          onClick={this._handleEndAndAnswer}
+          data-test-automation-id="telephony-end-answer-btn"
+        >
+          end_and_answer
+        </JuiIconButton>
         <StyledActionText>
           {t('telephony.action.endAndAnswer')}
         </StyledActionText>

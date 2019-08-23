@@ -210,18 +210,35 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 .c28.c28 .c14,
 .c28.c28 .c14 svg {
-  font-size: 20px;
+  font-size: 48px;
 }
 
 .c28.c28:hover .c14 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c28.c28:active .c14 {
-  color: #fff;
+  color: #9e9e9e;
 }
 
 .c28.c28.c28.c28.disabled .c14 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c29.c29 .c14,
+.c29.c29 .c14 svg {
+  font-size: 20px;
+}
+
+.c29.c29:hover .c14 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c29.c29:active .c14 {
+  color: #fff;
+}
+
+.c29.c29.c29.c29.disabled .c14 {
   color: rgba(0,0,0,0.12);
 }
 

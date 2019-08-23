@@ -199,18 +199,35 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 
 .c14.c14 .c2,
 .c14.c14 .c2 svg {
-  font-size: 20px;
+  font-size: 48px;
 }
 
 .c14.c14:hover .c2 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c14.c14:active .c2 {
-  color: #fff;
+  color: #9e9e9e;
 }
 
 .c14.c14.c14.c14.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c15.c15 .c2,
+.c15.c15 .c2 svg {
+  font-size: 20px;
+}
+
+.c15.c15:hover .c2 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c15.c15:active .c2 {
+  color: #fff;
+}
+
+.c15.c15.c15.c15.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -508,31 +525,48 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 
 .c26.c26 .c12,
 .c26.c26 .c12 svg {
-  font-size: 20px;
+  font-size: 48px;
 }
 
 .c26.c26:hover .c12 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c26.c26:active .c12 {
-  color: #fff;
+  color: #9e9e9e;
 }
 
 .c26.c26.c26.c26.disabled .c12 {
   color: rgba(0,0,0,0.12);
 }
 
-.c27.lozengeButtonLoading .c17 {
+.c27.c27 .c12,
+.c27.c27 .c12 svg {
+  font-size: 20px;
+}
+
+.c27.c27:hover .c12 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c27.c27:active .c12 {
+  color: #fff;
+}
+
+.c27.c27.c27.c27.disabled .c12 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.lozengeButtonLoading .c17 {
   margin-left: 4px;
 }
 
-.c27.lozengeButtonLoading .c28,
-.c27.lozengeButtonWithArrow .c28,
-.c27.lozengeButtonLoading .c17,
-.c27.lozengeButtonWithArrow .c17,
-.c27.lozengeButtonLoading span,
-.c27.lozengeButtonWithArrow span {
+.c28.lozengeButtonLoading .c29,
+.c28.lozengeButtonWithArrow .c29,
+.c28.lozengeButtonLoading .c17,
+.c28.lozengeButtonWithArrow .c17,
+.c28.lozengeButtonLoading span,
+.c28.lozengeButtonWithArrow span {
   vertical-align: middle;
 }
 
