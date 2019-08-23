@@ -65,8 +65,8 @@ class AudioConferenceViewModel extends AbstractViewModel<AudioConferenceProps>
   // };
   showIcon = promisedComputed(false, async () => {
     if (!this._group) return false;
-    const canUseTelephony = await this._featuresFlagsService.canUseTelephony();
-    if (canUseTelephony) {
+    const canUseConference = await this._featuresFlagsService.canUseConference();
+    if (canUseConference) {
       const group = this._group;
       return (
         group.type === CONVERSATION_TYPES.NORMAL_GROUP ||
