@@ -11,6 +11,7 @@ interface IMeetingsService {
   getMeetingServiceType(): Promise<MEETING_SERVICE_TYPE>;
   getDialInNumber(isRCV: boolean): string;
   cancelMeeting(meetingId: number): Promise<boolean>;
+  getJoinUrl(meetingId: number): Promise<string>;
 }
 
 export { IMeetingsService };

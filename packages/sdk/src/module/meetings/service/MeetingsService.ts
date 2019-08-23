@@ -33,6 +33,10 @@ class MeetingsService extends EntityBaseService<{ id: number }>
     return this.meetingsController.cancelMeeting(meetingId);
   }
 
+  getJoinUrl(meetingId: number): Promise<string> {
+    return this.meetingsController.getJoinUrl(meetingId);
+  }
+
   protected get meetingsController() {
     if (!this._meetingsController) {
       this._meetingsController = new MeetingsController();

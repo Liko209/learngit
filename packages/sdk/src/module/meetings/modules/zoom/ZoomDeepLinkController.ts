@@ -50,6 +50,14 @@ class ZoomDeepLinkController implements IMeetingController {
     return itemService.cancelZoomMeeting(meetingId);
   }
 
+  async getJoinUrl(meetingId: number): Promise<string> {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    const model = (await itemService.getById(meetingId)) as ZoomMeetingItem;
+    return (model && model.join_url) || '';
+  }
+
   private async _requestToCreateMeeting(groupIds: number[]) {
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,

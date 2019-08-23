@@ -54,14 +54,24 @@ class MeetingsAdaptorController {
   }
 
   cancelMeeting(meetingId: number): Promise<void> {
-    const type = GlipTypeUtil.isExpectedType(
+    const type = this._getMeetingTypeById(meetingId);
+    const controller = this._getSuitableMeetingController(type);
+    return controller.cancelMeeting(meetingId);
+  }
+
+  getJoinUrl(meetingId: number): Promise<string> {
+    const type = this._getMeetingTypeById(meetingId);
+    const controller = this._getSuitableMeetingController(type);
+    return controller.getJoinUrl(meetingId);
+  }
+
+  private _getMeetingTypeById(meetingId: number) {
+    return GlipTypeUtil.isExpectedType(
       meetingId,
       TypeDictionary.TYPE_ID_RC_VIDEO,
     )
       ? MEETING_SERVICE_TYPE.RCV
       : MEETING_SERVICE_TYPE.ZOOM;
-    const controller = this._getSuitableMeetingController(type);
-    return controller.cancelMeeting(meetingId);
   }
 
   private async _hasRCVService() {
