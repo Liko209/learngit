@@ -11,6 +11,8 @@ import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 import {
   isExpectedItemOfThisGroup,
   getNextItemToDisplay,
+  getTypeId,
+  getFilterFunc,
 } from '../dataSourceUtils';
 
 describe('dataSourceUtils', () => {
@@ -150,5 +152,27 @@ describe('dataSourceUtils', () => {
         ).toEqual(expected);
       },
     );
+  });
+  describe('getTypeId()', () => {
+    it('should return', () => {
+      expect(getTypeId(0)).toEqual(10);
+    });
+  });
+  describe('getFilterFunc()', () => {
+    it('should ItemUtils.imageFilter to been called', () => {
+      const item: Item = {
+        deactivated: false,
+        id: 0,
+        group_ids: 0,
+        post_ids: 0,
+      } as Item;
+      const funC = getFilterFunc(0, 0);
+      expect(funC && funC(null)).toEqual(false);
+      expect(funC && funC(item)).toEqual(false);
+    });
+    it('should return', () => {
+      const funC = getFilterFunc(0, 1);
+      expect(funC).toEqual(undefined);
+    });
   });
 });
