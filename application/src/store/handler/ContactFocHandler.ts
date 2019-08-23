@@ -11,7 +11,11 @@ import { Person } from 'sdk/module/person/entity';
 import { SortUtils } from 'sdk/framework/utils';
 import { IdModelFocHandler } from './IdModelFocHandler';
 import { IdModelFocBuilder } from './IdModelFocBuilder';
+import { IdModel } from 'sdk/framework/model';
 
+type DisplayNameModel = IdModel & {
+  displayName: string;
+};
 class ContactFocHandler extends IdModelFocHandler {
   private _personService: PersonService;
 
@@ -22,13 +26,24 @@ class ContactFocHandler extends IdModelFocHandler {
     );
   }
 
+  transformFunc = (
+    model: Person,
+  ): ISortableModelWithData<DisplayNameModel> => ({
+    id: model.id,
+    sortValue: model.id,
+    data: {
+      id: model.id,
+      displayName: this._personService.getFullName(model).toLowerCase(),
+    },
+  });
+
   sortFunc = (
-    lhs: ISortableModelWithData<Person>,
-    rhs: ISortableModelWithData<Person>,
+    lhs: ISortableModelWithData<DisplayNameModel>,
+    rhs: ISortableModelWithData<DisplayNameModel>,
   ): number => {
-    return SortUtils.compareString(
-      this._personService.getFullName(lhs.data!),
-      this._personService.getFullName(rhs.data!),
+    return SortUtils.compareLowerCaseString(
+      lhs.data!.displayName,
+      rhs.data!.displayName,
     );
   };
 
@@ -39,6 +54,7 @@ class ContactFocHandler extends IdModelFocHandler {
   protected createFoc() {
     return IdModelFocBuilder.buildFoc(
       this._personService.getEntitySource(),
+      this.transformFunc,
       this.filterFunc,
       this.sortFunc,
     );

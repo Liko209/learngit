@@ -67,8 +67,8 @@ describe('ContactFocHandler', () => {
 
     SortUtils.compareString = jest.fn();
     handler.sortFunc(
-      { id: 1, sortValue: 0, data: { id: 1 } as Person },
-      { id: 2, sortValue: 0, data: { id: 2 } as Person },
+      { id: 1, sortValue: 0, data: { id: 1, displayName: 'cbc' } },
+      { id: 2, sortValue: 0, data: { id: 2, displayName: 'bca' } },
     );
     expect(SortUtils.compareString).toHaveBeenCalledWith('cbc', 'bca');
   });

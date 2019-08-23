@@ -10,6 +10,7 @@ import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCache
 import { IdModel } from 'sdk/framework/model';
 import { IdModelFocBuilder } from '../IdModelFocBuilder';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
+import { ISortableModelWithData } from '@/store/base';
 
 describe('IdModelFocBuilder', () => {
   let entitySourceController: EntitySourceController<IdModel, number | string>;
@@ -52,6 +53,9 @@ describe('IdModelFocBuilder', () => {
       const foc = IdModelFocBuilder.buildFoc(
         entitySourceController,
         (model: IdModel) => {
+          return { id: model.id, sortValue: model.id, data: model };
+        },
+        (model: IdModel) => {
           return model.id > 0;
         },
         (a: IdModel, b: IdModel) => {
@@ -71,6 +75,9 @@ describe('IdModelFocBuilder', () => {
 
       const foc2 = IdModelFocBuilder.buildFoc(
         entitySourceController,
+        (model: IdModel) => {
+          return { id: model.id, sortValue: model.id, data: model };
+        },
         (model: IdModel) => {
           return model.id > 0;
         },

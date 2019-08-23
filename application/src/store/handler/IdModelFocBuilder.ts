@@ -52,16 +52,9 @@ class IdModelDataProvider implements IFetchSortableDataProvider<IdModel> {
 }
 
 class IdModelFocBuilder {
-  private static _transformFunc = (
-    model: IdModel,
-  ): ISortableModelWithData<IdModel> => ({
-    id: model.id,
-    sortValue: model.id,
-    data: model,
-  });
-
   static buildFoc(
     entitySource: IEntitySourceController<IdModel>,
+    transformFunc: (model: IdModel) => ISortableModelWithData<IdModel>,
     filterFunc: (model: IdModel) => boolean,
     sortFunc: (
       lhs: ISortableModelWithData<IdModel>,
@@ -70,7 +63,7 @@ class IdModelFocBuilder {
   ) {
     const options = {
       isMatchFunc: filterFunc,
-      transformFunc: IdModelFocBuilder._transformFunc,
+      transformFunc,
       sortFunc,
       entityName: ENTITY_NAME[entitySource.getEntityName()],
       eventName: entitySource.getEntityNotificationKey(),
@@ -80,7 +73,7 @@ class IdModelFocBuilder {
     return new FetchSortableDataListHandler(
       new IdModelDataProvider(
         entitySource,
-        IdModelFocBuilder._transformFunc,
+        transformFunc,
         filterFunc,
         sortFunc,
       ),
