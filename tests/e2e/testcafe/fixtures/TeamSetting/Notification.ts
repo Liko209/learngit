@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-08-23 09:57:18 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-08-23 16:47:59
+ * @Last Modified time: 2019-08-23 17:20:15
  */
 
 import * as _ from 'lodash';
@@ -59,12 +59,12 @@ test.meta(<ITestMeta>{
     await notificationPreferencesDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`When I click "Click the checkbox of the 'Mute all notifications everywhere'" checkbox`, async () => {
+  await h(t).withLog(`When I check "Click the checkbox of the 'Mute all notifications everywhere'" checkbox`, async () => {
     await notificationPreferencesDialog.checkMuteAll();
   });
 
   await h(t).withLog(`Then The checkbox of the 'Mute all notifications everywhere' is checked.`, async () => {
-    await t.expect(notificationPreferencesDialog.muteAllCheckbox.checked).ok();
+    await t.expect(notificationPreferencesDialog.muteAllCheckbox.find('input[type="checkbox"]').checked).ok();
   });
 
   await h(t).withLog(`And DesktopNotification options are disabled .`, async () => {

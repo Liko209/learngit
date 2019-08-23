@@ -147,30 +147,30 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
   }
 
   async checkMuteAll() {
-    await this.toggleCheckBox(this.muteAllCheckbox, true);
+    await this.toggleCheckBox(this.checkboxOf(this.muteAllCheckbox), true);
   }
 
   async uncheckMuteAll() {
-    await this.toggleCheckBox(this.muteAllCheckbox, false);
+    await this.toggleCheckBox(this.checkboxOf(this.muteAllCheckbox), false);
   }
 
   async checkDesktopNotification() {
-    await this.toggleCheckBox(this.desktopNotificationCheckbox, true);
+    await this.toggleCheckBox(this.checkboxOf(this.desktopNotificationCheckbox), true);
   }
 
   async uncheckDesktopNotification() {
-    await this.toggleCheckBox(this.desktopNotificationCheckbox, false);
+    await this.toggleCheckBox(this.checkboxOf(this.desktopNotificationCheckbox), false);
   }
 
   /** expects */
   async expectDesktopNotificationEnabled() {
-    await this.t.expect(this.desktopNotification.getAttribute('data-disabled')).eql('true');
+    await this.t.expect(this.desktopNotification.getAttribute('data-disabled')).eql('false');
     await this.t.expect(this.desktopNotificationLabel.hasClass('disabled')).notOk();
     await this.t.expect(this.desktopNotificationCheckbox.hasClass('disabled')).notOk();
   }
 
   async expectDesktopNotificationDisabled() {
-    await this.t.expect(this.desktopNotification.getAttribute('data-disabled')).eql('false');
+    await this.t.expect(this.desktopNotification.getAttribute('data-disabled')).eql('true');
     await this.t.expect(this.desktopNotificationLabel.hasClass('disabled')).ok();
     await this.t.expect(this.desktopNotificationCheckbox.hasClass('disabled')).ok();
   }
@@ -184,13 +184,13 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
   }
 
   async expectSoundNotificationEnabled() {
-    await this.t.expect(this.soundNotification.getAttribute('data-disabled')).eql('true');
+    await this.t.expect(this.soundNotification.getAttribute('data-disabled')).eql('false');
     await this.t.expect(this.soundNotificationLabel.hasClass('disabled')).notOk();
     await this.t.expect(this.soundNotificationSelectBox.hasClass('disabled')).notOk();
   }
 
   async expectSoundNotificationDisabled() {
-    await this.t.expect(this.soundNotification.getAttribute('data-disabled')).eql('false');
+    await this.t.expect(this.soundNotification.getAttribute('data-disabled')).eql('true');
     await this.t.expect(this.soundNotificationLabel.hasClass('disabled')).ok();
     await this.t.expect(this.soundNotificationSelectBox.hasClass('disabled')).ok();
   }
@@ -204,13 +204,13 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
   }
 
   async expectMobileNotificationEnabled() {
-    await this.t.expect(this.mobileNotification.getAttribute('data-disabled')).eql('true');
+    await this.t.expect(this.mobileNotification.getAttribute('data-disabled')).eql('false');
     await this.t.expect(this.mobileNotificationLabel.hasClass('disabled')).notOk();
     await this.t.expect(this.mobileNotificationSelectBox.hasClass('disabled')).notOk();
   }
 
   async expectMobileNotificationDisabled() {
-    await this.t.expect(this.mobileNotification.getAttribute('data-disabled')).eql('false');
+    await this.t.expect(this.mobileNotification.getAttribute('data-disabled')).eql('true');
     await this.t.expect(this.mobileNotificationLabel.hasClass('disabled')).ok();
     await this.t.expect(this.mobileNotificationSelectBox.hasClass('disabled')).ok();
   }
@@ -224,13 +224,13 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
   }
 
   async expectEmailNotificationEnabled() {
-    await this.t.expect(this.emailNotification.getAttribute('data-disabled')).eql('true');
+    await this.t.expect(this.emailNotification.getAttribute('data-disabled')).eql('false');
     await this.t.expect(this.emailNotificationLabel.hasClass('disabled')).notOk();
     await this.t.expect(this.emailNotificationSelectBox.hasClass('disabled')).notOk();
   }
 
   async expectEmailNotificationDisabled() {
-    await this.t.expect(this.emailNotification.getAttribute('data-disabled')).eql('false');
+    await this.t.expect(this.emailNotification.getAttribute('data-disabled')).eql('true');
     await this.t.expect(this.emailNotificationLabel.hasClass('disabled')).ok();
     await this.t.expect(this.emailNotificationSelectBox.hasClass('disabled')).ok();
   }
