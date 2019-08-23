@@ -728,7 +728,9 @@ export class PostItem extends BaseWebComponent {
   get postId() {
     return this.self.getAttribute('data-id');
   }
-
+  get linkPreviewCard(){
+    return this.self.find('[data-test-automation-id="linkItemsWrapper"]');
+  }
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
   }

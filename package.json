@@ -1,6 +1,6 @@
 {
   "name": "fiji",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "private": true,
   "engines": {
     "node": "10.9.0",
@@ -55,7 +55,8 @@
     "make-pseudo": "node ./scripts/make-pseudo.js",
     "networkDataToFileTree": "node ./scripts/networkDataToFileTree.js",
     "reactTypeWorkAround": "cp ./scripts/react-type/index.d.ts ./node_modules/@types/react",
-    "releaseToSentry": "node ./scripts/releaseToSentry.js"
+    "releaseToSentry": "node ./scripts/releaseToSentry.js",
+    "config:e2e": "cd tests/e2e/testcafe && npm run config"
   },
   "devDependencies": {
     "@jest-runner/electron": "2.0.1",

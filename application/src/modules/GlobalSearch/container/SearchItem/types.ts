@@ -27,6 +27,7 @@ type BaseViewProps = {
   addRecentRecord: () => void;
   onClose: () => void;
   onClear: () => void;
+  dataTrackingDomain: string;
 };
 
 export {

@@ -7,6 +7,7 @@
 import { buildEntityCacheController } from '..';
 import { IdModel } from '../../model';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
+import { SortUtils } from 'sdk/framework/utils';
 
 type EntityCacheTestModel = IdModel & {
   name: string;
@@ -28,7 +29,7 @@ describe('Entity Cache Manager', () => {
     age: 2,
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     entityCacheController = buildEntityCacheController();
     await entityCacheController.put(entityA);
     await entityCacheController.put(entityB);
@@ -107,7 +108,7 @@ describe('Entity Cache Manager', () => {
 
     await entityCacheController.update(entityC);
     let entity = await entityCacheController.get(entityA.id);
-    expect(entity).toBe(entityC);
+    expect(entity).toEqual(entityC);
 
     const entityD = {
       id: 1,
@@ -115,8 +116,8 @@ describe('Entity Cache Manager', () => {
     };
     await entityCacheController.update(entityD);
     entity = await entityCacheController.get(entityC.id);
-    expect(entity.name).toBe(entityD.name);
-    expect(entity.age).toBe(entityC.age);
+    expect(entity.name).toEqual(entityD.name);
+    expect(entity.age).toEqual(entityC.age);
   });
 
   it('should not change key when update', async () => {
@@ -151,5 +152,53 @@ describe('Entity Cache Manager', () => {
     entityCacheController.initialize([]);
     expect(entityCacheController.isInitialized()).toEqual(true);
     expect(entityCacheController.isStartInitial()).toEqual(true);
+  });
+
+  describe('getEntities', () => {
+    it('should all if no filter', async () => {
+      const result = await entityCacheController.getEntities();
+      expect(result.length).toBe(2);
+    });
+
+    it('should all with correct order', async () => {
+      const result = await entityCacheController.getEntities(
+        undefined,
+        (a, b) => {
+          return b.id - a.id;
+        },
+      );
+      expect(result).toEqual([entityB, entityA]);
+    });
+
+    it('should all with correct result with filter', async () => {
+      const result = await entityCacheController.getEntities((entity: any) => {
+        return entity.id !== 1;
+      });
+      expect(result).toEqual([entityB]);
+    });
+
+    it('should all with correct result with filter and sort', async () => {
+      const result = await entityCacheController.getEntities(
+        (entity: any) => {
+          return entity.id !== 1;
+        },
+        (a, b) => {
+          return b.id - a.id;
+        },
+      );
+      expect(result).toEqual([entityB]);
+    });
+
+    it('should all with correct result with filter and sort', async () => {
+      const result = await entityCacheController.getEntities(
+        (entity: any) => {
+          return entity.id === 0;
+        },
+        (a, b) => {
+          return b.id - a.id;
+        },
+      );
+      expect(result).toEqual([]);
+    });
   });
 });
