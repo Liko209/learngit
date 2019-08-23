@@ -13,6 +13,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RECORD_STATE as RTC_RECORD_STATE,
+  RTC_CALL_ACTION_DIRECTION,
 } from 'voip';
 
 import {
@@ -32,9 +33,11 @@ import { ToggleController, ToggleRequest } from './ToggleController';
 import {
   CALL_ACTION_ERROR_CODE,
   CallOptions,
+  CallDelegate,
+  TRANSFER_TYPE,
   MAKE_CALL_ERROR_CODE,
 } from '../types';
-import { TRANSFER_TYPE } from '../entity/types';
+
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
@@ -61,6 +64,7 @@ class TelephonyCallController implements IRTCCallDelegate {
   >;
   private _holdToggle: ToggleController;
   private _recordToggle: ToggleController;
+  private _callDelegate: CallDelegate;
 
   constructor(
     entityId: number,
@@ -98,6 +102,15 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   getEntityId() {
     return this._entityId;
+  }
+
+  setCallDelegate(delegate: CallDelegate) {
+    this._callDelegate = delegate;
+  }
+
+  isOnHold() {
+    const callEntity = this._getCallEntity();
+    return callEntity ? callEntity.hold_state === HOLD_STATE.HELD : false;
   }
 
   setRtcCall(call: RTCCall, isSwitchCall: boolean, callOption?: CallOptions) {
@@ -355,6 +368,12 @@ class TelephonyCallController implements IRTCCallDelegate {
   ) {
     const res = this._handleActionResult(callAction, true, options);
     this._handleCallActionCallback(callAction, true, res);
+    this._callDelegate &&
+      this._callDelegate.onCallActionSuccess(
+        this._entityId,
+        callAction,
+        options,
+      );
   }
 
   private _updateCallHoldState(state: HOLD_STATE) {
@@ -380,6 +399,8 @@ class TelephonyCallController implements IRTCCallDelegate {
   onCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
     const res = this._handleActionResult(callAction, false, code);
     this._handleCallActionCallback(callAction, false, res);
+    this._callDelegate &&
+      this._callDelegate.onCallActionFailed(this._entityId, callAction, code);
   }
 
   hangUp() {
@@ -400,6 +421,12 @@ class TelephonyCallController implements IRTCCallDelegate {
   mute() {
     this._updateCallMuteState(MUTE_STATE.MUTED);
     this._rtcCall.mute();
+  }
+
+  muteAll() {
+    this._updateCallMuteState(MUTE_STATE.MUTED);
+    this._rtcCall.mute(RTC_CALL_ACTION_DIRECTION.LOCAL);
+    this._rtcCall.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
   }
 
   unmute() {
