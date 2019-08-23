@@ -223,7 +223,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverDialpadButton() {
-    await this.t.hover(this.dialpadButton);
+    await this.t.hover(this.dialpadButton, {speed: 0.1});
   }
 
   get joinTeamDialog() {

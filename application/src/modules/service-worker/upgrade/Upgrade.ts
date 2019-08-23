@@ -15,10 +15,9 @@ import _ from 'lodash';
 const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
 const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
-const IDLE_THRESHOLD = 3 * 60 * 1000;
+const IDLE_THRESHOLD = 50 * 1000;
 const BACKGROUND_TIMER_INTERVAL = IDLE_THRESHOLD / 2;
 const USER_ACTION_EVENT_DEBOUNCE = 500;
-const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 type SWMessageData = {
   type?: string;
@@ -71,10 +70,6 @@ class Upgrade {
       `${logTag}setServiceWorkerURL: ${swURL}, hasWaitingWorker: ${hasWaitingWorker}`,
     );
     this._swURL = swURL;
-
-    if (!hasWaitingWorker) {
-      this._removeWorkingWorkerFlag();
-    }
   }
 
   public onNewContentAvailable(
@@ -84,17 +79,6 @@ class Upgrade {
     mainLogger.info(
       `${logTag}onNewContentAvailable. hasFocus: ${this._appInFocus()}, controller: ${isCurrentPageInControl}, byWaitingWorker: ${isByWaitingWorker}`,
     );
-    if (isByWaitingWorker) {
-      const workingWorkerFlag = this._getWorkingWorkerFlag();
-      if (workingWorkerFlag) {
-        mainLogger.info(
-          `${logTag} Ignore upgrade due to there's waiting worker flag: ${workingWorkerFlag}`,
-        );
-        return;
-      }
-
-      this._setWorkingWorkerFlag();
-    }
 
     this._hasNewVersion = true;
 
@@ -191,19 +175,6 @@ class Upgrade {
 
       this._reloadApp();
     }
-  }
-
-  private _getWorkingWorkerFlag() {
-    return window.sessionStorage.getItem(WAITING_WORKER_FLAG);
-  }
-  private _setWorkingWorkerFlag() {
-    window.sessionStorage.setItem(
-      WAITING_WORKER_FLAG,
-      new Date().toISOString(),
-    );
-  }
-  private _removeWorkingWorkerFlag() {
-    window.sessionStorage.removeItem(WAITING_WORKER_FLAG);
   }
 
   private _queryIfHasNewVersion = async () => {
@@ -392,20 +363,6 @@ class Upgrade {
       return false;
     }
 
-    if (this._dialogIsPresenting()) {
-      mainLogger.info(
-        `${logTag}[${triggerSource}] Forbidden to reload due to dialog is presenting`,
-      );
-      return false;
-    }
-
-    if (this._editorIsOnFocusAndNotEmpty()) {
-      mainLogger.info(
-        `${logTag}[${triggerSource}] Forbidden to reload due to editor is focused`,
-      );
-      return false;
-    }
-
     if (this._hasInProgressCall()) {
       mainLogger.info(
         `${logTag}[${triggerSource}] Forbidden to reload due to call in progress`,
@@ -429,44 +386,6 @@ class Upgrade {
 
     // TO-DO in future, disallow reload when there is any meeting.
     return true;
-  }
-
-  private _dialogIsPresenting() {
-    return document.querySelectorAll('[role=dialog]').length > 0;
-  }
-
-  private _editorIsOnFocusAndNotEmpty() {
-    if (!document.activeElement) {
-      return false;
-    }
-
-    return (
-      this._hasElementOnFocusAndNotEmpty(
-        'input[type="text"]',
-        (el: Element) => {
-          return !!(el as HTMLInputElement).value;
-        },
-      ) ||
-      this._hasElementOnFocusAndNotEmpty('.ql-editor', (el: Element) => {
-        const classList = [].slice.call(el.classList);
-        // Have both ql-blank and ql-editor if it is empty
-        return classList.length === 1;
-      })
-    );
-  }
-
-  private _hasElementOnFocusAndNotEmpty(
-    type: string,
-    isNotEmptyCallBack: (el: Element) => boolean,
-  ) {
-    const allInput = [].slice.call(document.querySelectorAll(type));
-
-    return allInput.some((el: Element) => {
-      if (el === document.activeElement) {
-        return isNotEmptyCallBack(el);
-      }
-      return false;
-    });
   }
 
   private _hasInProgressCall() {

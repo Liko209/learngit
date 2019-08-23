@@ -28,7 +28,6 @@ import { Dialog } from '@/containers/Dialog';
 import { NewConversation } from '@/containers/NewConversation';
 import { AddMembers } from '../Profile/Dialog/Group/Content/AddMembers';
 import { ANALYTICS_KEY } from '../Profile/Dialog/Group/Content/Members/constants';
-import { CONVERSATION_TYPES } from '@/constants';
 import { MiniCard } from '../MiniCard';
 import { Profile, PROFILE_TYPE } from '../Profile';
 import moize from 'moize';
@@ -120,14 +119,17 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     });
     analyticsCollector.openMiniProfile(ANALYTICS_KEY);
   });
-  
+
   buildPresence = moize((id: number) => {
     return <Presence uid={id} borderSize="medium" />
   })
 
 
   renderAvatar = (id: number) => {
-    const { personNameMap } = this.props;
+    const {
+      membersData: { personNameMap },
+    } = this.props;
+
     return (
       <Avatar
         data-test-automation-id="rightShelfMemberListAvatar"
@@ -171,22 +173,18 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   render() {
     const {
       t,
-      group,
-      isLoading,
+      membersData: {
+        isLoading,
+        fullMemberLen,
+        fullGuestLen,
+        shownMemberIds,
+        shownGuestIds,
+      },
+      shouldShowLink,
       loadingH,
-      fullMemberIds,
-      fullGuestIds,
-      shownMemberIds,
-      shownGuestIds,
       allMemberLength,
       shouldHide,
     } = this.props;
-
-    const showLink = ![
-      CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-      CONVERSATION_TYPES.ME,
-      CONVERSATION_TYPES.SMS,
-    ].includes(group.type);
 
     return shouldHide ? null : (
       <>
@@ -196,7 +194,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
         >
           <div>
             <MemberListTitle>{t('people.team.Members')}</MemberListTitle>
-            {showLink ? (
+            {shouldShowLink ? (
               <JuiLink
                 size="small"
                 handleOnClick={this.openProfile}
@@ -215,21 +213,21 @@ class RightShelfMemberListViewComponent extends Component<Props> {
         >
           <MemberListAvatarWrapper data-test-automation-id="rightShelfMemberListMembers">
             {shownMemberIds.map(id => this.renderAvatar(id))}
-            {fullMemberIds.length > shownMemberIds.length ? (
+            {fullMemberLen > shownMemberIds.length ? (
               <MemberListMoreCount
                 data-test-automation-id="rightShelfMemberListMore"
-                count={fullMemberIds.length - shownMemberIds.length}
+                count={fullMemberLen - shownMemberIds.length}
               />
             ) : null}
           </MemberListAvatarWrapper>
-          {fullGuestIds.length > 0 ? (
+          {fullGuestLen > 0 ? (
             <>
               <MemberListSubTitle>{t('message.guests')}</MemberListSubTitle>
               <MemberListAvatarWrapper data-test-automation-id="rightShelfMemberListGuests">
                 {shownGuestIds.map(id => this.renderAvatar(id))}
-                {fullGuestIds.length > shownGuestIds.length ? (
+                {fullGuestLen > shownGuestIds.length ? (
                   <MemberListMoreCount
-                    count={fullGuestIds.length - shownGuestIds.length}
+                    count={fullGuestLen - shownGuestIds.length}
                     data-test-automation-id="rightShelfMemberListMore"
                   />
                 ) : null}

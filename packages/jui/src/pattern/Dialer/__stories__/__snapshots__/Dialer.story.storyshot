@@ -19,7 +19,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   font-size: 24px;
 }
 
-.c23 {
+.c22 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -30,7 +30,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   font-size: 32px;
 }
 
-.c22.c22 {
+.c21.c21 {
   min-height: 0;
   background-color: #f44336;
   width: 64px;
@@ -43,12 +43,12 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   color: #fff;
 }
 
-.c22.c22:hover,
-.c22.c22:active {
+.c21.c21:hover,
+.c21.c21:active {
   background-color: rgb(219,60,48);
 }
 
-.c22.c22 .rippleVisible {
+.c21.c21 .rippleVisible {
   color: rgb(246,104,94);
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -58,130 +58,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   animation-name: cBKRfH;
 }
 
-.c22.c22[disabled] {
+.c21.c21[disabled] {
   background-color: #f44336;
   color: #fff;
   box-shadow: none;
   opacity: 0.12;
-}
-
-.c24.c24 .c8,
-.c24.c24 .c8 svg {
-  font-size: 20px;
-}
-
-.c24.c24:hover .c8 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c24.c24:active .c8 {
-  color: #9e9e9e;
-}
-
-.c24.c24.c24.c24.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c25.c25 .c8,
-.c25.c25 .c8 svg {
-  font-size: 20px;
-}
-
-.c25.c25:hover .c8 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c25.c25:active .c8 {
-  color: #9e9e9e;
-}
-
-.c25.c25.c25.c25.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c26.c26 .c8,
-.c26.c26 .c8 svg {
-  font-size: 20px;
-}
-
-.c26.c26:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c26.c26:active .c8 {
-  color: #0684bd;
-}
-
-.c26.c26.c26.c26.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c27.c27 .c8,
-.c27.c27 .c8 svg {
-  font-size: 20px;
-}
-
-.c27.c27:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c27.c27:active .c8 {
-  color: #0684bd;
-}
-
-.c27.c27.c27.c27.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c28.c28 .c8,
-.c28.c28 .c8 svg {
-  font-size: 20px;
-}
-
-.c28.c28:hover .c8 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c28.c28:active .c8 {
-  color: #edb63c;
-}
-
-.c28.c28.c28.c28.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c29.c29 .c8,
-.c29.c29 .c8 svg {
-  font-size: 16px;
-}
-
-.c29.c29:hover .c8 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c29.c29:active .c8 {
-  color: #9e9e9e;
-}
-
-.c29.c29.c29.c29.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c30.c30 .c8,
-.c30.c30 .c8 svg {
-  font-size: 16px;
-}
-
-.c30.c30:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c30.c30:active .c8 {
-  color: #0684bd;
-}
-
-.c30.c30.c30.c30.disabled .c8 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c7.c7 {
@@ -195,8 +76,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   border-radius: 0;
 }
 
-.c7.c7 .c8,
-.c7.c7 .c8 svg {
+.c7.c7 .icon,
+.c7.c7 .icon svg {
   font-size: 16px;
 }
 
@@ -204,15 +85,15 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   background-color: transparent;
 }
 
-.c7.c7:hover .c8 {
+.c7.c7:hover .icon {
   color: rgba(255,255,255,0.88);
 }
 
-.c7.c7:active .c8 {
+.c7.c7:active .icon {
   color: #fff;
 }
 
-.c7.c7.c7.c7.disabled .c8 {
+.c7.c7.c7.c7.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -226,7 +107,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   animation-name: cBKRfH;
 }
 
-.c20.c20 {
+.c19.c19 {
   padding: 0;
   width: 64px;
   height: 64px;
@@ -237,28 +118,28 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   border-radius: 50%;
 }
 
-.c20.c20 .c8,
-.c20.c20 .c8 svg {
+.c19.c19 .icon,
+.c19.c19 .icon svg {
   font-size: 32px;
 }
 
-.c20.c20:hover {
+.c19.c19:hover {
   background-color: rgba(33,33,33,0.12);
 }
 
-.c20.c20:hover .c8 {
+.c19.c19:hover .icon {
   color: rgba(33,33,33,0.88);
 }
 
-.c20.c20:active .c8 {
+.c19.c19:active .icon {
   color: #212121;
 }
 
-.c20.c20.c20.c20.disabled .c8 {
+.c19.c19.c19.c19.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c20.c20 .rippleVisible {
+.c19.c19 .rippleVisible {
   color: #212121;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -268,7 +149,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   animation-name: cBKRfH;
 }
 
-.c12.c12 {
+.c11.c11 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -278,20 +159,20 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   background-color: #f5f6fb;
 }
 
-.c12.c12:hover {
+.c11.c11:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c12.c12:active {
+.c11.c11:active {
   opacity: 0.76;
 }
 
-.c12:focus {
+.c11:focus {
   outline: none;
 }
 
-.c12 > .avatar-short-name {
+.c11 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -356,11 +237,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   margin-left: 8px;
 }
 
-.c11 {
+.c10 {
   margin-right: 12px;
 }
 
-.c13 {
+.c12 {
   margin-left: 12px;
   white-space: nowrap;
   overflow: hidden;
@@ -368,7 +249,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   word-break: break-word;
 }
 
-.c14 {
+.c13 {
   font-size: 1rem;
   font-weight: 600;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -379,7 +260,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   word-break: break-word;
 }
 
-.c15 {
+.c14 {
   font-size: 0.875rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -390,7 +271,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   word-break: break-word;
 }
 
-.c9.c9 {
+.c8.c8 {
   color: #fff;
   padding: 4px 16px 12px;
   display: -webkit-box;
@@ -405,7 +286,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   height: 56px;
 }
 
-.c10.c10 {
+.c9.c9 {
   font-size: 0.875rem;
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -421,14 +302,14 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   width: 100%;
 }
 
-.c10.c10 caption {
+.c9.c9 caption {
   font-size: 0.75rem;
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
 }
 
-.c16.c16 {
+.c15.c15 {
   background-color: #fff;
   padding: 0px 24px 24px;
   box-sizing: border-box;
@@ -446,13 +327,13 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   justify-content: space-between;
 }
 
-.c21.c21 {
+.c20.c20 {
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
 }
 
-.c17.c17 {
+.c16.c16 {
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
@@ -472,7 +353,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   min-height: 0;
 }
 
-.c18.c18 {
+.c17.c17 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -487,7 +368,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   margin-bottom: -20px;
 }
 
-.c19.c19 {
+.c18.c18 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -503,7 +384,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   margin-bottom: 20px;
 }
 
-.c19.c19 > span {
+.c18.c18 > span {
   color: #616161;
   font-size: 0.75rem;
   font-weight: 400;
@@ -511,7 +392,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   line-height: 16px;
 }
 
-.c19.c19 > span.disabled {
+.c18.c18 > span.disabled {
   color: rgba(0,0,0,0.12);
 }
 
@@ -564,8 +445,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
         className="c6"
       >
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Detach"
+          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -574,14 +456,14 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="plain"
         >
@@ -589,8 +471,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             className="MuiIconButton-label"
           >
             <span
-              className="c8  icon c4"
-              size="small"
+              className="  icon c4"
             >
               <svg
                 className="c5"
@@ -605,8 +486,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </span>
         </button>
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Minimize"
+          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -615,14 +497,14 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="plain"
         >
@@ -630,8 +512,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             className="MuiIconButton-label"
           >
             <span
-              className="c8  icon c4"
-              size="small"
+              className="  icon c4"
             >
               <svg
                 className="c5"
@@ -648,20 +529,21 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
       </div>
     </div>
     <div
-      className="c9"
+      className="c8"
       data-test-automation-id="telephony-dialer-header"
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
     >
       <div
-        className="c10"
+        className="c9"
       >
         <div
-          className="c11"
+          className="c10"
         >
           <button
-            aria-describedby={null}
+            aria-haspopup={true}
             aria-label="Back"
+            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c7"
             disabled={false}
             onBlur={[Function]}
@@ -670,14 +552,14 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseOver={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
             tabIndex={0}
-            title={null}
             type="button"
             variant="plain"
           >
@@ -685,8 +567,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
               className="MuiIconButton-label"
             >
               <span
-                className="c8  icon c4"
-                size="small"
+                className="  icon c4"
               >
                 <svg
                   className="c5"
@@ -702,7 +583,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </button>
         </div>
         <div
-          className="MuiAvatar-root c12"
+          className="MuiAvatar-root c11"
           size="medium"
         >
           <img
@@ -711,16 +592,16 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           />
         </div>
         <div
-          className="c13"
+          className="c12"
         >
           <div
-            className="c14"
+            className="c13"
             data-test-automation-id="telephony-dialer-header-name"
           >
             Terry Webster
           </div>
           <div
-            className="c15"
+            className="c14"
             data-test-automation-id="telephony-dialer-header-phone"
           >
             (650) 555-12345
@@ -730,22 +611,24 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
     </div>
   </div>
   <div
-    className="c16"
+    className="c15"
   >
     <div
-      className="c17"
+      className="c16"
       onMouseDown={[Function]}
     >
       <div
-        className="c18"
+        className="c17"
         onMouseDown={[Function]}
       >
         <div
-          className="c19"
+          className="c18"
         >
           <button
+            aria-haspopup={true}
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            aria-owns={null}
+            className="MuiButtonBase-root MuiIconButton-root c19"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -753,7 +636,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -766,8 +651,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
               className="MuiIconButton-label"
             >
               <span
-                className="c8  icon c4"
-                size="xxlarge"
+                className="  icon c4"
               >
                 <svg
                   className="c5"
@@ -780,20 +664,19 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 </svg>
               </span>
             </span>
-            <span
-              className="MuiTouchRipple-root"
-            />
           </button>
           <span>
             Mute
           </span>
         </div>
         <div
-          className="c19"
+          className="c18"
         >
           <button
+            aria-haspopup={true}
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            aria-owns={null}
+            className="MuiButtonBase-root MuiIconButton-root c19"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -801,7 +684,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -814,8 +699,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
               className="MuiIconButton-label"
             >
               <span
-                className="c8  icon c4"
-                size="xxlarge"
+                className="  icon c4"
               >
                 <svg
                   className="c5"
@@ -828,20 +712,19 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 </svg>
               </span>
             </span>
-            <span
-              className="MuiTouchRipple-root"
-            />
           </button>
           <span>
             Keypad
           </span>
         </div>
         <div
-          className="c19"
+          className="c18"
         >
           <button
+            aria-haspopup={true}
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            aria-owns={null}
+            className="MuiButtonBase-root MuiIconButton-root c19"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -849,7 +732,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -862,8 +747,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
               className="MuiIconButton-label"
             >
               <span
-                className="c8  icon c4"
-                size="xxlarge"
+                className="  icon c4"
               >
                 <svg
                   className="c5"
@@ -876,20 +760,19 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 </svg>
               </span>
             </span>
-            <span
-              className="MuiTouchRipple-root"
-            />
           </button>
           <span>
             Hold
           </span>
         </div>
         <div
-          className="c19"
+          className="c18"
         >
           <button
+            aria-haspopup={true}
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            aria-owns={null}
+            className="MuiButtonBase-root MuiIconButton-root c19"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -897,7 +780,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -910,8 +795,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
               className="MuiIconButton-label"
             >
               <span
-                className="c8  icon c4"
-                size="xxlarge"
+                className="  icon c4"
               >
                 <svg
                   className="c5"
@@ -924,20 +808,19 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 </svg>
               </span>
             </span>
-            <span
-              className="MuiTouchRipple-root"
-            />
           </button>
           <span>
             Add
           </span>
         </div>
         <div
-          className="c19"
+          className="c18"
         >
           <button
+            aria-haspopup={true}
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            aria-owns={null}
+            className="MuiButtonBase-root MuiIconButton-root c19"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -945,7 +828,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -958,8 +843,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
               className="MuiIconButton-label"
             >
               <span
-                className="c8  icon c4"
-                size="xxlarge"
+                className="  icon c4"
               >
                 <svg
                   className="c5"
@@ -972,20 +856,19 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 </svg>
               </span>
             </span>
-            <span
-              className="MuiTouchRipple-root"
-            />
           </button>
           <span>
             Record
           </span>
         </div>
         <div
-          className="c19"
+          className="c18"
         >
           <button
+            aria-haspopup={true}
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            aria-owns={null}
+            className="MuiButtonBase-root MuiIconButton-root c19"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -993,7 +876,9 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -1006,8 +891,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
               className="MuiIconButton-label"
             >
               <span
-                className="c8  icon c4"
-                size="xxlarge"
+                className="  icon c4"
               >
                 <svg
                   className="c5"
@@ -1020,9 +904,6 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 </svg>
               </span>
             </span>
-            <span
-              className="MuiTouchRipple-root"
-            />
           </button>
           <span>
             Call Actions
@@ -1031,11 +912,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
       </div>
     </div>
     <div
-      className="c21"
+      className="c20"
       onMouseDown={[Function]}
     >
       <button
-        className="MuiButtonBase-root MuiFab-root c22"
+        className="MuiButtonBase-root MuiFab-root c21"
         disabled={false}
         onBlur={[Function]}
         onDragLeave={[Function]}
@@ -1058,7 +939,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             className=" hand_up icon c4"
           >
             <svg
-              className="c23"
+              className="c22"
               role="img"
               size="moreLarge"
             >
@@ -1069,9 +950,6 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
     </div>
   </div>
