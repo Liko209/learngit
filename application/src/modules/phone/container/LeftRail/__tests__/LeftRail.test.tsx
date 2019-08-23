@@ -12,6 +12,8 @@ import { MISSED_CALL_BADGE_ID } from 'sdk/module/RCItems/callLog/constants';
 import { PhoneUMI } from '../../PhoneUMI';
 import { mockEntity, mockSingleEntity } from 'shield/application';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { jupiter } from 'framework/Jupiter';
+import { AppStore } from '@/modules/app/store';
 
 jest.mock('sdk/dao');
 jest.mock('sdk/api');
@@ -19,6 +21,8 @@ jest.mock('@/store/utils');
 jest.mock('sdk/module/config');
 
 describe('LeftRail', () => {
+  jupiter.registerClass(AppStore);
+
   const mockMissedCall = 10;
   const mockUnReadVoiceMail = 3;
   const entityMock = (name: string, id: string) => {

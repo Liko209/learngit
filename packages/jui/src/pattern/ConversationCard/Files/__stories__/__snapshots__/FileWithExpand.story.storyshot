@@ -8,7 +8,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   display: inline-flex;
 }
 
-.c10 {
+.c9 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -41,8 +41,8 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   border-radius: 0;
 }
 
-.c8.c8 .c9,
-.c8.c8 .c9 svg {
+.c8.c8 .icon,
+.c8.c8 .icon svg {
   font-size: 20px;
 }
 
@@ -50,15 +50,15 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   background-color: transparent;
 }
 
-.c8.c8:hover .c9 {
+.c8.c8:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c8.c8:active .c9 {
+.c8.c8:active .icon {
   color: #9e9e9e;
 }
 
-.c8.c8.c8.c8.disabled .c9 {
+.c8.c8.c8.c8.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -70,176 +70,6 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c12.c12 .c9,
-.c12.c12 .c9 svg {
-  font-size: 20px;
-}
-
-.c12.c12:hover .c9 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c12.c12:active .c9 {
-  color: #9e9e9e;
-}
-
-.c12.c12.c12.c12.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c13.c13 .c9,
-.c13.c13 .c9 svg {
-  font-size: 20px;
-}
-
-.c13.c13:hover .c9 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c13.c13:active .c9 {
-  color: #0684bd;
-}
-
-.c13.c13.c13.c13.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c14.c14 .c9,
-.c14.c14 .c9 svg {
-  font-size: 20px;
-}
-
-.c14.c14:hover .c9 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c14.c14:active .c9 {
-  color: #0684bd;
-}
-
-.c14.c14.c14.c14.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c15.c15 .c9,
-.c15.c15 .c9 svg {
-  font-size: 20px;
-}
-
-.c15.c15:hover .c9 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c15.c15:active .c9 {
-  color: #edb63c;
-}
-
-.c15.c15.c15.c15.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c16.c16 .c9,
-.c16.c16 .c9 svg {
-  font-size: 16px;
-}
-
-.c16.c16:hover .c9 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c16.c16:active .c9 {
-  color: #9e9e9e;
-}
-
-.c16.c16.c16.c16.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c17.c17 .c9,
-.c17.c17 .c9 svg {
-  font-size: 16px;
-}
-
-.c17.c17:hover .c9 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c17.c17:active .c9 {
-  color: #0684bd;
-}
-
-.c17.c17.c17.c17.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c18.c18 .c9,
-.c18.c18 .c9 svg {
-  font-size: 16px;
-}
-
-.c18.c18:hover .c9 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c18.c18:active .c9 {
-  color: #fff;
-}
-
-.c18.c18.c18.c18.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c9,
-.c19.c19 .c9 svg {
-  font-size: 32px;
-}
-
-.c19.c19:hover .c9 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c19.c19:active .c9 {
-  color: #212121;
-}
-
-.c19.c19.c19.c19.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c9,
-.c20.c20 .c9 svg {
-  font-size: 48px;
-}
-
-.c20.c20:hover .c9 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c20.c20:active .c9 {
-  color: #9e9e9e;
-}
-
-.c20.c20.c20.c20.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c9,
-.c21.c21 .c9 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c9 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c21.c21:active .c9 {
-  color: #fff;
-}
-
-.c21.c21.c21.c21.disabled .c9 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c2.c2 {
@@ -281,7 +111,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   font-size: 14px;
 }
 
-.c11:hover {
+.c10:hover {
   cursor: pointer;
 }
 
@@ -345,8 +175,9 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="download"
+              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -355,14 +186,13 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -370,11 +200,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c9  icon c3"
-                  size="medium"
+                  className="  icon c3"
                 >
                   <svg
-                    className="c10"
+                    className="c9"
                     role="img"
                   >
                     <use
@@ -405,7 +234,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           
           <img
-            className="c11"
+            className="c10"
             onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
@@ -454,8 +283,9 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="download"
+              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -464,14 +294,13 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -479,11 +308,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c9  icon c3"
-                  size="medium"
+                  className="  icon c3"
                 >
                   <svg
-                    className="c10"
+                    className="c9"
                     role="img"
                   >
                     <use
@@ -514,7 +342,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           
           <img
-            className="c11"
+            className="c10"
             onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
@@ -563,8 +391,9 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="download"
+              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -573,14 +402,13 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -588,11 +416,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c9  icon c3"
-                  size="medium"
+                  className="  icon c3"
                 >
                   <svg
-                    className="c10"
+                    className="c9"
                     role="img"
                   >
                     <use
@@ -623,7 +450,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           
           <img
-            className="c11"
+            className="c10"
             onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
@@ -672,8 +499,9 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="download"
+              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -682,14 +510,13 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -697,11 +524,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c9  icon c3"
-                  size="medium"
+                  className="  icon c3"
                 >
                   <svg
-                    className="c10"
+                    className="c9"
                     role="img"
                   >
                     <use
@@ -732,7 +558,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           
           <img
-            className="c11"
+            className="c10"
             onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
@@ -781,8 +607,9 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="download"
+              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -791,14 +618,13 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -806,11 +632,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c9  icon c3"
-                  size="medium"
+                  className="  icon c3"
                 >
                   <svg
-                    className="c10"
+                    className="c9"
                     role="img"
                   >
                     <use
@@ -841,7 +666,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           
           <img
-            className="c11"
+            className="c10"
             onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"

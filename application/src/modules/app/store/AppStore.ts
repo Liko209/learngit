@@ -49,18 +49,23 @@ class AppStore {
   ];
 
   @observable
-  private _umi: number = 0;
+  private _umiMap: { [key: string]: number } = {};
+
   @observable
   private _globalLoading: boolean = false;
 
+  private _umiReducer = (acc: number, cur: number): number => {
+    return acc + cur;
+  };
+
   @computed
   get umi() {
-    return this._umi;
+    return Object.values(this._umiMap).reduce(this._umiReducer, 0);
   }
 
   @action
-  setUmi(umi: number) {
-    this._umi = umi;
+  setUmi(umiInfo: { [key: string]: number }) {
+    this._umiMap = { ...this._umiMap, ...umiInfo };
   }
 
   @computed
