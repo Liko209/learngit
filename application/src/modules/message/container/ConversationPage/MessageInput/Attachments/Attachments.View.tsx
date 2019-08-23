@@ -81,7 +81,11 @@ class AttachmentsViewComponent extends Component<
               data-test-automation-id="message-attachment-node"
             />
             <JuiGrid container justify="center">
-              <JuiButton variant="contained" onClick={onPostClicked}>
+              <JuiButton
+                variant="contained"
+                onClick={onPostClicked}
+                data-test-automation-id="post-button"
+              >
                 Post
               </JuiButton>
             </JuiGrid>
