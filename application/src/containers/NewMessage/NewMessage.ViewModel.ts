@@ -65,10 +65,7 @@ class NewMessageViewModel extends StoreViewModel {
     this.emailError = false;
   };
   @action
-  handleCheckboxChange = (
-    event: React.ChangeEvent<{}>,
-    checked: boolean,
-  ) => {
+  handleCheckboxChange = (event: React.ChangeEvent<{}>, checked: boolean) => {
     this.isDirectMessage = checked;
   };
 
@@ -91,7 +88,9 @@ class NewMessageViewModel extends StoreViewModel {
       const conversationIds = (await Promise.all(personPromises)) as number[];
       ids = [...conversationIds, ...groupIds];
 
-      const promise = ids.map((id: number) => postService.sendPost({ groupId: id, text: message }));
+      const promise = ids.map((id: number) =>
+        postService.sendPost({ groupId: id, text: message }),
+      );
       await Promise.all(promise);
       ids[0] && goToConversation({ conversationId: ids[0] });
     } else {
@@ -114,6 +113,7 @@ class NewMessageViewModel extends StoreViewModel {
               conversationId,
             );
             analyticsCollector.sendPost(
+              '',
               'send new message',
               'text',
               group.analysisType,
