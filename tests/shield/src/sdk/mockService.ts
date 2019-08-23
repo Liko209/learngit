@@ -76,7 +76,6 @@ const _fakeService = function(
     descriptor: PropertyDescriptor,
   ) {
     const oldFn = descriptor.value;
-    const hasParam = oldFn.length > 0;
 
     const _mockService = () => {
       const ServiceClass = registerConfigs.classes.find(
@@ -90,7 +89,7 @@ const _fakeService = function(
       );
     };
 
-    descriptor.value = descriptorAOP(hasParam, _mockService, oldFn);
+    descriptor.value = descriptorAOP(target, _mockService, oldFn);
     return descriptor;
   };
 };
