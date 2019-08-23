@@ -7,6 +7,7 @@
 import React from 'react';
 import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import { observer } from 'mobx-react';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import { ContactSearch } from '@/containers/Downshift';
 import { Props, ViewProps } from './types';
@@ -16,6 +17,7 @@ import JuiLink from 'jui/components/Link';
 import { Loading } from 'jui/hoc/withLoading';
 import { newConversation, newConversationAction } from './dataTrackings';
 
+const Modal = withEscTracking(JuiModal);
 type NewConversationProps = Props & ViewProps & WithTranslation;
 
 @observer
@@ -49,7 +51,7 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
     } = this.props;
     const { members } = group;
     return (
-      <JuiModal
+      <Modal
         modalProps={{
           classes: {
             paper: 'overflow-y',
@@ -95,7 +97,7 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
             autoFocus
           />
         </Loading>
-      </JuiModal>
+      </Modal>
     );
   }
 }

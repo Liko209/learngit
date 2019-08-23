@@ -7,6 +7,7 @@ import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ConvertToTeamViewProps } from './types';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
 import { JuiTopText } from 'jui/pattern/ConvertToTeam';
@@ -25,6 +26,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { TeamSetting } from 'sdk/module/group';
 
+const Modal = withEscTracking(JuiModal);
 const NAME_INPUT_PROPS = {
   'data-test-automation-id': 'ConvertToTeamTeamName',
   maxLength: 200,
@@ -194,7 +196,7 @@ class ConvertToTeam extends Component<Props, State> {
       disabledOkBtn,
     } = this.props;
     return (
-      <JuiModal
+      <Modal
         open
         size="medium"
         title={t('people.team.convertToTeam')}
@@ -238,7 +240,7 @@ class ConvertToTeam extends Component<Props, State> {
             onChange={this._handleSwitchChange}
           /> */}
         </Loading>
-      </JuiModal>
+      </Modal>
     );
   }
 }

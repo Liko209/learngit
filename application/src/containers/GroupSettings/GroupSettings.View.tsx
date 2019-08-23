@@ -9,6 +9,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { GroupSettingsProps, GroupSettingsViewProps } from './types';
 import { toTitleCase } from '@/utils/string';
 import { JuiModal } from 'jui/components/Dialog';
+import { withEscTracking } from '@/containers/Dialog';
 import portalManager from '@/common/PortalManager';
 import {
   JuiTeamSettingButtonList as ButtonList,
@@ -18,6 +19,7 @@ import {
 import { ConvertToTeam } from '@/containers/ConvertToTeam';
 import { JuiDivider } from 'jui/components/Divider';
 
+const Modal = withEscTracking(JuiModal);
 type Props = GroupSettingsProps & GroupSettingsViewProps & WithTranslation;
 
 @observer
@@ -40,7 +42,7 @@ class GroupSettingsComponent extends Component<Props> {
     const { t } = this.props;
 
     return (
-      <JuiModal
+      <Modal
         fillContent
         open
         size={'medium'}
@@ -63,7 +65,7 @@ class GroupSettingsComponent extends Component<Props> {
           </ButtonListItem>
           <JuiDivider />
         </ButtonList>
-      </JuiModal>
+      </Modal>
     );
   }
 }

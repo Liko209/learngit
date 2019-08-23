@@ -28,10 +28,11 @@ import { GroupAvatar } from '@/containers/Avatar';
 import { toTitleCase } from '@/utils/string';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiToggleButton, JuiIconButton } from 'jui/components/Buttons';
-import { Dialog } from '@/containers/Dialog';
+import { Dialog, withEscTracking } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { dataAnalysis } from 'foundation/analysis';
 
+const Modal = withEscTracking(JuiModal);
 type TeamSettingsProps = WithTranslation & ViewProps;
 
 const NAME_MAX_LENGTH = 200;
@@ -331,7 +332,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     const disabledOkBtn =
       !this.state.name || this.state.name.trim().length <= 0;
     return (
-      <JuiModal
+      <Modal
         fillContent
         open
         size={'medium'}
@@ -347,7 +348,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         {isAdmin ? this.renderMemberPermissionSettings() : null}
         <JuiDivider />
         {this.renderButtonList()}
-      </JuiModal>
+      </Modal>
     );
   }
 }

@@ -39,6 +39,7 @@ type Props = {
   onUpdate: () => void;
   onCreate: () => void;
   duplicateFileNames: (React.ReactChild | null | (React.ReactChild | null)[])[];
+  onEscTrackedCancel?: () => void;
 };
 
 const NameList = styled.ul`
@@ -71,6 +72,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
     cancelText,
     updateText,
     createText,
+    onEscTrackedCancel,
   } = props;
   const showDuplicateFiles = duplicateFileNames.length > 0;
   /* eslint-disable react/no-array-index-key */
@@ -121,7 +123,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
     );
     return (
       <JuiModal
-        onCancel={onCancel}
+        onClose={onEscTrackedCancel}
         open={showDuplicateFiles}
         title={title}
         footer={footer}

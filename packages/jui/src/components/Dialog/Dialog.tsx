@@ -5,7 +5,6 @@ import MuiDialog, {
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled, { css } from 'styled-components';
 import { HotKeys } from '../../hoc/HotKeys';
-import { dataAnalysis } from 'foundation/analysis';
 
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
@@ -77,10 +76,6 @@ const WrapDialog = (props: JuiDialogProps) => {
     <HotKeys
       keyMap={{
         esc: event => {
-          onClose &&
-            dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
-              shortcut: 'escape',
-            });
           return onClose && onClose(event) && false;
         },
       }}

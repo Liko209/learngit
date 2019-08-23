@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDragZoom, JuiDragZoomOptions } from 'jui/pattern/DragZoom';
 import { JuiImageView } from 'jui/components/ImageView';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import { RuiSlider } from 'rcui/components/Forms/Slider';
 import { JuiButton } from 'jui/components/Buttons';
@@ -36,6 +37,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
+const Modal = withEscTracking(JuiModal);
 const CONTAINER_SIZE = 280;
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
@@ -176,7 +178,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
       isGifImage,
     } = this.props;
     return (
-      <JuiModal
+      <Modal
         open
         size={'medium'}
         title={t('people.profile.edit.editProfilePhotoTitle')}
@@ -245,7 +247,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             />
           </JuiEditPhotoSliderContent>
         )}
-      </JuiModal>
+      </Modal>
     );
   }
 }

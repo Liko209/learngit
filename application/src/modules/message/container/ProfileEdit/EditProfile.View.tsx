@@ -7,6 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import { Avatar } from '@/containers/Avatar';
 import {
@@ -26,6 +27,7 @@ import {
 } from './types';
 import { editItemSource } from './constant';
 
+const Modal = withEscTracking(JuiModal);
 @observer
 class EditProfileViewComponent extends Component<
   EditProfileViewModelProps & EditProfileProps & WithTranslation
@@ -135,7 +137,7 @@ class EditProfileViewComponent extends Component<
       localInfo,
     } = this.props;
     return (
-      <JuiModal
+      <Modal
         open
         size={'medium'}
         title={t('message.prompt.editProfileTitle')}
@@ -175,7 +177,7 @@ class EditProfileViewComponent extends Component<
             {this._renderSection()}
           </JuiEditProfileSectionContent>
         </JuiEditProfileContent>
-      </JuiModal>
+      </Modal>
     );
   }
 }

@@ -20,6 +20,7 @@ type AttachmentsProps = {
   id: number;
   viewRef?: React.RefObject<any>;
   forceSaveDraft: boolean;
+  onEscTrackedCancelDuplicateFiles: () => void;
 };
 
 type DidUploadFileCallback = () => Promise<void>;

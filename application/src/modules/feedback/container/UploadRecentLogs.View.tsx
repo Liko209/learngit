@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { DialogContext } from '@/containers/Dialog';
+import { DialogContext, withEscTracking } from '@/containers/Dialog';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { observer } from 'mobx-react';
@@ -23,11 +23,12 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { Loading } from 'jui/hoc/withLoading';
 
+const Modal = withEscTracking(JuiModal);
 type State = {};
 
 type Props = UploadRecentLogsViewProps &
-UploadRecentLogsViewModelProps &
-WithTranslation;
+  UploadRecentLogsViewModelProps &
+  WithTranslation;
 
 @observer
 class UploadRecentLogsComponent extends React.Component<Props, State> {
@@ -97,11 +98,9 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
   onClose = () => this.context();
 
   render() {
-    const {
-      handleTitleChange, handleDescChange, isLoading, t,
-    } = this.props;
+    const { handleTitleChange, handleDescChange, isLoading, t } = this.props;
     return (
-      <JuiModal
+      <Modal
         open
         size={'medium'}
         title={t('feedback.uploadRecentLogsDialogHeader')}
@@ -132,7 +131,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
             onChange={handleDescChange}
           />
         </Loading>
-      </JuiModal>
+      </Modal>
     );
   }
 }

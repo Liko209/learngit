@@ -15,7 +15,7 @@ import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
-import { DialogContext } from '@/containers/Dialog';
+import { DialogContext, withEscTracking } from '@/containers/Dialog';
 import { ViewProps } from './types';
 import {
   ToastType,
@@ -24,6 +24,7 @@ import {
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import JuiLink from 'jui/components/Link';
 
+const Modal = withEscTracking(JuiModal);
 type State = {
   message: string;
 };
@@ -109,7 +110,7 @@ class NewMessageComponent extends React.Component<Props, State> {
       this.renderFailError();
     }
     return (
-      <JuiModal
+      <Modal
         modalProps={{
           classes: {
             paper: 'overflow-y',
@@ -185,7 +186,7 @@ class NewMessageComponent extends React.Component<Props, State> {
             ]}
           />
         </JuiBottomText>
-      </JuiModal>
+      </Modal>
     );
   }
 }
