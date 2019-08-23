@@ -16,6 +16,7 @@ import { eventsDict } from './dataTrackings';
 import { ConversationType } from 'src/AnalyticsCollector/types';
 import ConversationPreferenceModel from '@/store/models/ConversationPreference';
 import { TO_CAMEL_DICT } from './constant';
+import _ from 'lodash';
 
 class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   private _groupService = ServiceLoader.getInstance<GroupService>(
@@ -73,10 +74,10 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
 
   @action
   handleCheckboxChange = moize((item: string) => () => {
-    this.value[item] =
-      this.value[item] === undefined
-        ? !this._initialValue[item]
-        : !this.value[item];
+    const hasSetValue = this.value[item] !== undefined;
+    this.value[item] = hasSetValue
+      ? !this.value[item]
+      : !this._initialValue[item];
   });
 
   @action
@@ -90,31 +91,40 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
     portalManager.dismissLast();
   };
 
+  private _diffObject = (
+    currObj: Partial<ConversationPreferenceModel>,
+    prevObj: ConversationPreferenceModel,
+  ) => _.omitBy(currObj, (key, value) => prevObj[key] === value);
+
+  private get _changedValue() {
+    return this._diffObject(this.value, this._initialValue);
+  }
+
+  private get _hasChanged() {
+    return !_.isEmpty(this._changedValue);
+  }
+
+  private _trackEvent = () => {
+    Object.keys(this._changedValue).forEach(key => {
+      eventsDict[key](this._changedValue[key], this._groupType);
+    });
+  };
+
   @catchError.flash({
     network: 'setting.errorText.network',
     server: 'setting.errorText.server',
   })
   handleSubmit = async () => {
     try {
-      let hasUpdated = true;
-      const updateValue: Partial<ConversationPreferenceModel> = {};
-      for (const key in this.value) {
-        if (this.value[key] !== this._initialValue[key]) {
-          updateValue[key] = this.value[key];
-          eventsDict[key](this.value[key], this._groupType);
-          hasUpdated = true;
-        }
-      }
-      if (hasUpdated) {
+      if (this._hasChanged) {
         this.loading = true;
+        this._trackEvent();
         await this._profileService.updateConversationPreference(
           this.props.groupId,
-          updateValue,
+          this._changedValue,
         );
         this.handleClose();
       }
-    } catch (error) {
-      throw error;
     } finally {
       this.loading = false;
     }

@@ -50,6 +50,13 @@ const MobileNotificationSourceItem = (props: MobileNotificationItemProps) => {
   );
 };
 
+const ModalProps = {
+  classes: {
+    paper: 'overflow-y',
+  },
+  scroll: 'body',
+};
+
 @observer
 class NotificationPreferencesComponent extends React.Component<
   NotificationPreferencesProps
@@ -142,12 +149,7 @@ class NotificationPreferencesComponent extends React.Component<
     } = this.props;
     return (
       <JuiModal
-        modalProps={{
-          classes: {
-            paper: 'overflow-y',
-          },
-          scroll: 'body',
-        }}
+        modalProps={ModalProps}
         open
         size={'medium'}
         title={t('setting.conversationPreferences.title')}
@@ -168,6 +170,9 @@ class NotificationPreferencesComponent extends React.Component<
                 value={currentValue[MUTE_ALL]}
                 onChange={handleCheckboxChange(MUTE_ALL)}
                 data-test-automation-id={`${MUTE_ALL}-checkbox`}
+                inputProps={{
+                  'aria-labelledby': MUTE_ALL,
+                }}
               />
             </JuiSettingItem>
             <JuiSettingItem
@@ -181,6 +186,9 @@ class NotificationPreferencesComponent extends React.Component<
                 value={currentValue[DESKTOP_NOTIFICATION]}
                 onChange={handleCheckboxChange(DESKTOP_NOTIFICATION)}
                 data-test-automation-id={`${DESKTOP_NOTIFICATION}-checkbox`}
+                inputProps={{
+                  'aria-labelledby': DESKTOP_NOTIFICATION,
+                }}
               />
             </JuiSettingItem>
             {this._renderSoundNotification()}

@@ -35,7 +35,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get microphoneSourceSelectBox() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-microphoneSource"
+      "selectBox-microphoneSource"
     );
   }
 
@@ -54,7 +54,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get speakerSourceSelectBox() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-speakerSource");
+    return this.getSelectorByAutomationId("selectBox-speakerSource");
   }
 
   get speakerSourceItems() {
@@ -62,7 +62,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get ringerSourceSelectBox() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-ringerSource");
+    return this.getSelectorByAutomationId("selectBox-ringerSource");
   }
 
   get ringerSourceItems() {
@@ -324,7 +324,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get newMessageItemSelectBox() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-newMessages");
+    return this.getSelectorByAutomationId("selectBox-newMessages");
   }
 
   get newMessageItemSelectOff() {
@@ -423,7 +423,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get newMessageBadgeCountDropDown() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-newMessageBadgeCount"
+      "selectBox-newMessageBadgeCount"
     );
   }
 
@@ -444,7 +444,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   /// Direct messages
   get directMessagesSelectBox() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-notificationDirectMessages"
+      "selectBox-notificationDirectMessages"
     );
   }
 
@@ -471,7 +471,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get newMessageBadgeCountSelectBox() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-newMessageBadgeCount"
+      "selectBox-newMessageBadgeCount"
     );
   }
 
@@ -511,21 +511,21 @@ export class SoundsSection extends BaseWebComponent {
 
   get soundDirectMessages() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-soundDirectMessages"
+      "selectBox-soundDirectMessages"
     )
       .find("div")
       .find("p");
   }
 
   get soundMentions() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-soundMentions")
+    return this.getSelectorByAutomationId("selectBox-soundMentions")
       .find("div")
       .find("p");
   }
 
   get soundTeamMessages() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-soundTeamMessages"
+      "selectBox-soundTeamMessages"
     )
       .find("div")
       .find("p");
@@ -533,7 +533,7 @@ export class SoundsSection extends BaseWebComponent {
 
   get soundIncomingCall() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-soundIncomingCall"
+      "selectBox-soundIncomingCall"
     )
       .find("div")
       .find("p");

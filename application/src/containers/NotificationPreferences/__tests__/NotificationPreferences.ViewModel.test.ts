@@ -32,10 +32,12 @@ describe('NotificationPreferencesViewModel', () => {
       'should display flash toast notification when updateConversationPreference failed for server issue [JPT-2838]',
     )
     @mockService.reject(ProfileService, [
+      { method: 'getByGroupId', data: { muted: true } },
       { method: 'updateConversationPreference', data: mockBackendError },
     ])
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      notificationPreferencesVM.value.muteAll = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -48,10 +50,12 @@ describe('NotificationPreferencesViewModel', () => {
       'should display flash toast notification when updateConversationPreference failed for network issue [JPT-2837]',
     )
     @mockService.reject(ProfileService, [
+      { method: 'getByGroupId', data: { muted: true } },
       { method: 'updateConversationPreference', data: mockNetworkError },
     ])
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      notificationPreferencesVM.value.muteAll = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({

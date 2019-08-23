@@ -209,7 +209,7 @@ class MessageNotificationManager extends AbstractNotificationManager
       [TEAM]: MESSAGE_SETTING_ITEM.SOUND_TEAM_MESSAGES,
     };
     const entity = await this._settingService.getById<AUDIO_SOUNDS_INFO>(soundSettingDict[type]);
-    return entity ? (entity.value ? entity.value.id : undefined) : undefined;
+    return entity && entity.value && entity.value.id;
   }
 
   async getCurrentMessageNotificationSetting() {
