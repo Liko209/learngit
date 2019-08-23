@@ -53,8 +53,7 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
         ServiceConfig.SEARCH_SERVICE,
       );
 
-      const result = await searchService.doFuzzySearchPersons({
-        searchKey,
+      const result = await searchService.doFuzzySearchPersons(searchKey, {
         excludeSelf: false,
         recentFirst: true,
       });
@@ -80,7 +79,7 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
     }
 
     return null;
-  }
+  };
 
   @action
   search = async (tab: TAB_TYPE) => {
@@ -89,7 +88,7 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
       return [];
     }
     return result.ids;
-  }
+  };
 }
 
 export { ListSearchResultViewModel };

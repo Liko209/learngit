@@ -65,11 +65,11 @@ describe('ContactFocHandler', () => {
         return '';
       });
 
-    SortUtils.compareString = jest.fn();
+    SortUtils.compareLowerCaseString = jest.fn();
     handler.sortFunc(
       { id: 1, sortValue: 0, data: { id: 1, displayName: 'cbc' } },
       { id: 2, sortValue: 0, data: { id: 2, displayName: 'bca' } },
     );
-    expect(SortUtils.compareString).toHaveBeenCalledWith('cbc', 'bca');
+    expect(SortUtils.compareLowerCaseString).toHaveBeenCalledWith('cbc', 'bca');
   });
 });
