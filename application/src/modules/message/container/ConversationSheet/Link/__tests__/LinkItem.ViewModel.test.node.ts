@@ -68,7 +68,7 @@ describe('LinkItemViewModel', () => {
   @testable
   class linkPreview {
     @test(
-      'isLinkPreviewDisabled should be false when link preview of profile is true [JPT-2817]',
+      'should isLinkPreviewDisabled be false when link preview of profile is true [JPT-2817]',
     )
     @mockEntity({ value: true })
     t1() {
@@ -76,7 +76,7 @@ describe('LinkItemViewModel', () => {
     }
 
     @test(
-      'isLinkPreviewDisabled should be true when link preview of profile is false [JPT-2817]',
+      'should  isLinkPreviewDisabled be true when link preview of profile is false [JPT-2817]',
     )
     @mockEntity({ value: false })
     t2() {

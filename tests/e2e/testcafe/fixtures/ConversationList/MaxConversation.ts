@@ -260,7 +260,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-247'],
   maintainers: ['ali.naffaa'],
   keywords: ['ConversationList'],
-})('The Favorites section should display all the favorite conversations and should not be limited to 20 conversations', async (t: TestController) => {
+})(`The Favorites section won't be affected by settings of max conversations`, async (t: TestController) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const MAX_NUMBER = 5

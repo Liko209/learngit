@@ -18,7 +18,7 @@ describe(NotificationSettingManager.name, () => {
       );
       const sectionAllRegistered = [
         SETTING_SECTION.DESKTOP_NOTIFICATIONS,
-        SETTING_SECTION.OTHER_NOTIFICATION_SETTINGS,
+        // SETTING_SECTION.OTHER_NOTIFICATION_SETTINGS,
         SETTING_SECTION.EMAIL_NOTIFICATIONS,
       ].some(i => !args.includes(i));
       expect(sectionAllRegistered).toBeFalsy();

@@ -24,6 +24,7 @@ class PlaceholderSettingManager {
       path: '/messages',
       weight: 200,
       sections: [],
+      dataTracking: { name: 'messages' },
     });
     this._settingService.registerPage(this._scope, {
       id: SETTING_PAGE__MEETINGS,
