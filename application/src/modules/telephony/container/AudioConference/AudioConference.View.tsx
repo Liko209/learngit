@@ -18,7 +18,8 @@ type Props = WithTranslation & AudioConferenceViewProps & AudioConferenceProps;
 class AudioConferenceViewComponent extends Component<Props> {
   private _handleClick = (evt: React.MouseEvent) => {
     evt.stopPropagation();
-    const { onClick } = this.props;
+    const { onClick, startAudioConference } = this.props;
+    startAudioConference();
     if (onClick) {
       onClick();
     } else if (!portalManager.profilePortalIsShow) {

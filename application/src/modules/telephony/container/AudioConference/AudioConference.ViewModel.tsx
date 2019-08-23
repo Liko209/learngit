@@ -5,9 +5,9 @@
  */
 import { container } from 'framework/ioc';
 import { AbstractViewModel } from '@/base';
-// import { TelephonyService } from '../../service';
+import { TelephonyService } from '@/modules/telephony/service';
 import { AudioConferenceProps, AudioConferenceViewProps } from './types';
-import { computed } from 'mobx';
+import { computed, action } from 'mobx';
 import { promisedComputed } from 'computed-async-mobx';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
@@ -16,13 +16,14 @@ import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 // import { analyticsCollector } from '@/AnalyticsCollector';
-// import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class AudioConferenceViewModel extends AbstractViewModel<AudioConferenceProps>
   implements AudioConferenceViewProps {
-  // private _telephonyService: TelephonyService = container.get(
-  //   TELEPHONY_SERVICE,
-  // );
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _featuresFlagsService: FeaturesFlagsService = container.get(
     FeaturesFlagsService,
   );
@@ -33,6 +34,19 @@ class AudioConferenceViewModel extends AbstractViewModel<AudioConferenceProps>
       ? getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId)
       : null;
   }
+
+  @action
+  startAudioConference = () => {
+    if (this.props.groupId) {
+      this._telephonyService.startAudioConference(this.props.groupId);
+    }
+    if (this._group && this.props.analysisSource) {
+      analyticsCollector.startConferenceCall(
+        this._group.analysisType,
+        this.props.analysisSource,
+      );
+    }
+  };
   // @action
   // call = async () => {
   //   if (!this.phoneNumber) return;

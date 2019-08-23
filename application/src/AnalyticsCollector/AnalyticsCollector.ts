@@ -322,6 +322,13 @@ class AnalyticsCollector {
       state,
     });
   }
+
+  startConferenceCall(conversationType: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_startConferenceCall', {
+      conversationType,
+      source,
+    });
+  }
 }
 
 export { AnalyticsCollector };

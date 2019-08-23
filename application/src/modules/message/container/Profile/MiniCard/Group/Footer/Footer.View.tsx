@@ -93,6 +93,7 @@ class ProfileMiniCardGroupFooter extends Component<
             variant="plain"
             size="medium"
             color="primary"
+            analysisSource="miniProfile"
           />
         </JuiProfileMiniCardFooterRight>
       </>

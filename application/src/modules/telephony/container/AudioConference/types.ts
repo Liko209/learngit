@@ -16,6 +16,7 @@ type AudioConferenceProps = {
 
 type AudioConferenceViewProps = {
   showIcon: PromisedComputedValue<boolean>;
+  startAudioConference: () => void;
 };
 
 export { AudioConferenceProps, AudioConferenceViewProps };

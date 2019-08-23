@@ -12,7 +12,11 @@ import { mainLogger } from 'foundation/log';
 import i18next from 'i18next';
 
 class ToastCallError {
-  static toast(msg: string, duration: number): void {
+  static toast(
+    msg: string,
+    duration: number,
+    dismissible: boolean = false,
+  ): void {
     const message = i18next.t(msg);
     Notification.flagToast({
       message,
@@ -20,7 +24,7 @@ class ToastCallError {
       messageAlign: ToastMessageAlign.LEFT,
       autoHideDuration: duration,
       fullWidth: false,
-      dismissible: false,
+      dismissible,
     });
   }
 

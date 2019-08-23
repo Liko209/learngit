@@ -44,7 +44,7 @@ describe('RecentCallsViewModel', () => {
       .mockImplementation(() => recentCallLogsHandler);
   });
 
-  it('makeCall()', done => {
+  it.only('makeCall()', done => {
     const phoneNumber = '123456';
     (getEntity as jest.Mock).mockImplementation((name: string, id: number) => {
       if (name === ENTITY_NAME.CALL_LOG) {
@@ -78,7 +78,7 @@ describe('RecentCallsViewModel', () => {
     setTimeout(async () => {
       expect(vm.isBlock).toBeFalsy();
       await vm.makeCall();
-      expect(telephonyService.makeCall).toHaveBeenCalledWith(phoneNumber);
+      expect(telephonyService.directCall).toHaveBeenCalledWith(phoneNumber);
       done();
     });
   });

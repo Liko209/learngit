@@ -117,7 +117,7 @@ class ItemListViewComponent extends Component<Props> {
         didChange={this.selectIndexChange(index)}
         id={id}
         key={id}
-        analysisSource="full search results page"
+        analysisSource="fullSearchResultsPage"
         dataTrackingDomain="fullSearch"
       />
     );

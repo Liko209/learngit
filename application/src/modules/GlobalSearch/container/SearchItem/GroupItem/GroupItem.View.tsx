@@ -81,7 +81,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
           groupId={group.id}
           variant="plain"
           size="small"
-          analysisSource={`Global search>${analysisSource}`}
+          analysisSource={`globalSearch_${analysisSource}`}
         />
       </>
     );

@@ -107,6 +107,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
                 groupId={group.id}
                 variant="text"
                 size="medium"
+                analysisSource="profileDialog"
               />
               {showJoinTeam &&
                 renderButton(
