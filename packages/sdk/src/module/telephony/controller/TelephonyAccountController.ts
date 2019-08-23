@@ -29,6 +29,7 @@ import {
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
   CallDelegate,
+  TRANSFER_TYPE,
 } from '../types';
 import { telephonyLogger } from 'foundation/log';
 import { MakeCallController } from './MakeCallController';
@@ -49,7 +50,6 @@ import { TelephonyDataCollectionController } from './TelephonyDataCollectionCont
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { E911Controller } from './E911Controller';
-import { TRANSFER_TYPE } from '../entity/types';
 
 class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
