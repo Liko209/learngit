@@ -623,7 +623,11 @@
     }
   },
   "contact": {
-    "Contacts": "Contacts"
+    "Contacts": "Contacts",
+    "tab": {
+      "allContacts": "All contacts",
+      "company": "Company directory"
+    }
   },
   "calendar": {
     "Calendar": "Calendar"
