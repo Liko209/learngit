@@ -14,7 +14,6 @@ import {
   typography,
   spacing,
   palette,
-  width,
   rippleEnter,
   height,
   grey,
@@ -79,8 +78,6 @@ const ButtonColor = ({
   );
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
-    min-width: ${({ theme }) => width(26)({ theme })};
-    padding: ${spacing(2.5, 4)};
     display: flex;
     text-transform: none;
     ${typography('button')};
