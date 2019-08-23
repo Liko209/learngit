@@ -15,6 +15,7 @@ import {
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
   SOUNDS_TYPE,
+  SETTING_KEYS,
 } from '../../constants';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import GroupService from 'sdk/module/group';
@@ -33,7 +34,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe.skip('ProfileDataController', () => {
+describe('ProfileDataController', () => {
   let profileDataController: ProfileDataController;
   let mockEntitySourceController: MockEntitySourceController;
   let mockEntityCacheController: IEntityCacheController<Profile>;
@@ -183,87 +184,29 @@ describe.skip('ProfileDataController', () => {
     });
   });
 
-  describe('_getGlobalSetting()', () => {
-    it.each`
-      global_setting                                         | isTeam   | expectRes
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF}            | ${true}  | ${true}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE}    | ${true}  | ${false}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION} | ${true}  | ${true}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF}            | ${false} | ${true}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE}    | ${false} | ${false}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION} | ${false} | ${false}
-      ${undefined}                                           | ${false} | ${false}
-      ${undefined}                                           | ${true}  | ${true}
-    `(
-      'should return $expectRes when global setting is $global_setting and isTeam is $isTeam',
-      async ({ global_setting, isTeam, expectRes }) => {
-        const groupId = 1;
-        groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
-        settingService.getById = jest
-          .fn()
-          .mockReturnValue({ value: global_setting });
-        const result = await profileDataController['_getGlobalSetting'](
-          groupId,
-        );
-        expect(result).toEqual(expectRes);
-      },
-    );
-  });
-
   describe('isNotificationMute()', () => {
     it.each`
-      muted        | desktop_notifications | global_setting | expectRes
-      ${undefined} | ${true}               | ${true}        | ${false}
-      ${undefined} | ${true}               | ${false}       | ${false}
-      ${undefined} | ${false}              | ${true}        | ${true}
-      ${undefined} | ${false}              | ${false}       | ${true}
-      ${undefined} | ${undefined}          | ${true}        | ${true}
-      ${undefined} | ${undefined}          | ${false}       | ${false}
-      ${false}     | ${true}               | ${true}        | ${false}
-      ${false}     | ${true}               | ${false}       | ${false}
-      ${false}     | ${false}              | ${true}        | ${true}
-      ${false}     | ${false}              | ${false}       | ${true}
-      ${false}     | ${undefined}          | ${true}        | ${true}
-      ${false}     | ${undefined}          | ${false}       | ${false}
-      ${true}      | ${true}               | ${true}        | ${true}
-      ${true}      | ${true}               | ${false}       | ${true}
-      ${true}      | ${false}              | ${true}        | ${true}
-      ${true}      | ${false}              | ${false}       | ${true}
-      ${true}      | ${undefined}          | ${true}        | ${true}
-      ${true}      | ${undefined}          | ${false}       | ${true}
+      muted    | desktop_notifications | expectRes
+      ${true}  | ${true}               | ${true}
+      ${true}  | ${false}              | ${true}
+      ${false} | ${true}               | ${false}
+      ${false} | ${false}              | ${true}
     `(
-      'should return $expectRes when mute is $mute and desktop_notification is $desktop_notifications and global_setting is $global_setting',
-      async ({ muted, desktop_notifications, global_setting, expectRes }) => {
+      'should return $expectRes when mute is $mute and desktop_notifications is $desktop_notifications',
+      async ({ muted, desktop_notifications, expectRes }) => {
         const groupId = 1;
-        profileDataController['_getGlobalSetting'] = jest
-          .fn()
-          .mockReturnValue(global_setting);
-        profileDataController.getProfile = jest.fn().mockReturnValue({
-          conversation_level_notifications: {
-            [groupId]: {
-              muted,
-              desktop_notifications,
-            },
-          },
+        profileDataController.getByGroupId = jest.fn().mockResolvedValue({
+          muted,
+          desktop_notifications,
         });
         const result = await profileDataController.isNotificationMute(groupId);
         expect(result).toEqual(expectRes);
       },
     );
-    it('should return global setting when profile.conversation_level_notifications is undefined', async () => {
-      const groupId = 1;
-      profileDataController['_getGlobalSetting'] = jest
-        .fn()
-        .mockReturnValue(true);
-      profileDataController.getProfile = jest.fn().mockReturnValue({
-        conversation_level_notifications: undefined,
-      });
-      const result = await profileDataController.isNotificationMute(groupId);
-      expect(result).toEqual(true);
-    });
   });
 
-  describe.skip('getByGroupId', () => {
+  describe('getByGroupId', () => {
+    const groupId = 1;
     const desktopNotifications = true;
     const soundNotifications = SoundsListWithDefault[2];
     const mobileNotifications =
@@ -274,6 +217,14 @@ describe.skip('ProfileDataController', () => {
     const globalMobile = MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF;
     const globalSound = SoundsListWithDefault[1];
     const globalDesktop = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+    const expectValue = {
+      id: groupId,
+      muted: false,
+      desktop_notifications: false,
+      email_notifications: globalEmail,
+      sound_notifications: globalSound,
+      push_notifications: globalMobile,
+    };
     beforeEach(() => {
       settingService.getById = jest.fn().mockImplementation(id => {
         if (id === SettingEntityIds.Notification_NewMessages) {
@@ -300,7 +251,6 @@ describe.skip('ProfileDataController', () => {
       });
     });
     it('should return globalValue when conversation is team and conversation preference is undefined', async () => {
-      const groupId = 1;
       groupService.getById = jest.fn().mockReturnValue({ is_team: true });
       profileDataController.getProfile = jest.fn().mockReturnValue({
         conversation_level_notifications: {
@@ -308,17 +258,10 @@ describe.skip('ProfileDataController', () => {
         },
       });
       const result = await profileDataController.getByGroupId(groupId);
-      expect(result).toEqual({
-        muted: false,
-        desktop_notifications: false,
-        email_notifications: globalEmail,
-        sound_notifications: globalSound,
-        push_notifications: globalMobile,
-      });
+      expect(result).toEqual(expectValue);
     });
     it('should return globalValue when conversation is direct message and conversation preference is undefined', async () => {
-      const groupId = 1;
-      groupService.getById = jest.fn().mockReturnValue({ is_team: false });
+      groupService.getById = jest.fn().mockResolvedValue({ is_team: false });
       profileDataController.getProfile = jest.fn().mockReturnValue({
         conversation_level_notifications: {
           [groupId]: undefined,
@@ -326,15 +269,11 @@ describe.skip('ProfileDataController', () => {
       });
       const result = await profileDataController.getByGroupId(groupId);
       expect(result).toEqual({
-        muted: false,
+        ...expectValue,
         desktop_notifications: true,
-        email_notifications: globalEmail,
-        sound_notifications: globalSound,
-        push_notifications: globalMobile,
       });
     });
     it('should return value when conversation preference is not undefined', async () => {
-      const groupId = 1;
       groupService.getById = jest.fn().mockReturnValue({ is_team: false });
       profileDataController.getProfile = jest.fn().mockReturnValue({
         conversation_level_notifications: {
@@ -346,11 +285,9 @@ describe.skip('ProfileDataController', () => {
       });
       const result = await profileDataController.getByGroupId(groupId);
       expect(result).toEqual({
-        muted: false,
+        ...expectValue,
         desktop_notifications: desktopNotifications,
         email_notifications: emailNotifications,
-        sound_notifications: globalSound,
-        push_notifications: globalMobile,
       });
     });
     it.each`
@@ -363,7 +300,6 @@ describe.skip('ProfileDataController', () => {
     `(
       'should return $expectRes when isTeam is $isTeam and backend is $sound',
       async ({ sound, isTeam, expectRes }) => {
-        const groupId = 1;
         groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
         profileDataController.getProfile = jest.fn().mockReturnValue({
           conversation_level_notifications: {
@@ -397,5 +333,96 @@ describe.skip('ProfileDataController', () => {
         expect(result.desktop_notifications).toEqual(expectRes);
       },
     );
+  });
+
+  describe('_handleConversationPreference', () => {
+    const notification = {
+      muted: true,
+      desktop_notifications: true,
+      push_notifications: MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF,
+      email_notifications: EMAIL_NOTIFICATION_OPTIONS.OFF,
+    };
+    const audio = {
+      gid: 2,
+      sound: SOUNDS_TYPE.Alert,
+    };
+    const profile: any = {
+      conversation_level_notifications: {
+        1: notification,
+      },
+      team_specific_audio_notifications: [audio],
+    };
+    beforeEach(() => {
+      profileDataController['_emitConversationChangedData'] = jest.fn();
+    });
+    it('should not call emit when new profile has no conversation preference', async () => {
+      const newProfile: any = {};
+      const localProfile = {
+        ...profile,
+      };
+      await profileDataController['_handleConversationPreference'](
+        newProfile,
+        localProfile,
+      );
+      expect(
+        profileDataController['_emitConversationChangedData'],
+      ).not.toHaveBeenCalled();
+    });
+    it('should update all conversation when local profile is null', async () => {
+      const newProfile = {
+        ...profile,
+      };
+      const localProfile = null;
+      await profileDataController['_handleConversationPreference'](
+        newProfile,
+        localProfile,
+      );
+      expect(
+        profileDataController['_emitConversationChangedData'],
+      ).toHaveBeenCalledWith([1, 2]);
+    });
+    it('should update all conversation when notification change', async () => {
+      const newProfile = {
+        ...profile,
+        conversation_level_notifications: {
+          1: notification,
+          3: notification,
+        },
+      };
+      const localProfile = {
+        ...profile,
+      };
+      await profileDataController['_handleConversationPreference'](
+        newProfile,
+        localProfile,
+      );
+      expect(
+        profileDataController['_emitConversationChangedData'],
+      ).toHaveBeenCalledWith([3]);
+    });
+    it('should update all conversation when sound change', async () => {
+      const newProfile = {
+        ...profile,
+        team_specific_audio_notifications: [
+          { gid: 2, sound: SOUNDS_TYPE.Default },
+          { gid: 3, sound: SOUNDS_TYPE.Alert },
+          { gid: 4, sound: SOUNDS_TYPE.Alert },
+        ],
+      };
+      const localProfile = {
+        ...profile,
+        team_specific_audio_notifications: [
+          { gid: 2, sound: SOUNDS_TYPE.Alert },
+          { gid: 1, sound: SOUNDS_TYPE.Alert },
+        ],
+      };
+      await profileDataController['_handleConversationPreference'](
+        newProfile,
+        localProfile,
+      );
+      expect(
+        profileDataController['_emitConversationChangedData'],
+      ).toHaveBeenCalledWith([2, 3, 4, 1]);
+    });
   });
 });

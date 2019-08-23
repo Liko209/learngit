@@ -26,21 +26,18 @@ import {
   VIDEO_SERVICE_OPTIONS,
   SOUNDS_TYPE,
   SoundsList,
+  SETTING_KEYS,
+  // SETTING_KEYS,
 } from '../constants';
 import GroupService from 'sdk/module/group';
 import { ConversationPreference } from '../entity/Profile';
+import { PerformanceTracer } from 'foundation/performance';
 
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
   ) {}
-
-  get settingService() {
-    return ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
-    );
-  }
 
   async profileHandleData(
     profile: Raw<Profile> | null,
@@ -107,53 +104,20 @@ class ProfileDataController {
     const profile = await this.getProfile();
     return (profile && profile.favorite_group_ids) || [];
   }
-  async _isTeam(conversationId: number) {
+  private async _isTeam(conversationId: number) {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
     const group = await groupService.getById(conversationId);
     return !!(group && group.is_team);
   }
-  async _getGlobalDesktopNotification(conversationId: number) {
-    const settingService = ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
-    );
-    const model = await settingService.getById<
-      DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
-    >(SettingEntityIds.Notification_NewMessages);
-    const value = model && model.value;
-    let isMute;
-    switch (value) {
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE:
-        isMute = false;
-        break;
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF:
-        isMute = true;
-        break;
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION:
-      default:
-        isMute = await this._isTeam(conversationId);
-        break;
-    }
-    return isMute;
-  }
 
-  async isNotificationMute(conversationId: number) {
-    const profile = await this.getProfile();
-    const notification =
-      profile &&
-      profile.conversation_level_notifications &&
-      profile.conversation_level_notifications[conversationId];
-    if (!notification) {
-      return this._getGlobalDesktopNotification(conversationId);
-    }
-    if (notification.muted) {
+  async isNotificationMute(cid: number) {
+    const model = await this.getByGroupId(cid);
+    if (model.muted) {
       return true;
     }
-    if (notification.desktop_notifications === undefined) {
-      return this._getGlobalDesktopNotification(conversationId);
-    }
-    return !notification.desktop_notifications;
+    return !model.desktop_notifications;
   }
 
   async isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {
@@ -182,6 +146,7 @@ class ProfileDataController {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,
               ]);
+              await this._handleConversationPreference(transformedData, local);
             }
           }
           return transformedData;
@@ -194,6 +159,78 @@ class ProfileDataController {
     }
   }
 
+  private async _handleConversationPreference(
+    newProfile: Profile,
+    localProfile: Nullable<Profile>,
+  ): Promise<void> {
+    const tracer = PerformanceTracer.start();
+    const newNotification = newProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
+    const newAudio = newProfile[SETTING_KEYS.CONVERSATION_AUDIO];
+    if (!newNotification && !newAudio) {
+      return;
+    }
+
+    if (!localProfile) {
+      this._conversationPreferenceInit(newProfile);
+      return;
+    }
+    const changedIds = new Set<number>();
+    if (newNotification) {
+      const oldNotification =
+        localProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
+      // eslint-disable-next-line
+      for (const id in newNotification) {
+        if (
+          !_.isEqual(
+            newNotification[id],
+            oldNotification && oldNotification[id],
+          )
+        ) {
+          changedIds.add(+id);
+        }
+      }
+    }
+    if (newAudio) {
+      const localAudio = localProfile[SETTING_KEYS.CONVERSATION_AUDIO] || [];
+      _.difference(
+        _.unionWith(newAudio, localAudio, _.isEqual),
+        _.intersectionWith(newAudio, localAudio, _.isEqual),
+      ).map(item => changedIds.add(item.gid));
+    }
+    this._emitConversationChangedData(Array.from(changedIds));
+    tracer.end({
+      key: 'vicky profile change',
+    });
+  }
+
+  private async _conversationPreferenceInit(profile: Profile) {
+    const ids = new Set<number>();
+    const notification = profile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
+    const audio = profile[SETTING_KEYS.CONVERSATION_AUDIO];
+    if (notification) {
+      // eslint-disable-next-line
+      for (const id in notification) {
+        ids.add(+id);
+      }
+    }
+    if (audio) {
+      audio.map(item => ids.add(item.gid));
+    }
+    this._emitConversationChangedData(Array.from(ids));
+  }
+
+  private async _emitConversationChangedData(ids: number[]) {
+    if (!ids.length) {
+      return;
+    }
+    const promises = ids.map(id => this.getByGroupId(id));
+    const changedData = await Promise.all(promises);
+    notificationCenter.emitEntityUpdate(
+      ENTITY.CONVERSATION_PREFERENCE,
+      changedData,
+    );
+  }
+
   async getByGroupId(cid: number): Promise<ConversationPreference> {
     const profile = await this.getProfile();
     const notification =
@@ -201,7 +238,7 @@ class ProfileDataController {
       profile.conversation_level_notifications &&
       profile.conversation_level_notifications[cid];
     const sound = (
-      (profile && profile.team_specific_audio_notifications) ||
+      (profile && profile[SETTING_KEYS.CONVERSATION_AUDIO]) ||
       []
     ).find(item => item.gid === cid);
     let model = {
@@ -210,16 +247,19 @@ class ProfileDataController {
       sound_notifications:
         sound && SoundsList.find(item => item.id === sound.sound),
     } as ConversationPreference;
-    if (this._isTeam(cid)) {
+    if (await this._isTeam(cid)) {
       model = await this._getTeamSetting(model);
     } else {
       model = await this._getDMSetting(model);
     }
-    return model;
+    return { id: cid, ...model };
   }
 
   private async _getSettingValue<T>(settingId: SettingEntityIds) {
-    const model = await this.settingService.getById<T>(settingId);
+    const settingService = ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    );
+    const model = await settingService.getById<T>(settingId);
     return (model && model.value)!;
   }
 
