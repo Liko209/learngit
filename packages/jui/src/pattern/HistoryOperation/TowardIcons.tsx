@@ -14,8 +14,9 @@ import { palette } from '../../foundation/utils';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const StyledIconButton = styled(JuiIconButton)<JuiIconButtonProps>`
-  &&&&& .icon[disabled] {
-    color: ${({ theme }) => fade(palette('common', 'white')({ theme }), theme.opacity['5'])};
+  &&&&&.disabled .icon {
+    color: ${({ theme }) =>
+      fade(palette('common', 'white')({ theme }), theme.opacity['5'])};
   }
 `;
 
