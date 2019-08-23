@@ -508,7 +508,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
             className="MuiFab-label"
           >
             <span
-              className=" minimize icon c11"
+              className=" ignore icon c11"
             >
               <svg
                 className="c12"
@@ -516,8 +516,8 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
                 size="small"
               >
                 <use
-                  href="#icon-minimize"
-                  xlinkHref="#icon-minimize"
+                  href="#icon-ignore"
+                  xlinkHref="#icon-ignore"
                 />
               </svg>
             </span>
@@ -645,15 +645,16 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
             className="MuiFab-label"
           >
             <span
-              className=" hand_up icon c11"
+              className=" voicemail icon c11"
             >
               <svg
                 className="c16"
                 role="img"
+                size="large"
               >
                 <use
-                  href="#icon-hand-up"
-                  xlinkHref="#icon-hand-up"
+                  href="#icon-voicemail"
+                  xlinkHref="#icon-voicemail"
                 />
               </svg>
             </span>

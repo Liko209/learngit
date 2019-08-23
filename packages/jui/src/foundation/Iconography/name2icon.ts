@@ -154,6 +154,7 @@ const name2icon = {
   speaker: 'speaker',
   'speaker-mute': 'speaker-mute',
   end_and_answer: 'end--answer',
+  ignore: 'ignore',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

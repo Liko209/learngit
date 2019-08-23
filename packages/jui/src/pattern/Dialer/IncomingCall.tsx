@@ -85,8 +85,8 @@ class JuiIncomingCall extends PureComponent<Props> {
         <StyledActionsContainer onMouseDown={this._handleMouseDown}>
           {Actions &&
             Actions.map((Action: React.ComponentType) => (
-              <StyledAction>
-                <Action key={Action.displayName} />
+              <StyledAction key={Action.displayName}>
+                <Action />
               </StyledAction>
             ))}
         </StyledActionsContainer>

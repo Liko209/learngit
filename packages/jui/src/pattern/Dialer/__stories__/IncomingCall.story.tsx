@@ -21,12 +21,14 @@ const Ignore = () => (
     <JuiFabButton
       color="grey.200"
       size="medium"
-      iconName="minimize"
+      iconName="ignore"
       showShadow={false}
     />
     <StyledActionText>Ignore</StyledActionText>
   </>
 );
+
+Ignore.displayName = 'Ignore';
 
 const VoiceMail = () => (
   <>
@@ -35,7 +37,7 @@ const VoiceMail = () => (
       size="mediumLarge"
       showShadow={false}
       tooltipPlacement="top"
-      iconName="hand_up"
+      iconName="voicemail"
     />
     <StyledActionText>To Voicemail</StyledActionText>
   </>
@@ -50,7 +52,7 @@ const Answer = () => (
       size="mediumLarge"
       showShadow={false}
       tooltipPlacement="top"
-      iconName="phone"
+      iconName="answer"
     />
     <StyledActionText>Answer</StyledActionText>
   </>
