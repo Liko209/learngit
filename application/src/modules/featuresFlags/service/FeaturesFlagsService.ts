@@ -9,6 +9,9 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { featureModuleConfig } from '../config/featureModuleConfig';
 import _ from 'lodash';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { getSingleEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store/constants';
 
 class FeaturesFlagsService {
   private _permissionService = ServiceLoader.getInstance<PermissionService>(
@@ -26,12 +29,23 @@ class FeaturesFlagsService {
     });
   }
 
-  canUseTelephony = async () => (
-    (await this._rcInfoService.isVoipCallingAvailable()) &&
+  canUseTelephony = async () => {
+    return (
+      (await this._rcInfoService.isVoipCallingAvailable()) &&
       (await this._permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
       ))
-  )
+    );
+  };
+
+  canUseConference = async () => {
+    const useGlip =
+      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
+      CALLING_OPTIONS.GLIP;
+    return useGlip
+      ? this.canUseTelephony()
+      : this._rcInfoService.isWebPhoneAvailable();
+  };
 
   getSupportFeatureModules = async () => {
     const supportFeature = await this._getSupportFeature();
@@ -44,7 +58,7 @@ class FeaturesFlagsService {
     });
 
     return _.uniq(featureModules);
-  }
+  };
 
   getModulesByFeatureName = (featureName: string) => {
     let modules: string[] = [];
@@ -53,7 +67,7 @@ class FeaturesFlagsService {
       modules = this._featureModuleMap.get(featureName);
     }
     return modules;
-  }
+  };
 
   private async _getSupportFeature() {
     const defaultSupportFeatures: string[] = [];

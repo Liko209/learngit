@@ -177,16 +177,30 @@ class RCInfoService extends EntityBaseService<IdModel>
   }
 
   async isVoipCallingAvailable(): Promise<boolean> {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
     const result =
-      userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
+      this.isRCAccount &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.VOIP_CALLING,
       ));
     mainLogger.debug(`isVoipCallingAvailable: ${result}`);
     return result;
+  }
+
+  async isWebPhoneAvailable(): Promise<boolean> {
+    const result =
+      this.isRCAccount &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.WEB_PHONE,
+      ));
+    mainLogger.debug(`isWebPhoneAvailable: ${result}`);
+    return result;
+  }
+
+  isRCAccount() {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC;
   }
 
   async getAccountMainNumber() {
