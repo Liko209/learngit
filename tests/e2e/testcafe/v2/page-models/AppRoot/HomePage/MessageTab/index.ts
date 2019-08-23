@@ -156,25 +156,14 @@ class ConversationEntry extends BaseWebComponent {
     });
   }
 
-  async ensureMoreButton() {
-    const moreButton = this.moreMenuEntry;
-    await this.t.expect(moreButton.exists).ok();
-    const displayMoreButton = ClientFunction(
-      () => { moreButton().style["display"] = "inline-flex"; },
-      { dependencies: { moreButton } }
-    );
-    await displayMoreButton();
-    return moreButton;
-  }
-
   async openMoreMenu() {
-    await this.ensureMoreButton();
+    await this.hoverSelf();
     await this.t.click(this.moreMenuEntry);
   }
 
   async hoverMoreButton() {
-    const moreButton = await this.ensureMoreButton();
-    await this.t.hover(moreButton);
+    await this.hoverSelf();
+    await this.t.hover(this.moreMenuEntry, {speed: 0.1});
   }
 
   get draftIcon() {

@@ -4,8 +4,7 @@
  */
 import { SceneConfig } from "./config/sceneConfig";
 import * as lighthouse from "lighthouse";
-import { LogUtils } from "../utils/logUtils";
-import { PptrUtils } from "../utils/pptrUtils";
+import { LogUtils, PptrUtils } from "../utils";
 import { TaskDto, SceneDto } from "../models";
 import { FileService, MetricService, DashboardService } from "../services";
 import * as reportGenerater from "lighthouse/lighthouse-core/report/report-generator";

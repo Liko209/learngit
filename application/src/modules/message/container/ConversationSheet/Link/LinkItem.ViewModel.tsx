@@ -29,12 +29,10 @@ class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
 
   @computed
   get isLinkPreviewDisabled() {
-    return (
-      !getEntity<UserSettingEntity, SettingModel>(
-        ENTITY_NAME.USER_SETTING,
-        SettingEntityIds.Link_Preview,
-      ).value
-    );
+    return !getEntity<UserSettingEntity, SettingModel>(
+      ENTITY_NAME.USER_SETTING,
+      SettingEntityIds.Link_Preview,
+    ).value;
   }
 
   @computed
