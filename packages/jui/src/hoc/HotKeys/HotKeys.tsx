@@ -103,7 +103,7 @@ class HotKeys extends PureComponent<HotKeysProps, {}> {
       display: 'flex',
       height: '100%',
       flexDirection: 'column',
-    };
+    } as React.CSSProperties;
   }
 
   render() {

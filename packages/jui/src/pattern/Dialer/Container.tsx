@@ -64,7 +64,7 @@ const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
   }
 `;
 
-const JuiKeypadAction = styled.div<{ removeMargin: boolean }>`
+const JuiKeypadAction = styled.div<{ removeMargin?: boolean }>`
   && {
     display: flex;
     flex-direction: column;
