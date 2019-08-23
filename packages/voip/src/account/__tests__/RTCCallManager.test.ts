@@ -38,7 +38,7 @@ describe('RTCCallManager', () => {
     expect(callManager.allowCall()).toBe(true);
   });
 
-  it('should allowCall() return false when current call count = 1 [JPT-804],[JPT-2722],[JPT-2719]', () => {
+  it('should allowCall() return true if current call count = 1 when make extra outbound call [JPT-2719], [JPT-804],[JPT-2722]', () => {
     const callManager = new RTCCallManager();
     const account = new MockAccountAndCallObserver();
     const call = new RTCCall(false, '123', null, account, account);
@@ -73,7 +73,7 @@ describe('RTCCallManager', () => {
     expect(callManager.allowCall(ALLOW_CALL_FLAG.INBOUND_CALL)).toBe(true);
   });
 
-  it('should allowCall() return true when receive incoming call and call count = 1 which state is not connected [JPT-2721]', () => {
+  it('should allowCall() return false when receive incoming call and call count = 1 which state is not connected [JPT-2721]', () => {
     const callManager = new RTCCallManager();
     const account = new MockAccountAndCallObserver();
     const call = new RTCCall(false, '123', null, account, account);

@@ -597,7 +597,7 @@ describe('CallSwitchController', () => {
             [
               1,
               {
-                call_state: 'connected',
+                call_state: 'Connected',
                 call_id: '1',
                 from_tag: 'f',
                 to_tag: 't',
@@ -606,7 +606,7 @@ describe('CallSwitchController', () => {
             [
               2,
               {
-                call_state: 'disconnected',
+                call_state: 'Disconnected',
                 call_id: '1',
                 from_tag: 'f',
                 to_tag: 't',
