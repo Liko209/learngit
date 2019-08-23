@@ -10,7 +10,7 @@ import {
   kDefaultPhoneTabPath,
   ROUTE_ROOT_PATH,
 } from '@/modules/phone/container/LeftRail/constant';
-import { PhoneUMI } from '@/modules/phone/container/PhoneUMI';
+import { PhoneUMI, PhoneUMIType } from '@/modules/phone/container/PhoneUMI';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -40,7 +40,7 @@ const config: SubModuleConfig = {
     ),
     IconSelected: <JuiIconography>leftNavPhone</JuiIconography>,
     title: 'telephony.Phone',
-    umi: <PhoneUMI />,
+    umi: <PhoneUMI type={PhoneUMIType.ALL} />,
     placement: 'top',
     disable: !(await container.get(FeaturesFlagsService).canUseTelephony()),
   }),
