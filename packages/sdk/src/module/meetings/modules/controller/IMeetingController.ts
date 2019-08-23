@@ -8,6 +8,7 @@ import { StartMeetingResultType } from '../../types';
 interface IMeetingController {
   startMeeting(groupIds: number[]): Promise<StartMeetingResultType>;
   cancelMeeting(meetingId: number): Promise<void>;
+  getJoinUrl(meetingId: number): Promise<string>;
 }
 
 export { IMeetingController };

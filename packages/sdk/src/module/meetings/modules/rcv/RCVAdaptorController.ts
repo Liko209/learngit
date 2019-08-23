@@ -26,6 +26,11 @@ class RCVAdaptorController implements IMeetingAdaptorController {
     return controller.cancelMeeting(meetingId);
   }
 
+  getJoinUrl(meetingId: number): Promise<string> {
+    const controller = this.getSuitableController();
+    return controller.getJoinUrl(meetingId);
+  }
+
   private getSuitableController() {
     // TODO, should depends on condition to choose DeepLink or Embedded
     return this.rcvDeepLinkController;

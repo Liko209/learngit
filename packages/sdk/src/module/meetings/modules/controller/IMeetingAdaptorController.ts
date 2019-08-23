@@ -9,6 +9,7 @@ interface IMeetingAdaptorController {
   startMeeting(groupIds: number[]): Promise<StartMeetingResultType>;
   isRCVideo(): boolean;
   cancelMeeting(meetingId: number): Promise<void>;
+  getJoinUrl(meetingId: number): Promise<string>;
 }
 
 export { IMeetingAdaptorController };
