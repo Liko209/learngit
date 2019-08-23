@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, ClipboardEvent } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources, RangeStatic } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
@@ -117,6 +117,19 @@ type Props = {
   hasFocused?: boolean;
 };
 
+function isPasteImageEvent(event: ClipboardEvent) {
+  if (event.clipboardData) {
+    const { files, types } = event.clipboardData;
+    return (
+      files &&
+      files.length > 0 &&
+      types[0] === 'text/plain' &&
+      types[1] === 'Files'
+    );
+  }
+  return false;
+}
+
 class JuiMessageInput extends React.PureComponent<Props> {
   static defaultProps = {
     autofocus: true,
@@ -186,20 +199,18 @@ class JuiMessageInput extends React.PureComponent<Props> {
     }
   };
 
-  private _handlePaste = (event: any) => {
-    if (event.clipboardData) {
-      const files: FileList = event.clipboardData.files;
-      if (files && files.length > 0) {
-        // access data directly
-        const result: File[] = [];
-        for (let i = 0; i < files.length; ++i) {
-          const file = files[i];
-          result.push(file);
-        }
-        const { didDropFile } = this.props;
-        didDropFile && files && didDropFile(result);
-        event.preventDefault();
+  private _handlePaste = (event: ClipboardEvent) => {
+    if (isPasteImageEvent(event)) {
+      const { files } = event.clipboardData;
+      // access data directly
+      const result: File[] = [];
+      for (let i = 0; i < files.length; ++i) {
+        const file = files[i];
+        result.push(file);
       }
+      const { didDropFile } = this.props;
+      didDropFile && files && didDropFile(result);
+      event.preventDefault();
     }
   };
   render() {
