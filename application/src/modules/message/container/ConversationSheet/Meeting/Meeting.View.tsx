@@ -24,6 +24,7 @@ import {
   SearchHighlightContext,
 } from '@/common/postParser';
 import { MeetingStatus } from './MeetingStatus.View';
+import moize from 'moize';
 
 type meetingProps = WithTranslation & ViewProps;
 
@@ -83,11 +84,14 @@ class Meeting extends React.Component<meetingProps> {
     }
   }
 
-  private _getStatusClick = () => ({
-    [MEETING_STATUS.NO_ANSWER]: this.props.callbackMeeting,
-    [MEETING_STATUS.NOT_STARTED]: this.props.cancelMeeting,
-    [MEETING_STATUS.LIVE]: this.props.joinMeeting,
-  })
+  private _getStatusClick = moize((status: MEETING_STATUS) => {
+    const statusClickStrategy = {
+      [MEETING_STATUS.NO_ANSWER]: this.props.callbackMeeting,
+      [MEETING_STATUS.NOT_STARTED]: this.props.cancelMeeting,
+      [MEETING_STATUS.LIVE]: this.props.joinMeeting,
+    };
+    return statusClickStrategy[status];
+  });
 
   render() {
     const { t, meetingTitle, meetingItem, duration } = this.props;
@@ -100,7 +104,7 @@ class Meeting extends React.Component<meetingProps> {
           <MeetingStatus
             status={status}
             duration={`${t('item.meeting.duration')}: ${duration}`}
-            onStatusClick={this._getStatusClick()[status]}
+            onStatusClick={this._getStatusClick(status)}
           />
         }
         isShowLoading={status === MEETING_STATUS.NOT_STARTED

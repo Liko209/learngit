@@ -20,7 +20,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 // import { ElectronService } from '@/modules/electron';
 // import { container } from 'framework/ioc';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { MEETING_ACTION } from 'sdk/src/module/meetings/types';
+import { MEETING_ACTION } from 'sdk/module/meetings/types';
 import { mainLogger } from 'foundation/log';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
@@ -104,9 +104,7 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     }
   };
 
-  cancelMeeting = () => {
-    
-  }
+  cancelMeeting = () => {};
 
   @computed
   get meetingTitle() {
