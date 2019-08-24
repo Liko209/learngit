@@ -20,24 +20,18 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { SettingService, SettingEntityIds } from 'sdk/module/setting';
-import {
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  VIDEO_SERVICE_OPTIONS,
-  SOUNDS_TYPE,
-  SoundsList,
-  SETTING_KEYS,
-  // SETTING_KEYS,
-} from '../constants';
-import GroupService from 'sdk/module/group';
+import { VIDEO_SERVICE_OPTIONS } from '../constants';
 import { ConversationPreference } from '../entity/Profile';
-import { PerformanceTracer } from 'foundation/performance';
+import ConversationPreferenceHelper from './ConversationPreferenceHelper';
 
 class ProfileDataController {
+  private _conversationPreferenceHelper: ConversationPreferenceHelper;
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
-  ) {}
+  ) {
+    this._conversationPreferenceHelper = new ConversationPreferenceHelper();
+  }
 
   async profileHandleData(
     profile: Raw<Profile> | null,
@@ -104,13 +98,6 @@ class ProfileDataController {
     const profile = await this.getProfile();
     return (profile && profile.favorite_group_ids) || [];
   }
-  private async _isTeam(conversationId: number) {
-    const groupService = ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
-    );
-    const group = await groupService.getById(conversationId);
-    return !!(group && group.is_team);
-  }
 
   async isNotificationMute(cid: number) {
     const model = await this.getByGroupId(cid);
@@ -146,7 +133,7 @@ class ProfileDataController {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,
               ]);
-              await this._handleConversationPreference(transformedData, local);
+              await this._emitConversationUpdate(transformedData, local);
             }
           }
           return transformedData;
@@ -159,67 +146,14 @@ class ProfileDataController {
     }
   }
 
-  private async _handleConversationPreference(
+  private async _emitConversationUpdate(
     newProfile: Profile,
     localProfile: Nullable<Profile>,
   ): Promise<void> {
-    const tracer = PerformanceTracer.start();
-    const newNotification = newProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
-    const newAudio = newProfile[SETTING_KEYS.CONVERSATION_AUDIO];
-    if (!newNotification && !newAudio) {
-      return;
-    }
-
-    if (!localProfile) {
-      this._conversationPreferenceInit(newProfile);
-      return;
-    }
-    const changedIds = new Set<number>();
-    if (newNotification) {
-      const oldNotification =
-        localProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
-      // eslint-disable-next-line
-      for (const id in newNotification) {
-        if (
-          !_.isEqual(
-            newNotification[id],
-            oldNotification && oldNotification[id],
-          )
-        ) {
-          changedIds.add(+id);
-        }
-      }
-    }
-    if (newAudio) {
-      const localAudio = localProfile[SETTING_KEYS.CONVERSATION_AUDIO] || [];
-      _.difference(
-        _.unionWith(newAudio, localAudio, _.isEqual),
-        _.intersectionWith(newAudio, localAudio, _.isEqual),
-      ).map(item => changedIds.add(item.gid));
-    }
-    this._emitConversationChangedData(Array.from(changedIds));
-    tracer.end({
-      key: 'vicky profile change',
-    });
-  }
-
-  private async _conversationPreferenceInit(profile: Profile) {
-    const ids = new Set<number>();
-    const notification = profile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
-    const audio = profile[SETTING_KEYS.CONVERSATION_AUDIO];
-    if (notification) {
-      // eslint-disable-next-line
-      for (const id in notification) {
-        ids.add(+id);
-      }
-    }
-    if (audio) {
-      audio.map(item => ids.add(item.gid));
-    }
-    this._emitConversationChangedData(Array.from(ids));
-  }
-
-  private async _emitConversationChangedData(ids: number[]) {
+    const ids = this._conversationPreferenceHelper.getUpdateConversationIds(
+      newProfile,
+      localProfile,
+    );
     if (!ids.length) {
       return;
     }
@@ -233,92 +167,10 @@ class ProfileDataController {
 
   async getByGroupId(cid: number): Promise<ConversationPreference> {
     const profile = await this.getProfile();
-    const notification =
-      profile &&
-      profile.conversation_level_notifications &&
-      profile.conversation_level_notifications[cid];
-    const sound = (
-      (profile && profile[SETTING_KEYS.CONVERSATION_AUDIO]) ||
-      []
-    ).find(item => item.gid === cid);
-    let model = {
-      ...notification,
-      muted: (notification && notification.muted) || false,
-      audio_notifications:
-        sound && SoundsList.find(item => item.id === sound.sound),
-    } as ConversationPreference;
-    if (await this._isTeam(cid)) {
-      model = await this._getTeamSetting(model);
-    } else {
-      model = await this._getDMSetting(model);
-    }
-    return { id: cid, ...model };
-  }
-
-  private async _getSettingValue<T>(settingId: SettingEntityIds) {
-    const settingService = ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
+    return await this._conversationPreferenceHelper.buildEntityInfo(
+      profile,
+      cid,
     );
-    const model = await settingService.getById<T>(settingId);
-    return (model && model.value)!;
-  }
-
-  private async _getTeamSetting(model: ConversationPreference) {
-    if (
-      model.audio_notifications === undefined ||
-      model.audio_notifications.id === SOUNDS_TYPE.Default
-    ) {
-      model.audio_notifications = await this._getSettingValue(
-        SettingEntityIds.Audio_TeamMessages,
-      );
-    }
-    if (!model.desktop_notifications) {
-      const value = await this._getSettingValue(
-        SettingEntityIds.Notification_NewMessages,
-      );
-      model.desktop_notifications =
-        value === DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE;
-    }
-    if (model.email_notifications === undefined) {
-      model.email_notifications = await this._getSettingValue(
-        SettingEntityIds.Notification_Teams,
-      );
-    }
-    if (model.push_notifications === undefined) {
-      model.push_notifications = await this._getSettingValue(
-        SettingEntityIds.MOBILE_Team,
-      );
-    }
-    return model;
-  }
-
-  private async _getDMSetting(model: ConversationPreference) {
-    if (
-      !model.audio_notifications ||
-      model.audio_notifications.id === SOUNDS_TYPE.Default
-    ) {
-      model.audio_notifications = await this._getSettingValue(
-        SettingEntityIds.Audio_DirectMessage,
-      );
-    }
-    if (!model.desktop_notifications) {
-      const value = await this._getSettingValue(
-        SettingEntityIds.Notification_NewMessages,
-      );
-      model.desktop_notifications =
-        value !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF;
-    }
-    if (model.email_notifications === undefined) {
-      model.email_notifications = await this._getSettingValue(
-        SettingEntityIds.Notification_DirectMessages,
-      );
-    }
-    if (model.push_notifications === undefined) {
-      model.push_notifications = await this._getSettingValue(
-        SettingEntityIds.MOBILE_DM,
-      );
-    }
-    return model;
   }
 }
 
