@@ -178,12 +178,12 @@ class ProfileService extends EntityBaseService<Profile>
   };
 
   async updateConversationPreference(
-    id: number,
+    cid: number,
     model: Partial<ConversationPreference>,
   ): Promise<void> {
     await this.getProfileController()
       .getSettingsActionController()
-      .updateSettingByGroupId(id, model);
+      .updateConversationPreference(cid, model);
   }
 
   private get profileSetting() {
