@@ -18,9 +18,14 @@ import {
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import GroupService from 'sdk/module/group';
+import { ProfileObserver } from '../types';
+import { notificationCenter, ENTITY } from 'sdk/service';
 
-class ConversationPreferenceHandler {
-  constructor() {}
+class ConversationPreferenceHandler implements ProfileObserver {
+  keys: SETTING_KEYS[] = [];
+  constructor(keys: SETTING_KEYS[]) {
+    this.keys = keys;
+  }
   public async buildEntityInfo(profile: Nullable<Profile>, cid: number) {
     const notification =
       profile &&
@@ -44,39 +49,55 @@ class ConversationPreferenceHandler {
     return { id: cid, ...model };
   }
 
-  public getUpdateConversationIds(
-    newProfile: Profile,
+  async update(
+    profile: Profile,
+    originProfile: Nullable<Profile>,
+  ): Promise<void> {
+    const ids = this._getUpdateConversationIds(profile, originProfile);
+    if (!ids.length) {
+      return;
+    }
+    const promises = ids.map(id => this.buildEntityInfo(profile, id));
+    const changedData = await Promise.all(promises);
+    notificationCenter.emitEntityUpdate(
+      ENTITY.CONVERSATION_PREFERENCE,
+      changedData,
+    );
+  }
+
+  private _getUpdateConversationIds(
+    profile: Profile,
     localProfile: Nullable<Profile>,
   ) {
-    const newNotification = newProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
-    const newAudio = newProfile[SETTING_KEYS.CONVERSATION_AUDIO];
-    if (!newNotification && !newAudio) {
+    const notification = profile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
+    const audio = profile[SETTING_KEYS.CONVERSATION_AUDIO];
+    if (!notification && !audio) {
       return [];
     }
     if (!localProfile) {
-      return this._getInitConversationIds(newProfile);
+      return this._getInitConversationIds(profile);
     }
     const changedIds = new Set<number>();
-    if (newNotification) {
-      const oldNotification =
+    if (notification) {
+      const localNotification =
         localProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
       // eslint-disable-next-line
-      for (const id in newNotification) {
+      for (const id in notification) {
         if (
           !_.isEqual(
-            newNotification[id],
-            oldNotification && oldNotification[id],
+            notification[id],
+            localNotification && localNotification[id],
           )
         ) {
           changedIds.add(+id);
         }
       }
     }
-    if (newAudio) {
+    if (audio) {
       const localAudio = localProfile[SETTING_KEYS.CONVERSATION_AUDIO] || [];
       _.difference(
-        _.unionWith(newAudio, localAudio, _.isEqual),
-        _.intersectionWith(newAudio, localAudio, _.isEqual),
+        _.unionWith(audio, localAudio, _.isEqual),
+        _.intersectionWith(audio, localAudio, _.isEqual),
       ).map(item => changedIds.add(item.gid));
     }
     return Array.from(changedIds);
@@ -176,4 +197,4 @@ class ConversationPreferenceHandler {
   }
 }
 
-export default ConversationPreferenceHandler;
+export { ConversationPreferenceHandler };

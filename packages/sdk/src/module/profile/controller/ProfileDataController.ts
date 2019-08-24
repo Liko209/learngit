@@ -20,17 +20,26 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { VIDEO_SERVICE_OPTIONS } from '../constants';
+import { VIDEO_SERVICE_OPTIONS, SETTING_KEYS } from '../constants';
 import { ConversationPreference } from '../entity/Profile';
-import ConversationPreferenceHelper from './ConversationPreferenceHelper';
+import { ConversationPreferenceHandler } from './ConversationPreferenceHelper';
+import { ProfileEntityObservable } from './ProfileEntityObservable';
 
 class ProfileDataController {
-  private _conversationPreferenceHelper: ConversationPreferenceHelper;
+  private _conversationPreferenceHandler: ConversationPreferenceHandler;
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
+    public profileEntityObservable: ProfileEntityObservable,
   ) {
-    this._conversationPreferenceHelper = new ConversationPreferenceHelper();
+    this._registerObservers();
+  }
+  private _registerObservers() {
+    this._conversationPreferenceHandler = new ConversationPreferenceHandler([
+      SETTING_KEYS.CONVERSATION_AUDIO,
+      SETTING_KEYS.CONVERSATION_NOTIFICATION,
+    ]);
+    this.profileEntityObservable.register(this._conversationPreferenceHandler);
   }
 
   async profileHandleData(
@@ -133,7 +142,10 @@ class ProfileDataController {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,
               ]);
-              await this._emitConversationUpdate(transformedData, local);
+              this.profileEntityObservable.onProfileUpdate(
+                transformedData,
+                local,
+              );
             }
           }
           return transformedData;
@@ -146,28 +158,9 @@ class ProfileDataController {
     }
   }
 
-  private async _emitConversationUpdate(
-    newProfile: Profile,
-    localProfile: Nullable<Profile>,
-  ): Promise<void> {
-    const ids = this._conversationPreferenceHelper.getUpdateConversationIds(
-      newProfile,
-      localProfile,
-    );
-    if (!ids.length) {
-      return;
-    }
-    const promises = ids.map(id => this.getByGroupId(id));
-    const changedData = await Promise.all(promises);
-    notificationCenter.emitEntityUpdate(
-      ENTITY.CONVERSATION_PREFERENCE,
-      changedData,
-    );
-  }
-
   async getByGroupId(cid: number): Promise<ConversationPreference> {
     const profile = await this.getProfile();
-    return await this._conversationPreferenceHelper.buildEntityInfo(
+    return await this._conversationPreferenceHandler.buildEntityInfo(
       profile,
       cid,
     );

@@ -12,7 +12,7 @@ export default class ConversationPreferenceModel extends Base<
 > {
   @observable muted: boolean;
   @observable desktopNotifications: boolean;
-  @observable soundNotifications: AUDIO_SOUNDS_INFO;
+  @observable audioNotifications: AUDIO_SOUNDS_INFO;
   @observable pushNotifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
   @observable emailNotifications: EMAIL_NOTIFICATION_OPTIONS;
 
@@ -28,7 +28,7 @@ export default class ConversationPreferenceModel extends Base<
 
     this.muted = muted;
     this.desktopNotifications = desktop_notifications;
-    this.soundNotifications = audio_notifications;
+    this.audioNotifications = audio_notifications;
     this.pushNotifications = push_notifications;
     this.emailNotifications = email_notifications;
   }

@@ -72,7 +72,7 @@ class SettingsActionController {
     const originAudio =
       (profile && profile[SETTING_KEYS.CONVERSATION_AUDIO]) || [];
     if (notification) {
-      originNotification[cid] = notification;
+      originNotification[cid] = { ...originNotification[cid], ...notification };
       updateData.push({
         key: SETTING_KEYS.CONVERSATION_NOTIFICATION,
         value: originNotification,
