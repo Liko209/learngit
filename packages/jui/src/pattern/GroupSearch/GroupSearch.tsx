@@ -38,6 +38,7 @@ export type GroupSearchProps<T> = {
   closeIconAriaLabel?: string;
   onDialogClose: () => void;
   itemCount: number;
+  onKeyDownEscape: () => void;
 };
 
 const LIST_HEIGHT = '392px';
@@ -67,8 +68,9 @@ function stateReducer(state: any, changes: any) {
   // selects an item with a keyboard or mouse
   switch (changes.type) {
     case Downshift.stateChangeTypes.keyDownSpaceButton:
+    case Downshift.stateChangeTypes.keyDownEscape:
     case Downshift.stateChangeTypes.blurInput:
-      return {}
+      return {};
     case Downshift.stateChangeTypes.keyDownEnter:
     case Downshift.stateChangeTypes.clickItem:
       return {
@@ -95,6 +97,7 @@ export function JuiGroupSearch<T extends SelectItem>({
   closeIconAriaLabel,
   onDialogClose,
   itemCount,
+  onKeyDownEscape,
 }: GroupSearchProps<T>) {
   const ref = useRef<DownshiftInterface<any>>(null);
   const _onInputChange = useCallback(
@@ -106,6 +109,18 @@ export function JuiGroupSearch<T extends SelectItem>({
       }
     },
     [onInputChange],
+  );
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<any>) => {
+      if (e.key === 'Escape') {
+        // Prevent Downshift's default 'escape' behavior.
+        // @ts-ignore
+        e.nativeEvent.preventDownshiftDefault = true;
+        onKeyDownEscape();
+      }
+    },
+    [onKeyDownEscape],
   );
 
   return (
@@ -140,6 +155,7 @@ export function JuiGroupSearch<T extends SelectItem>({
                 size="medium"
                 withCloseIcon={false}
                 InputProps={getInputProps({
+                  onKeyDown,
                   placeholder: searchPlaceHolder,
                   autoFocus: true,
                 })}

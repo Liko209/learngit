@@ -163,6 +163,11 @@
     "NoMatchesFound": "No matches found",
     "SearchForContactsAndKeywords": "Search for contacts and keywords"
   },
+  "groupSearch": {
+    "inputGhostText": "Type person or team name",
+    "dialogTitle": "Switch conversation",
+    "listTitle": "Recent conversations"
+  },
   "dashboard": {
     "Dashboard": "Dashboard"
   },
