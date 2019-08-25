@@ -26,8 +26,10 @@ class ProfileEntityObservable implements ProfileObservable {
   unRegister(observer: ProfileObserver) {
     this._observers.forEach(
       (observers: ProfileObserver[], key: SETTING_KEYS) => {
-        observers.filter((item: ProfileObserver) => item === observer);
-        this._observers.set(key, observers);
+        this._observers.set(
+          key,
+          observers.filter((item: ProfileObserver) => item !== observer),
+        );
       },
     );
   }
