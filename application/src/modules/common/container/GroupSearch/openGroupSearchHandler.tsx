@@ -9,16 +9,19 @@ import { GroupSearch } from './GroupSearch';
 import { Dialog } from '@/containers/Dialog';
 import { goToConversation } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 const DIALOG_KEY = 'GroupSearch';
 function gotoConversation({ id }: { id: number }) {
   portalManager.dismissLast();
   setTimeout(() => {
+    analyticsCollector.goToConversation('switchConversationDialog');
     goToConversation({ conversationId: id });
   });
 }
 
 export function openGroupSearchHandler() {
+  analyticsCollector.shortcuts('quickSwitcher');
   if (portalManager.isOpened(DIALOG_KEY)) return;
   Dialog.simple(
     <GroupSearch onSelectChange={gotoConversation} />,
