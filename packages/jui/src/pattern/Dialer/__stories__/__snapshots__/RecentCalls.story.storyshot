@@ -134,8 +134,8 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
 }
 
 .c1.c1 {
-  margin-top: 0;
-  height: calc(100%);
+  margin-top: 44px;
+  height: calc(100% - 44px);
   overflow: hidden;
 }
 

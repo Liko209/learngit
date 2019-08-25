@@ -47,7 +47,7 @@ const RecentCall = (props: { isTransfer: boolean }) => {
   const { isTransfer } = props;
   return (
     <JuiDialer>
-      <JuiRecentCalls>
+      <JuiRecentCalls addMargin>
         <JuiRecentCallItem
           selected={selected === 0}
           onClick={() => setSelected(0)}
@@ -130,5 +130,5 @@ const RecentCall = (props: { isTransfer: boolean }) => {
 
 storiesOf('Pattern', module).add('Recent Calls', () => {
   const isTransfer = boolean('isTransfer', false);
-  return <RecentCall isTransfer={isTransfer} addMargin />;
+  return <RecentCall isTransfer={isTransfer} />;
 });
