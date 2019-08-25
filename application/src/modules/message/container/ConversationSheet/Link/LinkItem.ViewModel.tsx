@@ -15,7 +15,7 @@ import { LinkItemModel, LinkItemProps } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
 import ProfileModel from '@/store/models/Profile';
-import { Profile } from 'sdk/src/module/profile/entity';
+import { Profile } from 'sdk/module/profile/entity';
 
 class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
   private _itemService = ServiceLoader.getInstance<ItemService>(

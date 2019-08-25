@@ -1,5 +1,6 @@
 import { Person } from 'sdk/module/person/entity';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { SortableModel } from 'sdk/framework/model';
 
 /*
  * @Author: Thomas thomas.yang@ringcentral.com
@@ -22,14 +23,17 @@ type RecentSearchModel = {
   time_stamp: number;
 };
 
-type FuzzySearchPersonOptions = {
-  searchKey?: string;
+type FuzzySearchContactOptions = {
   excludeSelf?: boolean;
   arrangeIds?: number[];
   fetchAllIfSearchKeyEmpty?: boolean;
   asIdsOrder?: boolean;
   recentFirst?: boolean;
   ignoreEmail?: boolean;
+  sortFunc?: (
+    personA: SortableModel<Person>,
+    personB: SortableModel<Person>,
+  ) => number;
 };
 
 type PhoneContactEntity = {
@@ -48,7 +52,7 @@ enum PersonSortingOrder {
 export {
   RecentSearchModel,
   RecentSearchTypes,
-  FuzzySearchPersonOptions,
+  FuzzySearchContactOptions,
   PersonSortingOrder,
   PhoneContactEntity,
 };

@@ -34,8 +34,8 @@ import { GroupEntityCacheController } from '../controller/GroupEntityCacheContro
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
-import { GroupSearchOption } from '../entity/Group';
 import { UndefinedAble } from 'sdk/types';
+import { FuzzySearchGroupOptions } from '../entity/Group';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -332,7 +332,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
 
   async doFuzzySearchAllGroups(
     searchKey: UndefinedAble<string>,
-    option: GroupSearchOption,
+    option: FuzzySearchGroupOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
