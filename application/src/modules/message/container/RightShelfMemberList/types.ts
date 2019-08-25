@@ -12,16 +12,19 @@ type RightShelfMemberListProps = {
 type RightShelfMemberListViewProps = RightShelfMemberListProps & {
   shouldHide: boolean;
   group: GroupModel;
-  isLoading: boolean;
-  loadingH: number;
-  fullMemberIds: number[];
-  fullGuestIds: number[];
-  shownMemberIds: number[];
-  shownGuestIds: number[];
+  membersData: {
+    isLoading: boolean;
+    fullMemberLen: number;
+    fullGuestLen: number;
+    shownMemberIds: number[];
+    shownGuestIds: number[];
+    personNameMap: { [id: number]: string };
+  };
   canAddMembers: boolean;
+  shouldShowLink: boolean;
+  loadingH: number;
   allMemberLength?: number;
   isTeam?: boolean;
-  personNameMap: { [id: string]: string };
   setWrapperWidth: (width: number) => void;
   init: () => void;
   dispose: () => void;
