@@ -35,7 +35,8 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<AddMembersComponent {...props} />);
-      await Wrapper.find(JuiModal)
+      await Wrapper.shallow()
+        .find(JuiModal)
         .shallow()
         .find(JuiButton)
         .simulate('click');
@@ -53,7 +54,9 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<AddMembersComponent {...props} />);
-      await Wrapper.find(JuiModal)
+      console.log('nye ', Wrapper.shallow().debug());
+      await Wrapper.shallow()
+        .find(JuiModal)
         .shallow()
         .find(JuiButton)
         .simulate('click');
