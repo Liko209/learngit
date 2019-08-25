@@ -54,7 +54,6 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<AddMembersComponent {...props} />);
-      console.log('nye ', Wrapper.shallow().debug());
       await Wrapper.shallow()
         .find(JuiModal)
         .shallow()
