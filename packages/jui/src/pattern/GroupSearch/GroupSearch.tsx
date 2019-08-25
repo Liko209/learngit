@@ -4,16 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing, grey, typography } from '../../foundation/utils';
 import { JuiSearchInput } from '../SearchBar/SearchInput';
 import {
   JuiDialogHeaderTitle,
   JuiDialogHeaderActions,
+  JuiDialogHeader,
 } from '../../components/Dialog';
 import { JuiIconButton } from '../../components/Buttons';
-import Downshift, { GetItemPropsOptions } from 'downshift';
+import Downshift, { GetItemPropsOptions, DownshiftInterface } from 'downshift';
 
 export type SelectItem = {
   id: number;
@@ -35,15 +36,11 @@ export type GroupSearchProps<T> = {
   }) => React.ReactElement;
   closeIconTooltip: string;
   closeIconAriaLabel?: string;
+  onDialogClose: () => void;
+  itemCount: number;
 };
 
 const LIST_HEIGHT = '392px';
-
-const StyledHeader = styled.div`
-  padding: ${spacing(5, 6)};
-  display: flex;
-  align-items: center;
-`;
 
 const Container = styled.div`
   display: flex;
@@ -69,6 +66,9 @@ function stateReducer(state: any, changes: any) {
   // this prevents the highlightIndex changing closed when the user
   // selects an item with a keyboard or mouse
   switch (changes.type) {
+    case Downshift.stateChangeTypes.keyDownSpaceButton:
+    case Downshift.stateChangeTypes.blurInput:
+      return {}
     case Downshift.stateChangeTypes.keyDownEnter:
     case Downshift.stateChangeTypes.clickItem:
       return {
@@ -93,7 +93,21 @@ export function JuiGroupSearch<T extends SelectItem>({
   clearText,
   closeIconTooltip,
   closeIconAriaLabel,
+  onDialogClose,
+  itemCount,
 }: GroupSearchProps<T>) {
+  const ref = useRef<DownshiftInterface<any>>(null);
+  const _onInputChange = useCallback(
+    e => {
+      if (ref && ref.current) {
+        // @ts-ignore
+        ref.current.setHighlightedIndex(0);
+        onInputChange(e);
+      }
+    },
+    [onInputChange],
+  );
+
   return (
     <Downshift
       defaultHighlightedIndex={0}
@@ -101,33 +115,36 @@ export function JuiGroupSearch<T extends SelectItem>({
       stateReducer={stateReducer}
       onChange={onSelectChange}
       initialIsOpen
+      itemCount={itemCount}
+      ref={ref}
     >
       {({ getInputProps, getItemProps, highlightedIndex, getRootProps }) => {
         return (
           <Container {...getRootProps()}>
-            <StyledHeader>
+            <JuiDialogHeader>
               <JuiDialogHeaderTitle>{dialogTitle}</JuiDialogHeaderTitle>
               <JuiDialogHeaderActions>
                 <JuiIconButton
                   tooltipTitle={closeIconTooltip}
                   ariaLabel={closeIconAriaLabel}
+                  onClick={onDialogClose}
                 >
                   close
                 </JuiIconButton>
               </JuiDialogHeaderActions>
-            </StyledHeader>
+            </JuiDialogHeader>
             <StyledFixedTop>
               <JuiSearchInput
                 onClear={onClear}
                 clearText={clearText}
-                showClear
                 size="medium"
                 withCloseIcon={false}
                 InputProps={getInputProps({
                   placeholder: searchPlaceHolder,
+                  autoFocus: true,
                 })}
                 value={searchKey}
-                onChange={onInputChange}
+                onChange={_onInputChange}
               />
               <StyledListTitle>{listTitle}</StyledListTitle>
             </StyledFixedTop>
