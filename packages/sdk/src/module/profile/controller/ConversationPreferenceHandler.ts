@@ -7,7 +7,7 @@
 import _ from 'lodash';
 import { Profile } from '../entity';
 import { Nullable, UndefinedAble } from 'sdk/types';
-import { ConversationPreference } from '../entity/Profile';
+import { ConversationPreference, AUDIO_NOTIFICATIONS } from '../entity/Profile';
 import {
   SoundsList,
   SETTING_KEYS,
@@ -27,14 +27,13 @@ class ConversationPreferenceHandler implements ProfileObserver {
     this.keys = keys;
   }
   public async buildEntityInfo(profile: Nullable<Profile>, cid: number) {
-    const notification =
-      profile &&
-      profile.conversation_level_notifications &&
-      profile.conversation_level_notifications[cid];
-    const sound = (
-      (profile && profile.team_specific_audio_notifications) ||
-      []
-    ).find(item => item.gid === cid);
+    const notification = _.get(
+      profile,
+      `conversation_level_notifications.${cid}`,
+    );
+    const sound = _.get(profile, 'team_specific_audio_notifications', []).find(
+      (item: AUDIO_NOTIFICATIONS) => item.gid === cid,
+    );
     let model = {
       ...notification,
       muted: (notification && notification.muted) || false,

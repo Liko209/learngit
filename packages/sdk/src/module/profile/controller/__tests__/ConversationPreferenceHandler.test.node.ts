@@ -5,7 +5,7 @@
  */
 
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
-import ConversationPreferenceHandler from '../ConversationPreferenceHelper';
+import { ConversationPreferenceHandler } from '../ConversationPreferenceHandler';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupService from 'sdk/module/group';
 import {

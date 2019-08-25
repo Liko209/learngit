@@ -22,7 +22,7 @@ import { Nullable } from 'sdk/types';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { VIDEO_SERVICE_OPTIONS, SETTING_KEYS } from '../constants';
 import { ConversationPreference } from '../entity/Profile';
-import { ConversationPreferenceHandler } from './ConversationPreferenceHelper';
+import { ConversationPreferenceHandler } from './ConversationPreferenceHandler';
 import { ProfileEntityObservable } from './ProfileEntityObservable';
 
 class ProfileDataController {
