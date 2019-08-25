@@ -59,6 +59,10 @@ exports[`Storyshots Pattern/SearchBar SearchInput: Pattern/SearchBar SearchInput
   color: #fff;
 }
 
+.c7.c7.c7.c7.disabled {
+  background-color: inherit;
+}
+
 .c7.c7.c7.c7.disabled .icon {
   color: rgba(0,0,0,0.12);
 }

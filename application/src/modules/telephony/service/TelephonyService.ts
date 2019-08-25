@@ -62,6 +62,7 @@ import { ISoundNotification } from '@/modules/notification/interface';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -305,9 +306,9 @@ class TelephonyService {
         }
         const isOffDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.OFF
         const isAllDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.ALL;
-        
+
         this._muteRingtone = isOffDevice;
-        
+
         if (isOffDevice) {
           this._outputDevices = [];
         } else if (isAllDevice) {
@@ -317,11 +318,11 @@ class TelephonyService {
             (deviceInfo as MediaDeviceInfo).deviceId,
           ]
         }
-        
+
         if(!this._ringtone){
           return;
         }
-        
+
         if (isOffDevice) {
           this._ringtone.setOutputDevices([]);
           this._ringtone.setMute(true);
@@ -329,7 +330,7 @@ class TelephonyService {
         }
 
         this._ringtone.setMute(false);
-        
+
         if (isAllDevice) {
           this._ringtone.setOutputDevices('all');
           return;
@@ -593,7 +594,7 @@ class TelephonyService {
   switchCall = async (otherDeviceCall: ActiveCall) => {
     const myNumber = (await this._rcInfoService.getAccountMainNumber()) || '';
     const rv = await this._serverTelephonyService.switchCall(myNumber, otherDeviceCall);
-  
+
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
         ToastCallError.toastSwitchCallNoNetwork();
@@ -1151,6 +1152,21 @@ class TelephonyService {
     const lines = await this._rcInfoService.getDigitalLines();
     const hasConfirmed = this._serverTelephonyService.isEmergencyAddrConfirmed();
     return lines.length > 0 && hasConfirmed;
+  };
+
+  transfer = async (type: TRANSFER_TYPE, transferTo: string) => {
+    if (!this._callEntityId) {
+      return;
+    }
+    try {
+      await this._serverTelephonyService.transfer(
+        this._callEntityId,
+        type,
+        transferTo
+      );
+    } catch (error) {
+      ToastCallError.toastTransferError();
+    }
   };
 };
 

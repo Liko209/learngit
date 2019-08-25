@@ -11,10 +11,12 @@ import { JuiTitleBar } from 'jui/pattern/Dialer';
 
 describe('DialerTitleBar', () => {
   describe('render', () => {
-    const newCall = 'New Call';
     it('should have label: New Call', () => {
+      const newCall = 'New Call';
       const props = {
+        isTransfer: false,
         isDialer: true,
+        isForward: false,
         t: (str: string) => (str === 'dialer.newCall' ? newCall : null),
         tReady: true,
         timing: 'Connecting',
@@ -23,6 +25,22 @@ describe('DialerTitleBar', () => {
       const wrapper = shallow(<DialerTitleBarView {...props} />);
       expect(wrapper.find(JuiTitleBar).length).toBe(1);
       expect(wrapper.find(JuiTitleBar).props().label).toBe(newCall);
+    });
+
+    it('should have label: Transfer [JPT-2758]', () => {
+      const transfer = 'Transfer';
+      const props = {
+        isTransfer: true,
+        isDialer: true,
+        isForward: false,
+        t: (str: string) =>
+          str === 'telephony.action.transfer' ? transfer : null,
+        tReady: true,
+        timing: 'Connecting',
+      };
+      const wrapper = shallow(<DialerTitleBarView {...props} />);
+      expect(wrapper.find(JuiTitleBar).length).toBe(1);
+      expect(wrapper.find(JuiTitleBar).props().label).toBe(transfer);
     });
   });
 });

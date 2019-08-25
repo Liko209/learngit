@@ -58,6 +58,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   color: #9e9e9e;
 }
 
+.c13.c13.c13.c13.disabled {
+  background-color: inherit;
+}
+
 .c13.c13.c13.c13.disabled .icon {
   color: rgba(0,0,0,0.12);
 }

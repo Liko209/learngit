@@ -322,6 +322,16 @@ class AnalyticsCollector {
       state,
     });
   }
+
+  directToTransferPage() {
+    dataAnalysis.track('Jup_Web/DT_phone_transferCall');
+  }
+
+  clickTransferActions(action: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_transferActions', {
+      action,
+    });
+  }
 }
 
 export { AnalyticsCollector };
