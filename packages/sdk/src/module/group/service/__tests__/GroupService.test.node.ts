@@ -2,7 +2,7 @@ import { PERMISSION_ENUM } from '../../constants';
 import { groupFactory } from '../../controller/__tests__/factory';
 import { GroupActionController } from '../../controller/GroupActionController';
 import { GroupController } from '../../controller/GroupController';
-import { TeamPermission, TeamPermissionParams } from '../../entity';
+import { TeamPermission, TeamPermissionParams, Group } from '../../entity';
 import { TeamSetting } from '../../types';
 import { GroupService } from '../GroupService';
 import { GROUP_QUERY_TYPE } from 'sdk/service';
@@ -45,6 +45,7 @@ describe('GroupService', () => {
     getOrCreateGroupByMemberList: jest.fn(),
     isFavored: jest.fn(),
     getGroupEmail: jest.fn(),
+    getGroupName: jest.fn(),
     getMemberAndGuestIds: jest.fn(),
   };
   const mockHandleDataController = {
@@ -496,6 +497,17 @@ describe('GroupService', () => {
       } catch (e) {
         expect(e).toBeNull();
       }
+    });
+  });
+
+  describe('getGroupName', () => {
+    it('should call getGroupName with correct parameter', () => {
+      const group = {
+        id: 1,
+        members: [1, 2],
+      };
+      groupService.getGroupName(group as Group);
+      expect(mockGroupFetchDataController.getGroupName).toHaveBeenCalledWith(group);
     });
   });
 

@@ -11,19 +11,26 @@ import { Person } from 'sdk/module/person/entity';
 import { SortUtils } from 'sdk/framework/utils';
 import { IdModelFocHandler } from './IdModelFocHandler';
 import { IdModelFocBuilder } from './IdModelFocBuilder';
-import { IdModel } from 'sdk/framework/model';
+import { DisplayNameModel } from 'sdk/framework/model';
 
-type DisplayNameModel = IdModel & {
-  displayName: string;
-};
+enum CONTACT_TAB_TYPE {
+  ALL,
+  PERSONAL,
+  GLIP_CONTACT,
+  CLOUD_CONTACT,
+  FAVORITES,
+}
+
 class ContactFocHandler extends IdModelFocHandler {
   private _personService: PersonService;
+  private _type: CONTACT_TAB_TYPE;
 
-  constructor() {
+  constructor(type: CONTACT_TAB_TYPE = CONTACT_TAB_TYPE.ALL) {
     super();
     this._personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
+    this._type = type;
   }
 
   transformFunc = (
@@ -48,7 +55,23 @@ class ContactFocHandler extends IdModelFocHandler {
   };
 
   filterFunc = (person: Person) => {
-    return this._personService.isVisiblePerson(person);
+    const isValid = this._personService.isVisiblePerson(person);
+    if (isValid) {
+      switch (this._type) {
+        case CONTACT_TAB_TYPE.ALL:
+          break;
+        case CONTACT_TAB_TYPE.GLIP_CONTACT:
+          break;
+        case CONTACT_TAB_TYPE.PERSONAL:
+          break;
+        case CONTACT_TAB_TYPE.CLOUD_CONTACT:
+          break;
+        default:
+          break;
+      }
+    }
+
+    return isValid;
   };
 
   protected createFoc() {
@@ -61,4 +84,4 @@ class ContactFocHandler extends IdModelFocHandler {
   }
 }
 
-export { ContactFocHandler };
+export { ContactFocHandler, CONTACT_TAB_TYPE };

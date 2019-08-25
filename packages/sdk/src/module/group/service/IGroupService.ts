@@ -147,6 +147,8 @@ interface IGroupService {
   sendTypingEvent(groupId: number, isClear: boolean): void;
 
   getSynchronously(id: number): Group | null;
+
+  getGroupName(group: Group): string;
 }
 
 export { IGroupService };

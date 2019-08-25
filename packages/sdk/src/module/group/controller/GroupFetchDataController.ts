@@ -754,6 +754,37 @@ export class GroupFetchDataController {
     });
     return soundexResult;
   }
+
+  getGroupName(group: Group) {
+    if (group.is_team) {
+      return group.set_abbreviation || '';
+    }
+
+    if (group.members && group.members.length === 1 
+      && group.members[0] === this._currentUserId) {
+        const personService = ServiceLoader.getInstance<PersonService>(
+          ServiceConfig.PERSON_SERVICE,
+        );
+        const result = personService.getSynchronously(this._currentUserId);
+        return result? personService.getFullName(result) : '';
+    }
+
+    const persons = this.getAllPersonOfGroup(
+      group.members,
+      this._currentUserId,
+    );
+
+    if (!persons.visiblePersons.length) {
+      return '';
+    }
+
+    const { groupName } = this.getGroupNameByMultiMembers(
+      persons.visiblePersons,
+    );
+
+    return groupName;
+  }
+
   getGroupNameByMultiMembers(allPersons: Person[]) {
     const names: string[] = [];
     const emails: string[] = [];
