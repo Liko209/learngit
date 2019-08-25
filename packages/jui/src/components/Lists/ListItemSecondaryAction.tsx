@@ -10,7 +10,7 @@ type JuiListItemSecondaryActionProps = {};
 
 const JuiListItemSecondaryAction = styled.div`
   && {
-    margin: ${spacing(0, 2)};
+    margin-right: ${spacing(-2)};
     a,
     button {
       margin-right: 0;
