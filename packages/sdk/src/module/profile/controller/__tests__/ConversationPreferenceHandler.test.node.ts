@@ -15,9 +15,11 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SOUNDS_TYPE,
 } from '../..';
+import { notificationCenter } from 'sdk/service';
 
 jest.mock('sdk/module/group');
 jest.mock('sdk/module/setting');
+jest.mock('sdk/service');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -30,7 +32,7 @@ describe('ConversationPreferenceHandler', () => {
   let groupService: GroupService;
 
   beforeEach(() => {
-    conversationPreferenceHandler = new ConversationPreferenceHandler();
+    conversationPreferenceHandler = new ConversationPreferenceHandler([]);
     settingService = new SettingService();
     groupService = new GroupService();
     ServiceLoader.getInstance = jest.fn().mockImplementation(config => {
@@ -88,7 +90,7 @@ describe('ConversationPreferenceHandler', () => {
       });
       groupService.getById = jest.fn().mockResolvedValue({ is_team: false });
     });
-    it('should return globalValue when conversation is team and conversation preference is undefined', async () => {
+    it('should return globalValue when conversation is team and conversation preference is undefined [JPT-2807]', async () => {
       groupService.getById = jest.fn().mockReturnValue({ is_team: true });
       const profile = {
         conversation_level_notifications: {
@@ -101,7 +103,7 @@ describe('ConversationPreferenceHandler', () => {
       );
       expect(result).toEqual(expectValue);
     });
-    it('should return globalValue when conversation is direct message and conversation preference is undefined', async () => {
+    it('should return globalValue when conversation is direct message and conversation preference is undefined [JPT-2803]', async () => {
       groupService.getById = jest.fn().mockResolvedValue({ is_team: false });
       const profile = {
         conversation_level_notifications: {
@@ -186,5 +188,89 @@ describe('ConversationPreferenceHandler', () => {
         expect(result.desktop_notifications).toEqual(expectRes);
       },
     );
+  });
+
+  describe('update', () => {
+    const notification = {
+      muted: true,
+      desktop_notifications: true,
+      push_notifications: MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF,
+      email_notifications: EMAIL_NOTIFICATION_OPTIONS.OFF,
+    };
+    const audio = {
+      gid: 2,
+      sound: SOUNDS_TYPE.Alert,
+    };
+    const profile: any = {
+      conversation_level_notifications: {
+        1: notification,
+      },
+      team_specific_audio_notifications: [audio],
+    };
+    beforeEach(() => {
+      conversationPreferenceHandler.buildEntityInfo = jest.fn();
+    });
+    it('should not call emit when new profile has no conversation preference', async () => {
+      const newProfile: any = {};
+      const localProfile = {
+        ...profile,
+      };
+      await conversationPreferenceHandler.update(newProfile, localProfile);
+      expect(
+        conversationPreferenceHandler.buildEntityInfo,
+      ).not.toHaveBeenCalled();
+      expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalled();
+    });
+    it('should update all conversation when local profile is null', async () => {
+      const newProfile = {
+        ...profile,
+      };
+      const localProfile = null;
+      await conversationPreferenceHandler.update(newProfile, localProfile);
+      expect(
+        conversationPreferenceHandler.buildEntityInfo,
+      ).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
+    });
+    it('should update different conversation when notification change', async () => {
+      const newProfile = {
+        ...profile,
+        conversation_level_notifications: {
+          1: notification,
+          4: notification,
+          3: notification,
+        },
+      };
+      const localProfile = {
+        ...profile,
+      };
+      await conversationPreferenceHandler.update(newProfile, localProfile);
+      expect(
+        conversationPreferenceHandler.buildEntityInfo,
+      ).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
+    });
+    it('should update all conversation when sound change', async () => {
+      const newProfile = {
+        ...profile,
+        team_specific_audio_notifications: [
+          { gid: 2, sound: SOUNDS_TYPE.Default },
+          { gid: 3, sound: SOUNDS_TYPE.Alert },
+          { gid: 4, sound: SOUNDS_TYPE.Alert },
+        ],
+      };
+      const localProfile = {
+        ...profile,
+        team_specific_audio_notifications: [
+          { gid: 2, sound: SOUNDS_TYPE.Alert },
+          { gid: 1, sound: SOUNDS_TYPE.Alert },
+        ],
+      };
+      await conversationPreferenceHandler.update(newProfile, localProfile);
+      expect(
+        conversationPreferenceHandler.buildEntityInfo,
+      ).toHaveBeenCalledTimes(4);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
+    });
   });
 });

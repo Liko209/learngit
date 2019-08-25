@@ -34,12 +34,12 @@ class ProfileEntityObservable implements ProfileObservable {
   unRegisterAll() {
     this._observers = new Map<SETTING_KEYS, ProfileObserver[]>();
   }
-  notify(
+  async notify(
     observer: ProfileObserver,
     profile: Profile,
     originProfile: Nullable<Profile>,
   ) {
-    observer.update(profile, originProfile);
+    observer.update && (await observer.update(profile, originProfile));
   }
 }
 export { ProfileEntityObservable };

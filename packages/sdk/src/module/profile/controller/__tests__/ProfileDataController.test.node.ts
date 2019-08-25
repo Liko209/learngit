@@ -10,19 +10,18 @@ import { buildEntityCacheController } from 'sdk/framework/controller';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  SoundsList,
   SoundsListWithDefault,
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
   SOUNDS_TYPE,
-  SETTING_KEYS,
 } from '../../constants';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import GroupService from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { ProfileService } from '../../service/ProfileService';
+import { ProfileEntityObservable } from '../ProfileEntityObservable';
 
 jest.mock('../../../../api/glip/profile');
+jest.mock('../ProfileEntityObservable');
 jest.mock('sdk/framework/controller/interface/IEntitySourceController');
 jest.mock('sdk/framework/controller/impl/EntityCacheController');
 jest.mock('sdk/module/group');
@@ -40,12 +39,15 @@ describe('ProfileDataController', () => {
   let mockEntityCacheController: IEntityCacheController<Profile>;
   let settingService: SettingService;
   let groupService: GroupService;
+  let mockProfileObservable: ProfileEntityObservable;
   beforeEach(() => {
     mockEntitySourceController = new MockEntitySourceController();
     mockEntityCacheController = buildEntityCacheController();
+    mockProfileObservable = new ProfileEntityObservable();
     profileDataController = new ProfileDataController(
       mockEntitySourceController,
       mockEntityCacheController,
+      mockProfileObservable,
     );
     settingService = new SettingService();
     groupService = new GroupService();
@@ -333,96 +335,5 @@ describe('ProfileDataController', () => {
         expect(result.desktop_notifications).toEqual(expectRes);
       },
     );
-  });
-
-  describe('_handleConversationPreference', () => {
-    const notification = {
-      muted: true,
-      desktop_notifications: true,
-      push_notifications: MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF,
-      email_notifications: EMAIL_NOTIFICATION_OPTIONS.OFF,
-    };
-    const audio = {
-      gid: 2,
-      sound: SOUNDS_TYPE.Alert,
-    };
-    const profile: any = {
-      conversation_level_notifications: {
-        1: notification,
-      },
-      team_specific_audio_notifications: [audio],
-    };
-    beforeEach(() => {
-      profileDataController['_emitConversationChangedData'] = jest.fn();
-    });
-    it('should not call emit when new profile has no conversation preference', async () => {
-      const newProfile: any = {};
-      const localProfile = {
-        ...profile,
-      };
-      await profileDataController['_handleConversationPreference'](
-        newProfile,
-        localProfile,
-      );
-      expect(
-        profileDataController['_emitConversationChangedData'],
-      ).not.toHaveBeenCalled();
-    });
-    it('should update all conversation when local profile is null', async () => {
-      const newProfile = {
-        ...profile,
-      };
-      const localProfile = null;
-      await profileDataController['_handleConversationPreference'](
-        newProfile,
-        localProfile,
-      );
-      expect(
-        profileDataController['_emitConversationChangedData'],
-      ).toHaveBeenCalledWith([1, 2]);
-    });
-    it('should update all conversation when notification change', async () => {
-      const newProfile = {
-        ...profile,
-        conversation_level_notifications: {
-          1: notification,
-          3: notification,
-        },
-      };
-      const localProfile = {
-        ...profile,
-      };
-      await profileDataController['_handleConversationPreference'](
-        newProfile,
-        localProfile,
-      );
-      expect(
-        profileDataController['_emitConversationChangedData'],
-      ).toHaveBeenCalledWith([3]);
-    });
-    it('should update all conversation when sound change', async () => {
-      const newProfile = {
-        ...profile,
-        team_specific_audio_notifications: [
-          { gid: 2, sound: SOUNDS_TYPE.Default },
-          { gid: 3, sound: SOUNDS_TYPE.Alert },
-          { gid: 4, sound: SOUNDS_TYPE.Alert },
-        ],
-      };
-      const localProfile = {
-        ...profile,
-        team_specific_audio_notifications: [
-          { gid: 2, sound: SOUNDS_TYPE.Alert },
-          { gid: 1, sound: SOUNDS_TYPE.Alert },
-        ],
-      };
-      await profileDataController['_handleConversationPreference'](
-        newProfile,
-        localProfile,
-      );
-      expect(
-        profileDataController['_emitConversationChangedData'],
-      ).toHaveBeenCalledWith([2, 3, 4, 1]);
-    });
   });
 });
