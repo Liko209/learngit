@@ -130,5 +130,5 @@ const RecentCall = (props: { isTransfer: boolean }) => {
 
 storiesOf('Pattern', module).add('Recent Calls', () => {
   const isTransfer = boolean('isTransfer', false);
-  return <RecentCall isTransfer={isTransfer} />;
+  return <RecentCall isTransfer={isTransfer} addMargin />;
 });
