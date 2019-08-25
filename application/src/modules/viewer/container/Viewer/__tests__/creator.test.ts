@@ -12,6 +12,7 @@ jest.mock('@/containers/Dialog', () => {
     Dialog: {
       simple: jest.fn().mockReturnValue({ dismiss: () => {} }),
     },
+    withEscTracking: jest.fn(),
   };
 });
 
@@ -19,7 +20,7 @@ describe('creator', () => {
   describe('showImageViewer', () => {
     it('should call Dialog.simple', () => {
       showImageViewer();
-      expect(Dialog.simple).toBeCalled();
+      expect(Dialog.simple).toHaveBeenCalled();
     });
   });
 });
