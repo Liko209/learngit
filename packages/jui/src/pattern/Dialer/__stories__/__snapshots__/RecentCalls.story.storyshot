@@ -190,8 +190,9 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   >
     <div
       aria-disabled={false}
-      className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
+      className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button Mui-selected"
       onBlur={[Function]}
+      onClick={[Function]}
       onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
@@ -269,6 +270,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       aria-disabled={false}
       className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
       onBlur={[Function]}
+      onClick={[Function]}
       onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
@@ -346,6 +348,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       aria-disabled={false}
       className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
       onBlur={[Function]}
+      onClick={[Function]}
       onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}

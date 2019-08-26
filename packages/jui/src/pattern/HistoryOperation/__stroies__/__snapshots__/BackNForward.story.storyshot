@@ -47,6 +47,10 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
   color: #fff;
 }
 
+.c2.c2.c2.c2.disabled {
+  background-color: inherit;
+}
+
 .c2.c2.c2.c2.disabled .icon {
   color: rgba(0,0,0,0.12);
 }

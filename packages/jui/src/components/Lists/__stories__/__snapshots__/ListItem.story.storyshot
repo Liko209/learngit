@@ -304,6 +304,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   color: #9e9e9e;
 }
 
+.c2.c2.c2.c2.disabled {
+  background-color: inherit;
+}
+
 .c2.c2.c2.c2.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -523,6 +527,10 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 
 .c6.c6:active .icon {
   color: #9e9e9e;
+}
+
+.c6.c6.c6.c6.disabled {
+  background-color: inherit;
 }
 
 .c6.c6.c6.c6.disabled .icon {

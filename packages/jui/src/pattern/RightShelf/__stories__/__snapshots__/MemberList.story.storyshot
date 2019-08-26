@@ -47,6 +47,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   color: #9e9e9e;
 }
 
+.c4.c4.c4.c4.disabled {
+  background-color: inherit;
+}
+
 .c4.c4.c4.c4.disabled .icon {
   color: rgba(0,0,0,0.12);
 }

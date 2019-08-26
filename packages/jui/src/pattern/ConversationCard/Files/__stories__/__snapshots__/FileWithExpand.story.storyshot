@@ -58,6 +58,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   color: #9e9e9e;
 }
 
+.c8.c8.c8.c8.disabled {
+  background-color: inherit;
+}
+
 .c8.c8.c8.c8.disabled .icon {
   color: rgba(0,0,0,0.12);
 }

@@ -47,7 +47,7 @@ const RecentCall = (props: { isTransfer: boolean }) => {
   const { isTransfer } = props;
   return (
     <JuiDialer>
-      <JuiRecentCalls>
+      <JuiRecentCalls addMargin>
         <JuiRecentCallItem
           selected={selected === 0}
           onClick={() => setSelected(0)}
