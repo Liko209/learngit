@@ -944,15 +944,7 @@
     "notificationAndSounds": {
       "title": "Notifications and sounds",
       "otherNotificationSettings": {
-        "title": "Other notification settings",
-        "newMessageBadgeCount": {
-          "options": {
-            "groups_and_mentions": "Direct messages and mentions only",
-            "all": "All new messages"
-          },
-          "description": "Choose how the app will count new messages in the app badge count",
-          "label": "New message badge count"
-        }
+        "title": "Other notification settings"
       },
       "sounds": {
         "directMessages": {
@@ -1057,6 +1049,30 @@
           "0": "Off",
           "900000": "Every 15 minutes",
           "3600000": "Every hour"
+        }
+      }
+    },
+    "Messages": {
+      "conversationList": {
+        "title": "Conversation list",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        },
+        "maxConversations": {
+          "label": "Max conversations",
+          "description": "Choose the maximum amount of read conversations the app will display in your conversation rail (unreads will always display)"
+        }
+      },
+      "messageThread": {
+        "title": "Message thread",
+        "linkPreviews": {
+          "label": "Show link previews",
+          "description": "Disable content preview links"
         }
       }
     },
