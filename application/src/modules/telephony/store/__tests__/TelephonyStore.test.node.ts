@@ -29,8 +29,9 @@ function createStore() {
   return new TelephonyStore();
 }
 describe('Telephony store', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     call = observable({
+      id: 1,
       holdState: HOLD_STATE.IDLE,
       callState: CALL_STATE.IDLE,
       direction: CALL_DIRECTION.INBOUND,
@@ -324,7 +325,7 @@ describe('Telephony store', () => {
     // @ts-ignore
     store._sortableListHandler.sortableListStore = { getIds: [1] };
     call.id = 1;
-    expect((store as any).call.id).toEqual(1);
+    expect((store as any).call).toBeDefined();
     done();
 
     // @ts-ignore
@@ -384,5 +385,22 @@ describe('Telephony store', () => {
     expect(store.callDisconnecting).toBeFalsy();
     call.callState = CALL_STATE.DISCONNECTING;
     expect(store.callDisconnecting).toBeTruthy();
+  });
+
+  it('call init state', () => {
+    const store = createStore();
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [] };
+
+    expect(store.holdState).toBe(HOLD_STATE.DISABLED);
+    expect(store.recordState).toBe(RECORD_STATE.DISABLED);
+    expect(store.callState).toBe(CALL_STATE.IDLE);
+    expect(store.isMute).toBeFalsy;
+    expect(store.activeCallTime).toBe(0);
+    expect(store.callConnectingTime).toBe(0);
+    expect(store.isInbound).toBeFalsy;
+    expect(store.isOutbound).toBeFalsy;
+    expect(store.activeCallDirection).toBeUndefined;
+    expect(store.uuid).toBe('');
   });
 });

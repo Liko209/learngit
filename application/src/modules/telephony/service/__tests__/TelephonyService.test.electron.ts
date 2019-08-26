@@ -48,6 +48,7 @@ import { MediaService } from '@/modules/media/service';
 
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { isCurrentUserDND } from '@/modules/notification/utils';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -1214,7 +1215,7 @@ describe('TelephonyService', () => {
     })
   })
 
-  describe.only('multiple calls', () => {
+  describe('multiple calls', () => {
     it('Can NOT make call when user on a call. [JPT-2772]', async () => {
       mockedServerTelephonyService.getAllCallCount = jest.fn().mockReturnValue(2);
       telephonyService.makeCall = jest.fn();
