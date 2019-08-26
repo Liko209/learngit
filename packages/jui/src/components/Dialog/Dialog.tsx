@@ -11,7 +11,10 @@ type StyledDialogProps = MuiDialogProps & {
 };
 
 type JuiDialogProps = StyledDialogProps & {
-  onClose?: (event: KeyboardEvent | React.MouseEvent) => void;
+  onClose?: (
+    event: KeyboardEvent | React.MouseEvent,
+    reason?: 'backdropClick' | 'escapeKeyDown',
+  ) => void;
 };
 
 const FilteredMuiDialog = ({ fixedAtTop, ...rest }: StyledDialogProps) => (

@@ -40,7 +40,10 @@ const StyledGlobalSearch = styled(JuiDialog)`
 
 type JuiGlobalSearchProps = {
   open: boolean;
-  onClose: (e: React.MouseEvent) => void;
+  onClose: (
+    e: React.MouseEvent,
+    reason: 'backdropClick' | 'escapeKeyDown',
+  ) => void;
   children: React.ReactNode;
 };
 
