@@ -30,12 +30,12 @@ class SettingGatherer extends DebugGatherer {
   async _afterPass(passContext) {
     this.beginGathererConsole();
 
-    let filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(passContext.driver));
+    let filePath = await FileService.trackingHeapObjects(passContext.driver);
     globals.pushMemoryFilePath(filePath);
     // switch conversation
     await this.switchSettingTab(new SettingPage(passContext), Config.sceneRepeatCount);
 
-    filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(passContext.driver));
+    filePath = await FileService.trackingHeapObjects(passContext.driver);
     globals.pushMemoryFilePath(filePath);
 
     this.endGathererConsole();

@@ -9,7 +9,7 @@ import MuiMenuItem, {
 } from '@material-ui/core/MenuItem';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import { JuiIconography } from '../../foundation/Iconography';
-import styled from '../../foundation/styled-components';
+import styled, { css } from '../../foundation/styled-components';
 import {
   width,
   height,
@@ -30,6 +30,7 @@ type JuiMenuItemProps = {
   maxWidth?: number;
   searchString?: string;
   hasSecondaryAction?: boolean;
+  highlighted?: boolean;
 } & MuiListItemPropsFixed;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
@@ -48,11 +49,16 @@ const FilteredMenuItem = React.forwardRef(
       maxWidth,
       searchString,
       hasSecondaryAction,
+      highlighted,
       ...rest
     }: JuiMenuItemProps,
     ref,
   ) => <MuiMenuItem ref={ref as any} {...rest} />,
 );
+
+const highlightedStyle = css`
+  background-color: ${palette('grey', '500', 1)};
+`;
 
 const StyledMenuItem = styled(FilteredMenuItem)`
   && {
@@ -74,8 +80,10 @@ const StyledMenuItem = styled(FilteredMenuItem)`
     }
 
     &:hover {
-      background-color: ${palette('grey', '500', 1)};
+      ${highlightedStyle};
     }
+
+    ${({ highlighted }) => (highlighted ? highlightedStyle : '')}
 
     &:active {
       background-color: ${palette('primary', 'main')};

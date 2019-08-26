@@ -14,6 +14,7 @@ import { SearchItemTypes, SEARCH_SCOPE, SEARCH_VIEW } from '../../../types';
 
 jest.mock('sdk/dao');
 jest.mock('@/store/utils');
+jest.mock('sdk/module/config');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

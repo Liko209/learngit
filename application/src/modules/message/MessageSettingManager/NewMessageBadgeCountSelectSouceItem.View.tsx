@@ -14,7 +14,7 @@ type BadgeCountItemProps = {
 const BadgeCountSourceItem = (props: BadgeCountItemProps) => {
   const { value } = props;
   return i18nP(
-    `setting.notificationAndSounds.otherNotificationSettings.newMessageBadgeCount.options.${value}`,
+    `setting.Messages.conversationList.newMessageBadgeCount.options.${value}`,
   );
 };
 

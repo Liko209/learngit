@@ -267,7 +267,7 @@ class CallLogHandleDataController {
       duration: 0,
       __localInfo: localInfo,
       __timestamp: Date.parse(startTime),
-      __deactivated: false,
+      deleted: false,
       __isPseudo: true,
     };
   }
