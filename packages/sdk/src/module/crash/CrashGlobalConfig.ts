@@ -18,15 +18,15 @@ class CrashGlobalConfig extends GlobalConfig {
     return this.get(CRASH_KEYS.WHITE_SCREEN_TIMES);
   }
 
-  static setLastWhiteScreenTime(count: number, timeStamp: number) {
+  static setLastHandleWhiteScreenTime(count: number, timeStamp: number) {
     this.put(
-      CRASH_KEYS.LAST_WHITE_SCREEN_TIME,
+      CRASH_KEYS.LAST_HANDLE_WHITE_SCREEN_TIME,
       JSON.stringify({ count, timeStamp }),
     );
   }
 
   static getLastWhiteScreenTime(): { count: number; timeStamp: number } {
-    const t = this.get(CRASH_KEYS.LAST_WHITE_SCREEN_TIME);
+    const t = this.get(CRASH_KEYS.LAST_HANDLE_WHITE_SCREEN_TIME);
     if (t) {
       return JSON.parse(t);
     }

@@ -19,15 +19,20 @@ export class WhiteScreenHandler {
     const lastCrashTime = CrashGlobalConfig.getLastWhiteScreenTime();
     if (times > lastCrashTime.count + 2) {
       if (Date.now() - lastCrashTime.timeStamp > WHITE_SCREEN_HANDLE_SPACE) {
-        CrashGlobalConfig.setLastWhiteScreenTime(times, Date.now());
-        (await caches.keys()).forEach(key => {
-          caches.delete(key);
-        });
-        const registration = await navigator.serviceWorker.getRegistration('/');
-        registration && (await registration.unregister());
-        await container.get<AccountManager>(AccountManager.name).logout();
-        window.location.reload();
+        this._handled = true;
+        CrashGlobalConfig.setLastHandleWhiteScreenTime(times, Date.now());
+        this.handleWhiteScreen();
       }
     }
+  }
+
+  async handleWhiteScreen() {
+    (await caches.keys()).forEach(key => {
+      caches.delete(key);
+    });
+    const registration = await navigator.serviceWorker.getRegistration('/');
+    registration && (await registration.unregister());
+    await container.get<AccountManager>(AccountManager.name).logout();
+    window.location.reload();
   }
 }

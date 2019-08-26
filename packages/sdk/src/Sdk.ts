@@ -212,7 +212,6 @@ class Sdk {
   }
 
   async onLogout() {
-    console.log('TCL: Sdk -> onLogout -> onLogout');
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     mainLogger.tags(LOG_TAG).info('onLogout() delete database');
