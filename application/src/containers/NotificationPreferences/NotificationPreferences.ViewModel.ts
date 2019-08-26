@@ -45,7 +45,7 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   }
 
   init = async () => {
-    const initialValue = await this._profileService.getByGroupId(
+    const initialValue = await this._profileService.getConversationPreference(
       this.props.groupId,
     );
     for (const key in initialValue) {
@@ -69,8 +69,8 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
 
   @computed
   get soundNotificationsDisabled() {
-    const { muteAll, desktopNotification } = this.currentValue;
-    return muteAll || !desktopNotification;
+    const { muted, desktopNotifications } = this.currentValue;
+    return muted || !desktopNotifications;
   }
 
   @action

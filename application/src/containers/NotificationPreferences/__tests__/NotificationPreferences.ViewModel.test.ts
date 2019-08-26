@@ -37,7 +37,7 @@ describe('NotificationPreferencesViewModel', () => {
     ])
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
-      notificationPreferencesVM.value.muteAll = false;
+      notificationPreferencesVM.value.muted = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -55,7 +55,7 @@ describe('NotificationPreferencesViewModel', () => {
     ])
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
-      notificationPreferencesVM.value.muteAll = false;
+      notificationPreferencesVM.value.muted = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({

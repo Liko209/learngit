@@ -7,11 +7,11 @@
 import { dataAnalysis } from 'foundation/analysis';
 import { ConversationType } from 'src/AnalyticsCollector/types';
 import {
-  MUTE_ALL,
-  DESKTOP_NOTIFICATION,
-  SOUND_NOTIFICATION,
-  MOBILE_NOTIFICATION,
-  EMAIL_NOTIFICATION,
+  MUTED,
+  DESKTOP_NOTIFICATIONS,
+  AUDIO_NOTIFICATIONS,
+  MOBILE_NOTIFICATIONS,
+  EMAIL_NOTIFICATIONS,
 } from './constant';
 import {
   SoundSelectDataTrackingOption,
@@ -52,17 +52,17 @@ export function notificationPreferencesShown() {
 }
 
 export const eventsDict = {
-  [MUTE_ALL]: _buildBooleanTracker('muteNotifications'),
-  [DESKTOP_NOTIFICATION]: _buildBooleanTracker('desktopNotification'),
-  [SOUND_NOTIFICATION]: _buildCustomTracker(
+  [MUTED]: _buildBooleanTracker('muteNotifications'),
+  [DESKTOP_NOTIFICATIONS]: _buildBooleanTracker('desktopNotification'),
+  [AUDIO_NOTIFICATIONS]: _buildCustomTracker(
     'notificationSound',
     ({ id }: { id: string }) => SoundSelectDataTrackingOption[id],
   ),
-  [MOBILE_NOTIFICATION]: _buildCustomTracker(
+  [MOBILE_NOTIFICATIONS]: _buildCustomTracker(
     'mobileNotification',
     (value: string) => MobileNotificationDataTrackingOption[value],
   ),
-  [EMAIL_NOTIFICATION]: _buildCustomTracker(
+  [EMAIL_NOTIFICATIONS]: _buildCustomTracker(
     'emailNotification',
     (value: string) => EmailNotificationSelectDataTrackingOption[value],
   ),

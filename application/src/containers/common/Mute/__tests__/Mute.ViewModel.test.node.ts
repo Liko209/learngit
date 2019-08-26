@@ -10,15 +10,15 @@ import { MuteViewModel } from '../Mute.ViewModel';
 describe('MuteViewModel', () => {
   @testable
   class isMuted {
-    @test('should be true when muteAll is true')
-    @mockEntity({ muteAll: true })
+    @test('should be true when muted is true')
+    @mockEntity({ muted: true })
     async t1() {
       const muteVM = new MuteViewModel();
       expect(muteVM.isMuted).toBeTruthy();
     }
 
-    @test('should be false when muteAll is false')
-    @mockEntity({ muteAll: false })
+    @test('should be false when muted is false')
+    @mockEntity({ muted: false })
     async t2() {
       const muteVM = new MuteViewModel();
       expect(muteVM.isMuted).toBeFalsy();

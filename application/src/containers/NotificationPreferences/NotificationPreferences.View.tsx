@@ -10,11 +10,11 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { Props, ViewProps } from './types';
 import {
-  MUTE_ALL,
-  DESKTOP_NOTIFICATION,
-  SOUND_NOTIFICATION,
-  MOBILE_NOTIFICATION,
-  EMAIL_NOTIFICATION,
+  MUTED,
+  DESKTOP_NOTIFICATIONS,
+  AUDIO_NOTIFICATIONS,
+  MOBILE_NOTIFICATIONS,
+  EMAIL_NOTIFICATIONS,
 } from './constant';
 import { Loading } from 'jui/hoc/withLoading';
 import { JuiSettingItem, JuiSettingContainer } from 'jui/pattern/DialogSetting';
@@ -46,7 +46,7 @@ type MobileNotificationItemProps = {
 const MobileNotificationSourceItem = (props: MobileNotificationItemProps) => {
   const { value } = props;
   return i18nP(
-    `setting.conversationPreferences.options.mobileNotification.${value}`,
+    `setting.conversationPreferences.options.mobileNotifications.${value}`,
   );
 };
 
@@ -93,7 +93,7 @@ class NotificationPreferencesComponent extends React.Component<
   private _renderSoundNotification = () => {
     const { soundNotificationsDisabled } = this.props;
     const config = {
-      id: SOUND_NOTIFICATION,
+      id: AUDIO_NOTIFICATIONS,
       sourceRenderer: SoundSourceItem,
       secondaryActionRenderer: SoundSourcePlayerRenderer,
     };
@@ -107,10 +107,10 @@ class NotificationPreferencesComponent extends React.Component<
   private _renderMobileNotification = () => {
     const { currentValue, isTeam } = this.props;
     const config = {
-      id: MOBILE_NOTIFICATION,
+      id: MOBILE_NOTIFICATIONS,
       sourceRenderer: MobileNotificationSourceItem,
     };
-    const disabled = currentValue[MUTE_ALL];
+    const disabled = currentValue[MUTED];
     return this._renderSelect<MOBILE_TEAM_NOTIFICATION_OPTIONS>(
       isTeam ? mobileTeamNotificationList : mobileDMNotificationList,
       config,
@@ -121,10 +121,10 @@ class NotificationPreferencesComponent extends React.Component<
   private _renderEmailNotification = () => {
     const { currentValue } = this.props;
     const config = {
-      id: EMAIL_NOTIFICATION,
+      id: EMAIL_NOTIFICATIONS,
       sourceRenderer: EmailNotificationTimeSourceItem,
     };
-    const disabled = currentValue[MUTE_ALL];
+    const disabled = currentValue[MUTED];
     return this._renderSelect<EMAIL_NOTIFICATION_OPTIONS>(
       emailNotificationList,
       config,
@@ -147,7 +147,7 @@ class NotificationPreferencesComponent extends React.Component<
       handleSubmit,
       handleClose,
     } = this.props;
-    const isMuted = currentValue[MUTE_ALL];
+    const isMuted = currentValue[MUTED];
     return (
       <JuiModal
         modalProps={ModalProps}
@@ -162,34 +162,34 @@ class NotificationPreferencesComponent extends React.Component<
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiSettingContainer>
             <JuiSettingItem
-              id={MUTE_ALL}
-              label={t(`setting.conversationPreferences.${MUTE_ALL}`)}
+              id={MUTED}
+              label={t(`setting.conversationPreferences.${MUTED}`)}
               divider
             >
               <RuiCheckbox
                 color="primary"
-                checked={currentValue[MUTE_ALL]}
-                onChange={handleCheckboxChange(MUTE_ALL)}
-                data-test-automation-id={`${MUTE_ALL}-checkbox`}
+                checked={currentValue[MUTED]}
+                onChange={handleCheckboxChange(MUTED)}
+                data-test-automation-id={`${MUTED}-checkbox`}
                 inputProps={{
-                  'aria-labelledby': MUTE_ALL,
+                  'aria-labelledby': MUTED,
                 }}
               />
             </JuiSettingItem>
             <JuiSettingItem
-              id={DESKTOP_NOTIFICATION}
+              id={DESKTOP_NOTIFICATIONS}
               label={t(
-                `setting.conversationPreferences.${DESKTOP_NOTIFICATION}`,
+                `setting.conversationPreferences.${DESKTOP_NOTIFICATIONS}`,
               )}
               disabled={isMuted}
             >
-              {currentValue[DESKTOP_NOTIFICATION] !== undefined && <RuiCheckbox
+              {currentValue[DESKTOP_NOTIFICATIONS] !== undefined && <RuiCheckbox
                 color="primary"
-                checked={currentValue[DESKTOP_NOTIFICATION]}
-                onChange={handleCheckboxChange(DESKTOP_NOTIFICATION)}
-                data-test-automation-id={`${DESKTOP_NOTIFICATION}-checkbox`}
+                checked={currentValue[DESKTOP_NOTIFICATIONS]}
+                onChange={handleCheckboxChange(DESKTOP_NOTIFICATIONS)}
+                data-test-automation-id={`${DESKTOP_NOTIFICATIONS}-checkbox`}
                 inputProps={{
-                  'aria-labelledby': DESKTOP_NOTIFICATION,
+                  'aria-labelledby': DESKTOP_NOTIFICATIONS,
                 }}
                 disabled={isMuted}
               />}

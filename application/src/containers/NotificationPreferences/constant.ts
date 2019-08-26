@@ -4,24 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const MUTE_ALL = 'muteAll';
-const DESKTOP_NOTIFICATION = 'desktopNotification';
-const SOUND_NOTIFICATION = 'soundNotification';
-const MOBILE_NOTIFICATION = 'mobileNotification';
-const EMAIL_NOTIFICATION = 'emailNotification';
+const MUTED = 'muted';
+const DESKTOP_NOTIFICATIONS = 'desktopNotifications';
+const AUDIO_NOTIFICATIONS = 'audioNotifications';
+const MOBILE_NOTIFICATIONS = 'mobileNotifications';
+const EMAIL_NOTIFICATIONS = 'emailNotifications';
 
 const TO_CAMEL_DICT = {
-  muted: MUTE_ALL,
-  desktop_notifications: DESKTOP_NOTIFICATION,
-  sound_notifications: SOUND_NOTIFICATION,
-  push_notifications: MOBILE_NOTIFICATION,
-  email_notifications: EMAIL_NOTIFICATION,
+  muted: MUTED,
+  desktop_notifications: DESKTOP_NOTIFICATIONS,
+  audio_notifications: AUDIO_NOTIFICATIONS,
+  push_notifications: MOBILE_NOTIFICATIONS,
+  email_notifications: EMAIL_NOTIFICATIONS,
 };
 export {
-  MUTE_ALL,
-  DESKTOP_NOTIFICATION,
-  SOUND_NOTIFICATION,
-  MOBILE_NOTIFICATION,
-  EMAIL_NOTIFICATION,
+  MUTED,
+  DESKTOP_NOTIFICATIONS,
+  AUDIO_NOTIFICATIONS,
+  MOBILE_NOTIFICATIONS,
+  EMAIL_NOTIFICATIONS,
   TO_CAMEL_DICT,
 };

@@ -15,11 +15,11 @@ import ConversationPreferenceModel from '@/store/models/ConversationPreference';
 class MuteViewModel extends AbstractViewModel<MuteProps> {
   @computed
   get isMuted() {
-    const { muteAll } = getEntity<
+    const { muted } = getEntity<
       ConversationPreference,
       ConversationPreferenceModel
     >(ENTITY_NAME.CONVERSATION_PREFERENCE, this.props.groupId);
-    return muteAll;
+    return muted;
   }
 }
 
