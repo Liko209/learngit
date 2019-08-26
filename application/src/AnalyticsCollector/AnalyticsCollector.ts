@@ -322,6 +322,14 @@ class AnalyticsCollector {
       state,
     });
   }
+
+  createTeamDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_createTeamDialog', { source });
+  }
+
+  newMessageDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
+  }
 }
 
 export { AnalyticsCollector };
