@@ -69,6 +69,7 @@ class GroupSearchViewComponent extends React.Component<
           itemId={id}
           key={index}
           isHighlighted={isHighlighted}
+          data-test-automation-id="groupSearchItem"
           {...getItemProps({ index, item: { id } })}
         />
       ) : (
@@ -77,6 +78,7 @@ class GroupSearchViewComponent extends React.Component<
           key={index}
           isHighlighted={isHighlighted}
           avatar={this._renderAvatar(id)}
+          data-test-automation-id="groupSearchItem"
           {...getItemProps({ index, item: { id } })}
         />
       );
@@ -94,8 +96,11 @@ class GroupSearchViewComponent extends React.Component<
     this.props.searchGroups('');
   };
 
-  private _itemToString = ({ id }: { id: number }) => {
-    return id.toString();
+  private _itemToString = (props: { id: number }) => {
+    if (props) {
+      return props.id.toString();
+    }
+    return '';
   };
 
   render() {

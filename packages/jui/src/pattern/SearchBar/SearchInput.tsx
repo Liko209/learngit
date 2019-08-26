@@ -73,7 +73,7 @@ const JuiSearchInput = memo(
     const MemoClearButton = useMemo(
       () => (
         <ClearButton
-          data-test-automation-id="global-search-clear"
+          data-test-automation-id="search-input-clear"
           onClick={handleClearClick}
           withCloseIcon={withCloseIcon}
         >
