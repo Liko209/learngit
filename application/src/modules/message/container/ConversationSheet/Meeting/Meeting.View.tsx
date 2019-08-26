@@ -94,7 +94,7 @@ class Meeting extends React.Component<meetingProps> {
   });
 
   render() {
-    const { t, meetingTitle, meetingItem, duration } = this.props;
+    const { t, meetingTitle, meetingItem, duration, isMeetingOwner } = this.props;
     const status = meetingItem.meetingStatus;
     return (
       <JuiConversationItemCard
@@ -105,6 +105,7 @@ class Meeting extends React.Component<meetingProps> {
             status={status}
             duration={`${t('item.meeting.duration')}: ${duration}`}
             onStatusClick={this._getStatusClick(status)}
+            isOwner={isMeetingOwner}
           />
         }
         isShowLoading={status === MEETING_STATUS.NOT_STARTED

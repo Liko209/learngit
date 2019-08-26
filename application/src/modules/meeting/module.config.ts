@@ -8,6 +8,7 @@ import { MeetingModule } from './MeetingModule';
 import { MeetingService } from './service';
 import { MeetingStore } from './store';
 import { MEETING_SERVICE } from './interface/constant';
+import { ElectronService } from '../electron';
 
 const config = {
   entry: MeetingModule,
@@ -16,6 +17,7 @@ const config = {
       name: MEETING_SERVICE,
       value: MeetingService,
     },
+    ElectronService,
     MeetingStore,
   ],
 };

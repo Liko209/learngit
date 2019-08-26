@@ -13,6 +13,7 @@ const MeetingButton = css`
   box-shadow: none;
   border-radius: 4px;
   text-transform: uppercase;
+  cursor: pointer;
 `
 
 const MeetingSharedStyle = css`
@@ -20,7 +21,6 @@ const MeetingSharedStyle = css`
   margin-left: 5px;
 	font-size: 11px !important;
 	padding: 5px 10px;
-	cursor: pointer;
   :hover {
     text-decoration: none;
   }
@@ -58,22 +58,25 @@ const MeetingDuration = styled.p`
 
 const getMeetingStatus = (
   duration: string,
-  onStatusClick: (() => void) | undefined) => ({
-    [MEETING_STATUS.ENDED]: <MeetingDuration>Duration: ${duration}</MeetingDuration>,
-    [MEETING_STATUS.NO_ANSWER]: <MeetingCallback onClick={onStatusClick}>Callback</MeetingCallback>,
-    [MEETING_STATUS.NOT_STARTED]: <MeetingCancel onClick={onStatusClick}>Cancel</MeetingCancel>,
-    [MEETING_STATUS.LIVE]: <MeetingJoin onClick={onStatusClick}>Join</MeetingJoin>,
-  });
+  onStatusClick: (() => void) | undefined,
+  isOwner: boolean
+) => ({
+  [MEETING_STATUS.ENDED]: <MeetingDuration>{duration}</MeetingDuration>,
+  [MEETING_STATUS.NO_ANSWER]: !isOwner ? <MeetingCallback onClick={onStatusClick}>Callback</MeetingCallback> : null,
+  [MEETING_STATUS.NOT_STARTED]: isOwner ? <MeetingCancel onClick={onStatusClick}>Cancel</MeetingCancel> : null,
+  [MEETING_STATUS.LIVE]: <MeetingJoin onClick={onStatusClick}>Join</MeetingJoin>,
+});
 
 type Props = {
   status: MEETING_STATUS;
   duration: string;
   onStatusClick?: () => void;
+  isOwner: boolean;
 };
 
-const MeetingStatus = ({ status, duration, onStatusClick }: Props) => (
+const MeetingStatus = ({ status, duration, onStatusClick, isOwner }: Props) => (
   <>
-    {getMeetingStatus(duration, onStatusClick)[status]}
+    {getMeetingStatus(duration, onStatusClick, isOwner)[status]}
   </>
 );
 

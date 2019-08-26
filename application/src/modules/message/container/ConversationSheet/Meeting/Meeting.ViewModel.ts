@@ -17,17 +17,13 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import RCVideoMeetingItemModel from '@/store/models/RCVideoMeetingItem';
 import { MeetingsService } from 'sdk/module/meetings';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-// import { ElectronService } from '@/modules/electron';
-// import { container } from 'framework/ioc';
+import { ElectronService } from '@/modules/electron';
+import { container } from 'framework/ioc';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { MEETING_ACTION } from 'sdk/module/meetings/types';
 import { mainLogger } from 'foundation/log';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
-  // private get _electronService() {
-  //   return container.get(ElectronService);
-  // }
-
   @computed
   get meetingStrategy(): {
     [x: number]:
@@ -88,7 +84,12 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   };
 
   joinMeeting = () => {
-    // this._electronService.openWindow({ url: this.joinUrl });
+    if (window.jupiterElectron && window.jupiterElectron.openWindow) {
+      const _electronService = container.get<ElectronService>(ElectronService);
+      _electronService.openWindow(this.joinUrl);
+    } else {
+      window.open(this.joinUrl);
+    }
   };
 
   callbackMeeting = async () => {
@@ -104,7 +105,18 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     }
   };
 
-  cancelMeeting = () => {};
+  cancelMeeting = async () => {
+    await ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).cancelMeeting(this.meetingId);
+  };
+
+  @computed
+  get isMeetingOwner() {
+    return (
+      this.meetingItem.creatorId === getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID)
+    );
+  }
 
   @computed
   get meetingTitle() {
