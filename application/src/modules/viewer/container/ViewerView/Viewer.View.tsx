@@ -261,7 +261,7 @@ class ViewerViewComponent extends Component<
     const { dataModule } = this.props;
     if (dataModule.pages) {
       const items = dataModule.pages.map((page, i) => {
-        return <JuiImageWithStatusView src={page.url} key={i} />;
+        return <JuiImageWithStatusView src={page.url || ''} key={i} />;
       });
       return (
         <JuiViewerSidebar
