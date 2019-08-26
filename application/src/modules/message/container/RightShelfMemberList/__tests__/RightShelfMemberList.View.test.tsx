@@ -50,11 +50,15 @@ const props = {
   group: {
     type: CONVERSATION_TYPES.TEAM,
   } as GroupModel,
-  isLoading: false,
-  fullMemberIds: [],
-  fullGuestIds: [],
-  shownMemberIds: [],
-  shownGuestIds: [],
+  membersData: {
+    isLoading: false,
+    fullMemberLen: 0,
+    fullGuestLen: 0,
+    shownMemberIds: [],
+    shownGuestIds: [],
+    personNameMap: {},
+  },
+  shouldShowLink: true,
   allMemberLength: 0,
   isTeam: false,
   personNameMap: {},
@@ -63,6 +67,7 @@ const props = {
   shouldHide: false,
   loadingH: 100,
   dispose: jest.fn(),
+  canAddMembers: true,
 };
 let wrapper;
 describe('RightShelfMemberList.View', () => {
@@ -98,25 +103,16 @@ describe('RightShelfMemberList.View', () => {
     expect(instance._resizeObserver.disconnect).toHaveBeenCalled();
   });
 
-  it('should NOT render link for 1:1 conversations', () => {
-    props.group.type = CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
-    wrapper = shallow(<RightShelfMemberListView {...props} />);
+  it('should NOT render link according to shouldShowLink [JPT-2658]', () => {
+    wrapper = shallow(<RightShelfMemberListView {...props} shouldShowLink={true} />);
+    expect(wrapper.find(JuiLink).exists()).toBe(true);
+
+    wrapper = shallow(<RightShelfMemberListView {...props} shouldShowLink={false} />);
     expect(wrapper.find(JuiLink).exists()).toBe(false);
   });
 
-  it('should render link for non-1:1 conversations [JPT-2658]', () => {
-    props.group.type = CONVERSATION_TYPES.NORMAL_GROUP;
-    wrapper = shallow(<RightShelfMemberListView {...props} />);
-    expect(wrapper.find(JuiLink).exists()).toBe(true);
-
-    props.group.type = CONVERSATION_TYPES.TEAM;
-    wrapper = shallow(<RightShelfMemberListView {...props} />);
-    expect(wrapper.find(JuiLink).exists()).toBe(true);
-  });
   it('should open profile dialog when click the link button', () => {
-    props.group.type = CONVERSATION_TYPES.TEAM;
-
-    wrapper = shallow(<RightShelfMemberListView {...props} />);
+    wrapper = shallow(<RightShelfMemberListView {...props} shouldShowLink={true}  />);
     wrapper
       .find(JuiLink)
       .shallow()

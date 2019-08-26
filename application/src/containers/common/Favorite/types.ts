@@ -10,6 +10,10 @@ import { IconButtonSize } from 'jui/components/Buttons';
 type FavoriteProps = {
   id: number; // personId || conversationId
   size?: IconButtonSize;
+  dataTrackingProps: {
+    source: string;
+    conversationType: string;
+  };
 };
 
 type FavoriteViewProps = FavoriteProps & {

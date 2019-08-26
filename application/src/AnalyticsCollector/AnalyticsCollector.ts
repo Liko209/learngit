@@ -176,9 +176,10 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_phone_dialer_callHistory');
   }
 
-  phoneGoToConversation(source: string) {
+  goToConversation(source: string, conversationType?: string) {
     dataAnalysis.track('Jup_Web/DT_msg_goToConversation', {
       source,
+      conversationType,
     });
   }
 
@@ -214,6 +215,103 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_confirmCallSwitch', {
       source,
     });
+  }
+
+  // FIJI-7829
+  showGlobalDialog() {
+    dataAnalysis.track('Jup_Web/DT_search_globalSearchDialog');
+  }
+
+  showFullMessageSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullMessageSearchDialog');
+  }
+
+  showFullPeopleSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullPeopleSearchDialog');
+  }
+
+  showFullGroupSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullGroupSearchDialog');
+  }
+
+  showFullTeamSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullTeamSearchDialog');
+  }
+
+  clearSearchHistory() {
+    dataAnalysis.track('Jup_Web/DT_search_clearHistory');
+  }
+
+  gotoConversationFromSearch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_goToConversation', { source });
+  }
+
+  jumpToPostInConversation(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_jumpToPostInConversation', { source });
+  }
+
+  outboundCallFromPeople(source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_outboundCall', { source });
+  }
+
+  joinPublicTeamFromSearch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_joinPublicTeam', { source });
+  }
+
+  filterContentSearchResultByType(type: string) {
+    dataAnalysis.track('Jup_Web/DT_search_filterMessageByType', { type });
+  }
+
+  filterContentSearchResultByTime(time: string) {
+    dataAnalysis.track('Jup_Web/DT_search_filterMessageByTimePosted', { time });
+  }
+  // end FIJI-7829
+
+  // for global hot keys
+  shortcuts(shortcut: string) {
+    dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+      shortcut,
+    });
+  }
+
+  profileDialog(category: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
+      category,
+      source,
+    });
+  }
+
+  addOrRemoveFavorite(
+    source: string,
+    action: string,
+    conversationType: string,
+  ) {
+    dataAnalysis.track('Jup_Web/DT_profile_addOrRemoveFavorite', {
+      source,
+      action,
+      conversationType,
+    });
+  }
+
+  copyProfileField(field: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_copyProfileField', {
+      field,
+    });
+  }
+
+  toggleTeamVisibility(toggle: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_profile_toggleTeamVisibility', {
+      toggle,
+      source,
+    });
+  }
+
+  copyTeamURL() {
+    dataAnalysis.track('Jup_Web/DT_profile_copyTeamURL');
+  }
+
+  copyTeamEmail() {
+    dataAnalysis.track('Jup_Web/DT_profile_copyTeamEmail');
   }
 
   // [FIJI-7395]

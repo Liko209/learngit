@@ -23,6 +23,7 @@ export type Post = ExtendedBaseModel & {
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
   new_version?: number; // This field should be moved to base model?
+  from_company_id?: number;
   from_group_id?: number;
   item_data?: PostItemData;
   links?: object[];

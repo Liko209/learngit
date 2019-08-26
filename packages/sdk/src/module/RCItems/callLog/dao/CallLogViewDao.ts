@@ -192,7 +192,7 @@ class CallLogViewDao extends BaseDao<CallLogView, string>
         view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED
           ? CALL_RESULT.MISSED
           : CALL_RESULT.UNKNOWN,
-      __deactivated: false,
+      deleted: false,
     } as CallLog;
   }
 }

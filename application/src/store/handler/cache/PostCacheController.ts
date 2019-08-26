@@ -118,16 +118,23 @@ abstract class PostCacheController implements IPreFetchController {
   }
 
   protected shouldPreFetch(groupId: number, direction: QUERY_DIRECTION) {
-    if (this.hasCache(groupId)) {
-      const foc = this.get(groupId);
-      return foc.hasMore(direction) && foc.listStore.size === 0;
+    if (this.isInRange(groupId)) {
+      if (this.hasCache(groupId)) {
+        const foc = this.get(groupId);
+        return foc.hasMore(direction) && foc.listStore.size === 0;
+      }
+      return true;
     }
-    return true;
+    return false;
   }
 
   protected removeInternal(groupId: number) {
     this.get(groupId).dispose();
     this._cacheMap.delete(groupId);
+  }
+
+  isInRange(groupId: number): boolean {
+    return groupId > 0;
   }
 }
 

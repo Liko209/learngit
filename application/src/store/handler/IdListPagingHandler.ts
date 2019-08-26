@@ -27,6 +27,7 @@ type IdListPaginationOptions<T, K, IdType extends ModelIdType = number> = {
   sortFunc?: ISortFunc<IdType>;
   defaultHasMoreUp?: boolean;
   defaultHasMoreDown?: boolean;
+  pageSize?: number;
 };
 
 class IdListPaginationHandler<
@@ -74,6 +75,7 @@ class IdListPaginationHandler<
     );
 
     return new FetchSortableDataListHandler<T, IdType>(this._idsDataProvider, {
+      pageSize: options.pageSize,
       isMatchFunc: options.isMatchFunc || this.defaultIsMatchFunc,
       sortFunc: options.sortFunc || this.defaultSortFunc,
       transformFunc: options.transformFunc || this.defaultTransformFunc,
