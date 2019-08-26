@@ -1,9 +1,11 @@
 import { MessageSettingManager } from '../MessageSettingManager';
 import * as utils from '@/modules/setting/utils';
+
 describe('MessageSettingManager', () => {
   let msm: MessageSettingManager;
   const mockedSettingService = {
     registerItem: jest.fn(),
+    registerSection: jest.fn(),
     unRegisterAll: jest.fn(),
   };
   const emailNotificationTitleAndDescBuilder = jest.fn();
@@ -21,15 +23,18 @@ describe('MessageSettingManager', () => {
       expect(mockedSettingService.registerItem).toHaveBeenCalled();
     });
     it('the description and title should be correct', () => {
-      expect(utils.buildTitleAndDesc).toBeCalledWith(
+      expect(utils.buildTitleAndDesc).toHaveBeenCalledWith(
         'notificationAndSounds',
         'emailNotifications',
       );
-      expect(emailNotificationTitleAndDescBuilder).toBeCalledTimes(4);
+      expect(emailNotificationTitleAndDescBuilder).toHaveBeenCalledTimes(7);
       const args = emailNotificationTitleAndDescBuilder.mock.calls.map(
         i => i[0],
       );
       expect(args).toEqual([
+        'maxConversations',
+        'newMessageBadgeCount',
+        'linkPreviews',
         'directMessages',
         'mentions',
         'teams',

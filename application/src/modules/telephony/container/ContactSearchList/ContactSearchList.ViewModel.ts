@@ -213,8 +213,7 @@ export class ContactSearchListViewModel
       ServiceConfig.SEARCH_SERVICE,
     );
 
-    return searchService.doFuzzySearchPhoneContacts({
-      searchKey: searchString,
+    return searchService.doFuzzySearchPhoneContacts(searchString, {
       fetchAllIfSearchKeyEmpty: false,
       recentFirst: true,
     });

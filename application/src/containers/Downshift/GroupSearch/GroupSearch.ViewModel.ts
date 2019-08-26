@@ -62,12 +62,11 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const result = await searchService.doFuzzySearchAllGroups(
-      query,
-      false,
-      true,
-      true,
-    );
+    const result = await searchService.doFuzzySearchAllGroups(query, {
+      fetchAllIfSearchKeyEmpty: false,
+      myGroupsOnly: true,
+      recentFirst: true,
+    });
 
     return result.sortableModels;
   };

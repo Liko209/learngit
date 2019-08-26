@@ -20,18 +20,29 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { ENTITY_NAME, PERMISSION_KEYS } from '@/store';
 import UserPermissionModel from '@/store/models/UserPermission';
 import { UserPermission } from 'sdk/module/permission/entity';
+import { container } from 'framework/ioc';
+import { ElectronService } from '@/modules/electron';
 
 class MeetingViewModel extends AbstractViewModel<MeetingProps> {
+
   startMeeting = async () => {
     const id = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const result = await ServiceLoader.getInstance<MeetingsService>(
-      ServiceConfig.MEETINGS_SERVICE,
-    ).startMeeting([id]);
-    if (result.action === MEETING_ACTION.DEEP_LINK) {
-      window.open(result.link);
+
+    const result = await ServiceLoader.getInstance<MeetingsService>(ServiceConfig.MEETINGS_SERVICE).startMeeting([id]);
+    if (result.action === MEETING_ACTION.DEEP_LINK && !!result.link) {
+      this.openWindow(result.link);
     } else {
       // show alert
       mainLogger.info(result.reason || 'start video error');
+    }
+  };
+
+  openWindow = (link: string) => {
+    if (window.jupiterElectron) {
+      const electronService = container.get(ElectronService);
+      electronService.openWindow({ url: link });
+    } else {
+      window.open(link);
     }
   };
 
@@ -48,7 +59,7 @@ class MeetingViewModel extends AbstractViewModel<MeetingProps> {
   });
 
   @computed
-  private get _group() {
+  get _group() {
     const { groupId } = this.props;
     if (groupId) {
       return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
