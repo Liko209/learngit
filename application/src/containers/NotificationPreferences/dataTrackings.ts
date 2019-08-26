@@ -9,7 +9,7 @@ import { ConversationType } from 'src/AnalyticsCollector/types';
 import {
   MUTED,
   DESKTOP_NOTIFICATIONS,
-  AUDIO_NOTIFICATIONS,
+  SOUND_NOTIFICATIONS,
   MOBILE_NOTIFICATIONS,
   EMAIL_NOTIFICATIONS,
 } from './constant';
@@ -54,7 +54,7 @@ export function notificationPreferencesShown() {
 export const eventsDict = {
   [MUTED]: _buildBooleanTracker('muteNotifications'),
   [DESKTOP_NOTIFICATIONS]: _buildBooleanTracker('desktopNotification'),
-  [AUDIO_NOTIFICATIONS]: _buildCustomTracker(
+  [SOUND_NOTIFICATIONS]: _buildCustomTracker(
     'notificationSound',
     ({ id }: { id: string }) => SoundSelectDataTrackingOption[id],
   ),

@@ -6,21 +6,21 @@
 
 const MUTED = 'muted';
 const DESKTOP_NOTIFICATIONS = 'desktopNotifications';
-const AUDIO_NOTIFICATIONS = 'audioNotifications';
-const MOBILE_NOTIFICATIONS = 'mobileNotifications';
+const SOUND_NOTIFICATIONS = 'audioNotifications';
+const MOBILE_NOTIFICATIONS = 'pushNotifications';
 const EMAIL_NOTIFICATIONS = 'emailNotifications';
 
 const TO_CAMEL_DICT = {
   muted: MUTED,
   desktop_notifications: DESKTOP_NOTIFICATIONS,
-  audio_notifications: AUDIO_NOTIFICATIONS,
+  audio_notifications: SOUND_NOTIFICATIONS,
   push_notifications: MOBILE_NOTIFICATIONS,
   email_notifications: EMAIL_NOTIFICATIONS,
 };
 export {
   MUTED,
   DESKTOP_NOTIFICATIONS,
-  AUDIO_NOTIFICATIONS,
+  SOUND_NOTIFICATIONS,
   MOBILE_NOTIFICATIONS,
   EMAIL_NOTIFICATIONS,
   TO_CAMEL_DICT,

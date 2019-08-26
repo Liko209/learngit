@@ -1139,7 +1139,7 @@
       "muted": "Mute all notifications everywhere",
       "desktopNotifications": "Enable desktop notifications",
       "audioNotifications": "Enable desktop sound notifications",
-      "mobileNotifications": "Enable mobile notifications",
+      "pushNotifications": "Enable mobile notifications",
       "emailNotifications": "Enable email notifications",
       "options": {
         "mobileNotifications": {

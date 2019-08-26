@@ -12,7 +12,7 @@ import { Props, ViewProps } from './types';
 import {
   MUTED,
   DESKTOP_NOTIFICATIONS,
-  AUDIO_NOTIFICATIONS,
+  SOUND_NOTIFICATIONS,
   MOBILE_NOTIFICATIONS,
   EMAIL_NOTIFICATIONS,
 } from './constant';
@@ -93,7 +93,7 @@ class NotificationPreferencesComponent extends React.Component<
   private _renderSoundNotification = () => {
     const { soundNotificationsDisabled } = this.props;
     const config = {
-      id: AUDIO_NOTIFICATIONS,
+      id: SOUND_NOTIFICATIONS,
       sourceRenderer: SoundSourceItem,
       secondaryActionRenderer: SoundSourcePlayerRenderer,
     };
@@ -166,7 +166,7 @@ class NotificationPreferencesComponent extends React.Component<
               label={t(`setting.conversationPreferences.${MUTED}`)}
               divider
             >
-              <RuiCheckbox
+              {currentValue[MUTED] !== undefined && <RuiCheckbox
                 color="primary"
                 checked={currentValue[MUTED]}
                 onChange={handleCheckboxChange(MUTED)}
@@ -174,7 +174,7 @@ class NotificationPreferencesComponent extends React.Component<
                 inputProps={{
                   'aria-labelledby': MUTED,
                 }}
-              />
+              />}
             </JuiSettingItem>
             <JuiSettingItem
               id={DESKTOP_NOTIFICATIONS}
