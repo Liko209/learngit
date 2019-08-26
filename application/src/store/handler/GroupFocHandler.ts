@@ -88,7 +88,7 @@ class GroupFocHandler extends IdModelFocHandler {
     return isValid;
   };
 
-  protected createFoc() {
+  protected async createFoc() {
     return IdModelFocBuilder.buildFoc(
       this._groupService.getEntitySource(),
       this.transformFunc,
