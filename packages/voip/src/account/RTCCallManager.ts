@@ -26,7 +26,7 @@ class RTCCallManager {
 
   removeCall(callUuid: string) {
     this._calls = this._calls.filter((item: RTCCall) => {
-      item.getCallInfo().uuid !== callUuid;
+      return item.getCallInfo().uuid !== callUuid;
     });
     rtcLogger.debug(
       LOG_TAG,
