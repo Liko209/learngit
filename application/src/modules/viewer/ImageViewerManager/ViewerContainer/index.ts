@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './ImageViewer.View';
+export * from './SingleImageViewer.View';
 export * from './types';

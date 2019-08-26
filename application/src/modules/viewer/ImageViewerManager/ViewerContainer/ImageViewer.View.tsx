@@ -3,6 +3,7 @@
  * @Date: 2019-03-04 15:28:55
  * Copyright © RingCentral. All rights reserved.
  */
+/*eslint-disable*/
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiDragZoom } from 'jui/pattern/DragZoom';
 import {
@@ -51,7 +52,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   }
 
   async componentDidMount() {
-    await this.props.dataModule.init();
+    const { init } = this.props.dataModule;
+    init && (await this.props.dataModule.init());
   }
 
   switchPreImage = () => {
@@ -145,6 +147,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     } = dataModule;
     const page = pages && pages[0];
     const padding = 32;
+    console.log('looper', this._imageRef.current, this.state.imageInited);
     return (
       <ViewerContext.Consumer>
         {value => (

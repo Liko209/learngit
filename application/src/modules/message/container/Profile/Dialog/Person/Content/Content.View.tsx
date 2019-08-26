@@ -39,12 +39,15 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 import { IMessageStore } from '@/modules/message/interface';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { container } from 'framework/ioc';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
   WithTranslation & ProfileDialogPersonContentViewProps
 > {
   @IMessageStore private _messageStore: IMessageStore;
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
 
   renderPresence = () => {
     const { id } = this.props;
@@ -73,7 +76,12 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <JuiIconography iconSize="medium">{key}</JuiIconography>;
   };
 
-  renderIcons = (value: string, aria?: string, showCall?: boolean, fieldName?: string) => {
+  renderIcons = (
+    value: string,
+    aria?: string,
+    showCall?: boolean,
+    fieldName?: string,
+  ) => {
     const { t, id } = this.props;
     const copy = (
       <JuiIconButton
@@ -107,7 +115,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
   };
 
   onClickCopy = (value: string, fieldName?: string) => {
-    fieldName && analyticsCollector.copyProfileField(fieldName)
+    fieldName && analyticsCollector.copyProfileField(fieldName);
     copy(value);
   };
 
@@ -122,8 +130,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }: FormGroupType) => {
     const iconToFieldName = {
       call: 'number',
-      email: 'email'
-    }
+      email: 'email',
+    };
     return (
       <FormGroup key={value}>
         <FormLeft>{icon && this.renderIcon(icon)}</FormLeft>
@@ -131,7 +139,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copyValue && this.renderIcons(copyValue, copyAria, showCall, icon && iconToFieldName[icon])}
+        {copyValue &&
+          this.renderIcons(
+            copyValue,
+            copyAria,
+            showCall,
+            icon && iconToFieldName[icon],
+          )}
       </FormGroup>
     );
   };
@@ -149,7 +163,11 @@ class ProfileDialogPersonContentViewComponent extends Component<
   messageAfterClick = () => {
     analyticsCollector.goToConversation('profileDialog', '1:1 conversation');
     portalManager.dismissLast();
-  }
+  };
+
+  handleAvatarClick = () => {
+    this._viewerService.showSingleImageViewer(this.props.id);
+  };
 
   render() {
     const {
@@ -171,6 +189,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
             <Avatar
               uid={id}
               size="xlarge"
+              onClick={this.handleAvatarClick}
               presence={this.renderPresence()}
               automationId="profileAvatar"
             />

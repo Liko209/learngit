@@ -18,6 +18,11 @@ type ImageViewerViewModuleProps = {
   dismiss: () => void;
 };
 
+type SingleImageViewerViewModuleProps = {
+  personId: number;
+  dismiss: () => void;
+};
+
 type ImageViewerViewModule = {
   init: () => void;
   currentItemId: number;
@@ -70,4 +75,5 @@ export {
   ImageViewerProps,
   ImageViewerOptions,
   ImageViewerBuild,
+  SingleImageViewerViewModuleProps,
 };
