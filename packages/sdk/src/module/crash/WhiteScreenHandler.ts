@@ -6,8 +6,8 @@
 
 import { CrashGlobalConfig } from './CrashGlobalConfig';
 import { WHITE_SCREEN_HANDLE_SPACE } from './constants';
-import { AccountManager } from 'sdk/framework/account';
-import { container } from 'sdk/container';
+import { AccountService } from 'sdk/module/account/service';
+import { ServiceLoader, ServiceConfig } from '../serviceLoader';
 
 export class WhiteScreenHandler {
   private _handled: boolean;
@@ -27,12 +27,18 @@ export class WhiteScreenHandler {
   }
 
   async handleWhiteScreen() {
+    this._clearServiceWorkerCaches();
+    const registration = await navigator.serviceWorker.getRegistration('/');
+    registration && (await registration.unregister());
+    await ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).logout();
+    window.location.reload();
+  }
+
+  private async _clearServiceWorkerCaches() {
     (await caches.keys()).forEach(key => {
       caches.delete(key);
     });
-    const registration = await navigator.serviceWorker.getRegistration('/');
-    registration && (await registration.unregister());
-    await container.get<AccountManager>(AccountManager.name).logout();
-    window.location.reload();
   }
 }

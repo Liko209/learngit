@@ -36,10 +36,11 @@ export class CrashManager {
   };
 
   onCrash = () => {
-    if (Pal.instance.getWhiteScreenChecker()) {
-      if (Pal.instance.getWhiteScreenChecker().isWhiteScreen()) {
-        this._whiteScreenHandler.onCrash();
-      }
+    if (
+      Pal.instance.getWhiteScreenChecker() &&
+      Pal.instance.getWhiteScreenChecker().isWhiteScreen()
+    ) {
+      this._whiteScreenHandler.onCrash();
     }
   };
 }
