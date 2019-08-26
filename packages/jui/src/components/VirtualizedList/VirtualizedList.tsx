@@ -179,7 +179,11 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: PartialScrollPosition) => {
     if (ref.current) {
       if (options === true) {
-        ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
+        if(index === 0 && offset === 0) {
+          ref.current.scrollTop = 0;
+        } else {
+          ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
+        }
       } else {
         ref.current.scrollTop =
           rowManager.getRowOffsetTop(index + 1) - height - offset;

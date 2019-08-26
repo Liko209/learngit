@@ -1032,15 +1032,22 @@ describe('StateDataHandleController', () => {
           },
           {
             id: 3456,
+            unread_count: 0,
+          },
+          {
+            id: 6789,
+            unread_count: 9,
           },
         ],
       } as any;
       stateDataHandleController['_ignoredIdSet'].add(3456);
+      stateDataHandleController['_ignoredIdSet'].add(6789);
       await stateDataHandleController['_updateEntitiesAndDoNotification'](
         transformedState,
       );
       expect(mockUpdate).toHaveBeenCalledTimes(1);
       expect(mockActionController.updateReadStatus).toHaveBeenCalledTimes(1);
+      expect(mockActionController.updateReadStatus).toBeCalledWith(6789, false, true);
       expect(mockStateService.myStateConfig.setMyStateId).toHaveBeenCalledTimes(
         1,
       );

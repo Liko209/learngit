@@ -122,7 +122,7 @@ class ConfigWrapper {
     this.includeScene = this.getArray("INCLUDE_SCENE", "");
     this.includeTags = this.getArray("INCLUDE_TAGS", "");
     this.excludeTags = this.getArray("EXCLUDE_TAGS", "");
-    this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "2288713734,2288697350");
+    this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "4591173638,4591181830");
     this.searchKeywords = this.getArray("SEARCH_KEYWORD", "a,b,c,d");
     this.searchPhones = this.getArray("SEARCH_PHONE", "1,2,3,4,5,6,7,8,9,0");
     /* scene config */
