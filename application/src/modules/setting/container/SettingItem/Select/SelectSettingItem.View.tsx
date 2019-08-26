@@ -18,6 +18,7 @@ import { JuiText } from 'jui/components/Text';
 import { JuiListItemSecondaryAction } from 'jui/components/Lists';
 import { JuiVirtualizedBoxSelect } from 'jui/components/VirtualizedSelects';
 import { SETTING_ITEM_TYPE } from '@/interface/setting';
+import { observable } from 'mobx';
 
 type SourceItemType =
   | {
@@ -68,6 +69,19 @@ class SelectSettingItemViewComponent<
     }
     return reactNode;
   };
+
+  @observable
+  private _open = false;
+
+  private _onOpen = async () => {
+    const { onBeforeOpen } = this.props.settingItem;
+    this._open = onBeforeOpen ? await onBeforeOpen() : true;
+  };
+
+  private _onClose = () => {
+    this._open = false;
+  };
+
   private _renderSelect() {
     const { value, disabled, settingItem } = this.props;
     return (
@@ -79,6 +93,9 @@ class SelectSettingItemViewComponent<
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={value}
         isFullWidth
+        open={this._open}
+        onOpen={this._onOpen}
+        onClose={this._onClose}
         name="settings"
         renderValue={this._renderValue}
       >

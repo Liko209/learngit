@@ -1142,7 +1142,8 @@
       "volume": {
         "label": "Volume control",
         "description": "Update the app volume"
-      }
+      },
+      "microphonePermissionBlocked": "To use this function, go to your browser settings to allow RingCentral to access microphone."
     },
     "useDefault": "Use system default",
     "speaker": "Speaker",
@@ -1177,11 +1178,7 @@
       "enablePermissionAction": "Enable notifications",
       "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
     },
-    "notificationBlockedDialog": {
-      "title": "Notifications not allowed",
-      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
-      "button": "OK"
-    }
+    "notificationPermissionBlocked": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications."
   },
   "feedback": {
     "name": "Feedback",
