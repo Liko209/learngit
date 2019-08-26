@@ -25,6 +25,8 @@ import GroupService, { Group, FuzzySearchGroupOptions } from 'sdk/module/group';
 import { SortUtils } from 'sdk/framework/utils';
 import { PerformanceTracer } from 'foundation/performance';
 import { SEARCH_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { Terms } from 'sdk/framework/search';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {
@@ -160,6 +162,20 @@ class SearchService extends AbstractService
       count: result && result.sortableModels ? result.sortableModels.length : 0,
     });
     return result;
+  }
+
+  generateMatchedInfo(
+    personId: number,
+    name: string,
+    phoneNumbers: PhoneNumber[],
+    terms: Terms,
+  ) {
+    return this.searchPersonController.generateMatchedInfo(
+      personId,
+      name,
+      phoneNumbers,
+      terms,
+    );
   }
 }
 

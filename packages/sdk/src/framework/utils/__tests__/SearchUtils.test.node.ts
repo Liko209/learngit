@@ -171,4 +171,149 @@ describe('SearchUtils', () => {
       expect(result).toBe(0);
     });
   });
+
+  describe('toDefaultSearchKeyTerms', () => {
+    it('should return undefined when search is undefined', () => {
+      const term = SearchUtils.toDefaultSearchKeyTerms(undefined);
+      expect(term).toEqual({
+        searchKey: undefined,
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      });
+    });
+    it('should return correct value when search is not undefined', () => {
+      const term = SearchUtils.toDefaultSearchKeyTerms('abc');
+      expect(term).toEqual({
+        searchKey: 'abc',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      });
+    });
+  });
+
+  describe('formatTerms', () => {
+    it('should not call format when search key is empty or undefined', () => {
+      SearchUtils.getTermsFromText = jest.fn();
+
+      const terms = {
+        searchKey: undefined,
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+      SearchUtils.formatTerms(terms);
+      expect(SearchUtils.getTermsFromText).not.toHaveBeenCalled();
+    });
+
+    it('should call format when search key is valid', async () => {
+      SearchUtils.getTermsFromText = jest.fn();
+      SearchUtils.isUseSoundex = jest.fn().mockResolvedValue(false);
+      const terms = {
+        searchKey: 'Abc haa ',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+
+      await SearchUtils.formatTerms(terms);
+      expect(SearchUtils.getTermsFromText).toHaveBeenCalledWith(
+        terms.searchKey.toLowerCase().trim(),
+      );
+      expect(SearchUtils.isUseSoundex).toHaveBeenCalled();
+    });
+
+    it('should call format when search key is valid and has formatFunc', async () => {
+      SearchUtils.getTermsFromText = jest.fn();
+      SearchUtils.isUseSoundex = jest.fn().mockResolvedValue(false);
+      const terms = {
+        searchKey: 'Abc haa ',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+
+      const formattedTerms = {
+        formattedKeys: [
+          { original: 'abc', formatted: 'abc' },
+          { original: 'haa', formatted: 'haa' },
+        ],
+        validFormattedKeys: [
+          { original: 'abc', formatted: 'abc' },
+          { original: 'haa', formatted: 'haa' },
+        ],
+      };
+
+      await SearchUtils.formatTerms(terms, (originalTerms: string[]) => {
+        return formattedTerms;
+      });
+      expect(SearchUtils.getTermsFromText).toHaveBeenCalledWith(
+        terms.searchKey.toLowerCase().trim(),
+      );
+      expect(SearchUtils.isUseSoundex).toHaveBeenCalled();
+      expect(terms.searchKeyFormattedTerms).toEqual(formattedTerms);
+    });
+  });
+
+  describe('genSearchKeyTerms', () => {
+    it('should return correct terms', async () => {
+      SearchUtils.formatTerms = jest.fn();
+      SearchUtils.formatTerms = jest.fn();
+      await SearchUtils.genSearchKeyTerms(undefined);
+      expect(SearchUtils.formatTerms).toHaveBeenCalledWith(
+        {
+          searchKey: undefined,
+          searchKeyTerms: [],
+          searchKeyTermsToSoundex: [],
+          searchKeyFormattedTerms: {
+            formattedKeys: [],
+            validFormattedKeys: [],
+          },
+        },
+        undefined,
+      );
+
+      const func = (originalTerms: string[]) => {
+        return {
+          formattedKeys: [
+            { original: 'abc', formatted: 'abc' },
+            { original: 'haa', formatted: 'haa' },
+          ],
+          validFormattedKeys: [
+            { original: 'abc', formatted: 'abc' },
+            { original: 'haa', formatted: 'haa' },
+          ],
+        };
+      };
+      await SearchUtils.genSearchKeyTerms('abc haa', func);
+      expect(SearchUtils.formatTerms).toHaveBeenCalledWith(
+        {
+          searchKey: 'abc haa',
+          searchKeyTerms: [],
+          searchKeyTermsToSoundex: [],
+          searchKeyFormattedTerms: {
+            formattedKeys: [],
+            validFormattedKeys: [],
+          },
+        },
+        func,
+      );
+    });
+  });
 });
