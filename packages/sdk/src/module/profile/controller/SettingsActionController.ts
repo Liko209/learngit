@@ -60,34 +60,36 @@ class SettingsActionController {
     }
   }
 
-  async updateSettingByGroupId(
+  async updateConversationPreference(
     cid: number,
     model: Partial<ConversationPreference>,
   ) {
-    const profile = await this._profileDataController.getProfile();
-    const { sound_notifications, ...notification } = model;
-    const allNotification =
-      (profile && profile.conversation_level_notifications) || {};
-    const allSound =
-      (profile && profile.team_specific_audio_notifications) || [];
-    allNotification[cid] = notification;
-    const data = [
-      { key: SETTING_KEYS.CONVERSATION_NOTIFICATION, value: allNotification },
-      {
-        key: SETTING_KEYS.CONVERSATION_SOUND,
-        value: allSound.map(item => {
-          if (
-            item.gid === cid &&
-            sound_notifications &&
-            sound_notifications.id
-          ) {
-            item.sound = sound_notifications.id;
+    const updateData: SettingOption[] = [];
+    const profile = await this._profileDataController.getLocalProfile();
+    const { audio_notifications, ...notification } = model;
+    const originNotification =
+      (profile && profile[SETTING_KEYS.CONVERSATION_NOTIFICATION]) || {};
+    const originAudio =
+      (profile && profile[SETTING_KEYS.CONVERSATION_AUDIO]) || [];
+    if (notification) {
+      originNotification[cid] = { ...originNotification[cid], ...notification };
+      updateData.push({
+        key: SETTING_KEYS.CONVERSATION_NOTIFICATION,
+        value: originNotification,
+      });
+    }
+    if (audio_notifications) {
+      updateData.push({
+        key: SETTING_KEYS.CONVERSATION_AUDIO,
+        value: originAudio.map(item => {
+          if (item.gid === cid) {
+            item.sound = audio_notifications.id;
           }
           return item;
         }),
-      },
-    ];
-    this.updateSettingOptions(data);
+      });
+    }
+    this.updateSettingOptions(updateData);
   }
 }
 

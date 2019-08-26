@@ -159,7 +159,7 @@ const ENTITY_SETTING = {
       getById: (id: number) =>
         ServiceLoader.getInstance<ProfileService>(
           ServiceConfig.PROFILE_SERVICE,
-        ).getByGroupId(id),
+        ).getConversationPreference(id),
     }),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,

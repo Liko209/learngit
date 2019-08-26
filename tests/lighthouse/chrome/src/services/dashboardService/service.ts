@@ -546,7 +546,7 @@ class DashboardService {
     });
 
     if (merticWarnArr.length === 0 && merticBlockArr.length === 0) {
-      glipMessage.push('All of metric seem to be good');
+      glipMessage.push('All of metric seem to be good. See all metrics from below link');
     } else {
       glipMessage.push(...merticBlockArr);
       glipMessage.push(...merticWarnArr);
@@ -587,9 +587,10 @@ class DashboardService {
       glipMessage.push(...memoryDiff);
     }
 
-    glipMessage.push(`\n**Dashboard:**\n ${Config.buildURL}Dashboard`);
+    glipMessage.push(`\n**Dashboard(See all metrics from below link):**\n ${Config.buildURL}Dashboard`);
     glipMessage.push(`**Lighthouse:**\n ${Config.buildURL}Lighthouse`);
     glipMessage.push(`**Metabase:**\n ${Config.dashboardUrl}`);
+    glipMessage.push(`**Performance related Jira Tickets:**\n ${Config.jiraUrl}`);
 
     FileService.saveDashboardIntoDisk(htmlArray.join(''));
     FileService.saveGlipMessageIntoDisk(glipMessage.join('\n'));

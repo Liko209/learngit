@@ -68,7 +68,7 @@ type Profile = ExtendedBaseModel & {
   // conversation settings
   [SETTING_KEYS.MAX_LEFTRAIL_GROUP]?: string;
   [SETTING_KEYS.CONVERSATION_NOTIFICATION]?: CONVERSATION_NOTIFICATIONS_VALUE;
-  [SETTING_KEYS.CONVERSATION_SOUND]?: AUDIO_NOTIFICATIONS[];
+  [SETTING_KEYS.CONVERSATION_AUDIO]?: AUDIO_NOTIFICATIONS[];
   [SETTING_KEYS.SHOW_LINK_PREVIEWS]: boolean;
 
   // meetings
@@ -78,7 +78,7 @@ type Profile = ExtendedBaseModel & {
 type ConversationPreference = IdModel<number> & {
   muted: boolean;
   desktop_notifications: boolean;
-  sound_notifications: AUDIO_SOUNDS_INFO;
+  audio_notifications: AUDIO_SOUNDS_INFO;
   push_notifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
   email_notifications: EMAIL_NOTIFICATION_OPTIONS;
 };

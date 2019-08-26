@@ -201,7 +201,7 @@ enum SETTING_KEYS {
   AUDIO_NEW_VOICEMAIL = 'meeting_audio_notifications',
 
   CONVERSATION_NOTIFICATION = 'conversation_level_notifications',
-  CONVERSATION_SOUND = 'team_specific_audio_notifications',
+  CONVERSATION_AUDIO = 'team_specific_audio_notifications',
 }
 type DesktopNotificationsSettingModel = {
   browserPermission: NotificationPermission;

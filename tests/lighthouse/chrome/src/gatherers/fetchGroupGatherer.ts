@@ -77,6 +77,7 @@ class FetchGroupGatherer extends DebugGatherer {
         await groupPage.close();
         page = undefined;
       } catch (err) {
+        this.logger.error(err);
         if (page) {
           await page.close()
         }
