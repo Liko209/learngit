@@ -59,10 +59,10 @@ describe('ConversationPreferenceHandler', () => {
     const expectValue = {
       id: groupId,
       muted: false,
-      desktop_notifications: false,
-      email_notifications: globalEmail,
-      audio_notifications: globalSound,
-      push_notifications: globalMobile,
+      desktopNotifications: false,
+      emailNotifications: globalEmail,
+      audioNotifications: globalSound,
+      pushNotifications: globalMobile,
     };
     beforeEach(() => {
       settingService.getById = jest.fn().mockImplementation(id => {
@@ -116,7 +116,7 @@ describe('ConversationPreferenceHandler', () => {
       );
       expect(result).toEqual({
         ...expectValue,
-        desktop_notifications: true,
+        desktopNotifications: true,
       });
     });
     it('should return value when conversation preference is not undefined', async () => {
@@ -135,8 +135,8 @@ describe('ConversationPreferenceHandler', () => {
       );
       expect(result).toEqual({
         ...expectValue,
-        desktop_notifications: desktopNotifications,
-        email_notifications: emailNotifications,
+        desktopNotifications,
+        emailNotifications,
       });
     });
     it.each`
@@ -161,7 +161,7 @@ describe('ConversationPreferenceHandler', () => {
           profile,
           groupId,
         );
-        expect(result.audio_notifications).toEqual(expectRes);
+        expect(result.audioNotifications).toEqual(expectRes);
       },
     );
     it.each`
@@ -170,14 +170,14 @@ describe('ConversationPreferenceHandler', () => {
       ${undefined} | ${false} | ${true}
       ${true}      | ${false} | ${true}
     `(
-      'should return desktop_notification is $expectRes when isTeam is $isTeam and backend is $desktop',
+      'should return desktopNotification is $expectRes when isTeam is $isTeam and backend is $desktop',
       async ({ desktop, isTeam, expectRes }) => {
         const groupId = 1;
         groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
         const profile = {
           conversation_level_notifications: {
             [groupId]: {
-              desktop_notifications: desktop,
+              desktopNotifications: desktop,
             },
           },
         };
@@ -185,7 +185,7 @@ describe('ConversationPreferenceHandler', () => {
           profile,
           groupId,
         );
-        expect(result.desktop_notifications).toEqual(expectRes);
+        expect(result.desktopNotifications).toEqual(expectRes);
       },
     );
   });

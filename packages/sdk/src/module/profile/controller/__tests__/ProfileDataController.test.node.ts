@@ -188,20 +188,20 @@ describe('ProfileDataController', () => {
 
   describe('isNotificationMute()', () => {
     it.each`
-      muted    | desktop_notifications | expectRes
-      ${true}  | ${true}               | ${true}
-      ${true}  | ${false}              | ${true}
-      ${false} | ${true}               | ${false}
-      ${false} | ${false}              | ${true}
+      muted    | desktopNotifications | expectRes
+      ${true}  | ${true}              | ${true}
+      ${true}  | ${false}             | ${true}
+      ${false} | ${true}              | ${false}
+      ${false} | ${false}             | ${true}
     `(
       'should return $expectRes when mute is $mute and desktop_notifications is $desktop_notifications',
-      async ({ muted, desktop_notifications, expectRes }) => {
+      async ({ muted, desktopNotifications, expectRes }) => {
         const groupId = 1;
         profileDataController.getConversationPreference = jest
           .fn()
           .mockResolvedValue({
             muted,
-            desktop_notifications,
+            desktopNotifications,
           });
         const result = await profileDataController.isNotificationMute(groupId);
         expect(result).toEqual(expectRes);
@@ -224,10 +224,10 @@ describe('ProfileDataController', () => {
     const expectValue = {
       id: groupId,
       muted: false,
-      desktop_notifications: false,
-      email_notifications: globalEmail,
-      audio_notifications: globalSound,
-      push_notifications: globalMobile,
+      desktopNotifications: false,
+      emailNotifications: globalEmail,
+      audioNotifications: globalSound,
+      pushNotifications: globalMobile,
     };
     beforeEach(() => {
       settingService.getById = jest.fn().mockImplementation(id => {
@@ -278,7 +278,7 @@ describe('ProfileDataController', () => {
       );
       expect(result).toEqual({
         ...expectValue,
-        desktop_notifications: true,
+        desktopNotifications: true,
       });
     });
     it('should return value when conversation preference is not undefined', async () => {
@@ -296,8 +296,8 @@ describe('ProfileDataController', () => {
       );
       expect(result).toEqual({
         ...expectValue,
-        desktop_notifications: desktopNotifications,
-        email_notifications: emailNotifications,
+        desktopNotifications,
+        emailNotifications,
       });
     });
     it.each`
@@ -321,7 +321,7 @@ describe('ProfileDataController', () => {
         const result = await profileDataController.getConversationPreference(
           groupId,
         );
-        expect(result.audio_notifications).toEqual(expectRes);
+        expect(result.audioNotifications).toEqual(expectRes);
       },
     );
     it.each`
@@ -344,7 +344,7 @@ describe('ProfileDataController', () => {
         const result = await profileDataController.getConversationPreference(
           groupId,
         );
-        expect(result.desktop_notifications).toEqual(expectRes);
+        expect(result.desktopNotifications).toEqual(expectRes);
       },
     );
   });
