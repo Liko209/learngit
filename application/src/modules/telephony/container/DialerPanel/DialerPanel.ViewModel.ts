@@ -15,7 +15,7 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
   @action
   makeCall = async (val: string) => {
     // make sure `this._telephonyStore.dialerCall()` run before `this._telephonyStore.end()`
-    if (!(await this._telephonyService.makeCall(val))) {
+    if (!(await this._telephonyService.directCall(val))) {
       await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });

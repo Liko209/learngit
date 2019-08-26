@@ -7,13 +7,17 @@
 import { FeaturesFlagsService } from '../FeaturesFlagsService';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { featureModuleConfig } from '../../config/featureModuleConfig';
+import { getSingleEntity } from '@/store/utils';
 import _ from 'lodash';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 
 const permission = {
   hasPermission: jest.fn().mockResolvedValue(true),
   isVoipCallingAvailable: jest.fn().mockResolvedValue(true),
+  isWebPhoneAvailable: jest.fn().mockResolvedValueOnce(true),
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
+jest.mock('@/store/utils');
 
 describe('FeaturesFlagsService', () => {
   beforeEach(() => {
@@ -46,6 +50,20 @@ describe('FeaturesFlagsService', () => {
     it('should use telephony when service has permission', async () => {
       const featuresFlagsService = new FeaturesFlagsService();
 
+      expect(await featuresFlagsService.canUseTelephony()).toBeTruthy();
+    });
+  });
+
+  describe('canUseConference()', () => {
+    it('should check web phone permission when choose ringcentral', async () => {
+      const featuresFlagsService = new FeaturesFlagsService();
+      getSingleEntity.mockReturnValueOnce(CALLING_OPTIONS.RINGCENTRAL);
+      expect(await featuresFlagsService.canUseTelephony()).toBeTruthy();
+    });
+
+    it('should check telephony permission when choose glip', async () => {
+      const featuresFlagsService = new FeaturesFlagsService();
+      getSingleEntity.mockReturnValueOnce(CALLING_OPTIONS.GLIP);
       expect(await featuresFlagsService.canUseTelephony()).toBeTruthy();
     });
   });

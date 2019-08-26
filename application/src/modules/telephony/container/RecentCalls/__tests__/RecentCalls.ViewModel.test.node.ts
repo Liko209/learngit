@@ -78,7 +78,7 @@ describe('RecentCallsViewModel', () => {
     setTimeout(async () => {
       expect(vm.isBlock).toBeFalsy();
       await vm.makeCall();
-      expect(telephonyService.makeCall).toHaveBeenCalledWith(phoneNumber);
+      expect(telephonyService.directCall).toHaveBeenCalledWith(phoneNumber);
       done();
     });
   });

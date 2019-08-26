@@ -17,14 +17,14 @@ import { TelephonyService } from '../TelephonyService';
 
 const globalConfigService = {
   name: ServiceConfig.GLOBAL_CONFIG_SERVICE,
-  get: jest.fn(),
-  put: jest.fn(),
+  get() {},
+  put() {},
 };
 
 const phoneNumberService = {
   name: ServiceConfig.PHONE_NUMBER_SERVICE,
-  isShortNumber: jest.fn(),
-  isValidNumber: jest.fn(),
+  isShortNumber() {},
+  isValidNumber() {},
 };
 
 describe('TelephonyService', () => {
@@ -47,44 +47,50 @@ describe('TelephonyService', () => {
     @test(
       'should needE911Prompt if account has DL and emergency has been confirmed',
     )
-    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
-    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
+    @mockService(ServerTelephonyService, [
+      { method: 'isEmergencyAddrConfirmed', data: true },
+      { method: 'hasActiveDL', data: true },
+    ])
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
-    async t1() {
+    t1() {
       let ts;
       runInAction(() => {
-        ts = jupiter.get(TELEPHONY_SERVICE);
+        ts = new TelephonyService();
       });
-      expect(await ts.needE911Prompt()).toBe(true);
+      expect(ts.needE911Prompt()).toBe(true);
     }
 
     @test('should not needE911Prompt if account does not have DL [JPT-2703]')
-    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
+    @mockService(ServerTelephonyService, [
+      { method: 'isEmergencyAddrConfirmed', data: true },
+      { method: 'hasActiveDL', data: false },
+    ])
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
-    async t2() {
+    t2() {
       let ts;
       runInAction(() => {
-        ts = jupiter.get(TELEPHONY_SERVICE);
-        ts['_rcInfoService'] = { getDigitalLines: () => [] };
+        ts = new TelephonyService();
       });
-      expect(await ts.needE911Prompt()).toBe(false);
+      expect(ts.needE911Prompt()).toBe(false);
     }
 
     @test(
       'should not needE911Prompt if account has DL but emergency has not been confirmed',
     )
-    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
-    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', false)
+    @mockService(ServerTelephonyService, [
+      { method: 'isEmergencyAddrConfirmed', data: false },
+      { method: 'hasActiveDL', data: true },
+    ])
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
-    async t3() {
+    t3() {
       let ts;
       runInAction(() => {
-        ts = jupiter.get(TELEPHONY_SERVICE);
+        ts = new TelephonyService();
       });
-      expect(await ts.needE911Prompt()).toBe(false);
+      expect(ts.needE911Prompt()).toBe(false);
     }
   }
 
@@ -98,8 +104,10 @@ describe('TelephonyService', () => {
     @mockEntity(mockVolumeEntity)
     beforeEach() {}
     @test('should show E911 if not have been show E911')
-    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
-    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed')
+    @mockService(ServerTelephonyService, [
+      { method: 'isEmergencyAddrConfirmed', data: true },
+      { method: 'hasActiveDL', data: true },
+    ])
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
     @mockService(TelephonyStore, [
@@ -117,8 +125,10 @@ describe('TelephonyService', () => {
     }
 
     @test('should not show E911 if have been show E911')
-    @mockService.resolve(RCInfoService, 'getDigitalLines', [])
-    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed')
+    @mockService(ServerTelephonyService, [
+      { method: 'isEmergencyAddrConfirmed', data: false },
+      { method: 'hasActiveDL', data: true },
+    ])
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
     t2() {

@@ -81,6 +81,10 @@ const JuiProfileDialogContentSummaryButton = styled('div')`
   align-items: center;
   cursor: pointer;
   outline: none;
+  margin-right: ${spacing(5)};
+  &:last-child {
+    margin-right: 0;
+  }
   span {
     margin-right: ${spacing(2)};
   }

@@ -17,6 +17,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   CALL_ACTION_ERROR_CODE,
   RINGER_ADDITIONAL_TYPE,
+  CallOptions,
 } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
@@ -62,6 +63,7 @@ import { ISoundNotification } from '@/modules/notification/interface';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
+import { ItemService } from 'sdk/module/item';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -81,6 +83,9 @@ class TelephonyService {
   );
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
+  );
+  private _itemService = ServiceLoader.getInstance<ItemService>(
+    ServiceConfig.ITEM_SERVICE
   );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
   private _ringtone?: IMedia;
@@ -490,16 +495,11 @@ class TelephonyService {
     return fromNumber;
   }
 
-  private _makeCall = async (toNumber: string, callback?: Function) => {
+  private _makeCall = async (toNumber: string, options: Partial<CallOptions> & { callback?: Function } = {}) => {
+    
     const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
-      return;
-    }
-    // No call permission
-    const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
-    if (!callAvailable) {
-      ToastCallError.toastPermissionError();
       return;
     }
 
@@ -507,7 +507,7 @@ class TelephonyService {
     if (shouldMakeRcPhoneCall) {
       return this.makeRCPhoneCall(toNumber);
     }
-    callback && callback();
+    options.callback && options.callback();
 
     const fromNumber = this._getFromNumber();
 
@@ -516,9 +516,10 @@ class TelephonyService {
         TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
+    const { accessCode } = options;
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
-      { fromNumber },
+      { fromNumber, accessCode },
     );
 
     switch (true) {
@@ -564,30 +565,29 @@ class TelephonyService {
     return true;
   };
 
-  makeCall = async (toNumber: string, callback?: Function) => {
-    if (!(await this.isShortNumber(toNumber))) {
-      // is long number, need to check e911
-      if (!this._serverTelephonyService.isEmergencyAddrConfirmed()) {
-        const lines = await this._rcInfoService.getDigitalLines();
-        if (lines.length > 0) {
-          // prompt to confirm
-          this.openE911(() => this._makeCall(toNumber, callback));
-        } else {
-          // toast error
-          Notification.flashToast({
-            message: 'telephony.prompt.e911ExtensionNotAllowedToMakeCall',
-            type: ToastType.ERROR,
-            messageAlign: ToastMessageAlign.CENTER,
-            fullWidth: false,
-            autoHideDuration: 5000,
-            dismissible: true,
-          });
-        }
-        return true;
-      }
+  ensureCallPermission = async (action: Function, options: { skipE911Check?: boolean } = {}) => {
+    const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
+    if (!callAvailable) {
+      ToastCallError.toastPermissionError();
+      return false;
+    }
+    if (!this._serverTelephonyService.hasActiveDL()) {
+      Notification.flashToast({
+        message: 'telephony.prompt.noDLNotAllowedToMakeCall',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.CENTER,
+        fullWidth: false,
+        autoHideDuration: 5000,
+        dismissible: true,
+      });
+      return false;
     }
 
-    return this._makeCall(toNumber, callback);
+    if (!options.skipE911Check && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+      this.openE911(action);
+      return true;
+    }
+    return action();
   };
 
   switchCall = async (otherDeviceCall: ActiveCall) => {
@@ -613,7 +613,7 @@ class TelephonyService {
     return this._serverTelephonyService.getSwitchCall();
   }
 
-  directCall = (toNumber: string) => {
+  directCall = async (toNumber: string) => {
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4275
     if (this._serverTelephonyService.getAllCallCount() > 0) {
@@ -623,7 +623,10 @@ class TelephonyService {
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-    return this.makeCall(toNumber);
+    const skipE911Check = await this.isShortNumber(toNumber);
+    return this.ensureCallPermission(() => {
+      return this._makeCall(toNumber)
+    }, { skipE911Check });
   };
 
   hangUp = () => {
@@ -833,7 +836,7 @@ class TelephonyService {
     return this._serverTelephonyService.dtmf(this._callEntityId, digits);
   };
 
-  getComponent = () => import('../container/Call');
+  getComponent = () => [import('../container/AudioConference'), import('../container/Call')];
 
   setCallerPhoneNumber = (phoneNumber?: string) => {
     if (
@@ -1141,17 +1144,32 @@ class TelephonyService {
     this._telephonyStore.switchE911Status(true);
   };
 
-  needConfirmE911 = async () => {
-    const lines = await this._rcInfoService.getDigitalLines();
+  needConfirmE911 = () => {
+    const hasActiveDL = this._serverTelephonyService.hasActiveDL();
     const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed();
-    return lines.length > 0 && !isEmergency;
+    return hasActiveDL && !isEmergency;
   };
 
-  needE911Prompt = async () => {
-    const lines = await this._rcInfoService.getDigitalLines();
+  needE911Prompt = () => {
+    const hasActiveDL = this._serverTelephonyService.hasActiveDL();
     const hasConfirmed = this._serverTelephonyService.isEmergencyAddrConfirmed();
-    return lines.length > 0 && hasConfirmed;
+    return hasActiveDL && hasConfirmed;
   };
+
+  startAudioConference = async (groupId: number) => {
+    await this.ensureCallPermission(async () => {
+      try {
+        const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
+        this._makeCall(phoneNumber, { accessCode: hostCode })
+      } catch(err) {
+        // need toast, toast message should be provided from PM
+        mainLogger.error(
+          `${TelephonyService.TAG} Error when start a conference`,
+          err
+        );
+      }
+    });
+  }
 };
 
 export { TelephonyService };
