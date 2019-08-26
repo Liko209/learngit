@@ -54,6 +54,7 @@ class IdModelDataProvider implements IFetchSortableDataProvider<IdModel> {
 
     performanceTracer.end({
       key: `${FOC_PERFORMANCE_TAG}_${this._entitySource.getEntityName()}`,
+      count: result && result.data ? result.data.length : 0,
     });
 
     return result;

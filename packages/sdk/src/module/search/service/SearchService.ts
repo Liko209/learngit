@@ -23,6 +23,8 @@ import { SearchConfigHistory } from '../config/ConfigHistory';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupService, { Group, FuzzySearchGroupOptions } from 'sdk/module/group';
 import { SortUtils } from 'sdk/framework/utils';
+import { PerformanceTracer } from 'foundation/performance';
+import { SEARCH_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {
@@ -137,6 +139,8 @@ class SearchService extends AbstractService
     searchKey: UndefinedAble<string>,
     option: FuzzySearchGroupOptions,
   ) {
+    const performanceTracer = PerformanceTracer.start();
+
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
@@ -149,7 +153,13 @@ class SearchService extends AbstractService
         return SortUtils.compareSortableModel<Group>(groupA, groupB);
       };
     }
-    return groupService.doFuzzySearchAllGroups(searchKey, option);
+    const result = await groupService.doFuzzySearchAllGroups(searchKey, option);
+
+    performanceTracer.end({
+      key: SEARCH_PERFORMANCE_KEYS.SEARCH_ALL_GROUPS,
+      count: result && result.sortableModels ? result.sortableModels.length : 0,
+    });
+    return result;
   }
 }
 
