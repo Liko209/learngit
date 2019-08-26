@@ -109,7 +109,7 @@ class ProfileDataController {
   }
 
   async isNotificationMute(cid: number) {
-    const model = await this.getByGroupId(cid);
+    const model = await this.getConversationPreference(cid);
     if (model.muted) {
       return true;
     }
@@ -158,7 +158,9 @@ class ProfileDataController {
     }
   }
 
-  async getByGroupId(cid: number): Promise<ConversationPreference> {
+  async getConversationPreference(
+    cid: number,
+  ): Promise<ConversationPreference> {
     const profile = await this.getProfile();
     return await this._conversationPreferenceHandler.buildEntityInfo(
       profile,

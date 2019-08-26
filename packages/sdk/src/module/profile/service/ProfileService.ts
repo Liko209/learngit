@@ -11,7 +11,7 @@ import { daoManager } from '../../../dao';
 import { ProfileDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
+import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
@@ -38,7 +38,6 @@ class ProfileService extends EntityBaseService<Profile>
         [SOCKET.PROFILE]: this.handleIncomingData,
         [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this
           .handleGroupIncomesNewPost,
-        [ENTITY.USER_SETTING]: this.getByGroupId,
       }),
     );
 
@@ -171,10 +170,12 @@ class ProfileService extends EntityBaseService<Profile>
       .isVideoServiceEnabled(option);
   }
 
-  getByGroupId = async (cid: number): Promise<ConversationPreference> => {
+  getConversationPreference = async (
+    cid: number,
+  ): Promise<ConversationPreference> => {
     return await this.getProfileController()
       .getProfileDataController()
-      .getByGroupId(cid);
+      .getConversationPreference(cid);
   };
 
   async updateConversationPreference(
