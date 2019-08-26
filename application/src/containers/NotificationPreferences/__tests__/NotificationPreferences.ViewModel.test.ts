@@ -12,7 +12,6 @@ import {
   ERROR_CODES_SERVER,
 } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
-import { SettingService } from 'sdk/module/setting';
 import { mockService } from 'shield/sdk/mockService';
 import { GroupService } from 'sdk/module/group';
 import { testable, test } from 'shield';
@@ -32,7 +31,7 @@ describe('NotificationPreferencesViewModel', () => {
       'should display flash toast notification when updateConversationPreference failed for server issue [JPT-2838]',
     )
     @mockService.reject(ProfileService, [
-      { method: 'getByGroupId', data: { muted: true } },
+      { method: 'getConversationPreference', data: { muted: true } },
       { method: 'updateConversationPreference', data: mockBackendError },
     ])
     async t1() {
@@ -50,7 +49,7 @@ describe('NotificationPreferencesViewModel', () => {
       'should display flash toast notification when updateConversationPreference failed for network issue [JPT-2837]',
     )
     @mockService.reject(ProfileService, [
-      { method: 'getByGroupId', data: { muted: true } },
+      { method: 'getConversationPreference', data: { muted: true } },
       { method: 'updateConversationPreference', data: mockNetworkError },
     ])
     async t2() {
@@ -67,7 +66,7 @@ describe('NotificationPreferencesViewModel', () => {
 
   @testable
   class _groupType {
-    @mockService(ProfileService, [{ method: 'getByGroupId' }])
+    @mockService(ProfileService, [{ method: 'getConversationPreference' }])
     beforeEach() {}
     @test('should be team when group.is_team is true')
     @mockService(GroupService, [
@@ -108,7 +107,7 @@ describe('NotificationPreferencesViewModel', () => {
   }
 
   @testable
-  class soundNotificationsDisabled {
+  class audioNotificationsDisabled {
     @mockService(GroupService, [
       { method: 'getById' },
       { method: 'isIndividualGroup' },
@@ -116,7 +115,7 @@ describe('NotificationPreferencesViewModel', () => {
     beforeEach() {}
 
     @test('should be true when muted is true')
-    @mockService(ProfileService, 'getByGroupId', { muted: true })
+    @mockService(ProfileService, 'getConversationPreference', { muted: true })
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
       await notificationPreferencesVM.init();
@@ -126,7 +125,7 @@ describe('NotificationPreferencesViewModel', () => {
     @test(
       'should be true when muted is false and desktop_notifications is false',
     )
-    @mockService(ProfileService, 'getByGroupId', {
+    @mockService(ProfileService, 'getConversationPreference', {
       muted: false,
       desktop_notifications: false,
     })
@@ -139,7 +138,7 @@ describe('NotificationPreferencesViewModel', () => {
     @test(
       'should be false when muted is false and desktop_notifications is true',
     )
-    @mockService(ProfileService, 'getByGroupId', {
+    @mockService(ProfileService, 'getConversationPreference', {
       muted: false,
       desktop_notifications: true,
     })
@@ -156,7 +155,7 @@ describe('NotificationPreferencesViewModel', () => {
       { method: 'getById' },
       { method: 'isIndividualGroup' },
     ])
-    @mockService(ProfileService, 'getByGroupId', { muted: false })
+    @mockService(ProfileService, 'getConversationPreference', { muted: false })
     beforeEach() {}
 
     @test('should be true when default is false and current is undefined')
