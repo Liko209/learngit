@@ -181,6 +181,9 @@ class RCInfoService extends EntityBaseService<IdModel>
       this.isRCAccount &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.VOIP_CALLING,
+      )) &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.WEB_PHONE,
       ));
     mainLogger.debug(`isVoipCallingAvailable: ${result}`);
     return result;
