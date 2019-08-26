@@ -73,7 +73,7 @@ describe('WhiteScreenHandler', () => {
     });
   });
 
-  describe('handleWhiteScreen()', () => {
+  describe('handleWhiteScreen() [JPT-2900]', () => {
     let registration: any;
     let accountManager: AccountManager;
     const setup = () => {
