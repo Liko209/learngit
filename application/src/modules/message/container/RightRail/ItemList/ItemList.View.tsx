@@ -9,6 +9,7 @@ import { DataList } from '@/modules/common/container/DataList';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { ThresholdStrategy } from 'jui/components/VirtualizedList';
+import { JuiAutoSizer,Size } from 'jui/components/AutoSizer/AutoSizer';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EmptyView } from './Empty';
 import {
@@ -20,7 +21,6 @@ import { getTabConfig } from './utils';
 import {
   ITEM_HEIGHT,
   LOAD_MORE_STRATEGY_CONFIG,
-  HEADER_HEIGHT,
   INITIAL_DATA_COUNT,
   LOADING_DELAY,
 } from '../constants';
@@ -47,10 +47,9 @@ class ItemListComponent extends React.Component<ItemListViewProps> {
   }
 
   render() {
-    const { type, height, listHandler, t } = this.props;
+    const { type, listHandler, t } = this.props;
     const { size, total } = listHandler;
     const { subheader } = getTabConfig(type);
-    const listHeight = Math.max(height - HEADER_HEIGHT, 0);
 
     return (
       <JuiRightShelfContent>
@@ -59,16 +58,20 @@ class ItemListComponent extends React.Component<ItemListViewProps> {
             {t(subheader)}
           </JuiListSubheader>
         )}
-        <DataList
-          listHandler={listHandler}
-          initialDataCount={INITIAL_DATA_COUNT}
-          InfiniteListProps={Object.assign(this._infiniteListProps, {
-            height: listHeight,
-            noRowsRenderer: <EmptyView type={type} />,
-          })}
-        >
-          {this._renderItems()}
-        </DataList>
+        <JuiAutoSizer>
+          {({ height }: Size) =>  (
+              <DataList
+                listHandler={listHandler}
+                initialDataCount={INITIAL_DATA_COUNT}
+                InfiniteListProps={Object.assign(this._infiniteListProps, {
+                  height,
+                  noRowsRenderer: <EmptyView type={type} />,
+                })}
+              >
+                {this._renderItems()}
+              </DataList>
+            )}
+        </JuiAutoSizer>
       </JuiRightShelfContent>
     );
   }

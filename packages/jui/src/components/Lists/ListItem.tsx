@@ -22,36 +22,41 @@ type JuiListItemProps = MuiListItemPropsFixed & {
   disableButton?: boolean;
 };
 
-const WrappedListItem = React.memo(
-  ({
-    width,
-    isInline,
-    singleLine,
-    disableButton,
-    ...rests
-  }: JuiListItemProps) => <MuiListItem {...rests} />,
-);
-
-const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
+const StyledListItem = styled<JuiListItemProps>(MuiListItem)`
   && {
     padding: ${spacing(2)};
     width: ${props => (props.width ? width(props.width) : '100%')};
-    display: ${props => (props.isInline ? 'inline-flex' : 'flex')};
-    padding-left: ${props => (props.singleLine ? spacing(4) : spacing(2))};
+    display: flex;
+    cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
+  }
+
+  &&.inline {
+    display: inline-flex;
+  }
+
+  &&.single-line {
+    padding-left: ${spacing(4)};
   }
 `;
 
-const JuiListItemComponent = (props: JuiListItemProps) => (
-  <StyledListItem button={!props.disableButton && true} {...props}>
-    {props.children}
-  </StyledListItem>
-);
+const JuiListItem = ({ className, singleLine, isInline, disableButton, children, ...rest }: JuiListItemProps) => {
+  const classes = [className]
+  if(singleLine) {
+    classes.push('single-line')
+  }
+  if(isInline){
+    classes.push('single-line')
+  }
+  return (
+    <StyledListItem className={classes.join(' ')} button={!disableButton} {...rest}>
+      {children}
+    </StyledListItem>
+  )
+};
 
-JuiListItemComponent.defaultProps = {
+JuiListItem.defaultProps = {
   singleLine: false,
 };
-JuiListItemComponent.displayName = 'JuiListItem';
-
-const JuiListItem = React.memo(JuiListItemComponent);
+JuiListItem.displayName = 'JuiListItem';
 
 export { JuiListItem, JuiListItemProps };
