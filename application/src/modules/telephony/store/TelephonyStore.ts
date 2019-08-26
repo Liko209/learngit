@@ -526,7 +526,7 @@ class TelephonyStore {
     // TODO: change this when refactoring for multi-call
     return (
       !this.call ||
-      this.callDisconnected ||
+      this.callDisconnecting ||
       this.incomingState === INCOMING_STATE.FORWARD
     );
   }
@@ -606,7 +606,7 @@ class TelephonyStore {
   }
 
   @computed
-  get callDisconnected(): boolean {
+  get callDisconnecting(): boolean {
     return this.callState === CALL_STATE.DISCONNECTING;
   }
 

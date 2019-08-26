@@ -359,4 +359,4 @@ function withDialogOrNewWindow<T>(
   return ComponentWithDialogOrNewWindow;
 }
 
-export { withDialogOrNewWindow };
+export { withDialogOrNewWindow, getDefaultPos };

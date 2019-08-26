@@ -300,7 +300,89 @@ describe('Telephony store', () => {
     };
     (getEntity as jest.Mock).mockReturnValue(call);
     const store = createStore();
-    store.id = 1;
     expect(store.phoneNumber).toEqual('');
+  });
+
+  it('ids', () => {
+    const store = createStore();
+    expect(store.ids).toEqual([1]);
+  });
+
+  it('_rawCalls', () => {
+    const store = createStore();
+    expect((store as any)._rawCalls).toBeDefined();
+    expect((store as any)._rawCalls.length).toEqual(1);
+  });
+
+  it('call', done => {
+    const store = createStore();
+    expect((store as any)._rawCalls).toBeDefined();
+    expect((store as any).call).toBeDefined();
+
+    store.switchCurrentCall(1);
+    expect(store.currentCallId).toEqual(1);
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1] };
+    call.id = 1;
+    expect((store as any).call.id).toEqual(1);
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [] };
+    expect((store as any)._rawCalls.length).toEqual(0);
+    expect((store as any).call).toBeUndefined();
+    done();
+  });
+
+  it('isMultipleCall', done => {
+    const store = createStore();
+    expect(store.isMultipleCall).toBeFalsy();
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+    expect(store.isMultipleCall).toBeTruthy();
+    expect(store.isBackToDefaultPos).toBeTruthy();
+    done();
+  });
+
+  it('isThirdCall', done => {
+    const store = createStore();
+    expect(store.isThirdCall).toBeFalsy();
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+    expect(store.isThirdCall).toBeFalsy();
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2, 3] };
+    expect(store.isThirdCall).toBeTruthy();
+    done();
+  });
+
+  it('isBackToDefaultPos', () => {
+    const store = createStore();
+    expect(store.isBackToDefaultPos).toBeFalsy();
+    expect(store.isMultipleCall).toBeFalsy();
+    store.endMultipleIncomingCall();
+    expect(store.isBackToDefaultPos).toBeFalsy();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+    expect(store.isMultipleCall).toBeTruthy();
+    store.endMultipleIncomingCall();
+    expect(store.isBackToDefaultPos).toBeTruthy();
+
+    store.changeBackToDefaultPos(false);
+    expect(store.isBackToDefaultPos).toBeFalsy();
+  });
+
+  it('callDisconnecting', () => {
+    const store = createStore();
+    expect(store.callDisconnecting).toBeFalsy();
+    call.callState = CALL_STATE.DISCONNECTING;
+    expect(store.callDisconnecting).toBeTruthy();
   });
 });

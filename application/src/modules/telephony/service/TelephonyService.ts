@@ -476,7 +476,7 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
-    if (this._telephonyStore.callDisconnected) {
+    if (this._telephonyStore.callDisconnecting) {
       this._telephonyStore.closeDialer();
     }
   }
