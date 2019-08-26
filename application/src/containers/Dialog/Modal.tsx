@@ -17,15 +17,20 @@ function modal(
   props: Props,
 ) {
   const { onClose, ...rest } = props;
-  const defaultClose = (e: React.MouseEvent) => {
+  const defaultClose = (
+    e: React.MouseEvent,
+    reason: 'backdropClick' | 'escapeKeyDown',
+  ) => {
     if (onClose) {
       onClose && onClose(e);
     } else {
       portalManager.dismissLast();
     }
-    dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
-      shortcut: 'escape',
-    });
+    if (reason === 'escapeKeyDown') {
+      dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+        shortcut: 'escape',
+      });
+    }
   };
   const Component = component;
   const Dialog = () => (
