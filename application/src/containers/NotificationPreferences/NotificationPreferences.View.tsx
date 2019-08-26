@@ -147,6 +147,7 @@ class NotificationPreferencesComponent extends React.Component<
       handleSubmit,
       handleClose,
     } = this.props;
+    const isMuted = currentValue[MUTE_ALL];
     return (
       <JuiModal
         modalProps={ModalProps}
@@ -167,7 +168,7 @@ class NotificationPreferencesComponent extends React.Component<
             >
               <RuiCheckbox
                 color="primary"
-                value={currentValue[MUTE_ALL]}
+                checked={currentValue[MUTE_ALL]}
                 onChange={handleCheckboxChange(MUTE_ALL)}
                 data-test-automation-id={`${MUTE_ALL}-checkbox`}
                 inputProps={{
@@ -180,16 +181,18 @@ class NotificationPreferencesComponent extends React.Component<
               label={t(
                 `setting.conversationPreferences.${DESKTOP_NOTIFICATION}`,
               )}
+              disabled={isMuted}
             >
-              <RuiCheckbox
+              {currentValue[DESKTOP_NOTIFICATION] !== undefined && <RuiCheckbox
                 color="primary"
-                value={currentValue[DESKTOP_NOTIFICATION]}
+                checked={currentValue[DESKTOP_NOTIFICATION]}
                 onChange={handleCheckboxChange(DESKTOP_NOTIFICATION)}
                 data-test-automation-id={`${DESKTOP_NOTIFICATION}-checkbox`}
                 inputProps={{
                   'aria-labelledby': DESKTOP_NOTIFICATION,
                 }}
-              />
+                disabled={isMuted}
+              />}
             </JuiSettingItem>
             {this._renderSoundNotification()}
             {this._renderMobileNotification()}

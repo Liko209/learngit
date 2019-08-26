@@ -32,10 +32,16 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   @observable
   isTeam: boolean;
   private _groupType: ConversationType;
+  @observable
+  currentValue: ConversationPreferenceModel = {} as ConversationPreferenceModel;
 
   constructor(props: Props) {
     super(props);
     this.init();
+    this.autorun(
+    () => {
+      Object.assign(this.currentValue, this._initialValue, this.value)
+    })
   }
 
   init = async () => {
@@ -60,11 +66,6 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
 
   @observable
   loading: boolean = false;
-
-  @computed
-  get currentValue() {
-    return Object.assign({}, this._initialValue, this.value);
-  }
 
   @computed
   get soundNotificationsDisabled() {
