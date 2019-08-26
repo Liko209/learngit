@@ -27,46 +27,46 @@ container.bind(FeaturesFlagsService).to(FeaturesFlagsService);
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 
 let vm: AudioConferenceViewModel;
-let group = {
+const group = {
   groupId: 123,
   type: CONVERSATION_TYPES.TEAM,
 };
-let telephonyService = {
-  startAudioConference: jest.fn()
-}
-let featuresFlagsService = {
-  canUseTelephony: jest.fn().mockResolvedValue(true)
-}
+const telephonyService = {
+  startAudioConference: jest.fn(),
+};
+const featuresFlagsService = {
+  canUseTelephony: jest.fn().mockResolvedValue(true),
+};
 
-const setUp = ({group, telephonyService, featureFlagsService}: any) => {
+const setUp = ({ group, telephonyService, featureFlagsService }: any) => {
   if (group) {
     jest.spyOn(utils, 'getEntity').mockImplementation(() => group);
   }
   if (telephonyService || featureFlagsService) {
     container.get = jest.fn((key: any) => {
       if (key === TELEPHONY_SERVICE && telephonyService) {
-        return telephonyService
+        return telephonyService;
       }
 
-      if(key === FeaturesFlagsService && featureFlagsService) {
-        return featureFlagsService
+      if (key === FeaturesFlagsService && featureFlagsService) {
+        return featureFlagsService;
       }
-    })
+    });
   }
-}
+};
 
-setUp({group, telephonyService, featuresFlagsService})
+setUp({ group, telephonyService, featuresFlagsService });
 
 describe('AudioConference.ViewModel', () => {
   it('should call service api when startAudioConference is called', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.TEAM,
-    }
+    };
     setUp({
       group,
       telephonyService,
-    })
+    });
     vm = new AudioConferenceViewModel({ groupId: 123 });
     vm.startAudioConference();
     expect(telephonyService.startAudioConference).toHaveBeenCalledWith(123);
@@ -76,11 +76,11 @@ describe('AudioConference.ViewModel', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-    }
+    };
     setUp({
       group,
       telephonyService,
-    })
+    });
     vm = new AudioConferenceViewModel({ groupId: 123 });
 
     expect(vm.showIcon.cached.value).toBe(false);

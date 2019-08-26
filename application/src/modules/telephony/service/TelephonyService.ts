@@ -310,9 +310,9 @@ class TelephonyService {
         }
         const isOffDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.OFF
         const isAllDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.ALL;
-        
+
         this._muteRingtone = isOffDevice;
-        
+
         if (isOffDevice) {
           this._outputDevices = [];
         } else if (isAllDevice) {
@@ -322,11 +322,11 @@ class TelephonyService {
             (deviceInfo as MediaDeviceInfo).deviceId,
           ]
         }
-        
+
         if(!this._ringtone){
           return;
         }
-        
+
         if (isOffDevice) {
           this._ringtone.setOutputDevices([]);
           this._ringtone.setMute(true);
@@ -334,7 +334,7 @@ class TelephonyService {
         }
 
         this._ringtone.setMute(false);
-        
+
         if (isAllDevice) {
           this._ringtone.setOutputDevices('all');
           return;
@@ -496,7 +496,7 @@ class TelephonyService {
   }
 
   private _makeCall = async (toNumber: string, options: Partial<CallOptions> & { callback?: Function } = {}) => {
-    
+
     const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
@@ -593,7 +593,7 @@ class TelephonyService {
   switchCall = async (otherDeviceCall: ActiveCall) => {
     const myNumber = (await this._rcInfoService.getAccountMainNumber()) || '';
     const rv = await this._serverTelephonyService.switchCall(myNumber, otherDeviceCall);
-  
+
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
         ToastCallError.toastSwitchCallNoNetwork();
@@ -1169,6 +1169,19 @@ class TelephonyService {
         );
       }
     });
+  }
+
+  joinAudioConference = async (phoneNumber: string, accessCode: string) => {
+    if (this._serverTelephonyService.getAllCallCount() > 0) {
+      mainLogger.warn(
+        `${TelephonyService.TAG}Only allow to make one call at the same time`,
+      );
+      return;
+    }
+    const skipE911Check = await this.isShortNumber(phoneNumber);
+    return this.ensureCallPermission(() => {
+      return this._makeCall(phoneNumber, { accessCode })
+    }, { skipE911Check });
   }
 };
 

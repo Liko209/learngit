@@ -46,6 +46,7 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
+import { ExpansionPanelActions } from '@material-ui/core';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -211,7 +212,7 @@ describe('TelephonyService', () => {
       userConfig: { getLastCalledNumber: jest.fn() },
       isShortNumber: jest.fn().mockReturnValue(true),
       isEmergencyAddrConfirmed: jest.fn(),
-      hasActiveDL: jest.fn().mockReturnValue(true),
+      hasActiveDL: jest.fn().mockReturnValue(false),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
@@ -394,7 +395,7 @@ describe('TelephonyService', () => {
 
   describe('The "record" button status tests', () => {
     it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
-      
+
       await (telephonyService as TelephonyService).directCall(v4());
       call.recordState = RECORD_STATE.DISABLED;
       await (telephonyService as TelephonyService).startOrStopRecording();
@@ -413,7 +414,7 @@ describe('TelephonyService', () => {
 
     it('Start recording if the call is connected [JPT-1600]', async () => {
       mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
-      
+
       await (telephonyService as TelephonyService).directCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
@@ -437,7 +438,7 @@ describe('TelephonyService', () => {
     });
 
     it('Stop recording should work when call is under recording [JPT-1603]', async () => {
-      
+
       await (telephonyService as TelephonyService).directCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
@@ -473,7 +474,7 @@ describe('TelephonyService', () => {
     });
 
     it("Record shouldn't work when a call being holded [JPT-1608]", async () => {
-      
+
       await (telephonyService as TelephonyService).directCall(v4());
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.IDLE;
@@ -499,7 +500,7 @@ describe('TelephonyService', () => {
     });
 
     it('Should restore recording state when unhold [JPT-1608]', async () => {
-      
+
       await (telephonyService as TelephonyService).directCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
@@ -528,7 +529,7 @@ describe('TelephonyService', () => {
 
     it('Should prompt toast when recording disabled in service web [JPT-2427]', async () => {
       mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
-      
+
       await (telephonyService as TelephonyService).directCall(v4());
       await sleep(testProcedureWaitingTime);
       await (telephonyService as TelephonyService).startOrStopRecording();
@@ -544,7 +545,7 @@ describe('TelephonyService', () => {
       mockedServerTelephonyService.startRecord = jest
         .fn()
         .mockImplementation(() => Promise.reject(-8));
-      
+
       await (telephonyService as TelephonyService).directCall(v4());
       await sleep(testProcedureWaitingTime);
       await (telephonyService as TelephonyService).startOrStopRecording();
@@ -730,7 +731,7 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    
+
     const incomingId = v4();
     telephonyService._onReceiveIncomingCall({
       fromName: 'test',
@@ -850,7 +851,7 @@ describe('TelephonyService', () => {
   });
 
   it("Should Can't make outbound call when call permission is disabled [JPT-2381]", async () => {
-    
+
     mockedRCInfoService.isVoipCallingAvailable = jest
       .fn()
       .mockReturnValue(false);
@@ -1178,5 +1179,35 @@ describe('TelephonyService', () => {
       await telephonyService.switchCall(caller as any);
       expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
     })
+  })
+
+  describe('joinAudioConference()', () => {
+    it('Join conf failed when user has no any active DL. JPT-[2755]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(false);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
+      // @ts-ignore
+      Notification.flashToast = jest.fn();
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('1', '2');
+
+      setTimeout(() => {
+        // @ts-ignore
+        expect(Notification.flashToast).toHaveBeenCalled();
+      }, 0);
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
+
+    it('Join conf failed when user webRTC permission removed JPT-[2756]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(true);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(false);
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('1', '2');
+      expect(ToastCallError.toastPermissionError).toHaveBeenCalled();
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
   })
 });
