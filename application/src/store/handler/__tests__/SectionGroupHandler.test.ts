@@ -16,12 +16,12 @@ import { StateService } from 'sdk/module/state';
 import { GroupService } from 'sdk/module/group';
 import { notificationCenter, ENTITY, GROUP_QUERY_TYPE } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import preFetchConversationDataHandler from '../PreFetchConversationDataHandler';
+import { PreFetchConversationDataHandler } from '../PreFetchConversationDataHandler';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ENTITY_NAME } from '@/store/constants';
 
 jest.mock('@/containers/Notification');
-jest.mock('../PreFetchConversationDataHandler');
+// jest.mock('../PreFetchConversationDataHandler');
 jest.mock('sdk/api');
 jest.mock('sdk/module/profile');
 jest.mock('sdk/module/state');
@@ -1599,19 +1599,23 @@ describe('SectionGroupHandler', () => {
 
     it('should call addProcessor twice when sectionType is favorites', async () => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
+      const preFetchConversationDataHandler = PreFetchConversationDataHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
       const sectionType = SECTION_TYPE.FAVORITE;
       jest
         .spyOn(sectionGroupHandler._handlersMap[sectionType], 'fetchData')
         .mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
+      const addProcessorSpy = jest.spyOn(
+        preFetchConversationDataHandler,
+        'addProcessor',
+      );
       await sectionGroupHandler.fetchGroups(sectionType, direction);
-      expect(
-        preFetchConversationDataHandler.addProcessor,
-      ).toHaveBeenCalledTimes(2);
+      expect(addProcessorSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should call addProcessor twice when sectionType is direct_messages and state.unread_count is 2', async (done: any) => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
+      const preFetchConversationDataHandler = PreFetchConversationDataHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
       const sectionType = SECTION_TYPE.DIRECT_MESSAGE;
       jest
@@ -1626,17 +1630,20 @@ describe('SectionGroupHandler', () => {
       jest
         .spyOn(stateService, 'getById')
         .mockResolvedValue({ unread_count: 2 });
+      const addProcessorSpy = jest.spyOn(
+        preFetchConversationDataHandler,
+        'addProcessor',
+      );
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       setTimeout(() => {
-        expect(
-          preFetchConversationDataHandler.addProcessor,
-        ).toHaveBeenCalledTimes(2);
+        expect(addProcessorSpy).toHaveBeenCalledTimes(2);
         done();
       });
     });
 
     it('should call addProcessor twice when sectionType is teams and state.unread_mentions_count is 2', async (done: any) => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
+      const preFetchConversationDataHandler = PreFetchConversationDataHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
       const sectionType = SECTION_TYPE.TEAM;
       jest
@@ -1645,11 +1652,13 @@ describe('SectionGroupHandler', () => {
       jest
         .spyOn(stateService, 'getById')
         .mockResolvedValue({ unread_mentions_count: 2 });
+      const addProcessorSpy = jest.spyOn(
+        preFetchConversationDataHandler,
+        'addProcessor',
+      );
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       setTimeout(() => {
-        expect(
-          preFetchConversationDataHandler.addProcessor,
-        ).toHaveBeenCalledTimes(2);
+        expect(addProcessorSpy).toHaveBeenCalledTimes(2);
         done();
       });
     });

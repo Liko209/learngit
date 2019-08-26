@@ -1,0 +1,12 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/AtMention/*.ts",
+      "./fixtures/Bookmarks/*.ts",
+      "./fixtures/RightRail/PinnedPost.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

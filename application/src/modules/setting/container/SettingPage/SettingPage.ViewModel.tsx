@@ -17,7 +17,15 @@ class SettingPageViewModel extends StoreViewModel<SettingPageProps>
 
   @computed
   get page() {
-    return this._settingStore.getPageById(this.props.id);
+    const val = this._settingStore.getPageById(this.props.id);
+    if (!val) {
+      throw Error(
+        `[SettingPageViewComponent] trying to render a setting page without page ${
+          this.props.id
+        } info`,
+      );
+    }
+    return val;
   }
 
   @computed

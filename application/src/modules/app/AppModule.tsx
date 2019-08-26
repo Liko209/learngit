@@ -6,9 +6,11 @@
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import {
- sdk, service, LogControlManager
-} from 'sdk';
+import { sdk } from 'sdk';
+
+import { LogControlManager } from 'sdk/module/log';
+
+import { notificationCenter, SOCKET, SERVICE, CONFIG } from 'sdk/service';
 import { powerMonitor } from 'foundation/utils';
 import { AbstractModule } from 'framework/AbstractModule';
 import { inject } from 'framework/ioc';
@@ -28,6 +30,7 @@ import {
   generalErrorHandler,
   errorReporter,
   getAppContextInfo,
+  getApplicationInfo,
 } from '@/utils/error';
 import { AccountService } from 'sdk/module/account';
 import { AppEnvSetting } from 'sdk/module/env';
@@ -37,8 +40,6 @@ import { analyticsCollector } from '@/AnalyticsCollector';
 import { Pal } from 'sdk/pal';
 import { isProductionVersion } from '@/common/envUtils';
 import { showUpgradeDialog } from '@/modules/electron';
-import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
-import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework'
@@ -90,14 +91,14 @@ class AppModule extends AbstractModule {
       );
     });
 
-    const { deployedVersion } = await fetchVersionInfo();
+    const applicationInfo = await getApplicationInfo();
     Pal.instance.setApplicationInfo({
-      appVersion: deployedVersion,
-    } as IApplicationInfo);
-
-    const {
- notificationCenter, SOCKET, SERVICE, CONFIG
-} = service;
+      env: applicationInfo.env,
+      appVersion: applicationInfo.version,
+      browser: applicationInfo.browser,
+      os: applicationInfo.os,
+      platform: applicationInfo.platform,
+    });
 
     if (window.jupiterElectron) {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
@@ -124,13 +125,6 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
         globalStore.set(GLOBAL_KEYS.IS_RC_USER, isRcUser);
         getAppContextInfo().then(contextInfo => {
-          Pal.instance.setApplicationInfo({
-            env: contextInfo.env,
-            appVersion: contextInfo.version,
-            browser: contextInfo.browser,
-            os: contextInfo.os,
-            platform: contextInfo.platform,
-          });
           window.jupiterElectron &&
             window.jupiterElectron.setContextInfo &&
             window.jupiterElectron.setContextInfo(contextInfo);

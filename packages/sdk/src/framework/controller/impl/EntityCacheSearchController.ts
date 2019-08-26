@@ -46,8 +46,11 @@ class EntityCacheSearchController<
     return entities;
   }
 
-  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
-    return await this.entityCacheController.getEntities(filterFunc);
+  async getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]> {
+    return await this.entityCacheController.getEntities(filterFunc, sortFunc);
   }
 
   async searchEntities(
@@ -57,9 +60,9 @@ class EntityCacheSearchController<
     arrangeIds?: IdType[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
   ): Promise<{
-      terms: Terms;
-      sortableModels: SortableModel<T>[];
-    }> {
+    terms: Terms;
+    sortableModels: SortableModel<T>[];
+  }> {
     const terms: Terms = {
       searchKeyTerms: [],
       searchKeyTermsToSoundex: [],
@@ -83,7 +86,9 @@ class EntityCacheSearchController<
       }
 
       if (isUseSoundex) {
-        terms.searchKeyTermsToSoundex = terms.searchKeyTerms.map(item => soundex(item));
+        terms.searchKeyTermsToSoundex = terms.searchKeyTerms.map(item =>
+          soundex(item),
+        );
       }
     }
 

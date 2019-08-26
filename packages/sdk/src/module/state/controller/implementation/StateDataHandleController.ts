@@ -592,7 +592,12 @@ class StateDataHandleController {
       const GroupStatesForNotify = groupStates.filter(
         (groupState: GroupState) => {
           if (this._ignoredIdSet.has(groupState.id)) {
-            this._actionController.updateReadStatus(groupState.id, false, true);
+            groupState.unread_count &&
+              this._actionController.updateReadStatus(
+                groupState.id,
+                false,
+                true,
+              );
             return false;
           }
           return true;

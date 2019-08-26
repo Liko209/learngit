@@ -9,6 +9,8 @@ import { container } from 'sdk/container';
 import _ from 'lodash';
 
 const SplitTermsSymbols = new RegExp(/[\s,._-]+/);
+const kSortingRateWithFirstMatched: number = 1;
+const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
 class SearchUtils {
   static isFuzzyMatched(srcText: string, terms: string[]): boolean {
@@ -40,6 +42,33 @@ class SearchUtils {
       }
     }
     return false;
+  }
+
+  static getMatchedWeight(
+    lowerCaseSplitNames: string[],
+    searchKeyTerms: string[],
+  ) {
+    let sortValue = 0;
+
+    const setKeyMatched: Set<string> = new Set();
+    for (let i = 0; i < lowerCaseSplitNames.length; ++i) {
+      for (let j = 0; j < searchKeyTerms.length; ++j) {
+        if (
+          !setKeyMatched.has(searchKeyTerms[j]) &&
+          SearchUtils.isStartWithMatched(lowerCaseSplitNames[i], [
+            searchKeyTerms[j],
+          ])
+        ) {
+          setKeyMatched.add(searchKeyTerms[j]);
+          sortValue +=
+            i === j
+              ? kSortingRateWithFirstAndPositionMatched
+              : kSortingRateWithFirstMatched;
+        }
+      }
+    }
+
+    return sortValue;
   }
 
   static getTermsFromText(searchKey: string) {

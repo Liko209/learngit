@@ -21,6 +21,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { JError } from 'foundation/error';
 import { mainLogger } from 'foundation/log';
 import { PerformanceTracer } from 'foundation/performance';
+import { PhoneContactEntity } from 'sdk/module/search/entity';
 
 abstract class RCItemFetchController<
   T extends IdModel<IdType>,
@@ -45,9 +46,11 @@ abstract class RCItemFetchController<
     }
     const phoneContacts = await ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
-    ).doFuzzySearchPhoneContacts({ searchKey: filterKey });
+    ).doFuzzySearchPhoneContacts(filterKey, {});
     const numberSet = new Set(
-      phoneContacts.phoneContacts.map(data => data.phoneNumber.id),
+      phoneContacts.phoneContacts.map(
+        (data: PhoneContactEntity) => data.phoneNumber.id,
+      ),
     );
     const terms: string[] = SearchUtils.getTermsFromText(
       filterKey.toLowerCase().trim(),

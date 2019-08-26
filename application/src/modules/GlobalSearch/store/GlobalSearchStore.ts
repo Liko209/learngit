@@ -5,7 +5,7 @@
  */
 
 import { ComponentType } from 'react';
-import { observable, action } from 'mobx';
+import { observable, action, ObservableSet } from 'mobx';
 import { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE } from '../types';
 
 class GlobalSearchStore {
@@ -14,6 +14,7 @@ class GlobalSearchStore {
   @observable searchKey: string = '';
   @observable currentTab: TAB_TYPE;
   @observable groupId: number;
+  @observable needFocus: boolean = false;
 
   @observable currentView: SEARCH_VIEW = SEARCH_VIEW.FULL_SEARCH;
   @observable searchScope: SEARCH_SCOPE;
@@ -26,6 +27,11 @@ class GlobalSearchStore {
     }
 
     this.open = open;
+  }
+
+  @action
+  setFocus(focus: boolean) {
+    this.needFocus = focus;
   }
 
   @action
@@ -61,12 +67,19 @@ class GlobalSearchStore {
 
   @observable extensions: { [key: string]: Set<ComponentType> } = {};
 
+  @action
   addExtensions(key: string, extension: ComponentType) {
-    if (this.extensions[key]) {
-      this.extensions[key].add(extension);
-      return;
+    if (!this.extensions[key]) {
+      this.extensions[key] = new ObservableSet();
     }
-    this.extensions[key] = new Set([extension]);
+    this.extensions[key].add(extension);
+  }
+
+  @action
+  removeExtensions(key: string, extension: ComponentType) {
+    if (this.extensions[key]) {
+      this.extensions[key].delete(extension);
+    }
   }
 }
 

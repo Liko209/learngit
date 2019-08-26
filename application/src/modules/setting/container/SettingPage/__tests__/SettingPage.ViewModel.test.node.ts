@@ -51,10 +51,5 @@ describe('SettingPageViewModel', () => {
 
       expect(vm.sectionIds).toEqual(['SECTION_1', 'SECTION_2']);
     });
-
-    it('should return [] when page not found', () => {
-      const { vm } = setup();
-      expect(vm.sectionIds).toEqual([]);
-    });
   });
 });

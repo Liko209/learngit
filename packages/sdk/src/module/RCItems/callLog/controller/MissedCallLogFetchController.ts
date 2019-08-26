@@ -44,7 +44,6 @@ class MissedCallLogFetchController extends AbstractFetchController {
           LOCAL_INFO_TYPE.IS_MISSED |
           LOCAL_INFO_TYPE.IS_MISSED_SOURCE;
         callLog.__timestamp = timestamp;
-        callLog.__deactivated = false;
         result.push(_.cloneDeep(callLog));
       }
     });

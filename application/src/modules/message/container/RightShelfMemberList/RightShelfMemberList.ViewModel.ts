@@ -10,8 +10,8 @@ import {
 } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { GroupService, Group } from 'sdk/module/group';
-import { ENTITY_NAME } from '@/store/constants';
-import { getEntity } from '@/store/utils';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupModel from '@/store/models/Group';
 import { Person } from 'sdk/module/person/entity';
@@ -23,6 +23,7 @@ import {
   RIGHT_SHELF_DEFAULT_WIDTH,
   RIGHT_SHELF_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
+import { LOADING_DELAY } from '../RightRail/constants';
 
 const GUEST_SECTION_HEIGHT = 85;
 const AVATAR_PADDING = 4;
@@ -41,17 +42,31 @@ class RightShelfMemberListViewModel
     ServiceConfig.GROUP_SERVICE,
   );
 
+  private _loadingTimeout: NodeJS.Timeout;
+
   @observable
   private _wrapperWidth: number = RIGHT_SHELF_DEFAULT_WIDTH;
 
   @observable
-  isLoading: boolean = true;
+  membersData: {
+    isLoading: boolean;
+    fullMemberLen: number;
+    fullGuestLen: number;
+    shownMemberIds: number[];
+    shownGuestIds: number[];
+    personNameMap: { [id: number]: string };
+  } = {
+    isLoading: true,
+    fullMemberLen: 0,
+    fullGuestLen: 0,
+    shownMemberIds: [],
+    shownGuestIds: [],
+    personNameMap: {},
+  };
 
-  @observable
-  fullMemberIds: number[] = [];
+  private _fullMemberIds: number[] = [];
 
-  @observable
-  fullGuestIds: number[] = [];
+  private _fullGuestIds: number[] = [];
 
   private _membersCache: {
     [groupId: string]: number[];
@@ -78,7 +93,10 @@ class RightShelfMemberListViewModel
       () => this.props.groupId,
       (id: number) => {
         if (id === undefined) return;
-        this.isLoading = true;
+        this._loadingTimeout = setTimeout(() => {
+          this._setData(true);
+        }, LOADING_DELAY);
+
         setTimeout(() => {
           this._getMemberAndGuestIds();
         });
@@ -116,7 +134,10 @@ class RightShelfMemberListViewModel
     this.reaction(
       () => this._guestCompanyIdsLen,
       (len: number) => {
-        if (len === undefined) return;
+        const cachedIdsLen = (this._membersCache[this.props.groupId] || [])
+          .length;
+        // only react to member length change within the same conversation
+        if (len === undefined || cachedIdsLen <= 0) return;
         this._getMemberAndGuestIds();
       },
     );
@@ -136,9 +157,47 @@ class RightShelfMemberListViewModel
     );
     if (originalGroupId !== this.props.groupId) return;
     this._membersCache = { [this.props.groupId]: this.group.members };
-    this.isLoading = false;
-    this.fullMemberIds = realMemberIds.concat(optionalIds);
-    this.fullGuestIds = guestIds;
+    this._fullMemberIds = realMemberIds.concat(optionalIds);
+    this._fullGuestIds = guestIds;
+    clearTimeout(this._loadingTimeout);
+    this._setData(false);
+  }
+
+  @action
+  private _setData(isLoading: boolean = false) {
+    if (isLoading) {
+      this.membersData = {
+        isLoading: true,
+        fullMemberLen: 0,
+        fullGuestLen: 0,
+        shownMemberIds: [],
+        shownGuestIds: [],
+        personNameMap: {},
+      };
+      return;
+    }
+    const { _fullMemberIds, _fullGuestIds } = this;
+    const shownMemberIds = this._getSubset(
+      _fullMemberIds,
+      MAX_MEMBER_ROW_COUNT,
+    );
+    const shownGuestIds = this._getSubset(_fullGuestIds, 1);
+    const personNameMap = {};
+    [...shownMemberIds, ...shownGuestIds].forEach(id => {
+      personNameMap[id] = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        id,
+      ).userDisplayName;
+    });
+
+    this.membersData = {
+      isLoading,
+      fullMemberLen: _fullMemberIds.length,
+      fullGuestLen: _fullGuestIds.length,
+      shownGuestIds,
+      shownMemberIds,
+      personNameMap,
+    };
   }
 
   private _isNewGuestCompanyId(companyId: number) {
@@ -184,12 +243,24 @@ class RightShelfMemberListViewModel
   }
 
   @computed
+  get shouldShowLink() {
+    return ![
+      CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+      CONVERSATION_TYPES.ME,
+      CONVERSATION_TYPES.SMS,
+    ].includes(this.group.type);
+  }
+
+  @computed
   get loadingH() {
+    if (!this.membersData.isLoading) {
+      return 0;
+    }
     return (
       (this._guestCompanyIdsLen > 0 ? GUEST_SECTION_HEIGHT : 0) +
       Math.min(
-        this.allMemberLength && this.allMemberLength > this.countPerRow
-          ? Math.ceil(this.allMemberLength / this.countPerRow)
+        this.allMemberLength && this.allMemberLength > this._countPerRow
+          ? Math.ceil(this.allMemberLength / this._countPerRow)
           : 1,
         MAX_MEMBER_ROW_COUNT,
       ) *
@@ -197,56 +268,71 @@ class RightShelfMemberListViewModel
     );
   }
 
-  @computed
-  get countPerRow() {
+  private get _countPerRow() {
     return Math.floor(
       (this._wrapperWidth - WRAPPER_PADDING) / (AVATAR_PADDING + AVATAR_WIDTH),
     );
   }
 
-  @computed
-  get shownMemberIds() {
-    const rowCount = MAX_MEMBER_ROW_COUNT;
-    let showCount = Math.min(
-      rowCount * this.countPerRow,
-      this.fullMemberIds.length,
+  private _getSubset(fullIds: number[], maxRowCount: number) {
+    const countPerRow = Math.floor(
+      (this._wrapperWidth - WRAPPER_PADDING) / (AVATAR_PADDING + AVATAR_WIDTH),
     );
-    if (showCount < this.fullMemberIds.length) {
+    let showCount = Math.min(maxRowCount * countPerRow, fullIds.length);
+    if (showCount < fullIds.length) {
       showCount = showCount - 1;
     }
-    return this.fullMemberIds.slice(0, showCount);
-  }
-
-  @computed
-  get shownGuestIds() {
-    const rowCount = 1;
-    let showCount = Math.min(
-      rowCount * this.countPerRow,
-      this.fullGuestIds.length,
-    );
-    if (showCount < this.fullGuestIds.length) {
-      showCount = showCount - 1;
-    }
-    return this.fullGuestIds.slice(0, showCount);
-  }
-
-  @computed
-  get personNameMap() {
-    const map = {};
-    [...this.shownGuestIds, ...this.shownMemberIds].forEach(id => {
-      map[id] = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        id,
-      ).userDisplayName;
-    });
-    return map;
+    return fullIds.slice(0, showCount);
   }
 
   @action
   setWrapperWidth = (width: number) => {
     this._wrapperWidth =
       width < RIGHT_SHELF_MIN_WIDTH ? RIGHT_SHELF_MIN_WIDTH : width;
+    this._setData();
   };
+
+  @computed
+  private get _currentUserId() {
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  }
+
+  @computed
+  private get _isCurrentUserGuest() {
+    return this.group.isThePersonGuest(this._currentUserId);
+  }
+
+  @computed
+  private get _isCurrentUserAdmin() {
+    return this.group.isAdmin;
+  }
+
+  @computed
+  private get _canTeamAddMembers() {
+    const permissionFlags = this._groupService.getTeamUserPermissionFlags(
+      this.group.permissions || {},
+    );
+
+    return Boolean(permissionFlags.TEAM_ADD_MEMBER);
+  }
+
+  @computed
+  private get _canAddTeamMembers() {
+    return this._isCurrentUserAdmin || this._canTeamAddMembers;
+  }
+
+  @computed
+  get canAddMembers() {
+    if (!this.isTeam) {
+      return true;
+    }
+
+    if (this._isCurrentUserGuest) {
+      return false;
+    }
+
+    return this._canAddTeamMembers;
+  }
 }
 
 export { RightShelfMemberListViewModel };

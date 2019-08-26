@@ -8,6 +8,7 @@ import styled, { keyframes } from '../../../foundation/styled-components';
 import MuiCheckbox, { CheckboxProps } from '@material-ui/core/Checkbox';
 import { JuiIconography, SvgSymbol } from '../../../foundation/Iconography';
 import { palette, grey, width } from '../../../foundation/utils/styles';
+import { parseColor } from '../../../foundation/utils/parseColor';
 import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
@@ -169,18 +170,7 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
       ...rest
     } = this.props;
 
-    let colorScope: keyof Palette = 'primary';
-    let colorName: string = 'main';
-    if (color && color.indexOf('.') >= 0) {
-      const array = color.split('.');
-      if (array.length > 1) {
-        colorScope = array[0] as keyof Palette;
-        colorName = array[1];
-      } else {
-        colorScope = array[0] as keyof Palette;
-        colorName = 'main';
-      }
-    }
+    const colorObj = parseColor(color);
 
     return (
       <RuiTooltip title={tooltipTitle}>
@@ -189,8 +179,8 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
             onChange={this.changeHandler}
             checked={this.state.checked}
             icon={<StyledIcon symbol={icon}>{iconName}</StyledIcon>}
-            colorScope={colorScope}
-            colorName={colorName}
+            colorScope={colorObj.scope}
+            colorName={colorObj.name}
             checkedIcon={
               <StyledIcon symbol={checkedIcon}>{checkedIconName}</StyledIcon>
             }

@@ -94,7 +94,10 @@ describe('Sdk', () => {
         success: true,
       });
       accountManager.on = jest.fn();
+      jest.spyOn(Foundation, 'init');
       await sdk.init({ api: {}, db: {} });
+      expect(Foundation.init).toHaveBeenCalled();
+      expect(Api.init).toHaveBeenCalled();
       expect(notificationCenter.on).toHaveBeenCalledTimes(1);
       expect(accountManager.on).toHaveBeenCalledTimes(4);
       expect(accountManager.syncLogin).toHaveBeenCalledTimes(1);
@@ -105,10 +108,7 @@ describe('Sdk', () => {
   describe('onStartLogin()', () => {
     it('should init all module', async () => {
       sdk['_sdkConfig'] = { api: {}, db: {} };
-      jest.spyOn(Foundation, 'init');
       await sdk.onStartLogin();
-      expect(Foundation.init).toHaveBeenCalled();
-      expect(Api.init).toHaveBeenCalled();
       expect(daoManager.initDatabase).toHaveBeenCalled();
       expect(serviceManager.startService).toHaveBeenCalled();
       expect(HandleByRingCentral.platformHandleDelegate).toEqual(
