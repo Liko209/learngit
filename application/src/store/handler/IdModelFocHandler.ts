@@ -10,11 +10,13 @@ import { IdModel } from 'sdk/framework/model';
 abstract class IdModelFocHandler {
   private _foc: FetchSortableDataListHandler<IdModel>;
 
-  protected abstract createFoc(): FetchSortableDataListHandler<IdModel>;
+  protected abstract async createFoc(): Promise<
+    FetchSortableDataListHandler<IdModel>
+  >;
 
-  getFoc() {
+  async getFoc() {
     if (!this._foc) {
-      this._foc = this.createFoc();
+      this._foc = await this.createFoc();
     }
     return this._foc;
   }
