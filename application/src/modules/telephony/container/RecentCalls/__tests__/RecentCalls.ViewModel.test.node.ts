@@ -44,7 +44,7 @@ describe('RecentCallsViewModel', () => {
       .mockImplementation(() => recentCallLogsHandler);
   });
 
-  it.only('makeCall()', done => {
+  it('makeCall()', done => {
     const phoneNumber = '123456';
     (getEntity as jest.Mock).mockImplementation((name: string, id: number) => {
       if (name === ENTITY_NAME.CALL_LOG) {

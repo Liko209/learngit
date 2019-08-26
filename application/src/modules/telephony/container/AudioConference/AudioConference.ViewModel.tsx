@@ -15,9 +15,9 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
-// import { analyticsCollector } from '@/AnalyticsCollector';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { mainLogger } from 'foundation/log';
 
 class AudioConferenceViewModel extends AbstractViewModel<AudioConferenceProps>
   implements AudioConferenceViewProps {
@@ -47,25 +47,12 @@ class AudioConferenceViewModel extends AbstractViewModel<AudioConferenceProps>
       );
     }
   };
-  // @action
-  // call = async () => {
-  //   if (!this.phoneNumber) return;
-  //   const isCallSuccess = await this._telephonyService.directCall(
-  //     this.phoneNumber,
-  //   );
-  //   if (!isCallSuccess) {
-  //     this._telephonyService.hangUp();
-  //   }
-  // };
-  // @action
-  // trackCall = (analysisSource?: string) => {
-  //   if (analysisSource) {
-  //     analyticsCollector.makeOutboundCall(analysisSource);
-  //   }
-  // };
   showIcon = promisedComputed(false, async () => {
     if (!this._group) return false;
     const canUseConference = await this._featuresFlagsService.canUseConference();
+    mainLogger.info(
+      `${TelephonyService.TAG} Conference permission: ${canUseConference}`,
+    );
     if (canUseConference) {
       const group = this._group;
       return (

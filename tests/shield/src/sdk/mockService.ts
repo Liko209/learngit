@@ -21,8 +21,6 @@ const _getMockService = function(
 ) {
   const { name, value: Service } = mockObject;
   // we don't use real Service only fake a object
-  // if already has mock service only change mock function
-  // const cacheService = mockServiceCache.get(name);
   const serviceClass = Service ? {} : mockObject;
 
   if (Array.isArray(methods)) {
