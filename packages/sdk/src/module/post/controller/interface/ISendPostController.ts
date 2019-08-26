@@ -10,6 +10,7 @@ interface ISendPostController {
   sendPost(params: SendPostType): void;
   reSendPost(id: number): void;
   editFailedPost(params: EditPostType): Promise<Post | null>;
+  shareItem(postId: number, itemId: number, targetGroupId: number): Promise<void>;
 }
 
 export { ISendPostController };

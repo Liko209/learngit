@@ -11,12 +11,39 @@ import { Post, PostView, UnreadPostQuery } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import { ArrayUtils } from '../../../utils/ArrayUtils';
+import { IViewDao } from 'sdk/module/base/dao/IViewDao';
 
-class PostViewDao extends BaseDao<PostView> {
+class PostViewDao extends BaseDao<PostView>
+  implements IViewDao<number, Post, PostView> {
   static COLLECTION_NAME = 'postView';
   // TODO, use IDatabase after import foundation module in
   constructor(db: IDatabase) {
     super(PostViewDao.COLLECTION_NAME, db);
+  }
+
+  toViewItem(entity: Post): PostView {
+    return {
+      id: entity.id,
+      group_id: entity.group_id,
+      created_at: entity.created_at,
+    };
+  }
+
+  toPartialViewItem(partialEntity: Partial<Post>): Partial<PostView> {
+    return _.pickBy(
+      {
+        id: partialEntity.id,
+        group_id: partialEntity.group_id,
+        created_at: partialEntity.created_at,
+      },
+      _.identity,
+    );
+  }
+
+  getCollection() {
+    return this.getDb().getCollection<PostView, number>(
+      PostViewDao.COLLECTION_NAME,
+    );
   }
 
   async queryPostsByGroupId(

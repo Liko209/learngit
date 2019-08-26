@@ -1,12 +1,10 @@
 {
   "on_merge": {
     "fixtures": [
-      "fixtures/ConversationList/OpenConversation.ts",
-      "fixtures/Profile/Avatar.ts"
+      "fixtures/ConversationStream/UnreadMessageIndicator.ts"
     ],
     "include_tags": [
-      "JPT-464",
-      "JPT-2597"
+      "JPT-221"
     ],
     "browsers": [
       "selenium:chrome"

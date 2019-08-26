@@ -10,6 +10,7 @@ module.exports = {
     `!${process.env.APP}/src/**/*.d.ts`,
     `!${process.env.APP}/src/**/*.View.tsx`,
     `!${process.env.APP}/src/**/index.(ts|tsx)`,
+    `!${process.env.App}/src/**/AnalyticsCollector.ts`,
     '!<rootDir>/packages/jui/**/*',
     '!<rootDir>/packages/rcui/**/*',
     '!<rootDir>/tests/shield/**/*',
@@ -38,7 +39,10 @@ module.exports = {
       '<rootDir>/config/jest/__mocks__/fileMock.js',
     '\\.(css|less)$': '<rootDir>/config/jest/__mocks__/cssMock.js',
   },
-  modulePathIgnorePatterns: [`${process.env.APP}/build`],
+  modulePathIgnorePatterns: [
+    `${process.env.APP}/build`,
+    `${process.env.APP}.*/__mocks__/*`,
+  ],
   moduleFileExtensions: [
     'web.ts',
     'ts',

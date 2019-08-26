@@ -20,10 +20,10 @@ import { Favorite, Privacy } from '@/containers/common';
 @observer
 class ProfileMiniCardGroupHeaderView extends Component<
   ProfileMiniCardGroupHeaderViewProps
-  > {
+> {
   render() {
     const { id, group } = this.props;
-    const { displayName } = group;
+    const { displayName, analysisType } = group;
     return (
       <JuiProfileMiniCardHeader>
         <JuiProfileMiniCardHeaderLeft>
@@ -39,8 +39,15 @@ class ProfileMiniCardGroupHeaderView extends Component<
           </JuiProfileMiniCardGroupName>
         </JuiProfileMiniCardHeaderMiddle>
         <JuiProfileMiniCardHeaderRight>
-          <Privacy id={id} size="small" />
-          <Favorite id={id} size="small" />
+          <Privacy id={id} size="small" analysisSource="miniProfile" />
+          <Favorite
+            id={id}
+            size="small"
+            dataTrackingProps={{
+              source: 'miniProfile',
+              conversationType: analysisType,
+            }}
+          />
         </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );

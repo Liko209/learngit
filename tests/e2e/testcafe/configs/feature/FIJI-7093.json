@@ -1,0 +1,13 @@
+
+{
+    "on_merge": {
+        "fixtures": [
+          "./fixtures/ActionBar/MoreItem.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}
+
+

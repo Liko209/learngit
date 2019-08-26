@@ -117,6 +117,7 @@ class ItemListViewComponent extends Component<Props> {
         didChange={this.selectIndexChange(index)}
         id={id}
         key={id}
+        dataTrackingDomain="fullSearch"
       />
     );
   };
@@ -153,6 +154,7 @@ class ItemListViewComponent extends Component<Props> {
           down: this.onKeyDown,
           enter: this.onEnter,
         }}
+        global
       >
         <DataList
           ref={this._dataList}

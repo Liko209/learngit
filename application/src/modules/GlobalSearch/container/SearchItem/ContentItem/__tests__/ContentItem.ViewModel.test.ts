@@ -18,6 +18,7 @@ import { ContentItemViewModel } from '../ContentItem.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
+jest.mock('sdk/module/config')
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

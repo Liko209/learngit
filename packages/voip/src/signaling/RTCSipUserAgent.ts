@@ -138,15 +138,22 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       options.replacesFromTag &&
       options.replacesToTag
     ) {
-      inviteOptions.extraHeaders = [
+      inviteOptions.extraHeaders = inviteOptions.extraHeaders || [];
+      inviteOptions.extraHeaders.push(
         `Replaces: ${options.replacesCallId};to-tag=${
           options.replacesFromTag
         };from-tag=${options.replacesToTag}`,
         'RC-call-type: replace',
-      ];
+      );
       rtcLogger.info(
         LOG_TAG,
         `switch over call to ${inviteOptions.extraHeaders}`,
+      );
+    }
+    if (options.accessCode) {
+      inviteOptions.extraHeaders = inviteOptions.extraHeaders || [];
+      inviteOptions.extraHeaders.push(
+        `rc-tap: rcc;accessCode=${options.accessCode}`,
       );
     }
     return this._webphone.userAgent.invite(phoneNumber, inviteOptions);

@@ -27,6 +27,7 @@ import {
   IconColor,
   SvgSymbol,
 } from '../../../foundation/Iconography';
+import { parseColor } from '../../../foundation/utils/parseColor';
 
 type IconButtonSize = 'small' | 'medium' | 'large' | 'midLarge' | 'moreLarge';
 
@@ -171,25 +172,14 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     icon,
     ...rest
   } = props;
-  let colorScope: keyof Palette = 'primary';
-  let colorName: string = 'main';
-  if (color && color.indexOf('.') >= 0) {
-    const array = color.split('.');
-    if (array.length > 1) {
-      colorScope = array[0] as keyof Palette;
-      colorName = array[1];
-    } else {
-      colorScope = array[0] as keyof Palette;
-      colorName = 'main';
-    }
-  }
+  const colorObj = parseColor(color);
 
   if (!disabled && !disableToolTip && tooltipTitle) {
     return (
       <RuiTooltip title={tooltipTitle} placement={tooltipPlacement}>
         <StyledFabButtonWithRef
-          colorScope={colorScope}
-          colorName={colorName}
+          colorScope={colorObj.scope}
+          colorName={colorObj.name}
           size={size}
           {...rest}
         >
@@ -207,8 +197,8 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   return (
     <StyledFabButton
       disabled={disabled}
-      colorScope={colorScope}
-      colorName={colorName}
+      colorScope={colorObj.scope}
+      colorName={colorObj.name}
       size={size}
       {...rest}
     >

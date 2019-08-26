@@ -32,7 +32,10 @@ interface IEntityCacheSearchController<
     filterFunc?: (entity: T) => boolean,
   ): Promise<T[]>;
 
-  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
+  getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]>;
 
   searchEntities(
     genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
@@ -57,6 +60,4 @@ interface IEntityCacheSearchController<
   isInitialized(): boolean;
 }
 
-export {
-  IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms,
-};
+export { IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms };

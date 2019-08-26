@@ -8,7 +8,7 @@ import { ISearchService } from './ISearchService';
 import {
   RecentSearchTypes,
   RecentSearchModel,
-  FuzzySearchPersonOptions,
+  FuzzySearchContactOptions,
   PhoneContactEntity,
 } from '../entity';
 import { SearchServiceController } from '../controller/SearchServiceController';
@@ -17,9 +17,12 @@ import { SortableModel, IdModel } from '../../../framework/model';
 import { SearchUserConfig } from '../config/SearchUserConfig';
 import { IConfigHistory } from 'sdk/framework/config/IConfigHistory';
 import { ConfigChangeHistory } from 'sdk/framework/config/types';
-import { Nullable } from 'sdk/types';
+import { Nullable, UndefinedAble } from 'sdk/types';
 import { configMigrator } from 'sdk/framework/config';
 import { SearchConfigHistory } from '../config/ConfigHistory';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import GroupService, { Group, FuzzySearchGroupOptions } from 'sdk/module/group';
+import { SortUtils } from 'sdk/framework/utils';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {
@@ -90,34 +93,63 @@ class SearchService extends AbstractService
   }
 
   async doFuzzySearchPersons(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    options: FuzzySearchContactOptions,
   ): Promise<{
-      terms: string[];
-      sortableModels: SortableModel<Person>[];
-    }> {
-    return await this.searchPersonController.doFuzzySearchPersons(options);
+    terms: string[];
+    sortableModels: SortableModel<Person>[];
+  }> {
+    return await this.searchPersonController.doFuzzySearchPersons(
+      searchKey,
+      options,
+    );
   }
 
   async doFuzzySearchPersonsAndGroups(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    contactOptions: FuzzySearchContactOptions,
+    groupOptions: FuzzySearchGroupOptions,
   ): Promise<{
-      terms: string[];
-      sortableModels: SortableModel<IdModel>[];
-    }> {
+    terms: string[];
+    sortableModels: SortableModel<IdModel>[];
+  }> {
     return await this.searchPersonController.doFuzzySearchPersonsAndGroups(
-      options,
+      searchKey,
+      contactOptions,
+      groupOptions,
     );
   }
 
   async doFuzzySearchPhoneContacts(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    options: FuzzySearchContactOptions,
   ): Promise<{
-      terms: string[];
-      phoneContacts: PhoneContactEntity[];
-    }> {
+    terms: string[];
+    phoneContacts: PhoneContactEntity[];
+  }> {
     return await this.searchPersonController.doFuzzySearchPhoneContacts(
+      searchKey,
       options,
     );
+  }
+
+  async doFuzzySearchAllGroups(
+    searchKey: UndefinedAble<string>,
+    option: FuzzySearchGroupOptions,
+  ) {
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+
+    if (!option.sortFunc) {
+      option.sortFunc = (
+        groupA: SortableModel<Group>,
+        groupB: SortableModel<Group>,
+      ) => {
+        return SortUtils.compareSortableModel<Group>(groupA, groupB);
+      };
+    }
+    return groupService.doFuzzySearchAllGroups(searchKey, option);
   }
 }
 

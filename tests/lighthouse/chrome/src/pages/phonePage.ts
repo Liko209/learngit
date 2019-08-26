@@ -13,7 +13,7 @@ class PhonePage extends Page {
 
   private telephonyMinBtn: string = 'button[data-test-automation-id="telephony-minimize-btn"]';
 
-  private voiceMailTab: string = 'div[data-test-automation-id="phone-tab-voicemail"] p';
+  private voiceMailTab: string = 'div[data-test-automation-id="phone-tab-voicemail"]';
 
   private voiceMailItem: string = 'div[data-test-automation-class="voicemail-item"]';
 
@@ -89,7 +89,7 @@ class PhonePage extends Page {
 
   async deleteCallLog(): Promise<void> {
     let page = await this.page();
-    await PptrUtils.hover(page, 'div[data-test-automation-class="call-history-item"]');
+    await PptrUtils.hover(page, 'div[data-test-automation-class="call-history-item"]:nth-child(2)');
 
     await PptrUtils.click(page, 'button[data-test-automation-id="calllog-delete-button"]', { timeout: 3000 });
 

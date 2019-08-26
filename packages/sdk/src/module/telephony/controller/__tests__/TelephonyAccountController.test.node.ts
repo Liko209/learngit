@@ -26,6 +26,7 @@ import { RTC_SLEEP_MODE_EVENT } from 'voip/src/utils/types';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { E911Controller } from '../E911Controller';
+import { TRANSFER_TYPE } from '../../entity/types';
 
 jest.mock('../E911Controller');
 jest.mock('../TelephonyCallController');
@@ -254,6 +255,23 @@ describe('TelephonyAccountController', () => {
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
       expect(rtcAccount.makeCall).toHaveBeenCalled();
       expect(callControllerList.size).toBe(1);
+    });
+
+    it('should start a call with access code', async () => {
+      const code = '123456';
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      await accountController.makeCall(toNum, { accessCode: code });
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith(
+        toNum,
+        expect.any(Object),
+        { accessCode: code },
+      );
     });
 
     it('should return error when rtc make call fail', async () => {
@@ -573,6 +591,16 @@ describe('TelephonyAccountController', () => {
       const spy = jest.spyOn(callControllerList, 'delete');
       accountController._removeControllerFromList(callId);
       expect(spy).toHaveBeenCalledWith(callId);
+    });
+  });
+  describe('transfer', () => {
+    it('should call controller to transfer', () => {
+      const callController = {
+        transfer: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
+      accountController.transfer(callId, TRANSFER_TYPE.BLIND_TRANSFER, toNum);
+      expect(callController.transfer).toHaveBeenCalled();
     });
   });
 });

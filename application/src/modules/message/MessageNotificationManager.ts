@@ -48,6 +48,8 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import { IMessageNotificationManager } from './interface';
+import { GlipTypeUtil } from 'sdk/utils';
+import { getIntegration } from './container/ConversationSheet/IntegrationItem/getIntegration';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -61,6 +63,7 @@ type MessageTypeInfo = {
   isMention: boolean;
   isActivity: boolean;
   isOne2One: boolean;
+  isIntegration: boolean;
   messageType: MESSAGE_TYPE;
 };
 class MessageNotificationManager extends AbstractNotificationManager
@@ -114,8 +117,7 @@ class MessageNotificationManager extends AbstractNotificationManager
     }
     const MAX_SIZE = 50;
     const vm = new MessageNotificationViewModel(id, {
-      onCreate: () =>
-        this.buildNotification(postModel, groupModel),
+      onCreate: () => this.buildNotification(postModel, groupModel),
 
       onUpdate: (id: number) => {
         const postModel = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
@@ -282,6 +284,7 @@ class MessageNotificationManager extends AbstractNotificationManager
 
   getMessageType(post: PostModel, group: GroupModel) {
     const isOne2One = group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+    const isIntegration = post.itemIds.some(GlipTypeUtil.isIntegrationType);
     const isActivity = !!(post.existItemIds.length || post.parentId);
     const isMention = !!this.isMyselfAtMentioned(post);
     const messageType = isMention
@@ -289,7 +292,7 @@ class MessageNotificationManager extends AbstractNotificationManager
       : isOne2One
       ? MESSAGE_TYPE.DIRECT_MESSAGE
       : MESSAGE_TYPE.TEAM;
-    return { isActivity, isOne2One, isMention, messageType };
+    return { isActivity, isOne2One, isMention, messageType, isIntegration };
   }
 
   async buildNotificationBodyAndTitle(
@@ -302,14 +305,15 @@ class MessageNotificationManager extends AbstractNotificationManager
       person: PersonModel;
       group: GroupModel;
     },
-    { isOne2One, isActivity, isMention }: MessageTypeInfo,
+    { isOne2One, isActivity, isMention, isIntegration }: MessageTypeInfo,
   ) {
+    const senderName = person.userDisplayName;
     const translationArgs = {
-      person: person.userDisplayName,
+      person: senderName,
       conversation: group.displayName,
     };
     let title =
-      isOne2One || isActivity
+      isOne2One || isActivity || isIntegration
         ? group.displayName
         : await i18nT('notification.group', translationArgs);
     let body = this.handlePostContent(post);
@@ -320,9 +324,11 @@ class MessageNotificationManager extends AbstractNotificationManager
       } else {
         title = await i18nT('notification.mentioned', translationArgs);
       }
+    } else if (isIntegration) {
+      body = await getIntegration(post, senderName,true) || senderName;
     } else if (isActivity) {
       const { key, parameter } = getActivity(post, getActivityData(post));
-      body = `${person.userDisplayName} ${await i18nT(key, parameter)}`;
+      body = `${senderName} ${await i18nT(key, parameter)}`;
     }
     return { body, title };
   }

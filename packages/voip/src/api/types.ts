@@ -30,6 +30,7 @@ type RTCCallOptions = {
   replacesCallId?: string;
   replacesFromTag?: string;
   replacesToTag?: string;
+  accessCode?: string;
 };
 
 type RTCCallActionSuccessOptions = {

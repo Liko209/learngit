@@ -10,6 +10,8 @@ import {
 } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
 import { Post } from 'sdk/module/post/entity';
+import { UndefinedAble } from 'sdk/types';
+import { FuzzySearchGroupOptions } from '../entity/Group';
 
 interface IGroupService {
   isValid(group: Group): boolean;
@@ -73,6 +75,14 @@ interface IGroupService {
   getLocalGroup(personIds: number[]): Promise<Group | null>;
 
   getOrCreateGroupByMemberList(members: number[]): Promise<Group>;
+
+  doFuzzySearchAllGroups(
+    searchKey: UndefinedAble<string>,
+    option: FuzzySearchGroupOptions,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  }>;
 
   pinPost(postId: number, groupId: number, toPin: boolean): Promise<void>;
 
