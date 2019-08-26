@@ -39,6 +39,10 @@ export type GroupSearchProps<T> = {
   onDialogClose: () => void;
   itemCount: number;
   onKeyDownEscape: () => void;
+  /**
+   * needed for downshift to transform item to string
+   */
+  itemToString: (item: T) => string;
 };
 
 const LIST_HEIGHT = '392px';

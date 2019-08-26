@@ -12,7 +12,7 @@ type Props = {
 type ViewProps = Props & {
   group: GroupModel;
   isHighlighted: boolean;
-  avatar?: React.ReactNode;
+  avatar?: React.ReactElement;
 };
 
 export { Props, ViewProps };

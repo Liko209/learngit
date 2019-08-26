@@ -26,7 +26,7 @@ type MenuItemSize = 'large' | 'medium';
 
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
-  avatar?: React.ReactNode;
+  avatar?: React.ReactElement;
   secondaryAction?: JSX.Element;
   automationId?: string;
   maxWidth?: number;

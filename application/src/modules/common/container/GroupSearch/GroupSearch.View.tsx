@@ -94,6 +94,10 @@ class GroupSearchViewComponent extends React.Component<
     this.props.searchGroups('');
   };
 
+  private _itemToString = ({ id }: { id: number }) => {
+    return id.toString();
+  };
+
   render() {
     const { list, t, size } = this.props;
     return (
@@ -111,6 +115,7 @@ class GroupSearchViewComponent extends React.Component<
         onDialogClose={this._handleClose}
         itemCount={this.props.size}
         onKeyDownEscape={this._handleClose}
+        itemToString={this._itemToString}
       >
         {({ highlightedIndex, getItemProps }) => {
           return size === 0 ? (

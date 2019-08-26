@@ -11,9 +11,10 @@ import avatar from './img/avatar.jpg';
 
 const defaultProps = {
   clearText: 'clear',
-  size: 'medium',
+  size: 'medium' as any,
   withCloseIcon: false,
   value: 'searchKey',
+  onClear: () => {},
 };
 
 storiesOf('Pattern/SearchInput', module)
