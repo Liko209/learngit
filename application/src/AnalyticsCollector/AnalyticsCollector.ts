@@ -324,7 +324,7 @@ class AnalyticsCollector {
   }
 
   directToTransferPage() {
-    dataAnalysis.track('Jup_Web/DT_phone_transferCall');
+    dataAnalysis.page('Jup_Web/DT_phone_transferCall');
   }
 
   clickTransferActions(action: string) {

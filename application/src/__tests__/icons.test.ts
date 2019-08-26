@@ -32,7 +32,6 @@ describe('icon svg file', () => {
       console.error(
         `icon ${lackIcons.join(', ')} not exist in jupiter-icon.svg`,
       );
-    console.error(lackIcons[0]);
     expect(lackIcons.length).toEqual(0);
   });
 

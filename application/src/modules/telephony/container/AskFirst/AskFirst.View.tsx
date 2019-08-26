@@ -14,7 +14,7 @@ type Props = ViewProps & WithTranslation;
 
 @observer
 class AskFirstViewComponent extends Component<Props> {
-  private _handleAskFirstCall = async () => {
+  private _handleAskFirstCall = () => {
     const { directToAskFirst } = this.props;
     directToAskFirst();
   };
