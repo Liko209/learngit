@@ -34,6 +34,7 @@ class ProfileDataController {
   ) {
     this._registerObservers();
   }
+
   private _registerObservers() {
     this._conversationPreferenceHandler = new ConversationPreferenceHandler([
       SETTING_KEYS.CONVERSATION_AUDIO,
@@ -153,6 +154,10 @@ class ProfileDataController {
       mainLogger.warn(`handleProfile error:${e}`);
       return null;
     }
+  }
+
+  unRegisterAllObservers() {
+    this.profileEntityObservable.unRegisterAll();
   }
 
   async getConversationPreference(

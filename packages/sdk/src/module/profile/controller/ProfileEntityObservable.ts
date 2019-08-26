@@ -16,7 +16,7 @@ class ProfileEntityObservable implements IProfileObservable {
         }
       },
     );
-    this._profileCache = { ...profile };
+    this._profileCache = _.cloneDeep(profile);
   }
   register(observer: IProfileObserver) {
     observer.keys.forEach((key: SETTING_KEYS) => {

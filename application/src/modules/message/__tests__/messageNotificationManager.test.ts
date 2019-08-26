@@ -111,7 +111,7 @@ describe('messageNotificationManager', () => {
     value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
   };
   const conversationPreferences = {
-    audio_notifications: {
+    audioNotifications: {
       id: SOUNDS_TYPE.Default
     }
   }
@@ -505,7 +505,7 @@ sfdasfasd`);
     })
     it('should be Alert when global setting for sound is Triple_Beeps but current conversation preference for sound is Alert', async () => {
       settingItem.value = {id: SOUNDS_TYPE.Triple_Beeps};
-      conversationPreferences.audio_notifications.id = SOUNDS_TYPE.Alert;
+      conversationPreferences.audioNotifications.id = SOUNDS_TYPE.Alert;
       const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.DIRECT_MESSAGE, new GroupModel(group));
       expect(soundSetting).toBe(SOUNDS_TYPE.Alert)
     })
