@@ -16,15 +16,20 @@ function modal(
   component: React.ComponentType<any> | JSX.Element,
   props: Props,
 ) {
-  const onClose = () => {
+  const { onClose, ...rest } = props;
+  const defaultClose = (e: React.MouseEvent) => {
+    if (onClose) {
+      onClose && onClose(e);
+    } else {
+      portalManager.dismissLast();
+    }
     dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
       shortcut: 'escape',
     });
-    portalManager.dismissLast();
   };
   const Component = component;
   const Dialog = () => (
-    <JuiDialog {...props} onClose={onClose}>
+    <JuiDialog {...rest} onClose={defaultClose}>
       {Component instanceof Function ? <Component /> : Component}
     </JuiDialog>
   );

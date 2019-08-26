@@ -7,11 +7,13 @@
 import { dataAnalysis } from 'foundation/analysis';
 
 function withEscTracking(onCancel: any) {
-  const onClose = (event: React.MouseEvent) => {
+  const onClose = (event: React.MouseEvent, reason: string) => {
     if (onCancel) {
-      dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
-        shortcut: 'escape',
-      });
+      if (reason === 'escapeKeyDown') {
+        dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+          shortcut: 'escape',
+        });
+      }
       onCancel(event);
     }
   };

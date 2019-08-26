@@ -4,7 +4,6 @@ import MuiDialog, {
 } from '@material-ui/core/Dialog';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled, { css } from 'styled-components';
-import { HotKeys } from '../../hoc/HotKeys';
 
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
@@ -12,7 +11,6 @@ type StyledDialogProps = MuiDialogProps & {
 };
 
 type JuiDialogProps = StyledDialogProps & {
-  enableEscapeClose?: boolean;
   onClose?: (event: KeyboardEvent | React.MouseEvent) => void;
 };
 
@@ -38,7 +36,6 @@ const StyledDialog = styled(FilteredMuiDialog)`
 
 const WrapDialog = (props: JuiDialogProps) => {
   const {
-    enableEscapeClose = true,
     disableEscapeKeyDown,
     onClose,
     size = 'medium',
@@ -46,7 +43,6 @@ const WrapDialog = (props: JuiDialogProps) => {
     ...rest
   } = props;
 
-  const enableEscapeCloseHotKey = enableEscapeClose && !disableEscapeKeyDown;
   const initClasses = {
     ...classes,
     paper: `paper ${(classes && classes.paper) || ''}`,
@@ -72,19 +68,7 @@ const WrapDialog = (props: JuiDialogProps) => {
       break;
   }
 
-  return enableEscapeCloseHotKey ? (
-    <HotKeys
-      keyMap={{
-        esc: event => {
-          return onClose && onClose(event) && false;
-        },
-      }}
-    >
-      <StyledDialog {...rest} classes={initClasses} onClose={onClose} />
-    </HotKeys>
-  ) : (
-    <StyledDialog {...rest} classes={initClasses} onClose={onClose} />
-  );
+  return <StyledDialog {...rest} classes={initClasses} onClose={onClose} />;
 };
 
 const JuiDialog = withMobileDialog<JuiDialogProps>({ breakpoint: 'xs' })(

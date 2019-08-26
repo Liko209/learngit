@@ -40,7 +40,7 @@ const StyledGlobalSearch = styled(JuiDialog)`
 
 type JuiGlobalSearchProps = {
   open: boolean;
-  onClose: () => void;
+  onClose: (e: React.MouseEvent) => void;
   children: React.ReactNode;
 };
 
@@ -56,7 +56,6 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
         onClose={onClose}
         disablePortal
         fixedAtTop
-        enableEscapeClose={open}
       >
         {children}
       </StyledGlobalSearch>

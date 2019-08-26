@@ -38,7 +38,6 @@ export const showImageViewer = (
       fullScreen: true,
       hideBackdrop: true,
       TransitionComponent: JuiDialogOpenTransition as any,
-      enableEscapeClose: true,
       onClose: () => dismiss(),
     },
   );
