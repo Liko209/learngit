@@ -22,6 +22,18 @@ function spacing(...values: number[]) {
 }
 
 /**
+ * ellipsis
+ */
+function ellipsis() {
+  return css`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  `;
+}
+
+/**
  * opacity
  * @param values
  */
@@ -138,4 +150,4 @@ function fontProp<T extends keyof Typography, K extends keyof Typography[T]>(
   };
 }
 
-export { spacing, opacity, radius, shadows, zIndex, palette, typography, grey };
+export { spacing, opacity, radius, shadows, zIndex, palette, typography, grey, ellipsis };

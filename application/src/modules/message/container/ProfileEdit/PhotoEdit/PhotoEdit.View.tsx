@@ -30,7 +30,7 @@ import { accelerateURL } from '@/common/accelerateURL';
 import { Transform } from 'jui/components/ZoomArea';
 import portalManager from '@/common/PortalManager';
 import { withUploadFile } from 'jui/hoc/withUploadFile';
-import { isImageType } from '../utils';
+import { showNotImageTypeToast } from '../utils';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
 const CONTAINER_SIZE = 280;
@@ -89,7 +89,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
   handleFileChanged = async (files: FileList) => {
     if (!files) return;
     const file = files[0];
-    if (!(await isImageType(file.type))) {
+    if (!(await showNotImageTypeToast(file.type))) {
       return;
     }
     const { updateImageUrl } = this.props;

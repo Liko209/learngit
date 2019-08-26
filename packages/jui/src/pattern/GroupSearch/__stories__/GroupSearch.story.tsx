@@ -24,7 +24,7 @@ const sleep = function(time: number) {
 const loadInitialData = async () => {};
 const loadMore = async () => [];
 const hasMore = async () => false;
-const InfiniteListDemo = (props:any) => {
+const InfiniteListDemo = (props: any) => {
   return (
     <JuiInfiniteList
       fixedRowHeight={34}
@@ -55,7 +55,11 @@ function GroupSearch() {
     setKey(e.target.value);
   };
 
+<<<<<<< HEAD
   const onSelectChange = (e:any) => {
+=======
+  const onSelectChange = (e: any) => {
+>>>>>>> develop
     setKey(`item ${e.id}`);
   };
 

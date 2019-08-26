@@ -20,7 +20,7 @@ import portalManager from '@/common/PortalManager';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { withUploadFile } from 'jui/hoc/withUploadFile';
-import { isImageType } from './utils';
+import { showNotImageTypeToast } from './utils';
 import { PhotoEdit } from './PhotoEdit';
 import {
   EditProfileViewModelProps,
@@ -70,7 +70,7 @@ class EditProfileViewComponent extends Component<
   handleFileChanged = async (files: FileList) => {
     if (!files) return;
     const file = files[0];
-    if (!(await isImageType(file.type))) {
+    if (!(await showNotImageTypeToast(file.type))) {
       return;
     }
     const { currentPersonInfo, onPhotoEdited } = this.props;

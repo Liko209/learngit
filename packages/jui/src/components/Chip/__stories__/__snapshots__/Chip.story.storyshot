@@ -80,6 +80,10 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   opacity: 0.76;
 }
 
+.c1:focus {
+  outline: none;
+}
+
 .c1 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -168,6 +172,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
+    onMouseMove={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
@@ -215,6 +220,10 @@ exports[`Storyshots Components/Chip with Avatar: Components/Chip with Avatar 1`]
 
 .c1.c1:active {
   opacity: 0.76;
+}
+
+.c1:focus {
+  outline: none;
 }
 
 .c1 > .avatar-short-name {
@@ -414,6 +423,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
+    onMouseMove={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}

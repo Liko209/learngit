@@ -206,6 +206,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -494,6 +495,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -534,6 +536,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -580,6 +583,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -622,6 +626,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -799,6 +804,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -1036,6 +1045,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1076,6 +1086,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1122,6 +1133,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1164,6 +1176,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1268,6 +1281,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1308,6 +1322,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1354,6 +1369,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1396,6 +1412,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
