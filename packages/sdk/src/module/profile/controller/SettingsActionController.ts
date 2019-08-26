@@ -66,31 +66,35 @@ class SettingsActionController {
   ) {
     const updateData: SettingOption[] = [];
     const profile = await this._profileDataController.getLocalProfile();
-    const { audio_notifications, ...notification } = model;
+    const { audioNotifications, ...notification } = model;
     const originNotification =
       (profile && profile[SETTING_KEYS.CONVERSATION_NOTIFICATION]) || {};
     const originAudio =
       (profile && profile[SETTING_KEYS.CONVERSATION_AUDIO]) || [];
+
     if (notification) {
       updateData.push({
         key: SETTING_KEYS.CONVERSATION_NOTIFICATION,
         value: {
           ...originNotification,
-          [cid]: { ...originNotification[cid], ...notification },
+          [cid]: {
+            ...originNotification[cid],
+            ...this.getNotification(notification),
+          },
         },
       });
     }
-    if (audio_notifications) {
+    if (audioNotifications) {
       let audios = [...originAudio];
       if (audios.find(item => item.gid === cid)) {
         audios = audios.map(item => {
           if (item.gid === cid) {
-            item.sound = audio_notifications.id;
+            item.sound = audioNotifications.id;
           }
           return item;
         });
       } else {
-        audios.push({ gid: cid, sound: audio_notifications.id });
+        audios.push({ gid: cid, sound: audioNotifications.id });
       }
 
       updateData.push({
@@ -99,6 +103,21 @@ class SettingsActionController {
       });
     }
     this.updateSettingOptions(updateData);
+  }
+  private getNotification(notification: Partial<ConversationPreference>) {
+    const keyMap = {
+      muted: 'muted',
+      desktopNotifications: 'desktop_notifications',
+      pushNotifications: 'push_notifications',
+      emailNotifications: 'email_notifications',
+    };
+    const result = {};
+    Object.keys(notification).map(key => {
+      if (notification[key] !== undefined) {
+        result[keyMap[key]] = notification[key];
+      }
+    });
+    return result;
   }
 }
 

@@ -113,7 +113,7 @@ class ProfileDataController {
     if (model.muted) {
       return true;
     }
-    return !model.desktop_notifications;
+    return !model.desktopNotifications;
   }
 
   async isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {

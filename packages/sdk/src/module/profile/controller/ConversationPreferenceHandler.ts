@@ -35,9 +35,11 @@ class ConversationPreferenceHandler implements IProfileObserver {
       (item: AUDIO_NOTIFICATIONS) => item.gid === cid,
     );
     let model = {
-      ...notification,
       muted: (notification && notification.muted) || false,
-      audio_notifications:
+      desktopNotifications: notification && notification.desktop_notifications,
+      pushNotifications: notification && notification.push_notifications,
+      emailNotifications: notification && notification.email_notifications,
+      audioNotifications:
         sound && SoundsList.find(item => item.id === sound.sound),
     } as ConversationPreference;
     if (await this._isTeam(cid)) {
@@ -114,44 +116,44 @@ class ConversationPreferenceHandler implements IProfileObserver {
     return (model && model.value)!;
   }
   private async _getTeamNotification(model: ConversationPreference) {
-    model.desktop_notifications = await this._getValue(
-      model.desktop_notifications,
+    model.desktopNotifications = await this._getValue(
+      model.desktopNotifications,
       (await this._getSettingValue(
         SettingEntityIds.Notification_NewMessages,
       )) === DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
     );
-    model.audio_notifications = await this._getAudioValue(
-      model.audio_notifications,
+    model.audioNotifications = await this._getAudioValue(
+      model.audioNotifications,
       SettingEntityIds.Audio_TeamMessages,
     );
-    model.email_notifications = await this._getValue(
-      model.email_notifications,
+    model.emailNotifications = await this._getValue(
+      model.emailNotifications,
       await this._getSettingValue(SettingEntityIds.Notification_Teams),
     );
-    model.push_notifications = await this._getValue(
-      model.push_notifications,
+    model.pushNotifications = await this._getValue(
+      model.pushNotifications,
       await this._getSettingValue(SettingEntityIds.MOBILE_Team),
     );
     return model;
   }
 
   private async _getGroupNotification(model: ConversationPreference) {
-    model.desktop_notifications = await this._getValue(
-      model.desktop_notifications,
+    model.desktopNotifications = await this._getValue(
+      model.desktopNotifications,
       (await this._getSettingValue(
         SettingEntityIds.Notification_NewMessages,
       )) !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
     );
-    model.audio_notifications = await this._getAudioValue(
-      model.audio_notifications,
+    model.audioNotifications = await this._getAudioValue(
+      model.audioNotifications,
       SettingEntityIds.Audio_DirectMessage,
     );
-    model.email_notifications = await this._getValue(
-      model.email_notifications,
+    model.emailNotifications = await this._getValue(
+      model.emailNotifications,
       await this._getSettingValue(SettingEntityIds.Notification_DirectMessages),
     );
-    model.push_notifications = await this._getValue(
-      model.push_notifications,
+    model.pushNotifications = await this._getValue(
+      model.pushNotifications,
       await this._getSettingValue(SettingEntityIds.MOBILE_DM),
     );
     return model;
