@@ -24,6 +24,7 @@ type CallLogSyncParams = {
   syncToken?: string;
   recordCount?: number;
   statusGroup?: CALL_LOG_SOURCE;
+  showDeleted?: boolean;
 };
 
 type RCMessageSyncParams = {

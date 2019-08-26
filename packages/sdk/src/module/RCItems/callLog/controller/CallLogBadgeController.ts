@@ -148,7 +148,7 @@ class CallLogBadgeController {
 
     let unreadChanged = false;
     if (
-      data.__deactivated ||
+      data.deleted ||
       (this._lastReadMissed && this._lastReadMissed >= data.__timestamp)
     ) {
       if (this._unreadMap.has(data.id)) {

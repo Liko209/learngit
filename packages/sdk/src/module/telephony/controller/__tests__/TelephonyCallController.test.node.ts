@@ -13,16 +13,20 @@ import {
   RTC_CALL_ACTION,
   RTC_CALL_ACTION_ERROR_CODE,
   RECORD_STATE as RTC_RECORD_STATE,
+  RTCCallActionSuccessOptions,
 } from 'voip';
 import { HOLD_STATE, CALL_STATE, RECORD_STATE, MUTE_STATE } from '../../entity';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { ToggleController } from '../ToggleController';
-import { CALL_ACTION_ERROR_CODE } from '../../types';
+import { CALL_ACTION_ERROR_CODE, MAKE_CALL_ERROR_CODE } from '../../types';
+import { TRANSFER_TYPE } from '../../entity/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 jest.mock('voip');
 jest.mock('sdk/service/notificationCenter');
-
+jest.mock('sdk/module/phoneNumber');
 describe('TelephonyCallController', () => {
   class MockDelegate implements ITelephonyCallDelegate {
     onCallStateChange(callId: string, state: RTC_CALL_STATE) {}
@@ -48,10 +52,11 @@ describe('TelephonyCallController', () => {
   let rtcCall: RTCCall;
   let mockEntitySource: MockEntitySource;
   let mockEntityCache: MockEntityCache;
-  const callId = '123';
+  const callId = 123;
+  const toNum = '123';
   let holdToggle: ToggleController;
   let recordToggle: ToggleController;
-
+  let phoneNumberService: PhoneNumberService;
   function setup() {
     mockDelegate = new MockDelegate();
     mockEntitySource = new MockEntitySource();
@@ -66,7 +71,12 @@ describe('TelephonyCallController', () => {
     rtcCall = new RTCCall(false, '', null, null, null);
     holdToggle = new ToggleController();
     recordToggle = new ToggleController();
-
+    phoneNumberService = new PhoneNumberService();
+    ServiceLoader.getInstance = jest.fn().mockImplementation(config => {
+      if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
+        return phoneNumberService;
+      }
+    });
     Object.assign(callController, {
       _rtcCall: rtcCall,
       _holdToggle: holdToggle,
@@ -679,6 +689,80 @@ describe('TelephonyCallController', () => {
       callController._handleToggleState(RTC_CALL_ACTION.MUTE, false);
       expect(holdToggle.onSuccess).not.toHaveBeenCalled();
       expect(recordToggle.onSuccess).not.toHaveBeenCalled();
+    });
+  });
+  describe('transfer', () => {
+    beforeEach(() => {
+      phoneNumberService.getE164PhoneNumber = jest
+        .fn()
+        .mockResolvedValue(toNum);
+    });
+    it('should resolve warm transfer success when type is WARM_TRANSFER', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      const options = '';
+      expect(
+        callController.transfer(TRANSFER_TYPE.WARM_TRANSFER, toNum),
+      ).resolves.toEqual(options);
+      callController.onCallActionSuccess(
+        RTC_CALL_ACTION.WARM_TRANSFER,
+        options as RTCCallActionSuccessOptions,
+      );
+      done();
+    });
+    it('should reject fail when type is WARM_TRANSFER', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      const options = -1;
+      expect(
+        callController.transfer(TRANSFER_TYPE.WARM_TRANSFER, toNum),
+      ).rejects.toEqual('');
+      callController.onCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER, options);
+      done();
+    });
+
+    it('should resolve transfer success when type is BLIND_TRANSFER', async (done: jest.DoneCallback) => {
+      const options = '';
+      expect(
+        callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
+      ).resolves.toEqual(options);
+      callController.onCallActionSuccess(
+        RTC_CALL_ACTION.TRANSFER,
+        options as RTCCallActionSuccessOptions,
+      );
+      setTimeout(() => {
+        expect(rtcCall.transfer).toHaveBeenCalledWith('123');
+        done();
+      });
+    });
+    it('should reject fail when type is BLIND_TRANSFER', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      const options = -1;
+      expect(
+        callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
+      ).rejects.toEqual('');
+      callController.onCallActionFailed(RTC_CALL_ACTION.TRANSFER, options);
+      done();
+    });
+    it('should reject fail when number can not e164', async (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      phoneNumberService.getE164PhoneNumber = jest.fn().mockResolvedValue('');
+      await expect(
+        callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
+      ).rejects.toEqual(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
+      done();
+    });
+    it('should resolve to voicemail success when type is TO_VOICEMAIL', async (done: jest.DoneCallback) => {
+      const options = '';
+      expect(
+        callController.transfer(TRANSFER_TYPE.TO_VOICEMAIL, toNum),
+      ).resolves.toEqual(options);
+      callController.onCallActionSuccess(
+        RTC_CALL_ACTION.TRANSFER,
+        options as RTCCallActionSuccessOptions,
+      );
+      setTimeout(() => {
+        expect(rtcCall.transfer).toHaveBeenCalledWith('*0123');
+        done();
+      });
     });
   });
 });

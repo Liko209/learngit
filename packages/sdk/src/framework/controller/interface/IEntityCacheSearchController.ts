@@ -5,22 +5,8 @@
  */
 
 import { IdModel, SortableModel, ModelIdType } from '../../model';
+import { FormattedKey, FormattedTerms, Terms } from 'sdk/framework/search';
 
-type FormattedKey = {
-  original: string;
-  formatted: string;
-};
-
-type FormattedTerms = {
-  formattedKeys: FormattedKey[];
-  validFormattedKeys: FormattedKey[];
-};
-
-type Terms = {
-  searchKeyTerms: string[];
-  searchKeyTermsToSoundex: string[];
-  searchKeyFormattedTerms: FormattedTerms;
-};
 interface IEntityCacheSearchController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
@@ -32,7 +18,10 @@ interface IEntityCacheSearchController<
     filterFunc?: (entity: T) => boolean,
   ): Promise<T[]>;
 
-  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
+  getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]>;
 
   searchEntities(
     genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
@@ -57,6 +46,4 @@ interface IEntityCacheSearchController<
   isInitialized(): boolean;
 }
 
-export {
-  IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms,
-};
+export { IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms };

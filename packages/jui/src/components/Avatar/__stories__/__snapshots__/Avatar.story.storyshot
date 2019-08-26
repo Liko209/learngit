@@ -39,6 +39,10 @@ exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
   opacity: 0.76;
 }
 
+.c0:focus {
+  outline: none;
+}
+
 .c0 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -101,6 +105,10 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
   opacity: 0.76;
 }
 
+.c0:focus {
+  outline: none;
+}
+
 .c0 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -147,6 +155,10 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
 
 .c0.c0:active {
   opacity: 0.76;
+}
+
+.c0:focus {
+  outline: none;
 }
 
 .c0 > .avatar-short-name {
@@ -199,6 +211,10 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
 
 .c1.c1:active {
   opacity: 0.76;
+}
+
+.c1:focus {
+  outline: none;
 }
 
 .c1 > .avatar-short-name {

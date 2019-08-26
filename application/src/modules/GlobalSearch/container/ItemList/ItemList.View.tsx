@@ -3,8 +3,10 @@
  * @Date: 2019-04-01 17:16:07
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { JuiVirtualizedListHandles } from 'jui/components/VirtualizedList';
+import {
+  JuiVirtualizedListHandles,
+  ThresholdStrategy,
+} from 'jui/components/VirtualizedList';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import React, { Component } from 'react';
@@ -21,7 +23,13 @@ import { cacheEventFn } from '../types';
 
 import { PerformanceTracer } from 'foundation/performance';
 import { GLOBAL_SEARCH_PERFORMANCE_KEYS } from '../../performanceKeys';
-import { MAX_COUNT, ITEM_HEIGHT, MAX_HEIGHT, LOADING_DELAY } from './config';
+import {
+  INITIAL_DATA_COUNT,
+  MAX_COUNT,
+  ITEM_HEIGHT,
+  MAX_HEIGHT,
+  LOADING_DELAY,
+} from './config';
 
 type Props = ItemListProps &
   ItemListViewProps &
@@ -30,20 +38,34 @@ type Props = ItemListProps &
 @observer
 class ItemListViewComponent extends Component<Props> {
   private _infiniteListProps = {
-    minRowHeight: ITEM_HEIGHT,
+    height: MAX_HEIGHT,
+    fixedRowHeight: ITEM_HEIGHT,
     loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
     loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
+    loadMoreStrategy: new ThresholdStrategy({
+      threshold: 40,
+      minBatchCount: 10,
+    }),
   };
-
+  private _keyMap = {};
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
   > = React.createRef();
   private _dataList = React.createRef<DataList>();
-
   private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
+
+  constructor(props: Props) {
+    super(props);
+
+    this._keyMap = {
+      up: this.onKeyUp,
+      down: this.onKeyDown,
+      enter: this.onEnter,
+    };
+  }
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -117,6 +139,7 @@ class ItemListViewComponent extends Component<Props> {
         didChange={this.selectIndexChange(index)}
         id={id}
         key={id}
+        dataTrackingDomain="fullSearch"
       />
     );
   };
@@ -147,23 +170,14 @@ class ItemListViewComponent extends Component<Props> {
     }
 
     return (
-      <HotKeys
-        keyMap={{
-          up: this.onKeyUp,
-          down: this.onKeyDown,
-          enter: this.onEnter,
-        }}
-        global
-      >
+      <HotKeys keyMap={this._keyMap} global>
         <DataList
           ref={this._dataList}
-          initialDataCount={30}
+          initialDataCount={INITIAL_DATA_COUNT}
           listHandler={listHandler}
           reverse
           InfiniteListProps={Object.assign(this._infiniteListProps, {
-            height: MAX_HEIGHT,
             ref: this._listRef,
-            overscan: 20,
             onVisibleRangeChange: setRangeIndex,
           })}
         >

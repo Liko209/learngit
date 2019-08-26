@@ -75,6 +75,7 @@ class InstantSearchViewComponent extends Component<Props> {
         terms={terms}
         id={typeof value === 'string' ? null : value}
         key={typeof value === 'string' ? `${value}${cellIndex}` : value}
+        dataTrackingDomain="globalSearch"
       />
     );
   };

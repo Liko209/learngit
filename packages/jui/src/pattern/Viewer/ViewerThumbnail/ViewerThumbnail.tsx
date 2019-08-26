@@ -52,9 +52,14 @@ const ViewerThumbnailContentWrap = styled.div`
     padding: ${spacing(2)};
     width: 100%;
     border-radius: ${({ theme }) => theme.radius.xl};
+    div {
+      border-radius: ${({ theme }) => theme.radius.xl};
+    }
     min-height: ${viewerThumbnailMaxWidth /
       defaultThumbnailProportion['16/9']}px;
     box-sizing: border-box;
+    /*position for image*/
+    position: relative;
   }
 `;
 
@@ -78,13 +83,15 @@ const ViewerThumbnailWrap = styled.div`
 
     &&:hover {
       && ${ViewerThumbnailContentWrap} {
-        background-color: ${({ theme }) => fade(palette('primary', 'main')({ theme }), theme.opacity['1'])};
+        background-color: ${({ theme }) =>
+          fade(palette('primary', 'main')({ theme }), theme.opacity['1'])};
       }
     }
 
     &&:active {
       && ${ViewerThumbnailContentWrap} {
-        background-color: ${({ theme }) => fade(palette('primary', 'main')({ theme }), theme.opacity['2'])};
+        background-color: ${({ theme }) =>
+          fade(palette('primary', 'main')({ theme }), theme.opacity['2'])};
       }
     }
 
@@ -128,12 +135,12 @@ class JuiViewerThumbnail extends React.PureComponent<Props, States> {
   getContent = () => {
     const { children } = this.props;
     return <ThumbnailWarp>{children}</ThumbnailWarp>;
-  }
+  };
 
   handleSelected = (e: MouseEvent<HTMLDivElement>) => {
     const { onSelected } = this.props;
     onSelected && onSelected(e, this.state.info);
-  }
+  };
 
   handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const { onKeyDown, onSelected } = this.props;
@@ -141,7 +148,7 @@ class JuiViewerThumbnail extends React.PureComponent<Props, States> {
     if (e.keyCode === EnterKeyCode && onSelected) {
       onSelected(e, this.state.info);
     }
-  }
+  };
 
   render() {
     const {

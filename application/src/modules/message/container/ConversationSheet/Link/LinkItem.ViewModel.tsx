@@ -5,7 +5,7 @@
  */
 import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { Item } from 'sdk/module/item/entity';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
@@ -14,8 +14,8 @@ import { ItemService } from 'sdk/module/item';
 import { LinkItemModel, LinkItemProps } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
-import ProfileModel from '@/store/models/Profile';
-import { Profile } from 'sdk/src/module/profile/entity';
+import { UserSettingEntity, SettingEntityIds } from 'sdk/module/setting';
+import SettingModel from '@/store/models/UserSetting';
 
 class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
   private _itemService = ServiceLoader.getInstance<ItemService>(
@@ -29,12 +29,10 @@ class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
 
   @computed
   get isLinkPreviewDisabled() {
-    return (
-      getSingleEntity<Profile, ProfileModel>(
-        ENTITY_NAME.PROFILE,
-        'showLinkPreviews',
-      ) === false
-    );
+    return !getEntity<UserSettingEntity, SettingModel>(
+      ENTITY_NAME.USER_SETTING,
+      SettingEntityIds.Link_Preview,
+    ).value;
   }
 
   @computed

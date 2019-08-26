@@ -1,8 +1,6 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-02-20 10:25:49
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-08-09 15:10:49
  */
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
@@ -173,7 +171,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I hover "i" icon beside the "Archive team" button`, async () => {
-    await t.hover(teamSettingDialog.archiveTeamButtonInfoIcon);
+    await t.hover(teamSettingDialog.archiveTeamButtonInfoIcon, {speed: 0.1});
   });
 
   await h(t).withLog(`Then there should be tooltip displayed: "{tooltipText}"`, async (step) => {

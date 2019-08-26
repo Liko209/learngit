@@ -20,8 +20,8 @@ import {
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
-
 import { JuiIconography, SvgSymbol } from '../../foundation/Iconography';
+import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
 import { StyledMaskWrapper, StyledMask } from './Mask';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
@@ -73,6 +73,10 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     }
   }
 
+  &:focus {
+    outline: none;
+  }
+
   > .avatar-short-name {
     display: flex;
     height: 100%;
@@ -97,6 +101,7 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     background-color: ${({ color }) =>
       color ? palette('avatar', color) : primary('600')};
   }
+
   & span {
     display: flex;
     justify-content: center;
@@ -105,6 +110,10 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${width(33)};
     border-radius: 50%;
     background-color: ${palette('common', 'white')};
+  }
+
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -124,76 +133,71 @@ const StyledPresenceWrapper = styled.div`
   right: 0;
 `;
 
+const JuiAvatarMask = (props: JuiAvatarProps) => {
+  const { onClick, children } = props;
+  return (
+    <StyledMaskWrapper onClick={onClick}>
+      {children}
+      <StyledMask>
+        <JuiIconography iconSize="small" color="common.white">
+          edit
+        </JuiIconography>
+      </StyledMask>
+    </StyledMaskWrapper>
+  );
+};
+JuiAvatarMask.displayName = 'JuiAvatarMask';
+
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   const {
-    presence,
-    cover,
     tooltip,
+    cover,
     mask,
-    icon,
-    children,
-    size = 'medium',
+    presence,
     displayName,
+    children,
+    icon,
     ...rest
   } = props;
-  const maskWithIcon = (
-    <StyledMask>
-      <JuiIconography iconSize="small" color="common.white">
-        edit
-      </JuiIconography>
-    </StyledMask>
-  );
+  const popupHelper = usePopupHelper({ variant: 'popover' });
+
+  let avatar: JSX.Element;
+  const popupTriggerProps = tooltip ? popupHelper.HoverProps : {};
 
   if (cover) {
-    const coverWithMask = mask ? (
-      <StyledMaskWrapper>
-        <StyledCoverAvatar {...rest} />
-        {maskWithIcon}
-      </StyledMaskWrapper>
-    ) : (
-      <StyledCoverAvatar {...rest} />
+    avatar = <StyledCoverAvatar {...rest} {...popupTriggerProps} />;
+  } else {
+    let iconChildren;
+    if (icon) {
+      iconChildren = (
+        <StyledIconAvatar size={rest.size || 'medium'} symbol={icon} />
+      );
+    }
+
+    avatar = (
+      <StyledAvatar {...rest} {...popupTriggerProps}>
+        {iconChildren || children}
+      </StyledAvatar>
     );
-    return tooltip ? (
-      <RuiTooltip title={tooltip}>{coverWithMask}</RuiTooltip>
-    ) : (
-      coverWithMask
-    );
+    if (presence) {
+      avatar = (
+        <StyledWrapper size={rest.size} style={rest.style}>
+          {avatar}
+          <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+        </StyledWrapper>
+      );
+    }
   }
 
-  let iconChildren;
-  if (icon) {
-    iconChildren = <StyledIconAvatar size={size || 'medium'} symbol={icon} />;
+  if (mask) {
+    avatar = <JuiAvatarMask>{avatar}</JuiAvatarMask>;
   }
 
-  const _avatar = (
-    <StyledAvatar size={size} {...rest}>
-      {iconChildren || children}
-    </StyledAvatar>
-  );
+  if (tooltip && popupHelper.PopoverProps.open) {
+    avatar = <RuiTooltip title={tooltip}>{avatar}</RuiTooltip>;
+  }
 
-  const avatar = presence ? (
-    <StyledWrapper size={size} style={rest.style}>
-      {_avatar}
-      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-    </StyledWrapper>
-  ) : (
-    _avatar
-  );
-
-  const avatarWithMask = mask ? (
-    <StyledMaskWrapper onClick={rest.onClick}>
-      {avatar}
-      {maskWithIcon}
-    </StyledMaskWrapper>
-  ) : (
-    avatar
-  );
-
-  return tooltip ? (
-    <RuiTooltip title={tooltip}>{avatarWithMask}</RuiTooltip>
-  ) : (
-    avatarWithMask
-  );
+  return avatar;
 });
 
 JuiAvatar.defaultProps = {

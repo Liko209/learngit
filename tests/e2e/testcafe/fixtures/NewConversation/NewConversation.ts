@@ -6,8 +6,9 @@
 
 import * as _ from "lodash";
 import * as assert from "assert";
+import { v4 as uuid } from "uuid";
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { IGroup } from '../../v2/models';
@@ -240,8 +241,10 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
     members: [loginUser, userB, userC, userD]
   }
 
-  await h(t).withLog('Given I have a group', async () => {
+  await h(t).withLog('Given I have a group in list', async () => {
     await h(t).scenarioHelper.createOrOpenChat(group);
+    await h(t).glip(loginUser).init();
+    await h(t).scenarioHelper.sendTextPost(uuid(), group, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -251,14 +254,17 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
   const conversationPage = messageTab.conversationPage;
   const profileDialog = app.homePage.profileDialog;
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('And I click the "Add people" button in the group profile', async () => {
-    const groupEntry = app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId)
-    await groupEntry.enter();
+  await h(t).withLog('When I click the "Add people" button in the group profile', async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.ensureLoaded();
@@ -269,7 +275,6 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
     await newConversationDialog.ensureLoaded();
   });
 
-  await h(t).glip(loginUser).init();
   const userFName = await h(t).glip(loginUser).getPersonPartialData('display_name', userF.rcId);
   await h(t).withLog('And I create a new group by adding member userF', async () => {
     await newConversationDialog.memberInput.typeText(userFName);
@@ -284,8 +289,10 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
   await h(t).withLog('And the new group conversation should be opened automatically', async () => {
     const currentGroupId = await conversationPage.currentGroupId;
     const userGlipIDs = await h(t).glip(loginUser).toPersonId([loginUser.rcId, userB.rcId, userC.rcId, userD.rcId, userF.rcId])
-    const groupData = await h(t).glip(loginUser).getGroup(currentGroupId).then(res => res.data)
-    assert.equal(String(_.sortBy(groupData.members)), String(_.sortBy(userGlipIDs)));
+    await H.retryUntilPass(async () => {
+      const groupData = await h(t).glip(loginUser).getGroup(currentGroupId).then(res => res.data)
+      assert.equal(String(_.sortBy(groupData.members)), String(_.sortBy(userGlipIDs)));
+    });
     await t.expect(conversationPage.posts.count).eql(0);
   });
 

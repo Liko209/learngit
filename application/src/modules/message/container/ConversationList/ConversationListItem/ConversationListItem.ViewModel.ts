@@ -19,7 +19,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationListItemViewModel extends StoreViewModel<
-ConversationListItemViewProps
+  ConversationListItemViewProps
 > {
   firstUnreadCount: number;
   important?: boolean | undefined;
@@ -69,8 +69,11 @@ ConversationListItemViewProps
   }
 
   onClick = () => {
-    history.push(`/messages/${this.groupId}`);
-  }
+    storeManager
+      .getGlobalStore()
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
+    setTimeout(() => history.push(`/messages/${this.groupId}`), 0);
+  };
 
   @computed
   private get _currentGroupId() {
@@ -85,7 +88,7 @@ ConversationListItemViewProps
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
-    return!!groupState.unreadCount;
+    return !!groupState.unreadCount;
   }
 
   @computed
