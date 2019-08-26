@@ -1,13 +1,21 @@
 import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
+import { ROUTE_ROOT_PATH } from '../../phone/container/LeftRail/constant';
 
 export const TELEPHONY_SERVICE = 'TELEPHONY_SERVICE';
 export const ANONYMOUS_NUM = 'anonymous';
 export const ANONYMOUS_NAME = 'Anonymous';
 export const DIALING = 'dialing';
 export const INITIAL_REPLY_COUNTDOWN_TIME = 55;
+export const NOTIFY_THROTTLE_FACTOR = 5000;
+export const VOICEMAILS_ROOT_PATH = `${ROUTE_ROOT_PATH}/voicemail`;
 
 export const SETTING_ITEM__NOTIFICATION_INCOMING_CALLS =
   SettingEntityIds.Notification_IncomingCalls;
+
+export const SETTING_ITEM__NOTIFICATION_MISS_CALL_AND_NEW_VOICEMAILS =
+  SettingEntityIds.Notification_MissCallAndNewVoiceMails;
+
+export const NOTIFICATION_NEW_VOICEMAILS_UUID_PREFIX = 'NEW_VOICEMAILS_UUID_';
 
 export enum CALL_ACTION {
   FORWARD,
