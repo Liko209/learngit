@@ -206,7 +206,7 @@ exports[`Storyshots Pattern/SearchInput large: Pattern/SearchInput large 1`] = `
     />
     <span
       className="c5"
-      data-test-automation-id="global-search-clear"
+      data-test-automation-id="search-input-clear"
       onClick={[Function]}
     >
       clear
@@ -323,7 +323,7 @@ exports[`Storyshots Pattern/SearchInput medium: Pattern/SearchInput medium 1`] =
     />
     <span
       className="c5"
-      data-test-automation-id="global-search-clear"
+      data-test-automation-id="search-input-clear"
       onClick={[Function]}
     >
       clear
