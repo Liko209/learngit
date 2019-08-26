@@ -73,49 +73,37 @@ class ConversationPreferenceHandler implements IProfileObserver {
     if (!notification && !audio) {
       return [];
     }
-    if (!localProfile) {
-      return this._getInitConversationIds(profile);
-    }
-    const changedIds = new Set<number>();
-    if (notification) {
-      const localNotification =
-        localProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
-      // eslint-disable-next-line
-      for (const id in notification) {
-        if (
-          !_.isEqual(
-            notification[id],
-            localNotification && localNotification[id],
-          )
-        ) {
-          changedIds.add(+id);
-        }
-      }
-    }
-    if (audio) {
-      const localAudio = localProfile[SETTING_KEYS.CONVERSATION_AUDIO] || [];
-      _.difference(
-        _.unionWith(audio, localAudio, _.isEqual),
-        _.intersectionWith(audio, localAudio, _.isEqual),
-      ).map(item => changedIds.add(item.gid));
-    }
-    return Array.from(changedIds);
+    return this._getChangedIds(profile, localProfile);
   }
-
-  private _getInitConversationIds(profile: Profile) {
-    const ids = new Set<number>();
+  private _getChangedIds(profile: Profile, localProfile?: Nullable<Profile>) {
+    const changedIds = new Set<number>();
     const notification = profile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
     const audio = profile[SETTING_KEYS.CONVERSATION_AUDIO];
     if (notification) {
-      // eslint-disable-next-line
-      for (const id in notification) {
-        ids.add(+id);
-      }
+      const localNotification =
+        localProfile && localProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
+      Object.keys(notification).map(id => {
+        if (
+          !localNotification ||
+          !_.isEqual(notification[+id], localNotification[+id])
+        ) {
+          changedIds.add(+id);
+        }
+      });
     }
     if (audio) {
-      audio.map(item => ids.add(item.gid));
+      const localAudio =
+        (localProfile && localProfile[SETTING_KEYS.CONVERSATION_AUDIO]) || [];
+      if (!localAudio.length) {
+        audio.map(item => changedIds.add(item.gid));
+      } else {
+        _.difference(
+          _.unionWith(audio, localAudio, _.isEqual),
+          _.intersectionWith(audio, localAudio, _.isEqual),
+        ).map(item => changedIds.add(item.gid));
+      }
     }
-    return Array.from(ids);
+    return Array.from(changedIds);
   }
 
   private async _getSettingValue<T>(settingId: SettingEntityIds) {
