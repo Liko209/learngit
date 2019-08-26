@@ -362,6 +362,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return await this._groupFetchDataController.getGroupEmail(groupId);
   }
 
+  getGroupName(group: Group): string {
+    return this._groupFetchDataController.getGroupName(group);
+  }
+
   setAsTrue4HasMoreConfigByDirection = async (
     ids: number[],
     direction: QUERY_DIRECTION,

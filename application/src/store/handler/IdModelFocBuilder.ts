@@ -14,7 +14,9 @@ import { ENTITY_NAME } from '@/store';
 import { IdModel } from 'sdk/framework/model';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
+import { PerformanceTracer } from 'foundation/performance';
 
+const FOC_PERFORMANCE_TAG = 'FOC_PERFORMANCE';
 class IdModelDataProvider implements IFetchSortableDataProvider<IdModel> {
   constructor(
     private _entitySource: IEntitySourceController<IdModel>,
@@ -30,7 +32,8 @@ class IdModelDataProvider implements IFetchSortableDataProvider<IdModel> {
     pageSize: number,
     anchor?: ISortableModelWithData<IdModel>,
   ): Promise<{ data: IdModel[]; hasMore: boolean }> {
-    const contacts = await this._entitySource.getEntities(
+    const performanceTracer = PerformanceTracer.start();
+    const dataArray = await this._entitySource.getEntities(
       (model: IdModel) => {
         return this._filterFunc(model);
       },
@@ -42,12 +45,19 @@ class IdModelDataProvider implements IFetchSortableDataProvider<IdModel> {
       },
     );
 
-    return ArrayUtils.sliceIdModelArray(
-      contacts,
+    const result = ArrayUtils.sliceIdModelArray(
+      dataArray,
       pageSize,
       anchor ? { id: anchor.id } : anchor,
       direction,
     );
+
+    performanceTracer.end({
+      key: `${FOC_PERFORMANCE_TAG}_${this._entitySource.getEntityName()}`,
+      count: result && result.data ? result.data.length : 0,
+    });
+
+    return result;
   }
 }
 

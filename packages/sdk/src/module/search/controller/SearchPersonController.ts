@@ -160,6 +160,8 @@ class SearchPersonController {
     terms: string[];
     sortableModels: SortableModel<IdModel>[];
   }> {
+    const performanceTracer = PerformanceTracer.start();
+
     const result: {
       terms: string[];
       sortableModels: SortableModel<IdModel>[];
@@ -216,6 +218,7 @@ class SearchPersonController {
       return SortUtils.compareSortableModel<IdModel>(groupA, groupB);
     });
 
+    performanceTracer.end({ key: SEARCH_PERFORMANCE_KEYS.SEARCH_PERSONS_GROUPS });
     return result;
   }
 
@@ -442,27 +445,6 @@ class SearchPersonController {
               const splitNames = SearchUtils.getTermsFromText(
                 personNameLowerCase,
               );
-              /*
-              sortValue = PersonSortingOrder.FullNameMatching;
-              if (
-                person.first_name &&
-                SearchUtils.isStartWithMatched(
-                  person.first_name.toLowerCase(),
-                  [terms.searchKeyTerms[0]],
-                )
-              ) {
-                sortValue += PersonSortingOrder.FirstNameMatching;
-              }
-              if (
-                person.last_name &&
-                SearchUtils.isStartWithMatched(
-                  person.last_name.toLowerCase(),
-                  terms.searchKeyTerms,
-                )
-              ) {
-                sortValue += PersonSortingOrder.LastNameMatching;
-              }
-              */
               sortValue = SearchUtils.getMatchedWeight(
                 splitNames,
                 terms.searchKeyTerms,
