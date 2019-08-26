@@ -64,14 +64,31 @@ class SortUtils {
     );
 
     if (result === 0) {
-      if (lhs.lowerCaseName < rhs.lowerCaseName) {
-        result = -1;
-      } else if (lhs.lowerCaseName > rhs.lowerCaseName) {
-        result = 1;
-      }
+      result = SortUtils.compareLowerCaseString(
+        lhs.lowerCaseName,
+        rhs.lowerCaseName,
+      );
     }
 
     return result;
+  }
+
+  static compareLowerCaseString(stringA: string, stringB: string) {
+    if (stringA < stringB) {
+      return -1;
+    }
+
+    if (stringA > stringB) {
+      return 1;
+    }
+    return 0;
+  }
+
+  static compareString(stringA: string, stringB: string) {
+    return SortUtils.compareLowerCaseString(
+      stringA ? stringA.toLowerCase() : '',
+      stringB ? stringB.toLowerCase() : '',
+    );
   }
 
   static compareArrayOfSameLens(arrA: number[], arrB: number[]) {

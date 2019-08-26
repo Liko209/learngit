@@ -7,12 +7,23 @@ import React from 'react';
 import MuiListItem, {
   ListItemProps as MuiListItemProps,
 } from '@material-ui/core/ListItem';
-import styled from '../../foundation/styled-components';
-import { spacing, width } from '../../foundation/utils';
+import styled, { css } from '../../foundation/styled-components';
+import { spacing, width, palette } from '../../foundation/utils';
+import { Palette } from '../../foundation/theme/theme';
 
 // type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
 type MuiListItemPropsFixed = MuiListItemProps & {
   button?: any;
+};
+
+type BaseColor = 'primary' | 'secondary' | 'black';
+
+const colorMap: {
+  [x: string]: [keyof Palette, string];
+} = {
+  primary: ['primary', 'main'],
+  secondary: ['secondary', 'main'],
+  black: ['common', 'black'],
 };
 
 type JuiListItemProps = MuiListItemPropsFixed & {
@@ -20,38 +31,78 @@ type JuiListItemProps = MuiListItemPropsFixed & {
   isInline?: boolean;
   singleLine?: boolean;
   disableButton?: boolean;
+  /**
+   * listItem use this color to calc hover, pressed, selected, disabled  background color, default to black
+   */
+  baseColor?: BaseColor;
+  highlighted?: boolean;
 };
 
-const StyledListItem = styled<JuiListItemProps>(MuiListItem)`
+const WrappedListItem = React.memo(
+  ({
+    width,
+    isInline,
+    singleLine,
+    disableButton,
+    baseColor,
+    highlighted,
+    ...rest
+  }: JuiListItemProps) => <MuiListItem {...rest} />,
+);
+
+const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
   && {
     padding: ${spacing(2)};
     width: ${props => (props.width ? width(props.width) : '100%')};
-    display: flex;
-    cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
-  }
+    display: ${props => (props.isInline ? 'inline-flex' : 'flex')};
+    padding-left: ${props => (props.singleLine ? spacing(4) : spacing(2))};
+    color: ${({ baseColor = 'black', theme }) =>
+      palette(colorMap[baseColor][0], colorMap[baseColor][1])({
+        theme,
+      })};
+    &.Mui-focusVisible {
+      background-color: ${({ baseColor = 'black', theme }) =>
+        palette(colorMap[baseColor][0], colorMap[baseColor][1], 0.1)({
+          theme,
+        })};
+    }
 
-  &&.inline {
-    display: inline-flex;
-  }
+    &:hover {
+      background-color: ${({ baseColor = 'black', theme }) =>
+        palette(colorMap[baseColor][0], colorMap[baseColor][1], 0.05)({
+          theme,
+        })};
+    }
 
-  &&.single-line {
-    padding-left: ${spacing(4)};
+    ${({ highlighted }) =>
+      highlighted
+        ? css`
+            background-color: ${({ baseColor = 'black', theme }) =>
+              palette(colorMap[baseColor][0], colorMap[baseColor][1], 0.05)({
+                theme,
+              })};
+          `
+        : ''};
+
+    .rippleVisible {
+      background-color: ${({ baseColor = 'black', theme }) =>
+        palette(colorMap[baseColor][0], colorMap[baseColor][1], 0.05)({
+          theme,
+        })};
+    }
   }
 `;
 
-const JuiListItem = ({ className, singleLine, isInline, disableButton, children, ...rest }: JuiListItemProps) => {
-  const classes = [className]
-  if(singleLine) {
-    classes.push('single-line')
-  }
-  if(isInline){
-    classes.push('single-line')
-  }
+const JuiListItem = ({
+  disableButton,
+  children,
+  ...rest
+}: JuiListItemProps) => {
   return (
-    <StyledListItem className={classes.join(' ')} button={!disableButton} {...rest}>
+    <StyledListItem button={!disableButton} {...rest}>
       {children}
     </StyledListItem>
-  )
+  );
 };
 
 JuiListItem.defaultProps = {

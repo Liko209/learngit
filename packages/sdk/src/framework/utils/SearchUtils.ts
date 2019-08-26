@@ -7,10 +7,14 @@ import UserPermissionType from 'sdk/module/permission/types';
 import { IPermissionService } from 'sdk/module/permission/service/IPermissionService';
 import { container } from 'sdk/container';
 import _ from 'lodash';
+import { UndefinedAble } from 'sdk/types';
+import { FormattedTerms, Terms } from 'sdk/framework/search';
 
 const SplitTermsSymbols = new RegExp(/[\s,._-]+/);
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+
+const soundex = require('soundex-code');
 
 class SearchUtils {
   static isFuzzyMatched(srcText: string, terms: string[]): boolean {
@@ -112,6 +116,52 @@ class SearchUtils {
       c === '#' ||
       c === ','
     );
+  }
+
+  static toDefaultSearchKeyTerms(searchKey: UndefinedAble<string>) {
+    const terms: Terms = {
+      searchKey,
+      searchKeyTerms: [],
+      searchKeyTermsToSoundex: [],
+      searchKeyFormattedTerms: {
+        formattedKeys: [],
+        validFormattedKeys: [],
+      },
+    };
+    return terms;
+  }
+
+  static async genSearchKeyTerms(
+    searchKey: UndefinedAble<string>,
+    genFormattedTermsFunc?: (originalTerms: string[]) => FormattedTerms,
+  ) {
+    const terms: Terms = SearchUtils.toDefaultSearchKeyTerms(searchKey);
+    await SearchUtils.formatTerms(terms, genFormattedTermsFunc);
+    return terms;
+  }
+
+  static async formatTerms(
+    terms: Terms,
+    genFormattedTermsFunc?: (originalTerms: string[]) => FormattedTerms,
+  ) {
+    if (terms.searchKey) {
+      terms.searchKeyTerms = SearchUtils.getTermsFromText(
+        terms.searchKey.toLowerCase().trim(),
+      );
+
+      if (genFormattedTermsFunc) {
+        terms.searchKeyFormattedTerms = genFormattedTermsFunc(
+          terms.searchKeyTerms,
+        );
+      }
+
+      const isUseSoundex = await SearchUtils.isUseSoundex();
+      if (isUseSoundex) {
+        terms.searchKeyTermsToSoundex = terms.searchKeyTerms.map(item =>
+          soundex(item),
+        );
+      }
+    }
   }
 }
 

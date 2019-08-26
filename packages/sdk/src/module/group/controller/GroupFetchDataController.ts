@@ -46,9 +46,9 @@ import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { SortUtils } from 'sdk/framework/utils';
 import { PresenceService } from 'sdk/module/presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { GroupSearchOption } from '../entity/Group';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 import { UndefinedAble } from 'sdk/types';
+import { FuzzySearchGroupOptions } from '../entity/Group';
 
 const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
@@ -341,7 +341,7 @@ export class GroupFetchDataController {
 
   async doFuzzySearchAllGroups(
     searchKey: UndefinedAble<string>,
-    option: GroupSearchOption,
+    option: FuzzySearchGroupOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -508,7 +508,7 @@ export class GroupFetchDataController {
     return result;
   }
 
-  private async _getTransformAllGroupFunc(option: GroupSearchOption) {
+  private async _getTransformAllGroupFunc(option: FuzzySearchGroupOptions) {
     const groupConfigService = this._groupConfigService;
 
     const recentSearchedGroups = option.recentFirst
@@ -536,7 +536,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        if (option.additionalFilterFunc && !option.additionalFilterFunc(group)) {
+        if (option.filterFunc && !option.filterFunc(group)) {
           isValidGroup = false;
           break;
         }
@@ -754,6 +754,37 @@ export class GroupFetchDataController {
     });
     return soundexResult;
   }
+
+  getGroupName(group: Group) {
+    if (group.is_team) {
+      return group.set_abbreviation || '';
+    }
+
+    if (group.members && group.members.length === 1 
+      && group.members[0] === this._currentUserId) {
+        const personService = ServiceLoader.getInstance<PersonService>(
+          ServiceConfig.PERSON_SERVICE,
+        );
+        const result = personService.getSynchronously(this._currentUserId);
+        return result? personService.getFullName(result) : '';
+    }
+
+    const persons = this.getAllPersonOfGroup(
+      group.members,
+      this._currentUserId,
+    );
+
+    if (!persons.visiblePersons.length) {
+      return '';
+    }
+
+    const { groupName } = this.getGroupNameByMultiMembers(
+      persons.visiblePersons,
+    );
+
+    return groupName;
+  }
+
   getGroupNameByMultiMembers(allPersons: Person[]) {
     const names: string[] = [];
     const emails: string[] = [];

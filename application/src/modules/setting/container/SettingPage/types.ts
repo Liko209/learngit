@@ -11,7 +11,7 @@ type SettingPageProps = {
 };
 
 type SettingPageViewProps = {
-  page?: StorePage;
+  page: StorePage;
   sectionIds: SettingSection['id'][];
 };
 

@@ -5,7 +5,7 @@
  */
 
 import { ComponentType } from 'react';
-import { observable, action } from 'mobx';
+import { observable, action, ObservableSet } from 'mobx';
 import { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE } from '../types';
 
 class GlobalSearchStore {
@@ -67,12 +67,19 @@ class GlobalSearchStore {
 
   @observable extensions: { [key: string]: Set<ComponentType> } = {};
 
+  @action
   addExtensions(key: string, extension: ComponentType) {
-    if (this.extensions[key]) {
-      this.extensions[key].add(extension);
-      return;
+    if (!this.extensions[key]) {
+      this.extensions[key] = new ObservableSet();
     }
-    this.extensions[key] = new Set([extension]);
+    this.extensions[key].add(extension);
+  }
+
+  @action
+  removeExtensions(key: string, extension: ComponentType) {
+    if (this.extensions[key]) {
+      this.extensions[key].delete(extension);
+    }
   }
 }
 

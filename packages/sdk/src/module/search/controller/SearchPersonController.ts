@@ -14,22 +14,21 @@ import { PerformanceTracer } from 'foundation/performance';
 import { AccountService } from '../../account/service';
 import {
   RecentSearchTypes,
-  FuzzySearchPersonOptions,
+  FuzzySearchContactOptions,
   PersonSortingOrder,
   RecentSearchModel,
   PhoneContactEntity,
 } from '../entity';
-import { SearchUtils } from '../../../framework/utils/SearchUtils';
-import {
-  Terms,
-  FormattedTerms,
-} from '../../../framework/controller/interface/IEntityCacheSearchController';
+import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
+import { Terms, FormattedTerms, FormattedKey } from 'sdk/framework/search';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { LAST_ACCESS_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
+import { UndefinedAble } from 'sdk/types';
+import { FuzzySearchGroupOptions } from 'sdk/module/group/entity/Group';
 
 type MatchedInfo = {
   nameMatched: boolean;
@@ -42,25 +41,25 @@ class SearchPersonController {
   constructor(private _searchService: ISearchService) {}
 
   async doFuzzySearchPhoneContacts(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    options: FuzzySearchContactOptions,
   ): Promise<{
     terms: string[];
     phoneContacts: PhoneContactEntity[];
   }> {
     const performanceTracer = PerformanceTracer.start();
 
-    const sortFunc =
-      !options.asIdsOrder || options.recentFirst
-        ? this._sortByKeyFunc
-        : undefined;
+    if (!options.sortFunc) {
+      options.sortFunc =
+        !options.asIdsOrder || options.recentFirst
+          ? this._sortByKeyFunc
+          : undefined;
+    }
 
-    const persons = await this._doFuzzySearchPersons(
-      {
-        ...options,
-        ignoreEmail: true,
-      },
-      sortFunc,
-    );
+    const persons = await this._doFuzzySearchPersons(searchKey, {
+      ...options,
+      ignoreEmail: true,
+    });
 
     const phoneContacts: PhoneContactEntity[] = [];
     const results = { phoneContacts, terms: persons.terms.searchKeyTerms };
@@ -85,7 +84,7 @@ class SearchPersonController {
           if (
             nameMatchedOnly ||
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.every(
-              item => phoneNumber.id.includes(item.formatted),
+              (item: FormattedKey) => phoneNumber.id.includes(item.formatted),
             )
           ) {
             if (showExtensionOnly) {
@@ -126,18 +125,22 @@ class SearchPersonController {
   }
 
   async doFuzzySearchPersons(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    options: FuzzySearchContactOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
   }> {
     const performanceTracer = PerformanceTracer.start();
 
-    const sortFunc =
-      !options.asIdsOrder || options.recentFirst
-        ? this._sortByKeyFunc
-        : undefined;
-    const result = await this._doFuzzySearchPersons(options, sortFunc);
+    if (!options.sortFunc) {
+      options.sortFunc =
+        !options.asIdsOrder || options.recentFirst
+          ? this._sortByKeyFunc
+          : undefined;
+    }
+
+    const result = await this._doFuzzySearchPersons(searchKey, options);
     performanceTracer.end({ key: SEARCH_PERFORMANCE_KEYS.SEARCH_PERSON });
     return {
       terms: result.terms.searchKeyTerms,
@@ -146,11 +149,15 @@ class SearchPersonController {
   }
 
   async doFuzzySearchPersonsAndGroups(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    contactOptions: FuzzySearchContactOptions,
+    groupOptions: FuzzySearchGroupOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<IdModel>[];
   }> {
+    const performanceTracer = PerformanceTracer.start();
+
     const result: {
       terms: string[];
       sortableModels: SortableModel<IdModel>[];
@@ -164,12 +171,8 @@ class SearchPersonController {
     );
 
     const [persons, groups] = await Promise.all([
-      this.doFuzzySearchPersons(options),
-      groupService.doFuzzySearchAllGroups(options.searchKey, {
-        fetchAllIfSearchKeyEmpty: true,
-        myGroupsOnly: options.excludeSelf,
-        recentFirst: true,
-      }),
+      this.doFuzzySearchPersons(searchKey, contactOptions),
+      groupService.doFuzzySearchAllGroups(searchKey, groupOptions),
     ]);
 
     result.terms = persons.terms;
@@ -211,21 +214,20 @@ class SearchPersonController {
       return SortUtils.compareSortableModel<IdModel>(groupA, groupB);
     });
 
+    performanceTracer.end({
+      key: SEARCH_PERFORMANCE_KEYS.SEARCH_PERSONS_GROUPS,
+    });
     return result;
   }
 
   private async _doFuzzySearchPersons(
-    options: FuzzySearchPersonOptions,
-    sortFunc?: (
-      personA: SortableModel<Person>,
-      personB: SortableModel<Person>,
-    ) => number,
+    searchKey: UndefinedAble<string>,
+    options: FuzzySearchContactOptions,
   ): Promise<{
     terms: Terms;
     sortableModels: SortableModel<Person>[];
   }> {
     const {
-      searchKey,
       excludeSelf,
       arrangeIds,
       fetchAllIfSearchKeyEmpty,
@@ -270,7 +272,7 @@ class SearchPersonController {
       genFormattedTermsFunc,
       searchKey,
       arrangeIds,
-      sortFunc,
+      options.sortFunc,
     );
     return result;
   }
@@ -302,7 +304,7 @@ class SearchPersonController {
     return now - maxAccessTime > LAST_ACCESS_VALID_PERIOD ? 0 : maxAccessTime;
   }
 
-  private _generateMatchedInfo(
+  generateMatchedInfo(
     personId: number,
     name: string,
     phoneNumbers: PhoneNumber[],
@@ -429,7 +431,7 @@ class SearchPersonController {
           personService.getPhoneNumbers(person, (phoneNumber: PhoneNumber) => {
             phoneNumbers.push(phoneNumber);
           });
-          const matchedInfo = this._generateMatchedInfo(
+          const matchedInfo = this.generateMatchedInfo(
             person.id,
             personNameLowerCase,
             phoneNumbers,
@@ -441,27 +443,6 @@ class SearchPersonController {
               const splitNames = SearchUtils.getTermsFromText(
                 personNameLowerCase,
               );
-              /*
-              sortValue = PersonSortingOrder.FullNameMatching;
-              if (
-                person.first_name &&
-                SearchUtils.isStartWithMatched(
-                  person.first_name.toLowerCase(),
-                  [terms.searchKeyTerms[0]],
-                )
-              ) {
-                sortValue += PersonSortingOrder.FirstNameMatching;
-              }
-              if (
-                person.last_name &&
-                SearchUtils.isStartWithMatched(
-                  person.last_name.toLowerCase(),
-                  terms.searchKeyTerms,
-                )
-              ) {
-                sortValue += PersonSortingOrder.LastNameMatching;
-              }
-              */
               sortValue = SearchUtils.getMatchedWeight(
                 splitNames,
                 terms.searchKeyTerms,
@@ -508,4 +489,4 @@ class SearchPersonController {
   }
 }
 
-export { SearchPersonController };
+export { SearchPersonController, MatchedInfo };

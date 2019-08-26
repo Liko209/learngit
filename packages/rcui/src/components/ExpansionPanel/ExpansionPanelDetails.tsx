@@ -7,11 +7,13 @@ import ExpansionPanelDetails, {
   ExpansionPanelDetailsProps,
 } from '@material-ui/core/ExpansionPanelDetails';
 import styled from '../../foundation/styled-components';
-import { spacing } from '../../foundation/utils/styles';
+import { spacing } from '../../foundation/shared/theme';
 
 type JuiExpansionPanelDetailsProps = ExpansionPanelDetailsProps;
 
-const JuiExpansionPanelDetails = styled<JuiExpansionPanelDetailsProps>(ExpansionPanelDetails)`
+const JuiExpansionPanelDetails = styled<JuiExpansionPanelDetailsProps>(
+  ExpansionPanelDetails,
+)`
   && {
     padding: ${spacing(4)};
   }
