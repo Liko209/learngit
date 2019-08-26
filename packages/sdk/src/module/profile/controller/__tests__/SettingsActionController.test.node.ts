@@ -12,6 +12,7 @@ import {
   SETTING_KEYS,
   CALLING_OPTIONS,
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
+  SOUNDS_TYPE,
 } from '../../constants';
 import { PartialUpdateParams } from 'sdk/framework/controller/interface/IPartialModifyController';
 
@@ -38,6 +39,7 @@ describe('SettingsActionController', () => {
   } as any;
   const mockProfileDataController = {
     getCurrentProfileId: jest.fn(),
+    getLocalProfile: jest.fn(),
   } as any;
 
   beforeEach(() => {
@@ -96,6 +98,83 @@ describe('SettingsActionController', () => {
         [SETTING_KEYS.DESKTOP_NOTIFICATION]: true,
         [SETTING_KEYS.MAX_LEFTRAIL_GROUP]: '14',
       });
+    });
+  });
+
+  describe('updateConversationPreference', () => {
+    const groupId = 1;
+    const notification = {
+      desktop_notifications: true,
+      push_notifications: '0',
+      email_notifications: '0',
+    };
+    const audio = { id: SOUNDS_TYPE.Alert, url: '' };
+    const model = {
+      ...notification,
+      audio_notifications: audio,
+    };
+    it('should call update setting when update conversation preference first', async () => {
+      settingsActionController.updateSettingOptions = jest.fn();
+      mockProfileDataController.getLocalProfile = jest.fn().mockResolvedValue({
+        [SETTING_KEYS.CONVERSATION_NOTIFICATION]: undefined,
+        [SETTING_KEYS.CONVERSATION_AUDIO]: undefined,
+      });
+      await settingsActionController.updateConversationPreference(
+        groupId,
+        model,
+      );
+      expect(
+        settingsActionController.updateSettingOptions,
+      ).toHaveBeenLastCalledWith([
+        {
+          key: SETTING_KEYS.CONVERSATION_NOTIFICATION,
+          value: { [groupId]: notification },
+        },
+        {
+          key: SETTING_KEYS.CONVERSATION_AUDIO,
+          value: [
+            {
+              gid: groupId,
+              sound: SOUNDS_TYPE.Alert,
+            },
+          ],
+        },
+      ]);
+    });
+    it('should call update setting when update conversation preference', async () => {
+      settingsActionController.updateSettingOptions = jest.fn();
+      const audio2 = { gid: 2, sound: '' };
+      mockProfileDataController.getLocalProfile = jest.fn().mockResolvedValue({
+        [SETTING_KEYS.CONVERSATION_NOTIFICATION]: {
+          [groupId]: { muted: true, desktop_notifications: false },
+        },
+        [SETTING_KEYS.CONVERSATION_AUDIO]: [
+          { sound: SOUNDS_TYPE.Default, gid: groupId },
+          audio2,
+        ],
+      });
+      await settingsActionController.updateConversationPreference(
+        groupId,
+        model,
+      );
+      expect(
+        settingsActionController.updateSettingOptions,
+      ).toHaveBeenLastCalledWith([
+        {
+          key: SETTING_KEYS.CONVERSATION_NOTIFICATION,
+          value: { [groupId]: { muted: true, ...notification } },
+        },
+        {
+          key: SETTING_KEYS.CONVERSATION_AUDIO,
+          value: [
+            {
+              gid: groupId,
+              sound: SOUNDS_TYPE.Alert,
+            },
+            audio2,
+          ],
+        },
+      ]);
     });
   });
 });

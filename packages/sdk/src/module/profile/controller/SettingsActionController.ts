@@ -72,21 +72,30 @@ class SettingsActionController {
     const originAudio =
       (profile && profile[SETTING_KEYS.CONVERSATION_AUDIO]) || [];
     if (notification) {
-      originNotification[cid] = { ...originNotification[cid], ...notification };
       updateData.push({
         key: SETTING_KEYS.CONVERSATION_NOTIFICATION,
-        value: originNotification,
+        value: {
+          ...originNotification,
+          [cid]: { ...originNotification[cid], ...notification },
+        },
       });
     }
     if (audio_notifications) {
-      updateData.push({
-        key: SETTING_KEYS.CONVERSATION_AUDIO,
-        value: originAudio.map(item => {
+      let audios = [...originAudio];
+      if (audios.find(item => item.gid === cid)) {
+        audios = audios.map(item => {
           if (item.gid === cid) {
             item.sound = audio_notifications.id;
           }
           return item;
-        }),
+        });
+      } else {
+        audios.push({ gid: cid, sound: audio_notifications.id });
+      }
+
+      updateData.push({
+        key: SETTING_KEYS.CONVERSATION_AUDIO,
+        value: audios,
       });
     }
     this.updateSettingOptions(updateData);
