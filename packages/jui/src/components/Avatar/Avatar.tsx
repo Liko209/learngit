@@ -34,7 +34,7 @@ type JuiAvatarProps = {
   cover?: boolean;
   mask?: boolean;
   displayName?: string;
-  icon?: SvgSymbol;
+  iconSymbol?: SvgSymbol;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -156,7 +156,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     presence,
     displayName,
     children,
-    icon,
+    iconSymbol,
     ...rest
   } = props;
   const popupHelper = usePopupHelper({ variant: 'popover' });
@@ -168,9 +168,9 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     avatar = <StyledCoverAvatar {...rest} {...popupTriggerProps} />;
   } else {
     let iconChildren;
-    if (icon) {
+    if (iconSymbol) {
       iconChildren = (
-        <StyledIconAvatar size={rest.size || 'medium'} symbol={icon} />
+        <StyledIconAvatar size={rest.size || 'medium'} symbol={iconSymbol} />
       );
     }
 

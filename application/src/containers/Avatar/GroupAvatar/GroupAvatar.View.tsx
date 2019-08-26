@@ -13,7 +13,9 @@ import { observer } from 'mobx-react';
 class GroupAvatarView extends Component<GroupAvatarViewProps> {
   render() {
     const { icon, size, onClick, ...rest } = this.props;
-    return <JuiAvatar onClick={onClick} icon={icon} size={size} {...rest} />;
+    return (
+      <JuiAvatar onClick={onClick} iconSymbol={icon} size={size} {...rest} />
+    );
   }
 }
 

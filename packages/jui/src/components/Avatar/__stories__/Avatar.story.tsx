@@ -63,7 +63,7 @@ storiesOf('Components/Avatar', module)
     );
   })
   .add('Icon', () => {
-    return <JuiAvatar size={knobs.size()} icon={TeamAvatar} />;
+    return <JuiAvatar size={knobs.size()} iconSymbol={TeamAvatar} />;
   })
   .add('With presence', () => {
     return (
