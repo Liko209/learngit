@@ -7,13 +7,14 @@
 import {
   RecentSearchTypes,
   RecentSearchModel,
-  FuzzySearchPersonOptions,
+  FuzzySearchContactOptions,
   PhoneContactEntity,
 } from '../entity';
 import { SearchUserConfig } from '../config/SearchUserConfig';
 import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/framework/model';
-import { Group } from 'sdk/module/group/entity';
+import { Group, FuzzySearchGroupOptions } from 'sdk/module/group/entity';
+import { UndefinedAble } from 'sdk/types';
 
 interface ISearchService {
   addRecentSearchRecord(
@@ -31,28 +32,24 @@ interface ISearchService {
   userConfig: SearchUserConfig;
 
   doFuzzySearchPersons(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    options: FuzzySearchContactOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
   }>;
 
   doFuzzySearchPhoneContacts(
-    options: FuzzySearchPersonOptions,
+    searchKey: UndefinedAble<string>,
+    options: FuzzySearchContactOptions,
   ): Promise<{
     terms: string[];
     phoneContacts: PhoneContactEntity[];
   }>;
 
   doFuzzySearchAllGroups(
-    searchKey: string,
-    fetchAllIfSearchKeyEmpty?: boolean,
-    myGroupsOnly?: boolean,
-    recentFirst?: boolean,
-    sortFunc?: (
-      groupA: SortableModel<Group>,
-      groupB: SortableModel<Group>,
-    ) => number,
+    searchKey: UndefinedAble<string>,
+    option: FuzzySearchGroupOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];

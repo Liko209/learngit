@@ -49,6 +49,8 @@ let telephonyNotificationManager: TelephonyNotificationManager;
 let telephonyStore: TelephonyStore;
 const title = 'Incoming Call';
 let call: any;
+const incomingCallDisposer = jest.fn();
+const voicemailDisposer = jest.fn();
 
 function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
   call = observable({
@@ -74,7 +76,10 @@ function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
     }
   });
   telephonyNotificationManager = jupiter.get(TelephonyNotificationManager);
-  telephonyNotificationManager._disposer = jest.fn();
+  telephonyNotificationManager._disposers = [
+    incomingCallDisposer,
+    voicemailDisposer,
+  ];
   telephonyStore = jupiter.get(TelephonyStore);
   Object.assign(telephonyStore, {
     uid: 1,
@@ -266,7 +271,18 @@ describe('TelephonyNotificationManager', () => {
       jest.spyOn(telephonyNotificationManager, 'clear').mockImplementation();
       telephonyNotificationManager.dispose();
       expect(telephonyNotificationManager.clear).toHaveBeenCalled();
-      expect(telephonyNotificationManager._disposer).toHaveBeenCalledTimes(1);
+      expect(incomingCallDisposer).toHaveBeenCalled();
+      expect(voicemailDisposer).toHaveBeenCalled();
+    });
+  });
+
+  describe('_notifyNewVoicemail()', () => {
+    it('Should show notification when notify new voicemail [JPT-2822]', () => {
+      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
+
+      telephonyNotificationManager._notifyNewVoicemail({});
+
+      expect(telephonyNotificationManager.show).toHaveBeenCalled();
     });
   });
 });

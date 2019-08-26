@@ -115,14 +115,15 @@ describe('SearchService', () => {
 
     it('should call correct parameter', () => {
       const options = {
-        searchKey: 'test keys',
         excludeSelf: true,
       };
-      searchService.doFuzzySearchPersons(options);
-      expect(searchPersonController.doFuzzySearchPersons).toHaveBeenCalledWith({
-        searchKey: 'test keys',
-        excludeSelf: true,
-      });
+      searchService.doFuzzySearchPersons('test keys', options);
+      expect(searchPersonController.doFuzzySearchPersons).toHaveBeenCalledWith(
+        'test keys',
+        {
+          excludeSelf: true,
+        },
+      );
     });
   });
 
@@ -140,16 +141,18 @@ describe('SearchService', () => {
 
     it('should call correct parameter', () => {
       const options = {
-        searchKey: 'test keys',
         excludeSelf: true,
       };
-      searchService.doFuzzySearchPersonsAndGroups(options);
+      searchService.doFuzzySearchPersonsAndGroups('test keys', options, {});
       expect(
         searchPersonController.doFuzzySearchPersonsAndGroups,
-      ).toHaveBeenCalledWith({
-        searchKey: 'test keys',
-        excludeSelf: true,
-      });
+      ).toHaveBeenCalledWith(
+        'test keys',
+        {
+          excludeSelf: true,
+        },
+        {},
+      );
     });
   });
 
@@ -166,14 +169,12 @@ describe('SearchService', () => {
 
     it('should call correct parameter', async () => {
       const options = {
-        searchKey: 'test keys',
         excludeSelf: true,
       };
-      searchService.doFuzzySearchPhoneContacts(options);
+      searchService.doFuzzySearchPhoneContacts('test keys', options);
       expect(
         searchPersonController.doFuzzySearchPhoneContacts,
-      ).toHaveBeenCalledWith({
-        searchKey: 'test keys',
+      ).toHaveBeenCalledWith('test keys', {
         excludeSelf: true,
       });
     });
@@ -218,16 +219,47 @@ describe('SearchService', () => {
         return groupService;
       });
 
-      await searchService.doFuzzySearchAllGroups(
-        searchKey,
+      await searchService.doFuzzySearchAllGroups(searchKey, {
         fetchAllIfSearchKeyEmpty,
         myGroupsOnly,
         recentFirst,
         sortFunc,
-      );
+      });
       expect(groupService.doFuzzySearchAllGroups).toHaveBeenCalledWith(
         searchKey,
         option,
+      );
+    });
+  });
+
+  describe('generateMatchInfo', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', () => {
+      const terms = {
+        searchKey: 'Dora Chen ',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+
+      searchService.generateMatchedInfo(1, 'Dora Chen', ['1600000001'], terms);
+      expect(searchPersonController.generateMatchedInfo).toHaveBeenCalledWith(
+        1,
+        'Dora Chen',
+        ['1600000001'],
+        terms,
       );
     });
   });

@@ -10,8 +10,8 @@ import {
 } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
 import { Post } from 'sdk/module/post/entity';
-import { GroupSearchOption } from '../entity/Group';
 import { UndefinedAble } from 'sdk/types';
+import { FuzzySearchGroupOptions } from '../entity/Group';
 
 interface IGroupService {
   isValid(group: Group): boolean;
@@ -78,7 +78,7 @@ interface IGroupService {
 
   doFuzzySearchAllGroups(
     searchKey: UndefinedAble<string>,
-    option: GroupSearchOption,
+    option: FuzzySearchGroupOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
@@ -147,6 +147,8 @@ interface IGroupService {
   sendTypingEvent(groupId: number, isClear: boolean): void;
 
   getSynchronously(id: number): Group | null;
+
+  getGroupName(group: Group): string;
 }
 
 export { IGroupService };
