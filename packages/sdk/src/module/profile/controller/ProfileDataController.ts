@@ -142,10 +142,7 @@ class ProfileDataController {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,
               ]);
-              this.profileEntityObservable.onProfileUpdate(
-                transformedData,
-                local,
-              );
+              this.profileEntityObservable.onProfileUpdate(transformedData);
             }
           }
           return transformedData;

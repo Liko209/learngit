@@ -5,16 +5,18 @@ import _ from 'lodash';
 import { SETTING_KEYS } from '../constants';
 
 class ProfileEntityObservable implements IProfileObservable {
+  private _profileCache: Profile;
   private _observers = new Map<SETTING_KEYS, IProfileObserver[]>();
-  onProfileUpdate(profile: Profile, originProfile: Nullable<Profile>) {
+  onProfileUpdate(profile: Profile) {
     this._observers.forEach(
       (observers: IProfileObserver[], key: SETTING_KEYS) => {
-        const originValue = originProfile && originProfile[key];
+        const originValue = this._profileCache && this._profileCache[key];
         if (!_.isEqual(profile[key], originValue)) {
-          observers.map(item => this.notify(item, profile, originProfile));
+          observers.map(item => this.notify(item, profile, this._profileCache));
         }
       },
     );
+    this._profileCache = { ...profile };
   }
   register(observer: IProfileObserver) {
     observer.keys.forEach((key: SETTING_KEYS) => {
