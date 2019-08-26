@@ -77,7 +77,7 @@ function GroupSearch() {
         onDialogClose={() => {}}
         itemCount={3}
         onKeyDownEscape={() => {}}
-        itemToString={() => {}}
+        itemToString={() => ''}
       >
         {({ highlightedIndex, getItemProps }) => {
           return (
