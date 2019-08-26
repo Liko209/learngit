@@ -14,7 +14,7 @@ type Props = ViewProps & WithTranslation;
 
 @observer
 class TransferViewComponent extends Component<Props> {
-  private _handleTransferCall = async () => {
+  private _handleTransferCall = () => {
     const { transferCall } = this.props;
     transferCall();
   };
