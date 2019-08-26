@@ -33,7 +33,7 @@ type JuiModalProps = {
   content?: string | JSX.Element;
   fillContent?: boolean;
   loading?: boolean;
-  onClose?(event: React.MouseEvent): void;
+  onClose?(event: React.MouseEvent, reason?: string): void;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
