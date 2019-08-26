@@ -371,6 +371,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   color: #9e9e9e;
 }
 
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
 .c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -634,6 +638,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
 
 .c1.c1:active .icon {
   color: #9e9e9e;
+}
+
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
 }
 
 .c1.c1.c1.c1.disabled .icon {

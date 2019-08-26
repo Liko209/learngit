@@ -302,4 +302,42 @@ describe('Telephony store', () => {
     store.id = 1;
     expect(store.phoneNumber).toEqual('');
   });
+
+  it('resetValidInputStringNumber()', () => {
+    const store = createStore();
+    store.resetValidInputStringNumber();
+    expect(store.isValidInputStringNumber).toBeFalsy();
+  });
+
+  it('setCallItem()', () => {
+    const store = createStore();
+    store.setCallItem('123', 1);
+    expect(store.selectedCallItem).toEqual({
+      phoneNumber: '123',
+      index: 1,
+    });
+  });
+
+  it('directToTransferPage()', () => {
+    const store = createStore();
+    store.directToTransferPage();
+    expect(store.isTransferPage).toBeTruthy();
+  });
+
+  it('backToDialerFromTransferPage()', () => {
+    const store = createStore();
+    store.backToDialerFromTransferPage();
+    expect(store.isTransferPage).toBeFalsy();
+    expect(store.isRecentCalls).toBeFalsy();
+    expect(store.isValidInputStringNumber).toBeFalsy();
+  });
+
+  it('resetCallItem() [JPT-2764]', () => {
+    const store = createStore();
+    store.resetCallItem();
+    expect(store.selectedCallItem).toEqual({
+      phoneNumber: '',
+      index: NaN,
+    });
+  });
 });

@@ -35,6 +35,9 @@ import {
   CALL_DIRECTION,
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
+
+type SelectedCallItem = { phoneNumber: string; index: number };
 
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
@@ -42,6 +45,9 @@ class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
   private _intervalReplyId?: NodeJS.Timeout;
   private _history: Set<CALL_DIRECTION | typeof DIALING> = new Set();
+  private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+    ServiceConfig.PHONE_NUMBER_SERVICE,
+  );
 
   maximumInputLength = 30;
 
@@ -89,6 +95,16 @@ class TelephonyStore {
   @observable
   forwardString: string = '';
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
+  @observable
+  transferString: string = '';
+
+  @observable
+  dialerString: string = '';
+
+  @observable
+  isValidInputStringNumber: boolean = false;
+
   @observable
   dialerInputFocused: boolean = false;
 
@@ -133,6 +149,15 @@ class TelephonyStore {
 
   @observable
   isRecentCalls: boolean = false;
+
+  @observable
+  isTransferPage: boolean = false;
+
+  @observable
+  selectedCallItem: SelectedCallItem = {
+    phoneNumber: '',
+    index: NaN,
+  };
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -180,10 +205,13 @@ class TelephonyStore {
     // TODO: move out of telephony store when minization won't destroy the telephony dialog
     reaction(
       () => this.inputString.length,
-      length => {
+      async (length: number) => {
         if (!length) {
           this.resetFirstLetterThroughKeypadForInputString();
+          this.transferString = this.inputString;
         }
+        this.resetCallItem();
+        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(this.inputString);
       },
     );
 
@@ -272,6 +300,11 @@ class TelephonyStore {
   };
 
   @action
+  private _clearTransferString = () => {
+    this.transferString = '';
+  };
+
+  @action
   openKeypad = () => {
     this.keypadEntered = true;
   };
@@ -340,6 +373,9 @@ class TelephonyStore {
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
+    this._clearTransferString();
+    this.resetCallItem();
+    this.backToDialerFromTransferPage();
 
     this.isContactMatched = false;
     this.hasManualSelected = false;
@@ -411,6 +447,11 @@ class TelephonyStore {
   @action
   resetFirstLetterThroughKeypadForForwardString = () => {
     this.firstLetterEnteredThroughKeypadForForwardString = false;
+  };
+
+  @action
+  resetValidInputStringNumber = () => {
+    this.isValidInputStringNumber = false;
   };
 
   @computed
@@ -603,10 +644,12 @@ class TelephonyStore {
 
   @computed
   get shouldDisplayRecentCalls() {
-    return !(
-      this.hasActiveOutBoundCall ||
-      this.hasActiveInBoundCall ||
-      this.isIncomingCall
+    return (
+      !(
+        this.hasActiveOutBoundCall ||
+        this.hasActiveInBoundCall ||
+        this.isIncomingCall
+      ) || this.isTransferPage
     );
   }
 
@@ -629,12 +672,46 @@ class TelephonyStore {
   @action
   backToDialer = () => {
     this.isRecentCalls = false;
+    this.resetCallItem();
   };
 
   @action
   switchE911Status = (status: boolean) => {
     this.hasShowE911 = status;
-  }
+  };
+
+  @action
+  directToTransferPage = () => {
+    this.isTransferPage = true;
+    if (this.transferString) {
+      this.dialerString = this.inputString;
+      this.inputString = this.transferString;
+    }
+  };
+
+  @action
+  backToDialerFromTransferPage = () => {
+    this.isTransferPage = false;
+    this.inputString = this.dialerString;
+    this.backToDialer();
+    this.resetValidInputStringNumber();
+  };
+
+  @action
+  setCallItem = (phoneNumber: string, index: number) => {
+    this.selectedCallItem = {
+      phoneNumber,
+      index,
+    };
+  };
+
+  @action
+  resetCallItem = () => {
+    this.selectedCallItem = {
+      phoneNumber: '',
+      index: NaN,
+    };
+  };
 }
 
-export { TelephonyStore, CALL_TYPE, INCOMING_STATE };
+export { TelephonyStore, CALL_TYPE, INCOMING_STATE, SelectedCallItem };
