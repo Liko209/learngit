@@ -60,6 +60,10 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   opacity: 0.76;
 }
 
+.c3:focus {
+  outline: none;
+}
+
 .c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;

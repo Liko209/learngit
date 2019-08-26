@@ -167,6 +167,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   opacity: 0.76;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -453,6 +457,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -738,6 +743,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
