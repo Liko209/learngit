@@ -39,13 +39,13 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I hover on the to more options button', async () => {
-    await telephonyDialog.hoverMoreOptionsButton();
-  });
+  // await h(t).withLog('When I hover on the to more options button', async () => {
+  //   await telephonyDialog.hoverMoreOptionsButton();
+  // });
 
-  await h(t).withLog(`Then Display a tooltip: '${tooltipText}`, async () => {
-    await telephonyDialog.showTooltip(tooltipText);
-  });
+  // await h(t).withLog(`Then Display a tooltip: '${tooltipText}`, async () => {
+  //   await telephonyDialog.showTooltip(tooltipText);
+  // });
 
   await h(t).withLog('When callerUser hangup the call', async () => {
     await callerWebPhone.hangup();
