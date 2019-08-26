@@ -29,7 +29,7 @@ class MeetingsService extends EntityBaseService<{ id: number }>
     return this.meetingsController.getMeetingServiceType();
   }
 
-  cancelMeeting(meetingId: number): Promise<boolean> {
+  cancelMeeting(meetingId: number): Promise<void> {
     return this.meetingsController.cancelMeeting(meetingId);
   }
 

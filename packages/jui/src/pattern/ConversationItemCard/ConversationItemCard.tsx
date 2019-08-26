@@ -104,7 +104,7 @@ type JuiConversationItemCardProps = {
   children?: React.ReactNode;
   contentHasPadding?: boolean;
   isShowLoading?: boolean;
-  subTitle: JSX.Element;
+  subTitle?: JSX.Element;
   Footer?: JSX.Element | null;
   footerPadding?: boolean;
   complete?: boolean;
