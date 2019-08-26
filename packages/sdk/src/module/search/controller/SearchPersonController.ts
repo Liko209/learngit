@@ -378,7 +378,7 @@ class SearchPersonController {
   // Rule:
   // The search results should be ranked as follows: perfect match>start with> fuzzy search/Soundex search/email matched
   // If there are multiple results fall in each of the categories, they should be ordered by most recent (searched and tapped/sent message to in the last 30 days)>alphabetical
-  async _getTransFromPersonToSortableModelFunc(
+  private async _getTransFromPersonToSortableModelFunc(
     excludeSelf?: boolean,
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
