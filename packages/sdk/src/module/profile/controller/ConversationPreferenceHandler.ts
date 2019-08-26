@@ -12,8 +12,6 @@ import {
   SoundsList,
   SETTING_KEYS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  SOUNDS_TYPE,
-  AUDIO_SOUNDS_INFO,
 } from '../constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';

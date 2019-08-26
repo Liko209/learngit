@@ -141,7 +141,7 @@ describe('SettingsActionController', () => {
         },
       ]);
     });
-    it('should call update setting when update conversation preference', async () => {
+    it('should call update setting when update conversation preference [JPT-2815]', async () => {
       settingsActionController.updateSettingOptions = jest.fn();
       const audio2 = { gid: 2, sound: '' };
       mockProfileDataController.getLocalProfile = jest.fn().mockResolvedValue({
