@@ -10,7 +10,7 @@ interface IMeetingsService {
   startMeeting(groupIds: number[]): Promise<StartMeetingResultType>;
   getMeetingServiceType(): Promise<MEETING_SERVICE_TYPE>;
   getDialInNumber(isRCV: boolean): string;
-  cancelMeeting(meetingId: number): Promise<boolean>;
+  cancelMeeting(meetingId: number): Promise<void>;
   getJoinUrl(meetingId: number): Promise<string>;
 }
 
