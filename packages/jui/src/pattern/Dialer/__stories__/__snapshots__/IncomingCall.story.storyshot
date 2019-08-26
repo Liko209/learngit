@@ -183,6 +183,10 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   background-color: #fff;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c0.c0 {
   width: 280px;
   margin: 32px;
@@ -438,6 +442,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
