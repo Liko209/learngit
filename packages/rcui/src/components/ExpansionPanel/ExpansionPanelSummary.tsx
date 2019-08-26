@@ -8,7 +8,7 @@ import ExpansionPanelSummary, {
   ExpansionPanelSummaryProps,
 } from '@material-ui/core/ExpansionPanelSummary';
 import styled from '../../foundation/styled-components';
-import { spacing } from '../../foundation/utils/styles';
+import { spacing } from '../../foundation/shared/theme';
 
 type JuiExpansionPanelSummaryProps = ExpansionPanelSummaryProps;
 
@@ -32,15 +32,15 @@ const StyledExpansionPanelSummary = styled(ExpansionPanelSummary)`
 
 const JuiExpansionPanelSummary = React.memo(
   (props: JuiExpansionPanelSummaryProps) => (
-      <StyledExpansionPanelSummary
-        classes={{
-          root: 'root',
-          expanded: 'expanded',
-          content: 'content',
-          focused: 'focused',
-        }}
-        {...props}
-      />
+    <StyledExpansionPanelSummary
+      classes={{
+        root: 'root',
+        expanded: 'expanded',
+        content: 'content',
+        focused: 'focused',
+      }}
+      {...props}
+    />
   ),
 );
 

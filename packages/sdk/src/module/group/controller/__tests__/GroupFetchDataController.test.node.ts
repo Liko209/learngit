@@ -1303,6 +1303,54 @@ describe('GroupFetchDataController', () => {
     });
   });
 
+  describe('getGroupName', () => {
+    it('should return directly when is a team', () => {
+      const spy = jest.spyOn(groupFetchDataController, 'getAllPersonOfGroup');
+      const result = groupFetchDataController.getGroupName({ id: 1, set_abbreviation: 'abc', is_team: true} as Group);
+      expect(spy).not.toBeCalled();
+      expect(result).toBe('abc');
+    })
+
+    it('should return Me when is a MeGroup ', () => {
+      personService.getSynchronously = jest
+      .fn()
+      .mockImplementation((id: number) => { return { id }; });
+      personService.getFullName = jest.fn().mockImplementation(() => 'me name');
+      const result1 = groupFetchDataController.getGroupName({ id: 1, set_abbreviation: 'abc', is_team: false, members: [1]} as Group);
+      expect(result1).toBe('me name');
+
+      personService.getSynchronously = jest
+      .fn()
+      .mockImplementation((id: number) => undefined);
+      const result2 = groupFetchDataController.getGroupName({ id: 1, set_abbreviation: 'abc', is_team: false, members: [1]} as Group);
+      expect(result2).toBe('');
+    });
+
+    it('should return 1:n group when is a 1:n group ', () => {
+      personService.getSynchronously = jest
+      .fn()
+      .mockImplementation((id: number) => { return { id }; });
+      personService.getFullName = jest.fn().mockImplementation(() => 'me name');
+      const spy = jest.spyOn(groupFetchDataController, 'getAllPersonOfGroup');
+      const mockData = { invisiblePersons: [], visiblePersons: [] };
+      spy.mockReturnValue(mockData);
+      const group = { id: 1, is_team: false, members: [1, 2, 3]} as Group;
+      const result1 = groupFetchDataController.getGroupName(group);
+      expect(spy).toHaveBeenCalledWith(group.members, 1);
+      expect(result1).toBe('');
+
+      const visiblePersons = [{ id: 2 } as Person, { id:3 } as Person];
+      const mockData2 = { invisiblePersons: [], visiblePersons };
+      spy.mockReturnValue(mockData2);
+      const spy2 = jest.spyOn(groupFetchDataController, 'getGroupNameByMultiMembers');
+      spy2.mockReturnValue({groupName: 'dora, bruce', memberNames:['dora', 'bruce']});
+      const result2 = groupFetchDataController.getGroupName(group);
+      expect(spy).toHaveBeenCalledWith(group.members, 1);
+      expect(spy2).toHaveBeenCalledWith(visiblePersons);
+      expect(result2).toBe('dora, bruce');
+    });
+  });
+
   describe('getAllPersonOfGroup', () => {
     let mockIsVisiblePerson = jest.fn();
     beforeEach(() => {

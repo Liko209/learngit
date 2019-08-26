@@ -44,7 +44,7 @@ beforeEach(() => {
 
 describe('CallViewModel', () => {
   it('`showIcon` should equals `false` when initializing', async () => {
-    expect(callViewModel.showIcon.cached.value).toBe(false);
+    expect(callViewModel.showIcon).toBe(false);
   });
 
   it('`_uid` should be empty', () => {
