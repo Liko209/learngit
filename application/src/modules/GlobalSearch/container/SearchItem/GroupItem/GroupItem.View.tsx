@@ -59,10 +59,6 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
     this.goToConversation();
   };
 
-  handleStartConference = (evt: React.MouseEvent) => {
-    evt.stopPropagation();
-  };
-
   private get _conversationActions() {
     const { t, group, analysisSource } = this.props;
 
