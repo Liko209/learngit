@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text, boolean } from '@storybook/addon-knobs';
+import { text, boolean, select } from '@storybook/addon-knobs';
 import { JuiIconButton } from '../../Buttons/IconButton';
 import { JuiThumbnail } from '../../Thumbnail';
 import { JuiAvatar } from '../../Avatar';
@@ -22,6 +22,8 @@ import avatar from '../../Avatar/__stories__/img/avatar.jpg';
 import download from '../../../assets/jupiter-icon/icon-download.svg';
 import info from '../../../assets/jupiter-icon/icon-info.svg';
 import star from '../../../assets/jupiter-icon/icon-star.svg';
+import { JuiVirtualizedMenuList } from '../../VirtualizedMenus';
+import _ from 'lodash';
 
 class TwoLineItem extends React.PureComponent {
   state = {
@@ -46,7 +48,7 @@ class TwoLineItem extends React.PureComponent {
         onMouseLeave={this.handleMouseLeave}
       >
         <JuiListItemIcon>
-          <JuiThumbnail iconType='pdf' />
+          <JuiThumbnail iconType="pdf" />
         </JuiListItemIcon>
         <JuiListItemText
           primary={primary}
@@ -61,8 +63,8 @@ class TwoLineItem extends React.PureComponent {
           <JuiListItemSecondaryAction>
             <JuiListItemIcon>
               <JuiIconButton
-                variant='plain'
-                tooltipTitle='Download'
+                variant="plain"
+                tooltipTitle="Download"
                 disabled={disabled}
                 symbol={download}
               />
@@ -70,7 +72,7 @@ class TwoLineItem extends React.PureComponent {
           </JuiListItemSecondaryAction>
         ) : (
           <JuiListItemSecondaryAction>
-            <JuiIconButton variant='plain' disabled={disabled} symbol={info} />
+            <JuiIconButton variant="plain" disabled={disabled} symbol={info} />
           </JuiListItemSecondaryAction>
         )}
       </JuiListItem>
@@ -79,6 +81,26 @@ class TwoLineItem extends React.PureComponent {
 }
 
 storiesOf('Components/Lists/ListItem', module)
+  .add('list item', () => {
+    const baseColor = select<any>(
+      'baseColor',
+      {
+        primary: 'primary',
+        secondary: 'secondary',
+        black: 'black',
+      },
+      'black',
+    );
+    return (
+      <JuiVirtualizedMenuList>
+        {_.range(0, 10).map(k => (
+          <JuiListItem key={k} singleLine baseColor={baseColor}>
+            list item
+          </JuiListItem>
+        ))}
+      </JuiVirtualizedMenuList>
+    );
+  })
   .add('Single-line item with Avatar and controls', () => {
     const primary = text('primary', 'Single-line item name');
 
@@ -86,7 +108,7 @@ storiesOf('Components/Lists/ListItem', module)
       <JuiList>
         <JuiListItem singleLine>
           <JuiListItemAvatar>
-            <JuiAvatar size='small' src={avatar} />
+            <JuiAvatar size="small" src={avatar} />
           </JuiListItemAvatar>
           <JuiListItemText primary={primary} />
           <JuiListItemSecondaryAction>
@@ -104,8 +126,8 @@ storiesOf('Components/Lists/ListItem', module)
         <JuiListItem singleLine>
           <JuiListItemIcon>
             <JuiIconButton
-              variant='plain'
-              tooltipTitle='favorite'
+              variant="plain"
+              tooltipTitle="favorite"
               symbol={star}
             />
           </JuiListItemIcon>

@@ -14,6 +14,7 @@ import React, {
   useRef,
   useCallback,
   cloneElement,
+  useMemo,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
@@ -254,8 +255,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const keyMapper = createKeyMapper(children);
-  const indexMapper = createIndexMapper(children);
+  const keyMapper = useMemo(() => createKeyMapper(children), [children]);
+  const indexMapper = useMemo(() => createIndexMapper(children), [children]);
   const childrenCount = children.length;
   const minIndex = 0;
   const maxIndex = childrenCount - 1;
