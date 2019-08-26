@@ -7,8 +7,8 @@
 import { test, testable } from 'shield';
 import { mockEntity } from 'shield/application/mockEntity';
 import { GroupAvatarViewModel } from '../GroupAvatar.ViewModel';
-import defaultGroupAvatar from '../defaultGroupAvatar.png';
-import defaultTeamAvatar from '../defaultTeamAvatar.png';
+import defaultGroupAvatar from 'jui/assets/jupiter-icon/icon-default-group-avatar.svg';
+import defaultTeamAvatar from 'jui/assets/jupiter-icon/icon-default-team-avatar.svg';
 
 describe('GroupAvatarViewModel', () => {
   @testable
@@ -26,14 +26,14 @@ describe('GroupAvatarViewModel', () => {
     @mockEntity({ isTeam: true })
     t1() {
       const vm = new GroupAvatarViewModel({ cid: 2031622 });
-      expect(vm.src).toBe(defaultTeamAvatar);
+      expect(vm.icon).toBe(defaultTeamAvatar);
     }
 
     @test('should return defaultGroupAvatar when group is group')
     @mockEntity({ isTeam: false })
     t2() {
       const vm = new GroupAvatarViewModel({ cid: 2031622 });
-      expect(vm.src).toBe(defaultGroupAvatar);
+      expect(vm.icon).toBe(defaultGroupAvatar);
     }
   }
 });

@@ -21,7 +21,7 @@ import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 
-import { JuiIconography } from '../../foundation/Iconography';
+import { JuiIconography, SvgSymbol } from '../../foundation/Iconography';
 import { StyledMaskWrapper, StyledMask } from './Mask';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
@@ -34,6 +34,7 @@ type JuiAvatarProps = {
   cover?: boolean;
   mask?: boolean;
   displayName?: string;
+  icon?: SvgSymbol;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -107,6 +108,16 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   }
 `;
 
+const StyledIconAvatar = styled(({ size, ...rest }: any) => (
+  <JuiIconography
+    iconSize="inherit"
+    iconColor={['primary', 'main']}
+    {...rest}
+  />
+))<{ size: Size; symbol: SvgSymbol }>`
+  font-size: ${({ size }) => sizes[size] * 4}px;
+`;
+
 const StyledPresenceWrapper = styled.div`
   position: absolute;
   bottom: 0;
@@ -114,7 +125,17 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, cover, tooltip, mask, displayName, ...rest } = props;
+  const {
+    presence,
+    cover,
+    tooltip,
+    mask,
+    icon,
+    children,
+    size = 'medium',
+    displayName,
+    ...rest
+  } = props;
   const maskWithIcon = (
     <StyledMask>
       <JuiIconography iconSize="small" color="common.white">
@@ -139,13 +160,24 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     );
   }
 
+  let iconChildren;
+  if (icon) {
+    iconChildren = <StyledIconAvatar size={size || 'medium'} symbol={icon} />;
+  }
+
+  const _avatar = (
+    <StyledAvatar size={size} {...rest}>
+      {iconChildren || children}
+    </StyledAvatar>
+  );
+
   const avatar = presence ? (
-    <StyledWrapper size={rest.size} style={rest.style}>
-      <StyledAvatar {...rest} />
+    <StyledWrapper size={size} style={rest.style}>
+      {_avatar}
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
     </StyledWrapper>
   ) : (
-    <StyledAvatar {...rest} />
+    _avatar
   );
 
   const avatarWithMask = mask ? (

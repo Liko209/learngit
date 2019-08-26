@@ -6,9 +6,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
-
 import { JuiAvatar, JuiAvatarProps } from '..';
 import { JuiPresence, PRESENCE } from '../../Presence';
+import TeamAvatar from '../../../assets/jupiter-icon/icon-default-team-avatar.svg';
 
 import avatar from './img/avatar.jpg';
 
@@ -61,6 +61,9 @@ storiesOf('Components/Avatar', module)
         SH
       </JuiAvatar>
     );
+  })
+  .add('Icon', () => {
+    return <JuiAvatar size={knobs.size()} icon={TeamAvatar} />;
   })
   .add('With presence', () => {
     return (
