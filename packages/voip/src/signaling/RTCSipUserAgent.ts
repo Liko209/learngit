@@ -128,11 +128,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     if (options.fromNumber) {
       inviteOptions.fromNumber = options.fromNumber;
     }
-
-    options.replacesCallId = '123';
-    options.replacesFromTag = '345';
-    options.replacesToTag = '567';
-
     if (
       options.replacesCallId &&
       options.replacesFromTag &&

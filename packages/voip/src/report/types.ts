@@ -93,6 +93,8 @@ export type MediaReportProps =
   | 'bytesReceived'
   | 'packetsLost'
   | 'jitter'
+  | 'fractionLost'
+  | 'currentRoundTripTime'
   | 'packetsSent'
   | 'bytesSent';
 
@@ -108,6 +110,8 @@ export type MediaReportItem<T> = {
   bytesReceived: T;
   packetsLost: T;
   jitter: T | MediaReportOutcomeItem<T>;
+  fractionLost: T | MediaReportOutcomeItem<T>;
+  currentRoundTripTime: T | MediaReportOutcomeItem<T>;
   packetsSent: T;
   bytesSent: T;
   none?: boolean; // marker
@@ -122,9 +126,14 @@ export type MediaReportOutCome = MediaReportItem<
 export type MediaStatusReport = {
   inboundRtpReport: Pick<
     MediaReportItemType,
-    'packetsReceived' | 'bytesReceived' | 'packetsLost' | 'jitter'
+    | 'packetsReceived'
+    | 'bytesReceived'
+    | 'packetsLost'
+    | 'jitter'
+    | 'fractionLost'
   >;
   outboundRtpReport: Pick<MediaReportItemType, 'packetsSent' | 'bytesSent'>;
+  rttMS: Pick<MediaReportItemType, 'currentRoundTripTime'>;
 };
 export interface IMediaReport {
   startAnalysis: (arg: any) => void;

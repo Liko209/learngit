@@ -84,15 +84,15 @@ type OutboundRtpReport = {
   packetsSent: number;
 };
 
+type RttMS = {
+  currentRoundTripTime: number;
+};
+
 type InviteOptions = {
   fromNumber?: string;
   homeCountryId?: string;
   extraHeaders?: any;
   RTCConstraints?: any;
-};
-
-type RttMS = {
-  currentRoundTripTime: number;
 };
 
 type MediaStatsReport = {
