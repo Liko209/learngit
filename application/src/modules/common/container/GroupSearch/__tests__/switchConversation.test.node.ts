@@ -16,7 +16,7 @@ import { goToConversation } from '@/common/goToConversation';
 jest.mock('@/common/goToConversation');
 
 describe('switch conversation handler', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     jest.restoreAllMocks();
   });
 
@@ -40,14 +40,13 @@ describe('switch conversation handler', () => {
     @test(
       'should close dialog and call gotoConversation when call switchToConversation()',
     )
-    async t3(done) {
+    async t3() {
       const conversationId = 123;
       jest.spyOn(portalManager, 'dismissLast').mockImplementation(jest.fn());
       switchToConversation({ id: conversationId });
       expect(portalManager.dismissLast).toHaveBeenCalled();
       setTimeout(() => {
         expect(goToConversation).toHaveBeenCalled();
-        done();
       });
     }
   }

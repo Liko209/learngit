@@ -26,6 +26,14 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
     const result = await searchService.doFuzzySearchAllGroups(searchKey, {
       myGroupsOnly: true,
       fetchAllIfSearchKeyEmpty: true,
+      sortFunc: (lhs, rhs) => {
+        const lhsModifiedAt = lhs.entity.most_recent_content_modified_at;
+        const rhsModifiedAt = rhs.entity.most_recent_content_modified_at;
+
+        if (lhsModifiedAt < rhsModifiedAt) return 1;
+        if (lhsModifiedAt > rhsModifiedAt) return -1;
+        return 0;
+      },
     });
     this.list = result.sortableModels.map(item => item.id);
   };
