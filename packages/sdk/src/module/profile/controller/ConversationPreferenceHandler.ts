@@ -116,49 +116,59 @@ class ConversationPreferenceHandler implements IProfileObserver {
     return (model && model.value)!;
   }
   private async _getTeamNotification(model: ConversationPreference) {
-    model.desktopNotifications = await this._getValue(
+    model.desktopNotifications = await this._getDesktopValue(
       model.desktopNotifications,
       (await this._getSettingValue(
         SettingEntityIds.Notification_NewMessages,
       )) === DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
     );
-    model.audioNotifications = await this._getAudioValue(
+    model.audioNotifications = await this._getValue(
       model.audioNotifications,
       SettingEntityIds.Audio_TeamMessages,
     );
     model.emailNotifications = await this._getValue(
       model.emailNotifications,
-      await this._getSettingValue(SettingEntityIds.Notification_Teams),
+      SettingEntityIds.Notification_Teams,
     );
     model.pushNotifications = await this._getValue(
       model.pushNotifications,
-      await this._getSettingValue(SettingEntityIds.MOBILE_Team),
+      SettingEntityIds.MOBILE_Team,
     );
     return model;
   }
 
   private async _getGroupNotification(model: ConversationPreference) {
-    model.desktopNotifications = await this._getValue(
+    model.desktopNotifications = await this._getDesktopValue(
       model.desktopNotifications,
       (await this._getSettingValue(
         SettingEntityIds.Notification_NewMessages,
       )) !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
     );
-    model.audioNotifications = await this._getAudioValue(
+    model.audioNotifications = await this._getValue(
       model.audioNotifications,
       SettingEntityIds.Audio_DirectMessage,
     );
     model.emailNotifications = await this._getValue(
       model.emailNotifications,
-      await this._getSettingValue(SettingEntityIds.Notification_DirectMessages),
+      SettingEntityIds.Notification_DirectMessages,
     );
     model.pushNotifications = await this._getValue(
       model.pushNotifications,
-      await this._getSettingValue(SettingEntityIds.MOBILE_DM),
+      SettingEntityIds.MOBILE_DM,
     );
     return model;
   }
   private async _getValue<T>(
+    value: UndefinedAble<T>,
+    settingId: SettingEntityIds,
+  ): Promise<T> {
+    if (value === undefined) {
+      return await this._getSettingValue(settingId);
+    }
+    return value;
+  }
+
+  private async _getDesktopValue<T>(
     value: UndefinedAble<T>,
     globalValue: T,
   ): Promise<T> {
@@ -168,15 +178,6 @@ class ConversationPreferenceHandler implements IProfileObserver {
     return value;
   }
 
-  private async _getAudioValue(
-    value: UndefinedAble<AUDIO_SOUNDS_INFO>,
-    key: SettingEntityIds,
-  ): Promise<AUDIO_SOUNDS_INFO> {
-    if (value === undefined || value.id === SOUNDS_TYPE.Default) {
-      return await this._getSettingValue(key);
-    }
-    return value;
-  }
   private async _isTeam(conversationId: number) {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
