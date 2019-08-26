@@ -90,7 +90,7 @@ describe('ConversationPreferenceHandler', () => {
       });
       groupService.getById = jest.fn().mockResolvedValue({ is_team: false });
     });
-    it('should return globalValue when conversation is team and conversation preference is undefined [JPT-2807]', async () => {
+    it('should return globalValue when conversation is team and conversation preference is undefined [JPT-2807,JPT-2810,JPT-2811]', async () => {
       groupService.getById = jest.fn().mockReturnValue({ is_team: true });
       const profile = {
         conversation_level_notifications: {
@@ -103,7 +103,7 @@ describe('ConversationPreferenceHandler', () => {
       );
       expect(result).toEqual(expectValue);
     });
-    it('should return globalValue when conversation is direct message and conversation preference is undefined [JPT-2803]', async () => {
+    it('should return globalValue when conversation is direct message and conversation preference is undefined [JPT-2803,JPT-2810,JPT-2811]', async () => {
       groupService.getById = jest.fn().mockResolvedValue({ is_team: false });
       const profile = {
         conversation_level_notifications: {

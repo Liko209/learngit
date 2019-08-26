@@ -197,17 +197,19 @@ describe('ProfileDataController', () => {
       'should return $expectRes when mute is $mute and desktop_notifications is $desktop_notifications',
       async ({ muted, desktop_notifications, expectRes }) => {
         const groupId = 1;
-        profileDataController.getConversationPreference = jest.fn().mockResolvedValue({
-          muted,
-          desktop_notifications,
-        });
+        profileDataController.getConversationPreference = jest
+          .fn()
+          .mockResolvedValue({
+            muted,
+            desktop_notifications,
+          });
         const result = await profileDataController.isNotificationMute(groupId);
         expect(result).toEqual(expectRes);
       },
     );
   });
 
-  describe(.getConversationPreference', () => {
+  describe('getConversationPreference', () => {
     const groupId = 1;
     const desktopNotifications = true;
     const soundNotifications = SoundsListWithDefault[2];
@@ -259,7 +261,9 @@ describe('ProfileDataController', () => {
           [groupId]: undefined,
         },
       });
-      const result = await profileDataController.getConversationPreference(groupId);
+      const result = await profileDataController.getConversationPreference(
+        groupId,
+      );
       expect(result).toEqual(expectValue);
     });
     it('should return globalValue when conversation is direct message and conversation preference is undefined', async () => {
@@ -269,7 +273,9 @@ describe('ProfileDataController', () => {
           [groupId]: undefined,
         },
       });
-      const result = await profileDataController.getConversationPreference(groupId);
+      const result = await profileDataController.getConversationPreference(
+        groupId,
+      );
       expect(result).toEqual({
         ...expectValue,
         desktop_notifications: true,
@@ -285,7 +291,9 @@ describe('ProfileDataController', () => {
           },
         },
       });
-      const result = await profileDataController.getConversationPreference(groupId);
+      const result = await profileDataController.getConversationPreference(
+        groupId,
+      );
       expect(result).toEqual({
         ...expectValue,
         desktop_notifications: desktopNotifications,
@@ -310,7 +318,9 @@ describe('ProfileDataController', () => {
             },
           },
         });
-        const result = await profileDataController.getConversationPreference(groupId);
+        const result = await profileDataController.getConversationPreference(
+          groupId,
+        );
         expect(result.audio_notifications).toEqual(expectRes);
       },
     );
@@ -331,7 +341,9 @@ describe('ProfileDataController', () => {
             },
           },
         });
-        const result = await profileDataController.getConversationPreference(groupId);
+        const result = await profileDataController.getConversationPreference(
+          groupId,
+        );
         expect(result.desktop_notifications).toEqual(expectRes);
       },
     );
