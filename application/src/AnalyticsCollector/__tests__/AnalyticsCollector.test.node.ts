@@ -106,4 +106,29 @@ describe('analyticsCollector', () => {
       expect(dataAnalysis.identify).not.toHaveBeenCalled();
     });
   });
+
+  describe('endAndAnswerCall', () => {
+    it('should call track with correct parameters', () => {
+      analyticsCollector.endAndAnswerCall();
+      expect(dataAnalysis.track).toHaveBeenCalledWith(
+        'Jup_Web/DT_phone_endAndAnswerCall',
+        {
+          source: 'incomingCallWindow',
+          type: 'multiCall',
+        },
+      );
+    });
+  });
+
+  describe('seeIncomingCallPage', () => {
+    it('should call track with correct parameters', () => {
+      analyticsCollector.seeIncomingCallPage('multiCall');
+      expect(dataAnalysis.page).toHaveBeenCalledWith(
+        'Jup_Web/DT_phone_incomingCallWindow',
+        {
+          type: 'multiCall',
+        },
+      );
+    });
+  });
 });
