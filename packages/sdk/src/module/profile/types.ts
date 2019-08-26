@@ -15,7 +15,7 @@ import {
 import { SettingEntityIds } from '../setting';
 import {
   CONVERSATION_NOTIFICATIONS_VALUE,
-  SOUND_NOTIFICATIONS,
+  AUDIO_NOTIFICATIONS,
   Profile,
 } from './entity/Profile';
 import { Nullable } from 'sdk/types';
@@ -30,7 +30,7 @@ type SettingValue =
   | DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
   | SOUNDS_TYPE
   | CONVERSATION_NOTIFICATIONS_VALUE
-  | SOUND_NOTIFICATIONS[];
+  | AUDIO_NOTIFICATIONS[];
 
 type SettingOption = {
   key: SETTING_KEYS;
