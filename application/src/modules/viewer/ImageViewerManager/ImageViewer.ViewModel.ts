@@ -84,8 +84,6 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
 
     this._initialWidth = props.initialOptions.initialWidth;
     this._initialHeight = props.initialOptions.initialHeight;
-
-    this.thumbnailSrc = initialOptions.thumbnailSrc;
     this.originElement = initialOptions.originElement;
     this.currentItemId = itemId;
     this._itemListDataSource = isNavigation
@@ -380,8 +378,10 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerViewModuleProps>
             nextToDisplay.index,
             nextToDisplay.itemId,
           );
-          this._onCurrentItemDeletedCb &&
+          if(this._onCurrentItemDeletedCb) {
             this._onCurrentItemDeletedCb(nextToDisplay.itemId);
+            this._onItemSwitchCb && this._onItemSwitchCb()
+          }
         } else {
           this.currentIndex = info.index;
         }
