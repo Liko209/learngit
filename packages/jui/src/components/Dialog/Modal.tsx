@@ -57,7 +57,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
     } = this.props;
     return (
       <>
-        {cancelText ? (
+        {cancelText && (
           <JuiButton
             onClick={onCancel}
             color="primary"
@@ -69,19 +69,21 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           >
             {cancelText}
           </JuiButton>
-        ) : null}
-        <JuiButton
-          onClick={onOK}
-          color={okType}
-          variant={okVariant}
-          autoFocus={false}
-          data-test-automation-id={'DialogOKButton'}
-          disabled={loading}
-          {...okBtnProps}
-          loading={loading}
-        >
-          {okText}
-        </JuiButton>
+        )}
+        {okText && (
+          <JuiButton
+            onClick={onOK}
+            color={okType}
+            variant={okVariant}
+            autoFocus={false}
+            data-test-automation-id={'DialogOKButton'}
+            disabled={loading}
+            {...okBtnProps}
+            loading={loading}
+          >
+            {okText}
+          </JuiButton>
+        )}
       </>
     );
   }

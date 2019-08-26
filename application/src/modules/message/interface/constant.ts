@@ -12,6 +12,8 @@ enum MESSAGE_SETTING_ITEM {
   SOUND_DIRECT_MESSAGES = SettingEntityIds.Audio_DirectMessage,
   SOUND_MENTIONS = SettingEntityIds.Audio_Mentions,
   SOUND_TEAM_MESSAGES = SettingEntityIds.Audio_TeamMessages,
+  MAX_CONVERSATIONS = SettingEntityIds.Max_Conversations,
+  SHOW_LINK_PREVIEWS = SettingEntityIds.Link_Preview,
 }
 
 export { MESSAGE_SETTING_SCOPE, MESSAGE_SETTING_ITEM };

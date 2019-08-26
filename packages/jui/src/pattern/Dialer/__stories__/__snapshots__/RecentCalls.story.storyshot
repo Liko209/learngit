@@ -40,6 +40,19 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   display: -ms-flexbox;
   display: flex;
   padding-left: 8px;
+  color: #000;
+}
+
+.c3.c3.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c3.c3:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c3.c3 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c6.c6 {
