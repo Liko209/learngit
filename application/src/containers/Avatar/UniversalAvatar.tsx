@@ -7,11 +7,10 @@
 import React, { useCallback } from 'react';
 import { GroupAvatar } from './GroupAvatar';
 import { Avatar } from './Avatar';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/src/utils';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { ProfileMiniCard } from '@/modules/message/container/MiniCard/Profile';
 import { ProfileMiniCardPerson } from '@/modules/message/container/Profile/MiniCard/Person';
 import { ProfileMiniCardGroup } from '@/modules/message/container/Profile/MiniCard/Group';
-
 
 export type UniversalAvatarProps = { id: number };
 
@@ -22,22 +21,21 @@ export function UniversalAvatar({ id }: UniversalAvatarProps) {
       event.preventDefault();
       const anchor = event.currentTarget as HTMLElement;
       const profileMiniCard = new ProfileMiniCard();
-      const idType = GlipTypeUtil.extractTypeId(id)
+      const idType = GlipTypeUtil.extractTypeId(id);
       if (idType === TypeDictionary.TYPE_ID_PERSON) {
-      profileMiniCard.show({
-        anchor,
-        id,
-        cardContent: <ProfileMiniCardPerson id={id} />
-      });
+        profileMiniCard.show({
+          anchor,
+          id,
+          cardContent: <ProfileMiniCardPerson id={id} />,
+        });
       } else {
-      profileMiniCard.show({
-        anchor,
-        id,
-        cardContent: <ProfileMiniCardGroup id={id} />
-      });
-
+        profileMiniCard.show({
+          anchor,
+          id,
+          cardContent: <ProfileMiniCardGroup id={id} />,
+        });
       }
-   },
+    },
     [id],
   );
 

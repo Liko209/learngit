@@ -6,13 +6,13 @@
 import { AbstractModule } from 'framework/AbstractModule';
 import { GLOBAL_HOT_KEYS } from '@/modules/app/globalKeys.config';
 import { globalKeysManager } from '@/modules/app/globalKeyManager';
-import { openGroupSearchHandler } from '@/modules/common/container/GroupSearch/openGroupSearchHandler';
+import { switchConversationHandler } from '@/modules/common/container/GroupSearch/switchConversationHandler';
 
 class CommonModule extends AbstractModule {
   bootstrap() {
     globalKeysManager.addGlobalKey(
-      GLOBAL_HOT_KEYS.OPEN_GROUP_SEARCH,
-      openGroupSearchHandler,
+      GLOBAL_HOT_KEYS.SWITCH_CONVERSATION,
+      switchConversationHandler,
     );
   }
 }

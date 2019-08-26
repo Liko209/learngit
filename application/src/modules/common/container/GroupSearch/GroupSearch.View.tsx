@@ -11,7 +11,7 @@ import portalManager from '@/common/PortalManager';
 import { GroupSearchItem } from '@/containers/Downshift/GroupSearch/GroupSearchItem';
 import { withAutoSizer } from 'jui/components/AutoSizer';
 import { JuiVirtualizedList, IndexRange } from 'jui/components/VirtualizedList';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/src/utils';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactSearchItem';
 import { GetItemPropsOptions } from 'downshift';
 import moize from 'moize';

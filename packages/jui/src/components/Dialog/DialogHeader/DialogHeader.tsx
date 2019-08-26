@@ -6,11 +6,14 @@
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils/styles';
 
-const JuiDialogHeader = styled.div`
+type JuiDialogHeaderProps = {
+  fullscreen?: boolean;
+};
+const JuiDialogHeader = styled.div<JuiDialogHeaderProps>`
   background-color: white;
-  padding: ${spacing(5, 6)};
+  padding: ${({ fullscreen }) => spacing(fullscreen ? 2 : 5, 6)};
   display: flex;
   align-items: center;
 `;
 
-export { JuiDialogHeader };
+export { JuiDialogHeader, JuiDialogHeaderProps };

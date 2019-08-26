@@ -135,7 +135,7 @@ export function JuiGroupSearch<T extends SelectItem>({
     >
       {({ getInputProps, getItemProps, highlightedIndex, getRootProps }) => {
         return (
-          <Container {...getRootProps()}>
+          <Container data-test-automation-id="groupSearch" {...getRootProps()}>
             <JuiDialogHeader>
               <JuiDialogHeaderTitle>{dialogTitle}</JuiDialogHeaderTitle>
               <JuiDialogHeaderActions>

@@ -12,7 +12,7 @@ import portalManager from '@/common/PortalManager';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 const DIALOG_KEY = 'GroupSearch';
-function gotoConversation({ id }: { id: number }) {
+export function switchToConversation({ id }: { id: number }) {
   portalManager.dismissLast();
   setTimeout(() => {
     analyticsCollector.goToConversation('switchConversationDialog');
@@ -20,11 +20,11 @@ function gotoConversation({ id }: { id: number }) {
   });
 }
 
-export function openGroupSearchHandler() {
+export function switchConversationHandler() {
   analyticsCollector.shortcuts('quickSwitcher');
   if (portalManager.isOpened(DIALOG_KEY)) return;
   Dialog.simple(
-    <GroupSearch onSelectChange={gotoConversation} />,
+    <GroupSearch onSelectChange={switchToConversation} />,
     {
       size: 'small',
       enableEscapeClose: true,
