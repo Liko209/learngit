@@ -20,6 +20,7 @@ import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
 import { HealthStatusItemProvider } from './HealthStatusItemProvider';
 import { Zip } from './Zip';
+import { getClientId } from './utils';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -75,6 +76,10 @@ export class LogControlManager implements IAccessor {
 
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this.setNetworkState(onLine);
+    });
+
+    notificationCenter.on(SERVICE.GLIP_LOGIN, () => {
+      mainLogger.info(`clientId: ${getClientId()}`);
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {

@@ -7,7 +7,7 @@ import { mainLogger } from 'foundation/log';
 import { ErrorParserHolder } from 'sdk/error';
 import { ErrorReporterProxy } from './ErrorReporterProxy';
 import { IErrorReporter } from './types';
-import { getAppContextInfo } from './helper';
+import { getAppContextInfo, getApplicationInfo } from './helper';
 import { isProductionVersion, isStage, isHotfix } from '@/common/envUtils';
 
 function generalErrorHandler(error: Error) {
@@ -17,4 +17,4 @@ function generalErrorHandler(error: Error) {
 const errorReporter: IErrorReporter = new ErrorReporterProxy(
   isProductionVersion || isStage || isHotfix,
 );
-export { generalErrorHandler, errorReporter, getAppContextInfo };
+export { generalErrorHandler, errorReporter, getAppContextInfo, getApplicationInfo };
