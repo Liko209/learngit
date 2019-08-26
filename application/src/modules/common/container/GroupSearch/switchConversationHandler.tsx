@@ -23,11 +23,12 @@ export function switchToConversation({ id }: { id: number }) {
 export function switchConversationHandler() {
   analyticsCollector.shortcuts('quickSwitcher');
   if (portalManager.isOpened(DIALOG_KEY)) return;
-  Dialog.simple(
+  const { dismiss } = Dialog.simple(
     <GroupSearch onSelectChange={switchToConversation} />,
     {
       size: 'small',
       enableEscapeClose: true,
+      onClose: () => dismiss(),
     },
     DIALOG_KEY,
   );
