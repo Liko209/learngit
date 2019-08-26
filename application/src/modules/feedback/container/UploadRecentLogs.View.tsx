@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { DialogContext, withEscTracking } from '@/containers/Dialog';
+import { DialogContext } from '@/containers/Dialog';
+import { withEscTracking } from '@/common/trackData';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { observer } from 'mobx-react';
@@ -23,7 +24,6 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { Loading } from 'jui/hoc/withLoading';
 
-const Modal = withEscTracking(JuiModal);
 type State = {};
 
 type Props = UploadRecentLogsViewProps &
@@ -100,7 +100,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
   render() {
     const { handleTitleChange, handleDescChange, isLoading, t } = this.props;
     return (
-      <Modal
+      <JuiModal
         open
         size={'medium'}
         title={t('feedback.uploadRecentLogsDialogHeader')}
@@ -109,6 +109,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
         okText={t('feedback.submit')}
         cancelText={t('common.dialog.cancel')}
         loading={isLoading}
+        onClose={withEscTracking(this.onClose)}
       >
         <Loading loading={isLoading} alwaysComponentShow delay={0}>
           <JuiTextField
@@ -131,7 +132,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
             onChange={handleDescChange}
           />
         </Loading>
-      </Modal>
+      </JuiModal>
     );
   }
 }

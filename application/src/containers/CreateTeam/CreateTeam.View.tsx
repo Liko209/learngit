@@ -20,7 +20,7 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
-import { DialogContext, withEscTracking } from '@/containers/Dialog';
+import { DialogContext } from '@/containers/Dialog';
 import { dataAnalysis } from 'foundation/analysis';
 import { ViewProps, INIT_ITEMS } from './types';
 import {
@@ -29,8 +29,8 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { TeamSetting } from './CreateTeam.ViewModel';
 import history from '@/history';
+import { withEscTracking } from '@/common/trackData';
 
-const Modal = withEscTracking(JuiModal);
 type State = {
   items: JuiListToggleItemProps[];
 };
@@ -226,12 +226,13 @@ class CreateTeamComponent extends React.Component<Props, State> {
       t,
     } = this.props;
     return (
-      <Modal
+      <JuiModal
         modalProps={{ scroll: 'body' }}
         open
         size={'medium'}
         title={t('people.team.CreateTeam')}
         onCancel={this.onClose}
+        onClose={withEscTracking(this.onClose)}
         onOK={this.createTeam}
         okText={t('people.team.Create')}
         contentBefore={
@@ -316,7 +317,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
           href=""
         /> */}
         </Loading>
-      </Modal>
+      </JuiModal>
     );
   }
 }
