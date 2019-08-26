@@ -9,6 +9,7 @@ import { spacing } from '../../../foundation/utils/styles';
 const JuiDialogHeaderActions = styled.div`
   margin-left: ${spacing(4)};
   margin-right: -${spacing(2.5)};
+  margin: ${spacing(-2.5, -2.5, -2.5, 4)};
   display: flex;
   align-items: center;
   justify-content: flex-end;

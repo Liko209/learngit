@@ -6,6 +6,7 @@
 
 const GLOBAL_HOT_KEYS = {
   OPEN_SEARCH: ['command+f', 'ctrl+f'],
+  SWITCH_CONVERSATION: ['command+k', 'ctrl+k'],
 };
 
 export { GLOBAL_HOT_KEYS };

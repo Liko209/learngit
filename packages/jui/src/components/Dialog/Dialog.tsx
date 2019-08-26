@@ -5,6 +5,7 @@ import MuiDialog, {
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled, { css } from 'styled-components';
 import { HotKeys } from '../../hoc/HotKeys';
+import { width } from '../../foundation/utils';
 
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
@@ -27,12 +28,19 @@ const fixedAtTopStyle = css`
 `;
 
 const StyledDialog = styled(FilteredMuiDialog)`
-  & .paper {
-    width: 100%;
-    ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
-  }
-  & .paper.overflow-y {
-    overflow-y: visible;
+  & {
+    .MuiDialog-paperWidthXs {
+      max-width: ${width(100)};
+    }
+
+    .paper {
+      width: 100%;
+      ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
+    }
+
+    .paper.overflow-y {
+      overflow-y: visible;
+    }
   }
 `;
 

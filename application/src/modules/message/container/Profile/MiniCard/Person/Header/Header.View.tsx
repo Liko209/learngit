@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ProfileMiniCardPersonHeaderViewProps } from './types';
-import { Avatar } from '@/containers/Avatar';
+import { Avatar } from '@/containers/Avatar/Avatar';
 import { Presence } from '@/containers/Presence';
 import {
   JuiProfileMiniCardHeader,
@@ -16,7 +16,7 @@ import {
   JuiProfileMiniCardHeaderRight,
   JuiProfileMiniCardPersonName,
   JuiProfileMiniCardPersonStatus,
-  JuiProfileMiniCardPersonTitle
+  JuiProfileMiniCardPersonTitle,
 } from 'jui/pattern/Profile/MiniCard';
 import { Favorite } from '@/containers/common/Favorite';
 
@@ -50,7 +50,14 @@ class ProfileMiniCardPersonHeaderView extends Component<
           </JuiProfileMiniCardPersonTitle>
         </JuiProfileMiniCardHeaderMiddle>
         <JuiProfileMiniCardHeaderRight>
-          <Favorite id={id} size="small" dataTrackingProps={{ source: 'miniProfile', conversationType: '1:1 conversation' }} />
+          <Favorite
+            id={id}
+            size="small"
+            dataTrackingProps={{
+              source: 'miniProfile',
+              conversationType: '1:1 conversation',
+            }}
+          />
         </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );

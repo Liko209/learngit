@@ -37,7 +37,7 @@ import { FileActionMenu } from '@/containers/common/fileAction';
 @observer
 class ViewerTitleViewComponent extends Component<
   WithTranslation & ViewerTitleViewProps
-  > {
+> {
   static contextType = DialogContext;
 
   dismiss = this.context;
@@ -75,7 +75,10 @@ class ViewerTitleViewComponent extends Component<
             animation={imageViewerHeaderAnimation}
           >
             <div>
-              <JuiDialogHeader data-test-automation-id="ViewerHeader">
+              <JuiDialogHeader
+                fullscreen
+                data-test-automation-id="ViewerHeader"
+              >
                 <ReactResizeDetector handleWidth />
                 <JuiDialogHeaderMeta>
                   {sender && createdAt && (
