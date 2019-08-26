@@ -82,6 +82,7 @@ class AttachmentsViewComponent extends Component<
             />
             <JuiGrid container justify="center">
               <JuiButton
+                size="medium"
                 variant="contained"
                 onClick={onPostClicked}
                 data-test-automation-id="post-button"
