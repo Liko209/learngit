@@ -8,11 +8,8 @@ import React from 'react';
 import { JuiGroupSearch } from 'jui/pattern/GroupSearch';
 import { GroupSearchViewProps } from './types';
 import portalManager from '@/common/PortalManager';
-import { GroupSearchItem } from '@/containers/Downshift/GroupSearch/GroupSearchItem';
 import { withAutoSizer } from 'jui/components/AutoSizer';
 import { JuiVirtualizedList, IndexRange } from 'jui/components/VirtualizedList';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactSearchItem';
 import { GetItemPropsOptions } from 'downshift';
 import moize from 'moize';
 import { UniversalAvatar } from '@/containers/Avatar/UniversalAvatar';
@@ -64,17 +61,10 @@ class GroupSearchViewComponent extends React.Component<
       this.state.renderedRange.startIndex <= index &&
       index <= this.state.renderedRange.stopIndex
     ) {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON) ? (
-        <ContactSearchItem
-          itemId={id}
-          key={index}
-          isHighlighted={isHighlighted}
-          data-test-automation-id="groupSearchItem"
-          {...getItemProps({ index, item: { id } })}
-        />
-      ) : (
-        <GroupSearchItem
-          itemId={id}
+      const { Item, props } = this.props.getItemComponent(id);
+      return (
+        <Item
+          {...props}
           key={index}
           isHighlighted={isHighlighted}
           avatar={this._renderAvatar(id)}
