@@ -18,10 +18,10 @@ import {
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import GroupService from 'sdk/module/group';
-import { ProfileObserver } from '../types';
+import { IProfileObserver } from '../types';
 import { notificationCenter, ENTITY } from 'sdk/service';
 
-class ConversationPreferenceHandler implements ProfileObserver {
+class ConversationPreferenceHandler implements IProfileObserver {
   keys: SETTING_KEYS[] = [];
   constructor(keys: SETTING_KEYS[]) {
     this.keys = keys;
