@@ -32,11 +32,9 @@ class CallViewComponent extends Component<Props> {
   };
 
   render() {
-    const {
-      t, phoneNumber, size, variant, color, showIcon,
-    } = this.props;
+    const { t, phoneNumber, size, variant, color, showIcon } = this.props;
 
-    if (!showIcon.get()) {
+    if (!showIcon) {
       return null;
     }
 
