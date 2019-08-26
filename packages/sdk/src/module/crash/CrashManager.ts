@@ -37,10 +37,6 @@ export class CrashManager {
 
   onCrash = () => {
     if (Pal.instance.getWhiteScreenChecker()) {
-      console.log(
-        'tcl: isWhite screen',
-        Pal.instance.getWhiteScreenChecker().isWhiteScreen(),
-      );
       if (Pal.instance.getWhiteScreenChecker().isWhiteScreen()) {
         this._whiteScreenHandler.onCrash();
       }

@@ -35,6 +35,8 @@ jest.mock('../framework');
 jest.mock('../service/notificationCenter');
 jest.mock('foundation/src/analysis');
 jest.mock('foundation/network/NetworkManager');
+window.addEventListener = jest.fn();
+window.removeEventListener = jest.fn();
 describe('Sdk', () => {
   let sdk: Sdk;
   let accountManager: AccountManager;
