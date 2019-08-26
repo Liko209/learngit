@@ -55,11 +55,7 @@ function GroupSearch() {
     setKey(e.target.value);
   };
 
-<<<<<<< HEAD
-  const onSelectChange = (e:any) => {
-=======
   const onSelectChange = (e: any) => {
->>>>>>> develop
     setKey(`item ${e.id}`);
   };
 
