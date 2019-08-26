@@ -12,6 +12,7 @@ import { NOTIFICATION_OPTIONS, SETTING_KEYS } from '../constants';
 import { SettingOption } from '../types';
 import { ProfileDataController } from './ProfileDataController';
 import { ConversationPreference } from '../entity/Profile';
+import _ from 'lodash';
 
 class SettingsActionController {
   constructor(
@@ -85,7 +86,7 @@ class SettingsActionController {
       });
     }
     if (audioNotifications) {
-      let audios = [...originAudio];
+      let audios = _.cloneDeep(originAudio);
       if (audios.find(item => item.gid === cid)) {
         audios = audios.map(item => {
           if (item.gid === cid) {

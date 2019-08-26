@@ -140,31 +140,6 @@ describe('ConversationPreferenceHandler', () => {
       });
     });
     it.each`
-      sound                       | isTeam   | expectRes
-      ${undefined}                | ${true}  | ${globalSound}
-      ${undefined}                | ${false} | ${globalSound}
-      ${SOUNDS_TYPE.Default}      | ${true}  | ${globalSound}
-      ${SOUNDS_TYPE.Default}      | ${false} | ${globalSound}
-      ${SOUNDS_TYPE.Double_Beeps} | ${false} | ${SoundsListWithDefault[1]}
-    `(
-      'should return $expectRes when isTeam is $isTeam and backend is $sound',
-      async ({ sound, isTeam, expectRes }) => {
-        groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
-        const profile = {
-          conversation_level_notifications: {
-            [groupId]: {
-              audio_notifications: sound,
-            },
-          },
-        };
-        const result = await conversationPreferenceHandler.buildEntityInfo(
-          profile,
-          groupId,
-        );
-        expect(result.audioNotifications).toEqual(expectRes);
-      },
-    );
-    it.each`
       desktop      | isTeam   | expectRes
       ${undefined} | ${true}  | ${false}
       ${undefined} | ${false} | ${true}

@@ -9,9 +9,9 @@ import { Profile } from '../entity';
 import { Nullable, UndefinedAble } from 'sdk/types';
 import { ConversationPreference, AUDIO_NOTIFICATIONS } from '../entity/Profile';
 import {
-  SoundsList,
   SETTING_KEYS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  SoundsListWithDefault,
 } from '../constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
@@ -27,19 +27,23 @@ class ConversationPreferenceHandler implements IProfileObserver {
   public async buildEntityInfo(profile: Nullable<Profile>, cid: number) {
     const notification = _.get(
       profile,
-      `conversation_level_notifications.${cid}`,
+      `${SETTING_KEYS.CONVERSATION_NOTIFICATION}.${cid}`,
     );
-    const sound = _.get(profile, 'team_specific_audio_notifications', []).find(
+    const sound = _.get(profile, `${SETTING_KEYS.CONVERSATION_AUDIO}`, []).find(
       (item: AUDIO_NOTIFICATIONS) => item.gid === cid,
     );
     let model = {
       muted: (notification && notification.muted) || false,
-      desktopNotifications: notification && notification.desktop_notifications,
-      pushNotifications: notification && notification.push_notifications,
-      emailNotifications: notification && notification.email_notifications,
       audioNotifications:
-        sound && SoundsList.find(item => item.id === sound.sound),
+        sound && SoundsListWithDefault.find(item => item.id === sound.sound),
     } as ConversationPreference;
+    notification &&
+      Object.keys(notification).map(key => {
+        const value = notification[key];
+        if (value !== undefined) {
+          model[_.camelCase(key)] = value;
+        }
+      });
     if (await this._isTeam(cid)) {
       model = await this._getTeamNotification(model);
     } else {
