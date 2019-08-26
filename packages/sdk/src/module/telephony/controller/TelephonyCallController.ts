@@ -155,6 +155,7 @@ class TelephonyCallController implements IRTCCallDelegate {
       call.call_state !== CALL_STATE.DISCONNECTING
     ) {
       call.call_state = CALL_STATE.DISCONNECTING;
+      this._setSipData(call);
       notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
     }
   }
@@ -164,7 +165,6 @@ class TelephonyCallController implements IRTCCallDelegate {
     if (!call.disconnectTime) {
       call.disconnectTime = Date.now();
     }
-    this._setSipData(call);
     notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
   }
 
