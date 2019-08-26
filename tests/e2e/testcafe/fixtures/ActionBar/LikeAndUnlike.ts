@@ -438,7 +438,7 @@ test.meta(<ITestMeta>{
 
   const postItem = conversationPage.postItemById(likedPostId);
   await h(t).withLog(`When I hover like button icon on post footer`, async () => {
-    await t.hover(postItem.likeButtonOnFooter);
+    await t.hover(postItem.likeButtonOnFooter, {speed: 0.1});
   });
 
   let tooltipText = `You and ${antherUsername} like this`;
@@ -453,7 +453,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I hover like button icon on post footer`, async () => {
-    await t.hover(postItem.likeButtonOnFooter);
+    await t.hover(postItem.likeButtonOnFooter, {speed: 0.1});
   });
 
   tooltipText = `You like this`;
@@ -468,7 +468,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I hover like button icon on post footer`, async () => {
-    await t.hover(postItem.likeButtonOnFooter);
+    await t.hover(postItem.likeButtonOnFooter, {speed: 0.1});
   });
 
   tooltipText = `You and ${antherUsername} like this`;
@@ -482,7 +482,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I hover like button icon on post footer`, async () => {
-    await t.hover(postItem.likeButtonOnFooter);
+    await t.hover(postItem.likeButtonOnFooter, {speed: 0.1});
   });
 
   tooltipText = `${antherUsername} likes this`;
@@ -496,7 +496,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I hover like button icon on post footer`, async () => {
-    await t.hover(postItem.likeButtonOnFooter);
+    await t.hover(postItem.likeButtonOnFooter, {speed: 0.1});
   });
 
   tooltipText = `You and ${antherUsername} like this`;

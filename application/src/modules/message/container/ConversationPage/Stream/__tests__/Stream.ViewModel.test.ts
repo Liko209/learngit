@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/// <reference path="../../../../../../../__tests__/types.d.ts" />
+// / <reference path="../../../../../../../__tests__/types.d.ts" />
 import React from 'react';
 import { notificationCenter } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
@@ -39,6 +39,7 @@ import { Post } from 'sdk/module/post/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { GroupState } from 'sdk/module/state/entity';
+import * as utils from '@/store/utils';
 
 jest.mock('sdk/dao');
 jest.mock('sdk/module/item');
@@ -120,6 +121,7 @@ describe('StreamViewModel', () => {
 
   describe('loadInitialPosts()', () => {
     function setupMock({ props, getPostsByGroupIdData }: any) {
+      jest.spyOn(utils, 'getSingleEntity').mockReturnValue([]);
       const vm = new StreamViewModel(props);
       jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
       postService.getPostsByGroupId.mockResolvedValue(getPostsByGroupIdData);
@@ -144,7 +146,7 @@ describe('StreamViewModel', () => {
           .compact()
           .value(),
       ).toEqual([1, 2, 3]);
-      expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
+      expect(storeManager.dispatchUpdatedDataModels).toHaveBeenCalledWith(
         ENTITY_NAME.ITEM,
         [{ id: 1 }],
         false,
@@ -306,7 +308,7 @@ describe('StreamViewModel', () => {
       const vm = setup({ _historyHandler: { clear: mockClear } });
       vm.clearHistoryUnread();
 
-      expect(mockClear).toBeCalledTimes(1);
+      expect(mockClear).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -327,8 +329,8 @@ describe('StreamViewModel', () => {
       });
 
       vm.updateHistoryHandler();
-      expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockUpdate).toBeCalledWith(vm._groupState, postIds);
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
+      expect(mockUpdate).toHaveBeenCalledWith(vm._groupState, postIds);
     });
   });
 
@@ -339,7 +341,7 @@ describe('StreamViewModel', () => {
       const vm = setup({ groupId });
       vm.updateIgnoredStatus(true);
 
-      expect(spy).toBeCalledWith([groupId], true);
+      expect(spy).toHaveBeenCalledWith([groupId], true);
 
       spy.mockRestore();
     });
@@ -352,7 +354,7 @@ describe('StreamViewModel', () => {
       const vm = setup({ groupId });
       vm.markAsRead();
 
-      expect(spy).toBeCalledWith(groupId, false, true);
+      expect(spy).toHaveBeenCalledWith(groupId, false, true);
 
       spy.mockRestore();
     });
@@ -366,7 +368,7 @@ describe('StreamViewModel', () => {
       });
       vm.enableNewMessageSeparatorHandler();
 
-      expect(mockEnable).toBeCalledTimes(1);
+      expect(mockEnable).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -379,7 +381,7 @@ describe('StreamViewModel', () => {
 
       vm.disableNewMessageSeparatorHandler();
 
-      expect(mockDisable).toBeCalledTimes(1);
+      expect(mockDisable).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -409,9 +411,9 @@ describe('StreamViewModel', () => {
         .spyOn(storeManager, 'getGlobalStore')
         .mockImplementation(() => globalStore);
       vm.initialize(12);
-      
-      expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-      expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
+
+      expect(globalStore.set).toHaveBeenCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
+      expect(globalStore.get).toHaveBeenCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
       spy.mockRestore();
     });
 
@@ -419,7 +421,7 @@ describe('StreamViewModel', () => {
     it('should sync group items when switch conversation', () => {
       const { vm } = localSetup();
       vm.initialize(12);
-      expect(itemService.requestSyncGroupItems).toBeCalled();
+      expect(itemService.requestSyncGroupItems).toHaveBeenCalled();
     });
   });
 
@@ -435,8 +437,8 @@ describe('StreamViewModel', () => {
       });
 
       const posts = await vm.loadPrevPosts();
-      expect(hasMore).toBeCalledWith(QUERY_DIRECTION.OLDER);
-      expect(fetchData).not.toBeCalled();
+      expect(hasMore).toHaveBeenCalledWith(QUERY_DIRECTION.OLDER);
+      expect(fetchData).not.toHaveBeenCalled();
       expect(posts).toEqual([]);
     });
 
@@ -452,7 +454,7 @@ describe('StreamViewModel', () => {
       });
 
       const posts = await vm.loadPrevPosts();
-      expect(fetchData).toBeCalledWith(QUERY_DIRECTION.OLDER, undefined);
+      expect(fetchData).toHaveBeenCalledWith(QUERY_DIRECTION.OLDER, undefined);
       expect(posts).toEqual(data);
     });
 
@@ -547,8 +549,8 @@ describe('StreamViewModel', () => {
 
       const posts = await vm.loadNextPosts();
 
-      expect(hasMore).toBeCalledWith(QUERY_DIRECTION.NEWER);
-      expect(fetchData).not.toBeCalled();
+      expect(hasMore).toHaveBeenCalledWith(QUERY_DIRECTION.NEWER);
+      expect(fetchData).not.toHaveBeenCalled();
       expect(posts).toEqual([]);
     });
 
@@ -564,7 +566,7 @@ describe('StreamViewModel', () => {
       });
 
       const posts = await vm.loadNextPosts();
-      expect(fetchData).toBeCalledWith(QUERY_DIRECTION.NEWER, undefined);
+      expect(fetchData).toHaveBeenCalledWith(QUERY_DIRECTION.NEWER, undefined);
       expect(posts).toEqual(data);
     });
 

@@ -7,9 +7,11 @@ import * as bluebird from "bluebird";
 import { PptrUtils } from '../utils';
 
 class SearchPage extends Page {
-  private globalSearchResult = 'li[data-test-automation-id="search-content-item"]:nth-child(2)';
+  private globalSearchResult = 'li[data-test-automation-id="search-content-item"]';
 
-  private input: string = 'input[data-test-automation-id="topBar-search-input"]';
+  private globalSearchBar = 'div[data-test-automation-id="topBar-search-bar"]';
+
+  private input: string = 'input[data-test-automation-id="global-search-input"]';
 
   private textItem: string = 'div[data-test-automation-id="search-item-text"]';
 
@@ -20,7 +22,7 @@ class SearchPage extends Page {
   async searchByKeyword(keyword: string) {
     let page = await this.page();
 
-    await PptrUtils.click(page, this.input);
+    await PptrUtils.click(page, this.globalSearchBar);
 
     await PptrUtils.waitForSelector(page, this.input);
 
