@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./l10n/Call/*.ts", "./l10n/Phone", ""],
+    "browsers": ["selenium:chrome"]
+  }
+}
