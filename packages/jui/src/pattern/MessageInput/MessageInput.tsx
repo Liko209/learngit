@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, ClipboardEvent } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources, RangeStatic } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
@@ -117,6 +117,37 @@ type Props = {
   hasFocused?: boolean;
 };
 
+// user try to paste image after snapshot
+function isPasteImageFromMemory(files: FileList, types: string[]) {
+  return (
+    files && files.length === 1 && types.length === 1 && types[0] === 'Files'
+  );
+}
+
+// user copy image in native filesystem, then try to paste into message input
+// even user copied more than 1 image, only the last one will be pasted into web
+function isPasteImageFromFileSystem(files: FileList, types: string[]) {
+  return (
+    files &&
+    files.length === 1 &&
+    types.length === 2 &&
+    // types[0] === 'text/plain' &&
+    types[1] === 'Files'
+  );
+}
+
+function isPasteImageEvent(event: ClipboardEvent) {
+  if (event.clipboardData) {
+    const { files, types } = event.clipboardData;
+    // will get error in compiled time if use keyword `readonly`, so make copy of `types`
+    const t: string[] = types ? [...types] : [];
+    return (
+      isPasteImageFromFileSystem(files, t) || isPasteImageFromMemory(files, t)
+    );
+  }
+  return false;
+}
+
 class JuiMessageInput extends React.PureComponent<Props> {
   static defaultProps = {
     autofocus: true,
@@ -191,20 +222,18 @@ class JuiMessageInput extends React.PureComponent<Props> {
     }
   };
 
-  private _handlePaste = (event: any) => {
-    if (event.clipboardData) {
-      const files: FileList = event.clipboardData.files;
-      if (files && files.length > 0) {
-        // access data directly
-        const result: File[] = [];
-        for (let i = 0; i < files.length; ++i) {
-          const file = files[i];
-          result.push(file);
-        }
-        const { didDropFile } = this.props;
-        didDropFile && files && didDropFile(result);
-        event.preventDefault();
+  private _handlePaste = (event: ClipboardEvent) => {
+    if (isPasteImageEvent(event)) {
+      const { files } = event.clipboardData;
+      // access data directly
+      const result: File[] = [];
+      for (let i = 0; i < files.length; ++i) {
+        const file = files[i];
+        result.push(file);
       }
+      const { didDropFile } = this.props;
+      didDropFile && files && didDropFile(result);
+      event.preventDefault();
     }
   };
   render() {

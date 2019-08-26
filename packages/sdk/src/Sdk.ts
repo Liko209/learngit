@@ -61,6 +61,18 @@ class Sdk {
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
+    // Use default config value
+    const apiConfig: ApiConfig = merge(
+      {},
+      defaultApiConfig,
+      this._sdkConfig.api,
+    );
+    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
+
+    Foundation.init({
+      dbAdapter: dbConfig.adapter,
+    });
+    Api.init(apiConfig, this.networkManager);
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -94,18 +106,6 @@ class Sdk {
 
   async onStartLogin() {
     mainLogger.tags(LOG_TAG).info('onStartLogin');
-    // Use default config value
-    const apiConfig: ApiConfig = merge(
-      {},
-      defaultApiConfig,
-      this._sdkConfig.api,
-    );
-    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
-
-    Foundation.init({
-      dbAdapter: dbConfig.adapter,
-    });
-    Api.init(apiConfig, this.networkManager);
     await this.daoManager.initDatabase(this.clearAllData);
 
     this.permissionService.injectControllers(new LaunchDarklyController());

@@ -421,25 +421,6 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     );
   }
 
-  get newMessageBadgeCountDropDown() {
-    return this.getSelectorByAutomationId(
-      "settingItemSelectBox-newMessageBadgeCount"
-    );
-  }
-
-  get newMessageBadgeCount() {
-    return this.getSelector(
-      `*[data-test-automation-id^="settingItemSelectBoxItem-newMessageBadgeCount-"`
-    );
-  }
-
-  async selectNewMessageBadgeCount(text: string) {
-    await this.t.click(this.newMessageBadgeCount.withText(text));
-  }
-
-  async clickNewMessageBadgeCountDropDown() {
-    await this.t.click(this.newMessageBadgeCountDropDown);
-  }
 
   /// Direct messages
   get directMessagesSelectBox() {
@@ -469,11 +450,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     );
   }
 
-  get newMessageBadgeCountSelectBox() {
-    return this.getSelectorByAutomationId(
-      "settingItemSelectBox-newMessageBadgeCount"
-    );
-  }
+
 
   get directMessagesAndMentionsOnlyItem() {
     return this.getSelectorByAutomationId(
@@ -495,9 +472,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     await this.t.hover(this.otherNotificationSettingsTitle);
   }
 
-  async clickNewMessageBadgeCountSelectBox() {
-    await this.t.click(this.newMessageBadgeCountSelectBox);
-  }
+
   // sounds section
   get soundsSection() {
     return this.getComponent(SoundsSection);
