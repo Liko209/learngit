@@ -90,6 +90,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
         data-test-automation-id={'fileActionMenu'}
       >
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
+          <FileShareAction fileId={fileId} postId={postId} />
           <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
           {showViewInPostAction && groupId && (
             <ViewInPostAction
@@ -99,7 +100,6 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
             />
           )}
           <FileDeleteAction fileId={fileId} postId={postId} {...rest} />
-          <FileShareAction fileId={fileId} postId={postId} />
         </JuiMenuList>
       </JuiPopperMenu>
     );

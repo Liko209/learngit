@@ -322,6 +322,7 @@ class AnalyticsCollector {
       state,
     });
   }
+
 }
 
 export { AnalyticsCollector };

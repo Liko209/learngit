@@ -14,6 +14,7 @@ export type GroupSearchProps = {
   searchFunc:(searchKey:string)=>Promise< SortableModel<any>[]>
 };
 
+
 export interface IGroupSearchViewModel {
   size: number;
   searchGroups: (key: string) => any;

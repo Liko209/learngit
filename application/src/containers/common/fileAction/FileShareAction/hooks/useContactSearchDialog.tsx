@@ -13,19 +13,20 @@ const searchFunc = async (searchKey: string) => {
     fetchAllIfSearchKeyEmpty: true,
     meFirst: true,
   });
-  return result
+  return result.sortableModels
 }
+
 const useContactSearchDialog = (selectHandler: (...args: any[]) => any, dependency: any[]) => {
   const onSelect = useCallback(selectHandler, dependency);
   const openDialog = useCallback(() => {
-    Dialog.simple(
+    const { dismiss } = Dialog.simple(
       <GroupSearch onSelect={onSelect} dialogTitle="shareFile.dialogTitle" listTitle="groupSearch.listTitle" searchFunc={searchFunc} />,
       {
         size: 'small',
-        enableEscapeClose: true,
+        onClose: () => dismiss(),
+        disableBackdropClick: true
       },
     );
-    return false;
   }, [onSelect])
   return [openDialog]
 }

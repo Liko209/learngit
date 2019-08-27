@@ -5,25 +5,95 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 import { useContactSearchDialog } from './hooks/useContactSearchDialog';
 import { PostService } from 'sdk/module/post';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import portalManager from '@/common/PortalManager';
+import { getConversationId } from '@/common/goToConversation';
+import { wrapHandleError, NOTIFICATION_TYPE } from '@/common/catchError';
+import { ERROR_CODES_SDK } from 'sdk/src/error';
+import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
+import { Notification } from '@/containers/Notification';
+import i18nT from '@/utils/i18nT';
+import { dataAnalysis } from 'foundation/analysis';
 
 interface Props {
   fileId: number,
-  postId: number
+  postId?: number
 }
 
 const share = <JuiIconography iconColor={['grey', '500']} iconSize="small">share</JuiIconography>
 const FileShareAction = (props: Props) => {
   const { t } = useTranslation();
-  const { fileId, postId } = props
-  const shareToConversation = useCallback((group: { id: number }) => {
+  const { fileId, postId } = props;
+  const shareToConversation = async (contact: { id: number }) => {
+    portalManager.dismissLast()
+    dataAnalysis.track('Jup_Web/DT_msg_shareFileToConversation', {
+      source: "conversation_shareFile",
+    });
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     );
-    postService.shareItem(postId, fileId, group.id)
-  }, [])
-  const [openContactSearchDialog] = useContactSearchDialog(shareToConversation, [])
+    if (!postId) {
+      return
+    }
+    const conversationId = await getConversationId(contact.id)
+    if (!conversationId) {
+      return
+    }
+    try {
+      await postService.shareItem(postId, fileId, conversationId)
+      Notification.flashToast({
+        message: await i18nT(`item.prompt.shareSuccess`),
+        type: ToastType.SUCCESS,
+        messageAlign: ToastMessageAlign.CENTER,
+        fullWidth: false,
+        dismissible: false,
+      })
+    } catch (e) {
+      let message = ''
+      switch (e.code) {
+        case ERROR_CODES_SDK.POST_DEACTIVATED:
+        case ERROR_CODES_SDK.ITEM_DEACTIVATED:
+          message = 'shareFileDeleted'
+          break;
+        case ERROR_CODES_SDK.GROUP_ARCHIVED:
+          message = 'shareFileTeamArchived'
+          break;
+        case ERROR_CODES_SDK.GROUP_DEACTIVATED:
+          message = 'shareFileTeamDeleted'
+          break;
+        case ERROR_CODES_SDK.GROUP_NOT_MEMBER:
+          message = 'shareFileNotMember'
+          break;
+        case ERROR_CODES_SDK.GROUP_NO_PERMISSION:
+          message = 'shareFileNoAuth'
+          break;
+        default:
+          throw e;
+      }
+      Notification.flashToast({
+        message: await i18nT(`item.prompt.${message}`),
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.CENTER,
+        fullWidth: false,
+        dismissible: false,
+      })
+    }
+  }
+  const shareToConversationCB = useCallback(
+    wrapHandleError(shareToConversation,
+      NOTIFICATION_TYPE.FLASH,
+      {
+        network: 'item.prompt.shareFileNetworkError',
+        server: 'item.prompt.shareFileBackendError',
+      }),
+    [postId, fileId])
+
+  const [openContactSearchDialog] = useContactSearchDialog(shareToConversationCB, [shareToConversationCB])
+  const openDialog = useCallback(() => {
+    dataAnalysis.page('Jup_Web/DT_msg_shareFileToConversation');
+    openContactSearchDialog();
+  }, [openContactSearchDialog])
   return (
-    <JuiMenuItem data-test-automation-id={'fileShareItem'} icon={share} onClick={openContactSearchDialog}>
+    <JuiMenuItem data-test-automation-id={'fileShareItem'} icon={share} onClick={openDialog}>
       {t('message.prompt.shareFile')}
     </JuiMenuItem>)
 }

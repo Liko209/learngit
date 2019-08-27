@@ -8,14 +8,18 @@ import { GroupSearchProps, IGroupSearchViewModel } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { observable, computed } from 'mobx';
 import GroupModel from '@/store/models/Group';
-import { SortableModel } from 'sdk/src/framework/model';
-import { Group } from 'sdk/src/module/group/entity';
+import { SortableModel } from 'sdk/framework/model';
+import { Group } from 'sdk/module/group/entity';
 import { mapGroupModelToItem } from './lib';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import PersonModel from '@/store/models/Person';
+import { Person } from 'sdk/module/person/entity';
+import { ContactSearchItem } from '@/modules/telephony/container/ContactSearchItem';
 
 export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
   implements IGroupSearchViewModel {
   @observable list: number[] = [];
-  searchResult: SortableModel<Group>[];
+  searchResult: SortableModel<Group|Person>[];
 
   @computed
   get size() {
@@ -24,8 +28,20 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
 
   getItemComponent = (id: number) => {
     const sortableModel = this.searchResult[this.list.indexOf(id)];
-    const groupModel = new GroupModel(sortableModel.entity);
-    return mapGroupModelToItem(groupModel);
+    const type = GlipTypeUtil.extractTypeId(id);
+    switch (type) {
+      case TypeDictionary.TYPE_ID_PERSON:
+        {
+          const personModel = new PersonModel(sortableModel.entity as Person)
+          return { Item: ContactSearchItem, props: { personId : personModel.id } }
+        };
+      default:
+        {
+          const groupModel = new GroupModel(sortableModel.entity as Group);
+          return mapGroupModelToItem(groupModel);
+        }
+    }
+
   };
 
   searchGroups = async (searchKey: string) => {
