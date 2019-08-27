@@ -30,7 +30,7 @@ describe('PartialModelController', () => {
       undefined,
     );
 
-    partialModifyController = new PartialModifyController(
+    partialModifyController = new PartialModifyController<TestEntity>(
       entitySourceController,
     );
   });
@@ -63,7 +63,9 @@ describe('PartialModelController', () => {
         return updateEntity;
       };
 
-      jest.spyOn(entitySourceController, 'update').mockImplementation(() => {});
+      jest
+        .spyOn(entitySourceController, 'update')
+        .mockImplementation(async () => {});
 
       jest
         .spyOn(notificationCenter, 'emitEntityUpdate')
@@ -103,7 +105,7 @@ describe('PartialModelController', () => {
 
       jest
         .spyOn(entitySourceController, 'bulkUpdate')
-        .mockImplementation(() => {});
+        .mockImplementation(async () => {});
 
       const result = await partialModifyController.updatePartially({
         entityId: 1,
@@ -138,7 +140,7 @@ describe('PartialModelController', () => {
 
       jest
         .spyOn(entitySourceController, 'bulkUpdate')
-        .mockImplementation(() => {});
+        .mockImplementation(async () => {});
 
       expect(
         partialModifyController.updatePartially({
@@ -188,6 +190,32 @@ describe('PartialModelController', () => {
       );
 
       expect(mergedEntity).toEqual(targetEntity);
+    });
+  });
+
+  describe('_handlePartialUpdateWithOriginal', () => {
+    it('should not rollback when shouldRollback is false', async () => {
+      partialModifyController.getRollbackPartialEntity = jest.fn();
+      partialModifyController.getMergedEntity = jest.fn();
+      const mockDoUpdateEntity = () => {
+        throw 'test error';
+      };
+      partialModifyController['_doPartialSaveAndNotify'] = jest.fn();
+
+      await partialModifyController['_handlePartialUpdateWithOriginal'](
+        {} as any,
+        {} as any,
+        mockDoUpdateEntity,
+        undefined,
+        false,
+        false,
+        false,
+      ).catch((err: string) => {
+        expect(err).toEqual('test error');
+      });
+      expect(
+        partialModifyController['_doPartialSaveAndNotify'],
+      ).not.toHaveBeenCalled();
     });
   });
 });

@@ -336,6 +336,9 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_msg_joinConferenceCall', {
       source,
     });
+  // [FIJI-8195]
+  login() {
+    dataAnalysis.track('Jup_Web/DT_general_login');
   }
 }
 

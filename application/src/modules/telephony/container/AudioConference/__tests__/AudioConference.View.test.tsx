@@ -8,7 +8,6 @@ import { shallow } from 'enzyme';
 import { AudioConferenceView } from '../AudioConference.View';
 import { JuiProfileDialogContentSummaryButton } from 'jui/pattern/Profile/Dialog';
 import { JuiIconButton } from 'jui/components/Buttons';
-import portalManager from '@/common/PortalManager';
 
 describe('AudioConference.View', () => {
   const props = {
@@ -29,16 +28,19 @@ describe('AudioConference.View', () => {
     expect(wrapper.type()).toBe(null);
   });
 
-  it('should render ProfileDialogContentSummaryButton if variant is text', () => {
+  it('should render ProfileDialogContentSummaryButton if variant is text [JPT-2893]', () => {
     const wrapper = shallow(<AudioConferenceView {...props} variant="text" />);
     expect(wrapper.find(JuiProfileDialogContentSummaryButton).exists()).toBe(
       true,
     );
+    expect(wrapper.find(JuiProfileDialogContentSummaryButton).props()['aria-label']).toBe('phone.startConference')
   });
 
-  it('should render IconButton by default', () => {
+  it('should render IconButton by default [JPT-2893]', () => {
     const wrapper = shallow(<AudioConferenceView {...props} />);
     expect(wrapper.find(JuiIconButton).exists()).toBe(true);
+    expect(wrapper.find(JuiIconButton).props().ariaLabel).toBe('phone.startConference')
+    expect(wrapper.find(JuiIconButton).props().tooltipTitle).toBe('phone.startConference')
   });
 
   it('should call startAudioConference when click', () => {
