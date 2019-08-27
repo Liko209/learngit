@@ -597,6 +597,7 @@ class TelephonyService {
       this.openE911(action);
       return true;
     }
+
     return action();
   };
 
@@ -1171,10 +1172,10 @@ class TelephonyService {
   };
 
   startAudioConference = async (groupId: number) => {
-    await this.ensureCallPermission(async () => {
+    return await this.ensureCallPermission(async () => {
       try {
         const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
-        this._makeCall(phoneNumber, { accessCode: hostCode })
+        return this._makeCall(phoneNumber, { accessCode: hostCode })
       } catch(err) {
         // need toast, toast message should be provided from PM
         mainLogger.error(

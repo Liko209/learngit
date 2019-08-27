@@ -12,6 +12,7 @@ import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { TelephonyService } from '@/modules/telephony/service/TelephonyService';
 import * as media from '@/modules/media/module.config';
 import { CONVERSATION_TYPES } from '@/constants';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 jest.mock('@/modules/media/service');
 
@@ -19,7 +20,9 @@ const jupiter = container.get(Jupiter);
 jupiter.registerModule(media.config);
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AuthUserConfig');
-
+jest.mock('computed-async-mobx', () => ({
+  promisedComputed: (name: string, factory: any) => Promise.resolve(factory())
+}))
 decorate(injectable(), FeaturesFlagsService);
 decorate(injectable(), TelephonyService);
 
@@ -35,21 +38,21 @@ let telephonyService = {
   startAudioConference: jest.fn()
 }
 let featuresFlagsService = {
-  canUseTelephony: jest.fn().mockResolvedValue(true)
+  canUseConference: jest.fn().mockResolvedValue(true)
 }
 
-const setUp = ({group, telephonyService, featureFlagsService}: any) => {
+const setUp = ({group, telephonyService, featuresFlagsService}: any) => {
   if (group) {
     jest.spyOn(utils, 'getEntity').mockImplementation(() => group);
   }
-  if (telephonyService || featureFlagsService) {
+  if (telephonyService || featuresFlagsService) {
     container.get = jest.fn((key: any) => {
       if (key === TELEPHONY_SERVICE && telephonyService) {
         return telephonyService
       }
 
-      if(key === FeaturesFlagsService && featureFlagsService) {
-        return featureFlagsService
+      if(key === FeaturesFlagsService && featuresFlagsService) {
+        return featuresFlagsService
       }
     })
   }
@@ -58,7 +61,13 @@ const setUp = ({group, telephonyService, featureFlagsService}: any) => {
 setUp({group, telephonyService, featuresFlagsService})
 
 describe('AudioConference.ViewModel', () => {
-  it('should call service api when startAudioConference is called', () => {
+
+  it('should not render if id is not provided', () => {
+    vm = new AudioConferenceViewModel();
+    expect(vm.showIcon).resolves.toEqual(false);
+  })
+
+  it('should call service api when startAudioConference is called, and track data', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.TEAM,
@@ -66,10 +75,14 @@ describe('AudioConference.ViewModel', () => {
     setUp({
       group,
       telephonyService,
+      FeaturesFlagsService,
     })
-    vm = new AudioConferenceViewModel({ groupId: 123 });
+    analyticsCollector.startConferenceCall = jest.fn();
+
+    vm = new AudioConferenceViewModel({ groupId: 123, analysisSource: 'conversationHeader'  });
     vm.startAudioConference();
     expect(telephonyService.startAudioConference).toHaveBeenCalledWith(123);
+    expect(analyticsCollector.startConferenceCall).toHaveBeenCalled();
   });
 
   it('showIcon should be false if conversation is not group/team', () => {
@@ -80,9 +93,42 @@ describe('AudioConference.ViewModel', () => {
     setUp({
       group,
       telephonyService,
+      featuresFlagsService,
     })
     vm = new AudioConferenceViewModel({ groupId: 123 });
 
-    expect(vm.showIcon.cached.value).toBe(false);
+    expect(vm.showIcon).resolves.toBe(false);
   });
+
+  it('showIcon should be false if canUseConference is false', () => {
+    const group = {
+      groupId: 123,
+      type: CONVERSATION_TYPES.TEAM,
+    }
+    featuresFlagsService.canUseConference.mockResolvedValue(false)
+    setUp({
+      group,
+      telephonyService,
+      featuresFlagsService,
+    })
+    vm = new AudioConferenceViewModel({ groupId: 123 });
+
+    expect(vm.showIcon).resolves.toBe(false);
+  });
+
+  it('showIcon should be true if it is a team/group and canUseConference is true', () => {
+    const group = {
+      groupId: 123,
+      type: CONVERSATION_TYPES.TEAM,
+    }
+    featuresFlagsService.canUseConference.mockResolvedValue(true)
+    setUp({
+      group,
+      telephonyService,
+      featuresFlagsService,
+    })
+    vm = new AudioConferenceViewModel({ groupId: 123 });
+
+    expect(vm.showIcon).resolves.toBe(true);
+  })
 });
