@@ -562,10 +562,7 @@ class TelephonyStore {
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
-    return (
-      [undefined, CALL_STATE.DISCONNECTED].includes(this.callState) ||
-      this.incomingState === INCOMING_STATE.FORWARD
-    );
+    return [undefined, CALL_STATE.DISCONNECTED].includes(this.callState);
   }
 
   @computed
