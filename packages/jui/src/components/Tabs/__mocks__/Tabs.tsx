@@ -86,6 +86,7 @@ class JuiTabs extends PureComponent<Props, States> {
   // right rail container
   private _containerRef: RefObject<any>;
   private _containerWidth: number = 0;
+  private _containerStyle: React.CSSProperties = {};
 
   constructor(props: Props) {
     super(props);
@@ -282,7 +283,9 @@ class JuiTabs extends PureComponent<Props, States> {
           <StyledContainer
             key={index}
             className={className}
-            offset={this._containerWidth}
+            style={Object.assign(this._containerStyle, {
+              right: this._containerWidth,
+            })}
           >
             {indexLazyLoadComponents.includes(index) && child.props.children}
           </StyledContainer>
