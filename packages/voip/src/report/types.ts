@@ -43,11 +43,11 @@ export type FsmStatusCategory =
 export enum CallEventCategory {
   InviteError = 'InviteError',
   RegistrationError = 'RegistrationError',
-  WebRTCError = 'WebRTCError',
   MediaEvent = 'MediaEvent',
   NetworkEvent = 'NetworkEvent',
   CallAction = 'CallAction',
-  CallActionResult = 'CallActionResult',
+  CallActionSuccess = 'CallActionSuccess',
+  CallActionFailed = 'CallActionFailed',
 }
 
 export type Establishment = Partial<{

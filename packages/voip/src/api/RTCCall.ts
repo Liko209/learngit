@@ -37,9 +37,6 @@ import {
   Establishment,
   CallEventCategory,
 } from '../report/types';
-import { Listener } from 'eventemitter2';
-import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
-import { RTC_NETWORK_EVENT } from '../utils/types';
 
 const LOG_TAG = 'RTCCall';
 
@@ -71,7 +68,6 @@ class RTCCall {
   private _connectedTimestamp: Date | undefined = undefined;
   private _userAgent: string = '';
   private _report: CallReport;
-  private _networkListener: Listener;
 
   constructor(
     isIncoming: boolean,
@@ -128,9 +124,6 @@ class RTCCall {
       { key: CALL_REPORT_PROPS.UA, value: userInfo },
     ]);
     this._report.updateEstablishment(establishmentKey);
-    this._networkListener = (params: any) => {
-      this._onNetworkChange(params);
-    };
     this._prepare();
   }
 
@@ -141,10 +134,7 @@ class RTCCall {
   private _addHangupTimer(): void {
     this._hangupInvalidCallTimer = setTimeout(() => {
       rtcLogger.info(LOG_TAG, 'call time out and be hangup');
-      this._delegate.onCallActionFailed(
-        RTC_CALL_ACTION.CALL_TIME_OUT,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID,
-      );
+      this._onCallActionFailed(RTC_CALL_ACTION.CALL_TIME_OUT, RTC_CALL_ACTION_ERROR_CODE.INVALID);
       this.hangup();
     }, kRTCHangupInvalidCallInterval * 1000);
   }
@@ -353,6 +343,10 @@ class RTCCall {
 
   park(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'park');
+    this._report.updateCallEvent(
+      CallEventCategory.CallAction,
+      RTC_CALL_ACTION.PARK,
+    );
     this._fsm.park();
   }
 
@@ -363,10 +357,7 @@ class RTCCall {
       RTC_CALL_ACTION.TRANSFER,
     );
     if (target.length === 0) {
-      this._delegate.onCallActionFailed(
-        RTC_CALL_ACTION.TRANSFER,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID,
-      );
+      this._onCallActionFailed(RTC_CALL_ACTION.TRANSFER, RTC_CALL_ACTION_ERROR_CODE.INVALID,);
       return;
     }
     this._fsm.transfer(target);
@@ -383,10 +374,7 @@ class RTCCall {
         LOG_TAG,
         'Can get call or call session from input call uuid',
       );
-      this._delegate.onCallActionFailed(
-        RTC_CALL_ACTION.WARM_TRANSFER,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID,
-      );
+      this._onCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER, RTC_CALL_ACTION_ERROR_CODE.INVALID);
       return;
     }
     this._fsm.warmTransfer(targetCall.getCallSession());
@@ -399,10 +387,7 @@ class RTCCall {
       RTC_CALL_ACTION.FORWARD,
     );
     if (target.length === 0 || !this._isIncomingCall) {
-      this._delegate.onCallActionFailed(
-        RTC_CALL_ACTION.FORWARD,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID,
-      );
+      this._onCallActionFailed(RTC_CALL_ACTION.FORWARD, RTC_CALL_ACTION_ERROR_CODE.INVALID,);
       return;
     }
     this._fsm.forward(target);
@@ -454,10 +439,6 @@ class RTCCall {
   }
 
   private _prepare(): void {
-    RTCNetworkNotificationCenter.instance().on(
-      RTC_NETWORK_EVENT.NETWORK_CHANGE,
-      this._networkListener,
-    );
     // listen session
     this._callSession.on(CALL_SESSION_STATE.ACCEPTED, () => {
       // Update party id and session id in invite response sip message
@@ -639,15 +620,7 @@ class RTCCall {
     });
   }
 
-  private _onNetworkChange(params: any) {
-    this._report.updateCallEvent(CallEventCategory.NetworkEvent, params.state);
-  }
-
   private _destroy() {
-    RTCNetworkNotificationCenter.instance().removeListener(
-      RTC_NETWORK_EVENT.NETWORK_CHANGE,
-      this._networkListener,
-    );
     this._maybeNotifyNoAudioEvent();
     this._callSession.removeAllListeners();
     this._callSession.destroy();
@@ -757,9 +730,19 @@ class RTCCall {
       default:
         break;
     }
-    if (this._delegate) {
-      this._delegate.onCallActionSuccess(callAction, options);
-    }
+    this._notifyCallActionSuccess(callAction, options);
+  }
+
+  private _notifyCallActionSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions) {
+      this._report.updateCallEvent(
+        CallEventCategory.CallActionSuccess,
+        `${callAction}`,
+      );
+      if (this._delegate) {
+        this._delegate.onCallActionSuccess(callAction, options);
+      }
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
@@ -783,6 +766,14 @@ class RTCCall {
       default:
         break;
     }
+    this._notifyCallActionFailed(callAction, code);
+  }
+
+  private _notifyCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
+    this._report.updateCallEvent(
+      CallEventCategory.CallActionFailed,
+      `${callAction}`,
+    );
     if (this._delegate) {
       rtcLogger.warn(
         LOG_TAG,
@@ -913,15 +904,15 @@ class RTCCall {
   }
 
   private _onStartRecordAction() {
-    if (RECORD_STATE.RECORDING === this._recordState && this._delegate) {
-      this._delegate.onCallActionSuccess(RTC_CALL_ACTION.START_RECORD, {});
+    if (RECORD_STATE.RECORDING === this._recordState) {
+      this._notifyCallActionSuccess(RTC_CALL_ACTION.START_RECORD, {});
     } else if (RECORD_STATE.IDLE === this._recordState) {
       this._recordState = RECORD_STATE.START_RECORD_IN_PROGRESS;
       this._callSession.startRecord();
-    } else if (this._delegate) {
-      this._delegate.onCallActionFailed(
+    } else {
+      this._notifyCallActionFailed(
         RTC_CALL_ACTION.START_RECORD,
-        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS,
+        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS
       );
     }
   }
@@ -930,12 +921,12 @@ class RTCCall {
     if (RECORD_STATE.RECORDING === this._recordState) {
       this._recordState = RECORD_STATE.STOP_RECORD_IN_PROGRESS;
       this._callSession.stopRecord();
-    } else if (RECORD_STATE.IDLE === this._recordState && this._delegate) {
-      this._delegate.onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD, {});
-    } else if (this._delegate) {
-      this._delegate.onCallActionFailed(
+    } else if (RECORD_STATE.IDLE === this._recordState) {
+      this._notifyCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD, {});
+    } else {
+      this._notifyCallActionFailed(
         RTC_CALL_ACTION.STOP_RECORD,
-        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS,
+        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS
       );
     }
   }

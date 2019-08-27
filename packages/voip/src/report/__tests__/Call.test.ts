@@ -48,6 +48,10 @@ class MockAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
   isReady(): boolean {
     return this.isReadyReturnValue;
   }
+
+  getRegistrationStatusCode(): number {
+    return 603;
+  }
 }
 
 class MediaStreams extends EventEmitter2 {
@@ -136,11 +140,11 @@ const diff: Diff = fsmStatus => {
 dataAnalysis.track = jest.fn();
 
 afterEach(() => {
-  CallReport.instance().destroySingleton();
+  // CallReport.instance().destroySingleton();
 });
 
 describe('Check all the report parameters if has call [JPT-1937]', () => {
-  it('should has current value when make call [JPT-1937]', async () => {
+  it.only('should has current value when make call [JPT-1937]', async () => {
     const account = new MockAccountAndCallObserver();
     const session = new MockSession();
     const call = new RTCCall(false, '123', null, account, account, undefined, {
@@ -155,11 +159,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
     (call as any)._callSession.getInviteResponse = jest
       .fn()
       .mockReturnValue(MockResponse);
-
-    await sleep(10);
     (call as any)._callSession.emit(CALL_SESSION_STATE.ACCEPTED);
-    await sleep(10);
-    CallReport.instance().destroySingleton = jest.fn();
     (call as any)._destroy();
 
     const {
@@ -168,7 +168,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
       ua,
       direction,
       establishment,
-    } = CallReport.instance();
+    } = call._report;
 
     expect(!!id).toBeTruthy;
     expect(!!sessionId).toBeTruthy;

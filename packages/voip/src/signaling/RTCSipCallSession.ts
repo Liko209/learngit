@@ -284,7 +284,6 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _onMediaConnectionStateChange(event: any) {
-    rtcLogger.debug(LOG_TAG, `WebRTC media connection state = ${event}`);
     this._report.updateCallEvent(CallEventCategory.MediaEvent, event);
     switch (event) {
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_FAILED:

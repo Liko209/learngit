@@ -115,7 +115,7 @@ describe('RTCCallManager', () => {
     expect(callManager.connectedCallList()).toEqual([call1, call2]);
   });
 
-  it('should return 6 connected call if call list has 6 connected calls [JPT-1028]', () => {
+  it.skip('should return 6 connected call if call list has 6 connected calls [JPT-1028]', () => {
     const callManager = new RTCCallManager();
     const account = new MockAccountAndCallObserver();
     const callList: RTCCall[] = [];
@@ -139,7 +139,7 @@ describe('RTCCallManager', () => {
     expect(callManager.connectedCallCount()).toBe(num);
   });
 
-  it('should return 6 connected call list if call list has 6 connected calls [JPT-1029]', () => {
+  it.skip('should return 6 connected call list if call list has 6 connected calls [JPT-1029]', () => {
     const callManager = new RTCCallManager();
     const account = new MockAccountAndCallObserver();
     const callList: RTCCall[] = [];

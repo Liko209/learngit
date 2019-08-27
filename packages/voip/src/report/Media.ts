@@ -117,11 +117,11 @@ class MediaReport implements IMediaReport {
   private _parse(data: MediaStatusReport): MediaReportItemType {
     return KEYS.reduce(
       (prev, curr) => {
-        if (data.inboundRtpReport[curr] !== undefined) {
+        if (data.inboundRtpReport && data.inboundRtpReport[curr] !== undefined) {
           prev[curr] = data.inboundRtpReport[curr];
-        } else if (data.outboundRtpReport[curr] !== undefined) {
+        } else if (data.outboundRtpReport && data.outboundRtpReport[curr] !== undefined) {
           prev[curr] = data.outboundRtpReport[curr];
-        } else if (data.rttMS[curr] !== undefined) {
+        } else if (data.rttMS && data.rttMS[curr] !== undefined) {
           prev[curr] = data.rttMS[curr];
         }
         return prev;
