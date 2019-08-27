@@ -102,6 +102,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -446,6 +447,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseMove={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -538,6 +540,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseMove={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -666,6 +669,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseMove={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -761,6 +765,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseMove={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -856,6 +861,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseMove={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}

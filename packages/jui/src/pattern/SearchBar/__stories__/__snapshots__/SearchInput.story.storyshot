@@ -274,6 +274,7 @@ exports[`Storyshots Pattern/SearchBar SearchInput: Pattern/SearchBar SearchInput
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}

@@ -167,6 +167,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   opacity: 0.76;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -453,6 +457,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -738,6 +743,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -783,7 +789,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
   flex-direction: column;
 }
 
-.c1.c1 {
+.c2.c2 {
   padding: 8px;
   width: 100%;
   display: -webkit-box;
@@ -794,16 +800,20 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
   color: #000;
 }
 
-.c1.c1.Mui-focusVisible {
+.c2.c2.Mui-focusVisible {
   background-color: rgba(0,0,0,0.1);
 }
 
-.c1.c1:hover {
+.c2.c2:hover {
   background-color: rgba(0,0,0,0.05);
 }
 
-.c1.c1 .rippleVisible {
+.c2.c2 .rippleVisible {
   background-color: rgba(0,0,0,0.05);
+}
+
+.c1 {
+  height: 8px;
 }
 
 <div
@@ -826,6 +836,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
     }
     tabIndex={-1}
   >
+    <div>
+      <div
+        className="c1"
+      />
+    </div>
     <div
       style={
         Object {
@@ -836,7 +851,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
     <div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -857,7 +872,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -878,7 +893,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -899,7 +914,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -920,7 +935,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -941,7 +956,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -962,7 +977,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -983,7 +998,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -1004,7 +1019,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -1025,7 +1040,7 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
       </div>
       <div
         aria-disabled={false}
-        className="MuiButtonBase-root MuiListItem-root c1 MuiListItem-gutters MuiListItem-button"
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
         onClick={[Function]}
         onDragLeave={[Function]}
@@ -1051,6 +1066,9 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
           "height": 0,
         }
       }
+    />
+    <div
+      className="c1"
     />
   </div>
 </div>
