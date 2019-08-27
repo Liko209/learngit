@@ -598,7 +598,7 @@ class TelephonyService {
       return true;
     }
 
-    return action();
+    return await action();
   };
 
   switchCall = async (otherDeviceCall: ActiveCall) => {
@@ -635,9 +635,10 @@ class TelephonyService {
       return Promise.resolve(true);
     }
     const skipE911Check = await this.isShortNumber(toNumber);
-    return this.ensureCallPermission(() => {
+    const result = await this.ensureCallPermission(() => {
       return this._makeCall(toNumber)
     }, { skipE911Check });
+    return result;
   };
 
   hangUp = () => {
