@@ -26,41 +26,18 @@ import { FileActionMenu } from '@/containers/common/fileAction';
 import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 import { postParser } from '@/common/postParser';
 import { JuiThumbnail } from 'jui/components/Thumbnail/Thumbnail';
-
-type States = {
-  hovered: boolean;
-};
+import { HoverHelper } from '../common/HoverHelper';
 
 @observer
-class FileItemView extends Component<FileItemViewProps, States> {
+class FileItemView extends Component<FileItemViewProps> {
   private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
-
-  constructor(props: FileItemViewProps) {
-    super(props);
-    this.state = { hovered: false };
-  }
-
-  private _handleMouseOver = () => {
-    if (!this.state.hovered) {
-      this.setState({ hovered: true });
-    }
-  };
-
-  private _handleMouseOut = (event: React.MouseEvent) => {
-    const { target, currentTarget, relatedTarget } = event;
-    if (
-      !currentTarget.contains(target as Node) ||
-      !currentTarget.contains(relatedTarget as Node)
-    ) {
-      this.setState({ hovered: false });
-    }
-  };
+  private _hoverHelper = new HoverHelper();
 
   private _handleFileClick = () => {
-    if(this._supportViewer && this._readyForViewer) {
+    if (this._supportViewer && this._readyForViewer) {
       this._viewerService.open({
         groupId: this.props.groupId,
-        itemId: this.props.file.id
+        itemId: this.props.file.id,
       });
     }
   };
@@ -79,23 +56,25 @@ class FileItemView extends Component<FileItemViewProps, States> {
   private get _primary() {
     return (
       <FileName>
-          {postParser(this.props.file.name, {
-            fileName: true,
-          })}
+        {postParser(this.props.file.name, {
+          fileName: true,
+        })}
       </FileName>
     );
   }
 
   @computed
   private get _secondary() {
-    const {  personName, modifiedTime } = this.props;
-    return (<SecondaryText name={personName} time={modifiedTime} />);
+    const { personName, modifiedTime } = this.props;
+    return <SecondaryText name={personName} time={modifiedTime} />;
   }
 
   @computed
   private get _icon() {
     return (
-      <JuiLeftRailListItemIcon disabled={this._supportViewer && !this._readyForViewer}>
+      <JuiLeftRailListItemIcon
+        disabled={this._supportViewer && !this._readyForViewer}
+      >
         <JuiThumbnail iconType={this.props.file.iconType} />
       </JuiLeftRailListItemIcon>
     );
@@ -104,27 +83,21 @@ class FileItemView extends Component<FileItemViewProps, States> {
   @computed
   private get _itemText() {
     return (
-      <JuiListItemText
-        primary={this._primary}
-        secondary={this._secondary}
-      />
+      <JuiListItemText primary={this._primary} secondary={this._secondary} />
     );
   }
 
   render() {
     const { downloadUrl, id } = this.props;
-    const { hovered } = this.state;
     return (
       <JuiListItem
-        onClick={this._handleFileClick}
-        onMouseEnter={this._handleMouseOver}
-        onMouseOver={this._handleMouseOver}
-        onMouseOut={this._handleMouseOut}
         data-test-automation-id="rightRail-file-item"
+        onClick={this._handleFileClick}
+        {...this._hoverHelper.TriggerProps}
       >
         {this._icon}
         {this._itemText}
-        {hovered && (
+        {this._hoverHelper.hovered && (
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />

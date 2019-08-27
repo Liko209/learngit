@@ -22,41 +22,15 @@ import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
 import { container } from 'framework/ioc';
 import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
+import { HoverHelper } from '../common/HoverHelper';
 
 const SQUARE_SIZE = 36;
 
-type States = {
-  hovered: boolean;
-};
-
 @observer
-class ImageItemView extends Component<
-  ImageItemViewProps & ImageItemProps,
-  States
-> {
-  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
+  private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _hoverHelper = new HoverHelper();
   @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
-
-  constructor(props: ImageItemViewProps) {
-    super(props);
-    this.state = { hovered: false };
-  }
-
-  private _handleMouseOver = () => {
-    if (!this.state.hovered) {
-      this.setState({ hovered: true });
-    }
-  };
-
-  private _handleMouseOut = (event: React.MouseEvent) => {
-    const { target, currentTarget, relatedTarget } = event;
-    if (
-      !currentTarget.contains(target as Node) ||
-      !currentTarget.contains(relatedTarget as Node)
-    ) {
-      this.setState({ hovered: false });
-    }
-  };
 
   private _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
     if (!this._thumbnailRef.current.vm.thumbsUrlWithSize) return;
@@ -109,18 +83,15 @@ class ImageItemView extends Component<
       return <></>;
     }
     const { downloadUrl, id } = this.props;
-    const { hovered } = this.state;
     return (
       <JuiListItem
-        onClick={this._handleImageClick}
-        onMouseEnter={this._handleMouseOver}
-        onMouseOver={this._handleMouseOver}
-        onMouseOut={this._handleMouseOut}
         data-test-automation-id="rightRail-file-item"
+        onClick={this._handleImageClick}
+        {...this._hoverHelper.TriggerProps}
       >
         {this._icon}
         {this._itemText}
-        {hovered && (
+        {this._hoverHelper.hovered && (
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
