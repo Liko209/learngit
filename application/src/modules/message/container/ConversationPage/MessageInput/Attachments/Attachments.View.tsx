@@ -65,7 +65,7 @@ class AttachmentsViewComponent extends Component<
   private _resolveIcon = (item: ItemInfo) => getFileIcon(item.name);
 
   render() {
-    const { files, cancelUploadFile, canPost, onPostClicked } = this.props;
+    const { t, files, cancelUploadFile, canPost, onPostClicked } = this.props;
     return (
       <>
         {canPost && files.length > 0 ? (
@@ -87,7 +87,7 @@ class AttachmentsViewComponent extends Component<
                 onClick={onPostClicked}
                 data-test-automation-id="post-button"
               >
-                Post
+                {t('message.postButton')}
               </JuiButton>
             </JuiGrid>
           </>
