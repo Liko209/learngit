@@ -11,7 +11,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import i18nT from '@/utils/i18nT';
 
-export const isImageType = async (type: File['type']) => {
+export const showNotImageTypeToast = async (type: File['type']) => {
   if (!type) return;
   if (!/image\/*/.test(type)) {
     Notification.flashToast({

@@ -80,8 +80,7 @@ describe('mentionViewModel', () => {
       memberIds: mockGroupEntityData.members,
     });
 
-    expect(mockSearchService.doFuzzySearchPersons).toHaveBeenCalledWith({
-      searchKey: '',
+    expect(mockSearchService.doFuzzySearchPersons).toHaveBeenCalledWith('', {
       excludeSelf: true,
       arrangeIds: mockGroupEntityData.members,
       fetchAllIfSearchKeyEmpty: true,

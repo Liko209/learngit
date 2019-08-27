@@ -75,11 +75,12 @@ type GroupTyping = {
   clear?: boolean;
 };
 
-type GroupSearchOption = {
+type FuzzySearchGroupOptions = {
   fetchAllIfSearchKeyEmpty?: boolean;
   myGroupsOnly?: boolean;
   recentFirst?: boolean;
-  additionalFilterFunc?: (group: Group) => boolean;
+  meFirst?: boolean;
+  filterFunc?: (group: Group) => boolean;
   sortFunc?: (
     groupA: SortableModel<Group>,
     groupB: SortableModel<Group>,
@@ -95,5 +96,5 @@ export {
   GroupCommon,
   TeamPermissionParams,
   GroupTyping,
-  GroupSearchOption,
+  FuzzySearchGroupOptions,
 };

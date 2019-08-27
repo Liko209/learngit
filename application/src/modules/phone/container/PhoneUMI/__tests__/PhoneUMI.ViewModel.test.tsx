@@ -11,12 +11,16 @@ import { test, testable } from 'shield';
 import { mockEntity, mockSingleEntity } from 'shield/application';
 import { MISSED_CALL_BADGE_ID } from 'sdk/module/RCItems/callLog/constants';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { jupiter } from 'framework/Jupiter';
+import { AppStore } from '@/modules/app/store';
 
 jest.mock('sdk/dao');
 jest.mock('sdk/api');
 jest.mock('@/store/utils');
 
 describe('PhoneUMI', () => {
+  jupiter.registerClass(AppStore);
+
   const mockMissedCall = 10;
   const mockUnReadVoiceMail = 3;
   const entityMock = (name: string, id: string) => {
@@ -33,7 +37,7 @@ describe('PhoneUMI', () => {
     @mockEntity(entityMock)
     @mockSingleEntity(CALLING_OPTIONS.GLIP)
     t1() {
-      const wrapper = mountWithTheme(<PhoneUMI />);
+      const wrapper = mountWithTheme(<PhoneUMI type={PhoneUMIType.ALL}/>);
       expect(wrapper.text()).toBe(`${mockMissedCall + mockUnReadVoiceMail}`);
     }
 

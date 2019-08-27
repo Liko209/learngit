@@ -445,6 +445,7 @@ describe('SendPostController', () => {
       expect(spy).toHaveBeenCalledWith(data, {
         priority: REQUEST_PRIORITY.HIGH,
         retryCount: DEFAULT_RETRY_COUNT,
+        ignoreNetwork: true,
       });
     });
     it('should call with retryCount', async () => {

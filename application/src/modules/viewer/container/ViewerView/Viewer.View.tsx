@@ -19,7 +19,7 @@ import { dataAnalysis } from 'foundation/analysis';
 import { JuiZoomButtonGroup } from 'jui/pattern/DragZoom';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { JuiViewerImg } from 'jui/pattern/Viewer/ViewerTitle';
+import { JuiImageWithStatusView } from 'jui/pattern/Viewer/ViewerContentView';
 import {
   JuiTransition,
   imageViewerHeaderAnimation,
@@ -261,7 +261,7 @@ class ViewerViewComponent extends Component<
     const { dataModule } = this.props;
     if (dataModule.pages) {
       const items = dataModule.pages.map((page, i) => {
-        return <JuiViewerImg src={page.url} key={i} />;
+        return <JuiImageWithStatusView src={page.url || ''} key={i} />;
       });
       return (
         <JuiViewerSidebar

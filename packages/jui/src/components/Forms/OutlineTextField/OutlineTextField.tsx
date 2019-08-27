@@ -81,7 +81,7 @@ const StyledWrapper = styled<CompositeWrapperProps>(CompositeWrapper)`
   border: 1px solid ${({ focus }) => (focus ? grey('400') : grey('300'))};
   border-radius: ${({ theme, radius, size }) => getRadius(theme, radius, size)};
   box-sizing: border-box;
-  padding: 0 ${spacing(4)};
+  padding: ${spacing(0, 4)};
   &:hover {
     background-color: ${({ focus, disabled }) => {
       if (disabled) {
@@ -137,94 +137,97 @@ type JuiOutlineTextFieldProps = {
 
 type JuiOutlineTextFieldRef = {
   focus(): void;
+  element: HTMLInputElement;
 };
 
-const JuiOutlineTextField: React.RefForwardingComponent<
-  JuiOutlineTextFieldRef,
-  JuiOutlineTextFieldProps
-> = forwardRef((props: JuiOutlineTextFieldProps, ref) => {
-  const {
-    iconPosition,
-    iconName = '',
-    InputProps = { onFocus: () => {}, onBlur: () => {} },
-    radiusType = 'rounded',
-    inputBefore,
-    inputAfter,
-    disabled,
-    onChange,
-    IconLeftProps,
-    IconRightProps,
-    onClickIconLeft,
-    onClickIconRight,
-    onClick,
-    value,
-    size = 'medium',
-    ...rest
-  } = props;
-  const { onFocus, onBlur, ...others } = InputProps;
-  const [focus, setFocus] = useState(false);
+const JuiOutlineTextField = forwardRef(
+  (props: JuiOutlineTextFieldProps, ref) => {
+    const {
+      iconPosition,
+      iconName = '',
+      InputProps = { onFocus: () => {}, onBlur: () => {} },
+      radiusType = 'rounded',
+      inputBefore,
+      inputAfter,
+      disabled,
+      onChange,
+      IconLeftProps,
+      IconRightProps,
+      onClickIconLeft,
+      onClickIconRight,
+      onClick,
+      value,
+      size = 'medium',
+      ...rest
+    } = props;
+    const { onFocus, onBlur, ...others } = InputProps;
+    const [focus, setFocus] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    },
-  }));
+    useImperativeHandle(ref, () => ({
+      focus: () => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      },
+      element: inputRef.current,
+    }));
 
-  const baseOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    setFocus(true);
-    onFocus && onFocus(e);
-  };
+    const baseOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocus(true);
+      onFocus && onFocus(e);
+    };
 
-  const baseOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    setFocus(false);
-    onBlur && onBlur(e);
-  };
+    const baseOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocus(false);
+      onBlur && onBlur(e);
+    };
 
-  return (
-    <StyledWrapper
-      focus={focus}
-      radius={radiusType}
-      disabled={disabled}
-      onClick={onClick}
-      size={size}
-      {...rest}
-    >
-      {(iconPosition === 'left' || iconPosition === 'both') && (
-        <StyledIconLeft
-          {...IconLeftProps}
-          iconSize="medium"
-          onClick={onClickIconLeft}
-        >
-          {Array.isArray(iconName) ? iconName[0] : iconName}
-        </StyledIconLeft>
-      )}
-      <StyledInput
-        {...others}
-        onFocus={baseOnFocus}
-        onBlur={baseOnBlur}
-        onChange={onChange}
+    // console.log(rest, others);
+
+    return (
+      <StyledWrapper
+        focus={focus}
+        radius={radiusType}
         disabled={disabled}
-        startAdornment={inputBefore || null}
-        endAdornment={inputAfter || null}
-        value={value}
-        inputRef={inputRef}
-      />
-      {(iconPosition === 'right' || iconPosition === 'both') && (
-        <StyledIconRight
-          {...IconRightProps}
-          iconSize="medium"
-          onClick={onClickIconRight}
-        >
-          {Array.isArray(iconName) ? iconName[1] : iconName}
-        </StyledIconRight>
-      )}
-    </StyledWrapper>
-  );
-});
+        onClick={onClick}
+        size={size}
+        {...rest}
+      >
+        {(iconPosition === 'left' || iconPosition === 'both') && (
+          <StyledIconLeft
+            {...IconLeftProps}
+            iconSize="medium"
+            onClick={onClickIconLeft}
+          >
+            {Array.isArray(iconName) ? iconName[0] : iconName}
+          </StyledIconLeft>
+        )}
+        <StyledInput
+          {...others}
+          onFocus={baseOnFocus}
+          onBlur={baseOnBlur}
+          onChange={onChange}
+          disabled={disabled}
+          startAdornment={inputBefore || null}
+          endAdornment={inputAfter || null}
+          value={value}
+          inputRef={inputRef}
+        />
+        {(iconPosition === 'right' || iconPosition === 'both') && (
+          <StyledIconRight
+            {...IconRightProps}
+            iconSize="medium"
+            onClick={onClickIconRight}
+          >
+            {Array.isArray(iconName) ? iconName[1] : iconName}
+          </StyledIconRight>
+        )}
+      </StyledWrapper>
+    );
+  },
+);
 
 export {
   StyledIconRight,

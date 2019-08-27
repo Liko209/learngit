@@ -13,6 +13,7 @@ import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { IMessageService } from '@/modules/message/interface';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { MEETING_SERVICE } from '@/modules/meeting/interface/constant';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class HomeModule extends AbstractModule {
   @IHomeService private _homeService: IHomeService;
@@ -25,6 +26,7 @@ class HomeModule extends AbstractModule {
   async bootstrap() {
     // load subModule
     notificationCenter.on(SERVICE.RC_LOGIN, async () => {
+      analyticsCollector.login();
       await this._initialSubModules();
     });
     notificationCenter.on(SERVICE.GLIP_LOGIN, async (success: boolean) => {

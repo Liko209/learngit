@@ -29,6 +29,7 @@ function setUpMock(
   errorType?: 'network' | 'server',
 ) {
   Notification.flashToast = jest.fn().mockImplementation(() => {});
+  Notification.flagWarningToast = jest.fn().mockImplementation(() => {});
   global.Notification = {
     requestPermission: jest.fn().mockImplementation(() => Promise.resolve()),
     permission: browserPermission,
@@ -69,7 +70,7 @@ describe('NotificationBrowserSettingItemView', () => {
       instance.handleToggleChange(null, true);
       expect(instance._requestPermission).toHaveBeenCalled();
     });
-    it('Given that browser permission is "default", should open dialog when switch the toggle from off to on and the browser permission changes to "denied"', async () => {
+    it('Given that browser permission is "default", should show flag toast when switch the toggle from off to on and the browser permission changes to "denied"', async () => {
       const props = setUpMock('default');
       const wrapper = shallow(
         <NotificationBrowserSettingItemView {...props} />,
@@ -79,7 +80,7 @@ describe('NotificationBrowserSettingItemView', () => {
         .spyOn(instance, '_requestPermission')
         .mockImplementation(() => 'denied');
       await instance.handleToggleChange(null, true);
-      expect(wrapper.state('dialogOpen')).toBeTruthy();
+      expect(Notification.flagWarningToast).toHaveBeenCalledWith('notification.notificationPermissionBlocked');
     });
     it('Given that browser permission is "default", should call _showEnabledNotification when switch the toggle from off to on and the browser permission changes to "granted"', async () => {
       const props = setUpMock('default');
@@ -104,13 +105,13 @@ describe('NotificationBrowserSettingItemView', () => {
       await instance.handleToggleChange(null, true);
       expect(instance._showEnabledNotification).toHaveBeenCalled();
     });
-    it('Given that browser permission is "denied", should open dialog when user try to switch the toggle from off to on', async () => {
+    it('Given that browser permission is "denied", should show flag toast when user try to switch the toggle from off to on', async () => {
       const props = setUpMock('denied');
       const wrapper = shallow(
         <NotificationBrowserSettingItemView {...props} />,
       );
       await wrapper.instance().handleToggleChange(null, true);
-      expect(wrapper.state('dialogOpen')).toBeTruthy();
+      expect(Notification.flagWarningToast).toHaveBeenCalledWith('notification.notificationPermissionBlocked');
     });
     it('Should display flash toast notification when setToggleState failed for network issue', async () => {
       const props = setUpMock('granted', 'network');

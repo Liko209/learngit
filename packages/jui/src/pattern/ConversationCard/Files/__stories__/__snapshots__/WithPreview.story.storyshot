@@ -254,6 +254,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -356,6 +357,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -458,6 +460,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -560,6 +563,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
