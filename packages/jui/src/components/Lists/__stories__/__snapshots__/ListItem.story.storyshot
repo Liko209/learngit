@@ -108,12 +108,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   margin-right: 0;
 }
 
-.c3 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
 .c3.c3 {
   padding: 0;
 }
@@ -223,6 +217,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
     </div>
     <div
       className="MuiListItemText-root c3"
+      flex="1 1 auto"
     >
       <span
         className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -321,6 +316,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   color: #9e9e9e;
 }
 
+.c2.c2.c2.c2.disabled {
+  background-color: inherit;
+}
+
 .c2.c2.c2.c2.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -378,12 +377,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   border-radius: 4px;
   overflow: hidden;
   min-width: unset;
-}
-
-.c5 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
 }
 
 .c5.c5 {
@@ -487,6 +480,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
     </div>
     <div
       className="MuiListItemText-root c5"
+      flex="1 1 auto"
     >
       <span
         className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -556,6 +550,10 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   color: #9e9e9e;
 }
 
+.c6.c6.c6.c6.disabled {
+  background-color: inherit;
+}
+
 .c6.c6.c6.c6.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -622,12 +620,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 .c5.c5 a,
 .c5.c5 button {
   margin-right: 0;
-}
-
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
 }
 
 .c4.c4 {
@@ -706,6 +698,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
     </div>
     <div
       className="MuiListItemText-root c4 MuiListItemText-multiline multiline"
+      flex="1 1 auto"
     >
       <span
         className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"

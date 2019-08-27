@@ -4,6 +4,7 @@ exports[`RecentCallItemView render should render each record item [JPT-2316, JPT
 <Styled(JuiListItem)
   button={true}
   singleLine={false}
+  onClick={[Function]}
   tabIndex={0}
 >
   <styled.div>

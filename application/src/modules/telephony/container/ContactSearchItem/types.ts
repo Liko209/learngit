@@ -5,6 +5,7 @@ type ContactSearchItemProps = {
   selected: boolean;
   onClick: () => void;
   phoneNumberType?: string;
+  itemIndex: number;
 };
 
 type ContactSearchItemViewProps = {
@@ -16,6 +17,9 @@ type ContactSearchItemViewProps = {
   selected: boolean;
   onClick: () => void;
   onAfterMount: () => void;
+  isTransferPage: boolean;
+  selectedCallItemIndex: number;
+  itemIndex: number;
 };
 
 export { ContactSearchItemProps, ContactSearchItemViewProps };

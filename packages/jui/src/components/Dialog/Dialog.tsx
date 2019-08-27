@@ -9,6 +9,7 @@ import { HotKeys } from '../../hoc/HotKeys';
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
   fixedAtTop?: boolean;
+  allowOverflowY?: boolean;
 };
 
 type JuiDialogProps = StyledDialogProps & {
@@ -16,9 +17,11 @@ type JuiDialogProps = StyledDialogProps & {
   onClose?: (event: KeyboardEvent) => void;
 };
 
-const FilteredMuiDialog = ({ fixedAtTop, ...rest }: StyledDialogProps) => (
-  <MuiDialog {...rest} />
-);
+const FilteredMuiDialog = ({
+  fixedAtTop,
+  allowOverflowY,
+  ...rest
+}: StyledDialogProps) => <MuiDialog {...rest} />;
 
 const fixedAtTopStyle = css`
   display: inline-flex;
@@ -33,6 +36,10 @@ const StyledDialog = styled(FilteredMuiDialog)`
   }
   & .paper.overflow-y {
     overflow-y: visible;
+  }
+  & .MuiDialog-paper {
+    overflow-y: ${(modalProps: { allowOverflowY: boolean }) =>
+      modalProps.allowOverflowY ? 'unset' : 'auto'};
   }
 `;
 

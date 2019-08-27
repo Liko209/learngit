@@ -197,6 +197,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   color: #9e9e9e;
 }
 
+.c3.c3.c3.c3.disabled {
+  background-color: inherit;
+}
+
 .c3.c3.c3.c3.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -241,12 +245,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 .c2.c2 a,
 .c2.c2 button {
   margin-right: 0;
-}
-
-.c1 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
 }
 
 .c1.c1 {
@@ -306,6 +304,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -378,6 +377,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -450,6 +450,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -522,6 +523,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -643,12 +645,6 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   min-width: unset;
 }
 
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
 .c4.c4 {
   padding: 0;
 }
@@ -727,6 +723,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       </div>
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -771,6 +768,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       </div>
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -805,6 +803,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
     >
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -832,6 +831,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
     >
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"

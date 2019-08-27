@@ -72,6 +72,11 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps> {
     return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
   }
 
+  @computed
+  get isTransfer() {
+    return this._telephonyStore.isTransferPage;
+  }
+
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
     this._intervalId = undefined;
