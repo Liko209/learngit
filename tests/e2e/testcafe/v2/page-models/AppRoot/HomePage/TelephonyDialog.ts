@@ -155,6 +155,18 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-more-option-menu');
   }
 
+  get transferActionsButton() {
+    return this.getSelectorByAutomationId('telephony-transfer-menu-item');
+  }
+
+  get transferNowButton() {
+    return this.getSelectorByAutomationId('telephony-transfer-btn');
+  }
+
+  get transferToVoicemailButton() {
+    return this.getSelectorByAutomationId('telephony-voice-mail-btn');
+  }
+  
   get replyActionMenuItem() {
     return this.getSelectorByAutomationId('telephony-reply-menu-item');
   }
@@ -429,6 +441,18 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async clickMoreOptionsButton() {
     await this.t.click(this.actionsButton);
+  }
+
+  async clickTransferActionButton() {
+    await this.t.click(this.transferActionsButton);
+  }
+
+  async clickTransferNowButton() {
+    await this.t.click(this.transferNowButton);
+  }
+
+  async clickTransferToVoicemailButton() {
+    await this.t.click(this.transferToVoicemailButton);
   }
 
   async clickReplyActionButton() {

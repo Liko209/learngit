@@ -14,12 +14,16 @@ import { Sound } from './Sound';
 import { Utils } from './Utils';
 import { mainLogger } from 'foundation/log';
 
+const noPlayEventName: MediaEventName[] = ['pause', 'ended', 'abort', 'error'];
+const playingEventName: MediaEventName[] = ['play', 'playing'];
+
 class MediaTrack {
   private _src: string[] = [];
   private _muted: boolean = false;
   private _loop: boolean = false;
   private _autoplay: boolean = false;
   private _mediaVolume: number = 1;
+  private _trackVolume: number = 1;
   private _currentTime: number = 0;
 
   private _id: string;
@@ -32,6 +36,8 @@ class MediaTrack {
   private _mediaId: string;
   private _mediaEvents: MediaEvents[] = [];
   private _preMediaRester: (() => void) | null;
+  private _weight: number;
+  private _onPlayingEvent: (isPlaying: boolean) => void;
 
   constructor(options: MediaTrackOptions) {
     this._setup(options);
@@ -67,9 +73,8 @@ class MediaTrack {
     if (!Utils.isValidVolume(vol)) {
       return;
     }
-    const volume = vol * this._masterVolume;
-    this._action('setVolume', volume);
-    this._mediaVolume = vol;
+    this._trackVolume = vol;
+    this._action('setVolume', this._computedSoundVolume());
     return this;
   }
 
@@ -141,13 +146,22 @@ class MediaTrack {
     return this;
   }
 
-  setMasterVolume(value: number) {
-    if (!Utils.isValidVolume(value)) {
+  setMasterVolume(vol: number) {
+    if (!Utils.isValidVolume(vol)) {
       return;
     }
 
-    this._masterVolume = value;
-    this.setVolume(this._mediaVolume);
+    this._masterVolume = vol;
+    this.setVolume(this._trackVolume);
+  }
+
+  setMediaVolume(vol: number) {
+    if (!Utils.isValidVolume(vol)) {
+      return;
+    }
+
+    this._mediaVolume = vol;
+    this.setVolume(this._trackVolume);
   }
 
   setOptions(options: MediaTrackOptions) {
@@ -171,12 +185,19 @@ class MediaTrack {
   unbindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
     const hasEvent = this._mediaEvents.some(evt => evt.name === eventName);
     if (hasEvent) {
+      this._mediaEvents = this._mediaEvents.filter(
+        evt => !(evt.name === eventName && evt.handler === handler),
+      );
       if (this._originSound) {
         this._originSound.unbindEvent(eventName, handler);
       } else if (this._sounds[0]) {
         this._sounds[0].unbindEvent(eventName, handler);
       }
     }
+  }
+
+  onPlaying(evt: (isPlaying: boolean) => void) {
+    this._onPlayingEvent = evt;
   }
 
   private _setup(options: MediaTrackOptions) {
@@ -188,10 +209,10 @@ class MediaTrack {
         : options.src
         ? [options.src]
         : [];
-    this._mediaVolume =
+    this._trackVolume =
       options.volume !== undefined && Utils.isValidVolume(options.volume)
         ? options.volume
-        : 1;
+        : this._trackVolume;
     this._muted = options.muted || false;
     this._loop = options.loop || false;
     this._autoplay = options.autoplay || false;
@@ -201,8 +222,15 @@ class MediaTrack {
       options.masterVolume !== undefined
         ? options.masterVolume
         : this._masterVolume;
+    this._mediaVolume =
+      options.mediaVolume !== undefined &&
+      Utils.isValidVolume(options.mediaVolume)
+        ? options.mediaVolume
+        : this._mediaVolume;
     this._mediaEvents = options.mediaEvents || [];
     this._preMediaRester = options.onReset || null;
+    this._weight =
+      options.weight !== undefined ? options.weight : this._weight || 9999;
 
     this._load();
   }
@@ -215,12 +243,42 @@ class MediaTrack {
         return;
       }
 
+      let eventSound: Sound;
+
       if (this._outputDevices === null) {
-        this._initNoDeviceSound();
+        eventSound = this._initNoDeviceSound();
       } else {
-        this._initDeviceSounds(this._outputDevices);
+        eventSound = this._initDeviceSounds(this._outputDevices);
       }
+
+      eventSound && this._bindTrackEvent(eventSound);
     }
+  }
+
+  private _trackPlayingEvent = () => {
+    this._onPlayingEvent(true);
+  };
+
+  private _trackNoPlayingEvent = () => {
+    this._onPlayingEvent(false);
+  };
+
+  private _bindTrackEvent(sound: Sound) {
+    noPlayEventName.forEach(evtName => {
+      sound.bindEvent(evtName, this._trackNoPlayingEvent, false);
+    });
+    playingEventName.forEach(evtName => {
+      sound.bindEvent(evtName, this._trackPlayingEvent, false);
+    });
+  }
+
+  private _unBindTrackEvent(sound: Sound) {
+    noPlayEventName.forEach(evtName => {
+      sound.unbindEvent(evtName, this._trackNoPlayingEvent);
+    });
+    playingEventName.forEach(evtName => {
+      sound.unbindEvent(evtName, this._trackPlayingEvent);
+    });
   }
 
   private _getUrlFromSrcArray(src: MediaOptions['src']) {
@@ -259,7 +317,7 @@ class MediaTrack {
       url: this._url,
       muted:
         options && options.muted !== undefined ? options.muted : this._muted,
-      volume: this._mediaVolume * this._masterVolume,
+      volume: this._computedSoundVolume(),
       loop: options && options.loop !== undefined ? options.loop : this._loop,
       autoplay:
         options && options.autoplay !== undefined
@@ -368,6 +426,26 @@ class MediaTrack {
   }
 
   private _resetTrack() {
+    this._disposeSound();
+    this._onPlayingEvent && this._onPlayingEvent(false);
+
+    this._mediaId = '';
+    this._src = [];
+    this._url = '';
+    this._muted = false;
+    this._trackVolume = 1;
+    this._currentTime = 0;
+    this._outputDevices = [];
+    this._mediaEvents = [];
+  }
+
+  private _disposeSound() {
+    if (this._originSound) {
+      this._unBindTrackEvent(this._originSound);
+    } else if (this._sounds[0]) {
+      this._unBindTrackEvent(this._sounds[0]);
+    }
+
     this._sounds.forEach(sound => {
       sound.dispose();
     });
@@ -376,15 +454,6 @@ class MediaTrack {
       this._originSound.dispose();
     }
     this._originSound = null;
-
-    this._mediaId = '';
-    this._src = [];
-    this._url = '';
-    this._muted = false;
-    this._mediaVolume = 1;
-    this._currentTime = 0;
-    this._outputDevices = [];
-    this._mediaEvents = [];
   }
 
   private _isSoundPlaying() {
@@ -393,6 +462,10 @@ class MediaTrack {
       (this._sounds[0] && !this._sounds[0].paused) ||
       false
     );
+  }
+
+  private _computedSoundVolume() {
+    return this._masterVolume * this._trackVolume * this._mediaVolume;
   }
 
   get masterVolume() {
@@ -416,7 +489,7 @@ class MediaTrack {
   }
 
   get volume() {
-    return this._mediaVolume;
+    return this._trackVolume;
   }
 
   get loop() {
@@ -448,6 +521,10 @@ class MediaTrack {
     return this._mediaId;
   }
 
+  get currentMediaVolume() {
+    return this._mediaVolume;
+  }
+
   get currentMediaEvent() {
     return this._mediaEvents;
   }
@@ -462,6 +539,10 @@ class MediaTrack {
       (this._sounds[0] && this._sounds[0].duration) ||
       0
     );
+  }
+
+  get weight() {
+    return this._weight;
   }
 }
 
