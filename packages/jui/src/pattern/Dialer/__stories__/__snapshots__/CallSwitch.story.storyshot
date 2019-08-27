@@ -14,6 +14,11 @@ exports[`Storyshots Pattern Call Switch: Pattern Call Switch 1`] = `
   color: #0684bd;
   text-align: center;
   box-shadow: unset;
+  padding: 8px 12px;
+}
+
+.c1.c1.MuiButton-sizeLarge {
+  padding: 10px 16px;
 }
 
 .c1.c1.containedButtonStyle {

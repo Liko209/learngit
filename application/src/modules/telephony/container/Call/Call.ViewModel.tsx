@@ -9,7 +9,6 @@ import { AbstractViewModel } from '@/base';
 import { TelephonyService } from '../../service';
 import { CallProps, CallViewProps } from './types';
 import { computed, action } from 'mobx';
-import { promisedComputed } from 'computed-async-mobx';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import GroupModel from '@/store/models/Group';
@@ -22,7 +21,6 @@ import {
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 
@@ -30,9 +28,6 @@ class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
-  );
-  private _featuresFlagsService: FeaturesFlagsService = container.get(
-    FeaturesFlagsService,
   );
 
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -114,11 +109,11 @@ class CallViewModel extends AbstractViewModel<CallProps>
     }
   };
 
-  showIcon = promisedComputed(false, async () => {
+  @computed
+  get showIcon() {
     const phoneNumber = this.phoneNumber;
     const { id, groupId } = this.props;
-    const canUseTelephony = await this._featuresFlagsService.canUseTelephony();
-    if (canUseTelephony && phoneNumber) {
+    if (phoneNumber) {
       if (id) {
         return this._currentUserId !== id;
       }
@@ -130,7 +125,7 @@ class CallViewModel extends AbstractViewModel<CallProps>
       }
     }
     return false;
-  });
+  }
 }
 
 export { CallViewModel };

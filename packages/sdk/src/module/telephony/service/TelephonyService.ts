@@ -33,6 +33,7 @@ import {
   ActiveCall,
 } from 'sdk/module/rcEventSubscription/types';
 import { RTCSipEmergencyServiceAddr } from 'voip';
+import { TRANSFER_TYPE } from '../entity/types';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
@@ -197,6 +198,16 @@ class TelephonyService extends EntityBaseService<Call>
     await this.telephonyController
       .getAccountController()
       .forward(callId, phoneNumber);
+
+  transfer = async (
+    callId: number,
+    type: TRANSFER_TYPE,
+    transferTo: string,
+  ) => {
+    await this.telephonyController
+      .getAccountController()
+      .transfer(callId, type, transferTo);
+  };
 
   replyWithPattern = (
     callId: number,

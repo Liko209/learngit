@@ -83,7 +83,6 @@ describe('Upgrade trigger', () => {
   it('should not run into infinite reload when new update event by waiting worker', () => {
     upgradeHandler = new Upgrade();
     upgradeHandler._lastUserActionTime = 0;
-    upgradeHandler._removeWorkingWorkerFlag();
 
     upgradeHandler.setServiceWorkerURL('/service-worker.js', true);
     const mockFn = jest.fn();
@@ -99,24 +98,6 @@ describe('Upgrade trigger', () => {
     upgradeHandler.onControllerChanged();
     upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toHaveBeenCalled();
-    mockFn.mockReset();
-
-    upgradeHandler = new Upgrade();
-    upgradeHandler._lastUserActionTime = 0;
-
-    upgradeHandler.setServiceWorkerURL('/service-worker.js', true);
-    jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(false);
-    jest
-      .spyOn(upgradeHandler, '_hasServiceWorkerController')
-      .mockReturnValue(false);
-    jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
-
-    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
-    upgradeHandler.onNewContentAvailable(true, true);
-    expect(upgradeHandler._hasSkippedWaiting).toBeFalsy();
-    upgradeHandler.onControllerChanged();
-    upgradeHandler.reloadIfAvailable('Test');
-    expect(mockFn).not.toHaveBeenCalled();
     mockFn.mockReset();
   });
 

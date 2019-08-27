@@ -42,4 +42,14 @@ describe('ProfileDialogGroupViewModel', () => {
       expect(vm.showMessage).toEqual(false);
     });
   });
+
+  describe('analysis', () => {
+    it('should return analysis type when pass value', () => {
+      const analysisType = '1';
+      (getEntity as jest.Mock).mockReturnValueOnce({
+        analysisType,
+      });
+      expect(vm.analysisType).toEqual(analysisType);
+    });
+  });
 });

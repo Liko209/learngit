@@ -35,6 +35,7 @@ type PartialUpdateParams<
   doPartialNotify?: PartialNotifyFunc<T>;
   saveLocalFirst?: boolean;
   forceDoUpdateEntity?: boolean;
+  shouldRollback?: boolean;
   handleRollbackPartialEntity?: HandleRollbackPartialEntityFunc<T>;
 };
 

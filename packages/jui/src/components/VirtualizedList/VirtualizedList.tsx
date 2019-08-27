@@ -14,6 +14,7 @@ import React, {
   useRef,
   useCallback,
   cloneElement,
+  useMemo,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
@@ -177,7 +178,11 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: PartialScrollPosition) => {
     if (ref.current) {
       if (options === true) {
-        ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
+        if(index === 0 && offset === 0) {
+          ref.current.scrollTop = 0;
+        } else {
+          ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
+        }
       } else {
         ref.current.scrollTop =
           rowManager.getRowOffsetTop(index + 1) - height - offset;
@@ -250,8 +255,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const keyMapper = createKeyMapper(children);
-  const indexMapper = createIndexMapper(children);
+  const keyMapper = useMemo(() => createKeyMapper(children), [children]);
+  const indexMapper = useMemo(() => createIndexMapper(children), [children]);
   const childrenCount = children.length;
   const minIndex = 0;
   const maxIndex = childrenCount - 1;

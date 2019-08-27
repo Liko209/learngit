@@ -14,7 +14,7 @@ import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
-import { ConversationType, NewConversationSource } from './types';
+import { ConversationType, NewConversationSource, SendTrigger } from './types';
 
 class AnalyticsCollector {
   constructor() {
@@ -84,14 +84,16 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_phone_outboundCall', info);
   }
 
-  // [FIJI-3202] Segment - Add event - Send post
+  // [FIJI-3202] Segment - Add event - Send post / [FIJI-8303] Post Button for Attachments
   sendPost(
+    trigger: SendTrigger,
     source: string,
     postType: string,
     destination: string,
     atTeam = 'no',
   ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
+      trigger,
       source,
       postType,
       destination,
@@ -217,6 +219,63 @@ class AnalyticsCollector {
     });
   }
 
+  // FIJI-7829
+  showGlobalDialog() {
+    dataAnalysis.track('Jup_Web/DT_search_globalSearchDialog');
+  }
+
+  showFullMessageSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullMessageSearchDialog');
+  }
+
+  showFullPeopleSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullPeopleSearchDialog');
+  }
+
+  showFullGroupSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullGroupSearchDialog');
+  }
+
+  showFullTeamSearch() {
+    dataAnalysis.track('Jup_Web/DT_search_fullTeamSearchDialog');
+  }
+
+  clearSearchHistory() {
+    dataAnalysis.track('Jup_Web/DT_search_clearHistory');
+  }
+
+  gotoConversationFromSearch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_goToConversation', { source });
+  }
+
+  jumpToPostInConversation(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_jumpToPostInConversation', { source });
+  }
+
+  outboundCallFromPeople(source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_outboundCall', { source });
+  }
+
+  joinPublicTeamFromSearch(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_joinPublicTeam', { source });
+  }
+
+  filterContentSearchResultByType(type: string) {
+    dataAnalysis.track('Jup_Web/DT_search_filterMessageByType', { type });
+  }
+
+  filterContentSearchResultByTime(time: string) {
+    dataAnalysis.track('Jup_Web/DT_search_filterMessageByTimePosted', { time });
+  }
+  // end FIJI-7829
+
+  // for global hot keys
+  shortcuts(shortcut: string) {
+    dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+      shortcut,
+    });
+  }
+
   profileDialog(category: string, source: string) {
     dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
       category,
@@ -256,6 +315,7 @@ class AnalyticsCollector {
   copyTeamEmail() {
     dataAnalysis.track('Jup_Web/DT_profile_copyTeamEmail');
   }
+
   // [FIJI-7395]
   toggleLeftNavPanel(isExpanded: boolean) {
     const state = isExpanded ? 'expanded' : 'collapsed';
@@ -263,6 +323,11 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_general_toggleLeftNavigationPanel', {
       state,
     });
+  }
+
+  // [FIJI-8195]
+  login() {
+    dataAnalysis.track('Jup_Web/DT_general_login');
   }
 }
 

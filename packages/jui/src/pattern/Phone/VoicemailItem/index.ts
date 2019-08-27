@@ -9,7 +9,7 @@ import { typography, grey } from '../../../foundation/utils';
 import {
   JuiExpansionPanel,
   JuiExpansionPanelDetails,
-} from '../../../components/ExpansionPanel';
+} from 'rcui/components/ExpansionPanel';
 
 const StyleVoicemailItem = JuiExpansionPanel;
 

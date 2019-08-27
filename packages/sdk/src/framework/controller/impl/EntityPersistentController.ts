@@ -124,17 +124,43 @@ class EntityPersistentController<
     return items;
   }
 
-  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+  async getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]> {
     let items: T[] = [];
     if (this.entityCacheController) {
-      items = await this.entityCacheController.getEntities(filterFunc);
+      items = await this.entityCacheController.getEntities(
+        filterFunc,
+        sortFunc,
+      );
     }
 
     if (items.length === 0 && this.dao) {
       items = await this.dao.getAll();
-      if (items && items.length && this.entityCacheController) {
-        await this.entityCacheController.bulkPut(items);
-        items = await this.entityCacheController.getEntities(filterFunc);
+      if (items && items.length) {
+        if (this.entityCacheController) {
+          await this.entityCacheController.bulkPut(items);
+          items = await this.entityCacheController.getEntities(
+            filterFunc,
+            sortFunc,
+          );
+        } else {
+          const filterItems: T[] = [];
+          if (filterFunc) {
+            items.forEach(item => {
+              if (filterFunc(item)) {
+                filterItems.push(item);
+              }
+            });
+          }
+
+          if (sortFunc) {
+            filterItems.sort(sortFunc);
+          }
+
+          items = filterItems;
+        }
       }
     }
 

@@ -5,8 +5,8 @@
 import {
   Table, Column, Model, DataType
 } from 'sequelize-typescript';
-
-@Table({ modelName: 't_task' })
+import { IDefineOptions } from 'sequelize-typescript/lib/interfaces/IDefineOptions';
+@Table(<IDefineOptions>{ modelName: 't_task' })
 class TaskDto extends Model<TaskDto> {
 
   @Column({

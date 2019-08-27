@@ -99,6 +99,8 @@ export class ConversationCard extends React.Component<
     if (this.props.showToast) {
       this.flashToast(this.getToastMessage());
     } else {
+      const { dataTrackingJumpToConversation } = this.context;
+      dataTrackingJumpToConversation && dataTrackingJumpToConversation();
       const { id, groupId } = this.props;
       jumpToPost({ id, groupId });
     }
@@ -188,7 +190,9 @@ export class ConversationCard extends React.Component<
           repliedEntity={this._renderRepliedEntity}
           from={from}
         >
-          {showProgressActions && <ProgressActions id={id} isEditMode={isEditMode} />}
+          {showProgressActions && (
+            <ProgressActions id={id} isEditMode={isEditMode} />
+          )}
           {!showProgressActions && isHover && (
             <Actions postId={id} groupId={post.groupId} />
           )}
