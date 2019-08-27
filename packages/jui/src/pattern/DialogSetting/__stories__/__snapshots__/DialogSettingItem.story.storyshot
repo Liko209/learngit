@@ -66,7 +66,7 @@ exports[`Storyshots Pattern/DialogSetting SettingItem: Pattern/DialogSetting Set
 }
 
 .c5.c5 .c6 {
-  margin: 6px 0px 6px 0px;
+  margin: 6px 0px;
   max-width: 200px;
 }
 
@@ -115,6 +115,7 @@ exports[`Storyshots Pattern/DialogSetting SettingItem: Pattern/DialogSetting Set
         <span
           className="setting-item-label  c4"
           data-test-automation-id="settingItemLabel-0"
+          id="0"
         >
           DialogSettingItem Label
         </span>
@@ -140,6 +141,7 @@ exports[`Storyshots Pattern/DialogSetting SettingItem: Pattern/DialogSetting Set
         <span
           className="setting-item-label  c4"
           data-test-automation-id="settingItemLabel-1"
+          id="1"
         >
           DialogSettingItem Label
         </span>

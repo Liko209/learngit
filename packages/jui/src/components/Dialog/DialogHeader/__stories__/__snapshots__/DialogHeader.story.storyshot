@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog/DialogHeader Title only 1`] = `
-.c6 {
+.c5 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c7 {
+.c6 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -17,23 +17,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c8.c8 .c5,
-.c8.c8 .c5 svg {
-  font-size: 20px;
-}
-
-.c8.c8:hover .c5 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c8.c8:active .c5 {
-  color: #9e9e9e;
-}
-
-.c8.c8.c8.c8.disabled .c5 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c4.c4 {
@@ -47,8 +30,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   border-radius: 50%;
 }
 
-.c4.c4 .c5,
-.c4.c4 .c5 svg {
+.c4.c4 .icon,
+.c4.c4 .icon svg {
   font-size: 20px;
 }
 
@@ -56,15 +39,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   background-color: rgba(158,158,158,0.12);
 }
 
-.c4.c4:hover .c5 {
+.c4.c4:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c4.c4:active .c5 {
+.c4.c4:active .icon {
   color: #9e9e9e;
 }
 
-.c4.c4.c4.c4.disabled .c5 {
+.c4.c4.c4.c4.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -76,40 +59,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c9.c9 .c5,
-.c9.c9 .c5 svg {
-  font-size: 20px;
-}
-
-.c9.c9:hover .c5 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c9.c9:active .c5 {
-  color: #0684bd;
-}
-
-.c9.c9.c9.c9.disabled .c5 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c10.c10 .c5,
-.c10.c10 .c5 svg {
-  font-size: 20px;
-}
-
-.c10.c10:hover .c5 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c10.c10:active .c5 {
-  color: #0684bd;
-}
-
-.c10.c10.c10.c10.disabled .c5 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c3 {
@@ -244,8 +193,9 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Close"
+          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -254,14 +204,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -269,11 +219,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
             className="MuiIconButton-label"
           >
             <span
-              className="c5  icon c6"
-              size="medium"
+              className="  icon c5"
             >
               <svg
-                className="c7"
+                className="c6"
                 role="img"
               >
                 <use
@@ -283,9 +232,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
@@ -294,14 +240,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 `;
 
 exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Components/Dialog/DialogHeader Title with action icons 1`] = `
-.c6 {
+.c5 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c7 {
+.c6 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -312,24 +258,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   font-size: 24px;
 }
 
-.c10.c10 .c5,
-.c10.c10 .c5 svg {
-  font-size: 20px;
-}
-
-.c10.c10:hover .c5 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c10.c10:active .c5 {
-  color: #9e9e9e;
-}
-
-.c10.c10.c10.c10.disabled .c5 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c8.c8 {
+.c7.c7 {
   padding: 0;
   width: 40px;
   height: 40px;
@@ -340,28 +269,28 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   border-radius: 50%;
 }
 
-.c8.c8 .c5,
-.c8.c8 .c5 svg {
+.c7.c7 .icon,
+.c7.c7 .icon svg {
   font-size: 20px;
 }
 
-.c8.c8:hover {
+.c7.c7:hover {
   background-color: rgba(158,158,158,0.12);
 }
 
-.c8.c8:hover .c5 {
+.c7.c7:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c8.c8:active .c5 {
+.c7.c7:active .icon {
   color: #9e9e9e;
 }
 
-.c8.c8.c8.c8.disabled .c5 {
+.c7.c7.c7.c7.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c8.c8 .rippleVisible {
+.c7.c7 .rippleVisible {
   color: #9e9e9e;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -369,40 +298,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c11.c11 .c5,
-.c11.c11 .c5 svg {
-  font-size: 20px;
-}
-
-.c11.c11:hover .c5 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c11.c11:active .c5 {
-  color: #0684bd;
-}
-
-.c11.c11.c11.c11.disabled .c5 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c12.c12 .c5,
-.c12.c12 .c5 svg {
-  font-size: 20px;
-}
-
-.c12.c12:hover .c5 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c12.c12:active .c5 {
-  color: #0684bd;
-}
-
-.c12.c12.c12.c12.disabled .c5 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c4.c4 {
@@ -416,8 +311,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   border-radius: 50%;
 }
 
-.c4.c4 .c5,
-.c4.c4 .c5 svg {
+.c4.c4 .icon,
+.c4.c4 .icon svg {
   font-size: 20px;
 }
 
@@ -425,15 +320,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   background-color: rgba(237,182,60,0.12);
 }
 
-.c4.c4:hover .c5 {
+.c4.c4:hover .icon {
   color: rgba(237,182,60,0.88);
 }
 
-.c4.c4:active .c5 {
+.c4.c4:active .icon {
   color: #edb63c;
 }
 
-.c4.c4.c4.c4.disabled .c5 {
+.c4.c4.c4.c4.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -549,7 +444,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   margin-left: 0;
 }
 
-.c9 {
+.c8 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -587,8 +482,9 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Favorite"
+          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -597,14 +493,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -612,11 +508,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
             className="MuiIconButton-label"
           >
             <span
-              className="c5  icon c6"
-              size="medium"
+              className="  icon c5"
             >
               <svg
-                className="c7"
+                className="c6"
                 role="img"
               >
                 <use
@@ -626,14 +521,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Settings"
-          className="MuiButtonBase-root MuiIconButton-root c8"
+          aria-owns={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -641,14 +534,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -656,11 +549,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
             className="MuiIconButton-label"
           >
             <span
-              className="c5  icon c6"
-              size="medium"
+              className="  icon c5"
             >
               <svg
-                className="c7"
+                className="c6"
                 role="img"
               >
                 <use
@@ -670,20 +562,18 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
         <div>
           <div
-            className="c9"
+            className="c8"
             onClick={[Function]}
             onMouseDown={[Function]}
           >
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="More"
-              className="MuiButtonBase-root MuiIconButton-root c8"
+              aria-owns={null}
+              className="MuiButtonBase-root MuiIconButton-root c7"
               disabled={false}
               onBlur={[Function]}
               onDragLeave={[Function]}
@@ -691,14 +581,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="round"
             >
@@ -706,11 +596,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c5  icon c6"
-                  size="medium"
+                  className="  icon c5"
                 >
                   <svg
-                    className="c7"
+                    className="c6"
                     role="img"
                   >
                     <use
@@ -720,16 +609,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
                   </svg>
                 </span>
               </span>
-              <span
-                className="MuiTouchRipple-root"
-              />
             </button>
           </div>
         </div>
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Close"
-          className="MuiButtonBase-root MuiIconButton-root c8"
+          aria-owns={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -737,14 +624,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -752,11 +639,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
             className="MuiIconButton-label"
           >
             <span
-              className="c5  icon c6"
-              size="medium"
+              className="  icon c5"
             >
               <svg
-                className="c7"
+                className="c6"
                 role="img"
               >
                 <use
@@ -766,9 +652,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
@@ -777,14 +660,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 `;
 
 exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and information: Components/Dialog/DialogHeader Title with avatar and information 1`] = `
-.c11 {
+.c10 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c12 {
+.c11 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -795,24 +678,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   font-size: 24px;
 }
 
-.c15.c15 .c10,
-.c15.c15 .c10 svg {
-  font-size: 20px;
-}
-
-.c15.c15:hover .c10 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c15.c15:active .c10 {
-  color: #9e9e9e;
-}
-
-.c15.c15.c15.c15.disabled .c10 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c13.c13 {
+.c12.c12 {
   padding: 0;
   width: 40px;
   height: 40px;
@@ -823,28 +689,28 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   border-radius: 50%;
 }
 
-.c13.c13 .c10,
-.c13.c13 .c10 svg {
+.c12.c12 .icon,
+.c12.c12 .icon svg {
   font-size: 20px;
 }
 
-.c13.c13:hover {
+.c12.c12:hover {
   background-color: rgba(158,158,158,0.12);
 }
 
-.c13.c13:hover .c10 {
+.c12.c12:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c13.c13:active .c10 {
+.c12.c12:active .icon {
   color: #9e9e9e;
 }
 
-.c13.c13.c13.c13.disabled .c10 {
+.c12.c12.c12.c12.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c13.c13 .rippleVisible {
+.c12.c12 .rippleVisible {
   color: #9e9e9e;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -852,40 +718,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c16.c16 .c10,
-.c16.c16 .c10 svg {
-  font-size: 20px;
-}
-
-.c16.c16:hover .c10 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c16.c16:active .c10 {
-  color: #0684bd;
-}
-
-.c16.c16.c16.c16.disabled .c10 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c17.c17 .c10,
-.c17.c17 .c10 svg {
-  font-size: 20px;
-}
-
-.c17.c17:hover .c10 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c17.c17:active .c10 {
-  color: #0684bd;
-}
-
-.c17.c17.c17.c17.disabled .c10 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c9.c9 {
@@ -899,8 +731,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   border-radius: 50%;
 }
 
-.c9.c9 .c10,
-.c9.c9 .c10 svg {
+.c9.c9 .icon,
+.c9.c9 .icon svg {
   font-size: 20px;
 }
 
@@ -908,15 +740,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   background-color: rgba(237,182,60,0.12);
 }
 
-.c9.c9:hover .c10 {
+.c9.c9:hover .icon {
   color: rgba(237,182,60,0.88);
 }
 
-.c9.c9:active .c10 {
+.c9.c9:active .icon {
   color: #edb63c;
 }
 
-.c9.c9.c9.c9.disabled .c10 {
+.c9.c9.c9.c9.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -972,6 +804,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -1068,7 +904,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   margin-left: 0;
 }
 
-.c14 {
+.c13 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -1196,8 +1032,9 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Favorite"
+          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1206,14 +1043,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -1221,11 +1058,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="c10  icon c11"
-              size="medium"
+              className="  icon c10"
             >
               <svg
-                className="c12"
+                className="c11"
                 role="img"
               >
                 <use
@@ -1235,14 +1071,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Settings"
-          className="MuiButtonBase-root MuiIconButton-root c13"
+          aria-owns={null}
+          className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1250,14 +1084,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -1265,11 +1099,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="c10  icon c11"
-              size="medium"
+              className="  icon c10"
             >
               <svg
-                className="c12"
+                className="c11"
                 role="img"
               >
                 <use
@@ -1279,20 +1112,18 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
         <div>
           <div
-            className="c14"
+            className="c13"
             onClick={[Function]}
             onMouseDown={[Function]}
           >
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="More"
-              className="MuiButtonBase-root MuiIconButton-root c13"
+              aria-owns={null}
+              className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
               onDragLeave={[Function]}
@@ -1300,14 +1131,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="round"
             >
@@ -1315,11 +1146,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c10  icon c11"
-                  size="medium"
+                  className="  icon c10"
                 >
                   <svg
-                    className="c12"
+                    className="c11"
                     role="img"
                   >
                     <use
@@ -1329,16 +1159,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                   </svg>
                 </span>
               </span>
-              <span
-                className="MuiTouchRipple-root"
-              />
             </button>
           </div>
         </div>
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Close"
-          className="MuiButtonBase-root MuiIconButton-root c13"
+          aria-owns={null}
+          className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1346,14 +1174,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -1361,11 +1189,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="c10  icon c11"
-              size="medium"
+              className="  icon c10"
             >
               <svg
-                className="c12"
+                className="c11"
                 role="img"
               >
                 <use
@@ -1375,9 +1202,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
@@ -1444,8 +1268,9 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Favorite"
+          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1454,14 +1279,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -1469,11 +1294,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="c10  icon c11"
-              size="medium"
+              className="  icon c10"
             >
               <svg
-                className="c12"
+                className="c11"
                 role="img"
               >
                 <use
@@ -1483,14 +1307,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Settings"
-          className="MuiButtonBase-root MuiIconButton-root c13"
+          aria-owns={null}
+          className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1498,14 +1320,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -1513,11 +1335,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="c10  icon c11"
-              size="medium"
+              className="  icon c10"
             >
               <svg
-                className="c12"
+                className="c11"
                 role="img"
               >
                 <use
@@ -1527,20 +1348,18 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
         <div>
           <div
-            className="c14"
+            className="c13"
             onClick={[Function]}
             onMouseDown={[Function]}
           >
             <button
-              aria-describedby={null}
+              aria-haspopup={true}
               aria-label="More"
-              className="MuiButtonBase-root MuiIconButton-root c13"
+              aria-owns={null}
+              className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
               onDragLeave={[Function]}
@@ -1548,14 +1367,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseOver={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="round"
             >
@@ -1563,11 +1382,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c10  icon c11"
-                  size="medium"
+                  className="  icon c10"
                 >
                   <svg
-                    className="c12"
+                    className="c11"
                     role="img"
                   >
                     <use
@@ -1577,16 +1395,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                   </svg>
                 </span>
               </span>
-              <span
-                className="MuiTouchRipple-root"
-              />
             </button>
           </div>
         </div>
         <button
-          aria-describedby={null}
+          aria-haspopup={true}
           aria-label="Close"
-          className="MuiButtonBase-root MuiIconButton-root c13"
+          aria-owns={null}
+          className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1594,14 +1410,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -1609,11 +1425,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="c10  icon c11"
-              size="medium"
+              className="  icon c10"
             >
               <svg
-                className="c12"
+                className="c11"
                 role="img"
               >
                 <use
@@ -1623,9 +1438,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>

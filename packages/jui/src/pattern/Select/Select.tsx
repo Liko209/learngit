@@ -15,7 +15,7 @@ import { JuiListItemSecondaryAction } from '../../components/Lists';
 import { JuiVirtualizedBoxSelect } from '../../components/VirtualizedSelects';
 import { extractValue } from './utils';
 import { observer } from 'mobx-react';
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import styled from 'styled-components';
 
 type ItemProcessFunction<T> = (args: {
@@ -31,6 +31,7 @@ type SelectConfig<T> = {
   valueRenderer?: ItemProcessFunction<T>;
   sourceRenderer?: ItemProcessFunction<T>;
   secondaryActionRenderer?: ItemProcessFunction<T>;
+  onBeforeOpen?: () => Promise<boolean>;
 };
 
 type JuiSelectProps<T> = {
@@ -44,6 +45,18 @@ type JuiSelectProps<T> = {
 
 @observer
 class JuiSelectComponent<T> extends React.Component<JuiSelectProps<T>> {
+  @observable
+  private _open = false;
+
+  private _onOpen = async () => {
+    const { onBeforeOpen } = this.props.config;
+    this._open = onBeforeOpen ? await onBeforeOpen() : true;
+  };
+
+  private _onClose = () => {
+    this._open = false;
+  };
+
   @computed
   get value() {
     return this._extractValue(this.props.rawValue);
@@ -113,6 +126,10 @@ class JuiSelectComponent<T> extends React.Component<JuiSelectProps<T>> {
     const renderer = config.valueRenderer || config.sourceRenderer;
 
     if (!renderer) {
+      const type = typeof rawValue;
+      if (['string', 'number'].includes(type)) {
+        return <JuiText>{rawValue}</JuiText>;
+      }
       return null;
     }
 
@@ -147,6 +164,9 @@ class JuiSelectComponent<T> extends React.Component<JuiSelectProps<T>> {
         automationId={`selectBox-${this.automationId}`}
         data-test-automation-value={this.value}
         isFullWidth
+        open={this._open}
+        onOpen={this._onOpen}
+        onClose={this._onClose}
         name="settings"
         renderValue={this._renderValue}
         className={className}

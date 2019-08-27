@@ -13,6 +13,11 @@ class ElectronService {
     }
   }
 
+  openWindow(option: any) {
+    window.jupiterElectron.openWindow &&
+      window.jupiterElectron.openWindow(option);
+  }
+
   setBadgeCount(count: number) {
     window.jupiterElectron.setBadgeCount &&
       window.jupiterElectron.setBadgeCount(count || 0);

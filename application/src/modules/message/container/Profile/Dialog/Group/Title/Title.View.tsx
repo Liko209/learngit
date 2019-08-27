@@ -45,7 +45,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
             }}
           />
           {group.isMember && <TeamSettingButton id={id} size="medium" />}
-          {group.isTeam && <More id={id} size="medium" />}
+          {group.isTeam && <More id={id} size="medium" automationId="team-profile-more" />}
           <JuiIconButton
             onClick={this.dismiss}
             tooltipTitle={t('common.dialog.close')}

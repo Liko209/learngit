@@ -62,7 +62,7 @@ const RightWrap = styled.div`
     justify-content: flex-end;
     margin-left: ${spacing(4)};
     ${JuiSelect} {
-      margin: ${spacing(1.5, 0, 1.5, 0)};
+      margin: ${spacing(1.5, 0)};
       max-width: 200px;
       @media (max-width: 480px) {
         max-width: 168px;
@@ -112,6 +112,7 @@ class JuiSettingItem extends React.PureComponent<JuiSettingItemProps> {
         <SettingItemContentWrap className="setting-item-content">
           <LeftWrap className={`setting-item-left ${indentClass}`}>
             <LabelWrap
+              id={`${id}`}
               data-test-automation-id={`settingItemLabel-${testId}`}
               className={`setting-item-label ${disabledClass}`}
             >

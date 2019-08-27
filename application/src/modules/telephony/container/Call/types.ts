@@ -3,8 +3,6 @@
  * @Date: 2019-03-04 15:26:33
  * Copyright © RingCentral. All rights reserved.
  */
-import { PromisedComputedValue } from 'computed-async-mobx';
-
 type CallProps = {
   phone?: string;
   variant?: 'round' | 'plain';
@@ -20,7 +18,7 @@ type CallViewProps = {
   phoneNumber: string;
   call: () => void;
   trackCall: (analysisSource?: string) => void;
-  showIcon: PromisedComputedValue<boolean>;
+  showIcon: boolean;
 };
 
 export { CallProps, CallViewProps };

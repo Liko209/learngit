@@ -16,7 +16,9 @@ import { SettingEntityIds } from '../setting';
 import {
   CONVERSATION_NOTIFICATIONS_VALUE,
   AUDIO_NOTIFICATIONS,
+  Profile,
 } from './entity/Profile';
+import { Nullable } from 'sdk/types';
 
 type SettingValue =
   | number
@@ -41,5 +43,24 @@ type SettingItemConfig<T> = {
   source?: T[];
   defaultValue?: T;
 };
+interface IProfileObservable {
+  register(observer: IProfileObserver): void;
+  unRegister(observer: IProfileObserver): void;
+  notify(
+    observer: IProfileObserver,
+    profile: Profile,
+    originProfile: Nullable<Profile>,
+  ): void;
+}
+interface IProfileObserver {
+  keys: SETTING_KEYS[];
+  update(profile: Profile, originProfile: Nullable<Profile>): Promise<void>;
+}
 
-export { SettingValue, SettingOption, SettingItemConfig };
+export {
+  SettingValue,
+  SettingOption,
+  SettingItemConfig,
+  IProfileObservable,
+  IProfileObserver,
+};

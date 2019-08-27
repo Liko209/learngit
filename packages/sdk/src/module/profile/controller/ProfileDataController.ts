@@ -20,26 +20,27 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { SettingService, SettingEntityIds } from 'sdk/module/setting';
-import {
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  VIDEO_SERVICE_OPTIONS,
-  SOUNDS_TYPE,
-  SoundsList,
-} from '../constants';
-import GroupService from 'sdk/module/group';
+import { VIDEO_SERVICE_OPTIONS, SETTING_KEYS } from '../constants';
 import { ConversationPreference } from '../entity/Profile';
+import { ConversationPreferenceHandler } from './ConversationPreferenceHandler';
+import { ProfileEntityObservable } from './ProfileEntityObservable';
 
 class ProfileDataController {
+  private _conversationPreferenceHandler: ConversationPreferenceHandler;
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
-  ) {}
+    public profileEntityObservable: ProfileEntityObservable,
+  ) {
+    this._registerObservers();
+  }
 
-  get settingService() {
-    return ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
-    );
+  private _registerObservers() {
+    this._conversationPreferenceHandler = new ConversationPreferenceHandler([
+      SETTING_KEYS.CONVERSATION_AUDIO,
+      SETTING_KEYS.CONVERSATION_NOTIFICATION,
+    ]);
+    this.profileEntityObservable.register(this._conversationPreferenceHandler);
   }
 
   async profileHandleData(
@@ -107,53 +108,13 @@ class ProfileDataController {
     const profile = await this.getProfile();
     return (profile && profile.favorite_group_ids) || [];
   }
-  async _isTeam(conversationId: number) {
-    const groupService = ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
-    );
-    const group = await groupService.getById(conversationId);
-    return !!(group && group.is_team);
-  }
-  async _getGlobalDesktopNotification(conversationId: number) {
-    const settingService = ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
-    );
-    const model = await settingService.getById<
-      DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
-    >(SettingEntityIds.Notification_NewMessages);
-    const value = model && model.value;
-    let isMute;
-    switch (value) {
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE:
-        isMute = false;
-        break;
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF:
-        isMute = true;
-        break;
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION:
-      default:
-        isMute = await this._isTeam(conversationId);
-        break;
-    }
-    return isMute;
-  }
 
-  async isNotificationMute(conversationId: number) {
-    const profile = await this.getProfile();
-    const notification =
-      profile &&
-      profile.conversation_level_notifications &&
-      profile.conversation_level_notifications[conversationId];
-    if (!notification) {
-      return this._getGlobalDesktopNotification(conversationId);
-    }
-    if (notification.muted) {
+  async isNotificationMute(cid: number) {
+    const model = await this.getConversationPreference(cid);
+    if (model.muted) {
       return true;
     }
-    if (notification.desktop_notifications === undefined) {
-      return this._getGlobalDesktopNotification(conversationId);
-    }
-    return !notification.desktop_notifications;
+    return !model.desktopNotifications;
   }
 
   async isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {
@@ -182,6 +143,7 @@ class ProfileDataController {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,
               ]);
+              this.profileEntityObservable.onProfileUpdate(transformedData);
             }
           }
           return transformedData;
@@ -194,91 +156,18 @@ class ProfileDataController {
     }
   }
 
-  async getByGroupId(cid: number): Promise<ConversationPreference> {
+  unRegisterAllObservers() {
+    this.profileEntityObservable.unRegisterAll();
+  }
+
+  async getConversationPreference(
+    cid: number,
+  ): Promise<ConversationPreference> {
     const profile = await this.getProfile();
-    const notification =
-      profile &&
-      profile.conversation_level_notifications &&
-      profile.conversation_level_notifications[cid];
-    const sound = (
-      (profile && profile.team_specific_audio_notifications) ||
-      []
-    ).find(item => item.gid === cid);
-    let model = {
-      ...notification,
-      muted: (notification && notification.muted) || false,
-      sound_notifications:
-        sound && SoundsList.find(item => item.id === sound.sound),
-    } as ConversationPreference;
-    if (this._isTeam(cid)) {
-      model = await this._getTeamSetting(model);
-    } else {
-      model = await this._getDMSetting(model);
-    }
-    return model;
-  }
-
-  private async _getSettingValue<T>(settingId: SettingEntityIds) {
-    const model = await this.settingService.getById<T>(settingId);
-    return (model && model.value)!;
-  }
-
-  private async _getTeamSetting(model: ConversationPreference) {
-    if (
-      model.sound_notifications === undefined ||
-      model.sound_notifications.id === SOUNDS_TYPE.Default
-    ) {
-      model.sound_notifications = await this._getSettingValue(
-        SettingEntityIds.Audio_TeamMessages,
-      );
-    }
-    if (!model.desktop_notifications) {
-      const value = await this._getSettingValue(
-        SettingEntityIds.Notification_NewMessages,
-      );
-      model.desktop_notifications =
-        value === DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE;
-    }
-    if (model.email_notifications === undefined) {
-      model.email_notifications = await this._getSettingValue(
-        SettingEntityIds.Notification_Teams,
-      );
-    }
-    if (model.push_notifications === undefined) {
-      model.push_notifications = await this._getSettingValue(
-        SettingEntityIds.MOBILE_Team,
-      );
-    }
-    return model;
-  }
-
-  private async _getDMSetting(model: ConversationPreference) {
-    if (
-      !model.sound_notifications ||
-      model.sound_notifications.id === SOUNDS_TYPE.Default
-    ) {
-      model.sound_notifications = await this._getSettingValue(
-        SettingEntityIds.Audio_DirectMessage,
-      );
-    }
-    if (!model.desktop_notifications) {
-      const value = await this._getSettingValue(
-        SettingEntityIds.Notification_NewMessages,
-      );
-      model.desktop_notifications =
-        value !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF;
-    }
-    if (model.email_notifications === undefined) {
-      model.email_notifications = await this._getSettingValue(
-        SettingEntityIds.Notification_DirectMessages,
-      );
-    }
-    if (model.push_notifications === undefined) {
-      model.push_notifications = await this._getSettingValue(
-        SettingEntityIds.MOBILE_DM,
-      );
-    }
-    return model;
+    return await this._conversationPreferenceHandler.buildEntityInfo(
+      profile,
+      cid,
+    );
   }
 }
 

@@ -9,7 +9,7 @@ import { LinkItemViewModel } from '../LinkItem.ViewModel';
 import { LinkItemProps } from '../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { testable, test } from 'shield';
-import { mockSingleEntity } from 'shield/application';
+import { mockEntity } from 'shield/application';
 
 const itemService = {
   deleteItem: jest.fn(),
@@ -67,23 +67,20 @@ describe('LinkItemViewModel', () => {
 describe('LinkItemViewModel', () => {
   @testable
   class linkPreview {
-    @test('should be false when profile link preview returns true [JPT-2817]')
-    @mockSingleEntity(true)
+    @test(
+      'should isLinkPreviewDisabled be false when link preview of profile is true [JPT-2817]',
+    )
+    @mockEntity({ value: true })
     t1() {
       expect(linkItemVM.isLinkPreviewDisabled).toBeFalsy();
     }
 
-    @test('should be true when profile link preview returns false [JPT-2817]')
-    @mockSingleEntity(false)
+    @test(
+      'should  isLinkPreviewDisabled be true when link preview of profile is false [JPT-2817]',
+    )
+    @mockEntity({ value: false })
     t2() {
       expect(linkItemVM.isLinkPreviewDisabled).toBeTruthy();
-    }
-    @test(
-      'should be true when profile link preview returns undefined [JPT-2817]',
-    )
-    @mockSingleEntity(undefined)
-    t3() {
-      expect(linkItemVM.isLinkPreviewDisabled).toBeFalsy();
     }
   }
 });

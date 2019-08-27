@@ -5,23 +5,56 @@
  */
 
 import { NotificationPreferencesViewModel } from '../NotificationPreferences.ViewModel';
-import {
-  ERROR_CODES_NETWORK,
-  JNetworkError,
-  JServerError,
-  ERROR_CODES_SERVER,
-} from 'sdk/error';
+
 import { Notification } from '@/containers/Notification';
-import { SettingService } from 'sdk/module/setting';
 import { mockService } from 'shield/sdk/mockService';
 import { GroupService } from 'sdk/module/group';
 import { testable, test } from 'shield';
+import { networkErrorFunc, serverErrorFunc } from 'shield/utils';
 import { ProfileService } from 'sdk/module/profile';
 
-const mockBackendError = new JServerError(ERROR_CODES_SERVER.GENERAL, '');
-const mockNetworkError = new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
-
 describe('NotificationPreferencesViewModel', () => {
+  @testable
+  class _hasChanged {
+    @mockService(GroupService, [
+      { method: 'getById', data: { is_team: true } },
+      { method: 'isIndividualGroup' },
+    ])
+    beforeEach() {}
+
+    @test('should be false when value is undefined')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+    ])
+    async t1() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      expect(notificationPreferencesVM._hasChanged).toBeFalsy();
+    }
+
+    @test('should be false when value is the same as initialValue')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+    ])
+    async t2() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      notificationPreferencesVM.value = { muted: true };
+      expect(notificationPreferencesVM._hasChanged).toBeFalsy();
+    }
+
+    @test('should be true when value is different from initialValue')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+    ])
+    async t3() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      notificationPreferencesVM.value = { muted: false };
+      expect(notificationPreferencesVM._hasChanged).toBeTruthy();
+    }
+  }
+
   @testable
   class handleSubmit {
     beforeEach() {
@@ -31,39 +64,77 @@ describe('NotificationPreferencesViewModel', () => {
     @test(
       'should display flash toast notification when updateConversationPreference failed for server issue [JPT-2838]',
     )
-    @mockService.reject(ProfileService, [
-      { method: 'updateConversationPreference', data: mockBackendError },
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+      { method: 'updateConversationPreference', data: serverErrorFunc },
     ])
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
+      notificationPreferencesVM.value.muted = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'setting.errorText.server',
         }),
       );
+      expect(notificationPreferencesVM.handleClose).not.toHaveBeenCalled();
     }
 
     @test(
       'should display flash toast notification when updateConversationPreference failed for network issue [JPT-2837]',
     )
-    @mockService.reject(ProfileService, [
-      { method: 'updateConversationPreference', data: mockNetworkError },
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+      { method: 'updateConversationPreference', data: networkErrorFunc },
     ])
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
+      notificationPreferencesVM.value.muted = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'setting.errorText.network',
         }),
       );
+      expect(notificationPreferencesVM.handleClose).not.toHaveBeenCalled();
+    }
+
+    @test('should call handleClose when _hasChanged is true')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+      { method: 'updateConversationPreference' },
+    ])
+    async t3() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
+      notificationPreferencesVM.value.muted = false;
+      await notificationPreferencesVM.handleSubmit();
+      expect(notificationPreferencesVM.handleClose).toHaveBeenCalled();
+    }
+
+    @test('should call handleClose when _hasChanged is false')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+      { method: 'updateConversationPreference' },
+    ])
+    async t4() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
+      notificationPreferencesVM.value.muted = true;
+      await notificationPreferencesVM.handleSubmit();
+      expect(notificationPreferencesVM.handleClose).toHaveBeenCalled();
     }
   }
 
   @testable
   class _groupType {
-    @mockService(ProfileService, [{ method: 'getByGroupId' }])
+    @mockService(ProfileService, [{ method: 'getConversationPreference' }])
     beforeEach() {}
     @test('should be team when group.is_team is true')
     @mockService(GroupService, [
@@ -104,7 +175,7 @@ describe('NotificationPreferencesViewModel', () => {
   }
 
   @testable
-  class soundNotificationsDisabled {
+  class audioNotificationsDisabled {
     @mockService(GroupService, [
       { method: 'getById' },
       { method: 'isIndividualGroup' },
@@ -112,7 +183,7 @@ describe('NotificationPreferencesViewModel', () => {
     beforeEach() {}
 
     @test('should be true when muted is true')
-    @mockService(ProfileService, 'getByGroupId', { muted: true })
+    @mockService(ProfileService, 'getConversationPreference', { muted: true })
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
       await notificationPreferencesVM.init();
@@ -120,11 +191,11 @@ describe('NotificationPreferencesViewModel', () => {
     }
 
     @test(
-      'should be true when muted is false and desktop_notifications is false',
+      'should be true when muted is false and desktopNotifications is false',
     )
-    @mockService(ProfileService, 'getByGroupId', {
+    @mockService(ProfileService, 'getConversationPreference', {
       muted: false,
-      desktop_notifications: false,
+      desktopNotifications: false,
     })
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
@@ -133,11 +204,11 @@ describe('NotificationPreferencesViewModel', () => {
     }
 
     @test(
-      'should be false when muted is false and desktop_notifications is true',
+      'should be false when muted is false and desktopNotifications is true',
     )
-    @mockService(ProfileService, 'getByGroupId', {
+    @mockService(ProfileService, 'getConversationPreference', {
       muted: false,
-      desktop_notifications: true,
+      desktopNotifications: true,
     })
     async t3() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
@@ -152,7 +223,7 @@ describe('NotificationPreferencesViewModel', () => {
       { method: 'getById' },
       { method: 'isIndividualGroup' },
     ])
-    @mockService(ProfileService, 'getByGroupId', { muted: false })
+    @mockService(ProfileService, 'getConversationPreference', { muted: false })
     beforeEach() {}
 
     @test('should be true when default is false and current is undefined')

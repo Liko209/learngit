@@ -2,7 +2,6 @@
  * @Author: Mia Cai (mia.cai@ringcentral.com)
  */
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
@@ -259,7 +258,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-247'],
   maintainers: ['ali.naffaa'],
   keywords: ['ConversationList'],
-})('The Favorites section should display all the favorite conversations and should not be limited to 20 conversations', async (t: TestController) => {
+})(`The Favorites section won't be affected by settings of max conversations`, async (t: TestController) => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const MAX_NUMBER = 5
@@ -307,6 +306,92 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
   ;
+
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  await h(t).withLog('Then all conversations {favConversationCount} are displayed in Favorite section', async (step) => {
+    step.setMetadata('favConversationCount', favConversationCount.toString());
+
+    await favoritesSection.expand();
+    for (let teamId of teamsId) {
+      await favoritesSection.conversationEntryById(teamId).ensureLoaded();
+    }
+    await t.expect(favoritesSection.conversations.count).eql(favConversationCount);
+  });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2851'],
+  maintainers: ['andy.hu'],
+  keywords: ['ConversationList'],
+})('Check the max conversations is worked properly', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const MAX_NUMBER = 5
+
+  await h(t).withLog('Given clear all UMIs before login', async () => {
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).clearAllUmi();
+  });
+
+  await h(t).withLog(`And I login Jupiter with host {number}#{extension}`, async (step) => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I create ${MAX_NUMBER+1} new teams`, async () => {
+    const teams = Array.from({ length: MAX_NUMBER+1 }, (x, i) => <IGroup>{
+      name: `${i}-${uuid()}`,
+      type: "Team",
+      owner: loginUser,
+      members: [loginUser]
+    })
+    await h(t).scenarioHelper.createTeams(teams);
+  });
+
+  await h(t).withLog('Given set user max conversation display number is {MAX_NUMBER } ', async (step) => {
+    const settingsEntry = app.homePage.leftPanel.settingsEntry;
+    const settingTab = app.homePage.settingTab;
+    const messageSettingPage = settingTab.messageSettingPage;
+    await settingsEntry.enter();
+    await settingTab.messagesEntry.enter();
+    await messageSettingPage.clickMaxConversationSelectBox();
+    await t.click(messageSettingPage.maxConversationDropDownItems.nth(MAX_NUMBER-2))
+  });
+
+  const favConversationCount = MAX_NUMBER + 1
+  let teamsId = [];
+
+  await h(t).withLog('And I switch back to message tab', async (step) => {
+    await app.homePage.leftPanel.messagesEntry.enter()
+  });
+
+  await h(t).withLog(`And user has no more than ${MAX_NUMBER} teams on left panel`, async (step) => {
+    await t.expect(app.homePage.messageTab.teamsSection.conversations.count).eql(MAX_NUMBER)
+  });
+
+  await h(t).withLog('And user has more than {MAX_NUMBER} conversations in the Fav section', async (step) => {
+    const oldTeamsId: any[] = await h(t).glip(loginUser).getTeams().then(res => res.data.teams
+      .filter(team => !team.is_archived && !team.deactivated && !!team.members)
+      .map(team => team._id));
+    const needCreatedCount = favConversationCount - oldTeamsId.length
+    if (needCreatedCount > 0) {
+      teamsId.concat(oldTeamsId)
+      for (let i = 0; i < needCreatedCount; i++) {
+        let team = <IGroup>{
+          type: "Team",
+          name: uuid(),
+          owner: loginUser,
+          members: [loginUser],
+        };
+        await h(t).scenarioHelper.createTeam(team).then(() => teamsId.push(team.glipId));
+      }
+    } else {
+      teamsId = teamsId.concat(oldTeamsId.slice(0, favConversationCount))
+    }
+    await h(t).glip(loginUser).favoriteGroups(teamsId);
+  });
 
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   await h(t).withLog('Then all conversations {favConversationCount} are displayed in Favorite section', async (step) => {

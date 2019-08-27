@@ -11,7 +11,7 @@ import { daoManager } from '../../../dao';
 import { ProfileDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
+import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
@@ -35,10 +35,9 @@ class ProfileService extends EntityBaseService<Profile>
 
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.PROFILE]: this.handleProfileChange,
+        [SOCKET.PROFILE]: this.handleIncomingData,
         [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this
           .handleGroupIncomesNewPost,
-        [ENTITY.USER_SETTING]: this.getByGroupId,
       }),
     );
 
@@ -61,20 +60,12 @@ class ProfileService extends EntityBaseService<Profile>
       ).unRegisterModuleSetting(this._profileSetting);
       delete this._profileSetting;
     }
+    this.getProfileController()
+      .getProfileDataController()
+      .unRegisterAllObservers();
 
     super.onStopped();
   }
-  handleProfileChange = async (
-    profile: Raw<Profile> | null,
-    source: SYNC_SOURCE,
-    changeMap?: Map<string, ChangeModel>,
-  ) => {
-    await this.handleIncomingData(profile, source, changeMap);
-    // await this.handleConversationPreferenceChange();
-  };
-  // handleConversationPreferenceChange = async (a, b, c) => {
-  //   console.log('vicky', a, b, c);
-  // };
 
   handleIncomingData = async (
     profile: Raw<Profile> | null,
@@ -182,19 +173,21 @@ class ProfileService extends EntityBaseService<Profile>
       .isVideoServiceEnabled(option);
   }
 
-  getByGroupId = async (cid: number): Promise<ConversationPreference> => {
+  getConversationPreference = async (
+    cid: number,
+  ): Promise<ConversationPreference> => {
     return await this.getProfileController()
       .getProfileDataController()
-      .getByGroupId(cid);
+      .getConversationPreference(cid);
   };
 
   async updateConversationPreference(
-    id: number,
+    cid: number,
     model: Partial<ConversationPreference>,
   ): Promise<void> {
     await this.getProfileController()
       .getSettingsActionController()
-      .updateSettingByGroupId(id, model);
+      .updateConversationPreference(cid, model);
   }
 
   private get profileSetting() {

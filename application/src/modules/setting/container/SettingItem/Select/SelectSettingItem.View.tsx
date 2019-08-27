@@ -34,7 +34,6 @@ class SelectSettingItemViewComponent<
   handleChange = async (newValue: string, rawValue?: T) => {
     await this.props.saveSetting(newValue, rawValue);
   };
-
   render() {
     const { t, id, disabled, settingItem, value, source } = this.props;
     const config = Object.assign({}, settingItem, {

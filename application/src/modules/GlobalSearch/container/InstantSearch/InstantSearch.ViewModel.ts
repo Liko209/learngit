@@ -141,8 +141,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     );
 
     const [persons, groups, teams] = await Promise.all([
-      searchService.doFuzzySearchPersons({
-        searchKey: key,
+      searchService.doFuzzySearchPersons(key, {
         excludeSelf: false,
         recentFirst: true,
       }),

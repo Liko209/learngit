@@ -147,8 +147,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const res = await searchService.doFuzzySearchPersons({
-      searchKey: term,
+    const res = await searchService.doFuzzySearchPersons(term, {
       excludeSelf: true,
       arrangeIds: memberIds,
       fetchAllIfSearchKeyEmpty: true,

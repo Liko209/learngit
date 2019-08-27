@@ -16,7 +16,7 @@ type Props = MuteViewProps & WithTranslation & MuteProps;
 
 @observer
 class MuteViewComponent extends Component<Props> {
-  onClickMute = async () => {
+  private _handleClick = () => {
     portalManager.dismissLast();
     NotificationPreferences.show({ groupId: this.props.groupId });
   };
@@ -28,10 +28,10 @@ class MuteViewComponent extends Component<Props> {
     }
     return (
       <JuiIconButton
-        size={size}
+        size={size || 'medium'}
         className="Mute"
         alwaysEnableTooltip
-        onClick={this.onClickMute}
+        onClick={this._handleClick}
         tooltipTitle={t('setting.conversationPreferences.entry')}
         data-test-automation-id="muted"
       >

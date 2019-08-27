@@ -7,11 +7,11 @@
 import { dataAnalysis } from 'foundation/analysis';
 import { ConversationType } from 'src/AnalyticsCollector/types';
 import {
-  MUTE_ALL,
-  DESKTOP_NOTIFICATION,
-  SOUND_NOTIFICATION,
-  MOBILE_NOTIFICATION,
-  EMAIL_NOTIFICATION,
+  MUTED,
+  DESKTOP_NOTIFICATIONS,
+  SOUND_NOTIFICATIONS,
+  MOBILE_NOTIFICATIONS,
+  EMAIL_NOTIFICATIONS,
 } from './constant';
 import {
   SoundSelectDataTrackingOption,
@@ -19,15 +19,25 @@ import {
 } from '../../modules/message/MessageSettingManager/dataTrackingTransformer';
 import { MOBILE_TEAM_NOTIFICATION_OPTIONS } from 'sdk/module/profile/constants';
 
-function saveNotificationPreferences(name: string, transformFunc: Function) {
-  return (value: boolean | string, type: ConversationType) =>
-    dataAnalysis.track('Jup_Web/DT_msg_notificationPreferenceChange', {
-      name,
-      option: transformFunc(value),
-      type,
-    });
-}
-const booleanTransform = (value: boolean) => (value ? 'on' : 'off');
+const _trackPreferenceChange = (obj: {
+  name: string;
+  type: ConversationType;
+  option: string;
+}) => {
+  dataAnalysis.track('Jup_Web/DT_msg_notificationPreferenceChange', obj);
+};
+
+const _transformBoolean = (value: boolean) => (value ? 'on' : 'off');
+
+const _buildCustomTracker = (name: string, transformFunc: Function) => (
+  value: string,
+  type: ConversationType,
+) => _trackPreferenceChange({ name, type, option: transformFunc(value) });
+
+const _buildBooleanTracker = (name: string) => (
+  value: boolean,
+  type: ConversationType,
+) => _trackPreferenceChange({ name, type, option: _transformBoolean(value) });
 
 export const MobileNotificationDataTrackingOption: {
   [key in MOBILE_TEAM_NOTIFICATION_OPTIONS]: string
@@ -42,23 +52,17 @@ export function notificationPreferencesShown() {
 }
 
 export const eventsDict = {
-  [MUTE_ALL]: saveNotificationPreferences(
-    'muteNotifications',
-    booleanTransform,
-  ),
-  [DESKTOP_NOTIFICATION]: saveNotificationPreferences(
-    'desktopNotification',
-    booleanTransform,
-  ),
-  [SOUND_NOTIFICATION]: saveNotificationPreferences(
+  [MUTED]: _buildBooleanTracker('muteNotifications'),
+  [DESKTOP_NOTIFICATIONS]: _buildBooleanTracker('desktopNotification'),
+  [SOUND_NOTIFICATIONS]: _buildCustomTracker(
     'notificationSound',
     ({ id }: { id: string }) => SoundSelectDataTrackingOption[id],
   ),
-  [MOBILE_NOTIFICATION]: saveNotificationPreferences(
+  [MOBILE_NOTIFICATIONS]: _buildCustomTracker(
     'mobileNotification',
     (value: string) => MobileNotificationDataTrackingOption[value],
   ),
-  [EMAIL_NOTIFICATION]: saveNotificationPreferences(
+  [EMAIL_NOTIFICATIONS]: _buildCustomTracker(
     'emailNotification',
     (value: string) => EmailNotificationSelectDataTrackingOption[value],
   ),
