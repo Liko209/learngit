@@ -128,6 +128,10 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   color: #9e9e9e;
 }
 
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
 .c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
