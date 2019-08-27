@@ -233,6 +233,7 @@ class SearchPersonController {
       fetchAllIfSearchKeyEmpty,
       recentFirst,
       ignoreEmail,
+      meFirst,
     } = options;
 
     const toSortableModelFunc = await this._getTransFromPersonToSortableModelFunc(
@@ -240,6 +241,7 @@ class SearchPersonController {
       fetchAllIfSearchKeyEmpty,
       recentFirst,
       ignoreEmail,
+      meFirst,
     );
 
     const genFormattedTermsFunc = (originalTerms: string[]) => {
@@ -383,6 +385,7 @@ class SearchPersonController {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
     ignoreEmail?: boolean,
+    meFirst?: boolean,
   ) {
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
@@ -479,7 +482,9 @@ class SearchPersonController {
           id: person.id,
           displayName: personName,
           lowerCaseName: personNameLowerCase,
-          sortWeights: [sortValue, recentViewTime],
+          sortWeights: meFirst
+            ? [person.id === currentUserId ? 1 : 0, sortValue, recentViewTime]
+            : [sortValue, recentViewTime],
           entity: person,
           extraData: matchedNumbers,
         };
