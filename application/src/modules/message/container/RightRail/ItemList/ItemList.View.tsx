@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { DataList } from '@/modules/common/container/DataList';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { ThresholdStrategy } from 'jui/components/VirtualizedList';
-import { JuiAutoSizer,Size } from 'jui/components/AutoSizer/AutoSizer';
+import { JuiAutoSizer, Size } from 'jui/components/AutoSizer/AutoSizer';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EmptyView } from './Empty';
 import {
@@ -37,40 +38,52 @@ class ItemListComponent extends React.Component<ItemListViewProps> {
     stickToLastPosition: false,
   };
 
+  @computed
+  private get _emptyView() {
+    return <EmptyView type={this.props.type} />;
+  }
+
+  @computed
+  private get _dataReady() {
+    const { size, total } = this.props.listHandler;
+    return (total > 0 && total !== Infinity) || size > 0;
+  }
+
+  @computed
+  private get _tabConfig() {
+    return getTabConfig(this.props.type);
+  }
+
   private _renderItems() {
-    const { type, groupId, listHandler } = this.props;
-    const tabConfig = getTabConfig(type);
-    const Component: any = tabConfig.item;
+    const { groupId, listHandler } = this.props;
+    const Component: any = this._tabConfig.item;
     return listHandler.sortableListStore.getIds.map((itemId: number) => (
       <Component id={itemId} key={itemId} groupId={groupId} />
     ));
   }
 
   render() {
-    const { type, listHandler, t } = this.props;
-    const { size, total } = listHandler;
-    const { subheader } = getTabConfig(type);
-
+    const { listHandler, t } = this.props;
     return (
       <JuiRightShelfContent>
-        {(total > 0 || size > 0) && (
+        {this._dataReady && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {t(subheader)}
+            {t(this._tabConfig.subheader)}
           </JuiListSubheader>
         )}
         <JuiAutoSizer>
-          {({ height }: Size) =>  (
-              <DataList
-                listHandler={listHandler}
-                initialDataCount={INITIAL_DATA_COUNT}
-                InfiniteListProps={Object.assign(this._infiniteListProps, {
-                  height,
-                  noRowsRenderer: <EmptyView type={type} />,
-                })}
-              >
-                {this._renderItems()}
-              </DataList>
-            )}
+          {({ height }: Size) => (
+            <DataList
+              listHandler={listHandler}
+              initialDataCount={INITIAL_DATA_COUNT}
+              InfiniteListProps={Object.assign(this._infiniteListProps, {
+                height,
+                noRowsRenderer: this._emptyView,
+              })}
+            >
+              {this._renderItems()}
+            </DataList>
+          )}
         </JuiAutoSizer>
       </JuiRightShelfContent>
     );
