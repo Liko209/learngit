@@ -110,7 +110,7 @@ const JuiMenuItem = React.memo(
         maxWidth,
         classes,
         hasSecondaryAction,
-        size,
+        size = 'medium',
         ...rest
       }: JuiMenuItemProps,
       ref,

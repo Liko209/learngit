@@ -27,7 +27,6 @@ class ContactSearchItemView extends React.Component<ViewProps> {
         {...rest}
         selected={isHighlighted}
         avatar={avatar || <Avatar uid={itemId} />}
-        size="large"
       >
         <JuiListItemText
           primary={person.userDisplayName}
