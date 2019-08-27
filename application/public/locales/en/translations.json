@@ -663,7 +663,10 @@
       "voicemail": "To Voicemail",
       "answer": "Answer",
       "more": "More",
-      "endAndAnswer": "End & Answer"
+      "endAndAnswer": "End & Answer",
+      "transfer": "Transfer",
+      "toVoiceMail": "To Voicemail",
+      "askFirst": "Ask first"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -728,6 +731,10 @@
         "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
         "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
         "callEnded": "Your call with {{displayName}} is ended."
+      },
+      "transferCall": {
+        "backendError": "Transfer failed",
+        "transferSuccess": "Call transferred"
       },
       "voicemailDeleted": "The voicemail was deleted."
     },

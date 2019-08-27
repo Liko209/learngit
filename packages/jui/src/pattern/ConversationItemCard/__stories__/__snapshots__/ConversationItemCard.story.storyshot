@@ -583,6 +583,10 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   color: #9e9e9e;
 }
 
+.c8.c8.c8.c8.disabled {
+  background-color: inherit;
+}
+
 .c8.c8.c8.c8.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -1158,6 +1162,10 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c20.c20:active .icon {
   color: #9e9e9e;
+}
+
+.c20.c20.c20.c20.disabled {
+  background-color: inherit;
 }
 
 .c20.c20.c20.c20.disabled .icon {

@@ -404,6 +404,48 @@ describe('Telephony store', () => {
     expect(store.activeCallDirection).toBeUndefined;
     expect(store.uuid).toBe('');
   });
+  it('resetValidInputStringNumber()', () => {
+    const store = createStore();
+    store.resetValidInputStringNumber();
+    expect(store.isValidInputStringNumber).toBeFalsy();
+  });
+
+  it('setCallItem()', () => {
+    const store = createStore();
+    store.setCallItem('123', 1);
+    expect(store.selectedCallItem).toEqual({
+      phoneNumber: '123',
+      index: 1,
+    });
+  });
+
+  it('directToTransferPage()', () => {
+    const store = createStore();
+    store.inputString = '222';
+    store.directToTransferPage();
+    expect(store.isTransferPage).toBeTruthy();
+    expect(store.inputString).toBe('');
+    expect(store._dialerString).toBe('222');
+  });
+
+  it('backToDialerFromTransferPage()', () => {
+    const store = createStore();
+    store._dialerString = '111';
+    store.backToDialerFromTransferPage();
+    expect(store.isTransferPage).toBeFalsy();
+    expect(store.isValidInputStringNumber).toBeFalsy();
+    expect(store.inputString).toBe('111');
+    expect(store._dialerString).toBe('');
+  });
+
+  it('resetCallItem() [JPT-2764]', () => {
+    const store = createStore();
+    store.resetCallItem();
+    expect(store.selectedCallItem).toEqual({
+      phoneNumber: '',
+      index: NaN,
+    })
+  })
 
   describe('_getNotificationCallerInfo', () => {
     it('Should show unknown caller when SDK notification without from caller [JPT-2822]', async () => {

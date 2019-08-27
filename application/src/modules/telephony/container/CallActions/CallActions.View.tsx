@@ -17,6 +17,7 @@ import { Forward } from './Forward';
 import { Reply } from './Reply';
 import { Park } from './Park';
 import { Flip } from './Flip';
+import { Transfer } from './Transfer';
 
 type Props = CallActionsViewProps & WithTranslation;
 
@@ -25,6 +26,7 @@ const callActions = {
   [CALL_ACTION.REPLY]: Reply,
   [CALL_ACTION.PARK]: Park,
   [CALL_ACTION.FLIP]: Flip,
+  [CALL_ACTION.TRANSFER]: Transfer,
 };
 
 @observer

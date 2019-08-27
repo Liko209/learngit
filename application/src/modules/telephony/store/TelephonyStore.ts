@@ -44,6 +44,7 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDa
 import { formatSeconds } from './utils';
 import { VoicemailNotification } from './types';
 
+type SelectedCallItem = { phoneNumber: string; index: number };
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 class TelephonyStore {
@@ -54,6 +55,9 @@ class TelephonyStore {
    * foc
    */
   private _sortableListHandler: FetchSortableDataListHandler<Call>;
+  private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+    ServiceConfig.PHONE_NUMBER_SERVICE,
+  );
 
   maximumInputLength = 30;
 
@@ -97,6 +101,16 @@ class TelephonyStore {
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   forwardString: string = '';
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
+  @observable
+  transferString: string = '';
+
+  @observable
+  private _dialerString: string = '';
+
+  @observable
+  isValidInputStringNumber: boolean = false;
 
   @observable
   dialerInputFocused: boolean = false;
@@ -142,6 +156,18 @@ class TelephonyStore {
 
   @observable
   isRecentCalls: boolean = false;
+
+  @observable
+  private _isRecentCallsInDialerPage: boolean = false;
+
+  @observable
+  isTransferPage: boolean = false;
+
+  @observable
+  selectedCallItem: SelectedCallItem = {
+    phoneNumber: '',
+    index: NaN,
+  };
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -213,10 +239,13 @@ class TelephonyStore {
     // TODO: move out of telephony store when minization won't destroy the telephony dialog
     reaction(
       () => this.inputString.length,
-      length => {
+      async (length: number) => {
         if (!length) {
           this.resetFirstLetterThroughKeypadForInputString();
+          this.transferString = this.inputString;
         }
+        this.resetCallItem();
+        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(this.inputString);
       },
     );
 
@@ -329,6 +358,11 @@ class TelephonyStore {
   };
 
   @action
+  private _clearTransferString = () => {
+    this.transferString = '';
+  };
+
+  @action
   openKeypad = () => {
     this.keypadEntered = true;
   };
@@ -400,6 +434,10 @@ class TelephonyStore {
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
+    this._clearTransferString();
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
+    }
 
     this.isContactMatched = false;
     this.hasManualSelected = false;
@@ -466,6 +504,11 @@ class TelephonyStore {
   @action
   resetFirstLetterThroughKeypadForForwardString = () => {
     this.firstLetterEnteredThroughKeypadForForwardString = false;
+  };
+
+  @action
+  resetValidInputStringNumber = () => {
+    this.isValidInputStringNumber = false;
   };
 
   @computed
@@ -678,10 +721,12 @@ class TelephonyStore {
 
   @computed
   get shouldDisplayRecentCalls() {
-    return !(
-      this.hasActiveOutBoundCall ||
-      this.hasActiveInBoundCall ||
-      this.isIncomingCall
+    return (
+      !(
+        this.hasActiveOutBoundCall ||
+        this.hasActiveInBoundCall ||
+        this.isIncomingCall
+      ) || this.isTransferPage
     );
   }
 
@@ -706,6 +751,7 @@ class TelephonyStore {
   @action
   backToDialer = () => {
     this.isRecentCalls = false;
+    this.resetCallItem();
   };
 
   @action
@@ -749,6 +795,45 @@ class TelephonyStore {
     return this.ids.length > 2;
   }
 
+  directToTransferPage = () => {
+    this.isTransferPage = true;
+    this._isRecentCallsInDialerPage = this.isRecentCalls;
+    this.backToDialer();
+    if (this.inputString.length) {
+      this._dialerString = this.inputString;
+      this.inputString = '';
+    }
+  };
+
+  @action
+  backToDialerFromTransferPage = () => {
+    this.isTransferPage = false;
+    this.isRecentCalls = this._isRecentCallsInDialerPage;
+    this.resetValidInputStringNumber();
+    if (this._dialerString.length) {
+      this.inputString = this._dialerString;
+      this._dialerString = '';
+      return;
+    }
+    return this.inputString = '';
+  };
+
+  @action
+  setCallItem = (phoneNumber: string, index: number) => {
+    this.selectedCallItem = {
+      phoneNumber,
+      index,
+    };
+  };
+
+  @action
+  resetCallItem = () => {
+    this.selectedCallItem = {
+      phoneNumber: '',
+      index: NaN,
+    };
+  }
+
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
 
@@ -786,4 +871,4 @@ class TelephonyStore {
   };
 }
 
-export { TelephonyStore, CALL_TYPE, INCOMING_STATE };
+export { TelephonyStore, CALL_TYPE, INCOMING_STATE, SelectedCallItem };

@@ -38,8 +38,11 @@ import {
   MAKE_CALL_ERROR_CODE,
 } from '../types';
 
+import { CALL_ACTION_ERROR_CODE, CallOptions } from '../types';
+import { TRANSFER_TYPE } from '../entity/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { isOnline } from '../constants';
 
 type CallActionResult = string | CALL_ACTION_ERROR_CODE;
 
@@ -354,6 +357,10 @@ class TelephonyCallController implements IRTCCallDelegate {
       case RTC_CALL_ACTION.PARK:
         res = this._handleParkAction(isSuccess, options);
         break;
+      case RTC_CALL_ACTION.TRANSFER:
+      case RTC_CALL_ACTION.WARM_TRANSFER:
+        res = options as CALL_ACTION_ERROR_CODE;
+        break;
       default:
         break;
     }
@@ -547,21 +554,25 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   async transfer(type: TRANSFER_TYPE, transferTo: string) {
     return new Promise(async (resolve, reject) => {
+      this._saveCallActionCallback(
+        type === TRANSFER_TYPE.WARM_TRANSFER
+          ? RTC_CALL_ACTION.WARM_TRANSFER
+          : RTC_CALL_ACTION.TRANSFER,
+        resolve,
+        reject,
+      );
+      if (!isOnline()) {
+        reject(CALL_ACTION_ERROR_CODE.NOT_NETWORK);
+      }
       if (type === TRANSFER_TYPE.WARM_TRANSFER) {
-        this._saveCallActionCallback(
-          RTC_CALL_ACTION.WARM_TRANSFER,
-          resolve,
-          reject,
-        );
         this._rtcCall.warmTransfer(transferTo);
       } else {
-        this._saveCallActionCallback(RTC_CALL_ACTION.TRANSFER, resolve, reject);
         const phoneNumberService = ServiceLoader.getInstance<
           PhoneNumberService
         >(ServiceConfig.PHONE_NUMBER_SERVICE);
         let number = await phoneNumberService.getE164PhoneNumber(transferTo);
         if (!number) {
-          reject(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
+          reject(CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER);
         }
         if (type === TRANSFER_TYPE.TO_VOICEMAIL) {
           number = this._handleNumberToVoicemail(number);

@@ -19,10 +19,9 @@ import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
-import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
-import { container, injectable, decorate } from 'framework/ioc';
+import { container } from 'framework/ioc';
 import { jupiter } from 'framework/Jupiter';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
@@ -50,6 +49,7 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -63,8 +63,6 @@ const testProcedureWaitingTime = 100;
 let count = 0;
 let telephonyService: TelephonyService;
 let call: any;
-
-// (TelephonyStore as any)._serverTelephonyService = jest.fn().mockReturnValue({});
 
 jest.mock('../ToastCallError');
 jest.mock('@/containers/Notification');
@@ -184,6 +182,7 @@ describe('TelephonyService', () => {
         setTimeout(() => {}, mockedDelay);
         return MAKE_CALL_ERROR_CODE.NO_ERROR;
       }),
+      transfer: jest.fn(),
       hangUp: jest.fn().mockImplementation(() => {}),
       park: (callUuid: string) => {
         if (callUuid === 'failed') {
@@ -1279,5 +1278,15 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.answer).toHaveBeenCalledTimes(1);
       expect(call.callState).toBe(CALL_STATE.CONNECTED);
     });
+  });
+
+  describe('transfer()', () => {
+    it('should transfer call now success', async () => {
+      const callEntityId = 'id_0';
+      const toTransfer = '444555666';
+      telephonyService._callEntityId = callEntityId;
+      await telephonyService.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
+      expect(mockedServerTelephonyService.transfer).toHaveBeenCalledWith(callEntityId, TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
+    })
   })
 });

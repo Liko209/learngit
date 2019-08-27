@@ -8,8 +8,9 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { VoiceMailViewProps } from './types';
-import { JuiFabButton } from 'jui/components/Buttons';
 import { StyledActionText } from 'jui/pattern/Dialer';
+import { JuiFabButton, JuiIconButton } from 'jui/components/Buttons';
+import { JuiTransferAction } from 'jui/pattern/Dialer';
 
 type Props = VoiceMailViewProps & WithTranslation;
 
@@ -21,21 +22,36 @@ class VoiceMailViewComponent extends Component<Props> {
   };
 
   render() {
-    const { t } = this.props;
-    return (
-      <>
-        <JuiFabButton
-          color="semantic.negative"
-          size="mediumLarge"
-          showShadow={false}
-          tooltipPlacement="top"
-          iconName="voicemail"
+    const { t, isTransferPage, transferNumber } = this.props;
+    return isTransferPage ? (
+      <JuiTransferAction>
+        <JuiIconButton
+          shouldPersistBg
+          size="large"
+          color="grey.900"
           aria-label={t('telephony.sendToVoicemail')}
           onClick={this._handleVoiceMail}
           data-test-automation-id="telephony-voice-mail-btn"
-        />
-        <StyledActionText>{t('telephony.action.voicemail')}</StyledActionText>
-      </>
+          disabled={!transferNumber}
+        >
+          voicemail
+        </JuiIconButton>
+        <span>{t('telephony.action.toVoiceMail')}</span>
+      </JuiTransferAction>
+    ) : (
+        <>
+          <JuiFabButton
+            color="semantic.negative"
+            size="mediumLarge"
+            showShadow={false}
+            tooltipPlacement="top"
+            iconName="voicemail"
+            aria-label={t('telephony.sendToVoicemail')}
+            onClick={this._handleVoiceMail}
+            data-test-automation-id="telephony-voice-mail-btn"
+          />
+          <StyledActionText>{t('telephony.action.voicemail')}</StyledActionText>
+        </>
     );
   }
 }

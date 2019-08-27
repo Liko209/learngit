@@ -777,6 +777,14 @@ describe('TelephonyCallController', () => {
         .fn()
         .mockResolvedValue(toNum);
     });
+    it('should reject not network when disconnect network', (done: jest.DoneCallback) => {
+      const options = CALL_ACTION_ERROR_CODE.NOT_NETWORK;
+      expect(
+        callController.transfer(TRANSFER_TYPE.WARM_TRANSFER, toNum),
+      ).rejects.toEqual(options);
+      callController.onCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER, options);
+      done();
+    });
     it('should resolve warm transfer success when type is WARM_TRANSFER', (done: jest.DoneCallback) => {
       expect.assertions(1);
       const options = '';
@@ -791,10 +799,10 @@ describe('TelephonyCallController', () => {
     });
     it('should reject fail when type is WARM_TRANSFER', (done: jest.DoneCallback) => {
       expect.assertions(1);
-      const options = -1;
+      const options = CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER;
       expect(
         callController.transfer(TRANSFER_TYPE.WARM_TRANSFER, toNum),
-      ).rejects.toEqual('');
+      ).rejects.toEqual(options);
       callController.onCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER, options);
       done();
     });
@@ -815,19 +823,18 @@ describe('TelephonyCallController', () => {
     });
     it('should reject fail when type is BLIND_TRANSFER', (done: jest.DoneCallback) => {
       expect.assertions(1);
-      const options = -1;
+      const options = CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER;
       expect(
         callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
-      ).rejects.toEqual('');
+      ).rejects.toEqual(options);
       callController.onCallActionFailed(RTC_CALL_ACTION.TRANSFER, options);
       done();
     });
     it('should reject fail when number can not e164', async (done: jest.DoneCallback) => {
-      expect.assertions(1);
       phoneNumberService.getE164PhoneNumber = jest.fn().mockResolvedValue('');
       await expect(
         callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
-      ).rejects.toEqual(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
+      ).rejects.toEqual(CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER);
       done();
     });
     it('should resolve to voicemail success when type is TO_VOICEMAIL', async (done: jest.DoneCallback) => {
