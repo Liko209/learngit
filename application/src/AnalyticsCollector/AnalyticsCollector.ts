@@ -331,6 +331,7 @@ class AnalyticsCollector {
 
   newMessageDialog(source = 'newActionsMenu') {
     this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
+  }
 
   // [FIJI-8195]
   login() {
