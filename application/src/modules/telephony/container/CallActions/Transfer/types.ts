@@ -8,6 +8,7 @@ type Props = {};
 
 type ViewProps = {
   directToTransferPage: () => void;
+  disabledTransferAction: boolean;
 };
 
 export { Props, ViewProps };

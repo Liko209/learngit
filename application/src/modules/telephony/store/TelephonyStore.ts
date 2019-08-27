@@ -103,7 +103,7 @@ class TelephonyStore {
   transferString: string = '';
 
   @observable
-  dialerString: string = '';
+  private _dialerString: string = '';
 
   @observable
   isValidInputStringNumber: boolean = false;
@@ -152,6 +152,9 @@ class TelephonyStore {
 
   @observable
   isRecentCalls: boolean = false;
+
+  @observable
+  private _isRecentCallsInDialerPage: boolean = false;
 
   @observable
   isTransferPage: boolean = false;
@@ -397,8 +400,9 @@ class TelephonyStore {
     this._clearEnteredKeys();
     this._clearForwardString();
     this._clearTransferString();
-    this.resetCallItem();
-    this.backToDialerFromTransferPage();
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
+    }
 
     this.isContactMatched = false;
     this.hasManualSelected = false;
@@ -706,18 +710,25 @@ class TelephonyStore {
   @action
   directToTransferPage = () => {
     this.isTransferPage = true;
-    if (this.transferString) {
-      this.dialerString = this.inputString;
-      this.inputString = this.transferString;
+    this._isRecentCallsInDialerPage = this.isRecentCalls;
+    this.backToDialer();
+    if (this.inputString.length) {
+      this._dialerString = this.inputString;
+      this.inputString = '';
     }
   };
 
   @action
   backToDialerFromTransferPage = () => {
     this.isTransferPage = false;
-    this.inputString = this.dialerString;
-    this.backToDialer();
+    this.isRecentCalls = this._isRecentCallsInDialerPage;
     this.resetValidInputStringNumber();
+    if (this._dialerString.length) {
+      this.inputString = this._dialerString;
+      this._dialerString = '';
+      return;
+    }
+    return this.inputString = '';
   };
 
   @action
