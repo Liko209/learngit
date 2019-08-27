@@ -527,7 +527,7 @@ test.meta(<ITestMeta>{
   });
 });
 
-test.meta(<ITestMeta>{
+test.only.meta(<ITestMeta>{
   caseIds: ['JPT-2487'],
   priority: ['P2'],
   maintainers: ['Naya.Fang'],
