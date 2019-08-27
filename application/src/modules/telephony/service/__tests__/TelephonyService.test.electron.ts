@@ -15,6 +15,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
+import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
@@ -75,6 +76,7 @@ let mockedPhoneNumberService: any;
 let mockedRCInfoService: any;
 let mockedSettingService: any;
 let mockedAccountService: any;
+let mockedVoicemailService: any;
 
 function initializeCallerId() {
   try{
@@ -217,6 +219,8 @@ describe('TelephonyService', () => {
       isEmergencyAddrConfirmed: jest.fn(),
     };
 
+    mockedVoicemailService = { removeEntityNotificationObserver: jest.fn() };
+
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
@@ -239,6 +243,8 @@ describe('TelephonyService', () => {
           return mockedPhoneNumberService as PhoneNumberService;
         case ServiceConfig.SETTING_SERVICE:
           return mockedSettingService as SettingService;
+        case ServiceConfig.VOICEMAIL_SERVICE:
+          return mockedVoicemailService as VoicemailService;
         default:
           return {} as PersonService;
       }
@@ -870,6 +876,9 @@ describe('TelephonyService', () => {
     expect(telephonyService._callStateDisposer).toBeFalsy();
     expect(telephonyService._ringerDisposer).toBeFalsy();
     expect(telephonyService._speakerDisposer).toBeFalsy();
+    expect(
+      telephonyService._voicemailService.removeEntityNotificationObserver,
+    ).toHaveBeenCalled();
   })
 
   describe('onReceiveIncomingCall()', () => {

@@ -85,6 +85,10 @@ Array [
   opacity: 0.76;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -366,6 +370,7 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -482,6 +487,10 @@ Array [
   opacity: 0.76;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -763,6 +772,7 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}

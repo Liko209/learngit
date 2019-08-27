@@ -442,6 +442,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -482,6 +483,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -522,6 +524,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -562,6 +565,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -711,6 +715,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -751,6 +756,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -791,6 +797,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -831,6 +838,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}

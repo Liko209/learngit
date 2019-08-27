@@ -337,6 +337,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseMove={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -439,6 +440,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseMove={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -541,6 +543,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseMove={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -643,6 +646,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseMove={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -723,6 +727,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -800,6 +805,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -877,6 +883,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -954,6 +961,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1033,6 +1041,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1075,6 +1084,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1181,6 +1191,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1223,6 +1234,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1329,6 +1341,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1371,6 +1384,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1477,6 +1491,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1519,6 +1534,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}

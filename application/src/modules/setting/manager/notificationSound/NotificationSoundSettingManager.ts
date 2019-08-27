@@ -24,7 +24,11 @@ import {
   DEFAULT_AUDIO_INPUT_DEVICES,
   DEFAULT_AUDIO_OUTPUT_DEVICES,
 } from './audioSource/constant';
+import { Notification } from '@/containers/Notification';
+import { dataAnalysis } from 'foundation/analysis';
+import { mainLogger } from 'foundation/log';
 
+const logTag = '[Settings][Audio]';
 const deviceIdExtractor = (device?: MediaDeviceInfo) =>
   device ? device.deviceId : '';
 
@@ -33,6 +37,55 @@ class NotificationSoundSettingManager {
   @ISettingService private _settingService: ISettingService;
 
   init() {
+    const onPermissionDenied = async () => {
+      Notification.flagWarningToast(
+        'setting.audioSource.microphonePermissionBlocked',
+      );
+
+      dataAnalysis.track('Jup_Web/DT_settings_microphone_blocked', {
+        endPoint: 'web',
+      });
+    };
+    const baseDeviceSettingItem = {
+      valueExtractor: deviceIdExtractor,
+      sourceRenderer: MediaDeviceSourceItem,
+      type: SETTING_ITEM_TYPE.SELECT,
+      onBeforeOpen: async () => {
+        const permissions = window.navigator['permissions'];
+        if (!permissions) {
+          mainLogger.info(`${logTag}Not permissions module`);
+          return true;
+        }
+
+        const permissionInfo = await permissions.query({
+          name: 'microphone',
+        });
+        if (permissionInfo.state === 'prompt') {
+          try {
+            await window.navigator.mediaDevices.getUserMedia({ audio: true });
+            return true;
+          } catch (error) {
+            mainLogger.info(
+              `${logTag}Audio permission is denied: ${error.name}[${
+                error.message
+              }]`,
+            );
+            const allowed = error.name !== 'NotAllowedError';
+            if (!allowed) {
+              onPermissionDenied();
+            }
+            return allowed;
+          }
+        } else if (permissionInfo.state === 'denied') {
+          mainLogger.info(`${logTag}Audio permission is denied`);
+          onPermissionDenied();
+          return false;
+        }
+
+        return true;
+      },
+    };
+
     this._settingService.registerPage(this._scope, {
       id: SETTING_PAGE__NOTIFICATION_SOUND,
       automationId: 'notificationAndSounds',
@@ -55,36 +108,30 @@ class NotificationSoundSettingManager {
           weight: 300,
           items: [
             {
+              ...baseDeviceSettingItem,
               id: SETTING_ITEM__MICROPHONE_SOURCE,
               automationId: 'microphoneSource',
               title: 'setting.audioSource.microphoneSource.label',
               description: 'setting.audioSource.microphoneSource.description',
-              valueExtractor: deviceIdExtractor,
               defaultSource: DEFAULT_AUDIO_INPUT_DEVICES,
-              sourceRenderer: MediaDeviceSourceItem,
-              type: SETTING_ITEM_TYPE.SELECT,
               weight: 0,
             } as SelectSettingItem<MediaDeviceInfo>,
             {
+              ...baseDeviceSettingItem,
               id: SETTING_ITEM__SPEAKER_SOURCE,
               automationId: 'speakerSource',
               title: 'setting.audioSource.speakerSource.label',
               description: 'setting.audioSource.speakerSource.description',
-              valueExtractor: deviceIdExtractor,
               defaultSource: DEFAULT_AUDIO_OUTPUT_DEVICES,
-              sourceRenderer: MediaDeviceSourceItem,
-              type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
             } as SelectSettingItem<MediaDeviceInfo>,
             {
+              ...baseDeviceSettingItem,
               id: SETTING_ITEM__RINGER_SOURCE,
               automationId: 'ringerSource',
               title: 'setting.audioSource.ringerSource.label',
               description: 'setting.audioSource.ringerSource.description',
-              valueExtractor: deviceIdExtractor,
               defaultSource: DEFAULT_AUDIO_OUTPUT_DEVICES,
-              sourceRenderer: MediaDeviceSourceItem,
-              type: SETTING_ITEM_TYPE.SELECT,
               weight: 200,
             } as SelectSettingItem<MediaDeviceInfo>,
             {

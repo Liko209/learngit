@@ -804,6 +804,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -846,6 +847,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1551,6 +1553,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                     onMouseDown={[Function]}
                     onMouseEnter={[Function]}
                     onMouseLeave={[Function]}
+                    onMouseMove={[Function]}
                     onMouseUp={[Function]}
                     onTouchEnd={[Function]}
                     onTouchMove={[Function]}

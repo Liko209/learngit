@@ -170,6 +170,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -288,6 +289,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}

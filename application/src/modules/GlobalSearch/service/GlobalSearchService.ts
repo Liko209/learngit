@@ -31,6 +31,9 @@ class GlobalSearchService {
   registerExtension(key: string, extension: ComponentType) {
     this._globalSearchStore.addExtensions(key, extension);
   }
+  unregisterExtension(key: string, extension: ComponentType) {
+    this._globalSearchStore.removeExtensions(key, extension);
+  }
 }
 
 export { GlobalSearchService };

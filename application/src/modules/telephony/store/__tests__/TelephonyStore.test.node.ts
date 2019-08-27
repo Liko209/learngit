@@ -8,6 +8,7 @@ import { CALL_WINDOW_STATUS } from '../../FSM';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { observable } from 'mobx';
 import { getEntity } from '@/store/utils';
+import * as i18n from '@/utils/i18nT';
 import {
   HOLD_STATE,
   RECORD_STATE,
@@ -338,6 +339,18 @@ describe('Telephony store', () => {
     expect(store.selectedCallItem).toEqual({
       phoneNumber: '',
       index: NaN,
+    })
+  })
+
+  describe('_getNotificationCallerInfo', () => {
+    it('Should show unknown caller when SDK notification without from caller [JPT-2822]', async () => {
+      i18n.i18nP = jest.fn().mockReturnValue('unknown caller');
+
+      const store = createStore();
+
+      const info = await store._getNotificationCallerInfo(null);
+
+      expect(info).toBe('unknown caller');
     });
   });
 });

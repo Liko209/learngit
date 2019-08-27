@@ -129,6 +129,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -171,6 +172,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -213,6 +215,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -255,6 +258,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}

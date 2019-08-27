@@ -192,6 +192,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -300,6 +301,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -408,6 +410,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -516,6 +519,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -624,6 +628,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseMove={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}

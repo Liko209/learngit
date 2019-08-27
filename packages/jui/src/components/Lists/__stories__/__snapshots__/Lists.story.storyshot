@@ -223,6 +223,19 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   display: -ms-flexbox;
   display: flex;
   padding-left: 8px;
+  color: #000;
+}
+
+.c0.c0.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c0.c0:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c0.c0 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c2.c2 {
@@ -321,6 +334,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -392,6 +406,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -463,6 +478,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -534,6 +550,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseMove={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -593,6 +610,19 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   display: -ms-flexbox;
   display: flex;
   padding-left: 8px;
+  color: #000;
+}
+
+.c0.c0.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c0.c0:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c0.c0 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c1.c1 {

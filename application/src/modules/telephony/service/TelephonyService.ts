@@ -8,6 +8,9 @@ import { CALLING_OPTIONS, AUDIO_SOUNDS_INFO } from 'sdk/module/profile';
 import { inject } from 'framework/ioc';
 import { jupiter } from 'framework/Jupiter';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import {
   TelephonyService as ServerTelephonyService,
   RTC_REPLY_MSG_PATTERN,
@@ -26,9 +29,10 @@ import { mainLogger } from 'foundation/log';
 import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { ANONYMOUS_NUM } from '../interface/constant';
+import { ANONYMOUS_NUM, NOTIFY_THROTTLE_FACTOR } from '../interface/constant';
 import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
+import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { AccountService } from 'sdk/module/account';
@@ -54,7 +58,7 @@ import {
   SETTING_ITEM__RINGER_SOURCE,
   SETTING_ITEM__SPEAKER_SOURCE,
 } from '@/modules/setting/constant';
-import { isObject } from 'lodash';
+import { isObject, throttle } from 'lodash';
 import { sleep } from '../helpers';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
@@ -83,6 +87,9 @@ class TelephonyService {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
+  private _voicemailService = ServiceLoader.getInstance<VoicemailService>(
+    ServiceConfig.VOICEMAIL_SERVICE,
+  );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
   private _ringtone?: IMedia;
   private _muteRingtone: boolean = false;
@@ -102,6 +109,7 @@ class TelephonyService {
   private _keypadBeepPool: IMedia[];
   private _currentSoundTrackForBeep: number | null;
   private _canPlayOgg: boolean = this._mediaService.canPlayType('audio/ogg');
+  protected _voicemailNotificationObserver: IEntityChangeObserver;
 
   private _onMadeOutgoingCall = (id: number) => {
     // TODO: This should be a list in order to support multiple call
@@ -446,6 +454,8 @@ class TelephonyService {
 
     // triggering a change of caller id list
     this._getCallerPhoneNumberList();
+
+    this._subscribeVoicemailNotification();
   };
 
   async makeRCPhoneCall(phoneNumber: string) {
@@ -921,6 +931,9 @@ class TelephonyService {
     this._callStateDisposer && this._callStateDisposer();
     this._ringerDisposer && this._ringerDisposer();
     this._speakerDisposer && this._speakerDisposer();
+    this._voicemailService.removeEntityNotificationObserver(
+      this._voicemailNotificationObserver,
+    );
 
     this._stopRingtone();
     this._telephonyStore.hasManualSelected = false;
@@ -937,6 +950,7 @@ class TelephonyService {
     delete this._defaultCallerPhoneNumberDisposer;
     delete this._ringtone;
     delete this._keypadBeepPool;
+    delete this._voicemailNotificationObserver;
   };
 
   @action
@@ -1168,6 +1182,23 @@ class TelephonyService {
       ToastCallError.toastTransferError();
     }
   };
+
+  private _subscribeVoicemailNotification = () => {
+    this._voicemailNotificationObserver = {
+      onEntitiesChanged:
+        isFirefox && isWindows
+          ? throttle(this._handleVoicemailEntityChanged, NOTIFY_THROTTLE_FACTOR)
+          : this._handleVoicemailEntityChanged,
+    };
+
+    this._voicemailService.addEntityNotificationObserver(
+      this._voicemailNotificationObserver,
+    );
+  }
+
+  private _handleVoicemailEntityChanged = (voicemails: Voicemail[]) => {
+    this._telephonyStore.updateVoicemailNotification(voicemails[0]);
+  }
 };
 
 export { TelephonyService };

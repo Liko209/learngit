@@ -7,11 +7,14 @@
 import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed, action, reaction } from 'mobx';
 import { PersonService } from 'sdk/module/person';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { i18nP } from '@/utils/i18nT';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { Person, PhoneNumberModel } from 'sdk/module/person/entity';
+import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
 import { v4 } from 'uuid';
 import {
   CALL_WINDOW_STATUS,
@@ -36,9 +39,10 @@ import {
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { formatSeconds } from './utils';
+import { VoicemailNotification } from './types';
 
 type SelectedCallItem = { phoneNumber: string; index: number };
-
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 class TelephonyStore {
@@ -175,6 +179,9 @@ class TelephonyStore {
   @observable
   hasShowE911: boolean = false;
 
+  @observable
+  voicemailNotification: VoicemailNotification;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -244,6 +251,23 @@ class TelephonyStore {
       ? ''
       : this.callerName;
   }
+
+  private _formatPhoneNumber = async (phoneNumber: string) => {
+    const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
+    );
+
+    return await phoneNumberService.getLocalCanonical(phoneNumber);
+  };
+
+  private _matchPersonByPhoneNumber = async (phoneNumber: string) => {
+    const matchedContact = await this._matchContactByPhoneNumber(phoneNumber);
+
+    return (
+      matchedContact &&
+      getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, matchedContact.id)
+    );
+  };
 
   private _matchContactByPhoneNumber = async (phone: string) => {
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -711,6 +735,42 @@ class TelephonyStore {
       phoneNumber: '',
       index: NaN,
     };
+  }
+
+  updateVoicemailNotification = async (voicemail: Voicemail) => {
+    const { id, from, attachments } = voicemail;
+
+    this.voicemailNotification = {
+      id,
+      title: await this._getNotificationCallerInfo(from),
+      body: this._getVoicemailNotificationBody(attachments),
+    };
+  };
+
+  private _getNotificationCallerInfo = async (caller: Voicemail['from']) => {
+    const { extensionNumber = '', phoneNumber = '' } = caller || {};
+    const contactNumber = extensionNumber || phoneNumber;
+
+    if (!contactNumber) {
+      return i18nP('telephony.unknownCaller');
+    }
+
+    const displayNumber = this._formatPhoneNumber(contactNumber);
+
+    const matchPerson = await this._matchPersonByPhoneNumber(contactNumber);
+
+    const displayName = matchPerson ? matchPerson.userDisplayName : caller.name;
+
+    return `${displayName} ${await displayNumber}`;
+  };
+
+  private _getVoicemailNotificationBody = (
+    attachments: Voicemail['attachments'],
+  ) => {
+    const audio = attachments && attachments[0];
+    const text = i18nP('telephony.notification.newVoicemail');
+
+    return audio ? `${text} ${formatSeconds(audio.vmDuration)}` : text;
   };
 }
 
