@@ -1,0 +1,14 @@
+
+{
+    "on_merge": {
+        "fixtures": [
+          "./fixtures/ImageViewer/RightRail.ts",
+          "./fixtures/RightRail"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}
+
+
