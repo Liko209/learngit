@@ -59,7 +59,7 @@ test.meta(<ITestMeta>{
     await notificationPreferencesDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`When I check "Click the checkbox of the 'Mute all notifications everywhere'" checkbox`, async () => {
+  await h(t).withLog(`When I check "Mute all notifications everywhere" checkbox`, async () => {
     await notificationPreferencesDialog.checkMuteAll();
   });
 
@@ -93,3 +93,58 @@ test.meta(<ITestMeta>{
 
 });
 
+
+test.meta(<ITestMeta>{
+  priority: ['P2'], caseIds: ['JPT-2864'], keywords: ['notification'], maintainers: ['Potar.He']
+})(`Check the "Sound notifications" option will be disabled if 'Enable desktop notifications' is unchecked`, async t => {
+  const loginUser = h(t).rcData.mainCompany.users[4];
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser],
+  }
+
+  await h(t).withLog('Given I have one team', async () => {
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with adminUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
+  const notificationPreferencesDialog = app.homePage.notificationPreferencesDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`When I open unopened Team setting dialog via team profile entry on conversation list`, async () => {
+    await teamEntry.enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.clickNotificationPreferences();
+  });
+
+  await h(t).withLog(`Then Notification Preferences Dialog should be showed`, async () => {
+    await notificationPreferencesDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I uncheck "Mute all notifications everywhere"checkbox`, async () => {
+    await notificationPreferencesDialog.uncheckMuteAll();
+  });
+
+  await h(t).withLog(`And uncheck 'Enable desktop notifications'`, async () => {
+    await notificationPreferencesDialog.uncheckDesktopNotification();
+  });
+
+  await h(t).withLog(`And SoundNotification options are disabled .`, async () => {
+    await notificationPreferencesDialog.expectSoundNotificationDisabled();
+  });
+
+});
