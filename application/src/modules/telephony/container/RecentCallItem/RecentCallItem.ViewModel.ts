@@ -8,15 +8,17 @@ import { computed, action } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps } from './types';
+import { Props } from './types';
 import CallLogModel from '@/store/models/CallLog';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { dialerTimestamp } from '@/utils/date';
 import { CallLog } from 'sdk/module/RCItems/callLog/entity';
+import { container } from 'framework/ioc';
+import { TelephonyStore } from '../../store';
 
-class RecentCallItemViewModel extends StoreViewModel<Props>
-  implements ViewProps {
+class RecentCallItemViewModel extends StoreViewModel<Props> {
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   @computed
   get data() {
     return getEntity<CallLog, CallLogModel, string>(
@@ -56,13 +58,23 @@ class RecentCallItemViewModel extends StoreViewModel<Props>
     return direction === CALL_DIRECTION.INBOUND ? this.data.from : this.data.to;
   }
 
+  @computed
+  get isTransferPage() {
+    return this._telephonyStore.isTransferPage;
+  }
+
+  @computed
+  get selectedCallItemIndex() {
+    return this._telephonyStore.selectedCallItem.index;
+  }
+
   @action
-  makeCall = (event: React.MouseEvent) => {
-    const { handleClick } = this.props;
+  handleClick = (event: React.MouseEvent) => {
+    const { onClick } = this.props;
     event.stopPropagation();
 
-    handleClick();
-  }
+    onClick();
+  };
 }
 
 export { RecentCallItemViewModel };

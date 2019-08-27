@@ -6,5 +6,6 @@
 
 type ConversationType = 'team' | '1:1' | 'group';
 type NewConversationSource = 'Profile' | 'Right Rail';
+type SendTrigger = 'button' | 'enter' | 'drag' | '';
 
-export { ConversationType, NewConversationSource };
+export { ConversationType, NewConversationSource, SendTrigger };

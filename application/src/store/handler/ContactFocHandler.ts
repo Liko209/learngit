@@ -8,14 +8,14 @@ import { ISortableModelWithData } from '@/store/base';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { PersonService } from 'sdk/module/person';
 import { Person } from 'sdk/module/person/entity';
-import { SortUtils } from 'sdk/framework/utils';
 import { IdModelFocHandler } from './IdModelFocHandler';
 import { IdModelFocBuilder } from './IdModelFocBuilder';
 import { DisplayNameModel } from 'sdk/framework/model';
 import { UndefinedAble } from 'sdk/types';
 import { SearchService } from 'sdk/module/search/service';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
-import { Terms } from 'sdk/framework/search';
+import { Terms, FormattedTerms } from 'sdk/framework/search';
+import { SortUtils } from 'sdk/framework/utils';
 
 enum CONTACT_TAB_TYPE {
   ALL,
@@ -43,8 +43,25 @@ class ContactFocHandler extends IdModelFocHandler {
       ServiceConfig.SEARCH_SERVICE,
     );
     this._type = type;
+
     this._searchTerms = SearchUtils.toDefaultSearchKeyTerms(searchKey);
   }
+
+  genFormattedTermsFunc = (originalTerms: string[]) => {
+    const formattedTerms: FormattedTerms = {
+      formattedKeys: [],
+      validFormattedKeys: [],
+    };
+
+    originalTerms.forEach(term => {
+      const formattedKey = {
+        original: term,
+        formatted: term,
+      };
+      formattedTerms.formattedKeys.push(formattedKey);
+    });
+    return formattedTerms;
+  };
 
   transformFunc = (
     model: Person,
@@ -57,14 +74,18 @@ class ContactFocHandler extends IdModelFocHandler {
     },
   });
 
+  firstCharAsNumber(str: string) {
+    return str[0] >= 'a' && str[0] <= 'z' ? 1 : 0;
+  }
+
   sortFunc = (
     lhs: ISortableModelWithData<DisplayNameModel>,
     rhs: ISortableModelWithData<DisplayNameModel>,
   ): number => {
-    return SortUtils.compareLowerCaseString(
-      lhs.data!.displayName,
-      rhs.data!.displayName,
-    );
+    const left = lhs.data!.displayName;
+    const right = rhs.data!.displayName;
+    const result = this.firstCharAsNumber(right) - this.firstCharAsNumber(left);
+    return result ? result : SortUtils.compareLowerCaseString(left, right);
   };
 
   filterFunc = (person: Person) => {
@@ -99,7 +120,10 @@ class ContactFocHandler extends IdModelFocHandler {
   };
 
   protected async createFoc() {
-    await SearchUtils.formatTerms(this._searchTerms);
+    await SearchUtils.formatTerms(
+      this._searchTerms,
+      this.genFormattedTermsFunc,
+    );
     return IdModelFocBuilder.buildFoc(
       this._personService.getEntitySource(),
       this.transformFunc,

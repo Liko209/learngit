@@ -133,7 +133,9 @@ class SearchUtils {
 
   static async genSearchKeyTerms(
     searchKey: UndefinedAble<string>,
-    genFormattedTermsFunc?: (originalTerms: string[]) => FormattedTerms,
+    genFormattedTermsFunc: UndefinedAble<
+      (originalTerms: string[]) => FormattedTerms
+    >,
   ) {
     const terms: Terms = SearchUtils.toDefaultSearchKeyTerms(searchKey);
     await SearchUtils.formatTerms(terms, genFormattedTermsFunc);
@@ -142,7 +144,9 @@ class SearchUtils {
 
   static async formatTerms(
     terms: Terms,
-    genFormattedTermsFunc?: (originalTerms: string[]) => FormattedTerms,
+    genFormattedTermsFunc: UndefinedAble<
+      (originalTerms: string[]) => FormattedTerms
+    >,
   ) {
     if (terms.searchKey) {
       terms.searchKeyTerms = SearchUtils.getTermsFromText(

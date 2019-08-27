@@ -315,6 +315,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       this.props.id,
     );
     analyticsCollector.sendPost(
+      'drag',
       'conversation thread',
       'file',
       group.analysisType,
