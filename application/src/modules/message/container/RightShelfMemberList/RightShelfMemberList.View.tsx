@@ -171,7 +171,6 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   }
 
   render() {
-    /* eslint-disable */
     const {
       t,
       membersData: {
