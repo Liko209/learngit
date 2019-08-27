@@ -56,7 +56,7 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createTeam(team02);
   });
 
-  await h(t).withLog(`And I press ${shortcuts}`, async () => {
+  await h(t).withLog(`When I press ${shortcuts}`, async () => {
     await t.pressKey(shortcuts);
   });
   await h(t).withLog(`Then show the recent conversation dialog`, async () => {
@@ -66,7 +66,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I select the conversation team01`, async () => {
     await recentConversationDialog.clickConversationWithName(team01.name);
   });
-
   await h(t).withLog(`And I click enter`, async () => {
     await recentConversationDialog.clickEnter();
   });
@@ -75,7 +74,7 @@ test.meta(<ITestMeta>{
   });
 
   // Search one conversation to open the conversation
-  await h(t).withLog(`And I press ${shortcuts}`, async () => {
+  await h(t).withLog(`When I press ${shortcuts}`, async () => {
     await t.pressKey(shortcuts);
   });
   await h(t).withLog(`Then show the recent conversation dialog`, async () => {
@@ -85,7 +84,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search the conversation ${team02.name}`, async () => {
     await recentConversationDialog.enterNameInSearchBox(team02.name);
   });
-
   await h(t).withLog(`Then show clear button`, async () => {
     await recentConversationDialog.existClearButton();
   });
@@ -93,7 +91,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I click the clear button`, async () => {
     await recentConversationDialog.clickClearButton();
   });
-
   await h(t).withLog(`Then back to the previous list`, async () => {
     await recentConversationDialog.existConversationInList(team01.name);
   });
@@ -101,7 +98,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search the conversation ${team02.name}`, async () => {
     await recentConversationDialog.enterNameInSearchBox(team02.name);
   });
-
   await h(t).withLog(`And I select the conversation ${team02.name}`, async () => {
     await recentConversationDialog.clickConversationWithName(team02.name);
   });
@@ -155,7 +151,7 @@ test.meta(<ITestMeta>{
   });
 
   //case JPT-2804
-  await h(t).withLog(`And I press ${shortcuts}`, async () => {
+  await h(t).withLog(`When I press ${shortcuts}`, async () => {
     await t.pressKey(shortcuts);
   });
   await h(t).withLog(`Then show the recent conversation dialog`, async () => {
@@ -165,26 +161,22 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I enter 'team01'  in the search box`, async () => {
     await recentConversationDialog.enterNameInSearchBox('team01');
   });
-
   await h(t).withLog(`And I close the dialog`, async () => {
     await recentConversationDialog.clickCloseButton();
     await recentConversationDialog.ensureDismiss();
   });
-
   await h(t).withLog(`And I press ${shortcuts} to open the dialog again`, async () => {
     await t.pressKey(shortcuts);
     await recentConversationDialog.ensureLoaded();
   });
-
   await h(t).withLog(`Then search box content should reset`, async () => {
     await t.expect(recentConversationDialog.searchBoxInput.getAttribute('value')).eql('');
   });
 
   //case JPT-2792
-  await h(t).withLog(`When I select the conversation team01`, async () => {
+  await h(t).withLog(`When I enter down arrow via keyboard`, async () => {
     await t.pressKey('down');
   });
-
   await h(t).withLog(`And I click enter`, async () => {
     await recentConversationDialog.clickEnter();
   });
@@ -196,12 +188,10 @@ test.meta(<ITestMeta>{
     await t.pressKey(shortcuts);
     await recentConversationDialog.ensureLoaded();
   });
-
-  await h(t).withLog(`And I click up key via keyboard`, async () => {
+  await h(t).withLog(`And I click up arrow via keyboard`, async () => {
     await t.pressKey('down');
     await t.pressKey('up')
   });
-
   await h(t).withLog(`And I click enter`, async () => {
     await recentConversationDialog.clickEnter();
   });
