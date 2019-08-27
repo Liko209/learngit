@@ -31,15 +31,15 @@ export class RecentConversationDialog extends BaseWebComponent {
     }
 
     async clickConversationWithName(name:string){
-        await this.t.click(this.recentConversationItem.find('div').nth(1).find('span').withText(name));
+        await this.t.click(this.recentConversationItem.withText(name));
+    }
+
+    async existConversationInList(name:string){
+      await this.t.expect(this.recentConversationItem.withText(name).exists).ok();
     }
 
     async clickEnter(){
         await this.t.pressKey('enter');
-    }
-
-    async openRecentConversationDialogWithShortcuts(key:string){
-        await this.t.pressKey(key);
     }
 
     async clickClearButton(){
@@ -49,4 +49,9 @@ export class RecentConversationDialog extends BaseWebComponent {
     async existClearButton(){
       await this.t.expect(this.clearButton.exists).ok();
     }
+
+    async clickCloseButton(){
+      await this.t.click(this.closeButton);
+    }
+
 }
