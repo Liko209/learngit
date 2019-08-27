@@ -38,7 +38,6 @@ import {
   CALL_DIRECTION,
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
-import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { formatSeconds } from './utils';
 import { VoicemailNotification } from './types';
 
