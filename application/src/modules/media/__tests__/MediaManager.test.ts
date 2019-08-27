@@ -193,6 +193,7 @@ describe('MediaManager', () => {
       const canPlayType = mediaManager.canPlayType('audio/mp3');
       expect(mockFun).toHaveBeenCalled();
       expect(canPlayType).toEqual(true);
+      expect(mediaManager.canPlayTypes.length).toEqual(1);
 
       expect(mediaManager.canPlayTypes).toEqual(['audio/mp3']);
       mediaManager.canPlayType('audio/mp3');

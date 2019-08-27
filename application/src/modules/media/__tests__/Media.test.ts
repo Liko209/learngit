@@ -417,22 +417,22 @@ describe('Media', () => {
       jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
       const media = new Media(baseMediaOpts);
       expect(media.volume).toEqual(1);
-      expect(useTrack.volume).toEqual(1);
+      expect(useTrack.currentMediaVolume).toEqual(1);
 
       media.setVolume(0.5);
       expect(media.volume).toEqual(0.5);
-      expect(useTrack.volume).toEqual(0.5);
+      expect(useTrack.currentMediaVolume).toEqual(0.5);
     });
     it('should media set volume and track not set volume when media setVolume called and media not in track', () => {
       const noUseTrack = new MediaTrack(noUseTrackOpts);
       jest.spyOn(trackManager, 'getTrack').mockReturnValue(noUseTrack);
       const media = new Media(baseMediaOpts);
       expect(media.volume).toEqual(1);
-      expect(noUseTrack.volume).toEqual(1);
+      expect(noUseTrack.currentMediaVolume).toEqual(1);
 
       media.setVolume(0.5);
       expect(media.volume).toEqual(0.5);
-      expect(noUseTrack.volume).toEqual(1);
+      expect(noUseTrack.currentMediaVolume).toEqual(1);
     });
   });
   describe('media set loop', () => {

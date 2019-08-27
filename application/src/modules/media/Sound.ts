@@ -29,7 +29,7 @@ class Sound {
   private _ended: boolean;
   private _loadError: boolean;
   private _seek: number;
-  private _hasSinkId: boolean;
+  private _hasSinkId: boolean = false;
   private _holdPlaying: boolean;
 
   private _node: (HTMLMediaElement & { setSinkId?: any; sinkId?: any }) | null;
@@ -120,8 +120,8 @@ class Sound {
     this._node.dispatchEvent(event);
   }
 
-  bindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
-    this._events.push({
+  bindEvent(eventName: MediaEventName, handler: (event: Event) => void, record: boolean = true) {
+    record && this._events.push({
       handler,
       name: eventName,
       type: MediaEventType.ON,
@@ -407,7 +407,7 @@ class Sound {
     ) {
       testPlay.catch((e: any) => {
         mainLogger.warn(
-          "[MediaModule] audio can't be play",
+          "[MediaModule] test audio can't be play, please check new Audio can be used",
           this._id,
           e.code,
           e.message,
