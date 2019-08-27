@@ -49,7 +49,7 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
-import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/types';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
