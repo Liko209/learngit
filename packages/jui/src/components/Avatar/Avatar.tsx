@@ -97,9 +97,9 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     justify-content: center;
     font-size: ${spacing(12)};
     color: ${({ color }) =>
-      color ? palette('avatar', color) : primary('600')};
+      color ? palette('avatar', color) : primary('main')};
     background-color: ${({ color }) =>
-      color ? palette('avatar', color) : primary('600')};
+      color ? palette('avatar', color) : primary('main')};
   }
 
   & span {
@@ -120,7 +120,7 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
   <JuiIconography
     iconSize="inherit"
-    iconColor={['primary', 'main']}
+    iconColor={['primary', 'light']}
     {...rest}
   />
 ))<{ size: Size; symbol: SvgSymbol }>`

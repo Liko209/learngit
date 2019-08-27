@@ -17,7 +17,7 @@ exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
   fill: currentColor;
   pointer-events: none;
   font-size: inherit;
-  fill: #0684bd;
+  fill: #18a4de;
 }
 
 .c0.c0 {
