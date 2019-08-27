@@ -1,3 +1,9 @@
+/*
+ * @Author: Mia Cai (mia.cai@ringcentral.com)
+ * @Date: 2019-08-27 17:10:29
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
@@ -7,7 +13,6 @@ import { v4 as uuid } from 'uuid';
 import { IGroup } from '../../v2/models';
 import { ClientFunction } from 'testcafe';
 import { UAParser } from 'ua-parser-js';
-import { shutdown } from 'log4js';
 
 
 fixture('Shortcut/SwitchConversation')
