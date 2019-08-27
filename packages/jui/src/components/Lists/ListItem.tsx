@@ -30,7 +30,6 @@ type JuiListItemProps = MuiListItemPropsFixed & {
   width?: number;
   isInline?: boolean;
   singleLine?: boolean;
-  disableButton?: boolean;
   /**
    * listItem use this color to calc hover, pressed, selected, disabled  background color, default to black
    */
@@ -43,14 +42,13 @@ const WrappedListItem = React.memo(
     width,
     isInline,
     singleLine,
-    disableButton,
     baseColor,
     highlighted,
     ...rest
   }: JuiListItemProps) => <MuiListItem {...rest} />,
 );
 
-const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
+const JuiListItem = styled<JuiListItemProps>(WrappedListItem)`
   && {
     padding: ${spacing(2)};
     width: ${props => (props.width ? width(props.width) : '100%')};
@@ -93,20 +91,9 @@ const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
   }
 `;
 
-const JuiListItem = ({
-  disableButton,
-  children,
-  ...rest
-}: JuiListItemProps) => {
-  return (
-    <StyledListItem button={!disableButton} {...rest}>
-      {children}
-    </StyledListItem>
-  );
-};
-
 JuiListItem.defaultProps = {
   singleLine: false,
+  button: true,
 };
 JuiListItem.displayName = 'JuiListItem';
 

@@ -21,22 +21,22 @@ import {
 } from '..';
 
 const ContactInfo = () => (
-  <ContactItem disableButton isUnread={false}>
+  <ContactItem button={false} isUnread={false}>
     <JuiListItemAvatar>
       <JuiAvatar src={avatarImg} />
     </JuiListItemAvatar>
-    <JuiListItemText primary='Shining Miao' secondary='(888) 888 - 8888' />
+    <JuiListItemText primary="Shining Miao" secondary="(888) 888 - 8888" />
   </ContactItem>
 );
 
 const ContactInfo1 = () => (
-  <ContactItem disableButton isUnread={false}>
+  <ContactItem button={false} isUnread={false}>
     <JuiListItemAvatar>
       <JuiAvatar src={avatarImg} />
     </JuiListItemAvatar>
     <JuiListItemText
-      primary='Shining Miao6666666'
-      secondary='(888) 888 - 8888'
+      primary="Shining Miao6666666"
+      secondary="(888) 888 - 8888"
     />
   </ContactItem>
 );
@@ -50,7 +50,7 @@ storiesOf('Pattern', module).add('Recent Calls', () => {
             <ContactInfo />
           </StyledContactWrapper>
           <StyledCallLogStatusWrapper>
-            <JuiIconography iconSize='medium' iconColor={['grey', '600']}>
+            <JuiIconography iconSize="medium" iconColor={['grey', '600']}>
               incall
             </JuiIconography>
           </StyledCallLogStatusWrapper>
@@ -61,7 +61,7 @@ storiesOf('Pattern', module).add('Recent Calls', () => {
             <ContactInfo1 />
           </StyledContactWrapper>
           <StyledCallLogStatusWrapper>
-            <JuiIconography iconSize='medium' iconColor={['grey', '600']}>
+            <JuiIconography iconSize="medium" iconColor={['grey', '600']}>
               outcall
             </JuiIconography>
           </StyledCallLogStatusWrapper>
@@ -72,7 +72,7 @@ storiesOf('Pattern', module).add('Recent Calls', () => {
             <ContactInfo />
           </StyledContactWrapper>
           <StyledCallLogStatusWrapper>
-            <JuiIconography iconSize='medium' iconColor={['accent', 'tomato']}>
+            <JuiIconography iconSize="medium" iconColor={['accent', 'tomato']}>
               missedcall
             </JuiIconography>
           </StyledCallLogStatusWrapper>

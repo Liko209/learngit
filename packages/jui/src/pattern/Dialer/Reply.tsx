@@ -53,12 +53,10 @@ const StyledCountdown = styled(JuiListItem)`
 `;
 /* eslint-disable react/no-array-index-key */
 const JuiReply = React.memo((props: Props) => {
-  const {
-    countText, count, PreDefines, CustomReply,
-  } = props;
+  const { countText, count, PreDefines, CustomReply } = props;
   return (
     <StyledReply>
-      <StyledCountdown disableButton>
+      <StyledCountdown button={false}>
         {countText}
         <span>{count.time}</span>
         {count.unit}
