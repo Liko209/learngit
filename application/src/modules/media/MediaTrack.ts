@@ -24,7 +24,7 @@ class MediaTrack {
 
   private _id: string;
   private _url: string = '';
-  private _outputDevices: MediaDeviceType[];
+  private _outputDevices: MediaDeviceType[] | null;
   private _sounds: Sound[] = [];
   private _originSound: Sound | null;
   private _masterVolume: number = 1;
@@ -93,24 +93,43 @@ class MediaTrack {
     return this;
   }
 
-  setOutputDevices(devices: MediaDeviceType[]) {
+  setOutputDevices(devices: MediaDeviceType[] | null) {
+    if (devices === this._outputDevices) {
+      return;
+    }
+
     const playing = this._isSoundPlaying();
-    if (this._outputDevices.length === 0) {
-      const currentTime = (this._sounds[0] && this._sounds[0].currentTime) || 0;
 
-      this._sounds.forEach(sound => {
-        sound.dispose();
-      });
-      this._sounds = [];
+    if (Array.isArray(devices)) {
+      if (this._outputDevices === null) {
+        // media track not output device before, clear all sound and init device sound
+        const currentTime =
+          (this._sounds[0] && this._sounds[0].currentTime) || 0;
+        this._sounds.forEach(sound => sound.dispose());
+        this._sounds = [];
 
-      this._initDeviceSounds(devices, {
-        currentTime,
-      });
-    } else {
+        this._initDeviceSounds(devices, {
+          currentTime,
+        });
+      } else {
+        // media track has output device before, change device sound
+        const currentTime =
+          (this._originSound && this._originSound.currentTime) || 0;
+
+        this._changeDeviceSounds(devices, {
+          currentTime,
+        });
+      }
+    } else if (devices === null) {
+      // remove all device sound and origin sound
       const currentTime =
         (this._originSound && this._originSound.currentTime) || 0;
 
-      this._changeDeviceSounds(devices, {
+      this._originSound && this._originSound.dispose();
+      this._sounds.forEach(sound => sound.dispose());
+      this._sounds = [];
+
+      this._initNoDeviceSound({
         currentTime,
       });
     }
@@ -177,7 +196,7 @@ class MediaTrack {
     this._loop = options.loop || false;
     this._autoplay = options.autoplay || false;
     this._currentTime = options.currentTime || 0;
-    this._outputDevices = options.outputDevices || [];
+    this._outputDevices = options.outputDevices || null;
     this._masterVolume =
       options.masterVolume !== undefined
         ? options.masterVolume
@@ -196,10 +215,10 @@ class MediaTrack {
         return;
       }
 
-      if (this._outputDevices.length !== 0) {
-        this._initDeviceSounds(this._outputDevices);
+      if (this._outputDevices === null) {
+        this._initNoDeviceSound();
       } else {
-        this._sounds.push(this._createSound());
+        this._initDeviceSounds(this._outputDevices);
       }
     }
   }
@@ -276,6 +295,12 @@ class MediaTrack {
     );
   }
 
+  private _initNoDeviceSound(options?: { currentTime: number }) {
+    const notDeviceSound = this._createSound(options);
+    this._sounds = [notDeviceSound];
+    return notDeviceSound;
+  }
+
   private _initDeviceSounds(
     devices: MediaDeviceType[],
     options?: { currentTime: number },
@@ -284,6 +309,7 @@ class MediaTrack {
     this._originSound = originSound;
     const deviceSounds = this._createDeviceSound(devices, options);
     this._sounds = deviceSounds;
+    return originSound;
   }
 
   private _changeDeviceSounds(
@@ -293,7 +319,9 @@ class MediaTrack {
     },
   ) {
     const currentUsedDevices = this._outputDevices;
-    this._removeDeviceSounds(currentUsedDevices);
+    if (Array.isArray(currentUsedDevices)) {
+      this._removeDeviceSounds(currentUsedDevices);
+    }
 
     const newDeviceSounds = this._createDeviceSound(devices, options);
     newDeviceSounds.forEach(sound => {
