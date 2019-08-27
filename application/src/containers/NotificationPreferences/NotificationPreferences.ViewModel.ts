@@ -14,9 +14,8 @@ import GroupService from 'sdk/module/group';
 import { ProfileService } from 'sdk/module/profile';
 import { eventsDict } from './dataTrackings';
 import { ConversationType } from 'src/AnalyticsCollector/types';
-import ConversationPreferenceModel from '@/store/models/ConversationPreference';
-import { TO_CAMEL_DICT } from './constant';
 import _ from 'lodash';
+import { ConversationPreference } from 'sdk/module/profile/entity/Profile';
 
 class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   private _groupService = ServiceLoader.getInstance<GroupService>(
@@ -28,12 +27,12 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   );
 
   @observable
-  private _initialValue: ConversationPreferenceModel = {} as ConversationPreferenceModel;
+  private _initialValue: ConversationPreference = {} as ConversationPreference;
   @observable
   isTeam: boolean;
   private _groupType: ConversationType;
   @observable
-  currentValue: ConversationPreferenceModel = {} as ConversationPreferenceModel;
+  currentValue: ConversationPreference = {} as ConversationPreference;
 
   constructor(props: Props) {
     super(props);
@@ -44,14 +43,9 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   }
 
   init = async () => {
-    const initialValue = await this._profileService.getConversationPreference(
+    this._initialValue = await this._profileService.getConversationPreference(
       this.props.groupId,
     );
-    for (const key in initialValue) {
-      if (Object.prototype.hasOwnProperty.call(initialValue, key)) {
-        this._initialValue[TO_CAMEL_DICT[key]] = initialValue[key];
-      }
-    }
     const group = await this._groupService.getById(this.props.groupId);
     if (group) {
       const isOne2One = await this._groupService.isIndividualGroup(group);
@@ -61,7 +55,7 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   };
 
   @observable
-  value: Partial<ConversationPreferenceModel> = {};
+  value: Partial<ConversationPreference> = {};
 
   @observable
   loading: boolean = false;
@@ -92,8 +86,8 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   };
 
   private _diffObject = (
-    currObj: Partial<ConversationPreferenceModel>,
-    prevObj: ConversationPreferenceModel,
+    currObj: Partial<ConversationPreference>,
+    prevObj: ConversationPreference,
   ) => _.omitBy(currObj, (value, key) => prevObj[key] === value);
 
   private get _changedValue() {

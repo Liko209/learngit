@@ -9,19 +9,17 @@ import { Profile } from '../entity';
 import { Nullable, UndefinedAble } from 'sdk/types';
 import { ConversationPreference, AUDIO_NOTIFICATIONS } from '../entity/Profile';
 import {
-  SoundsList,
   SETTING_KEYS,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  SOUNDS_TYPE,
-  AUDIO_SOUNDS_INFO,
+  SoundsListWithDefault,
 } from '../constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import GroupService from 'sdk/module/group';
-import { ProfileObserver } from '../types';
+import { IProfileObserver } from '../types';
 import { notificationCenter, ENTITY } from 'sdk/service';
 
-class ConversationPreferenceHandler implements ProfileObserver {
+class ConversationPreferenceHandler implements IProfileObserver {
   keys: SETTING_KEYS[] = [];
   constructor(keys: SETTING_KEYS[]) {
     this.keys = keys;
@@ -29,17 +27,23 @@ class ConversationPreferenceHandler implements ProfileObserver {
   public async buildEntityInfo(profile: Nullable<Profile>, cid: number) {
     const notification = _.get(
       profile,
-      `conversation_level_notifications.${cid}`,
+      `${SETTING_KEYS.CONVERSATION_NOTIFICATION}.${cid}`,
     );
-    const sound = _.get(profile, 'team_specific_audio_notifications', []).find(
+    const sound = _.get(profile, `${SETTING_KEYS.CONVERSATION_AUDIO}`, []).find(
       (item: AUDIO_NOTIFICATIONS) => item.gid === cid,
     );
     let model = {
-      ...notification,
       muted: (notification && notification.muted) || false,
-      audio_notifications:
-        sound && SoundsList.find(item => item.id === sound.sound),
+      audioNotifications:
+        sound && SoundsListWithDefault.find(item => item.id === sound.sound),
     } as ConversationPreference;
+    notification &&
+      Object.keys(notification).map(key => {
+        const value = notification[key];
+        if (value !== undefined) {
+          model[_.camelCase(key)] = value;
+        }
+      });
     if (await this._isTeam(cid)) {
       model = await this._getTeamNotification(model);
     } else {
@@ -73,49 +77,37 @@ class ConversationPreferenceHandler implements ProfileObserver {
     if (!notification && !audio) {
       return [];
     }
-    if (!localProfile) {
-      return this._getInitConversationIds(profile);
-    }
-    const changedIds = new Set<number>();
-    if (notification) {
-      const localNotification =
-        localProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
-      // eslint-disable-next-line
-      for (const id in notification) {
-        if (
-          !_.isEqual(
-            notification[id],
-            localNotification && localNotification[id],
-          )
-        ) {
-          changedIds.add(+id);
-        }
-      }
-    }
-    if (audio) {
-      const localAudio = localProfile[SETTING_KEYS.CONVERSATION_AUDIO] || [];
-      _.difference(
-        _.unionWith(audio, localAudio, _.isEqual),
-        _.intersectionWith(audio, localAudio, _.isEqual),
-      ).map(item => changedIds.add(item.gid));
-    }
-    return Array.from(changedIds);
+    return this._getChangedIds(profile, localProfile);
   }
-
-  private _getInitConversationIds(profile: Profile) {
-    const ids = new Set<number>();
+  private _getChangedIds(profile: Profile, localProfile?: Nullable<Profile>) {
+    const changedIds = new Set<number>();
     const notification = profile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
     const audio = profile[SETTING_KEYS.CONVERSATION_AUDIO];
     if (notification) {
-      // eslint-disable-next-line
-      for (const id in notification) {
-        ids.add(+id);
-      }
+      const localNotification =
+        localProfile && localProfile[SETTING_KEYS.CONVERSATION_NOTIFICATION];
+      Object.keys(notification).map(id => {
+        if (
+          !localNotification ||
+          !_.isEqual(notification[+id], localNotification[+id])
+        ) {
+          changedIds.add(+id);
+        }
+      });
     }
     if (audio) {
-      audio.map(item => ids.add(item.gid));
+      const localAudio =
+        (localProfile && localProfile[SETTING_KEYS.CONVERSATION_AUDIO]) || [];
+      if (!localAudio.length) {
+        audio.map(item => changedIds.add(item.gid));
+      } else {
+        _.difference(
+          _.unionWith(audio, localAudio, _.isEqual),
+          _.intersectionWith(audio, localAudio, _.isEqual),
+        ).map(item => changedIds.add(item.gid));
+      }
     }
-    return Array.from(ids);
+    return Array.from(changedIds);
   }
 
   private async _getSettingValue<T>(settingId: SettingEntityIds) {
@@ -126,49 +118,59 @@ class ConversationPreferenceHandler implements ProfileObserver {
     return (model && model.value)!;
   }
   private async _getTeamNotification(model: ConversationPreference) {
-    model.desktop_notifications = await this._getValue(
-      model.desktop_notifications,
+    model.desktopNotifications = await this._getDesktopValue(
+      model.desktopNotifications,
       (await this._getSettingValue(
         SettingEntityIds.Notification_NewMessages,
       )) === DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
     );
-    model.audio_notifications = await this._getAudioValue(
-      model.audio_notifications,
+    model.audioNotifications = await this._getValue(
+      model.audioNotifications,
       SettingEntityIds.Audio_TeamMessages,
     );
-    model.email_notifications = await this._getValue(
-      model.email_notifications,
-      await this._getSettingValue(SettingEntityIds.Notification_Teams),
+    model.emailNotifications = await this._getValue(
+      model.emailNotifications,
+      SettingEntityIds.Notification_Teams,
     );
-    model.push_notifications = await this._getValue(
-      model.push_notifications,
-      await this._getSettingValue(SettingEntityIds.MOBILE_Team),
+    model.pushNotifications = await this._getValue(
+      model.pushNotifications,
+      SettingEntityIds.MOBILE_Team,
     );
     return model;
   }
 
   private async _getGroupNotification(model: ConversationPreference) {
-    model.desktop_notifications = await this._getValue(
-      model.desktop_notifications,
+    model.desktopNotifications = await this._getDesktopValue(
+      model.desktopNotifications,
       (await this._getSettingValue(
         SettingEntityIds.Notification_NewMessages,
       )) !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
     );
-    model.audio_notifications = await this._getAudioValue(
-      model.audio_notifications,
+    model.audioNotifications = await this._getValue(
+      model.audioNotifications,
       SettingEntityIds.Audio_DirectMessage,
     );
-    model.email_notifications = await this._getValue(
-      model.email_notifications,
-      await this._getSettingValue(SettingEntityIds.Notification_DirectMessages),
+    model.emailNotifications = await this._getValue(
+      model.emailNotifications,
+      SettingEntityIds.Notification_DirectMessages,
     );
-    model.push_notifications = await this._getValue(
-      model.push_notifications,
-      await this._getSettingValue(SettingEntityIds.MOBILE_DM),
+    model.pushNotifications = await this._getValue(
+      model.pushNotifications,
+      SettingEntityIds.MOBILE_DM,
     );
     return model;
   }
   private async _getValue<T>(
+    value: UndefinedAble<T>,
+    settingId: SettingEntityIds,
+  ): Promise<T> {
+    if (value === undefined) {
+      return await this._getSettingValue(settingId);
+    }
+    return value;
+  }
+
+  private async _getDesktopValue<T>(
     value: UndefinedAble<T>,
     globalValue: T,
   ): Promise<T> {
@@ -178,15 +180,6 @@ class ConversationPreferenceHandler implements ProfileObserver {
     return value;
   }
 
-  private async _getAudioValue(
-    value: UndefinedAble<AUDIO_SOUNDS_INFO>,
-    key: SettingEntityIds,
-  ): Promise<AUDIO_SOUNDS_INFO> {
-    if (value === undefined || value.id === SOUNDS_TYPE.Default) {
-      return await this._getSettingValue(key);
-    }
-    return value;
-  }
   private async _isTeam(conversationId: number) {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,

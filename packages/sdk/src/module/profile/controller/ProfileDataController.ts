@@ -34,6 +34,7 @@ class ProfileDataController {
   ) {
     this._registerObservers();
   }
+
   private _registerObservers() {
     this._conversationPreferenceHandler = new ConversationPreferenceHandler([
       SETTING_KEYS.CONVERSATION_AUDIO,
@@ -113,7 +114,7 @@ class ProfileDataController {
     if (model.muted) {
       return true;
     }
-    return !model.desktop_notifications;
+    return !model.desktopNotifications;
   }
 
   async isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {
@@ -142,10 +143,7 @@ class ProfileDataController {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,
               ]);
-              this.profileEntityObservable.onProfileUpdate(
-                transformedData,
-                local,
-              );
+              this.profileEntityObservable.onProfileUpdate(transformedData);
             }
           }
           return transformedData;
@@ -156,6 +154,10 @@ class ProfileDataController {
       mainLogger.warn(`handleProfile error:${e}`);
       return null;
     }
+  }
+
+  unRegisterAllObservers() {
+    this.profileEntityObservable.unRegisterAll();
   }
 
   async getConversationPreference(

@@ -77,10 +77,10 @@ type Profile = ExtendedBaseModel & {
 };
 type ConversationPreference = IdModel<number> & {
   muted: boolean;
-  desktop_notifications: boolean;
-  audio_notifications: AUDIO_SOUNDS_INFO;
-  push_notifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
-  email_notifications: EMAIL_NOTIFICATION_OPTIONS;
+  desktopNotifications: boolean;
+  audioNotifications: AUDIO_SOUNDS_INFO;
+  pushNotifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+  emailNotifications: EMAIL_NOTIFICATION_OPTIONS;
 };
 
 export {

@@ -5,8 +5,6 @@
  */
 
 import { SettingsActionController } from '../SettingsActionController';
-import { Profile } from '../../entity';
-import { Raw } from '../../../../framework/model';
 import { SettingOption } from '../../types';
 import {
   SETTING_KEYS,
@@ -110,8 +108,10 @@ describe('SettingsActionController', () => {
     };
     const audio = { id: SOUNDS_TYPE.Alert, url: '' };
     const model = {
-      ...notification,
-      audio_notifications: audio,
+      desktopNotifications: true,
+      pushNotifications: '0',
+      emailNotifications: '0',
+      audioNotifications: audio,
     };
     it('should call update setting when update conversation preference first', async () => {
       settingsActionController.updateSettingOptions = jest.fn();
@@ -141,7 +141,7 @@ describe('SettingsActionController', () => {
         },
       ]);
     });
-    it('should call update setting when update conversation preference', async () => {
+    it('should call update setting when update conversation preference [JPT-2815]', async () => {
       settingsActionController.updateSettingOptions = jest.fn();
       const audio2 = { gid: 2, sound: '' };
       mockProfileDataController.getLocalProfile = jest.fn().mockResolvedValue({

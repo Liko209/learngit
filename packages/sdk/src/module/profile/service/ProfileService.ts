@@ -60,6 +60,9 @@ class ProfileService extends EntityBaseService<Profile>
       ).unRegisterModuleSetting(this._profileSetting);
       delete this._profileSetting;
     }
+    this.getProfileController()
+      .getProfileDataController()
+      .unRegisterAllObservers();
 
     super.onStopped();
   }

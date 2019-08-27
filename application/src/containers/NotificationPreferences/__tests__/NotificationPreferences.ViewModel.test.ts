@@ -191,11 +191,11 @@ describe('NotificationPreferencesViewModel', () => {
     }
 
     @test(
-      'should be true when muted is false and desktop_notifications is false',
+      'should be true when muted is false and desktopNotifications is false',
     )
     @mockService(ProfileService, 'getConversationPreference', {
       muted: false,
-      desktop_notifications: false,
+      desktopNotifications: false,
     })
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
@@ -204,11 +204,11 @@ describe('NotificationPreferencesViewModel', () => {
     }
 
     @test(
-      'should be false when muted is false and desktop_notifications is true',
+      'should be false when muted is false and desktopNotifications is true',
     )
     @mockService(ProfileService, 'getConversationPreference', {
       muted: false,
-      desktop_notifications: true,
+      desktopNotifications: true,
     })
     async t3() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();

@@ -43,16 +43,16 @@ type SettingItemConfig<T> = {
   source?: T[];
   defaultValue?: T;
 };
-interface ProfileObservable {
-  register(observer: ProfileObserver): void;
-  unRegister(observer: ProfileObserver): void;
+interface IProfileObservable {
+  register(observer: IProfileObserver): void;
+  unRegister(observer: IProfileObserver): void;
   notify(
-    observer: ProfileObserver,
+    observer: IProfileObserver,
     profile: Profile,
     originProfile: Nullable<Profile>,
   ): void;
 }
-interface ProfileObserver {
+interface IProfileObserver {
   keys: SETTING_KEYS[];
   update(profile: Profile, originProfile: Nullable<Profile>): Promise<void>;
 }
@@ -61,6 +61,6 @@ export {
   SettingValue,
   SettingOption,
   SettingItemConfig,
-  ProfileObservable,
-  ProfileObserver,
+  IProfileObservable,
+  IProfileObserver,
 };
