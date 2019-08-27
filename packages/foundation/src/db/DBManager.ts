@@ -7,6 +7,8 @@ import { DexieDB, LokiDB } from './adapter';
 import { DatabaseType } from './enums';
 import { ISchema, IDatabase } from './db';
 
+import 'dexie-export-import';
+
 class DBManager {
   private db!: IDatabase;
   initDatabase(schema: ISchema, type?: DatabaseType): void {
@@ -20,6 +22,8 @@ class DBManager {
         this.db = new DexieDB(schema);
         break;
     }
+
+
   }
 
   async openDatabase(): Promise<void> {

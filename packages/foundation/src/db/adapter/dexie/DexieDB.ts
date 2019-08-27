@@ -14,6 +14,16 @@ import {
   ISchema,
   ISchemaVersions,
 } from '../../db';
+import 'dexie-export-import';
+
+export function saveBlob(name: string, blob: Blob) {
+  const a = document.createElement('a');
+  a.href = window.URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
 
 class DexieDB implements IDatabase {
   db: Dexie;
@@ -21,6 +31,10 @@ class DexieDB implements IDatabase {
     const { name } = schema;
     this.db = new Dexie(name);
     this._initSchema(schema);
+    (window as any).export = async () => {
+      const blob = await (this.db as any).export();
+      saveBlob('dexie.json', blob);
+    };
   }
 
   async ensureDBOpened(): Promise<void> {
