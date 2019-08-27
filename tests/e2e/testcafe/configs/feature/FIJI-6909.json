@@ -1,0 +1,12 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/Dialer.ts",
+      "./fixtures/Setting/NotificationAndSounds/AudioSources.ts",
+      "./fixtures/PhoneTab/Voicemail/CheckStatus.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -57,7 +57,24 @@ describe('TrackManager', () => {
       expect(useMediaTrack).toEqual(oldTrack);
     });
   });
-  describe('setAllTrackVolume', () => {
+  describe('setTrackVolume()', () => {
+    it('should set track volume and return true when set volume success', () => {
+      const trackManager = new TrackManager();
+      const track = trackManager.createTrack({
+        id: 'track1',
+      });
+      expect(track.volume).toEqual(1);
+      expect(track.id).toEqual('track1');
+      trackManager.setTrackVolume(track.id, 0.5);
+      expect(track.currentMediaVolume).toEqual(1);
+      expect(track.volume).toEqual(0.5);
+    })
+    it('should not set track volume and return false when set volume to not exist track', () => {
+      const trackManager = new TrackManager();
+      trackManager.setTrackVolume('noExist', 0.5);
+    })
+  })
+  describe('setAllTrackVolume()', () => {
     it('should set all track master volume when track manager set volume', () => {
       const newVolumeValue = 0.5;
       const trackManager = new TrackManager();
@@ -72,8 +89,8 @@ describe('TrackManager', () => {
       expect(trackManager.volume).toEqual(1);
 
       trackManager.setAllTrackVolume(newVolumeValue);
-      expect(track1.masterVolume).toEqual(newVolumeValue);
-      expect(track2.masterVolume).toEqual(newVolumeValue);
+      expect(track1.volume).toEqual(newVolumeValue);
+      expect(track2.volume).toEqual(newVolumeValue);
       expect(trackManager.volume).toEqual(newVolumeValue);
     });
   });
@@ -95,6 +112,14 @@ describe('TrackManager', () => {
       expect(track2.outputDevices).toEqual(newDevices);
     });
   });
+  describe('getAllOutputDeviceId()', () => {
+    it('should return allOutputDevices ids', () => {
+      const newDevices = ['device1', 'device2'];
+      const trackManager = new TrackManager();
+      trackManager.updateAllOutputDevices(newDevices);
+      expect(trackManager.getAllOutputDevicesId()).toEqual(newDevices)
+    })
+  })
   describe('updateAllOutputDevices()', () => {
     it('should update all output devices', () => {
       const newDevices = ['device1', 'device2'];
@@ -121,5 +146,104 @@ describe('TrackManager', () => {
       expect(trackManager.volume).toEqual(1);
       expect(trackManager.outputDevices).toEqual([]);
     });
+  });
+  describe('track priority pool', () => {
+    describe('_addPlayingTrackToPool()', () => {
+      it('should create new priorityItem to pool when add playing track and not same weight item', () => {
+        const trackManager = new TrackManager();
+        const playingTrack = trackManager.createTrack({
+          id: 'playingTrack',
+          weight: 100,
+        });
+
+        expect(playingTrack.weight).toEqual(100);
+        trackManager._addPlayingTrackToPool(playingTrack.id);
+        expect(trackManager._priorityPool).toEqual([{ ids: ['playingTrack'], weight: 100, position: 0 }]);
+      });
+      it('should not create new priorityItem to pool but add trackId when add playing track but have same weight item', () => {
+        const trackManager = new TrackManager();
+        const defaultPriorityItem = { ids: [], weight: 100 };
+        trackManager._priorityPool = [defaultPriorityItem];
+
+        const playingTrack = trackManager.createTrack({
+          id: 'playingTrack',
+          weight: 100,
+        });
+        expect(trackManager._priorityPool.length).toEqual(1);
+        expect(trackManager._getPriorityItemByWeight(100)).toEqual(defaultPriorityItem)
+
+        trackManager._addPlayingTrackToPool(playingTrack.id);
+        expect(trackManager._priorityPool).toEqual([{ ids: ['playingTrack'], weight: 100, position: 0 }]);
+      });
+      it('should not add trackId to priority pool when can\'t find this track', () => {
+        const trackManager = new TrackManager();
+        trackManager._addPlayingTrackToPool('noExistTrack');
+        expect(trackManager._priorityPool.length).toEqual(0);
+      })
+    });
+    describe('_removePlayingTrackFromPool()', () => {
+      it('should remove trackId from pool when remove playing track', () => {
+        const trackManager = new TrackManager();
+        const defaultPriorityItem = { ids: ['playingTrack'], weight: 100, position: 0 };
+        trackManager._priorityPool = [defaultPriorityItem];
+
+        const playingTrack = trackManager.createTrack({
+          id: 'playingTrack',
+          weight: 100,
+        });
+        expect(trackManager._priorityPool.length).toEqual(1);
+        expect(trackManager._getPriorityItemByWeight(100)).toEqual(defaultPriorityItem)
+
+        trackManager._removePlayingTrackFromPool(playingTrack.id);
+        expect(trackManager._priorityPool).toEqual([]);
+      });
+      it('should not remove trackId from pool when can\'t find this trackId', () => {
+        const trackManager = new TrackManager();
+        trackManager._removePlayingTrackFromPool('noExistTrack');
+        expect(trackManager._priorityPool.length).toEqual(0);
+      })
+    })
+    describe('_updatePriorityPoolVolume()',() => {
+      it('should set low volume when hight priority item into pool', () => {
+        const trackManager = new TrackManager();
+
+        const track1 = trackManager.createTrack({
+          id: 'track1',
+          weight: 200,
+        });
+
+        trackManager._addPlayingTrackToPool(track1.id);
+
+        const track2 = trackManager.createTrack({
+          id: 'track2',
+          weight: 100,
+        });
+        trackManager._addPlayingTrackToPool(track2.id);
+
+        expect(trackManager._priorityPool.length).toEqual(2);
+        expect(track1.volume).toEqual(0.7);
+        expect(track2.volume).toEqual(1);
+      });
+      it('should set height volume when hight priority item out pool', () => {
+        const trackManager = new TrackManager();
+        const track1 = trackManager.createTrack({
+          id: 'track1',
+          weight: 200,
+        });
+
+        trackManager._addPlayingTrackToPool(track1.id);
+        const track2 = trackManager.createTrack({
+          id: 'track2',
+          weight: 100,
+        });
+        trackManager._addPlayingTrackToPool(track2.id);
+        expect(trackManager._priorityPool.length).toEqual(2);
+        expect(track1.volume).toEqual(0.7);
+
+        trackManager._removePlayingTrackFromPool(track2.id);
+        expect(trackManager._priorityPool.length).toEqual(1);
+        expect(track1.volume).toEqual(1);
+      })
+    })
   });
 });
