@@ -168,6 +168,9 @@
     "dialogTitle": "Switch conversation",
     "listTitle": "Recent conversations"
   },
+  "shareFile": {
+    "dialogTitle": "Share file"
+  },
   "dashboard": {
     "Dashboard": "Dashboard"
   },
@@ -270,6 +273,7 @@
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
+      "shareFile": "Share file",
       "deletePostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete this post. Try again later.",
       "deletePostFailedForNetworkIssue": "We weren't able to delete this post. Check your network connection, then try again.",
       "editPostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to apply edits to this post. Try again later.",

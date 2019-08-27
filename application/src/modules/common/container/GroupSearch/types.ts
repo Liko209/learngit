@@ -3,9 +3,17 @@
  * @Date: 2019-08-22 16:34:05
  * Copyright © RingCentral. All rights reserved.
  */
+import { SortableModel } from "sdk/framework/model";
+
 
 export type GroupSearchProps = {
-  onSelectChange: (params: { id: number }) => void;
+  onSelect: (params: { id: number }) => void;
+  dialogTitle: string;
+  listTitle: string;
+  searchFunc:(searchKey:string)=>Promise<{
+    terms: string[];
+    sortableModels: SortableModel<any>[];
+}>
 };
 
 export interface IGroupSearchViewModel {

@@ -6,8 +6,6 @@
 
 import { GroupSearchProps, IGroupSearchViewModel } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { SearchService } from 'sdk/module/search';
 import { observable, computed } from 'mobx';
 
 export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
@@ -20,13 +18,7 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
   }
 
   searchGroups = async (searchKey: string) => {
-    const searchService = ServiceLoader.getInstance<SearchService>(
-      ServiceConfig.SEARCH_SERVICE,
-    );
-    const result = await searchService.doFuzzySearchAllGroups(searchKey, {
-      myGroupsOnly: true,
-      fetchAllIfSearchKeyEmpty: true,
-    });
+    const result = await this.props.searchFunc(searchKey)
     this.list = result.sortableModels.map(item => item.id);
   };
 }

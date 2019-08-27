@@ -14,6 +14,7 @@ import { ViewInPostAction } from '../ViewInPostAction';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { FileShareAction } from '../FileShareAction/FileShareAction';
 
 type FileActionMenuProps = {
   fileId: number;
@@ -24,8 +25,8 @@ type FileActionMenuProps = {
   groupId?: number;
   asyncOperationDecorator?: FunctionDecorator;
 } & FileDeleteActionProps &
-FileNameEditActionProps &
-WithTranslation;
+  FileNameEditActionProps &
+  WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
 class InnerComponent extends Component<FileActionMenuProps, State> {
@@ -98,6 +99,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
             />
           )}
           <FileDeleteAction fileId={fileId} postId={postId} {...rest} />
+          <FileShareAction />
         </JuiMenuList>
       </JuiPopperMenu>
     );
