@@ -4,5 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './FileViewer.ViewModel';
-export * from './type';
+export * from './ImageViewer.ViewModel';
+export * from './types';
+export * from './constants';
