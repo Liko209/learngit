@@ -322,6 +322,11 @@ class AnalyticsCollector {
       state,
     });
   }
+
+  // [FIJI-8195]
+  login() {
+    dataAnalysis.track('Jup_Web/DT_general_login');
+  }
 }
 
 export { AnalyticsCollector };
