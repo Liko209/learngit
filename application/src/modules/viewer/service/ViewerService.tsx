@@ -36,7 +36,6 @@ class ViewerService implements IViewerService {
         fullScreen: true,
         hideBackdrop: true,
         TransitionComponent: JuiDialogOpenTransition as any,
-        enableEscapeClose: true,
         onClose: () => dismiss(),
       },
     );
@@ -70,7 +69,6 @@ class ViewerService implements IViewerService {
         fullScreen: true,
         hideBackdrop: true,
         TransitionComponent: JuiDialogOpenTransition as any,
-        enableEscapeClose: true,
         onClose: () => dismiss(),
       },
     );
@@ -88,7 +86,6 @@ class ViewerService implements IViewerService {
         fullScreen: true,
         hideBackdrop: true,
         TransitionComponent: JuiDialogOpenTransition as any,
-        enableEscapeClose: true,
         onClose: () => dismiss(),
       },
     );

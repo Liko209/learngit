@@ -11,8 +11,11 @@ import { getEntity } from '@/store/utils';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { IViewerView } from '@/modules/viewer/container/ViewerView/interface';
+import { PersonService } from 'sdk/module/person';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SingleImageViewerViewModuleProps } from './types';
 
+const IMAGE_SIZE = 2000;
 class SingleImageViewerViewModel
   extends AbstractViewModel<SingleImageViewerViewModuleProps>
   implements IViewerView {
@@ -41,24 +44,24 @@ class SingleImageViewerViewModel
     this._dismiss();
   }
 
-  @action
-  switchToPrevious = () => {};
-
-  @action
-  switchToNext = () => {};
-
   @computed
   get pages() {
-    let url = '';
-    const { headshot = '' } = this._person;
-    if (typeof headshot === 'string') {
-      url = headshot;
-    } else {
-      url = headshot.url;
+    let url;
+    if (this._person && this._person.hasHeadShot && this._personId) {
+      const { headshotVersion, headshot = '' } = this._person;
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+      url = personService.getHeadShotWithSize(
+        this._personId,
+        headshot,
+        IMAGE_SIZE,
+        headshotVersion,
+      );
     }
     return [
       {
-        url,
+        url: url || '',
         viewport: {
           origHeight: 0,
           origWidth: 0,
@@ -70,9 +73,7 @@ class SingleImageViewerViewModel
   @computed
   get title() {
     const { displayName } = this._person;
-    const page = this.pages[0];
     return {
-      downloadUrl: page.url,
       displayName,
     };
   }

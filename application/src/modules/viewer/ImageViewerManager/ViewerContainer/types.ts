@@ -35,8 +35,6 @@ type ImageViewerViewProps = {
 };
 
 type SingleImageViewerTitleViewProp = {
-  id: number;
-  downloadUrl: string;
   displayName: string;
 };
 

@@ -14,7 +14,6 @@ import {
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
 import { SingleImageViewerTitleViewProp } from './types';
-import { Download } from '@/containers/common/Download';
 
 type Type = SingleImageViewerTitleViewProp &
   WithTranslation & {
@@ -24,7 +23,7 @@ type Type = SingleImageViewerTitleViewProp &
 @observer
 class SingleImageViewerTitleViewComponent extends Component<Type> {
   render() {
-    const { displayName, downloadUrl, t, closeViewer } = this.props;
+    const { displayName, t, closeViewer } = this.props;
     return (
       <>
         <JuiDialogHeaderTitle data-test-automation-id={'viewerTitle'}>
@@ -32,7 +31,6 @@ class SingleImageViewerTitleViewComponent extends Component<Type> {
         </JuiDialogHeaderTitle>
         <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>
           <JuiButtonBar overlapSize={2}>
-            <Download url={downloadUrl} variant="round" />
             <JuiIconButton
               onClick={closeViewer}
               aria-label={t('common.dialog.close')}

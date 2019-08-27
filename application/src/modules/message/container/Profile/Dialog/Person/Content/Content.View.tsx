@@ -39,6 +39,7 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 import { IMessageStore } from '@/modules/message/interface';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { dataAnalysis } from 'foundation/analysis';
 import { container } from 'framework/ioc';
 import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 
@@ -48,6 +49,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
 > {
   @IMessageStore private _messageStore: IMessageStore;
   _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _avatarRef: React.RefObject<any> = React.createRef();
 
   renderPresence = () => {
     const { id } = this.props;
@@ -166,6 +168,16 @@ class ProfileDialogPersonContentViewComponent extends Component<
   };
 
   handleAvatarClick = () => {
+    if (
+      this._avatarRef.current &&
+      this._avatarRef.current.vm &&
+      this._avatarRef.current.vm.shouldShowShortName
+    ) {
+      return;
+    }
+    dataAnalysis.track('Jup_Web/DT_profile_viewProfilePhotoFullScreen', {
+      source: 'Profile',
+    });
     this._viewerService.showSingleImageViewer(this.props.id);
   };
 
@@ -189,6 +201,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
             <Avatar
               uid={id}
               size="xlarge"
+              ref={this._avatarRef}
               onClick={this.handleAvatarClick}
               presence={this.renderPresence()}
               automationId="profileAvatar"
