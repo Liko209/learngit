@@ -11,6 +11,7 @@
   },
   "scripts": {
     "prebuild:storybook": "npm run test:generate-output",
+    "prestorybook": "npm run test:generate-output",
     "start": "npm run storybook",
     "storybook": "start-storybook -p 6006",
     "test": "cross-env NODE_ENV=test jest",

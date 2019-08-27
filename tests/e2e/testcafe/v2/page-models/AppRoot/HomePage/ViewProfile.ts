@@ -193,6 +193,10 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.click(this.editProfileButton);
   }
 
+  async hoverEditProfile() {
+    await this.t.hover(this.editProfileButton);
+  }
+
   get status() {
     return this.getSelectorByAutomationId('profileDialogSummaryStatus');
   }

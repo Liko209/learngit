@@ -8,23 +8,60 @@ import { ISortableModelWithData } from '@/store/base';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { PersonService } from 'sdk/module/person';
 import { Person } from 'sdk/module/person/entity';
-import { SortUtils } from 'sdk/framework/utils';
 import { IdModelFocHandler } from './IdModelFocHandler';
 import { IdModelFocBuilder } from './IdModelFocBuilder';
-import { IdModel } from 'sdk/framework/model';
+import { DisplayNameModel } from 'sdk/framework/model';
+import { UndefinedAble } from 'sdk/types';
+import { SearchService } from 'sdk/module/search/service';
+import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
+import { Terms, FormattedTerms } from 'sdk/framework/search';
+import { SortUtils } from 'sdk/framework/utils';
 
-type DisplayNameModel = IdModel & {
-  displayName: string;
-};
+enum CONTACT_TAB_TYPE {
+  ALL,
+  PERSONAL,
+  GLIP_CONTACT,
+  CLOUD_CONTACT,
+  FAVORITES,
+}
+
 class ContactFocHandler extends IdModelFocHandler {
   private _personService: PersonService;
+  private _searchService: SearchService;
+  private _type: CONTACT_TAB_TYPE;
+  private _searchTerms: Terms;
 
-  constructor() {
+  constructor(
+    type: CONTACT_TAB_TYPE = CONTACT_TAB_TYPE.ALL,
+    searchKey: UndefinedAble<string> = undefined,
+  ) {
     super();
     this._personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
+    this._searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    this._type = type;
+
+    this._searchTerms = SearchUtils.toDefaultSearchKeyTerms(searchKey);
   }
+
+  genFormattedTermsFunc = (originalTerms: string[]) => {
+    const formattedTerms: FormattedTerms = {
+      formattedKeys: [],
+      validFormattedKeys: [],
+    };
+
+    originalTerms.forEach(term => {
+      const formattedKey = {
+        original: term,
+        formatted: term,
+      };
+      formattedTerms.formattedKeys.push(formattedKey);
+    });
+    return formattedTerms;
+  };
 
   transformFunc = (
     model: Person,
@@ -37,21 +74,56 @@ class ContactFocHandler extends IdModelFocHandler {
     },
   });
 
+  firstCharAsNumber(str: string) {
+    return str[0] >= 'a' && str[0] <= 'z' ? 1 : 0;
+  }
+
   sortFunc = (
     lhs: ISortableModelWithData<DisplayNameModel>,
     rhs: ISortableModelWithData<DisplayNameModel>,
   ): number => {
-    return SortUtils.compareLowerCaseString(
-      lhs.data!.displayName,
-      rhs.data!.displayName,
-    );
+    const left = lhs.data!.displayName;
+    const right = rhs.data!.displayName;
+    const result = this.firstCharAsNumber(right) - this.firstCharAsNumber(left);
+    return result ? result : SortUtils.compareLowerCaseString(left, right);
   };
 
   filterFunc = (person: Person) => {
-    return this._personService.isVisiblePerson(person);
+    let isValid = this._personService.isVisiblePerson(person);
+
+    if (isValid) {
+      switch (this._type) {
+        case CONTACT_TAB_TYPE.ALL:
+          break;
+        case CONTACT_TAB_TYPE.GLIP_CONTACT:
+          break;
+        case CONTACT_TAB_TYPE.PERSONAL:
+          break;
+        case CONTACT_TAB_TYPE.CLOUD_CONTACT:
+          break;
+        default:
+          break;
+      }
+
+      if (this._searchTerms.searchKey) {
+        const matchInfo = this._searchService.generateMatchedInfo(
+          person.id,
+          this._personService.getFullName(person).toLowerCase(),
+          [],
+          this._searchTerms,
+        );
+        isValid = matchInfo.isMatched;
+      }
+    }
+
+    return isValid;
   };
 
-  protected createFoc() {
+  protected async createFoc() {
+    await SearchUtils.formatTerms(
+      this._searchTerms,
+      this.genFormattedTermsFunc,
+    );
     return IdModelFocBuilder.buildFoc(
       this._personService.getEntitySource(),
       this.transformFunc,
@@ -61,4 +133,4 @@ class ContactFocHandler extends IdModelFocHandler {
   }
 }
 
-export { ContactFocHandler };
+export { ContactFocHandler, CONTACT_TAB_TYPE };

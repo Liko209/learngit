@@ -89,6 +89,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -208,6 +209,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}

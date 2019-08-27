@@ -231,4 +231,36 @@ describe('SearchService', () => {
       );
     });
   });
+
+  describe('generateMatchInfo', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', () => {
+      const terms = {
+        searchKey: 'Dora Chen ',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+
+      searchService.generateMatchedInfo(1, 'Dora Chen', ['1600000001'], terms);
+      expect(searchPersonController.generateMatchedInfo).toHaveBeenCalledWith(
+        1,
+        'Dora Chen',
+        ['1600000001'],
+        terms,
+      );
+    });
+  });
 });

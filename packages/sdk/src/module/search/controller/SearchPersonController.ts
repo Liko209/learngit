@@ -20,11 +20,7 @@ import {
   PhoneContactEntity,
 } from '../entity';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
-import {
-  Terms,
-  FormattedTerms,
-  FormattedKey,
-} from 'sdk/framework/controller/interface/IEntityCacheSearchController';
+import { Terms, FormattedTerms, FormattedKey } from 'sdk/framework/search';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { LAST_ACCESS_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
@@ -160,6 +156,8 @@ class SearchPersonController {
     terms: string[];
     sortableModels: SortableModel<IdModel>[];
   }> {
+    const performanceTracer = PerformanceTracer.start();
+
     const result: {
       terms: string[];
       sortableModels: SortableModel<IdModel>[];
@@ -216,6 +214,9 @@ class SearchPersonController {
       return SortUtils.compareSortableModel<IdModel>(groupA, groupB);
     });
 
+    performanceTracer.end({
+      key: SEARCH_PERFORMANCE_KEYS.SEARCH_PERSONS_GROUPS,
+    });
     return result;
   }
 
@@ -303,7 +304,7 @@ class SearchPersonController {
     return now - maxAccessTime > LAST_ACCESS_VALID_PERIOD ? 0 : maxAccessTime;
   }
 
-  private _generateMatchedInfo(
+  generateMatchedInfo(
     personId: number,
     name: string,
     phoneNumbers: PhoneNumber[],
@@ -430,7 +431,7 @@ class SearchPersonController {
           personService.getPhoneNumbers(person, (phoneNumber: PhoneNumber) => {
             phoneNumbers.push(phoneNumber);
           });
-          const matchedInfo = this._generateMatchedInfo(
+          const matchedInfo = this.generateMatchedInfo(
             person.id,
             personNameLowerCase,
             phoneNumbers,
@@ -442,27 +443,6 @@ class SearchPersonController {
               const splitNames = SearchUtils.getTermsFromText(
                 personNameLowerCase,
               );
-              /*
-              sortValue = PersonSortingOrder.FullNameMatching;
-              if (
-                person.first_name &&
-                SearchUtils.isStartWithMatched(
-                  person.first_name.toLowerCase(),
-                  [terms.searchKeyTerms[0]],
-                )
-              ) {
-                sortValue += PersonSortingOrder.FirstNameMatching;
-              }
-              if (
-                person.last_name &&
-                SearchUtils.isStartWithMatched(
-                  person.last_name.toLowerCase(),
-                  terms.searchKeyTerms,
-                )
-              ) {
-                sortValue += PersonSortingOrder.LastNameMatching;
-              }
-              */
               sortValue = SearchUtils.getMatchedWeight(
                 splitNames,
                 terms.searchKeyTerms,
@@ -509,4 +489,4 @@ class SearchPersonController {
   }
 }
 
-export { SearchPersonController };
+export { SearchPersonController, MatchedInfo };
