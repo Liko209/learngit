@@ -10,8 +10,6 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
 } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-
-import { CallReport } from '../report/Call';
 import { FsmStatusCategory } from '../report/types';
 
 const CallFsmState = {
@@ -94,8 +92,7 @@ interface IRTCCallFsmTableDependency {
 }
 
 class RTCCallFsmTable extends StateMachine {
-  private _report: CallReport;
-  constructor(dependency: IRTCCallFsmTableDependency, report: CallReport) {
+  constructor(dependency: IRTCCallFsmTableDependency) {
     super({
       init: CallFsmState.IDLE,
       transitions: [
@@ -576,7 +573,6 @@ class RTCCallFsmTable extends StateMachine {
         },
       },
     });
-    this._report = report;
   }
 }
 

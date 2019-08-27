@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ContactFocHandler } from '../ContactFocHandler';
+import { ContactFocHandler, CONTACT_TAB_TYPE } from '../ContactFocHandler';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { Person } from 'sdk/module/person/entity';
 import { SortUtils } from 'sdk/framework/utils';
@@ -29,47 +29,66 @@ describe('ContactFocHandler', () => {
     jest.restoreAllMocks();
   }
 
-  beforeEach(() => {
-    clearMocks();
+  function setUp() {
     ServiceLoader.getInstance = jest.fn().mockImplementation(() => {
       return personService;
     });
+  }
+
+  beforeEach(() => {
+    clearMocks();
+
+    setUp();
   });
 
-  it('should call create/dispose foc', () => {
+  it('should call create/dispose foc', async () => {
     const handler = new ContactFocHandler();
     personService.getEntitySource.mockReturnValue(entitySourceController);
-    const foc = handler.getFoc();
+    const foc = await handler.getFoc();
     const spyOnDispose = jest.spyOn(foc, 'dispose');
     handler.dispose();
     expect(spyOnDispose).toHaveBeenCalled();
   });
 
-  it('should call sort/filter foc', () => {
-    const handler = new ContactFocHandler();
-    entitySourceController.getEntities;
-    personService.getEntitySource.mockReturnValue(entitySourceController);
-    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
-      return true;
-    });
-    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
-    personService.getFullName = jest
-      .fn()
-      .mockImplementation((person: Person) => {
-        if (person.id === 1) {
-          return 'cbc';
-        }
-        if (person.id === 2) {
-          return 'bca';
-        }
-        return '';
-      });
-
+  it('should call sort', () => {
+    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.ALL);
     SortUtils.compareLowerCaseString = jest.fn();
     handler.sortFunc(
       { id: 1, sortValue: 0, data: { id: 1, displayName: 'cbc' } },
       { id: 2, sortValue: 0, data: { id: 2, displayName: 'bca' } },
     );
     expect(SortUtils.compareLowerCaseString).toHaveBeenCalledWith('cbc', 'bca');
+  });
+
+  it('should call filter foc when type is all', () => {
+    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.ALL);
+    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+      return true;
+    });
+    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+  });
+
+  it('should call filter foc when type is personal', () => {
+    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.PERSONAL);
+    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+      return true;
+    });
+    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+  });
+
+  it('should call filter foc when type is glip contact', () => {
+    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.GLIP_CONTACT);
+    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+      return true;
+    });
+    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+  });
+
+  it('should call filter foc when type is cloud contact', () => {
+    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.CLOUD_CONTACT);
+    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+      return true;
+    });
+    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
   });
 });

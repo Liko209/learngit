@@ -48,6 +48,10 @@ Array [
   color: #0684bd;
 }
 
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
 .c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -79,6 +83,10 @@ Array [
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -362,6 +370,7 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -441,6 +450,10 @@ Array [
   color: #0684bd;
 }
 
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
 .c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -472,6 +485,10 @@ Array [
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -755,6 +772,7 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}

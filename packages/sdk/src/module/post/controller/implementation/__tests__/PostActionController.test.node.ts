@@ -102,7 +102,12 @@ describe('PostActionController', () => {
         },
         async (newPost: Post) => newPost,
       );
-      expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
+      expect(
+        testPartialModifyController.updatePartially.mock.calls[0][0],
+      ).toHaveProperty('forceDoUpdateEntity', true);
+      expect(
+        testPartialModifyController.updatePartially.mock.calls[0][0],
+      ).toHaveProperty('shouldRollback', false);
     });
   });
 

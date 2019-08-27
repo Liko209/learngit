@@ -14,8 +14,6 @@ import {
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import { SearchUtils } from '../../utils/SearchUtils';
 
-const soundex = require('soundex-code');
-
 class EntityCacheSearchController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
@@ -63,34 +61,13 @@ class EntityCacheSearchController<
     terms: Terms;
     sortableModels: SortableModel<T>[];
   }> {
-    const terms: Terms = {
-      searchKeyTerms: [],
-      searchKeyTermsToSoundex: [],
-      searchKeyFormattedTerms: {
-        formattedKeys: [],
-        validFormattedKeys: [],
-      },
-    };
+    const terms: Terms = await SearchUtils.genSearchKeyTerms(
+      searchKey,
+      genFormattedTermsFunc,
+    );
+
     let entities: T[];
     const sortableEntities: SortableModel<T>[] = [];
-    const isUseSoundex = await SearchUtils.isUseSoundex();
-    if (searchKey) {
-      terms.searchKeyTerms = this.getTermsFromSearchKey(
-        searchKey.toLowerCase().trim(),
-      );
-
-      if (genFormattedTermsFunc) {
-        terms.searchKeyFormattedTerms = genFormattedTermsFunc(
-          terms.searchKeyTerms,
-        );
-      }
-
-      if (isUseSoundex) {
-        terms.searchKeyTermsToSoundex = terms.searchKeyTerms.map(item =>
-          soundex(item),
-        );
-      }
-    }
 
     if (arrangeIds) {
       entities = await this.entityCacheController.batchGet(arrangeIds, true);
@@ -118,12 +95,14 @@ class EntityCacheSearchController<
   isFuzzyMatched(srcText: string, terms: string[]): boolean {
     return SearchUtils.isFuzzyMatched(srcText, terms);
   }
+
   isSoundexMatched(
     soundexOfEntity: string[],
     soundexOfSearchTerms: string[],
   ): boolean {
     return SearchUtils.isSoundexMatched(soundexOfEntity, soundexOfSearchTerms);
   }
+
   isStartWithMatched(srcText: string, terms: string[]): boolean {
     return SearchUtils.isStartWithMatched(srcText, terms);
   }

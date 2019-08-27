@@ -8,6 +8,9 @@ import { CALLING_OPTIONS, AUDIO_SOUNDS_INFO } from 'sdk/module/profile';
 import { inject } from 'framework/ioc';
 import { jupiter } from 'framework/Jupiter';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import {
   TelephonyService as ServerTelephonyService,
   RTC_REPLY_MSG_PATTERN,
@@ -26,9 +29,10 @@ import { mainLogger } from 'foundation/log';
 import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { ANONYMOUS_NUM } from '../interface/constant';
+import { ANONYMOUS_NUM, NOTIFY_THROTTLE_FACTOR } from '../interface/constant';
 import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
+import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { AccountService } from 'sdk/module/account';
@@ -54,7 +58,7 @@ import {
   SETTING_ITEM__RINGER_SOURCE,
   SETTING_ITEM__SPEAKER_SOURCE,
 } from '@/modules/setting/constant';
-import { isObject } from 'lodash';
+import { isObject, throttle } from 'lodash';
 import { sleep } from '../helpers';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
@@ -62,6 +66,7 @@ import { ISoundNotification } from '@/modules/notification/interface';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -82,10 +87,13 @@ class TelephonyService {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
+  private _voicemailService = ServiceLoader.getInstance<VoicemailService>(
+    ServiceConfig.VOICEMAIL_SERVICE,
+  );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
   private _ringtone?: IMedia;
   private _muteRingtone: boolean = false;
-  private _outputDevices: string[] | 'all' = [];
+  private _outputDevices: string[] | 'all' | null = null;
   @ISoundNotification
   private _soundNotification: ISoundNotification;
 
@@ -101,6 +109,7 @@ class TelephonyService {
   private _keypadBeepPool: IMedia[];
   private _currentSoundTrackForBeep: number | null;
   private _canPlayOgg: boolean = this._mediaService.canPlayType('audio/ogg');
+  protected _voicemailNotificationObserver: IEntityChangeObserver;
 
   private _onMadeOutgoingCall = (id: number) => {
     // TODO: This should be a list in order to support multiple call
@@ -305,33 +314,40 @@ class TelephonyService {
         }
         const isOffDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.OFF
         const isAllDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.ALL;
-        
+        const isDefaultDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.DEFAULT;
+
         this._muteRingtone = isOffDevice;
-        
+
         if (isOffDevice) {
           this._outputDevices = [];
         } else if (isAllDevice) {
           this._outputDevices = 'all';
+        } else if (isDefaultDevice) {
+          this._outputDevices = null;
         } else {
           this._outputDevices = [
             (deviceInfo as MediaDeviceInfo).deviceId,
           ]
         }
-        
+
         if(!this._ringtone){
-          return;
-        }
-        
-        if (isOffDevice) {
-          this._ringtone.setOutputDevices([]);
-          this._ringtone.setMute(true);
           return;
         }
 
         this._ringtone.setMute(false);
-        
+
+        if (isOffDevice) {
+          this._ringtone.setOutputDevices([]);
+          return;
+        }
+
         if (isAllDevice) {
           this._ringtone.setOutputDevices('all');
+          return;
+        }
+
+        if (isDefaultDevice) {
+          this._ringtone.setOutputDevices(null);
           return;
         }
 
@@ -359,14 +375,17 @@ class TelephonyService {
         if (!deviceInfo) {
           this._keypadBeepPool.forEach(keypadBeep => {
             keypadBeep.setOutputDevices([]);
-            keypadBeep.setMute(true);
           });
           return;
         }
+        const isDefaultDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.DEFAULT;
 
-        this._keypadBeepPool.forEach(keypadBeep => {
-          keypadBeep.setMute(false);
-        });
+        if (isDefaultDevice) {
+          this._keypadBeepPool.forEach(keypadBeep => {
+            keypadBeep.setOutputDevices(null);
+          });
+          return;
+        }
 
         this._keypadBeepPool.forEach(keypadBeep => {
           keypadBeep.setOutputDevices([
@@ -445,6 +464,8 @@ class TelephonyService {
 
     // triggering a change of caller id list
     this._getCallerPhoneNumberList();
+
+    this._subscribeVoicemailNotification();
   };
 
   async makeRCPhoneCall(phoneNumber: string) {
@@ -593,7 +614,7 @@ class TelephonyService {
   switchCall = async (otherDeviceCall: ActiveCall) => {
     const myNumber = (await this._rcInfoService.getAccountMainNumber()) || '';
     const rv = await this._serverTelephonyService.switchCall(myNumber, otherDeviceCall);
-  
+
     switch (true) {
       case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
         ToastCallError.toastSwitchCallNoNetwork();
@@ -920,6 +941,9 @@ class TelephonyService {
     this._callStateDisposer && this._callStateDisposer();
     this._ringerDisposer && this._ringerDisposer();
     this._speakerDisposer && this._speakerDisposer();
+    this._voicemailService.removeEntityNotificationObserver(
+      this._voicemailNotificationObserver,
+    );
 
     this._stopRingtone();
     this._telephonyStore.hasManualSelected = false;
@@ -936,6 +960,7 @@ class TelephonyService {
     delete this._defaultCallerPhoneNumberDisposer;
     delete this._ringtone;
     delete this._keypadBeepPool;
+    delete this._voicemailNotificationObserver;
   };
 
   @action
@@ -1152,6 +1177,54 @@ class TelephonyService {
     const hasConfirmed = this._serverTelephonyService.isEmergencyAddrConfirmed();
     return lines.length > 0 && hasConfirmed;
   };
+
+  transfer = async (type: TRANSFER_TYPE, transferTo: string) => {
+    if (!this._callEntityId) {
+      return false;
+    }
+    try {
+      await this._serverTelephonyService.transfer(
+        this._callEntityId,
+        type,
+        transferTo
+      );
+    } catch (error) {
+      switch (true) {
+        case CALL_ACTION_ERROR_CODE.NOT_NETWORK === error: {
+          ToastCallError.toastNoNetwork();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+        }
+
+        default:
+          ToastCallError.toastTransferError();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+      }
+    }
+    return true;
+  };
+
+  private _subscribeVoicemailNotification = () => {
+    this._voicemailNotificationObserver = {
+      onEntitiesChanged:
+        isFirefox && isWindows
+          ? throttle(this._handleVoicemailEntityChanged, NOTIFY_THROTTLE_FACTOR)
+          : this._handleVoicemailEntityChanged,
+    };
+
+    this._voicemailService.addEntityNotificationObserver(
+      this._voicemailNotificationObserver,
+    );
+  }
+
+  private _handleVoicemailEntityChanged = (voicemails: Voicemail[]) => {
+    this._telephonyStore.updateVoicemailNotification(voicemails[0]);
+  }
 };
 
 export { TelephonyService };

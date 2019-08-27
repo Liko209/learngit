@@ -16,8 +16,8 @@ import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { SettingSection } from '../SettingSection';
 import { SETTING_PERFORMANCE_KEYS } from '../../performanceKeys';
 import { SettingPageViewProps, SettingPageProps } from './types';
-import { mainLogger } from 'foundation/log';
 import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`
@@ -50,17 +50,16 @@ class SettingPageViewComponent extends Component<Props> {
       key: SETTING_PERFORMANCE_KEYS.UI_SETTING_PAGE_RENDER,
     });
   }
-
+  componentDidMount() {
+    const { page } = this.props;
+    const tracking = page.dataTracking;
+    if (tracking) {
+      dataAnalysis.page(`Jup_Web/DT_settings_${tracking.name}`);
+    }
+  }
   render() {
     const { t, id, page } = this.props;
     const { width } = this._size;
-
-    if (!page) {
-      mainLogger.warn(
-        '[SettingPageViewComponent] trying to render a setting page without page info',
-      );
-      return null;
-    }
 
     return (
       <StyledSettingPage

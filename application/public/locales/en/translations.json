@@ -332,7 +332,8 @@
       "initializing": "Initializing...",
       "failure": "The message service failed to start.",
       "tryAgain": " Please try again later."
-    }
+    },
+    "postButton": "Post"
   },
   "item": {
     "activity": {
@@ -657,7 +658,10 @@
       "customForward": "Custom...",
       "flip": "Flip",
       "recentCall": "Recent calls",
-      "backToDialer": "Back to dialer"
+      "backToDialer": "Back to dialer",
+      "transfer": "Transfer",
+      "toVoiceMail": "To Voicemail",
+      "askFirst": "Ask first"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -721,9 +725,15 @@
         "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
         "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
         "callEnded": "Your call with {{displayName}} is ended."
-      }
+      },
+      "transferCall": {
+        "backendError": "Transfer failed",
+        "transferSuccess": "Call transferred"
+      },
+      "voicemailDeleted": "The voicemail was deleted."
     },
     "notification": {
+      "newVoicemail": "Left a voicemail",
       "incomingCall": "Incoming Call",
       "answer": "Answer",
       "unknownCaller": "Unknown Caller"
@@ -944,15 +954,7 @@
     "notificationAndSounds": {
       "title": "Notifications and sounds",
       "otherNotificationSettings": {
-        "title": "Other notification settings",
-        "newMessageBadgeCount": {
-          "options": {
-            "groups_and_mentions": "Direct messages and mentions only",
-            "all": "All new messages"
-          },
-          "description": "Choose how the app will count new messages in the app badge count",
-          "label": "New message badge count"
-        }
+        "title": "Other notification settings"
       },
       "sounds": {
         "directMessages": {
@@ -1060,6 +1062,30 @@
         }
       }
     },
+    "Messages": {
+      "conversationList": {
+        "title": "Conversation list",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        },
+        "maxConversations": {
+          "label": "Max conversations",
+          "description": "Choose the maximum amount of read conversations the app will display in your conversation rail (unreads will always display)"
+        }
+      },
+      "messageThread": {
+        "title": "Message thread",
+        "linkPreviews": {
+          "label": "Show link previews",
+          "description": "Disable content preview links"
+        }
+      }
+    },
     "sounds": "Sounds",
     "messages": "Messages",
     "meetings": "Meetings",
@@ -1121,7 +1147,8 @@
       "volume": {
         "label": "Volume control",
         "description": "Update the app volume"
-      }
+      },
+      "microphonePermissionBlocked": "To use this function, go to your browser settings to allow RingCentral to access microphone."
     },
     "useDefault": "Use system default",
     "speaker": "Speaker",
@@ -1156,11 +1183,7 @@
       "enablePermissionAction": "Enable notifications",
       "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
     },
-    "notificationBlockedDialog": {
-      "title": "Notifications not allowed",
-      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
-      "button": "OK"
-    }
+    "notificationPermissionBlocked": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications."
   },
   "feedback": {
     "name": "Feedback",

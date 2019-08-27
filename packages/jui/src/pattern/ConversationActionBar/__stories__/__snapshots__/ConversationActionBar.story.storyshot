@@ -47,6 +47,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
   color: #0684bd;
 }
 
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
 .c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -125,6 +129,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -167,6 +172,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -209,6 +215,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -251,6 +258,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseMove={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
