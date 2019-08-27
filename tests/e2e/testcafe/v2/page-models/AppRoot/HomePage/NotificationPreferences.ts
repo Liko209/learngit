@@ -22,55 +22,55 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
   }
 
   get muteAllCheckbox() {
-    return this.getSelectorByAutomationId('muteAll-checkbox');
+    return this.getSelectorByAutomationId('muted-checkbox').find('input[type="checkbox"]');
   }
 
   get desktopNotification() {
-    return this.getSelectorByAutomationId('settingItem-desktopNotification');
+    return this.getSelectorByAutomationId('settingItem-desktopNotifications');
   }
 
   get desktopNotificationLabel() {
-    return this.getSelectorByAutomationId('settingItemLabel-desktopNotification');
+    return this.getSelectorByAutomationId('settingItemLabel-desktopNotifications');
   }
 
   get desktopNotificationCheckbox() {
-    return this.getSelectorByAutomationId('desktopNotification-checkbox');
+    return this.getSelectorByAutomationId('desktopNotifications-checkbox').find('input[type="checkbox"]');
   }
 
   get soundNotification() {
-    return this.getSelectorByAutomationId('settingItem-soundNotification');
+    return this.getSelectorByAutomationId('settingItem-audioNotifications');
   }
 
   get soundNotificationLabel() {
-    return this.getSelectorByAutomationId('settingItemLabel-soundNotification');
+    return this.getSelectorByAutomationId('settingItemLabel-audioNotifications');
   }
 
   get soundNotificationSelectBox() {
-    return this.getSelectorByAutomationId('selectBox-soundNotification')
+    return this.getSelectorByAutomationId('selectBox-audioNotifications')
   }
 
   get mobileNotification() {
-    return this.getSelectorByAutomationId('settingItem-mobileNotification');
+    return this.getSelectorByAutomationId('settingItem-pushNotifications');
   }
 
   get mobileNotificationLabel() {
-    return this.getSelectorByAutomationId('settingItemLabel-mobileNotification');
+    return this.getSelectorByAutomationId('settingItemLabel-pushNotifications');
   }
 
   get mobileNotificationSelectBox() {
-    return this.getSelectorByAutomationId('selectBox-mobileNotification');
+    return this.getSelectorByAutomationId('selectBox-pushNotifications');
   }
 
   get emailNotification() {
-    return this.getSelectorByAutomationId('settingItem-emailNotification');
+    return this.getSelectorByAutomationId('settingItem-emailNotifications');
   }
 
   get emailNotificationLabel() {
-    return this.getSelectorByAutomationId('settingItemLabel-emailNotification');
+    return this.getSelectorByAutomationId('settingItemLabel-emailNotifications');
   }
 
   get emailNotificationSelectBox() {
-    return this.getSelectorByAutomationId('selectBox-emailNotification');
+    return this.getSelectorByAutomationId('selectBox-emailNotifications');
   }
 
   /** selectBoxItem */
@@ -127,12 +127,20 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
     await this.t.click(this.soundNotificationSelectBox);
   }
 
+  async clickMobileNotificationSelectBox() {
+    await this.t.click(this.mobileNotificationSelectBox);
+  }
+
   async clickEmailNotificationSelectBox() {
     await this.t.click(this.emailNotificationSelectBox);
   }
 
-  async clickSelectBoxItemByValue(value) {
+  async clickSelectBoxItemByValue(value: string) {
     await this.t.click(this.selectBoxItemByValue(value));
+  }
+
+  async clickSelectBoxItemByNth(n: number) {
+    await this.t.click(this.selectBoxItems.nth(n));
   }
 
   async clickSelectBoxItemByText(text: string) {
@@ -147,52 +155,37 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
   }
 
   async checkMuteAll() {
-    await this.toggleCheckBox(this.checkboxOf(this.muteAllCheckbox), true);
+    await this.toggleCheckBox(this.muteAllCheckbox, true);
   }
 
   async uncheckMuteAll() {
-    await this.toggleCheckBox(this.checkboxOf(this.muteAllCheckbox), false);
+    await this.toggleCheckBox(this.muteAllCheckbox, false);
   }
 
   async checkDesktopNotification() {
-    await this.toggleCheckBox(this.checkboxOf(this.desktopNotificationCheckbox), true);
+    await this.toggleCheckBox(this.desktopNotificationCheckbox, true);
   }
 
   async uncheckDesktopNotification() {
-    await this.toggleCheckBox(this.checkboxOf(this.desktopNotificationCheckbox), false);
+    await this.toggleCheckBox(this.desktopNotificationCheckbox, false);
   }
 
   /** expects */
   async expectDesktopNotificationEnabled() {
     await this.t.expect(this.desktopNotification.getAttribute('data-disabled')).eql('false');
-    await this.t.expect(this.desktopNotificationLabel.hasClass('disabled')).notOk();
-    await this.t.expect(this.desktopNotificationCheckbox.hasClass('disabled')).notOk();
   }
 
   async expectDesktopNotificationDisabled() {
     await this.t.expect(this.desktopNotification.getAttribute('data-disabled')).eql('true');
-    await this.t.expect(this.desktopNotificationLabel.hasClass('disabled')).ok();
-    await this.t.expect(this.desktopNotificationCheckbox.hasClass('disabled')).ok();
-  }
-
-  async expectDesktopNotificationSelectBoxValue(value: string) {
-    await this.t.expect(this.desktopNotificationCheckbox.getAttribute('data-test-automation-value')).eql(value);
-  }
-
-  async expectDesktopNotificationSelectBoxText(text: string) {
-    await this.t.expect(this.desktopNotificationCheckbox.textContent).eql(text);
   }
 
   async expectSoundNotificationEnabled() {
     await this.t.expect(this.soundNotification.getAttribute('data-disabled')).eql('false');
-    await this.t.expect(this.soundNotificationLabel.hasClass('disabled')).notOk();
-    await this.t.expect(this.soundNotificationSelectBox.hasClass('disabled')).notOk();
+
   }
 
   async expectSoundNotificationDisabled() {
     await this.t.expect(this.soundNotification.getAttribute('data-disabled')).eql('true');
-    await this.t.expect(this.soundNotificationLabel.hasClass('disabled')).ok();
-    await this.t.expect(this.soundNotificationSelectBox.hasClass('disabled')).ok();
   }
 
   async expectSoundNotificationSelectBoxValue(value: string) {
@@ -205,14 +198,10 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
 
   async expectMobileNotificationEnabled() {
     await this.t.expect(this.mobileNotification.getAttribute('data-disabled')).eql('false');
-    await this.t.expect(this.mobileNotificationLabel.hasClass('disabled')).notOk();
-    await this.t.expect(this.mobileNotificationSelectBox.hasClass('disabled')).notOk();
   }
 
   async expectMobileNotificationDisabled() {
     await this.t.expect(this.mobileNotification.getAttribute('data-disabled')).eql('true');
-    await this.t.expect(this.mobileNotificationLabel.hasClass('disabled')).ok();
-    await this.t.expect(this.mobileNotificationSelectBox.hasClass('disabled')).ok();
   }
 
   async expectMobileNotificationSelectBoxValue(value: string) {
@@ -225,14 +214,10 @@ export class NotificationPreferencesDialog extends BaseWebComponent {
 
   async expectEmailNotificationEnabled() {
     await this.t.expect(this.emailNotification.getAttribute('data-disabled')).eql('false');
-    await this.t.expect(this.emailNotificationLabel.hasClass('disabled')).notOk();
-    await this.t.expect(this.emailNotificationSelectBox.hasClass('disabled')).notOk();
   }
 
   async expectEmailNotificationDisabled() {
     await this.t.expect(this.emailNotification.getAttribute('data-disabled')).eql('true');
-    await this.t.expect(this.emailNotificationLabel.hasClass('disabled')).ok();
-    await this.t.expect(this.emailNotificationSelectBox.hasClass('disabled')).ok();
   }
 
   async expectEmailNotificationSelectBoxValue(value: string) {
