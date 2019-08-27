@@ -1172,3 +1172,114 @@ test.meta(<ITestMeta>{
     await t.expect(conversationPage.nthPostItem(0).images.getBoundingClientRectProperty('height')).eql(x);
   });
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2899', 'JPT-2898'],
+  maintainers: ['Alessia.Li'],
+  keywords: ['UploadFiles'],
+})('Check the "Post" button is disappear after user remove the attached files; Can send the uploaded files by clicking "Post" button', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).platform(loginUser).init();
+
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have an extension with 1 team', async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const messageInputArea = conversationPage.messageInputArea;
+  await h(t).withLog('And open the created team conversation', async () => {
+    await teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  const file1 = ['../../sources/1.txt'];
+  const file2 = ['../../sources/3.txt'];
+  const files = ['../../sources/1.txt', '../../sources/3.txt'];
+  const fileName1 = '1.txt';
+  const fileName2 = '3.txt';
+
+  await h(t).withLog('When I upload one file as attachment', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(file1);
+  });
+
+  await h(t).withLog('Then the file is in the the message attachment area', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName1).exists).ok();
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName1).visible).ok();
+  });
+
+  await h(t).withLog('And the "Post" button is displayed', async () => {
+    await t.expect(conversationPage.postButton.exists).ok();
+  });
+
+  await h(t).withLog('When remove the file from the conversation', async () => {
+    await conversationPage.removeFileOnMessageArea();
+  });
+
+  await h(t).withLog('Then the file is removed from the message attachment area', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName1).exists).notOk();
+  });
+
+  await h(t).withLog('And the "Post" button disappeared', async () => {
+    await t.expect(conversationPage.postButton.exists).notOk();
+  });
+
+  await h(t).withLog('When I upload two files as attachments', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(file1);
+    await conversationPage.uploadFilesToMessageAttachment(file2);
+  });
+
+  await h(t).withLog('Then the file is in the the message attachment ', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName1).exists).ok();
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName1).visible).ok();
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName2).exists).ok();
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName2).visible).ok();
+  });
+
+  await h(t).withLog('And the "Post" button is displayed', async () => {
+    await t.expect(conversationPage.postButton.exists).ok();
+  });
+
+  const message = `${uuid()} text message with attachments`;
+  await h(t).withLog(`When I send this message: "{message}" by clicking "Post" button`, async (step) => {
+    step.setMetadata('message', message);
+    await t.click(messageInputArea).typeText(messageInputArea, message);
+    await conversationPage.clickPostButton();
+    await conversationPage.lastPostItem.waitForPostToSend();
+  });
+
+  await h(t).withLog('Then I should find this message with files in post list', async () => {
+    await t.expect(conversationPage.lastPostItem.text.withText(H.escapePostText(message)).exists).ok();
+    await t.expect(conversationPage.lastPostItem.fileNames.count).eql(files.length);
+  }, true);
+
+  await h(t).withLog("And files' name and size in this post should be correct", async () => {
+    for (const file of files) {
+      await t.expect(conversationPage.lastPostItem.fileSizes.withText(fileSizeOf(file)).exists).ok();
+      await t.expect(conversationPage.lastPostItem.fileNames.withText(fileNameOf(file)).exists).ok();
+    }
+  });
+
+  const note = `shared ${files.length} files`;
+  await h(t).withLog(`And the post's notification should display: "{note}"`, async (step) => {
+    step.setMetadata('note', note);
+    await t.expect(conversationPage.fileNotification.withText(note).exists).ok();
+  });
+})

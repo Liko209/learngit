@@ -27,7 +27,7 @@ function useSound(soundName: Sounds) {
     );
     const media = soundNotification.create(soundName, {
       trackId: 'setting',
-      outputDevices: [],
+      outputDevices: null,
     });
     setState(media);
     return () => {

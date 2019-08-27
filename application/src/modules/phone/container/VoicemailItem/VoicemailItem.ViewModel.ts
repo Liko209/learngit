@@ -185,7 +185,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
         id: id.toString(),
         trackId: 'voicemail-track',
         src: ret,
-        outputDevices: [],
+        outputDevices: null,
       });
       this._phoneStore.updateAudio(id, {
         media,

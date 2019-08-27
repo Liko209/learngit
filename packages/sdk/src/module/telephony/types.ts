@@ -85,6 +85,7 @@ type TelephonyDataCollectionInfoConfigType = {
 enum RINGER_ADDITIONAL_TYPE {
   ALL = 'all',
   OFF = 'off',
+  DEFAULT = 'default',
 }
 type CallOptions = RTCCallOptions & {
   replaceName?: string;
