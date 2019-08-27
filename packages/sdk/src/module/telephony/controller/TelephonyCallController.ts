@@ -35,11 +35,7 @@ import {
   CallOptions,
   CallDelegate,
   TRANSFER_TYPE,
-  MAKE_CALL_ERROR_CODE,
 } from '../types';
-
-import { CALL_ACTION_ERROR_CODE, CallOptions } from '../types';
-import { TRANSFER_TYPE } from '../entity/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { isOnline } from '../constants';

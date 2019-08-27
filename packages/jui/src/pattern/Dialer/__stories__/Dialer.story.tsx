@@ -197,7 +197,7 @@ const KeypadActions = [
 const EndCall = () => (
   <JuiFabButton
     color="semantic.negative"
-    size="smallMedium"
+    size="mediumLarge"
     showShadow={false}
     tooltipPlacement="bottom"
     iconName="hand_up"

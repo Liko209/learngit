@@ -8,9 +8,8 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { VoiceMailViewProps } from './types';
-import { StyledActionText } from 'jui/pattern/Dialer';
+import { StyledActionText, JuiTransferAction } from 'jui/pattern/Dialer';
 import { JuiFabButton, JuiIconButton } from 'jui/components/Buttons';
-import { JuiTransferAction } from 'jui/pattern/Dialer';
 
 type Props = VoiceMailViewProps & WithTranslation;
 

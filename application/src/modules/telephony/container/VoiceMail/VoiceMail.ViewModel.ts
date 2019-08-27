@@ -10,7 +10,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { VoiceMailProps, VoiceMailViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
-import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/types';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,

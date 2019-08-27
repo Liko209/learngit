@@ -20,6 +20,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   CALL_ACTION_ERROR_CODE,
   RINGER_ADDITIONAL_TYPE,
+  TRANSFER_TYPE
 } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
@@ -68,7 +69,6 @@ import config from '@/config';
 import {
   CALL_STATE,
 } from 'sdk/module/telephony/entity';
-import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
