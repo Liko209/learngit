@@ -67,26 +67,6 @@ const StyledListTitle = styled.div`
   padding: ${spacing(5, 0, 3, 0)};
 `;
 
-function stateReducer(state: any, changes: any) {
-  // this prevents the highlightIndex changing closed when the user
-  // selects an item with a keyboard or mouse
-  switch (changes.type) {
-    case Downshift.stateChangeTypes.keyDownSpaceButton:
-    case Downshift.stateChangeTypes.keyDownEscape:
-    case Downshift.stateChangeTypes.blurInput:
-      return {};
-    case Downshift.stateChangeTypes.keyDownEnter:
-    case Downshift.stateChangeTypes.clickItem:
-      return {
-        ...changes,
-        isOpen: true,
-        highlightedIndex: state.highlightedIndex,
-      };
-    default:
-      return changes;
-  }
-}
-
 export function JuiGroupSearch<T extends SelectItem>({
   children,
   dialogTitle,
@@ -126,6 +106,43 @@ export function JuiGroupSearch<T extends SelectItem>({
       }
     },
     [onKeyDownEscape],
+  );
+
+  const stateReducer = useCallback(
+    function stateReducer(state: any, changes: any) {
+      // this prevents the highlightIndex changing closed when the user
+      // selects an item with a keyboard or mouse
+      switch (changes.type) {
+        case Downshift.stateChangeTypes.keyDownSpaceButton:
+        case Downshift.stateChangeTypes.keyDownEscape:
+        case Downshift.stateChangeTypes.blurInput:
+          return {};
+        case Downshift.stateChangeTypes.keyDownEnter:
+        case Downshift.stateChangeTypes.clickItem:
+          return {
+            ...changes,
+            isOpen: true,
+            highlightedIndex: state.highlightedIndex,
+          };
+        case Downshift.stateChangeTypes.keyDownArrowUp: {
+          if (state.highlightedIndex === 0) {
+            return {};
+          }
+          return changes;
+        }
+        case Downshift.stateChangeTypes.keyDownArrowDown: {
+          if (state.highlightedIndex === itemCount - 1) {
+            return {};
+          }
+          return changes;
+        }
+
+        default: {
+          return changes;
+        }
+      }
+    },
+    [itemCount],
   );
 
   return (

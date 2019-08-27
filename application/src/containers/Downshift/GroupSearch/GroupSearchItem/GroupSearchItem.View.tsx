@@ -24,7 +24,6 @@ class GroupSearchItemView extends React.Component<ViewProps> {
         {...rest}
         selected={isHighlighted}
         avatar={avatar || this._renderAvatar(itemId)}
-        size="large"
       >
         <JuiListItemText primary={group.displayName} />
       </JuiMenuItem>

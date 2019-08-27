@@ -14,6 +14,7 @@ type ViewProps = Props & {
   isHighlighted: boolean;
   avatar?: React.ReactElement;
   showEmail?: boolean;
+  size?: 'medium' | 'large';
 };
 
 export { Props, ViewProps };

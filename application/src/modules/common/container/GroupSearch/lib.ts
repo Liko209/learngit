@@ -18,18 +18,21 @@ export function mapGroupModelToItem(groupModel: GroupModel) {
   switch (groupModel.type) {
     case CONVERSATION_TYPES.TEAM:
     case CONVERSATION_TYPES.NORMAL_GROUP:
-      return { Item: GroupSearchItem, props: { itemId: groupModel.id } };
+      return {
+        Item: GroupSearchItem,
+        props: { itemId: groupModel.id, size: 'large' },
+      };
     case CONVERSATION_TYPES.ME:
       return {
         Item: ContactSearchItem,
-        props: { itemId: members[0], showEmail: false },
+        props: { itemId: members[0], showEmail: false, size: 'large' },
       };
     default: {
       const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const otherId = _.difference(members, [currentUserId])[0];
       return {
         Item: ContactSearchItem,
-        props: { itemId: otherId, showEmail: false },
+        props: { itemId: otherId, showEmail: false, size: 'large' },
       };
     }
   }
