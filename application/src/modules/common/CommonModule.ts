@@ -8,7 +8,7 @@ import { GLOBAL_HOT_KEYS } from '@/modules/app/globalKeys.config';
 import { globalKeysManager } from '@/modules/app/globalKeyManager';
 import { switchConversationHandler } from '@/modules/common/container/GroupSearch/switchConversationHandler';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
-import { inject } from 'inversify';
+import { inject } from 'framework/ioc';
 import { Jupiter } from 'framework/Jupiter';
 
 class CommonModule extends AbstractModule {

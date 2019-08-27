@@ -32,10 +32,10 @@ class FeaturesFlagsService {
       UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
     ));
 
-  canUseMessage = async () => {
+  async canUseMessage() {
     const features = await this.getSupportFeatureModules();
     return features.includes('Message');
-  };
+  }
 
   getSupportFeatureModules = async () => {
     const supportFeature = await this._getSupportFeature();
