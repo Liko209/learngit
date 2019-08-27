@@ -17,7 +17,6 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { catchError } from '@/common/catchError';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 const TRANSFER_NOW_ACTION = 'transferNow';
@@ -38,16 +37,13 @@ class TransferViewModel extends StoreViewModel<Props> {
     });
   };
 
-  @catchError.flash({
-    server: 'telephony.prompt.transferCall.backendError',
-  })
   transferCall = async () => {
     analyticsCollector.clickTransferActions(TRANSFER_NOW_ACTION);
-    await this._telephonyService.transfer(
+    const res = await this._telephonyService.transfer(
       TRANSFER_TYPE.BLIND_TRANSFER,
       this.transferNumber,
     );
-    this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
+    res && this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
   };
 
   @computed

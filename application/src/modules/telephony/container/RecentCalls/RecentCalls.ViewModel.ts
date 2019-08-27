@@ -88,11 +88,14 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
     }
 
     // analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
-    if (this.selectedCallItemIndex === focusIndex) {
+    if (this.selectedCallItemIndex === this.focusIndex) {
       this._telephonyStore.setCallItem('', NaN);
       return;
     }
-    return this._telephonyStore.setCallItem(this.phoneNumber || '', focusIndex || 0);
+    return this._telephonyStore.setCallItem(
+      this.phoneNumber || '',
+      this.focusIndex || 0,
+    );
   };
 
   @computed

@@ -9,6 +9,7 @@ import { Props, ViewProps } from './types';
 import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { computed } from 'mobx';
 
 class TransferViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
@@ -17,6 +18,11 @@ class TransferViewModel extends StoreViewModel<Props> implements ViewProps {
     analyticsCollector.directToTransferPage();
     this._telephonyStore.directToTransferPage();
   };
+
+  @computed
+  get disabledTransferAction() {
+    return this._telephonyStore.isRecording || this._telephonyStore.held;
+  }
 }
 
 export { TransferViewModel };

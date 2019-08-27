@@ -1170,7 +1170,7 @@ class TelephonyService {
 
   transfer = async (type: TRANSFER_TYPE, transferTo: string) => {
     if (!this._callEntityId) {
-      return;
+      return false;
     }
     try {
       await this._serverTelephonyService.transfer(
@@ -1179,8 +1179,24 @@ class TelephonyService {
         transferTo
       );
     } catch (error) {
-      ToastCallError.toastTransferError();
+      switch (true) {
+        case CALL_ACTION_ERROR_CODE.NOT_NETWORK === error: {
+          ToastCallError.toastNoNetwork();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+        }
+
+        default:
+          ToastCallError.toastTransferError();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+      }
     }
+    return true;
   };
 
   private _subscribeVoicemailNotification = () => {

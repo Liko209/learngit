@@ -42,13 +42,13 @@ class VoiceMailViewModel extends StoreViewModel<VoiceMailProps>
       : this._telephonyService.sendToVoiceMail();
   };
 
-  private _transferVoiceMail = () => {
+  private _transferVoiceMail = async () => {
     analyticsCollector.clickTransferActions(SEND_VOICEMAIL_ACTION);
-    this._telephonyService.transfer(
+    const res = await this._telephonyService.transfer(
       TRANSFER_TYPE.TO_VOICEMAIL,
       this.transferNumber,
     );
-    this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
+    res && this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
   };
 
   @computed
