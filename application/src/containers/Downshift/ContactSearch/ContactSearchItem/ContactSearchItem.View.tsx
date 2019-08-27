@@ -14,12 +14,18 @@ import { observer } from 'mobx-react';
 @observer
 class ContactSearchItemView extends React.Component<ViewProps> {
   render() {
-    const {
-      person, isHighlighted, itemId, ...rest
-    } = this.props;
+    const { person, isHighlighted, avatar, itemId, ...rest } = this.props;
     return (
-      <JuiMenuItem {...rest} selected={isHighlighted} avatar={<Avatar uid={itemId} />}>
-        <JuiListItemText primary={person.userDisplayName} secondary={person.email} />
+      <JuiMenuItem
+        {...rest}
+        selected={isHighlighted}
+        avatar={avatar || <Avatar uid={itemId} />}
+        size="large"
+      >
+        <JuiListItemText
+          primary={person.userDisplayName}
+          secondary={person.email}
+        />
       </JuiMenuItem>
     );
   }

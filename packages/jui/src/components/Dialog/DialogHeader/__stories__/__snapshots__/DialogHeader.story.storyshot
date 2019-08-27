@@ -88,9 +88,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -139,8 +137,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 }
 
 .c2 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -369,9 +366,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -420,8 +415,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 }
 
 .c2 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -829,9 +823,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -880,8 +872,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 }
 
 .c7 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;

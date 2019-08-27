@@ -25,13 +25,11 @@ export function UniversalAvatar({ id }: UniversalAvatarProps) {
       if (idType === TypeDictionary.TYPE_ID_PERSON) {
         profileMiniCard.show({
           anchor,
-          id,
           cardContent: <ProfileMiniCardPerson id={id} />,
         });
       } else {
         profileMiniCard.show({
           anchor,
-          id,
           cardContent: <ProfileMiniCardGroup id={id} />,
         });
       }

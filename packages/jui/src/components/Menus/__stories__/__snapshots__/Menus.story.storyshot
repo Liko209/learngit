@@ -92,7 +92,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
 }
 
 .c0.c0 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -102,10 +102,6 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c0.c0:focus {
@@ -200,7 +196,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
 }
 
 .c4.c4 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -210,10 +206,6 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c4.c4[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c4.c4:focus {
@@ -234,7 +226,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
 }
 
 .c1.c1 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -244,10 +236,6 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c1.c1[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c1.c1:focus {
@@ -405,7 +393,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
 }
 
 .c0.c0 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -415,10 +403,6 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c0.c0:focus {
@@ -480,7 +464,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
 
 exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuItem 1`] = `
 .c0.c0 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -490,10 +474,6 @@ exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuIt
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c0.c0:focus {

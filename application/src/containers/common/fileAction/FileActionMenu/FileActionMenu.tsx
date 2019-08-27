@@ -99,7 +99,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
             />
           )}
           <FileDeleteAction fileId={fileId} postId={postId} {...rest} />
-          <FileShareAction />
+          <FileShareAction fileId={fileId} postId={postId} />
         </JuiMenuList>
       </JuiPopperMenu>
     );

@@ -16,23 +16,19 @@ import { goToConversation } from '@/common/goToConversation';
 jest.mock('@/common/goToConversation');
 
 describe('switch conversation handler', () => {
-  beforeAll(() => {
-    jest.restoreAllMocks();
-  });
-
   @testable
   class openGroupSearch {
     @test('should open group search when called')
     t1() {
-      jest.spyOn(Dialog, 'simple').mockImplementation(jest.fn());
+      jest.spyOn(Dialog, 'simple').mockReturnValue({ dismiss: () => {} });
       switchConversationHandler();
       expect(Dialog.simple).toHaveBeenCalled();
     }
 
     @test('should not open GroupSearch when it has been opened')
     t2() {
+      jest.spyOn(Dialog, 'simple').mockReturnValue({ dismiss: () => {} });
       jest.spyOn(portalManager, 'isOpened').mockReturnValue(true);
-      jest.spyOn(Dialog, 'simple').mockImplementation(jest.fn());
       switchConversationHandler();
       expect(Dialog.simple).not.toHaveBeenCalled();
     }
@@ -40,14 +36,13 @@ describe('switch conversation handler', () => {
     @test(
       'should close dialog and call gotoConversation when call switchToConversation()',
     )
-    async t3(done) {
+    async t3() {
       const conversationId = 123;
       jest.spyOn(portalManager, 'dismissLast').mockImplementation(jest.fn());
       switchToConversation({ id: conversationId });
       expect(portalManager.dismissLast).toHaveBeenCalled();
       setTimeout(() => {
         expect(goToConversation).toHaveBeenCalled();
-        done();
       });
     }
   }

@@ -8,11 +8,8 @@ import React from 'react';
 import { JuiGroupSearch } from 'jui/pattern/GroupSearch';
 import { GroupSearchViewProps } from './types';
 import portalManager from '@/common/PortalManager';
-import { GroupSearchItem } from '@/containers/Downshift/GroupSearch/GroupSearchItem';
 import { withAutoSizer } from 'jui/components/AutoSizer';
 import { JuiVirtualizedList, IndexRange } from 'jui/components/VirtualizedList';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactSearchItem';
 import { GetItemPropsOptions } from 'downshift';
 import moize from 'moize';
 import { UniversalAvatar } from '@/containers/Avatar/UniversalAvatar';
@@ -36,7 +33,7 @@ class GroupSearchViewComponent extends React.Component<
     this.props.searchGroups('');
   }
 
-  onChange = (e: React.ChangeEvent<any>) => {
+  private _handleChange = (e: React.ChangeEvent<any>) => {
     this.setState({ searchKey: e.target.value });
     this.props.searchGroups(e.target.value);
   };
@@ -45,15 +42,15 @@ class GroupSearchViewComponent extends React.Component<
     this.props.onSelect(e);
   };
 
-  handleClose = () => {
+  private _handleClose = () => {
     portalManager.dismissLast();
   };
 
-  _renderAvatar = moize(id => {
+  private _renderAvatar = moize(id => {
     return <UniversalAvatar id={id} />;
   });
 
-  _renderItem = (
+  private _renderItem = (
     getItemProps: (options: GetItemPropsOptions<any>) => any,
     id: number,
     index: number,
@@ -64,19 +61,14 @@ class GroupSearchViewComponent extends React.Component<
       this.state.renderedRange.startIndex <= index &&
       index <= this.state.renderedRange.stopIndex
     ) {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON) ? (
-        <ContactSearchItem
-          itemId={id}
+      const { Item, props } = this.props.getItemComponent(id);
+      return (
+        <Item
+          {...props}
           key={index}
           isHighlighted={isHighlighted}
-          {...getItemProps({ index, item: { id } })}
-        />
-      ) : (
-        <GroupSearchItem
-          itemId={id}
-          key={index}
-          isHighlighted={isHighlighted}
-          avatar={this._renderAvatar(id)}
+          avatar={this._renderAvatar(props.itemId)}
+          data-test-automation-id="groupSearchItem"
           {...getItemProps({ index, item: { id } })}
         />
       );
@@ -85,35 +77,43 @@ class GroupSearchViewComponent extends React.Component<
     return { key: id || 0 };
   };
 
-  handleRenderedRangeChange = (renderedRange: IndexRange) => {
+  private _handleRenderedRangeChange = (renderedRange: IndexRange) => {
     this.setState({ renderedRange });
   };
 
-  handleClear = () => {
+  private _handleClear = () => {
     this.setState({ searchKey: '' });
     this.props.searchGroups('');
   };
 
+  private _itemToString = (props: { id: number }) => {
+    if (props) {
+      return props.id.toString();
+    }
+    return '';
+  };
+
   render() {
-    const { list, t ,dialogTitle, listTitle} = this.props;
+    const { list, t ,size, dialogTitle, listTitle} = this.props;
     return (
       <JuiGroupSearch
         dialogTitle={t(dialogTitle)}
         searchPlaceHolder={t('groupSearch.inputGhostText')}
         listTitle={t(listTitle)}
-        onClear={this.handleClear}
+        onClear={this._handleClear}
         searchKey={this.state.searchKey}
-        onInputChange={this.onChange}
+        onInputChange={this._handleChange}
         onSelectChange={this.onSelect}
         clearText={t('globalSearch.clear')}
         closeIconAriaLabel="close-icon"
         closeIconTooltip={t('common.dialog.close')}
-        onDialogClose={this.handleClose}
+        onDialogClose={this._handleClose}
         itemCount={this.props.size}
-        onKeyDownEscape={this.handleClose}
+        onKeyDownEscape={this._handleClose}
+        itemToString={this._itemToString}
       >
         {({ highlightedIndex, getItemProps }) => {
-          return list.length === 0 ? (
+          return size === 0 ? (
             <JuiEmptyScreen
               imgWidth={60}
               textVariant="subheading1"
@@ -121,12 +121,12 @@ class GroupSearchViewComponent extends React.Component<
             />
           ) : (
             <VirtualizedListWithAutoSizer
-              onRenderedRangeChange={this.handleRenderedRangeChange}
+              onRenderedRangeChange={this._handleRenderedRangeChange}
               fixedRowHeight={ITEM_HEIGHT}
               highlightedIndex={highlightedIndex || 0}
               overscan={2}
             >
-              {this.props.list.map((id, index) =>
+              {list.map((id, index) =>
                 this._renderItem(
                   getItemProps,
                   id,

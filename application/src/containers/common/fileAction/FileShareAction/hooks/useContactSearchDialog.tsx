@@ -8,9 +8,10 @@ const searchFunc = async (searchKey: string) => {
   const searchService = ServiceLoader.getInstance<SearchService>(
     ServiceConfig.SEARCH_SERVICE,
   );
-  const result = await searchService.doFuzzySearchPersonsAndGroups(searchKey, { excludeSelf: false, fetchAllIfSearchKeyEmpty: false }, {
+  const result = await searchService.doFuzzySearchPersonsAndGroups(searchKey, { excludeSelf: false, fetchAllIfSearchKeyEmpty: false, meFirst: true }, {
     myGroupsOnly: true,
     fetchAllIfSearchKeyEmpty: true,
+    meFirst: true,
   });
   return result
 }

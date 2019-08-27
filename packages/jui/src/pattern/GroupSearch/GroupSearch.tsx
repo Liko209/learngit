@@ -39,6 +39,10 @@ export type GroupSearchProps<T> = {
   onDialogClose: () => void;
   itemCount: number;
   onKeyDownEscape: () => void;
+  /**
+   * needed for downshift to transform item to string
+   */
+  itemToString: (item: T) => string;
 };
 
 const LIST_HEIGHT = '392px';
@@ -98,6 +102,7 @@ export function JuiGroupSearch<T extends SelectItem>({
   onDialogClose,
   itemCount,
   onKeyDownEscape,
+  itemToString,
 }: GroupSearchProps<T>) {
   const ref = useRef<DownshiftInterface<any>>(null);
   const _onInputChange = useCallback(
@@ -132,17 +137,21 @@ export function JuiGroupSearch<T extends SelectItem>({
       initialIsOpen
       itemCount={itemCount}
       ref={ref}
+      itemToString={itemToString}
     >
       {({ getInputProps, getItemProps, highlightedIndex, getRootProps }) => {
         return (
           <Container data-test-automation-id="groupSearch" {...getRootProps()}>
             <JuiDialogHeader>
-              <JuiDialogHeaderTitle>{dialogTitle}</JuiDialogHeaderTitle>
+              <JuiDialogHeaderTitle data-test-automation-id="groupSearchTitle">
+                {dialogTitle}
+              </JuiDialogHeaderTitle>
               <JuiDialogHeaderActions>
                 <JuiIconButton
                   tooltipTitle={closeIconTooltip}
                   ariaLabel={closeIconAriaLabel}
                   onClick={onDialogClose}
+                  data-test-automation-id="groupSearchCloseButton"
                 >
                   close
                 </JuiIconButton>
@@ -154,11 +163,14 @@ export function JuiGroupSearch<T extends SelectItem>({
                 clearText={clearText}
                 size="medium"
                 withCloseIcon={false}
-                InputProps={getInputProps({
-                  onKeyDown,
-                  placeholder: searchPlaceHolder,
-                  autoFocus: true,
-                })}
+                InputProps={{
+                  ...getInputProps({
+                    onKeyDown,
+                    placeholder: searchPlaceHolder,
+                    autoFocus: true,
+                  }),
+                  'data-test-automation-id': 'groupSearchInput',
+                }}
                 value={searchKey}
                 onChange={_onInputChange}
               />

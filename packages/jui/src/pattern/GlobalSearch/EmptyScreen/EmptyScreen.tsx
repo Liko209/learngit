@@ -8,13 +8,13 @@ import * as React from 'react';
 import styled from '../../../foundation/styled-components';
 import { width, spacing, typography, grey } from '../../../foundation/utils';
 import image from './img/no-result.svg';
-import { Theme } from 'jui/foundation/theme/theme';
+import { Theme } from '../../../foundation/theme/theme';
 
 type Variant = keyof Theme['typography'];
 type JuiEmptyScreenProps = {
   text: string;
   imgWidth?: number;
-  textVariant: Variant;
+  textVariant?: Variant;
 };
 
 const Wrapper = styled.div`

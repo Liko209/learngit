@@ -63,7 +63,6 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
       minRowHeight,
       highlightedIndex,
     } = this.props;
-    console.log('hightlight ', highlightedIndex);
 
     return (
       <StyledPaper square data-test-automation-id={automationId}>
