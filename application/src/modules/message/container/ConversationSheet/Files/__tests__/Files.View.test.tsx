@@ -16,12 +16,12 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 import { ImageCard } from 'jui/pattern/ConversationCard/Files/style';
 import { config } from '@/modules/viewer/module.config';
-import * as Viewer from '@/modules/viewer/container/Viewer';
+import * as Viewer from '@/modules/viewer/container/ViewerView';
 import { VIEWER_SERVICE } from '@/modules/viewer/interface';
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
-jest.mock('@/modules/viewer/container/Viewer');
+jest.mock('@/modules/viewer/container/ViewerView');
 describe('FilesView', () => {
   const mockEvent = {
     stopPropagation: () => undefined,

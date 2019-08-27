@@ -94,7 +94,7 @@ class TelephonyService {
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
   private _ringtone?: IMedia;
   private _muteRingtone: boolean = false;
-  private _outputDevices: string[] | 'all' = [];
+  private _outputDevices: string[] | 'all' | null = null;
   @ISoundNotification
   private _soundNotification: ISoundNotification;
 
@@ -320,6 +320,7 @@ class TelephonyService {
         }
         const isOffDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.OFF
         const isAllDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.ALL;
+        const isDefaultDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.DEFAULT;
 
         this._muteRingtone = isOffDevice;
 
@@ -327,6 +328,8 @@ class TelephonyService {
           this._outputDevices = [];
         } else if (isAllDevice) {
           this._outputDevices = 'all';
+        } else if (isDefaultDevice) {
+          this._outputDevices = null;
         } else {
           this._outputDevices = [
             (deviceInfo as MediaDeviceInfo).deviceId,
@@ -337,16 +340,20 @@ class TelephonyService {
           return;
         }
 
+        this._ringtone.setMute(false);
+
         if (isOffDevice) {
           this._ringtone.setOutputDevices([]);
-          this._ringtone.setMute(true);
           return;
         }
 
-        this._ringtone.setMute(false);
-
         if (isAllDevice) {
           this._ringtone.setOutputDevices('all');
+          return;
+        }
+
+        if (isDefaultDevice) {
+          this._ringtone.setOutputDevices(null);
           return;
         }
 
@@ -374,14 +381,17 @@ class TelephonyService {
         if (!deviceInfo) {
           this._keypadBeepPool.forEach(keypadBeep => {
             keypadBeep.setOutputDevices([]);
-            keypadBeep.setMute(true);
           });
           return;
         }
+        const isDefaultDevice = isObject(deviceInfo) && (deviceInfo as MediaDeviceInfo).deviceId === RINGER_ADDITIONAL_TYPE.DEFAULT;
 
-        this._keypadBeepPool.forEach(keypadBeep => {
-          keypadBeep.setMute(false);
-        });
+        if (isDefaultDevice) {
+          this._keypadBeepPool.forEach(keypadBeep => {
+            keypadBeep.setOutputDevices(null);
+          });
+          return;
+        }
 
         this._keypadBeepPool.forEach(keypadBeep => {
           keypadBeep.setOutputDevices([

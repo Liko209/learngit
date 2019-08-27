@@ -58,7 +58,7 @@ describe('MediaTrack', () => {
         expect(mediaTrack.loop).toBeFalsy();
         expect(mediaTrack.autoplay).toBeFalsy();
         expect(mediaTrack.currentTime).toEqual(0);
-        expect(mediaTrack.outputDevices).toEqual([]);
+        expect(mediaTrack.outputDevices).toEqual(null);
         expect(mediaTrack.masterVolume).toEqual(1);
         expect(mediaTrack.currentMediaEvent).toEqual([]);
         expect(mediaTrack.currentMediaUrl).toEqual('');
@@ -274,7 +274,7 @@ describe('MediaTrack', () => {
       const mediaTrack = new MediaTrack(
         Object.assign({}, trackBaseOpts, hasMediaOpts),
       );
-      expect(mediaTrack.outputDevices.length).toEqual(0);
+      expect(mediaTrack.outputDevices).toEqual(null);
 
       mediaTrack.setOutputDevices(devices);
       expect(mediaTrack.outputDevices).toEqual(devices);
@@ -313,6 +313,32 @@ describe('MediaTrack', () => {
       expect(mediaTrack.playing).toBeTruthy();
       expect(mediaTrack.sounds.length).toEqual(3);
     });
+    it('should remove all device sound and create normal sound when set output device null', () => {
+      const devices = ['device1', 'device2', 'device3'];
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts, {
+          outputDevices: devices,
+        }),
+      );
+      expect(mediaTrack.sounds.length).toEqual(3);
+      mediaTrack.setOutputDevices(null);
+      expect(mediaTrack.sounds.length).toEqual(1);
+    })
+    it('should continue play sound when track set output device null', () => {
+      const devices = ['device1', 'device2', 'device3'];
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts, {
+          outputDevices: devices,
+        }),
+      );
+      expect(mediaTrack.playing).toBeFalsy();
+      expect(mediaTrack.sounds.length).toEqual(3);
+      mediaTrack.play();
+      expect(mediaTrack.playing).toBeTruthy();
+      mediaTrack.setOutputDevices(null);
+      expect(mediaTrack.sounds.length).toEqual(1);
+      expect(mediaTrack.playing).toBeTruthy();
+    })
   });
 
   describe('media track set options', () => {

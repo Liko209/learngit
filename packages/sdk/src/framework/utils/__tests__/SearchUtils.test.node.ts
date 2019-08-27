@@ -19,6 +19,15 @@ describe('SearchUtils', () => {
     clearMocks();
   });
 
+  const formattedTerms = {
+    formattedKeys: [],
+    validFormattedKeys: [],
+  };
+
+  const formatFunc = (originalTerms: string[]) => {
+    return formattedTerms;
+  };
+
   describe('isFuzzyMatched', () => {
     it.each`
       srcText        | searchKey       | expectRes
@@ -212,7 +221,8 @@ describe('SearchUtils', () => {
           validFormattedKeys: [],
         },
       };
-      SearchUtils.formatTerms(terms);
+
+      SearchUtils.formatTerms(terms, formatFunc);
       expect(SearchUtils.getTermsFromText).not.toHaveBeenCalled();
     });
 
@@ -229,7 +239,7 @@ describe('SearchUtils', () => {
         },
       };
 
-      await SearchUtils.formatTerms(terms);
+      await SearchUtils.formatTerms(terms, formatFunc);
       expect(SearchUtils.getTermsFromText).toHaveBeenCalledWith(
         terms.searchKey.toLowerCase().trim(),
       );
@@ -274,8 +284,7 @@ describe('SearchUtils', () => {
   describe('genSearchKeyTerms', () => {
     it('should return correct terms', async () => {
       SearchUtils.formatTerms = jest.fn();
-      SearchUtils.formatTerms = jest.fn();
-      await SearchUtils.genSearchKeyTerms(undefined);
+      await SearchUtils.genSearchKeyTerms(undefined, formatFunc);
       expect(SearchUtils.formatTerms).toHaveBeenCalledWith(
         {
           searchKey: undefined,
@@ -286,22 +295,10 @@ describe('SearchUtils', () => {
             validFormattedKeys: [],
           },
         },
-        undefined,
+        formatFunc,
       );
 
-      const func = (originalTerms: string[]) => {
-        return {
-          formattedKeys: [
-            { original: 'abc', formatted: 'abc' },
-            { original: 'haa', formatted: 'haa' },
-          ],
-          validFormattedKeys: [
-            { original: 'abc', formatted: 'abc' },
-            { original: 'haa', formatted: 'haa' },
-          ],
-        };
-      };
-      await SearchUtils.genSearchKeyTerms('abc haa', func);
+      await SearchUtils.genSearchKeyTerms('abc haa', formatFunc);
       expect(SearchUtils.formatTerms).toHaveBeenCalledWith(
         {
           searchKey: 'abc haa',
@@ -312,7 +309,7 @@ describe('SearchUtils', () => {
             validFormattedKeys: [],
           },
         },
-        func,
+        formatFunc,
       );
     });
   });

@@ -146,7 +146,10 @@ export class NetworkRequestExecutor
 
   canRetry(response: IResponse) {
     if (response.status <= 0) {
-      return response.status === RESPONSE_STATUS_CODE.NETWORK_ERROR;
+      return (
+        this.request.ignoreNetwork &&
+        response.status === RESPONSE_STATUS_CODE.NETWORK_ERROR
+      );
     }
     return response.status >= 500;
   }

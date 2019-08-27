@@ -12,7 +12,7 @@ type MediaOptions = {
   volume?: number;
   loop?: boolean;
   autoplay?: boolean;
-  outputDevices?: MediaDeviceType[] | 'all';
+  outputDevices?: MediaDeviceType[] | 'all' | null;
 };
 
 type PlayOptions = {

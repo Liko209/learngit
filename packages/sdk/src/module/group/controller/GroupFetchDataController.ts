@@ -591,9 +591,15 @@ export class GroupFetchDataController {
         keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms);
 
         isMatched = true;
+
       } while (false);
 
       if (isMatched) {
+        let meGroupId: UndefinedAble<number>;
+        if (this.isMeGroup(group)) {
+          meGroupId = group.id;
+        }
+
         const mostRecentViewTime = option.recentFirst
           ? this._getMostRecentViewTime(
               group.id,
@@ -601,11 +607,13 @@ export class GroupFetchDataController {
               recentSearchedGroups!,
             )
           : 0;
+
+        const sortWeights = option.meFirst && meGroupId? [group.id === meGroupId? 1 : 0,  keyWeight, mostRecentViewTime] : [keyWeight, mostRecentViewTime];
         return {
           lowerCaseName,
           id: group.id,
           displayName: groupName,
-          sortWeights: [keyWeight, mostRecentViewTime],
+          sortWeights,
           entity: group,
         };
       }
@@ -755,13 +763,16 @@ export class GroupFetchDataController {
     return soundexResult;
   }
 
+  isMeGroup(group: Group): boolean {
+    return  (group.members && group.members.length === 1 && group.members[0] === this._currentUserId);
+  }
+
   getGroupName(group: Group) {
     if (group.is_team) {
       return group.set_abbreviation || '';
     }
 
-    if (group.members && group.members.length === 1 
-      && group.members[0] === this._currentUserId) {
+    if (this.isMeGroup(group)) {
         const personService = ServiceLoader.getInstance<PersonService>(
           ServiceConfig.PERSON_SERVICE,
         );
