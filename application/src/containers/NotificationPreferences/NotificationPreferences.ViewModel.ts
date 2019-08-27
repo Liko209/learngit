@@ -38,10 +38,9 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   constructor(props: Props) {
     super(props);
     this.init();
-    this.autorun(
-    () => {
-      Object.assign(this.currentValue, this._initialValue, this.value)
-    })
+    this.autorun(() => {
+      Object.assign(this.currentValue, this._initialValue, this.value);
+    });
   }
 
   init = async () => {
@@ -95,7 +94,7 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
   private _diffObject = (
     currObj: Partial<ConversationPreferenceModel>,
     prevObj: ConversationPreferenceModel,
-  ) => _.omitBy(currObj, (key, value) => prevObj[key] === value);
+  ) => _.omitBy(currObj, (value, key) => prevObj[key] === value);
 
   private get _changedValue() {
     return this._diffObject(this.value, this._initialValue);
@@ -124,8 +123,8 @@ class NotificationPreferencesViewModel extends StoreViewModel<Props> {
           this.props.groupId,
           this._changedValue,
         );
-        this.handleClose();
       }
+      this.handleClose();
     } finally {
       this.loading = false;
     }

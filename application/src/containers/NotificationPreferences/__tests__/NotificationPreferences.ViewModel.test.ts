@@ -5,22 +5,56 @@
  */
 
 import { NotificationPreferencesViewModel } from '../NotificationPreferences.ViewModel';
-import {
-  ERROR_CODES_NETWORK,
-  JNetworkError,
-  JServerError,
-  ERROR_CODES_SERVER,
-} from 'sdk/error';
+
 import { Notification } from '@/containers/Notification';
 import { mockService } from 'shield/sdk/mockService';
 import { GroupService } from 'sdk/module/group';
 import { testable, test } from 'shield';
+import { networkErrorFunc, serverErrorFunc } from 'shield/utils';
 import { ProfileService } from 'sdk/module/profile';
 
-const mockBackendError = new JServerError(ERROR_CODES_SERVER.GENERAL, '');
-const mockNetworkError = new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
-
 describe('NotificationPreferencesViewModel', () => {
+  @testable
+  class _hasChanged {
+    @mockService(GroupService, [
+      { method: 'getById', data: { is_team: true } },
+      { method: 'isIndividualGroup' },
+    ])
+    beforeEach() {}
+
+    @test('should be false when value is undefined')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+    ])
+    async t1() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      expect(notificationPreferencesVM._hasChanged).toBeFalsy();
+    }
+
+    @test('should be false when value is the same as initialValue')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+    ])
+    async t2() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      notificationPreferencesVM.value = { muted: true };
+      expect(notificationPreferencesVM._hasChanged).toBeFalsy();
+    }
+
+    @test('should be true when value is different from initialValue')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+    ])
+    async t3() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      notificationPreferencesVM.value = { muted: false };
+      expect(notificationPreferencesVM._hasChanged).toBeTruthy();
+    }
+  }
+
   @testable
   class handleSubmit {
     beforeEach() {
@@ -30,12 +64,14 @@ describe('NotificationPreferencesViewModel', () => {
     @test(
       'should display flash toast notification when updateConversationPreference failed for server issue [JPT-2838]',
     )
-    @mockService.reject(ProfileService, [
+    @mockService(ProfileService, [
       { method: 'getConversationPreference', data: { muted: true } },
-      { method: 'updateConversationPreference', data: mockBackendError },
+      { method: 'updateConversationPreference', data: serverErrorFunc },
     ])
     async t1() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
       notificationPreferencesVM.value.muted = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
@@ -43,17 +79,20 @@ describe('NotificationPreferencesViewModel', () => {
           message: 'setting.errorText.server',
         }),
       );
+      expect(notificationPreferencesVM.handleClose).not.toHaveBeenCalled();
     }
 
     @test(
       'should display flash toast notification when updateConversationPreference failed for network issue [JPT-2837]',
     )
-    @mockService.reject(ProfileService, [
+    @mockService(ProfileService, [
       { method: 'getConversationPreference', data: { muted: true } },
-      { method: 'updateConversationPreference', data: mockNetworkError },
+      { method: 'updateConversationPreference', data: networkErrorFunc },
     ])
     async t2() {
       const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
       notificationPreferencesVM.value.muted = false;
       await notificationPreferencesVM.handleSubmit();
       expect(Notification.flashToast).toHaveBeenCalledWith(
@@ -61,6 +100,35 @@ describe('NotificationPreferencesViewModel', () => {
           message: 'setting.errorText.network',
         }),
       );
+      expect(notificationPreferencesVM.handleClose).not.toHaveBeenCalled();
+    }
+
+    @test('should call handleClose when _hasChanged is true')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+      { method: 'updateConversationPreference' },
+    ])
+    async t3() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
+      notificationPreferencesVM.value.muted = false;
+      await notificationPreferencesVM.handleSubmit();
+      expect(notificationPreferencesVM.handleClose).toHaveBeenCalled();
+    }
+
+    @test('should call handleClose when _hasChanged is false')
+    @mockService(ProfileService, [
+      { method: 'getConversationPreference', data: { muted: true } },
+      { method: 'updateConversationPreference' },
+    ])
+    async t4() {
+      const notificationPreferencesVM = new NotificationPreferencesViewModel();
+      await notificationPreferencesVM.init();
+      jest.spyOn(notificationPreferencesVM, 'handleClose');
+      notificationPreferencesVM.value.muted = true;
+      await notificationPreferencesVM.handleSubmit();
+      expect(notificationPreferencesVM.handleClose).toHaveBeenCalled();
     }
   }
 
