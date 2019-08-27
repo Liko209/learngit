@@ -7,13 +7,19 @@ import { AbstractModule } from 'framework/AbstractModule';
 import { GLOBAL_HOT_KEYS } from '@/modules/app/globalKeys.config';
 import { globalKeysManager } from '@/modules/app/globalKeyManager';
 import { switchConversationHandler } from '@/modules/common/container/GroupSearch/switchConversationHandler';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
+import { inject } from 'inversify';
+import { Jupiter } from 'framework/Jupiter';
 
 class CommonModule extends AbstractModule {
+  @inject(Jupiter) private _jupiter: Jupiter;
   bootstrap() {
-    globalKeysManager.addGlobalKey(
-      GLOBAL_HOT_KEYS.SWITCH_CONVERSATION,
-      switchConversationHandler,
-    );
+    if (this._jupiter.get(FeaturesFlagsService).canUseMessage) {
+      globalKeysManager.addGlobalKey(
+        GLOBAL_HOT_KEYS.SWITCH_CONVERSATION,
+        switchConversationHandler,
+      );
+    }
   }
 }
 export { CommonModule };

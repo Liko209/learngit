@@ -26,12 +26,16 @@ class FeaturesFlagsService {
     });
   }
 
-  canUseTelephony = async () => (
+  canUseTelephony = async () =>
     (await this._rcInfoService.isVoipCallingAvailable()) &&
-      (await this._permissionService.hasPermission(
-        UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
-      ))
-  )
+    (await this._permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
+    ));
+
+  canUseMessage = async () => {
+    const features = await this.getSupportFeatureModules();
+    return features.includes('Message');
+  };
 
   getSupportFeatureModules = async () => {
     const supportFeature = await this._getSupportFeature();
@@ -44,7 +48,7 @@ class FeaturesFlagsService {
     });
 
     return _.uniq(featureModules);
-  }
+  };
 
   getModulesByFeatureName = (featureName: string) => {
     let modules: string[] = [];
@@ -53,7 +57,7 @@ class FeaturesFlagsService {
       modules = this._featureModuleMap.get(featureName);
     }
     return modules;
-  }
+  };
 
   private async _getSupportFeature() {
     const defaultSupportFeatures: string[] = [];

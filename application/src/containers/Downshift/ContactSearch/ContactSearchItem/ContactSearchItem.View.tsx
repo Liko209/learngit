@@ -14,7 +14,14 @@ import { observer } from 'mobx-react';
 @observer
 class ContactSearchItemView extends React.Component<ViewProps> {
   render() {
-    const { person, isHighlighted, avatar, itemId, ...rest } = this.props;
+    const {
+      person,
+      isHighlighted,
+      avatar,
+      itemId,
+      showEmail = true,
+      ...rest
+    } = this.props;
     return (
       <JuiMenuItem
         {...rest}
@@ -24,7 +31,7 @@ class ContactSearchItemView extends React.Component<ViewProps> {
       >
         <JuiListItemText
           primary={person.userDisplayName}
-          secondary={person.email}
+          secondary={showEmail && person.email}
         />
       </JuiMenuItem>
     );
