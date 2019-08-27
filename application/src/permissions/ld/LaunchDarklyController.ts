@@ -3,10 +3,10 @@
  * @Date: 2019-07-22 14:01:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractPermissionController } from '../AbstractPermissionController';
 import {
   IPermissionController,
   UserPermissionType,
+  AbstractPermissionController
 } from 'sdk/module/permission';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyFlagList';
 import { LaunchDarklyClient } from './LaunchDarklyClient';
