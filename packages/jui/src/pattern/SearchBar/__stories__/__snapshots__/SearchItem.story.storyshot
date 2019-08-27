@@ -20,6 +20,10 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
   opacity: 0.76;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c2 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;

@@ -35,10 +35,11 @@ describe('analyticsCollector', () => {
   });
   describe('sendPost', () => {
     it('should call track with correct parameters', () => {
-      analyticsCollector.sendPost('input box', 'text', 'team');
+      analyticsCollector.sendPost('button', 'input box', 'text', 'team');
       expect(dataAnalysis.track).toHaveBeenCalledWith(
         'Jup_Web/DT_msg_postSent',
         {
+          trigger: 'button',
           source: 'input box',
           postType: 'text',
           destination: 'team',

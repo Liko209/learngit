@@ -195,6 +195,11 @@ class JuiMessageInput extends React.PureComponent<Props> {
     }
   };
 
+  getContents = () => {
+    const current = this._inputRef.current;
+    return current && current.getEditor().getContents();
+  };
+
   focusEditor = () => {
     clearTimeout(this._timerId);
     this._timerId = setTimeout(() => {

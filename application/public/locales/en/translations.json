@@ -332,7 +332,8 @@
       "initializing": "Initializing...",
       "failure": "The message service failed to start.",
       "tryAgain": " Please try again later."
-    }
+    },
+    "postButton": "Post"
   },
   "item": {
     "activity": {
@@ -721,9 +722,11 @@
         "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
         "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
         "callEnded": "Your call with {{displayName}} is ended."
-      }
+      },
+      "voicemailDeleted": "The voicemail was deleted."
     },
     "notification": {
+      "newVoicemail": "Left a voicemail",
       "incomingCall": "Incoming Call",
       "answer": "Answer",
       "unknownCaller": "Unknown Caller"

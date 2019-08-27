@@ -211,6 +211,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
+    onMouseMove={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
