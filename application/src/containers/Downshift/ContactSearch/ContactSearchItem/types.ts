@@ -13,6 +13,7 @@ type ViewProps = Props & {
   person: PersonModel;
   isHighlighted: boolean;
   avatar?: React.ReactElement;
+  showEmail?: boolean;
 };
 
 export { Props, ViewProps };

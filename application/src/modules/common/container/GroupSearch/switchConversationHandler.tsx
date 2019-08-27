@@ -15,7 +15,7 @@ import { SearchService } from 'sdk/module/search';
 
 const DIALOG_KEY = 'GroupSearch';
 export function switchToConversation({ id }: { id: number }) {
-  portalManager.dismissLast();
+  portalManager.dismissAll();
   setTimeout(() => {
     analyticsCollector.goToConversation('switchConversationDialog');
     goToConversation({ conversationId: id });
@@ -49,6 +49,7 @@ export function switchConversationHandler() {
     {
       size: 'small',
       onClose: () => dismiss(),
+      disableBackdropClick: true,
     },
     DIALOG_KEY,
   );

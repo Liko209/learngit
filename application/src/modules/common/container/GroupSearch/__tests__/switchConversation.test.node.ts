@@ -34,13 +34,13 @@ describe('switch conversation handler', () => {
     }
 
     @test(
-      'should close dialog and call gotoConversation when call switchToConversation()',
+      'should close all dialog and call gotoConversation when call switchToConversation()',
     )
     async t3() {
       const conversationId = 123;
-      jest.spyOn(portalManager, 'dismissLast').mockImplementation(jest.fn());
+      jest.spyOn(portalManager, 'dismissAll').mockImplementation(jest.fn());
       switchToConversation({ id: conversationId });
-      expect(portalManager.dismissLast).toHaveBeenCalled();
+      expect(portalManager.dismissAll).toHaveBeenCalled();
       setTimeout(() => {
         expect(goToConversation).toHaveBeenCalled();
       });

@@ -22,12 +22,15 @@ export function mapGroupModelToItem(groupModel: GroupModel) {
     case CONVERSATION_TYPES.ME:
       return {
         Item: ContactSearchItem,
-        props: { itemId: members[0] },
+        props: { itemId: members[0], showEmail: false },
       };
     default: {
       const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const otherId = _.difference(members, [currentUserId])[0];
-      return { Item: ContactSearchItem, props: { itemId: otherId } };
+      return {
+        Item: ContactSearchItem,
+        props: { itemId: otherId, showEmail: false },
+      };
     }
   }
 }
