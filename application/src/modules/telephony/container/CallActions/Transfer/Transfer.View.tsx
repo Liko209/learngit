@@ -18,11 +18,12 @@ class TransferViewComponent extends React.Component<Props> {
     directToTransferPage();
   };
   render() {
-    const { t } = this.props;
+    const { t, disabledTransferAction } = this.props;
     return (
       <JuiMenuItem
         onClick={this.handleClick}
         data-test-automation-id="telephony-transfer-menu-item"
+        disabled={disabledTransferAction}
       >
         {t('telephony.action.transfer')}
       </JuiMenuItem>

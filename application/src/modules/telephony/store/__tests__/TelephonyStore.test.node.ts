@@ -321,16 +321,21 @@ describe('Telephony store', () => {
 
   it('directToTransferPage()', () => {
     const store = createStore();
+    store.inputString = '222';
     store.directToTransferPage();
     expect(store.isTransferPage).toBeTruthy();
+    expect(store.inputString).toBe('');
+    expect(store._dialerString).toBe('222');
   });
 
   it('backToDialerFromTransferPage()', () => {
     const store = createStore();
+    store._dialerString = '111';
     store.backToDialerFromTransferPage();
     expect(store.isTransferPage).toBeFalsy();
-    expect(store.isRecentCalls).toBeFalsy();
     expect(store.isValidInputStringNumber).toBeFalsy();
+    expect(store.inputString).toBe('111');
+    expect(store._dialerString).toBe('');
   });
 
   it('resetCallItem() [JPT-2764]', () => {
