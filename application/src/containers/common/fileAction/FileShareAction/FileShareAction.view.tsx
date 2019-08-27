@@ -8,21 +8,27 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import portalManager from '@/common/PortalManager';
 import { getConversationId } from '@/common/goToConversation';
 import { wrapHandleError, NOTIFICATION_TYPE } from '@/common/catchError';
-import { ERROR_CODES_SDK } from 'sdk/src/error';
+import { ERROR_CODES_SDK } from 'sdk/error';
 import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import i18nT from '@/utils/i18nT';
 import { dataAnalysis } from 'foundation/analysis';
+import { getEntity } from '@/store/utils';
+import { Item } from 'sdk/module/item/entity';
+import { ENTITY_NAME } from '@/store';
+import FileItemModel from '@/store/models/FileItem';
 
 interface Props {
   fileId: number,
-  postId?: number
+  postId?: number,
+  groupId?: number,
 }
 
 const share = <JuiIconography iconColor={['grey', '500']} iconSize="small">share</JuiIconography>
 const FileShareAction = (props: Props) => {
   const { t } = useTranslation();
-  const { fileId, postId } = props;
+  const { fileId, groupId } = props;
+  let postId = props.postId
   const shareToConversation = async (contact: { id: number }) => {
     portalManager.dismissLast()
     dataAnalysis.track('Jup_Web/DT_msg_shareFileToConversation', {
@@ -31,12 +37,18 @@ const FileShareAction = (props: Props) => {
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     );
-    if (!postId) {
+    const conversationId = await getConversationId(contact.id)
+    if (!conversationId || !groupId) {
       return
     }
-    const conversationId = await getConversationId(contact.id)
-    if (!conversationId) {
-      return
+    if (!postId) {
+      const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, fileId)
+      const post = await item.getDirectRelatedPostInGroup(groupId)
+      if (post && post.id) {
+        postId = post.id
+      } else {
+        return;
+      }
     }
     try {
       await postService.shareItem(postId, fileId, conversationId)

@@ -28,7 +28,7 @@ const SQUARE_SIZE = 36;
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
-    const { fileName, id, personName, modifiedTime, downloadUrl } = this.props;
+    const { fileName, id, personName, modifiedTime, downloadUrl, groupId } = this.props;
     return (
       <>
         <JuiListItemIcon>
@@ -48,7 +48,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
-              <FileActionMenu fileId={id} disablePortal />
+              <FileActionMenu fileId={id} disablePortal groupId={groupId} />
             </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}
