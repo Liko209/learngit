@@ -1265,8 +1265,20 @@ class AudioConference extends BaseWebComponent {
     return this.self.find('div').withText('Dial-in Number'); // todo i18n
   }
 
-  get phoneNumber() {
-    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+  get audioConferenceLink() {
+    return this.getSelectorByAutomationId('audioConferenceLink', this.self);
+  }
+
+  get joinAudioConferenceBtn() {
+    return this.getSelectorByAutomationId('joinConferenceBtn', this.self);
+  }
+
+  clickAudioConferenceLink() {
+    return this.t.click(this.audioConferenceLink);
+  }
+
+  clickJoinAudioConferenceBtn() {
+    return this.t.click(this.joinAudioConferenceBtn);
   }
 
   get globalNumber() {

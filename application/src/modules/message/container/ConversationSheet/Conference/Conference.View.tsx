@@ -100,6 +100,7 @@ class Conference extends React.Component<conferenceViewProps> {
             onClick={joinAudioConference}
             data-test-automation-id="joinConferenceBtn"
             variant="outlined"
+            size="medium"
             disabled={disabled}
           >
             join
