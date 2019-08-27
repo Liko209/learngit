@@ -41,10 +41,10 @@ describe('ContactFocHandler', () => {
     setUp();
   });
 
-  it('should call create/dispose foc', () => {
+  it('should call create/dispose foc', async () => {
     const handler = new ContactFocHandler();
     personService.getEntitySource.mockReturnValue(entitySourceController);
-    const foc = handler.getFoc();
+    const foc = await handler.getFoc();
     const spyOnDispose = jest.spyOn(foc, 'dispose');
     handler.dispose();
     expect(spyOnDispose).toHaveBeenCalled();

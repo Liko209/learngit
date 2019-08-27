@@ -9,7 +9,7 @@ fixture('Settings/SettingsPhoneChooseApp')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check Phone Settings', ['P2', 'Settings', 'SettingsPhoneChooseApp', 'V1.6', 'Knight.Shen']), async (t) => {
+test(formalName('Check Phone Settings', ['P2', 'Settings', 'SettingsPhoneChooseApp', 'V1.6', 'V1.7', 'Knight.Shen']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   const app = new AppRoot(t);
 
