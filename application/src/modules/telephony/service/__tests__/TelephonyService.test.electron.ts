@@ -47,7 +47,6 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
-import { ExpansionPanelActions } from '@material-ui/core';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -214,7 +213,7 @@ describe('TelephonyService', () => {
       userConfig: { getLastCalledNumber: jest.fn() },
       isShortNumber: jest.fn().mockReturnValue(true),
       isEmergencyAddrConfirmed: jest.fn(),
-      hasActiveDL: jest.fn().mockReturnValue(false),
+      hasActiveDL: jest.fn().mockReturnValue(true),
     };
 
     mockedVoicemailService = { removeEntityNotificationObserver: jest.fn() };
@@ -1195,15 +1194,8 @@ describe('TelephonyService', () => {
       mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(false);
       mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
       // @ts-ignore
-      Notification.flashToast = jest.fn();
-      // @ts-ignore
       telephonyService._makeCall = jest.fn();
       await telephonyService.joinAudioConference('1', '2');
-
-      setTimeout(() => {
-        // @ts-ignore
-        expect(Notification.flashToast).toHaveBeenCalled();
-      }, 0);
       // @ts-ignore
       expect(telephonyService._makeCall).not.toHaveBeenCalled();
     });

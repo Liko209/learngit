@@ -1195,9 +1195,11 @@ class TelephonyService {
       return;
     }
     const skipE911Check = await this.isShortNumber(phoneNumber);
-    return this.ensureCallPermission(() => {
+    const ret = await this.ensureCallPermission(() => {
       return this._makeCall(phoneNumber, { accessCode })
     }, { skipE911Check });
+
+    return ret;
   }
 
   private _subscribeVoicemailNotification = () => {
