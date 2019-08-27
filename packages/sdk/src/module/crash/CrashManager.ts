@@ -11,7 +11,7 @@ import { WhiteScreenHandler } from './WhiteScreenHandler';
 export class CrashManager {
   private static _instance: CrashManager;
   private _whiteScreenHandler: WhiteScreenHandler;
-  _onCrash: () => void;
+  onCrash: () => void;
 
   static getInstance() {
     if (!CrashManager._instance) {
@@ -21,21 +21,21 @@ export class CrashManager {
   }
 
   private constructor() {
-    this._onCrash = _.debounce(this.onCrash, CRASH_HANDLE_DEBOUNCE);
+    this.onCrash = _.debounce(this._onCrash, CRASH_HANDLE_DEBOUNCE);
     this._whiteScreenHandler = new WhiteScreenHandler();
   }
 
   monitor = () => {
-    window.addEventListener('error', this._onCrash);
-    window.addEventListener('unhandledrejection', this._onCrash);
+    window.addEventListener('error', this.onCrash);
+    window.addEventListener('unhandledrejection', this.onCrash);
   };
 
   dispose = () => {
-    window.removeEventListener('error', this._onCrash);
-    window.removeEventListener('unhandledrejection', this._onCrash);
+    window.removeEventListener('error', this.onCrash);
+    window.removeEventListener('unhandledrejection', this.onCrash);
   };
 
-  onCrash = () => {
+  private _onCrash = () => {
     if (
       Pal.instance.getWhiteScreenChecker() &&
       Pal.instance.getWhiteScreenChecker().isWhiteScreen()
