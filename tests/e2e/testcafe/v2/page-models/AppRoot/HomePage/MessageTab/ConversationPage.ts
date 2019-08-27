@@ -81,6 +81,14 @@ class HeaderMoreMenu extends BaseWebComponent {
     return await this.t.click(this.profile);
   }
 
+  get notificationPreferences() {
+    return this.getSelectorByAutomationId('notificationPreferencesEntry')
+  }
+
+  async  clickNotificationPreferences() {
+    await this.t.click(this.notificationPreferences);
+  }
+
   get adminActions() {
     return this.self.find('li').withText('Admin actions');
   }
@@ -446,6 +454,14 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.memberCountIcon);
   }
 
+  get muteButton() {
+    return this.getSelectorByAutomationIdUnderSelf('muted');
+  }
+
+  get mutedIcon() {
+    return this.getSelectorByIcon('mute', this.muteButton);
+  }
+  
   get messageInputArea() {
     this.warnFlakySelector();
     return this.self.child().find('.ql-editor');
@@ -728,7 +744,7 @@ export class PostItem extends BaseWebComponent {
   get postId() {
     return this.self.getAttribute('data-id');
   }
-  get linkPreviewCard(){
+  get linkPreviewCard() {
     return this.self.find('[data-test-automation-id="linkItemsWrapper"]');
   }
   get actionBarMoreMenu() {

@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ConversationList/CloseConversation.ts", "./fixtures/ConversationList/MarkDmAndTmFavorite.ts", "./fixtures/ConversationList/MarkFavoriteOrUnfavorite.ts", "./fixtures/ConversationList/UnreadToggle.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}
