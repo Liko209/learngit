@@ -144,6 +144,7 @@ class ContactSearchListViewComponent extends Component<
                       phoneNumberType={
                         phoneNumber && phoneNumber.phoneNumberType
                       }
+                      itemIndex={idx}
                     />
                   );
                 })}

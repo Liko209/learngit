@@ -17,8 +17,8 @@ interface ICallerPhoneNumber {
 
 export type CallerIdSelectorProps = {
   tooltipProps: Pick<
-  RuiTooltipProps,
-  Exclude<keyof RuiTooltipProps, 'children'>
+    RuiTooltipProps,
+    Exclude<keyof RuiTooltipProps, 'children'>
   >;
   callerIdProps: CallerIdSelectorProps;
 };
@@ -26,7 +26,7 @@ export type CallerIdSelectorProps = {
 export type GenericDialerPanelProps = {
   inputStringProps: 'forwardString' | 'inputString';
   onInputEnterKeyDown: (val: string) => void;
-  CallActionBtn: React.ComponentType<any>;
+  CallActionBtn: React.ComponentType<any>[] | React.ComponentType<any>;
   displayCallerIdSelector: boolean;
   onContactSelected: (phoneNumber: string) => void;
   onAfterMount?: () => void;
@@ -54,13 +54,14 @@ export type GenericDialerPanelViewProps = {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   shouldDisplayRecentCalls: boolean;
+  isTransferPage: boolean;
 } & Pick<
-GenericDialerPanelProps,
-| 'onContactSelected'
-| 'displayCallerIdSelector'
-| 'CallActionBtn'
-| 'Back'
-| 'inputStringProps'
+  GenericDialerPanelProps,
+  | 'onContactSelected'
+  | 'displayCallerIdSelector'
+  | 'CallActionBtn'
+  | 'Back'
+  | 'inputStringProps'
 >;
 
 export type GenericDialerPanelViewState = {

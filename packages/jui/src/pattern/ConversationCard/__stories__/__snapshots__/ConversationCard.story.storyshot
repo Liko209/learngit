@@ -48,6 +48,10 @@ Array [
   color: #0684bd;
 }
 
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
 .c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -444,6 +448,10 @@ Array [
 
 .c14.c14:active .icon {
   color: #0684bd;
+}
+
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
 }
 
 .c14.c14.c14.c14.disabled .icon {
