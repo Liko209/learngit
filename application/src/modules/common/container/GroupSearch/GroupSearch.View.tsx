@@ -67,7 +67,7 @@ class GroupSearchViewComponent extends React.Component<
           {...props}
           key={index}
           isHighlighted={isHighlighted}
-          avatar={this._renderAvatar(id)}
+          avatar={this._renderAvatar(props.itemId)}
           data-test-automation-id="groupSearchItem"
           {...getItemProps({ index, item: { id } })}
         />

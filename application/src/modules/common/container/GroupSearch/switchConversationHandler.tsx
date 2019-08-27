@@ -27,7 +27,6 @@ export function switchConversationHandler() {
     <GroupSearch onSelectChange={switchToConversation} />,
     {
       size: 'small',
-      enableEscapeClose: true,
       onClose: () => dismiss(),
     },
     DIALOG_KEY,
