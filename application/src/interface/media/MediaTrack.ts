@@ -13,7 +13,7 @@ type MediaTrackOptions = {
   loop?: boolean;
   autoplay?: boolean;
   currentTime?: number;
-  outputDevices?: MediaDeviceType[];
+  outputDevices?: MediaDeviceType[] | null;
   masterVolume?: number;
   mediaId?: string;
   mediaEvents?: MediaEvents[];

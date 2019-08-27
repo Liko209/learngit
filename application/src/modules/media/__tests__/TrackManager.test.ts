@@ -87,8 +87,8 @@ describe('TrackManager', () => {
       const track2 = trackManager.createTrack({
         id: 'track2',
       });
-      expect(track1.outputDevices).toEqual([]);
-      expect(track2.outputDevices).toEqual([]);
+      expect(track1.outputDevices).toEqual(null);
+      expect(track2.outputDevices).toEqual(null);
 
       trackManager.setAllTrackOutputDevices(newDevices);
       expect(track1.outputDevices).toEqual(newDevices);
