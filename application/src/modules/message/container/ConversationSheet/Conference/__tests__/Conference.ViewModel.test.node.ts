@@ -80,7 +80,15 @@ describe('Conference View Model', () => {
     expect(viewModel.phoneNumber).toEqual(phoneNumber);
   });
 
-  it.only('Should NOT show [Join] button and link if login user has no WebRTC permission', () => {
+  it('Should NOT show [Join] button and link if login user has no WebRTC permission', () => {
     expect(viewModel.canUseConference.cached.value).toEqual(false);
+  });
+
+  it('[Join] button and dial-in number are disabled when user is already making a call(inbound/outbound) [JPT-2897]', () => {
+    viewModel._telephonyStore.id = undefined;
+    expect(viewModel.disabled).toBeFalsy();
+
+    viewModel._telephonyStore.id = 1;
+    expect(viewModel.disabled).toBeTruthy();
   });
 });
