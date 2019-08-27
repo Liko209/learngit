@@ -1170,16 +1170,16 @@ class TelephonyService {
     this._telephonyStore.switchE911Status(true);
   };
 
-  needConfirmE911 = () => {
-    const hasActiveDL = this._serverTelephonyService.hasActiveDL();
+  needConfirmE911 = async () => {
+    const lines = await this._rcInfoService.getDigitalLines();
     const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed();
-    return hasActiveDL && !isEmergency;
+    return lines.length > 0 && !isEmergency;
   };
 
-  needE911Prompt = () => {
-    const hasActiveDL = this._serverTelephonyService.hasActiveDL();
+  needE911Prompt = async () => {
+    const lines = await this._rcInfoService.getDigitalLines();
     const hasConfirmed = this._serverTelephonyService.isEmergencyAddrConfirmed();
-    return hasActiveDL && hasConfirmed;
+    return lines.length > 0 && hasConfirmed;
   };
 
   startAudioConference = async (groupId: number) => {
