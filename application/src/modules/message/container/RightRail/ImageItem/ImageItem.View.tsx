@@ -13,7 +13,6 @@ import {
   JuiListItemSecondaryAction,
 } from 'jui/components/Lists';
 import { Thumbnail } from '../../Thumbnail';
-import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';
@@ -21,6 +20,8 @@ import { SecondaryText } from '../common/SecondaryText.View';
 import { postParser } from '@/common/postParser';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { container } from 'framework/ioc';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 
 const SQUARE_SIZE = 36;
 
@@ -29,7 +30,11 @@ type States = {
 };
 
 @observer
-class ImageItemView extends Component<ImageItemViewProps & ImageItemProps, States> {
+class ImageItemView extends Component<
+  ImageItemViewProps & ImageItemProps,
+  States
+> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
 
   constructor(props: ImageItemViewProps) {
@@ -54,33 +59,32 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps, State
   };
 
   private _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
-    if (this._thumbnailRef.current && this._thumbnailRef.current.vm.thumbsUrlWithSize) {
-      const { id, groupId } = this.props;
-      const target = event.currentTarget;
-      showImageViewer(groupId, id, {
-        thumbnailSrc: this._thumbnailRef.current.vm.thumbsUrlWithSize,
-        initialWidth: SQUARE_SIZE,
-        initialHeight: SQUARE_SIZE,
-        originElement: target,
-      });
-    }
+    if (!this._thumbnailRef.current.vm.thumbsUrlWithSize) return;
+    const { id, groupId } = this.props;
+    const target = event.currentTarget;
+    this._viewerService.showImageViewer(groupId, id, {
+      thumbnailSrc: this._thumbnailRef.current.vm.thumbsUrlWithSize,
+      initialWidth: SQUARE_SIZE,
+      initialHeight: SQUARE_SIZE,
+      originElement: target,
+    });
   };
 
   @computed
   private get _primary() {
     return (
       <FileName>
-          {postParser(this.props.file.name, {
-            fileName: true,
-          })}
+        {postParser(this.props.file.name, {
+          fileName: true,
+        })}
       </FileName>
     );
   }
 
   @computed
   private get _secondary() {
-    const {  personName, modifiedTime } = this.props;
-    return (<SecondaryText name={personName} time={modifiedTime} />);
+    const { personName, modifiedTime } = this.props;
+    return <SecondaryText name={personName} time={modifiedTime} />;
   }
 
   @computed
@@ -92,14 +96,10 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps, State
     );
   }
 
-
   @computed
   private get _itemText() {
     return (
-      <JuiListItemText
-        primary={this._primary}
-        secondary={this._secondary}
-      />
+      <JuiListItemText primary={this._primary} secondary={this._secondary} />
     );
   }
 
