@@ -14,7 +14,7 @@ import { mapGroupModelToItem } from './lib';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
-import { ContactSearchItem } from '@/modules/telephony/container/ContactSearchItem';
+import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactSearchItem';
 
 export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
   implements IGroupSearchViewModel {
@@ -33,7 +33,7 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
       case TypeDictionary.TYPE_ID_PERSON:
         {
           const personModel = new PersonModel(sortableModel.entity as Person)
-          return { Item: ContactSearchItem, props: { personId : personModel.id } }
+          return { Item: ContactSearchItem, props: { itemId : personModel.id } }
         };
       default:
         {

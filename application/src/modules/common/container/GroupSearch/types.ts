@@ -5,7 +5,8 @@
  */
 import { SortableModel } from "sdk/framework/model";
 
-import { Props } from '@/containers/Downshift/GroupSearch/GroupSearchItem/types';
+import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactSearchItem';
+import { GroupSearchItem } from '@/containers/Downshift/GroupSearch/GroupSearchItem';
 
 export type GroupSearchProps = {
   onSelect: (params: { id: number }) => void;
@@ -21,6 +22,6 @@ export interface IGroupSearchViewModel {
   list: number[];
   getItemComponent: (
     id: number,
-  ) => { Item: React.ComponentType<Props>; props: { itemId: number } };
+  ) => { Item: typeof ContactSearchItem| typeof GroupSearchItem; props: { itemId: number }};
 }
 export type GroupSearchViewProps = GroupSearchProps & IGroupSearchViewModel;

@@ -35,7 +35,7 @@ class FileItemView extends Component<FileItemViewProps> {
     this._viewerService.open({ groupId: this.props.groupId, itemId: id });
   };
   private _renderItem = () => {
-    const { file, personName, modifiedTime, downloadUrl, id } = this.props;
+    const { file, personName, modifiedTime, downloadUrl, id ,groupId} = this.props;
     const fileInfo = file || {};
     const { name, status, type } = fileInfo;
     const supportFileViewer = isSupportFileViewer(type);
@@ -62,7 +62,7 @@ class FileItemView extends Component<FileItemViewProps> {
             <JuiListItemSecondaryAction>
               <JuiButtonBar isStopPropagation overlapSize={-2}>
                 <Download url={downloadUrl} />
-                <FileActionMenu fileId={id} disablePortal />
+                <FileActionMenu fileId={id} disablePortal groupId={groupId} />
               </JuiButtonBar>
             </JuiListItemSecondaryAction>
           )}

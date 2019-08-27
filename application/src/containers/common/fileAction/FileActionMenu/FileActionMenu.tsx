@@ -22,7 +22,7 @@ type FileActionMenuProps = {
   disablePortal?: boolean;
   variant?: IconButtonVariant;
   showViewInPostAction?: boolean;
-  groupId?: number;
+  groupId: number;
   asyncOperationDecorator?: FunctionDecorator;
 } & FileDeleteActionProps &
   FileNameEditActionProps &
@@ -90,7 +90,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
         data-test-automation-id={'fileActionMenu'}
       >
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
-          <FileShareAction fileId={fileId} postId={postId} />
+          <FileShareAction fileId={fileId} postId={postId} groupId={groupId} />
           <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
           {showViewInPostAction && groupId && (
             <ViewInPostAction
