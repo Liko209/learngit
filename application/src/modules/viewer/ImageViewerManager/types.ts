@@ -19,7 +19,8 @@ type ImageViewerViewModuleProps = {
 };
 
 type SingleImageViewerViewModuleProps = {
-  personId: number;
+  titleName: string;
+  url: string;
   dismiss: () => void;
 };
 

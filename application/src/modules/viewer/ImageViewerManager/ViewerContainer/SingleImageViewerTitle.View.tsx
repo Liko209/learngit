@@ -26,10 +26,10 @@ class SingleImageViewerTitleViewComponent extends Component<Type> {
     const { displayName, t, closeViewer } = this.props;
     return (
       <>
-        <JuiDialogHeaderTitle data-test-automation-id={'viewerTitle'}>
+        <JuiDialogHeaderTitle data-test-automation-id="viewerTitle">
           {displayName}
         </JuiDialogHeaderTitle>
-        <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>
+        <JuiDialogHeaderActions data-test-automation-id="viewerActions">
           <JuiButtonBar overlapSize={2}>
             <JuiIconButton
               onClick={closeViewer}

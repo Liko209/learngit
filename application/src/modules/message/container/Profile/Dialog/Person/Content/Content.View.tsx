@@ -50,7 +50,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
   WithTranslation & ProfileDialogPersonContentViewProps
 > {
   @IMessageStore private _messageStore: IMessageStore;
-  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   private _avatarRef: React.RefObject<any> = React.createRef();
 
   renderPresence = () => {
@@ -170,17 +170,15 @@ class ProfileDialogPersonContentViewComponent extends Component<
   };
 
   handleAvatarClick = () => {
-    if (
-      this._avatarRef.current &&
-      this._avatarRef.current.vm &&
-      this._avatarRef.current.vm.shouldShowShortName
-    ) {
+    const avatarRef = this._avatarRef.current;
+    if (avatarRef && avatarRef.vm && avatarRef.vm.shouldShowShortName) {
       return;
     }
     dataAnalysis.track('Jup_Web/DT_profile_viewProfilePhotoFullScreen', {
       source: 'Profile',
     });
-    this._viewerService.showSingleImageViewer(this.props.id);
+    const { url, person } = this.props;
+    this._viewerService.showSingleImageViewer(url, person.displayName || '');
   };
 
   render() {

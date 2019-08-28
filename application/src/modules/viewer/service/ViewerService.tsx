@@ -74,10 +74,16 @@ class ViewerService implements IViewerService {
     );
   };
 
-  showSingleImageViewer = (personId: number) => {
+  showSingleImageViewer = (url: string, titleName: string) => {
     const { dismiss } = Dialog.simple(
       <ViewerView
-        dataModule={new SingleImageViewerViewModel(personId, () => dismiss())}
+        dataModule={
+          new SingleImageViewerViewModel({
+            url,
+            titleName,
+            dismiss: () => dismiss(),
+          })
+        }
         unNeedZoomButtonGroup
         TitleRenderer={SingleImageViewerTitleView}
         PageRenderer={ImageViewerView}
