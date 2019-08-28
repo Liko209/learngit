@@ -6,6 +6,7 @@ import { getLargeRawImageURL } from '@/common/getThumbnailURL';
 import { Translation } from 'react-i18next';
 import { isElectron } from '@/common/isUserAgent';
 import { Scene, trackViewInBrowserAction } from '../dataTrackings';
+import externalLinkSymbol from 'jui/assets/jupiter-icon/icon-external_link.svg';
 
 type ViewInBrowserTabActionProps = {
   item: FileItemModel;
@@ -21,9 +22,11 @@ function ViewInBrowserTabAction({ item, scene }: ViewInBrowserTabActionProps) {
 
   const icon = useMemo(
     () => (
-      <JuiIconography iconColor={['grey', '500']} iconSize="small">
-        edit
-      </JuiIconography>
+      <JuiIconography
+        symbol={externalLinkSymbol}
+        iconColor={['grey', '500']}
+        iconSize="small"
+      />
     ),
     [],
   );

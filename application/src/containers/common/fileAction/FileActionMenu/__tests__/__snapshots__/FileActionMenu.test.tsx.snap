@@ -14,14 +14,12 @@ exports[`FileActionMenu should not render viewInBrowser when item is not image 1
     <Container(FileNameEditActionViewComponent)
       fileId={1}
       fileName="filename"
-      item={Object {}}
       t={[Function]}
       variant="plain"
     />
     <Container(FileDeleteActionViewComponent)
       fileId={1}
       fileName="filename"
-      item={Object {}}
       t={[Function]}
       variant="plain"
     />
@@ -47,14 +45,12 @@ exports[`FileActionMenu should render correctly 1`] = `
     <Container(FileNameEditActionViewComponent)
       fileId={1}
       fileName="filename"
-      item={Object {}}
       t={[Function]}
       variant="plain"
     />
     <Container(FileDeleteActionViewComponent)
       fileId={1}
       fileName="filename"
-      item={Object {}}
       t={[Function]}
       variant="plain"
     />

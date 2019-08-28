@@ -12,9 +12,8 @@ exports[`ViewInBrowserTabAction should render correctly 1`] = `
         ]
       }
       iconSize="small"
-    >
-      edit
-    </ForwardRef(JuiIconography)>
+      symbol="icon-external_link.svg"
+    />
   }
   onClick={[Function]}
 >
