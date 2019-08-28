@@ -48,7 +48,11 @@ const WrappedListItem = React.memo(
   }: JuiListItemProps) => <MuiListItem {...rest} />,
 );
 
-const JuiListItem = styled<JuiListItemProps>(WrappedListItem)`
+const JuiListItem = styled<JuiListItemProps>(WrappedListItem).attrs(
+  ({ onClick }: JuiListItemProps) => ({
+    style: { cursor: onClick ? 'pointer' : 'default' },
+  }),
+)`
   && {
     padding: ${spacing(2)};
     width: ${props => (props.width ? width(props.width) : '100%')};

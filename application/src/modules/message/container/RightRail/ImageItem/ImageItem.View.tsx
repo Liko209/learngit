@@ -32,8 +32,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   private _hoverHelper = new HoverHelper();
   @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
 
-  private _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
-    if (!this._thumbnailRef.current.vm.thumbsUrlWithSize) return;
+  private _openImageViewer = (event: React.MouseEvent<HTMLElement>) => {
     const { id, groupId } = this.props;
     const target = event.currentTarget;
     this._viewerService.showImageViewer(groupId, id, {
@@ -43,6 +42,14 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
       originElement: target,
     });
   };
+
+  @computed
+  private get _handleImageClick() {
+    return this._thumbnailRef.current &&
+      this._thumbnailRef.current.vm.thumbsUrlWithSize
+      ? this._openImageViewer
+      : undefined;
+  }
 
   @computed
   private get _primary() {

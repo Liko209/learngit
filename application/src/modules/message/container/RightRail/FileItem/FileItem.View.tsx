@@ -33,14 +33,19 @@ class FileItemView extends Component<FileItemViewProps> {
   private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   private _hoverHelper = new HoverHelper();
 
-  private _handleFileClick = () => {
-    if (this._supportViewer && this._readyForViewer) {
+  private _openFileViewer = () => {
+    if (this._readyForViewer) {
       this._viewerService.open({
         groupId: this.props.groupId,
         itemId: this.props.file.id,
       });
     }
   };
+
+  @computed
+  private get _handleFileClick() {
+    return this._supportViewer ? this._openFileViewer : undefined;
+  }
 
   @computed
   private get _supportViewer() {
