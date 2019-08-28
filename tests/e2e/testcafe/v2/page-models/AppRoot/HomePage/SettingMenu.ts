@@ -86,4 +86,28 @@ export class SettingMenu extends BaseWebComponent {
     await this.t.click(this.dndUnblockButton);
   }
 
+  get shareStatusButton() {
+    return this.getSelectorByAutomationId('shareStatus');
+  }
+
+  async clickShareStatusButton() {
+    await this.t.click(this.shareStatusButton);
+  }
+
+  get clearStatusButton() {
+    return this.getSelectorByAutomationId('clearStatus');
+  }
+
+  async clickClearStatusButton() { 
+    await this.t.click(this.clearStatusButton);
+  }
+
+  get statusButton() {
+    return this.getSelectorByAutomationId('sharedStatus');
+  }
+
+  async clickStatusButton() {
+    await this.t.click(this.statusButton);
+  }
+
 }

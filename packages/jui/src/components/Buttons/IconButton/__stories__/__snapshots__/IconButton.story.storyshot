@@ -47,6 +47,10 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   color: #0684bd;
 }
 
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
 .c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -165,6 +169,10 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
 
 .c1.c1:active .icon {
   color: #0684bd;
+}
+
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
 }
 
 .c1.c1.c1.c1.disabled .icon {

@@ -74,6 +74,31 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
   };
 
   @computed
+  get selectedCallItemIndex() {
+    return this._telephonyStore.selectedCallItem.index;
+  }
+
+  @action
+  selectCallItem = (focusIndex?: number) => {
+    if (!this.dialerInputFocused) {
+      return;
+    }
+    if (typeof focusIndex === 'number') {
+      this.focusIndex = focusIndex;
+    }
+
+    // analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
+    if (this.selectedCallItemIndex === this.focusIndex) {
+      this._telephonyStore.setCallItem('', NaN);
+      return;
+    }
+    return this._telephonyStore.setCallItem(
+      this.phoneNumber || '',
+      this.focusIndex || 0,
+    );
+  };
+
+  @computed
   private get _callLogId() {
     return (
       this.listHandler &&
@@ -160,6 +185,11 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
   onErrorReload = () => {
     this.isError = false;
   };
+
+  @computed
+  get isTransferPage() {
+    return this._telephonyStore.isTransferPage;
+  }
 
   dispose = () => {
     this._recentCallLogsHandler && this._recentCallLogsHandler.dispose();

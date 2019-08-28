@@ -29,6 +29,9 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
       [CALL_ACTION.FLIP]: {
         shouldShowAction: !this.isIncomingPage,
       },
+      [CALL_ACTION.TRANSFER]: {
+        shouldShowAction: !this.isIncomingPage,
+      },
     };
   }
 

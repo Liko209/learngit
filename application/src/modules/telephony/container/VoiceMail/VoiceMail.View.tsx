@@ -8,7 +8,8 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { VoiceMailViewProps } from './types';
-import { JuiFabButton } from 'jui/components/Buttons';
+import { JuiFabButton, JuiIconButton } from 'jui/components/Buttons';
+import { JuiTransferAction } from 'jui/pattern/Dialer';
 
 type Props = VoiceMailViewProps & WithTranslation;
 
@@ -17,11 +18,26 @@ class VoiceMailViewComponent extends Component<Props> {
   private _handleVoiceMail = async () => {
     const { sendToVoiceMail } = this.props;
     sendToVoiceMail();
-  }
+  };
 
   render() {
-    const { t } = this.props;
-    return (
+    const { t, isTransferPage, transferNumber } = this.props;
+    return isTransferPage ? (
+      <JuiTransferAction>
+        <JuiIconButton
+          shouldPersistBg
+          size="large"
+          color="grey.900"
+          aria-label={t('telephony.sendToVoicemail')}
+          onClick={this._handleVoiceMail}
+          data-test-automation-id="telephony-voice-mail-btn"
+          disabled={!transferNumber}
+        >
+          voicemail
+        </JuiIconButton>
+        <span>{t('telephony.action.toVoiceMail')}</span>
+      </JuiTransferAction>
+    ) : (
       <JuiFabButton
         color="semantic.negative"
         size="midLarge"

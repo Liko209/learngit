@@ -136,6 +136,13 @@ class ToastCallError {
     ToastCallError.toast('telephony.prompt.switchCall.backendError', 3000);
     mainLogger.info("Call error: Unexpected backend error, can't switch call");
   }
+
+  static toastTransferError(): void {
+    ToastCallError.toast('telephony.prompt.transferCall.backendError', 3000);
+    mainLogger.info(
+      "Call error: Unexpected backend error, can't transfer call",
+    );
+  }
 }
 
 export { ToastCallError };
