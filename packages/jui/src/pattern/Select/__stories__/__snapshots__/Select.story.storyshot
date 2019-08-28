@@ -75,7 +75,7 @@ exports[`Storyshots Pattern/Select Select: Pattern/Select Select 1`] = `
 }
 
 .c5.c5 .c0 {
-  margin: 6px 0px;
+  margin: 8px 0px;
   max-width: 200px;
 }
 

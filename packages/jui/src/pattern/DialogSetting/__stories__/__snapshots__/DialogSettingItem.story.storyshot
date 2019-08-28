@@ -66,24 +66,21 @@ exports[`Storyshots Pattern/DialogSetting SettingItem: Pattern/DialogSetting Set
 }
 
 .c5.c5 .c6 {
-  margin: 6px 0px;
+  margin: 8px 0px;
   max-width: 200px;
 }
 
 .c5.c5 .c7 {
+  margin: -4px 0px;
   margin-right: -9px;
 }
 
-.c1.c1 {
-  margin-bottom: 4px;
-}
-
 .c1:last-child {
-  margin-bottom: 0;
+  margin-bottom: -2px;
 }
 
 .c0 {
-  padding: 6px 0px 0px 0px;
+  margin-top: -4px;
   margin-bottom: -6px;
 }
 

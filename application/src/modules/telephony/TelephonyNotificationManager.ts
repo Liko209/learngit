@@ -22,12 +22,13 @@ import {
 } from './interface/constant';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
-import { UserSettingEntity } from 'sdk/module/setting';
+import { UserSettingEntity, SettingService } from 'sdk/module/setting';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import { NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import { VoicemailNotification } from './store/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/src/module/serviceLoader';
 
 class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore)
@@ -51,17 +52,16 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
     super('telephony');
   }
 
-  @computed
-  get incomingCallsSettingItem() {
-    return getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
-      ENTITY_NAME.USER_SETTING,
+  async shouldShowNotification() {
+    const incomingCallsSettingItem = await ServiceLoader.getInstance<
+      SettingService
+    >(ServiceConfig.SETTING_SERVICE).getById<NOTIFICATION_OPTIONS>(
       SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
     );
-  }
-
-  @computed
-  get shouldShowNotification() {
-    return this.incomingCallsSettingItem.value === NOTIFICATION_OPTIONS.ON;
+    return (
+      incomingCallsSettingItem &&
+      incomingCallsSettingItem.value === NOTIFICATION_OPTIONS.ON
+    );
   }
 
   @computed
@@ -78,7 +78,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         isIncomingCall: this._telephonyStore.isIncomingCall,
         isContactMatched: this._telephonyStore.isContactMatched,
       }),
-      ({
+      async ({
         callState,
         isIncomingCall,
         isContactMatched,
@@ -88,7 +88,8 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         isContactMatched: boolean;
       }) => {
         if (isIncomingCall && isContactMatched) {
-          this.shouldShowNotification && this._showNotification();
+          const shouldShowNotification = await this.shouldShowNotification();
+          shouldShowNotification && this._showNotification();
         } else {
           const shouldCloseNotification = [
             CALL_STATE.IDLE,

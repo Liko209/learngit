@@ -8,7 +8,7 @@ import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
 
 const JuiSettingContainer = styled.div`
-  padding: ${spacing(1.5, 0, 0, 0)};
+  margin-top: ${spacing(-1)};
   margin-bottom: ${spacing(-1.5)};
 `;
 

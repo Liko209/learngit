@@ -166,15 +166,17 @@ class NotificationPreferencesComponent extends React.Component<
               label={t(`setting.conversationPreferences.${MUTED}`)}
               divider
             >
-              {currentValue[MUTED] !== undefined && <RuiCheckbox
-                color="primary"
-                checked={currentValue[MUTED]}
-                onChange={handleCheckboxChange(MUTED)}
-                data-test-automation-id={`${MUTED}-checkbox`}
-                inputProps={{
-                  'aria-labelledby': MUTED,
-                }}
-              />}
+              {currentValue[MUTED] !== undefined && (
+                <RuiCheckbox
+                  color="primary"
+                  checked={currentValue[MUTED]}
+                  onChange={handleCheckboxChange(MUTED)}
+                  data-test-automation-id={`${MUTED}-checkbox`}
+                  inputProps={{
+                    'aria-labelledby': MUTED,
+                  }}
+                />
+              )}
             </JuiSettingItem>
             <JuiSettingItem
               id={DESKTOP_NOTIFICATIONS}
@@ -183,16 +185,18 @@ class NotificationPreferencesComponent extends React.Component<
               )}
               disabled={isMuted}
             >
-              {currentValue[DESKTOP_NOTIFICATIONS] !== undefined && <RuiCheckbox
-                color="primary"
-                checked={currentValue[DESKTOP_NOTIFICATIONS]}
-                onChange={handleCheckboxChange(DESKTOP_NOTIFICATIONS)}
-                data-test-automation-id={`${DESKTOP_NOTIFICATIONS}-checkbox`}
-                inputProps={{
-                  'aria-labelledby': DESKTOP_NOTIFICATIONS,
-                }}
-                disabled={isMuted}
-              />}
+              {currentValue[DESKTOP_NOTIFICATIONS] !== undefined && (
+                <RuiCheckbox
+                  color="primary"
+                  checked={currentValue[DESKTOP_NOTIFICATIONS]}
+                  onChange={handleCheckboxChange(DESKTOP_NOTIFICATIONS)}
+                  data-test-automation-id={`${DESKTOP_NOTIFICATIONS}-checkbox`}
+                  inputProps={{
+                    'aria-labelledby': DESKTOP_NOTIFICATIONS,
+                  }}
+                  disabled={isMuted}
+                />
+              )}
             </JuiSettingItem>
             {this._renderSoundNotification()}
             {this._renderMobileNotification()}

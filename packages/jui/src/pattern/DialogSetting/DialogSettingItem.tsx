@@ -62,13 +62,14 @@ const RightWrap = styled.div`
     justify-content: flex-end;
     margin-left: ${spacing(4)};
     ${JuiSelect} {
-      margin: ${spacing(1.5, 0)};
+      margin: ${spacing(2, 0)};
       max-width: 200px;
       @media (max-width: 480px) {
         max-width: 168px;
       }
     }
     ${RuiCheckbox} {
+      margin: ${spacing(-1, 0)};
       margin-right: -9px;
     }
   }
@@ -76,16 +77,13 @@ const RightWrap = styled.div`
 
 const DividerWrap = styled<JuiDividerProps>(JuiDivider)`
   && {
-    margin: ${spacing(1.5, 0)};
+    margin: ${spacing(2, 0)};
   }
 `;
 
 const SettingItemWrap = styled.div`
-  && {
-    margin-bottom: ${spacing(1)};
-  }
   &:last-child {
-    margin-bottom: 0;
+    margin-bottom: ${spacing(-0.5)};
   }
 `;
 
