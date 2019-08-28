@@ -85,7 +85,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     const { downloadUrl, id } = this.props;
     return (
       <JuiListItem
-        data-test-automation-id="rightRail-file-item"
+        data-test-automation-id="rightRail-image-item"
         onClick={this._handleImageClick}
         {...this._hoverHelper.TriggerProps}
       >
