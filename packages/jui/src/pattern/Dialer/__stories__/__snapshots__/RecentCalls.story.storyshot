@@ -238,6 +238,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -246,6 +251,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
         <li
           className="MuiListItem-root c4 c5 MuiListItem-gutters"
           disabled={false}
+          style={
+            Object {
+              "cursor": "default",
+            }
+          }
         >
           <div
             className="MuiListItemAvatar-root c6"
@@ -317,6 +327,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -325,6 +340,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
         <li
           className="MuiListItem-root c4 c5 MuiListItem-gutters"
           disabled={false}
+          style={
+            Object {
+              "cursor": "default",
+            }
+          }
         >
           <div
             className="MuiListItemAvatar-root c6"
@@ -396,6 +416,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -404,6 +429,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
         <li
           className="MuiListItem-root c4 c5 MuiListItem-gutters"
           disabled={false}
+          style={
+            Object {
+              "cursor": "default",
+            }
+          }
         >
           <div
             className="MuiListItemAvatar-root c6"

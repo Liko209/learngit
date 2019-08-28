@@ -200,6 +200,11 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="button"
+    style={
+      Object {
+        "cursor": "default",
+      }
+    }
     tabIndex={0}
   >
     <div
@@ -431,6 +436,11 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="button"
+    style={
+      Object {
+        "cursor": "default",
+      }
+    }
     tabIndex={0}
   >
     <div
@@ -675,6 +685,11 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="button"
+    style={
+      Object {
+        "cursor": "default",
+      }
+    }
     tabIndex={0}
   >
     <div
@@ -859,6 +874,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -880,6 +900,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -901,6 +926,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -922,6 +952,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -943,6 +978,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -964,6 +1004,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -985,6 +1030,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -1006,6 +1056,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -1027,6 +1082,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item
@@ -1048,6 +1108,11 @@ exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListIt
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
         tabIndex={0}
       >
         list item

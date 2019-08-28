@@ -300,6 +300,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -373,6 +378,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -446,6 +456,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -519,6 +534,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -702,6 +722,11 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -747,6 +772,11 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -799,6 +829,11 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -827,6 +862,11 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
