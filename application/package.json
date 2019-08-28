@@ -52,7 +52,7 @@
     "react-idle-timer": "4.2.8",
     "ua-parser-js": "0.7.19",
     "@splitsoftware/splitio": "10.6.1",
-    "launchdarkly-js-client-sdk": "2.13.0"
+    "launchdarkly-js-client-sdk": "latest"
   },
   "devDependencies": {
     "@sentry/cli": "1.40.0",
