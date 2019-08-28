@@ -72,7 +72,7 @@ class TrackManager {
   }
 
   createTrack(options: MediaTrackOptions) {
-    return this._createTrack(options);
+    return this._getTrackById(options.id) || this._createTrack(options);
   }
 
   updateAllOutputDevices(devices: MediaDeviceType[]) {
@@ -178,16 +178,18 @@ class TrackManager {
       const oldPriorityItem = this._getPriorityItemByWeight(item.weight, oldPriorityPool);
       const oldPosition =  oldPriorityItem ? oldPriorityItem.position : currentPosition;
 
-      item.ids.forEach(id => {
-        const track = this._getTrackById(id);
-        if (track) {
-          const volume = currentPosition - oldPosition > 0 ?
-            this._globalVolume * track.volume * 0.7 ** currentPosition :
-            this._globalVolume * track.volume / 0.7 ** oldPosition;
+      if (currentPosition !== oldPosition) {
+        item.ids.forEach(id => {
+          const track = this._getTrackById(id);
+          if (track) {
+            const volume = currentPosition - oldPosition > 0 ?
+              this._globalVolume * track.volume * 0.7 ** currentPosition :
+              this._globalVolume * track.volume / 0.7 ** oldPosition;
 
-          this.setTrackVolume(id, volume);
-        }
-      });
+            this.setTrackVolume(id, volume);
+          }
+        });
+      }
     });
   }
 

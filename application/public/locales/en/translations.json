@@ -1173,7 +1173,7 @@
       "options": {
         "mobileNotifications": {
           "0": "Off",
-          "1": "Every Message",
+          "1": "Every message",
           "firstonly": "First new message only"
         }
       }

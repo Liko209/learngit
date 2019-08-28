@@ -16,6 +16,7 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
@@ -77,6 +78,7 @@ let mockedRCInfoService: any;
 let mockedSettingService: any;
 let mockedAccountService: any;
 let mockedVoicemailService: any;
+let mockedMissedCallService: any;
 
 function initializeCallerId() {
   try{
@@ -221,6 +223,8 @@ describe('TelephonyService', () => {
 
     mockedVoicemailService = { removeEntityNotificationObserver: jest.fn() };
 
+    mockedMissedCallService = { removeEntityNotificationObserver: jest.fn() };
+
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
@@ -245,6 +249,8 @@ describe('TelephonyService', () => {
           return mockedSettingService as SettingService;
         case ServiceConfig.VOICEMAIL_SERVICE:
           return mockedVoicemailService as VoicemailService;
+        case ServiceConfig.CALL_LOG_SERVICE:
+          return mockedMissedCallService as CallLogService;
         default:
           return {} as PersonService;
       }
