@@ -19,7 +19,7 @@ import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactS
 export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
   implements IGroupSearchViewModel {
   @observable list: number[] = [];
-  searchResult: SortableModel<Group|Person>[];
+  searchResult: SortableModel<Group | Person>[];
 
   @computed
   get size() {
@@ -30,22 +30,19 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
     const sortableModel = this.searchResult[this.list.indexOf(id)];
     const type = GlipTypeUtil.extractTypeId(id);
     switch (type) {
-      case TypeDictionary.TYPE_ID_PERSON:
-        {
-          const personModel = new PersonModel(sortableModel.entity as Person)
-          return { Item: ContactSearchItem, props: { itemId : personModel.id } }
-        };
-      default:
-        {
-          const groupModel = new GroupModel(sortableModel.entity as Group);
-          return mapGroupModelToItem(groupModel);
-        }
+      case TypeDictionary.TYPE_ID_PERSON: {
+        const personModel = new PersonModel(sortableModel.entity as Person);
+        return { Item: ContactSearchItem, props: { itemId: personModel.id } };
+      }
+      default: {
+        const groupModel = new GroupModel(sortableModel.entity as Group);
+        return mapGroupModelToItem(groupModel);
+      }
     }
-
   };
 
   searchGroups = async (searchKey: string) => {
-    const result = await this.props.searchFunc(searchKey)
+    const result = await this.props.searchFunc(searchKey);
     this.searchResult = result;
     this.list = result.map(item => item.id);
   };

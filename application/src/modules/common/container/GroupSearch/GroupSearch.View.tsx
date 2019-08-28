@@ -94,7 +94,7 @@ class GroupSearchViewComponent extends React.Component<
   };
 
   render() {
-    const { list, t ,size, dialogTitle, listTitle} = this.props;
+    const { list, t, size, dialogTitle, listTitle } = this.props;
     return (
       <JuiGroupSearch
         dialogTitle={t(dialogTitle)}

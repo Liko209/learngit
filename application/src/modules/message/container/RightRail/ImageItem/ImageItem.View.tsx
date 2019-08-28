@@ -30,7 +30,14 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
-    const { fileName, id, personName, modifiedTime, downloadUrl, groupId } = this.props;
+    const {
+      fileName,
+      id,
+      personName,
+      modifiedTime,
+      downloadUrl,
+      groupId,
+    } = this.props;
     return (
       <>
         <JuiListItemIcon>

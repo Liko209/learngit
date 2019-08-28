@@ -128,9 +128,14 @@ class FilesView extends React.Component<FilesViewProps> {
   handleFileMoreIconClicked = () => {};
 
   private _getActions = moize(
-    (downloadUrl: string, fileId: number, postId: number,groupId:number) => [
+    (downloadUrl: string, fileId: number, postId: number, groupId: number) => [
       <Download key="download-action" url={downloadUrl} />,
-      <FileActionMenu key="more-action" fileId={fileId} postId={postId} groupId={groupId} />,
+      <FileActionMenu
+        key="more-action"
+        fileId={fileId}
+        postId={postId}
+        groupId={groupId}
+      />,
     ],
   );
 
@@ -225,7 +230,7 @@ class FilesView extends React.Component<FilesViewProps> {
                     : undefined
                 }
                 disabled={supportFileViewer && !fileReadyForViewer}
-                Actions={this._getActions(downloadUrl, id, postId,groupId)}
+                Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
           })}
