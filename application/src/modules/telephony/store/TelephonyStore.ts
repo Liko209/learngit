@@ -446,7 +446,10 @@ class TelephonyStore {
       this.backToDialerFromTransferPage();
     }
 
-    this.isContactMatched = false;
+    if (this.phoneNumber !== '' || !this.isMultipleCall) {
+      this.isContactMatched = false;
+    }
+
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
   };
@@ -741,7 +744,7 @@ class TelephonyStore {
 
   @computed
   get phoneNumber() {
-    if (!this.call) return '';
+    if (!this.call) return undefined;
     const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
     return phoneNumber !== ANONYMOUS_NUM ? phoneNumber : '';
   }
