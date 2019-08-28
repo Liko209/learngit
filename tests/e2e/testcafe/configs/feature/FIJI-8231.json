@@ -5,6 +5,7 @@
           "./fixtures/ImageViewer/RightRail.ts",
           "./fixtures/RightRail"
         ],
+        "exclude_tags": ["JPT-726"],
         "browsers": [
             "selenium:chrome"
         ]
