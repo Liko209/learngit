@@ -62,4 +62,11 @@ describe('DialerViewModel', () => {
   it('should initialize with dialerId', async () => {
     expect(typeof dialerViewModel.dialerId).toBe('string');
   });
+
+  describe('isIncomingCall()', () => {
+    it('should isIncomingCall is false when in incoming page but isTransferPage is true', async () => {
+      dialerViewModel._telephonyStore.isTransferPage = true;
+      expect(dialerViewModel.isIncomingCall).toBeFalsy();
+    });
+  });
 });

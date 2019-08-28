@@ -21,14 +21,14 @@ import { Menu } from './Menu';
 type HeaderProps = {
   title: string;
   analysisSource: string;
-
+  colonsEmoji: string;
+  statusPlainText: string;
   type: CONVERSATION_TYPES;
   actions: {
     name: string;
     iconName: string;
     tooltip: string;
   }[];
-  customStatus: string | null;
   groupId: number;
 } & WithTranslation;
 
@@ -95,13 +95,14 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   render() {
-    const { title, customStatus } = this.props;
+    const { title, colonsEmoji, statusPlainText } = this.props;
 
     return (
       <JuiConversationPageHeader
         data-test-automation-id="conversation-page-header"
         title={title}
-        status={customStatus}
+        colonsEmoji={colonsEmoji}
+        statusPlainText={statusPlainText}
         SubTitle={this._SubTitle()}
         Right={this._ActionButtons}
       />

@@ -18,6 +18,7 @@ type SelectFile = {
 
 type AttachmentsProps = {
   id: number;
+  onPostClicked?: () => void;
   viewRef?: React.RefObject<any>;
   forceSaveDraft: boolean;
 };

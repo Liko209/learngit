@@ -23,13 +23,23 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
     }
   };
 
+  @action
+  backToDialerFromTransferPage = () =>
+    this._telephonyStore.backToDialerFromTransferPage();
+
   onAfterDialerOpen = () => this._telephonyService.onAfterDialerOpen();
 
   @computed
   get displayCallerIdSelector() {
     return (
       Array.isArray(this._telephonyStore.callerPhoneNumberList) &&
-      !!this._telephonyStore.callerPhoneNumberList.length
+      !!this._telephonyStore.callerPhoneNumberList.length &&
+      !this.isTransferPage
     );
+  }
+
+  @computed
+  get isTransferPage() {
+    return this._telephonyStore.isTransferPage;
   }
 }

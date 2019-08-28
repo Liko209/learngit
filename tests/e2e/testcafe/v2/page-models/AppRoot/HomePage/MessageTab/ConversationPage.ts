@@ -598,6 +598,14 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('attachment-list');
   }
 
+  get postButton() {
+    return this.getSelectorByAutomationId('post-button');
+  }
+
+  async clickPostButton() {
+    await this.t.click(this.postButton);
+  }
+
   get uploadFileInput() {
     return this.getSelectorByAutomationId('upload-file-input');
   }

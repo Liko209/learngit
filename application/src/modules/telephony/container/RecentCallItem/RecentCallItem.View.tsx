@@ -10,6 +10,7 @@ import {
   StyledContactWrapper,
   StyledCallLogStatusWrapper,
   StyledTime,
+  StyledSelectedItemIcon,
 } from 'jui/pattern/Dialer';
 import { ContactInfo } from '@/modules/phone/container/ContactInfo';
 import { ViewProps } from './types';
@@ -24,14 +25,17 @@ class RecentCallItemView extends React.Component<ViewProps> {
       isMissedCall,
       startTime,
       direction,
-      makeCall,
+      handleClick,
       selected,
+      isTransferPage,
+      itemIndex,
+      selectedCallItemIndex,
     } = this.props;
     const color: IconColor = isMissedCall
       ? ['accent', 'tomato']
       : ['grey', '600'];
     return (
-      <JuiRecentCallItem onClick={makeCall} tabIndex={0} selected={selected}>
+      <JuiRecentCallItem onClick={handleClick} tabIndex={0} selected={selected}>
         <StyledContactWrapper>
           <ContactInfo
             caller={caller}
@@ -40,12 +44,22 @@ class RecentCallItemView extends React.Component<ViewProps> {
             disableOpenMiniProfile
           />
         </StyledContactWrapper>
-        <StyledCallLogStatusWrapper>
-          <JuiIconography iconSize="medium" iconColor={color}>
-            {icon}
-          </JuiIconography>
-        </StyledCallLogStatusWrapper>
-        <StyledTime>{startTime}</StyledTime>
+        {isTransferPage && selectedCallItemIndex === itemIndex ? (
+          <StyledSelectedItemIcon>
+            <JuiIconography iconSize="medium">
+              item-list-selected
+            </JuiIconography>
+          </StyledSelectedItemIcon>
+        ) : (
+          <>
+            <StyledCallLogStatusWrapper>
+              <JuiIconography iconSize="medium" iconColor={color}>
+                {icon}
+              </JuiIconography>
+            </StyledCallLogStatusWrapper>
+            <StyledTime>{startTime}</StyledTime>
+          </>
+        )}
       </JuiRecentCallItem>
     );
   }

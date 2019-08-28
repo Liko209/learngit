@@ -14,6 +14,7 @@ import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
 import { i18nP } from '@/utils/i18nT';
+import { getColonsEmoji, getStatusPlainText } from '@/common/getSharedStatus';
 import _ from 'lodash';
 
 class HeaderViewModel extends AbstractViewModel {
@@ -83,6 +84,17 @@ class HeaderViewModel extends AbstractViewModel {
   get isFavorite() {
     const group = this.group;
     return group.isFavorite;
+  }
+  @computed
+  get colonsEmoji() {
+    const status = this.customStatus || '';
+    return getColonsEmoji(status);
+  }
+  @computed
+  get statusPlainText() {
+    const status = this.customStatus || '';
+
+    return getStatusPlainText(status);
   }
 }
 

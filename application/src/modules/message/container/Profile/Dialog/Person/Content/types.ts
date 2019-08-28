@@ -18,6 +18,8 @@ type ProfileDialogPersonContentViewProps = ProfileDialogPersonViewProps & {
   extensionNumbers: PhoneNumberInfo[];
   directNumbers: PhoneNumberInfo[];
   isMe: boolean;
+  colonsEmoji: string;
+  statusPlainText: string;
 };
 
 type FormGroupType = {

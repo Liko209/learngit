@@ -12,6 +12,7 @@ import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header, TopBarAvatar } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
+import { ShareStatusDialog } from './ShareStatusDialog';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { TelephonyPOC } from './TelephonyPOC'
@@ -168,6 +169,10 @@ export class HomePage extends BaseWebComponent {
 
   get addTeamMemberDialog() {
     return this.getComponent(AddTeamMembers);
+  }
+
+  get ShareStatusDialog() {
+    return this.getComponent(ShareStatusDialog);
   }
 
   get teamSettingDialog() {
