@@ -15,6 +15,7 @@ import history from '@/history';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { Notification } from '@/containers/Notification';
+import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
 
 jest.mock('@/utils/i18nT', () => ({
   i18nP: (key: string) => key,
@@ -139,9 +140,20 @@ describe('helpers', () => {
       expect(history.push).toHaveBeenCalled();
     });
 
-    it('Should flash toast when the voicemail has been deleted [JPT-2824]', () => {
+    it('Should flash toast when the voicemail not existed [JPT-2824]', () => {
       jest.spyOn(Notification, 'flashToast');
       jest.spyOn(utils, 'getEntity').mockImplementation(() => null);
+
+      onVoicemailNotificationClick();
+
+      expect(Notification.flashToast).toHaveBeenCalled();
+    });
+
+    it('Should flash toast when the voicemail not alive [JPT-2824]', () => {
+      jest.spyOn(Notification, 'flashToast');
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => ({
+        availability: MESSAGE_AVAILABILITY.DELETED,
+      }));
 
       onVoicemailNotificationClick();
 
