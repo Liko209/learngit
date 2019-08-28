@@ -83,12 +83,16 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   @computed
-  get umiHint() {
-    const groupState = getEntity<GroupState, GroupStateModel>(
+  private get _groupState() {
+    return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
-    return !!groupState.unreadCount;
+  }
+
+  @computed
+  get umiHint() {
+    return !!this._groupState.unreadCount;
   }
 
   @computed
