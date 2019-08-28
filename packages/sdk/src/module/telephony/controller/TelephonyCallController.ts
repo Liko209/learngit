@@ -30,6 +30,10 @@ import { IEntityCacheController } from 'sdk/framework/controller/interface/IEnti
 import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
 import { CALL_ACTION_ERROR_CODE, CallOptions } from '../types';
+import { TRANSFER_TYPE } from '../entity/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { isOnline } from '../constants';
 
 type CallActionResult = string | CALL_ACTION_ERROR_CODE;
 
@@ -42,6 +46,7 @@ interface IResultRejectFn {
 }
 
 const ACR_ON = -8;
+const NUMBER_PREFIX = '*0';
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _rtcCall: RTCCall;
@@ -116,7 +121,6 @@ class TelephonyCallController implements IRTCCallDelegate {
   }
 
   private _setSwitchCallInfo(callEntity: Call, callOption: CallOptions) {
-
     const isOutbound = callOption.callDirection === CALL_DIRECTION.OUTBOUND;
     if (isOutbound) {
       callEntity.to_num = callOption.replaceNumber || '';
@@ -301,6 +305,10 @@ class TelephonyCallController implements IRTCCallDelegate {
       case RTC_CALL_ACTION.PARK:
         res = this._handleParkAction(isSuccess, options);
         break;
+      case RTC_CALL_ACTION.TRANSFER:
+      case RTC_CALL_ACTION.WARM_TRANSFER:
+        res = options as CALL_ACTION_ERROR_CODE;
+        break;
       default:
         break;
     }
@@ -476,6 +484,40 @@ class TelephonyCallController implements IRTCCallDelegate {
       this._saveCallActionCallback(RTC_CALL_ACTION.FORWARD, resolve, reject);
       this._rtcCall.forward(phoneNumber);
     });
+  }
+
+  async transfer(type: TRANSFER_TYPE, transferTo: string) {
+    return new Promise(async (resolve, reject) => {
+      this._saveCallActionCallback(
+        type === TRANSFER_TYPE.WARM_TRANSFER
+          ? RTC_CALL_ACTION.WARM_TRANSFER
+          : RTC_CALL_ACTION.TRANSFER,
+        resolve,
+        reject,
+      );
+      if (!isOnline()) {
+        reject(CALL_ACTION_ERROR_CODE.NOT_NETWORK);
+      }
+      if (type === TRANSFER_TYPE.WARM_TRANSFER) {
+        this._rtcCall.warmTransfer(transferTo);
+      } else {
+        const phoneNumberService = ServiceLoader.getInstance<
+          PhoneNumberService
+        >(ServiceConfig.PHONE_NUMBER_SERVICE);
+        let number = await phoneNumberService.getE164PhoneNumber(transferTo);
+        if (!number) {
+          reject(CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER);
+        }
+        if (type === TRANSFER_TYPE.TO_VOICEMAIL) {
+          number = this._handleNumberToVoicemail(number);
+        }
+        this._rtcCall.transfer(number);
+      }
+    });
+  }
+
+  private _handleNumberToVoicemail(number: string) {
+    return `${NUMBER_PREFIX}${number}`;
   }
 
   ignore() {

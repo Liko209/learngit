@@ -12,6 +12,7 @@ import portalManager from '@/common/PortalManager';
 import { withRCMode } from '@/containers/withRCMode';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogFuncProps } from 'jui/components/Dialog';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type Props = OpenProfileDialogProps & OpenProfileDialogViewProps;
 
@@ -45,7 +46,16 @@ class OpenProfileDialogView extends Component<Props> {
   };
 
   private _onClickOpenProfileDialog = (event: MouseEvent<HTMLElement>) => {
-    const { beforeClick, id, afterClick, profileDialog } = this.props;
+    const {
+      beforeClick,
+      id,
+      afterClick,
+      profileDialog,
+      dataTrackingProps: { category, source },
+    } = this.props;
+
+    analyticsCollector.profileDialog(category, source);
+
     // needed for avoid Blinking when switching dialog
     const transitionDuration = portalManager.profilePortalIsShow
       ? {

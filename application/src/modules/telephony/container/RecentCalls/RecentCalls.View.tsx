@@ -36,12 +36,13 @@ class RecentCallsComponent extends React.Component<Props, State> {
   private _handleClickMap = {};
 
   private _handleClick = (index: number) => {
-    const { makeCall } = this.props;
+    const { makeCall, selectCallItem, isTransferPage } = this.props;
     if (this._handleClickMap[index]) {
       return this._handleClickMap[index];
     }
-    return (this._handleClickMap[index] = () => makeCall(index));
-  }
+    return (this._handleClickMap[index] = () =>
+      isTransferPage ? selectCallItem(index) : makeCall(index));
+  };
 
   state = {
     height: 0,
@@ -124,25 +125,31 @@ class RecentCallsComponent extends React.Component<Props, State> {
   };
 
   onEnter = () => {
-    const { makeCall } = this.props;
-    makeCall();
-  }
+    const { makeCall, selectCallItem, isTransferPage } = this.props;
+    isTransferPage ? selectCallItem() : makeCall();
+  };
 
   private _renderItems() {
     const { listHandler, focusIndex } = this.props;
     return listHandler
       ? listHandler.sortableListStore.getIds.map((itemId: string, index) => (
-            <RecentCallItem
-              id={itemId}
-              key={itemId}
-              selected={focusIndex === index}
-              handleClick={this._handleClick(index)}
-            />
-      ))
+          <RecentCallItem
+            id={itemId}
+            key={itemId}
+            selected={focusIndex === index}
+            onClick={this._handleClick(index)}
+            itemIndex={index}
+          />
+        ))
       : [];
   }
   render() {
-    const { listHandler, isError, onErrorReload } = this.props;
+    const {
+      listHandler,
+      isError,
+      onErrorReload,
+      displayCallerIdSelector,
+    } = this.props;
     const { height } = this.state;
 
     return (
@@ -152,8 +159,12 @@ class RecentCallsComponent extends React.Component<Props, State> {
           down: this.onKeyDown,
           enter: this.onEnter,
         }}
+        global
       >
-        <JuiRecentCalls ref={this._containerRef}>
+        <JuiRecentCalls
+          ref={this._containerRef}
+          addMargin={displayCallerIdSelector}
+        >
           {isError ? (
             <ErrorPage onReload={onErrorReload} height={height} />
           ) : (

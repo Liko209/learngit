@@ -41,6 +41,11 @@ type SettingPage = {
    * Sections in this page
    */
   sections: SettingSection[];
+
+  /**
+   * data in this page
+   */
+  dataTracking?: { name: string };
 };
 
 export { SettingPage };

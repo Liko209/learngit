@@ -7,31 +7,40 @@
 import { debounce } from 'lodash';
 import ReactDOM from 'react-dom';
 
+const ancestorMap = new WeakMap();
 function getScrollParent(element: HTMLElement, includeHidden: boolean = false) {
+  const storedVal = ancestorMap.get(element);
+  if (storedVal) {
+    return storedVal;
+  }
+  let parent: HTMLElement | null = element;
   let style = getComputedStyle(element);
   const excludeStaticParent = style.position === 'absolute';
   const overflowRegex = includeHidden
     ? /(auto|scroll|hidden)/
     : /(auto|scroll)/;
+  if (style.position !== 'fixed') {
+    while (parent) {
+      style = getComputedStyle(parent);
+      if (excludeStaticParent && style.position === 'static') {
+        continue;
+      }
 
-  if (style.position === 'fixed') return document.body;
-  let parent: HTMLElement | null = element;
-  do {
-    style = getComputedStyle(parent);
-    if (excludeStaticParent && style.position === 'static') {
-      continue;
+      const overflow = style.overflow || '';
+      const overflowX = style.overflowX || '';
+      const overflowY = style.overflowY || '';
+
+      if (overflowRegex.test(overflow + overflowX + overflowY)) {
+        break;
+      }
+      parent = parent.parentElement;
     }
-
-    const overflow = style.overflow || '';
-    const overflowX = style.overflowX || '';
-    const overflowY = style.overflowY || '';
-
-    if (overflowRegex.test(overflow + overflowX + overflowY)) {
-      return parent;
-    }
-  } while ((parent = parent.parentElement));
-
-  return document.body;
+  } else {
+    parent = document.body;
+  }
+  parent = parent || document.body;
+  ancestorMap.set(element, parent);
+  return parent;
 }
 
 function addScrollEndListener(

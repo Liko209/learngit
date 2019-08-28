@@ -42,6 +42,7 @@ const setup = () => {
       setAuthfree: jest.fn().mockReturnThis(),
       setRequestConfig: jest.fn().mockReturnThis(),
       setRetryCount: jest.fn().mockReturnThis(),
+      setIgnoreNetwork: jest.fn().mockReturnThis(),
       setPriority: jest.fn().mockReturnThis(),
       setHAPriority: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),

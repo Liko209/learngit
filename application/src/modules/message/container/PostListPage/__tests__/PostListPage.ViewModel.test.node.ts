@@ -20,7 +20,7 @@ describe('PostListPage.ViewModel', () => {
       jest.clearAllMocks();
     });
     it('should provide ids list in correct order for mentions, show these posts in the order of recency in mentions page [JPT-392]', () => {
-      const sourceArr = [4, 5, 3, 1, 2, 7, 6];
+      const sourceArr = [1, 2, 3, 4, 5, 6, 7];
       jest
         .spyOn(storeManager, 'getEntityMapStore')
         .mockImplementation(

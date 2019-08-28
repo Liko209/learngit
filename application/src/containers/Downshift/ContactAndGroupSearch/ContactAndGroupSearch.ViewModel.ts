@@ -15,9 +15,11 @@ import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactAndGroupSearchProps, SelectedMember } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { FuzzySearchPersonOptions } from 'sdk/module/search/entity';
+import { FuzzySearchContactOptions } from 'sdk/module/search/entity';
 
-class ContactAndGroupSearchViewModel extends StoreViewModel<ContactAndGroupSearchProps> {
+class ContactAndGroupSearchViewModel extends StoreViewModel<
+  ContactAndGroupSearchProps
+> {
   @observable existMembers: number[] = [];
   @observable suggestions: SelectedMember[] = [];
   @observable groupMembers: number[] = [];
@@ -61,17 +63,26 @@ class ContactAndGroupSearchViewModel extends StoreViewModel<ContactAndGroupSearc
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const params: FuzzySearchPersonOptions = {
-      searchKey: query,
+    const contactSearchOptions: FuzzySearchContactOptions = {
       excludeSelf: this.props.isExcludeMe,
       recentFirst: true,
     };
+
+    const groupSearchOptions = {
+      myGroupsOnly: true,
+      recentFirst: true,
+    };
+
     if (this.groupMembers.length) {
-      Object.assign(params, { arrangeIds: this.groupMembers });
+      Object.assign(contactSearchOptions, { arrangeIds: this.groupMembers });
     }
     const {
       sortableModels,
-    } = await searchService.doFuzzySearchPersonsAndGroups(params);
+    } = await searchService.doFuzzySearchPersonsAndGroups(
+      query,
+      contactSearchOptions,
+      groupSearchOptions,
+    );
     const { hasMembers } = this.props;
     const existMembers =
       hasMembers && hasMembers.length

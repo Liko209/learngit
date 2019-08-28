@@ -14,6 +14,8 @@ import { ItemService } from 'sdk/module/item';
 import { LinkItemModel, LinkItemProps } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { UserSettingEntity, SettingEntityIds } from 'sdk/module/setting';
+import SettingModel from '@/store/models/UserSetting';
 
 class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
   private _itemService = ServiceLoader.getInstance<ItemService>(
@@ -23,6 +25,14 @@ class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
   @computed
   private get _ids() {
     return this.props.ids;
+  }
+
+  @computed
+  get isLinkPreviewDisabled() {
+    return !getEntity<UserSettingEntity, SettingModel>(
+      ENTITY_NAME.USER_SETTING,
+      SettingEntityIds.Link_Preview,
+    ).value;
   }
 
   @computed
@@ -42,6 +52,7 @@ class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
     });
     return items;
   }
+
   @action
   onLinkItemClose = async (itemId: number = 0) => {
     await this._itemService.doNotRenderItem(itemId, 'link');

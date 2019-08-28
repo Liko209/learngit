@@ -325,14 +325,14 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
 `;
 
 exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/ButtonBar Plain Icon Button Bar 1`] = `
-.c3 {
+.c2 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c4 {
+.c3 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -354,8 +354,8 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   border-radius: 0;
 }
 
-.c1.c1 .c2,
-.c1.c1 .c2 svg {
+.c1.c1 .icon,
+.c1.c1 .icon svg {
   font-size: 20px;
 }
 
@@ -363,15 +363,19 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   background-color: transparent;
 }
 
-.c1.c1:hover .c2 {
+.c1.c1:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c1.c1:active .c2 {
+.c1.c1:active .icon {
   color: #9e9e9e;
 }
 
-.c1.c1.c1.c1.disabled .c2 {
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
+.c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -425,8 +429,9 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
       size="medium"
     >
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -435,14 +440,14 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="plain"
       >
@@ -450,11 +455,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -466,8 +470,9 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         </span>
       </button>
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -476,14 +481,14 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="plain"
       >
@@ -491,11 +496,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -507,8 +511,9 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         </span>
       </button>
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -517,14 +522,14 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="plain"
       >
@@ -532,11 +537,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -548,8 +552,9 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         </span>
       </button>
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -558,14 +563,14 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="plain"
       >
@@ -573,11 +578,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -594,14 +598,14 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
 `;
 
 exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/ButtonBar Round Icon Button Bar 1`] = `
-.c3 {
+.c2 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c4 {
+.c3 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -610,23 +614,6 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c5.c5 .c2,
-.c5.c5 .c2 svg {
-  font-size: 20px;
-}
-
-.c5.c5:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c5.c5:active .c2 {
-  color: #9e9e9e;
-}
-
-.c5.c5.c5.c5.disabled .c2 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c1.c1 {
@@ -640,8 +627,8 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   border-radius: 50%;
 }
 
-.c1.c1 .c2,
-.c1.c1 .c2 svg {
+.c1.c1 .icon,
+.c1.c1 .icon svg {
   font-size: 20px;
 }
 
@@ -649,15 +636,19 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   background-color: rgba(158,158,158,0.12);
 }
 
-.c1.c1:hover .c2 {
+.c1.c1:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c1.c1:active .c2 {
+.c1.c1:active .icon {
   color: #9e9e9e;
 }
 
-.c1.c1.c1.c1.disabled .c2 {
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
+.c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -711,8 +702,9 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
       size="medium"
     >
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -721,14 +713,14 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="round"
       >
@@ -736,11 +728,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -750,13 +741,11 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -765,14 +754,14 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="round"
       >
@@ -780,11 +769,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -794,13 +782,11 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -809,14 +795,14 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="round"
       >
@@ -824,11 +810,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -838,13 +823,11 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
       <button
-        aria-describedby={null}
+        aria-haspopup={true}
         aria-label="like"
+        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -853,14 +836,14 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseOver={[Function]}
+        onMouseMove={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="round"
       >
@@ -868,11 +851,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
           className="MuiIconButton-label"
         >
           <span
-            className="c2  icon c3"
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c4"
+              className="c3"
               role="img"
             >
               <use
@@ -882,9 +864,6 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
             </svg>
           </span>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
     </div>
   </div>

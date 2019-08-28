@@ -155,6 +155,18 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-more-option-menu');
   }
 
+  get transferActionsButton() {
+    return this.getSelectorByAutomationId('telephony-transfer-menu-item');
+  }
+
+  get transferNowButton() {
+    return this.getSelectorByAutomationId('telephony-transfer-btn');
+  }
+
+  get transferToVoicemailButton() {
+    return this.getSelectorByAutomationId('telephony-voice-mail-btn');
+  }
+  
   get replyActionMenuItem() {
     return this.getSelectorByAutomationId('telephony-reply-menu-item');
   }
@@ -337,15 +349,15 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async hoverSendToVoiceMailButton() {
-    await this.t.hover(this.sendToVoiceMailButton);
+    await this.t.hover(this.sendToVoiceMailButton, {speed: 0.1});
   }
 
   async hoverMinimizeButton() {
-    await this.t.hover(this.minimizeButton);
+    await this.t.hover(this.minimizeButton, {speed: 0.1});
   }
 
   async hoverRecentCallButton() {
-    await this.t.hover(this.recentCallButton);
+    await this.t.hover(this.recentCallButton, {speed: 0.1});
   }
 
   async clickRecentCallButton() {
@@ -353,7 +365,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async hoverBackToDialpadButton() {
-    await this.t.hover(this.backToDialpadButton);
+    await this.t.hover(this.backToDialpadButton, {speed: 0.1});
   }
 
   async clickCallLogItem(n: number) {
@@ -399,7 +411,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async hoverDeleteButton() {
-    await this.t.hover(this.deleteButton);
+    await this.t.hover(this.deleteButton, {speed: 0.1});
   }
 
   async clickDeleteButton() {
@@ -415,11 +427,23 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async hoverMoreOptionsButton() {
-    await this.t.hover(this.actionsButton);
+    await this.t.hover(this.actionsButton, {speed: 0.1});
   }
 
   async clickMoreOptionsButton() {
     await this.t.click(this.actionsButton);
+  }
+
+  async clickTransferActionButton() {
+    await this.t.click(this.transferActionsButton);
+  }
+
+  async clickTransferNowButton() {
+    await this.t.click(this.transferNowButton);
+  }
+
+  async clickTransferToVoicemailButton() {
+    await this.t.click(this.transferToVoicemailButton);
   }
 
   async clickReplyActionButton() {
@@ -443,7 +467,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async hoverReplyBackActionButton() {
-    await this.t.hover(this.replyBackActionButton);
+    await this.t.hover(this.replyBackActionButton, {speed: 0.1});
   }
 
   async typeCustomReplyMessage(message: string) {
@@ -497,7 +521,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async hoverForwardActionButton() {
-    await this.t.hover(this.forwardActionButton);
+    await this.t.hover(this.forwardActionButton, {speed: 0.1});
   }
 
   async clickForwardActionButton() {
@@ -613,7 +637,7 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
   }
 
   async hoverUnMuteButton() {
-    await this.t.hover(this.unMuteButton);
+    await this.t.hover(this.unMuteButton, {speed: 0.1});
   }
 
   async clickUnMuteButton() {
@@ -630,11 +654,11 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
   }
 
   async hoverhandupButton() {
-    await this.t.hover(this.hangupButton);
+    await this.t.hover(this.hangupButton, {speed: 0.1});
   }
 
   async hoverMuteButton() {
-    await this.t.hover(this.muteButton);
+    await this.t.hover(this.muteButton, {speed: 0.1});
   }
 
   async hoverunMuteButton() {

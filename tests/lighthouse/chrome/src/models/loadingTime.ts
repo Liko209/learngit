@@ -4,7 +4,8 @@
  */
 import { Table, Column, Model, DataType } from "sequelize-typescript";
 
-@Table({
+import { IDefineOptions } from 'sequelize-typescript/lib/interfaces/IDefineOptions';
+@Table(<IDefineOptions>{
   modelName: "t_loading_time_summary",
   indexes: [{
     unique: false,
@@ -113,7 +114,7 @@ class LoadingTimeSummaryDto extends Model<LoadingTimeSummaryDto> {
   apiHandleCount: number;
 }
 
-@Table({
+@Table(<IDefineOptions>{
   modelName: "t_loading_time_item",
   indexes: [{
     unique: false,
@@ -290,7 +291,7 @@ class LoadingTimeVersionSummaryDto extends Model<LoadingTimeVersionSummaryDto> {
   time: string;
 }
 
-@Table({
+@Table(<IDefineOptions>{
   modelName: "t_loading_time_release_summary",
   indexes: [{
     unique: false,
@@ -306,7 +307,7 @@ class LoadingTimeVersionSummaryDto extends Model<LoadingTimeVersionSummaryDto> {
 class LoadingTimeReleaseSummaryDto extends LoadingTimeVersionSummaryDto {
 }
 
-@Table({
+@Table(<IDefineOptions>{
   modelName: "t_loading_time_develop_summary",
   indexes: [{
     unique: false,

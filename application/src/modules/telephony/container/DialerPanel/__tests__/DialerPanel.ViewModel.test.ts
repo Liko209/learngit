@@ -76,4 +76,11 @@ describe('DialerPanelViewModel', () => {
       expect(dialerPanelViewModel._telephonyStore.end).not.toBeCalled();
     });
   });
+
+  describe('backToDialerFromTransferPage', () => {
+    it('Should be back to the previous active page when click the back button [JPT-2759]', () => {
+      dialerPanelViewModel.backToDialerFromTransferPage();
+      expect(dialerPanelViewModel._telephonyStore.isTransferPage).toBeFalsy();
+    })
+  })
 });

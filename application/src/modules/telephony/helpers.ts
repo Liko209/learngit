@@ -1,14 +1,24 @@
 import { isFunction } from 'lodash';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
+import history from '@/history';
 import { i18nP } from '@/utils/i18nT';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PersonService } from 'sdk/module/person';
 import { getEntity } from '@/store/utils';
 import { Person } from 'sdk/module/person/entity';
+import { Voicemail } from 'sdk/module/RCItems/voicemail/entity';
 import PersonModel from '@/store/models/Person';
+import VoicemailModel from '@/store/models/Voicemail';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastMessageAlign,
+  ToastType,
+} from '@/containers/ToastWrapper/Toast/types';
 import { ENTITY_NAME } from '@/store';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import { VOICEMAILS_ROOT_PATH, CALL_LOG_ROOT_PATH } from './interface/constant';
+import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
 
 /**
  * Moves the caret (cursor) position to the end of the specified text field.
@@ -93,3 +103,37 @@ export async function getDisplayNameByCaller(caller: ActiveCall) {
 
   return formatPhoneNumber(phoneNumber);
 }
+
+const linkWhenRouteInactive = (pathname: string) => {
+  const { location, push } = history;
+
+  if (!location.pathname.includes(pathname)) {
+    push(pathname);
+  }
+}
+
+export const onVoicemailNotificationClick = (id: number) => {
+  linkWhenRouteInactive(VOICEMAILS_ROOT_PATH);
+
+  const voicemail = getEntity<Voicemail, VoicemailModel>(
+    ENTITY_NAME.VOICE_MAIL,
+    id,
+  );
+
+  const isVoicemailExisted = voicemail
+    && (voicemail.availability === MESSAGE_AVAILABILITY.ALIVE);
+
+  if (!isVoicemailExisted) {
+    Notification.flashToast({
+      message: i18nP('telephony.prompt.voicemailDeleted'),
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+};
+
+export const onMissedCallNotificationClick = () => {
+  linkWhenRouteInactive(CALL_LOG_ROOT_PATH);
+};

@@ -15,6 +15,12 @@ jest.mock('sdk/module/phoneNumber/service/PhoneNumberService');
 jest.mock('@/store/models/PhoneNumber');
 jest.mock('@/modules/common/container/PhoneNumberFormat');
 
+jest.mock('emoji-mart', () => ({
+  getEmojiDataFromNative: () => ({
+    colons: ':rainbow:',
+  }),
+}));
+
 const mockCompanyData = {
   name: 'RingCentral',
 };
@@ -97,4 +103,12 @@ describe('MemberListItemViewModel', () => {
       ]);
     });
   });
+  describe('colonsEmoji', () => {
+    it('should return emoji when get customStatus', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        awayStatus: ':rainbow: in the meeting',
+      })
+      expect(vm.colonsEmoji).toBe(':rainbow:');
+    });
+  })
 });

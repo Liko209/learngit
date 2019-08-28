@@ -8,7 +8,7 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
-  background-color: #f5f6fb;
+  background-color: #6FAFEB;
 }
 
 .c0.c0:hover {
@@ -18,6 +18,10 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
 
 .c0.c0:active {
   opacity: 0.76;
+}
+
+.c0:focus {
+  outline: none;
 }
 
 .c0 > .avatar-short-name {
@@ -39,6 +43,8 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
 
 <div
   className="MuiAvatar-root c0"
+  color="lake"
+  onClick={[Function]}
   size="medium"
 >
   <img
@@ -68,6 +74,10 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
   opacity: 0.76;
 }
 
+.c0:focus {
+  outline: none;
+}
+
 .c0 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -88,6 +98,7 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
 <div
   className="MuiAvatar-root c0 MuiAvatar-colorDefault"
   color="lake"
+  onClick={[Function]}
   size="medium"
 >
   SH
@@ -118,6 +129,10 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
 
 .c1.c1:active {
   opacity: 0.76;
+}
+
+.c1:focus {
+  outline: none;
 }
 
 .c1 > .avatar-short-name {
@@ -170,6 +185,7 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
   <div
     className="MuiAvatar-root c1 MuiAvatar-colorDefault"
     color="lake"
+    onClick={[Function]}
     size="medium"
   >
     SH

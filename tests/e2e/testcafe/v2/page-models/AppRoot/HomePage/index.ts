@@ -12,6 +12,7 @@ import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header, TopBarAvatar } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
+import { ShareStatusDialog } from './ShareStatusDialog';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { TelephonyPOC } from './TelephonyPOC'
@@ -35,6 +36,7 @@ import { BlockNumberDialog } from './PhoneTab/index';
 import { AvatarEditDialog } from './AvatarEditDialog';
 import { ProfileEditDialog } from './ProfileEditDialog';
 import { AddressConfirmDialog, EmergencyConfirmDialog } from './E911';
+import { MessageSettingPage } from './SettingTab/MessageSettingPage';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
@@ -94,6 +96,7 @@ export class HomePage extends BaseWebComponent {
   get phoneTab() {
     return this.getComponent(PhoneTab);
   }
+
 
   get settingTab() {
     return this.getComponent(SettingTab);
@@ -168,6 +171,10 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(AddTeamMembers);
   }
 
+  get ShareStatusDialog() {
+    return this.getComponent(ShareStatusDialog);
+  }
+
   get teamSettingDialog() {
     return this.getComponent(TeamSettingDialog)
   }
@@ -181,7 +188,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverSettingMenu() {
-    await this.t.hover(this.topBarAvatar);
+    await this.t.hover(this.topBarAvatar, {speed: 0.1});
   }
 
   async openDialer(closeE911Prompt: boolean = true) {
@@ -223,7 +230,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverDialpadButton() {
-    await this.t.hover(this.dialpadButton);
+    await this.t.hover(this.dialpadButton, {speed: 0.1});
   }
 
   get joinTeamDialog() {
@@ -237,6 +244,8 @@ export class HomePage extends BaseWebComponent {
   get telephonyPOCPage() {
     return this.getComponent(TelephonyPOC);
   }
+
+
   get deleteTeamDialog() {
     return this.getComponent(DeleteTeamDialog);
   }

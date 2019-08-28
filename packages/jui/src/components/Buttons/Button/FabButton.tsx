@@ -27,8 +27,15 @@ import {
   IconColor,
   SvgSymbol,
 } from '../../../foundation/Iconography';
+import { parseColor } from '../../../foundation/utils/parseColor';
 
-type IconButtonSize = 'small' | 'medium' | 'large' | 'midLarge' | 'moreLarge';
+type IconButtonSize =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'midLarge'
+  | 'moreLarge'
+  | 'smallMedium';
 
 // TODO: remove iconname prop
 type ButtonProps = {
@@ -58,14 +65,15 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   children: React.ReactNode;
 };
 
-type Size = 'small' | 'medium' | 'large' | 'moreLarge';
-type ButtonSize = Size | 'midLarge';
+type Size = 'small' | 'medium' | 'large' | 'moreLarge' | 'smallMedium';
+type ButtonSize = Size | 'midLarge' | 'smallMedium';
 
 const buttonSizes: { [k in ButtonSize]: number } = {
   moreLarge: 16,
   midLarge: 14,
   large: 15,
   medium: 8,
+  smallMedium: 7,
   small: 5,
 };
 
@@ -73,6 +81,7 @@ const buttonShadows: { [k in Size]: number } = {
   moreLarge: 16,
   large: 16,
   medium: 1,
+  smallMedium: 1,
   small: 1,
 };
 
@@ -81,6 +90,7 @@ const iconSizesMap: { [k in Size]: IconSize } = {
   moreLarge: 'moreLarge',
   medium: 'small',
   small: 'extraSmall',
+  smallMedium: 'small',
 };
 
 const touchRippleClasses = {
@@ -171,25 +181,14 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     icon,
     ...rest
   } = props;
-  let colorScope: keyof Palette = 'primary';
-  let colorName: string = 'main';
-  if (color && color.indexOf('.') >= 0) {
-    const array = color.split('.');
-    if (array.length > 1) {
-      colorScope = array[0] as keyof Palette;
-      colorName = array[1];
-    } else {
-      colorScope = array[0] as keyof Palette;
-      colorName = 'main';
-    }
-  }
+  const colorObj = parseColor(color);
 
   if (!disabled && !disableToolTip && tooltipTitle) {
     return (
       <RuiTooltip title={tooltipTitle} placement={tooltipPlacement}>
         <StyledFabButtonWithRef
-          colorScope={colorScope}
-          colorName={colorName}
+          colorScope={colorObj.scope}
+          colorName={colorObj.name}
           size={size}
           {...rest}
         >
@@ -207,8 +206,8 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   return (
     <StyledFabButton
       disabled={disabled}
-      colorScope={colorScope}
-      colorName={colorName}
+      colorScope={colorObj.scope}
+      colorName={colorObj.name}
       size={size}
       {...rest}
     >

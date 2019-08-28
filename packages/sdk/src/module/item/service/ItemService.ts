@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Item, ItemFile } from '../entity';
+import { Item, ItemFile, ConferenceItem } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ItemServiceController } from '../controller/ItemServiceController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
@@ -288,6 +288,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       file,
       progressCallback,
       requestHolder,
+    );
+  }
+
+  async startConference(groupId: number): Promise<ConferenceItem> {
+    return this.itemServiceController.itemActionController.startConference(
+      groupId,
     );
   }
 }

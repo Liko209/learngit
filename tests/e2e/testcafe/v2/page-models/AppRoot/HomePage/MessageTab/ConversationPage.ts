@@ -582,6 +582,14 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('attachment-list');
   }
 
+  get postButton() {
+    return this.getSelectorByAutomationId('post-button');
+  }
+
+  async clickPostButton() {
+    await this.t.click(this.postButton);
+  }
+
   get uploadFileInput() {
     return this.getSelectorByAutomationId('upload-file-input');
   }
@@ -728,7 +736,9 @@ export class PostItem extends BaseWebComponent {
   get postId() {
     return this.self.getAttribute('data-id');
   }
-
+  get linkPreviewCard(){
+    return this.self.find('[data-test-automation-id="linkItemsWrapper"]');
+  }
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
   }

@@ -99,6 +99,8 @@ export class ConversationCard extends React.Component<
     if (this.props.showToast) {
       this.flashToast(this.getToastMessage());
     } else {
+      const { dataTrackingJumpToConversation } = this.context;
+      dataTrackingJumpToConversation && dataTrackingJumpToConversation();
       const { id, groupId } = this.props;
       jumpToPost({ id, groupId });
     }
@@ -139,7 +141,6 @@ export class ConversationCard extends React.Component<
       creator,
       name,
       createTime,
-      customStatus,
       showProgressActions,
       itemTypeIds,
       mode,
@@ -148,6 +149,8 @@ export class ConversationCard extends React.Component<
       cardRef,
       onAnimationStart,
       onHighlightAnimationStart,
+      colonsEmoji,
+      statusPlainText,
       isEditMode,
       showActivityStatus,
       ...rest
@@ -183,12 +186,15 @@ export class ConversationCard extends React.Component<
           data-name="header"
           name={name}
           time={showProgressActions ? '' : createTime}
-          status={customStatus}
+          statusPlainText={statusPlainText}
+          colonsEmoji={colonsEmoji}
           notification={showActivityStatus && activity}
           repliedEntity={this._renderRepliedEntity}
           from={from}
         >
-          {showProgressActions && <ProgressActions id={id} isEditMode={isEditMode} />}
+          {showProgressActions && (
+            <ProgressActions id={id} isEditMode={isEditMode} />
+          )}
           {!showProgressActions && isHover && (
             <Actions postId={id} groupId={post.groupId} />
           )}

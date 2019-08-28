@@ -154,6 +154,23 @@ describe('TelephonyEngineController', () => {
     });
   });
 
+  describe('hasActiveDL', () => {
+    it('should return true when getRemoteEmergencyAddress return not empty', () => {
+      engineController.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('test');
+      const res = engineController.hasActiveDL();
+      expect(res).toBeTruthy();
+    });
+    it('should return false when getRemoteEmergencyAddress return empty', () => {
+      engineController.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('');
+      const res = engineController.hasActiveDL();
+      expect(res).toBeFalsy();
+    });
+  });
+
   describe('getLocalEmergencyAddress', () => {
     it('should call account controller to get address', () => {
       accountController.getLocalEmergencyAddress = jest

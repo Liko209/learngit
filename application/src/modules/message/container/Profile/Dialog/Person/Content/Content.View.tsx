@@ -38,6 +38,10 @@ import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 import { IMessageStore } from '@/modules/message/interface';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
+
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
@@ -72,12 +76,12 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <JuiIconography iconSize="medium">{key}</JuiIconography>;
   };
 
-  renderIcons = (value: string, aria?: string, showCall?: boolean) => {
+  renderIcons = (value: string, aria?: string, showCall?: boolean, fieldName?: string) => {
     const { t, id } = this.props;
     const copy = (
       <JuiIconButton
         size="small"
-        onClick={() => this.onClickCopy(value)}
+        onClick={() => this.onClickCopy(value, fieldName)}
         tooltipTitle={t('common.copy')}
         ariaLabel={t('common.ariaCopy', {
           value: aria || value,
@@ -105,7 +109,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <FormCopy>{icons}</FormCopy>;
   };
 
-  onClickCopy = (value: string) => {
+  onClickCopy = (value: string, fieldName?: string) => {
+    fieldName && analyticsCollector.copyProfileField(fieldName)
     copy(value);
   };
 
@@ -118,6 +123,10 @@ class ProfileDialogPersonContentViewComponent extends Component<
     copyValue,
     showCall,
   }: FormGroupType) => {
+    const iconToFieldName = {
+      call: 'number',
+      email: 'email'
+    }
     return (
       <FormGroup key={value}>
         <FormLeft>{icon && this.renderIcon(icon)}</FormLeft>
@@ -125,7 +134,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copyValue && this.renderIcons(copyValue, copyAria, showCall)}
+        {copyValue && this.renderIcons(copyValue, copyAria, showCall, icon && iconToFieldName[icon])}
       </FormGroup>
     );
   };
@@ -140,7 +149,10 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <FormLink dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
-  messageAfterClick = () => portalManager.dismissLast();
+  messageAfterClick = () => {
+    analyticsCollector.goToConversation('profileDialog', '1:1 conversation');
+    portalManager.dismissLast();
+  }
 
   render() {
     const {
@@ -150,6 +162,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
       company,
       extensionNumbers,
       directNumbers,
+      statusPlainText,
+      colonsEmoji,
       isMe,
     } = this.props;
     return (
@@ -171,7 +185,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
               {person.userDisplayName}
             </Name>
             <Status data-test-automation-id="profileDialogSummaryStatus">
-              {person.awayStatus}
+              <Emoji
+                emoji={colonsEmoji || ''}
+                set="emojione"
+                size={16}
+                backgroundImageFn={backgroundImageFn}
+              />
+              {statusPlainText}
             </Status>
             <Title data-test-automation-id="profileDialogSummaryTitle">
               {person.jobTitle}

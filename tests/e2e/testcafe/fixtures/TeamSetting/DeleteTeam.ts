@@ -1,8 +1,6 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-02-18 17:51:37
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-08-09 15:11:00
  */
 
 import * as assert from 'assert';
@@ -33,17 +31,23 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
+  let team = <IGroup>{
+    name: teamName,
+    description: "need description??",
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser],
+  }
 
-  await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
+  await h(t).withLog('Given I have team with 1 admin and 1 member', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -51,7 +55,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open unopened Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -86,7 +90,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 
   await h(t).withLog(`And the team still in the team list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).ok();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).ok();
   });
 
   await h(t).withLog(`When I open Delete team confirmation again`, async () => {
@@ -110,7 +114,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).notOk();
   });
 
   await h(t).withLog(`And send to the empty conversation screen`, async () => {
@@ -118,7 +122,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).notOk();
   });
 });
 
@@ -149,7 +153,11 @@ test.meta(<ITestMeta>{
   const profileDialog = app.homePage.profileDialog;
   const deleteTeamDialog = app.homePage.deleteTeamDialog;
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -189,7 +197,11 @@ test.meta(<ITestMeta>{
     await t.expect(searchDialog.instantPage.teams.withText(team.name).exists).notOk()
   }, true);
 
-  await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
+  await h(t).withLog(`When I login Jupiter with team member:  {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: memberUser.company.number,
+      extension: memberUser.extension,
+    })
     await searchDialog.quitByPressEsc();
     await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
   });
@@ -223,16 +235,23 @@ test(formalName(`Can create team that team name is same as the deleted team`, ['
   const deleteTeamDialog = app.homePage.deleteTeamDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
 
-  let teamId;
-  await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    description: "need description??",
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser],
+  }
+
+  await h(t).withLog('Given I have team with 1 admin and 1 member', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -240,7 +259,7 @@ test(formalName(`Can create team that team name is same as the deleted team`, ['
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -257,7 +276,7 @@ test(formalName(`Can create team that team name is same as the deleted team`, ['
   });
 
   await h(t).withLog(`Then the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(team.glipId).exists).notOk();
   });
 
   await h(t).withLog(`When I create a team with the same name via "new actions" entry`, async () => {
@@ -285,13 +304,16 @@ test.meta(<ITestMeta>{
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  let teamId;
-  await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [adminUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    description: "need description??",
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser],
+  }
+
+  await h(t).withLog('Given I have team with 1 admin and 1 member', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`And I login Jupiter with adminUser: {number}#{extension}`, async (step) => {
@@ -306,7 +328,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).enter();
+    await teamSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -319,7 +341,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I hover "i" icon beside the 'Delete team' button`, async () => {
-    await t.hover(teamSettingDialog.deleteTeamButtonInfoIcon);
+    await t.hover(teamSettingDialog.deleteTeamButtonInfoIcon, {speed: 0.1});
   });
 
   await h(t).withLog(`Then there should be tooltip displayed: "{tooltipText}"`, async (step) => {

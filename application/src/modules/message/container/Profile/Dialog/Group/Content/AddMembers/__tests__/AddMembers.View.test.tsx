@@ -14,7 +14,9 @@ import { JServerError, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 jest.mock('@/containers/Notification');
 
 const someProps = {
-  t: (str: string) => {},
+  t: (str: string) => {
+    return str;
+  },
   disabledOkBtn: false,
   isOffline: false,
   members: [],
@@ -35,9 +37,11 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<AddMembersComponent {...props} />);
+
       await Wrapper.find(JuiModal)
         .shallow()
         .find(JuiButton)
+        .last()
         .simulate('click');
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -56,6 +60,7 @@ describe('AddMembersView', () => {
       await Wrapper.find(JuiModal)
         .shallow()
         .find(JuiButton)
+        .last()
         .simulate('click');
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
