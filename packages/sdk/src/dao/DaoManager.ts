@@ -80,6 +80,10 @@ class DaoManager extends Manager<
     this._notifyDBInitialized();
   }
 
+  getDataBase() {
+    return this.dbManager.getDatabase();
+  }
+
   async openDatabase(): Promise<void> {
     await this.dbManager.openDatabase();
   }

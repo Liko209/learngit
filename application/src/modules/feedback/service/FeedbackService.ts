@@ -17,7 +17,7 @@ import { DateFormatter } from 'foundation/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { ZipItemLevel } from 'sdk/module/log/types';
-import { saveBlob } from '@/common/blobUtils';
+import { saveBlob } from 'sdk/utils/fileUtils';
 
 type UploadOption = { timeout: number; retry: number; level: ZipItemLevel };
 

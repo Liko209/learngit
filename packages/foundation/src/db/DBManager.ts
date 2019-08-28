@@ -22,20 +22,18 @@ class DBManager {
         this.db = new DexieDB(schema);
         break;
     }
-
-
   }
 
   async openDatabase(): Promise<void> {
-    await this.db.open();
+    this.db && (await this.db.open());
   }
 
   async closeDatabase(): Promise<void> {
-    await this.db.close();
+    this.db && (await this.db.close());
   }
 
   async deleteDatabase(): Promise<void> {
-    await this.db.delete();
+    this.db && (await this.db.delete());
   }
 
   isDatabaseOpen(): boolean {
