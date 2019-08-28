@@ -9,12 +9,14 @@ import {
   toFirstLetterUpperCase,
   getDisplayNameByCaller,
   onVoicemailNotificationClick,
+  onMissedCallNotificationClick,
 } from '../helpers';
 import * as utils from '@/store/utils';
 import history from '@/history';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { Notification } from '@/containers/Notification';
+import { VOICEMAILS_ROOT_PATH, CALL_LOG_ROOT_PATH } from '../interface/constant';
 import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
 
 jest.mock('@/utils/i18nT', () => ({
@@ -137,7 +139,7 @@ describe('helpers', () => {
 
       onVoicemailNotificationClick();
 
-      expect(history.push).toHaveBeenCalled();
+      expect(history.push).toHaveBeenCalledWith(VOICEMAILS_ROOT_PATH);
     });
 
     it('Should flash toast when the voicemail not existed [JPT-2824]', () => {
@@ -158,6 +160,17 @@ describe('helpers', () => {
       onVoicemailNotificationClick();
 
       expect(Notification.flashToast).toHaveBeenCalled();
+    });
+  });
+
+  describe('onMissedCallNotificationClick', () => {
+    it('Should open call history page when user not in call history page [JPT-2794]', () => {
+      history.location = { pathname: '/message' };
+      history.push = jest.fn();
+
+      onMissedCallNotificationClick();
+
+      expect(history.push).toHaveBeenCalledWith(CALL_LOG_ROOT_PATH);
     });
   });
 });
