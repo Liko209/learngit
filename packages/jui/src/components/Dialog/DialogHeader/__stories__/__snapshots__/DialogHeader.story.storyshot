@@ -47,6 +47,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   color: #9e9e9e;
 }
 
+.c4.c4.c4.c4.disabled {
+  background-color: inherit;
+}
+
 .c4.c4.c4.c4.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -283,6 +287,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   color: #9e9e9e;
 }
 
+.c7.c7.c7.c7.disabled {
+  background-color: inherit;
+}
+
 .c7.c7.c7.c7.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -323,6 +331,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 
 .c4.c4:active .icon {
   color: #edb63c;
+}
+
+.c4.c4.c4.c4.disabled {
+  background-color: inherit;
 }
 
 .c4.c4.c4.c4.disabled .icon {
@@ -700,6 +712,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   color: #9e9e9e;
 }
 
+.c12.c12.c12.c12.disabled {
+  background-color: inherit;
+}
+
 .c12.c12.c12.c12.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -740,6 +756,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 
 .c9.c9:active .icon {
   color: #edb63c;
+}
+
+.c9.c9.c9.c9.disabled {
+  background-color: inherit;
 }
 
 .c9.c9.c9.c9.disabled .icon {

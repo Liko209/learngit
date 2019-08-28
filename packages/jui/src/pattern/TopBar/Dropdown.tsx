@@ -9,7 +9,13 @@ import styled from '../../foundation/styled-components';
 import { JuiTypography } from '../../foundation/Typography';
 import { JuiMenuItem } from '../../components/Menus';
 import { StyledAvatar } from '../../components/Avatar';
-import { spacing, width, typography, ellipsis } from '../../foundation/utils';
+import {
+  spacing,
+  width,
+  height,
+  typography,
+  ellipsis,
+} from '../../foundation/utils';
 
 type JuiDropdownContactInfoProps = {
   Avatar: React.ReactElement;
@@ -41,6 +47,12 @@ const StyledContactWrapper = styled('div')`
 const JuiStyledDropdownMenuItem = styled(JuiMenuItem)`
   && {
     font-size: ${spacing(3.5)};
+    display: block;
+    line-height: ${height(6)};
+    ${ellipsis()};
+    .emoji-mart-emoji {
+      line-height: ${height(2.5)};
+    }
   }
 `;
 
