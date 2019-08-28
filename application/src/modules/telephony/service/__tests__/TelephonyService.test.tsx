@@ -59,10 +59,8 @@ describe('TelephonyService', () => {
     @test(
       'should needE911Prompt if account has DL and emergency has been confirmed',
     )
-    @mockService(ServerTelephonyService, [
-      { method: 'isEmergencyAddrConfirmed', data: true },
-      { method: 'hasActiveDL', data: true },
-    ])
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
+    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
     t1() {
@@ -70,31 +68,27 @@ describe('TelephonyService', () => {
       runInAction(() => {
         ts = new TelephonyService();
       });
-      expect(ts.needE911Prompt()).toBe(true);
+      expect(ts.needE911Prompt()).resolves.toBe(true);
     }
 
     @test('should not needE911Prompt if account does not have DL [JPT-2703]')
-    @mockService(ServerTelephonyService, [
-      { method: 'isEmergencyAddrConfirmed', data: true },
-      { method: 'hasActiveDL', data: false },
-    ])
+    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
     t2() {
       let ts;
       runInAction(() => {
         ts = new TelephonyService();
+        ts['_rcInfoService'] = { getDigitalLines: () => [] };
       });
-      expect(ts.needE911Prompt()).toBe(false);
+      expect(ts.needE911Prompt()).resolves.toBe(false);
     }
 
     @test(
       'should not needE911Prompt if account has DL but emergency has not been confirmed',
     )
-    @mockService(ServerTelephonyService, [
-      { method: 'isEmergencyAddrConfirmed', data: false },
-      { method: 'hasActiveDL', data: true },
-    ])
+    @mockService.resolve(RCInfoService, 'getDigitalLines', [1])
+    @mockService(ServerTelephonyService, 'isEmergencyAddrConfirmed', false)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
     t3() {
@@ -102,7 +96,7 @@ describe('TelephonyService', () => {
       runInAction(() => {
         ts = new TelephonyService();
       });
-      expect(ts.needE911Prompt()).toBe(false);
+      expect(ts.needE911Prompt()).resolves.toBe(false);
     }
   }
 
@@ -159,11 +153,9 @@ describe('TelephonyService', () => {
   @testable
   class startAudioConference {
     beforeAll() {
-      // jupiter.registerService(IMediaService, MediaService);
       jupiter.registerModule(config);
     }
 
-    // @mockEntity(mockVolumeEntity)
     beforeEach() {}
     @test(
       'should not call api if has no active DL',
@@ -187,7 +179,7 @@ describe('TelephonyService', () => {
       });
     }
 
-    @test.only(
+    @test(
       'should call start conference api when it is allowed',
     )
     @mockService(ServerTelephonyService, [
@@ -210,39 +202,8 @@ describe('TelephonyService', () => {
         const result = await ts.startAudioConference(123);
         expect(result).toBe(true);
         expect(itemService.startConference).toHaveBeenCalled()
+        expect(ts._telephonyStore.isConference).toBe(true)
       });
     }
-
-    // @test('should not needE911Prompt if account does not have DL [JPT-2703]')
-    // @mockService(ServerTelephonyService, [
-    //   { method: 'isEmergencyAddrConfirmed', data: true },
-    //   { method: 'hasActiveDL', data: false },
-    // ])
-    // @mockService(globalConfigService)
-    // @mockService(phoneNumberService)
-    // t2() {
-    //   let ts;
-    //   runInAction(() => {
-    //     ts = new TelephonyService();
-    //   });
-    //   expect(ts.needE911Prompt()).toBe(false);
-    // }
-
-    // @test(
-    //   'should not needE911Prompt if account has DL but emergency has not been confirmed',
-    // )
-    // @mockService(ServerTelephonyService, [
-    //   { method: 'isEmergencyAddrConfirmed', data: false },
-    //   { method: 'hasActiveDL', data: true },
-    // ])
-    // @mockService(globalConfigService)
-    // @mockService(phoneNumberService)
-    // t3() {
-    //   let ts;
-    //   runInAction(() => {
-    //     ts = new TelephonyService();
-    //   });
-    //   expect(ts.needE911Prompt()).toBe(false);
-    // }
   }
 });
