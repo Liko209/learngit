@@ -89,9 +89,10 @@ class InnerComponent extends Component<InnerComponentProps, State> {
       disablePortal,
       asyncOperationDecorator,
       scene,
+      item,
       ...rest
     } = this.props;
-    const isImage = getFileType(this.props.item).type === FileType.image;
+    const isImage = getFileType(item).type === FileType.image;
     return (
       <JuiPopperMenu
         Anchor={this._Anchor}
@@ -103,7 +104,7 @@ class InnerComponent extends Component<InnerComponentProps, State> {
       >
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
           {isImage && (
-            <ViewInBrowserTabAction scene={scene} item={this.props.item} />
+            <ViewInBrowserTabAction scene={scene} item={item} />
           )}
           <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
           {showViewInPostAction && groupId && (

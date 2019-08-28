@@ -26,4 +26,4 @@ exports[`ViewInBrowserTabAction should render correctly 1`] = `
 </ForwardRef>
 `;
 
-exports[`ViewInBrowserTabAction should show correct text in browser and electron 1`] = `"message.fileAction.viewInNewTab"`;
+exports[`ViewInBrowserTabAction should show correct text in browser [JPT-2926] 1`] = `"message.fileAction.viewInNewTab"`;
