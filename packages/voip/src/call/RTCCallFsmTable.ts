@@ -89,6 +89,7 @@ interface IRTCCallFsmTableDependency {
     time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ): void;
+  onUpdateFsmState(state: FsmStatusCategory): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -549,8 +550,7 @@ class RTCCallFsmTable extends StateMachine {
       ],
       methods: {
         onTransition(lifecycle) {
-          this._report &&
-            this._report.updateFsmStatus(lifecycle.to as FsmStatusCategory);
+          dependency && dependency.onUpdateFsmState(lifecycle.to as FsmStatusCategory);
           rtcLogger.debug(
             'RTC_Call_FSM',
             `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${

@@ -94,7 +94,7 @@ class RTCCall {
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
     this._report = new CallReport();
-    this._fsm = new RTCCallFsm();
+    this._fsm = new RTCCallFsm(this._report);
     this._callSession = new RTCSipCallSession(
       this._callInfo.uuid,
       this._report,
