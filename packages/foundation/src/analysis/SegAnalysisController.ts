@@ -5,14 +5,14 @@
  */
 import Segment from 'load-segment';
 import { AnalysisBaseController } from './AnalysisBaseController';
-import keys from './keys.json';
 
 class SegAnalysisController extends AnalysisBaseController {
   private _segment: TSegment;
 
-  init() {
-    const key = this.isProduction() ? keys.production : keys.develop;
-    this._segment = Segment({ key });
+  init(key: string) {
+    if (key) {
+      this._segment = Segment({ key });
+    }
   }
 
   reset() {

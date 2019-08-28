@@ -2,8 +2,6 @@
 
 exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/ConversationRightShelf EmptyScreen 1`] = `
 .c6.c6 {
-  min-width: 104px;
-  padding: 10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -16,6 +14,11 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
   color: #0684bd;
   text-align: center;
   box-shadow: unset;
+  padding: 8px 12px;
+}
+
+.c6.c6.MuiButton-sizeLarge {
+  padding: 10px 16px;
 }
 
 .c6.c6.containedButtonStyle {

@@ -14,6 +14,7 @@ import { ENTITY_NAME } from '@/store';
 import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import { getColonsEmoji, getStatusPlainText } from '@/common/getSharedStatus';
 
 class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
   implements ProfileDialogPersonContentViewProps {
@@ -32,12 +33,17 @@ class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
 
   @computed
   get extensionNumbers() {
-    return this._phoneNumbers.filter((info: PhoneNumberInfo) => info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER);
+    return this._phoneNumbers.filter(
+      (info: PhoneNumberInfo) =>
+        info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+    );
   }
 
   @computed
   get directNumbers() {
-    const phoneNumbers = this._phoneNumbers.filter((info: PhoneNumberInfo) => info.type === PHONE_NUMBER_TYPE.DIRECT_NUMBER);
+    const phoneNumbers = this._phoneNumbers.filter(
+      (info: PhoneNumberInfo) => info.type === PHONE_NUMBER_TYPE.DIRECT_NUMBER,
+    );
     phoneNumbers.forEach((item: PhoneNumberInfo) => {
       item.phoneNumber = formatPhoneNumber(item.phoneNumber);
     });
@@ -48,6 +54,17 @@ class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
   get isMe() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return this.id === currentUserId;
+  }
+  @computed
+  get colonsEmoji() {
+    const status = this.person.awayStatus || '';
+    return getColonsEmoji(status);
+  }
+  @computed
+  get statusPlainText() {
+    const status = this.person.awayStatus || '';
+
+    return getStatusPlainText(status);
   }
 }
 

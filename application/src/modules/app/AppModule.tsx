@@ -43,6 +43,7 @@ import { showUpgradeDialog } from '@/modules/electron';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework'
+import { EnvConfig } from 'sdk/module/env/config';
 
 /**
  * The root module, we call it AppModule,
@@ -65,7 +66,8 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    this._logControlManager.setDebugMode(!isProductionVersion);
+    const isRunningE2E = EnvConfig.getIsRunningE2E();
+    this._logControlManager.setDebugMode(!isProductionVersion || isRunningE2E);
     dataCollectionHelper.setIsProductionAccount(config.isProductionAccount());
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
@@ -145,6 +147,7 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
       success && updateAccountInfoForGlobalStore();
+      success && analyticsCollector.init();
     });
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
@@ -187,7 +190,7 @@ class AppModule extends AbstractModule {
     await sdk.init({
       api,
       db,
-    });    
+    });
   }
 }
 

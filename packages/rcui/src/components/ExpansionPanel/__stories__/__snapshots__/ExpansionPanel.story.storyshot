@@ -47,6 +47,10 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
   color: #9e9e9e;
 }
 
+.c2.c2.c2.c2.disabled {
+  background-color: inherit;
+}
+
 .c2.c2.c2.c2.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -166,6 +170,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -284,6 +289,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
