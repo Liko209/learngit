@@ -136,13 +136,13 @@ const FileCardMediaWrapper = ({
 }: FileCardMediaWrapperProps) => {
   const [isHover, setHover] = useState(false);
   const handleOnMouseEnter = useCallback(() => setHover(true), []);
-  const handleOnMouseOver = useCallback(() => setHover(false), []);
+  const handleOnMouseLeave = useCallback(() => setHover(false), []);
   return (
     <JuiCardMedia
       {...rest}
       onMouseEnter={handleOnMouseEnter}
       onMouseOver={handleOnMouseEnter}
-      onMouseLeave={handleOnMouseOver}
+      onMouseLeave={handleOnMouseLeave}
     >
       {isHover && (
         <FileStatusButton>
