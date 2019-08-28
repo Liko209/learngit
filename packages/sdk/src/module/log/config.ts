@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { LogControlConfig } from './types';
 
 const DEFAULT_CONFIG: LogControlConfig = {
-  uploadEnabled: false,
+  uploadEnabled: true,
   memoryCountThreshold: 500,
   memorySizeThreshold: 1024 * 1024,
   combineSizeThreshold: 512 * 1024,
@@ -35,11 +35,16 @@ class ConfigManager {
   }
 
   mergeConfig(partialConfig: Partial<LogControlConfig>) {
-    const newConfig = _.mergeWith({}, this._config, partialConfig, (objValue, srcValue) => {
-      if (Array.isArray(objValue)) {
-        return srcValue;
-      }
-    });
+    const newConfig = _.mergeWith(
+      {},
+      this._config,
+      partialConfig,
+      (objValue, srcValue) => {
+        if (Array.isArray(objValue)) {
+          return srcValue;
+        }
+      },
+    );
     return this.setConfig(newConfig);
   }
 }

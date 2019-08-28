@@ -36,10 +36,12 @@ class PopupHelper {
   }
 
   close = () => {
-    this._setState({
-      open: false,
-      hovered: false,
-    });
+    if (this._state.open) {
+      this._setState({
+        open: false,
+        hovered: false,
+      });
+    }
   };
 
   open = (event: React.SyntheticEvent<any>) => {
@@ -47,11 +49,13 @@ class PopupHelper {
       document.activeElement.blur();
     }
 
-    this._setState({
-      anchorEl: event.currentTarget,
-      open: true,
-      hovered: event.type === 'mouseenter',
-    });
+    if (!this._state.open) {
+      this._setState({
+        anchorEl: event.currentTarget,
+        open: true,
+        hovered: event.type === 'mouseenter',
+      });
+    }
   };
 
   handleMouseLeave = (event: React.MouseEvent<any>) => {
@@ -123,6 +127,7 @@ class PopupHelper {
     return {
       ...this._AccessabilityProps,
       onMouseEnter: this.open,
+      onMouseMove: this.open,
       onMouseLeave: this.handleMouseLeave,
     };
   }

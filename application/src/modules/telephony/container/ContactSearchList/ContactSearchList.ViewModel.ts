@@ -131,6 +131,26 @@ export class ContactSearchListViewModel
     this.onEnter();
   };
 
+  @computed
+  get isTransferPage() {
+    return this._telephonyStore.isTransferPage;
+  }
+
+  @computed
+  get selectedCallItemIndex() {
+    return this._telephonyStore.selectedCallItem.index;
+  }
+
+  @action
+  selectCallItem = (phoneNumber: string, focusIndex?: number) => {
+    // analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
+    if (this.selectedCallItemIndex === focusIndex) {
+      this._telephonyStore.setCallItem('', NaN);
+      return;
+    }
+    return this._telephonyStore.setCallItem(phoneNumber, focusIndex || 0);
+  };
+
   @action
   onEnter = () => {
     if (!this.dialerInputFocused || this.isSearching) {
@@ -154,7 +174,10 @@ export class ContactSearchListViewModel
       );
       phoneNumber = this.trimmedInputString;
     }
-    this.props.onContactSelected(phoneNumber);
+    if (this.isTransferPage) {
+      return this.selectCallItem(phoneNumber, this.focusIndex);
+    }
+    return this.props.onContactSelected(phoneNumber);
   };
 
   @action
@@ -177,7 +200,8 @@ export class ContactSearchListViewModel
       ]);
 
       runInAction(() => {
-        this.shouldDisplayPhoneNumberItem = parsedPhone.isValid;
+        this.shouldDisplayPhoneNumberItem =
+          parsedPhone.isValid && !this.isTransferPage;
         this.isSearching = false;
         const res = this.shouldDisplayPhoneNumberItem
           ? [
@@ -213,8 +237,7 @@ export class ContactSearchListViewModel
       ServiceConfig.SEARCH_SERVICE,
     );
 
-    return searchService.doFuzzySearchPhoneContacts({
-      searchKey: searchString,
+    return searchService.doFuzzySearchPhoneContacts(searchString, {
       fetchAllIfSearchKeyEmpty: false,
       recentFirst: true,
     });

@@ -178,6 +178,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('When I mark as Unread this chat', async () => {
     await conversation.openMoreMenu();
     await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+    await t.hover('html');
   });
 
   await h(t).withLog('Then Umi should be 1', async () => {

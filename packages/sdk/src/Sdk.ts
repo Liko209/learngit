@@ -38,6 +38,7 @@ import {
 } from 'sdk/module/permission';
 import { jobScheduler } from './framework/utils/jobSchedule';
 import { UserConfigService } from './module/config';
+import { CrashManager } from './module/crash';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -57,10 +58,24 @@ class Sdk {
     public networkManager: NetworkManager,
     public syncService: SyncService,
     public permissionService: PermissionService,
-  ) {}
+  ) {
+    CrashManager.getInstance().monitor();
+  }
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
+    // Use default config value
+    const apiConfig: ApiConfig = merge(
+      {},
+      defaultApiConfig,
+      this._sdkConfig.api,
+    );
+    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
+
+    Foundation.init({
+      dbAdapter: dbConfig.adapter,
+    });
+    Api.init(apiConfig, this.networkManager);
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -88,24 +103,11 @@ class Sdk {
       }
     }
     this._subscribeNotification();
-    this._initDataAnalysis();
     mainLogger.tags(LOG_TAG).info('sdk init finished');
   }
 
   async onStartLogin() {
     mainLogger.tags(LOG_TAG).info('onStartLogin');
-    // Use default config value
-    const apiConfig: ApiConfig = merge(
-      {},
-      defaultApiConfig,
-      this._sdkConfig.api,
-    );
-    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
-
-    Foundation.init({
-      dbAdapter: dbConfig.adapter,
-    });
-    Api.init(apiConfig, this.networkManager);
     await this.daoManager.initDatabase(this.clearAllData);
 
     this.permissionService.injectControllers(new LaunchDarklyController());
@@ -218,6 +220,7 @@ class Sdk {
     ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
+    CrashManager.getInstance().dispose();
   }
 
   updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
@@ -249,10 +252,6 @@ class Sdk {
     sleepModeDetector.subScribe(this._sleepModeKey, (interval: number) => {
       notificationCenter.emit(SERVICE.WAKE_UP_FROM_SLEEP, interval);
     });
-  }
-
-  private _initDataAnalysis() {
-    dataAnalysis.init();
   }
 
   private _resetDataAnalysis() {

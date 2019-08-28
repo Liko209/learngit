@@ -39,6 +39,9 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 import { IMessageStore } from '@/modules/message/interface';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
+
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
@@ -159,6 +162,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
       company,
       extensionNumbers,
       directNumbers,
+      statusPlainText,
+      colonsEmoji,
       isMe,
     } = this.props;
     return (
@@ -180,7 +185,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
               {person.userDisplayName}
             </Name>
             <Status data-test-automation-id="profileDialogSummaryStatus">
-              {person.awayStatus}
+              <Emoji
+                emoji={colonsEmoji || ''}
+                set="emojione"
+                size={16}
+                backgroundImageFn={backgroundImageFn}
+              />
+              {statusPlainText}
             </Status>
             <Title data-test-automation-id="profileDialogSummaryTitle">
               {person.jobTitle}

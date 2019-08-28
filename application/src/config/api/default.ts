@@ -35,6 +35,7 @@ const config: ApiConfig = {
   meetingsConfig: {
     rcv: { baseUrl: 'https://v.ringcentral.com', dialInNumber: '+18582073116' },
   },
-  data_collection: 'https://jupedc.ringcentral.com',
+  data_collection: '',
+  segment: '',
 };
 export default config;

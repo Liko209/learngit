@@ -28,11 +28,11 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get avatar() {
-    return this.getSelectorByAutomationId('previewerSenderAvatar');
+    return this.getSelectorByAutomationId('viewerSenderAvatar');
   }
 
   get sender() {
-    return this.getSelectorByAutomationId('previewerSenderInfo');
+    return this.getSelectorByAutomationId('viewerSenderInfo');
   }
 
   get senderName() {
@@ -44,7 +44,7 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('previewerTitle');
+    return this.getSelectorByAutomationId('viewerTitle');
   }
 
   get fileName() {

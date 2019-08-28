@@ -263,7 +263,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
 
   const checkTooltip = async () => {
     await h(t).withLog('When I hover on my avatar on the right shell member list', async () => {
-      await t.hover(rightRail.memberListSection.getAvatarById(me.data._id))
+      await t.hover(rightRail.memberListSection.header);
+      await t.hover(rightRail.memberListSection.getAvatarById(me.data._id), {speed: 0.1})
     })
 
     await h(t).withLog('Then I can see tooltip with my name', async () => {
@@ -271,7 +272,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
     })
 
     await h(t).withLog('When I hover on guest\'s avatar on the right shell member list', async () => {
-      await t.hover(rightRail.memberListSection.getAvatarById(guest.data._id))
+      await t.hover(rightRail.memberListSection.header);
+      await t.hover(rightRail.memberListSection.getAvatarById(guest.data._id), {speed: 0.1})
     })
 
     await h(t).withLog('Then I can see tooltip with guest\'s name', async () => {
@@ -334,7 +336,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   });
 
   await h(t).withLog('When I hover on the add button', async () => {
-    await t.hover(rightRail.memberListSection.addMemberButton);
+    await t.hover(rightRail.memberListSection.body);
+    await t.hover(rightRail.memberListSection.addMemberButton, {speed: 0.1});
   });
 
   await h(t).withLog('Then I can see tooltip with text "Add people" ', async () => {
@@ -350,7 +353,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   });
 
   await h(t).withLog('When I hover on the add button', async () => {
-    await t.hover(rightRail.memberListSection.addMemberButton);
+    await t.hover(rightRail.memberListSection.header);
+    await t.hover(rightRail.memberListSection.addMemberButton, {speed: 0.1});
   });
 
   await h(t).withLog('Then I can see tooltip with text "Add people" ', async () => {
@@ -366,7 +370,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   });
 
   await h(t).withLog('When I hover on the add button', async () => {
-    await t.hover(rightRail.memberListSection.addMemberButton);
+    await t.hover(rightRail.memberListSection.header);
+    await t.hover(rightRail.memberListSection.addMemberButton, {speed: 0.1});
   });
 
   await h(t).withLog('Then I can see tooltip with text "Add team members" ', async () => {

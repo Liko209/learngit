@@ -48,6 +48,9 @@ let telephonyNotificationManager: TelephonyNotificationManager;
 let telephonyStore: TelephonyStore;
 const title = 'Incoming Call';
 let call: any;
+const incomingCallDisposer = jest.fn();
+const voicemailDisposer = jest.fn();
+const missedCallDisposer = jest.fn();
 
 function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
   call = observable({
@@ -73,7 +76,11 @@ function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
     }
   });
   telephonyNotificationManager = jupiter.get(TelephonyNotificationManager);
-  telephonyNotificationManager._disposer = jest.fn();
+  telephonyNotificationManager._disposers = [
+    incomingCallDisposer,
+    voicemailDisposer,
+    missedCallDisposer,
+  ];
   telephonyStore = jupiter.get(TelephonyStore);
   Object.assign(telephonyStore, {
     uid: 1,
@@ -266,7 +273,59 @@ describe('TelephonyNotificationManager', () => {
       jest.spyOn(telephonyNotificationManager, 'clear').mockImplementation();
       telephonyNotificationManager.dispose();
       expect(telephonyNotificationManager.clear).toHaveBeenCalled();
-      expect(telephonyNotificationManager._disposer).toHaveBeenCalledTimes(1);
+      expect(incomingCallDisposer).toHaveBeenCalled();
+      expect(voicemailDisposer).toHaveBeenCalled();
+      expect(missedCallDisposer).toHaveBeenCalled;
+    });
+  });
+
+  describe('_notifyNewVoicemail()', () => {
+    it('Should show notification when notify new voicemail [JPT-2822]', () => {
+      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
+
+      telephonyNotificationManager._notifyNewVoicemail({});
+
+      expect(telephonyNotificationManager.show).toHaveBeenCalled();
+    });
+  });
+
+  describe('_notifyMissedCall()', () => {
+    beforeEach(() => {
+      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
+      jest.spyOn(i18nT, 'i18nP').mockImplementationOnce(value => value);
+    });
+
+    it('Should show notification when notify missed call [JPT-2793]', () => {
+      telephonyNotificationManager._notifyMissedCall({});
+
+      expect(telephonyNotificationManager.show).toHaveBeenCalled();
+    });
+
+    it('Should show Call back action when displayNumber existed [JPT-2814]', () => {
+      const notification = { title: 'user', displayNumber: '1111' };
+      telephonyNotificationManager._notifyMissedCall(notification);
+
+      const mockExpectOptions = expect.objectContaining({ actions: expect.arrayContaining([]) })
+      expect(telephonyNotificationManager.show).toHaveBeenCalledWith(notification.title, mockExpectOptions);
+    });
+
+    it('Should not show Call back action when displayNumber not existed [JPT-2814]', () => {
+      const notification = { title: 'user' };
+      telephonyNotificationManager._notifyMissedCall(notification);
+
+      const mockExpectOptions = expect.not.objectContaining({ actions: expect.arrayContaining([]) })
+      expect(telephonyNotificationManager.show).toHaveBeenCalledWith(notification.title, mockExpectOptions);
+    });
+
+    it('Should make outbound call back when has displayNumber and click call back [JPT-2814]', () => {
+      const mockMakeCall = jest.spyOn(telephonyNotificationManager._telephonyService, 'makeCall');
+
+      const displayNumber = '123456'
+      const callbackAction = telephonyNotificationManager._buildCallbackAction(displayNumber);
+
+      callbackAction.handler();
+
+      expect(mockMakeCall).toHaveBeenCalledWith(displayNumber);
     });
   });
 });

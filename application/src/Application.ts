@@ -20,6 +20,7 @@ import * as viewer from '@/modules/viewer/module.config';
 import * as phone from '@/modules/phone/module.config';
 import * as setting from '@/modules/setting/module.config';
 import * as media from '@/modules/media/module.config';
+import * as contact from '@/modules/contact/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
@@ -34,6 +35,12 @@ class Application {
   run() {
     Pal.instance.setImageDownloader(new ImageDownloader());
     Pal.instance.setErrorReporter(errorReporter);
+    Pal.instance.setWhiteScreenChecker({
+      isWhiteScreen: () => {
+        const root = document.getElementById('root');
+        return !root || !root.hasChildNodes();
+      },
+    });
     if (config.isProductionAccount()) {
       Performance.instance.setPerformance(new FirebasePerformance());
       Performance.instance.initialize();
@@ -56,6 +63,7 @@ class Application {
     jupiter.registerModule(phone.config);
     jupiter.registerModule(setting.config);
     jupiter.registerModule(media.config);
+    jupiter.registerModule(contact.config);
 
     if (window.jupiterElectron) {
       jupiter.registerModuleAsync(() =>

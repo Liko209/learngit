@@ -18,9 +18,15 @@ import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
+import { CustomStatus } from '@/containers/CustomStatus';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { IMessageService } from '@/modules/message/interface';
+import { PersonService } from 'sdk/module/person';
+import { catchError } from '@/common/catchError';
+import { EMOJI_UNICODE_REGEX } from '@/common/postParser/utils';
+
+const GLOBAL_MATCH_EMOJI = new RegExp(EMOJI_UNICODE_REGEX, 'g');
 
 const globalStore = storeManager.getGlobalStore();
 
@@ -104,7 +110,9 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   handleSendFeedback = () => {
     UploadRecentLogs.show();
   };
-
+  handleCustomStatus = () => {
+    CustomStatus.show();
+  }
   @computed
   get presence() {
     return getPresence(this.currentUserId);
@@ -117,7 +125,35 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
       this.currentUserId,
     );
   }
+  @computed
+  get awayStatus() {
+    const status = this.person.awayStatus || '';
+    const statusWithoutEmoji = status.replace(GLOBAL_MATCH_EMOJI, () => {
+      return '';
+    });
+    if (this.colons) {
+      return `  ${statusWithoutEmoji}`
+    }
+    return statusWithoutEmoji;
+  }
 
+  @catchError.flash({
+    network: 'customstatus.clearCustomStatusNetworkError',
+    server: 'customstatus.clearCustomStatusServerError',
+  })
+  handleClearStatus = async() => {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    await personService.setCustomStatus(this.currentUserId, '');
+  }
+
+  @computed
+  get colons () {
+    const status = this.person.awayStatus || '';
+    const matchedEmoji = status.match(EMOJI_UNICODE_REGEX) || [];
+    return matchedEmoji[0] || '';
+  }
   handleOpen = () => {
     this._messageService.open(this.currentUserId);
   };

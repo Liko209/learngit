@@ -40,6 +40,19 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   display: -ms-flexbox;
   display: flex;
   padding-left: 8px;
+  color: #000;
+}
+
+.c3.c3.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c3.c3:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c3.c3 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c6.c6 {
@@ -104,6 +117,10 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
 
 .c7.c7:active {
   opacity: 0.76;
+}
+
+.c7:focus {
+  outline: none;
 }
 
 .c7 > .avatar-short-name {
@@ -190,8 +207,9 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   >
     <div
       aria-disabled={false}
-      className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
+      className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button Mui-selected"
       onBlur={[Function]}
+      onClick={[Function]}
       onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
@@ -269,6 +287,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       aria-disabled={false}
       className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
       onBlur={[Function]}
+      onClick={[Function]}
       onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
@@ -346,6 +365,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       aria-disabled={false}
       className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
       onBlur={[Function]}
+      onClick={[Function]}
       onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
