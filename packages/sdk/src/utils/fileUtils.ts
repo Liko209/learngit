@@ -24,7 +24,6 @@ export async function loadFile(): Promise<File> {
   input.type = 'file';
 
   input.onchange = (e: any) => {
-    console.log('TCL: input.onchange -> onchange');
     // getting a hold of the file reference
     input.remove();
     const file = e.target.files[0];

@@ -84,13 +84,6 @@ export class DataModule extends BaseDebugModule {
     saveBlob(`${name}.zip`, exportZip);
   };
 
-  exportLocalStorageString() {
-    const obj: ExportStorage = {};
-    Object.keys(localStorage).forEach(key => {
-      obj[key] = localStorage.getItem(key);
-    });
-    return JSON.stringify(obj);
-  }
 }
 
 const data = new DataModule();
