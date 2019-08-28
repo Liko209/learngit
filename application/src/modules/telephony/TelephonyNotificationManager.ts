@@ -137,7 +137,12 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private async _showNotification() {
-    const { phoneNumber, uuid, displayName } = this._telephonyStore;
+    const {
+      phoneNumber,
+      uuid,
+      displayName,
+      isMultipleCall,
+    } = this._telephonyStore;
     if (!uuid) {
       return;
     }
@@ -157,7 +162,9 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
           icon: '',
           action: 'answer',
           handler: () => {
-            this._telephonyService.answer();
+            isMultipleCall
+              ? this._telephonyService.endAndAnswer()
+              : this._telephonyService.answer();
           },
         },
       ],
