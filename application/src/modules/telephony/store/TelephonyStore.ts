@@ -441,7 +441,10 @@ class TelephonyStore {
       this.backToDialerFromTransferPage();
     }
 
-    this.isContactMatched = false;
+    if (this.phoneNumber !== '' || !this.isMultipleCall) {
+      this.isContactMatched = false;
+    }
+
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
   };
