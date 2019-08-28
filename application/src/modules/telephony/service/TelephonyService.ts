@@ -68,6 +68,7 @@ import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -1196,6 +1197,37 @@ class TelephonyService {
       }
     });
   }
+
+  transfer = async (type: TRANSFER_TYPE, transferTo: string) => {
+    if (!this._callEntityId) {
+      return false;
+    }
+    try {
+      await this._serverTelephonyService.transfer(
+        this._callEntityId,
+        type,
+        transferTo
+      );
+    } catch (error) {
+      switch (true) {
+        case CALL_ACTION_ERROR_CODE.NOT_NETWORK === error: {
+          ToastCallError.toastNoNetwork();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+        }
+
+        default:
+          ToastCallError.toastTransferError();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+      }
+    }
+    return true;
+  };
 
   private _subscribeVoicemailNotification = () => {
     this._voicemailNotificationObserver = {

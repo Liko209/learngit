@@ -98,7 +98,10 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get isIncomingCall() {
-    return this._telephonyStore.isIncomingCall;
+    return (
+      this._telephonyStore.isIncomingCall &&
+      !this._telephonyStore.isTransferPage
+    );
   }
 
   @computed
@@ -128,7 +131,10 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get shouldDisplayDialer() {
-    return this._telephonyStore.shouldDisplayDialer;
+    return (
+      this._telephonyStore.shouldDisplayDialer ||
+      this._telephonyStore.isTransferPage
+    );
   }
 
   @computed

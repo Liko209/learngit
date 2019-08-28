@@ -47,6 +47,7 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -178,6 +179,7 @@ describe('TelephonyService', () => {
         setTimeout(() => {}, mockedDelay);
         return MAKE_CALL_ERROR_CODE.NO_ERROR;
       }),
+      transfer: jest.fn(),
       hangUp: jest.fn().mockImplementation(() => {}),
       park: (callUuid: string) => {
         if (callUuid === 'failed') {
@@ -1186,6 +1188,16 @@ describe('TelephonyService', () => {
       }
       await telephonyService.switchCall(caller as any);
       expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
+    })
+  })
+
+  describe('transfer()', () => {
+    it('should transfer call now success', async () => {
+      const callEntityId = 'id_0';
+      const toTransfer = '444555666';
+      telephonyService._callEntityId = callEntityId;
+      await telephonyService.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
+      expect(mockedServerTelephonyService.transfer).toHaveBeenCalledWith(callEntityId, TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
     })
   })
 });

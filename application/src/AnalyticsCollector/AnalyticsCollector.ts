@@ -331,6 +331,16 @@ class AnalyticsCollector {
       source,
     });
   }
+
+  directToTransferPage() {
+    dataAnalysis.page('Jup_Web/DT_phone_transferCall');
+  }
+
+  clickTransferActions(action: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_transferActions', {
+      action,
+    });
+  }
   // [FIJI-8195]
   login() {
     dataAnalysis.track('Jup_Web/DT_general_login');

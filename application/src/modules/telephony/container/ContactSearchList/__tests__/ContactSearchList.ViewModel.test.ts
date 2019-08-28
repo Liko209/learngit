@@ -240,4 +240,19 @@ describe('contactSearchListViewModel', () => {
     contactSearchListViewModel.loadInitialData();
     expect(contactSearchListViewModel.hasMore()).toBeFalsy();
   });
+
+  describe('selectCallItem()', () => {
+    it('should cancel the selection of transfer user [JPT-2764]',() => {
+      contactSearchListViewModel.selectCallItem('123', 1);
+      expect(contactSearchListViewModel._telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '123',
+        index: 1,
+      })
+      contactSearchListViewModel.selectCallItem('123', 1);
+      expect(contactSearchListViewModel._telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '',
+        index: NaN,
+      })
+    })
+  })
 });

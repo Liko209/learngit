@@ -165,6 +165,12 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
       .icon {
         color: ${palette('action', 'disabledBackground')};
       }
+      background-color: ${({ shouldPersistBg, theme, colorScope, colorName }) =>
+      shouldPersistBg
+        ? tinycolor(palette(colorScope, colorName)({ theme }))
+            .setAlpha(theme.palette.action.hoverOpacity)
+            .toRgbString()
+        : 'inherit'};
     }
 
     .rippleVisible {

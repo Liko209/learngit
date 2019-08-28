@@ -46,7 +46,7 @@ describe('MediaTrack', () => {
     const mediaTrack = new MediaTrack(trackBaseOpts);
     expect(mediaTrack).toBeInstanceOf(MediaTrack);
   });
-  describe('create media track', () => {
+  describe('constructor()', () => {
     describe('create media track without media', () => {
       it('should create default media track by id', () => {
         const mediaTrack = new MediaTrack(trackBaseOpts);
@@ -62,6 +62,8 @@ describe('MediaTrack', () => {
         expect(mediaTrack.masterVolume).toEqual(1);
         expect(mediaTrack.currentMediaEvent).toEqual([]);
         expect(mediaTrack.currentMediaUrl).toEqual('');
+        expect(mediaTrack.currentMediaVolume).toEqual(1);
+        expect(mediaTrack.weight).toEqual(9999);
       });
       it('should create media track use custom options', () => {
         const mediaTrack = new MediaTrack(
@@ -105,6 +107,15 @@ describe('MediaTrack', () => {
         );
         expect(mediaTrack.masterVolume).toEqual(testVol);
       });
+      it('should set media volume when custom set media volume', () => {
+        const testVol = 0.52;
+        const mediaTrack = new MediaTrack({
+          ...trackBaseOpts,
+          ...hasMediaOpts,
+          mediaVolume: testVol,
+        });
+        expect(mediaTrack.currentMediaVolume).toEqual(testVol);
+      })
       it('should set output device when custom set output devices', () => {
         const devices = ['device1', 'device2'];
         const mediaTrack = new MediaTrack(
@@ -128,10 +139,19 @@ describe('MediaTrack', () => {
         );
         expect(mediaTrack.currentMediaEvent).toEqual([loadEvent]);
       });
+      it('should set media track weight when custom set weight', () => {
+        const testWeight = 100;
+        const mediaTrack = new MediaTrack({
+          ...trackBaseOpts,
+          ...hasMediaOpts,
+          weight: testWeight,
+        });
+        expect(mediaTrack.weight).toEqual(testWeight);
+      })
     });
   });
 
-  describe('media track play', () => {
+  describe('play()', () => {
     it('should play sound when play called', () => {
       const mediaTrack = new MediaTrack(
         Object.assign({}, trackBaseOpts, hasMediaOpts),
@@ -148,7 +168,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track pause', () => {
+  describe('pause()', () => {
     it('should pause sound when track pause called', () => {
       const mediaTrack = new MediaTrack(
         Object.assign({}, trackBaseOpts, hasMediaOpts),
@@ -160,7 +180,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track stop', () => {
+  describe('stop()', () => {
     it('should stop sound when track stop called', () => {
       const mediaTrack = new MediaTrack(
         Object.assign({}, trackBaseOpts, hasMediaOpts),
@@ -173,7 +193,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track set mute', () => {
+  describe('setMute()', () => {
     it('should set sound mute or unmute when track setMute called', () => {
       const mediaTrack = new MediaTrack(
         Object.assign({}, trackBaseOpts, hasMediaOpts),
@@ -185,7 +205,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track set volume', () => {
+  describe('setVolume()', () => {
     it('should set sound volume when track setVolume called', () => {
       const mediaTrack = new MediaTrack(
         Object.assign({}, trackBaseOpts, hasMediaOpts),
@@ -204,7 +224,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track set loop', () => {
+  describe('setLoop()', () => {
     it('should set sound loop when track setLoop called', () => {
       const mediaTrack = new MediaTrack(
         Object.assign({}, trackBaseOpts, hasMediaOpts),
@@ -216,7 +236,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track set current time', () => {
+  describe('setCurrentTime()', () => {
     it('should set sound current time when track setVolume called', () => {
       const currentTime = 100;
       const mediaTrack = new MediaTrack(
@@ -239,26 +259,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track set master volume', () => {
-    it('should set sound volume when track setMasterVolume called', () => {
-      const mediaTrack = new MediaTrack(
-        Object.assign({}, trackBaseOpts, hasMediaOpts),
-      );
-      mediaTrack.setMasterVolume(0.5);
-      expect(mediaTrack.masterVolume).toEqual(0.5);
-    });
-    it('should not set sound volume when master volume is inValid', () => {
-      const mediaTrack = new MediaTrack(
-        Object.assign({}, trackBaseOpts, hasMediaOpts),
-      );
-      mediaTrack.setMasterVolume(0.5);
-      expect(mediaTrack.masterVolume).toEqual(0.5);
-      mediaTrack.setMasterVolume(2);
-      expect(mediaTrack.masterVolume).toEqual(0.5);
-    });
-  });
-
-  describe('media track set output devices', () => {
+  describe('setOutputDevices()', () => {
     it('should create device sound when track have output devices', () => {
       const devices = ['device1', 'device2'];
       const mediaTrack = new MediaTrack(
@@ -341,7 +342,39 @@ describe('MediaTrack', () => {
     })
   });
 
-  describe('media track set options', () => {
+  describe('setMasterVolume()', () => {
+    it('should set sound volume when track setMasterVolume called', () => {
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts),
+      );
+      mediaTrack.setMasterVolume(0.5);
+      expect(mediaTrack.masterVolume).toEqual(0.5);
+    });
+    it('should not set sound volume when master volume is inValid', () => {
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts),
+      );
+      mediaTrack.setMasterVolume(0.5);
+      expect(mediaTrack.masterVolume).toEqual(0.5);
+      mediaTrack.setMasterVolume(2);
+      expect(mediaTrack.masterVolume).toEqual(0.5);
+    });
+  });
+
+  describe('setMediaVolume()', () => {
+    it('should set sound volume when track set media volume', () => {
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts),
+      );
+      mediaTrack.setMediaVolume(0.1);
+      expect(mediaTrack.volume).toEqual(1);
+      expect(mediaTrack.masterVolume).toEqual(1);
+      expect(mediaTrack.currentMediaVolume).toEqual(0.1);
+      expect(mediaTrack.sounds[0].volume).toEqual(0.1);
+    })
+  })
+
+  describe('setOptions()', () => {
     it('should setup new media when track setOptions called', () => {
       const newMediaInfo = {
         id: trackBaseOpts.id,
@@ -377,7 +410,26 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track bind event', () => {
+  describe('dispose()', () => {
+    it('should reset track when dispose called', () => {
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts),
+      );
+      expect(mediaTrack.sounds.length).toEqual(1);
+      mediaTrack.dispose();
+      expect(mediaTrack.sounds.length).toEqual(0);
+      expect(mediaTrack.currentMediaId).toEqual('');
+      expect(mediaTrack.currentMediaUrl).toEqual('');
+      expect(mediaTrack.currentMediaEvent).toEqual([]);
+      expect(mediaTrack.src).toEqual([]);
+      expect(mediaTrack.muted).toBeFalsy();
+      expect(mediaTrack.volume).toEqual(1);
+      expect(mediaTrack.currentTime).toEqual(0);
+      expect(mediaTrack.outputDevices).toEqual([]);
+    });
+  });
+
+  describe('bindEvent()', () => {
     it('should bind event to current media', () => {
       const loadedEvent = {
         name: 'loadeddata' as MediaEventName,
@@ -403,7 +455,7 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track unbind event', () => {
+  describe('unbindEvent()', () => {
     it('should unbind event to current media', () => {
       const loadedEvent = {
         name: 'loadeddata' as MediaEventName,
@@ -427,22 +479,35 @@ describe('MediaTrack', () => {
     });
   });
 
-  describe('media track dispose', () => {
-    it('should reset track when dispose called', () => {
-      const mediaTrack = new MediaTrack(
-        Object.assign({}, trackBaseOpts, hasMediaOpts),
-      );
-      expect(mediaTrack.sounds.length).toEqual(1);
-      mediaTrack.dispose();
-      expect(mediaTrack.sounds.length).toEqual(0);
-      expect(mediaTrack.currentMediaId).toEqual('');
-      expect(mediaTrack.currentMediaUrl).toEqual('');
-      expect(mediaTrack.currentMediaEvent).toEqual([]);
-      expect(mediaTrack.src).toEqual([]);
-      expect(mediaTrack.muted).toBeFalsy();
-      expect(mediaTrack.volume).toEqual(1);
-      expect(mediaTrack.currentTime).toEqual(0);
-      expect(mediaTrack.outputDevices).toEqual([]);
-    });
-  });
+  describe('onPlaying()', () => {
+    it('should emit onPlaying event', () => {
+      const mediaTrack = new MediaTrack({
+        ...trackBaseOpts,
+        ...hasMediaOpts
+      });
+      const playingMockFn = jest.fn();
+      const noPlayingMockFn = jest.fn();
+
+      mediaTrack.onPlaying((isPlaying: boolean) => {
+        isPlaying ? playingMockFn() : noPlayingMockFn();
+      });
+
+      mediaTrack._trackPlayingEvent();
+      expect(playingMockFn).toHaveBeenCalled();
+      mediaTrack._trackPlayingEvent();
+      expect(playingMockFn).toHaveBeenCalled();
+    })
+    it('should emit onPlaying event when track reset', () => {
+      const mediaTrack = new MediaTrack({
+        ...trackBaseOpts,
+        ...hasMediaOpts,
+      });
+
+      const playingMockFn = jest.fn();
+      mediaTrack.onPlaying(playingMockFn);
+
+      mediaTrack._resetTrack();
+      expect(playingMockFn).toHaveBeenCalled();
+    })
+  })
 });

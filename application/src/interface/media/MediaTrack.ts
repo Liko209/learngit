@@ -16,8 +16,10 @@ type MediaTrackOptions = {
   outputDevices?: MediaDeviceType[] | null;
   masterVolume?: number;
   mediaId?: string;
+  mediaVolume?: number;
   mediaEvents?: MediaEvents[];
   onReset?: () => void;
+  weight?: number;
 };
 
 const DEFAULT_TRACK_ID = 'default-track';

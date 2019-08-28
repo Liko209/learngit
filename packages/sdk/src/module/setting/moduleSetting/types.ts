@@ -48,6 +48,8 @@ enum SettingEntityIds {
   Notification_IncomingCalls,
   Notification_MissCallAndNewVoiceMails,
   Notification_NewMessageBadgeCount,
+  MOBILE_DM,
+  MOBILE_Team,
   Audio_TeamMessages,
   Audio_DirectMessage,
   Audio_Mentions,
