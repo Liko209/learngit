@@ -24,7 +24,7 @@ import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
 
 import { UserConfigService } from 'sdk/module/config/service/UserConfigService';
 import { AccountGlobalConfig } from 'sdk/module/account/config/AccountGlobalConfig';
-
+import { CrashManager } from 'sdk/module/crash/CrashManager';
 jest.mock('../module/config/UserConfig');
 jest.mock('../module/config/GlobalConfig');
 jest.mock('../module/sync/service/SyncService');
@@ -35,6 +35,9 @@ jest.mock('../framework');
 jest.mock('../service/notificationCenter');
 jest.mock('foundation/src/analysis');
 jest.mock('foundation/network/NetworkManager');
+jest.mock('sdk/module/crash/CrashManager');
+window.addEventListener = jest.fn();
+window.removeEventListener = jest.fn();
 describe('Sdk', () => {
   let sdk: Sdk;
   let accountManager: AccountManager;
@@ -52,6 +55,12 @@ describe('Sdk', () => {
       getGlipToken: jest.fn(),
     },
   };
+  const crashManager: CrashManager = {
+    monitor: jest.fn(),
+    dispose: jest.fn(),
+    onCrash: jest.fn(),
+  } as any;
+  CrashManager.getInstance = () => crashManager;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -92,6 +101,7 @@ describe('Sdk', () => {
       expect(notificationCenter.on).toHaveBeenCalledTimes(1);
       expect(accountManager.on).toHaveBeenCalledTimes(4);
       expect(accountManager.syncLogin).toHaveBeenCalledTimes(1);
+      expect(crashManager.monitor).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -215,6 +225,9 @@ describe('Sdk', () => {
     });
     it('should clear database', () => {
       expect(daoManager.deleteDatabase).toHaveBeenCalled();
+    });
+    it('should dispose crashManager', () => {
+      expect(crashManager.dispose).toHaveBeenCalled();
     });
   });
 

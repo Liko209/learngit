@@ -3323,9 +3323,7 @@
       "version": 6805697933082624,
       "model_size": 0,
       "is_new": true,
-      "members": [
-        187875331
-      ],
+      "members": [187875331],
       "is_team": true,
       "is_public": false,
       "privacy": "private",
@@ -3333,9 +3331,7 @@
       "set_abbreviation": "[test] add member",
       "permissions": {
         "admin": {
-          "uids": [
-            187875331
-          ]
+          "uids": [187875331]
         },
         "user": {
           "uids": [],
@@ -3583,6 +3579,43 @@
       "privacy": "private",
       "description": "",
       "set_abbreviation": "LinkDemo",
+      "permissions": {
+        "admin": {
+          "uids": [187809795]
+        },
+        "user": {
+          "uids": [],
+          "level": 11
+        }
+      },
+      "function_id": "team",
+      "company_id": 401409,
+      "email_friendly_abbreviation": "linkdemo",
+      "guest_user_company_ids": [],
+      "most_recent_content_modified_at": 1560930105979,
+      "modified_at": 1560930101111,
+      "deactivated": false,
+      "most_recent_post_id": 2766872580,
+      "most_recent_post_created_at": 1560930100930,
+      "team_mention_cursor": 0,
+      "admin_mention_cursor": 0,
+      "last_author_id": 187809795,
+      "post_cursor": 18
+    },
+
+    {
+      "_id": 43212807,
+      "created_at": 1559526641756,
+      "creator_id": 187809795,
+      "version": 2570768384786432,
+      "model_size": 0,
+      "is_new": true,
+      "members": [187809795],
+      "is_team": true,
+      "is_public": true,
+      "privacy": "protected",
+      "description": "",
+      "set_abbreviation": "FIJI-6666 This is a public team, not include me",
       "permissions": {
         "admin": {
           "uids": [187809795]
