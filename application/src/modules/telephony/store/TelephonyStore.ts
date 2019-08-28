@@ -15,6 +15,7 @@ import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { Person, PhoneNumberModel } from 'sdk/module/person/entity';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 import { v4 } from 'uuid';
 import {
   CALL_WINDOW_STATUS,
@@ -39,7 +40,7 @@ import {
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 import { formatSeconds } from './utils';
-import { VoicemailNotification } from './types';
+import { VoicemailNotification, MissedCallNotification } from './types';
 
 type SelectedCallItem = { phoneNumber: string; index: number };
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
@@ -186,6 +187,9 @@ class TelephonyStore {
 
   @observable
   voicemailNotification: VoicemailNotification;
+
+  @observable
+  missedCallNotification: MissedCallNotification;
 
   constructor() {
     type FSM = '_callWindowFSM';
@@ -750,11 +754,25 @@ class TelephonyStore {
 
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
+    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
 
     this.voicemailNotification = {
       id,
-      title: await this._getNotificationCallerInfo(from),
+      title: `${displayName} ${displayNumber}`,
       body: this._getVoicemailNotificationBody(attachments),
+    };
+  };
+
+  @action
+  updateMissedCallNotification = async (callLog: CallLog) => {
+    const { id, from } = callLog;
+    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
+
+    this.missedCallNotification = {
+      id,
+      displayNumber,
+      title: i18nP('telephony.result.missedcall'),
+      body: `${displayName} ${displayNumber}`
     };
   };
 
@@ -763,7 +781,7 @@ class TelephonyStore {
     const contactNumber = extensionNumber || phoneNumber;
 
     if (!contactNumber) {
-      return i18nP('telephony.unknownCaller');
+      return { displayName: i18nP('telephony.unknownCaller'), displayNumber: '' };
     }
 
     const displayNumber = this._formatPhoneNumber(contactNumber);
@@ -772,7 +790,7 @@ class TelephonyStore {
 
     const displayName = matchPerson ? matchPerson.userDisplayName : caller.name;
 
-    return `${displayName} ${await displayNumber}`;
+    return { displayName, displayNumber: await displayNumber };
   };
 
   private _getVoicemailNotificationBody = (

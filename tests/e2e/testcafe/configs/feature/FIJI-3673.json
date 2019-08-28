@@ -1,0 +1,9 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Setting/**/*.ts",
+      "./fixtures/TeamSetting/Notification.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

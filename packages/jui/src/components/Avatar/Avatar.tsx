@@ -162,7 +162,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   }
 
   if (mask) {
-    avatar = <JuiAvatarMask>{avatar}</JuiAvatarMask>;
+    avatar = <JuiAvatarMask onClick={rest.onClick}>{avatar}</JuiAvatarMask>;
   }
 
   if (tooltip && popupHelper.PopoverProps.open) {
