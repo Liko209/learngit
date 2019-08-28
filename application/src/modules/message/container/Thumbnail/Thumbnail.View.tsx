@@ -13,9 +13,9 @@ import { accelerateURL } from '@/common/accelerateURL';
 
 @observer
 class ThumbnailView extends React.Component<ViewProps & Props> {
-  private static _placeHolder = (
-    <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
-  );
+  private static get _placeHolder() {
+    return <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>;
+  }
 
   private _renderIcon = () => {
     const { thumbsUrlWithSize, onClick } = this.props;
@@ -28,7 +28,7 @@ class ThumbnailView extends React.Component<ViewProps & Props> {
         <JuiThumbnail url={url} onClick={onClick} />
       </PreloadImg>
     );
-  }
+  };
 
   render() {
     const { icon, type, onClick } = this.props;
