@@ -446,7 +446,10 @@ class TelephonyStore {
       this.backToDialerFromTransferPage();
     }
 
-    if (this.phoneNumber !== '' || !this.isMultipleCall) {
+    if (
+      (this.phoneNumber !== '' || !this.isMultipleCall) &&
+      !this.isEndOtherCall
+    ) {
       this.isContactMatched = false;
     }
 
