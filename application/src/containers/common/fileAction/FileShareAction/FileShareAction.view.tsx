@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { useTranslation } from 'react-i18next';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -27,15 +27,17 @@ interface Props {
   groupId?: number;
 }
 
-
 const FileShareAction = (props: Props) => {
   const { t } = useTranslation();
   const { fileId, groupId } = props;
   let postId = props.postId;
-  const share = (
-    <JuiIconography iconColor={['grey', '500']} iconSize="small">
-      share
-    </JuiIconography>
+  const share = useMemo(
+    () => (
+      <JuiIconography iconColor={['grey', '500']} iconSize="small">
+        share
+      </JuiIconography>
+    ),
+    [],
   );
   const shareToConversation = async (contact: { id: number }) => {
     portalManager.dismissLast();
