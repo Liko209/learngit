@@ -42,23 +42,21 @@ import {
   ProfileService,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   AUDIO_SOUNDS_INFO,
+  SOUNDS_TYPE,
 } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import { IMessageNotificationManager } from './interface';
+import { MESSAGE_TYPE } from './types';
 import { GlipTypeUtil } from 'sdk/utils';
 import { getIntegration } from './container/ConversationSheet/IntegrationItem/getIntegration';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
 
-enum MESSAGE_TYPE {
-  DIRECT_MESSAGE,
-  MENTION,
-  TEAM,
-}
+
 type MessageTypeInfo = {
   isMention: boolean;
   isActivity: boolean;
@@ -71,6 +69,7 @@ class MessageNotificationManager extends AbstractNotificationManager
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   private _profileService: ProfileService;
+  private _settingService: SettingService;
   private _vmQueue: {
     id: number;
     vm: MessageNotificationViewModel;
@@ -80,6 +79,9 @@ class MessageNotificationManager extends AbstractNotificationManager
     super('message');
     this._profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
+    );
+    this._settingService = ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
     );
     this._observer = {
       onEntitiesChanged:
@@ -163,7 +165,7 @@ class MessageNotificationManager extends AbstractNotificationManager
     );
     const sound =
       !muteSounds &&
-      (await this.getCurrentMessageSoundSetting(type.messageType));
+      (await this.getCurrentMessageSoundSetting(type.messageType, groupModel));
     const opts = Object.assign(
       {
         body,
@@ -193,23 +195,25 @@ class MessageNotificationManager extends AbstractNotificationManager
     };
     return opts;
   }
-  async getCurrentMessageSoundSetting(type: MESSAGE_TYPE) {
+  async getCurrentMessageSoundSetting(type: MESSAGE_TYPE, groupModel: GroupModel) {
+    const { audioNotifications } = await this._profileService.getConversationPreference(
+      groupModel.id,
+    );
+    if (audioNotifications.id !== SOUNDS_TYPE.Default) {
+      return audioNotifications.id;
+    }
     const { DIRECT_MESSAGE, TEAM, MENTION } = MESSAGE_TYPE;
     const soundSettingDict = {
       [DIRECT_MESSAGE]: MESSAGE_SETTING_ITEM.SOUND_DIRECT_MESSAGES,
       [MENTION]: MESSAGE_SETTING_ITEM.SOUND_MENTIONS,
       [TEAM]: MESSAGE_SETTING_ITEM.SOUND_TEAM_MESSAGES,
     };
-    const entity = await ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
-    ).getById<AUDIO_SOUNDS_INFO>(soundSettingDict[type]);
-    return entity ? (entity.value ? entity.value.id : undefined) : undefined;
+    const entity = await this._settingService.getById<AUDIO_SOUNDS_INFO>(soundSettingDict[type]);
+    return entity && entity.value && entity.value.id;
   }
 
   async getCurrentMessageNotificationSetting() {
-    const entity = await ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
-    ).getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(
+    const entity = await this._settingService.getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(
       MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
     );
     return (entity && entity.value) || 'default';

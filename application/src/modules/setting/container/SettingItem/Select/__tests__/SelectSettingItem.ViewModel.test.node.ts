@@ -64,19 +64,6 @@ describe('SelectSettingItemViewModel', () => {
     });
   });
 
-  describe('value', () => {
-    it('should return extracted value', () => {
-      mockSettingItem({
-        valueExtractor: (obj: any) => obj.myId,
-      });
-      mockSettingItemEntity({
-        value: { myId: '1' },
-      });
-      const vm = new SelectSettingItemViewModel({ id: 1 });
-      expect(vm.value).toEqual('1');
-    });
-  });
-
   describe('saveSetting() [JPT-2083]', () => {
     it('should supports object as value and source', async () => {
       mockSettingItemEntity({
@@ -87,51 +74,10 @@ describe('SelectSettingItemViewModel', () => {
         beforeSaving: () => true,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
-      await vm.saveSetting('B');
+      await vm.saveSetting('B', { id: 'B' });
       expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith({
         id: 'B',
       });
-    });
-
-    it('should supports object as value and source, and id is number', async () => {
-      mockSettingItemEntity({
-        valueSetter: jest.fn(),
-        source: [{ id: 1 }, { id: 2 }],
-      });
-      mockSettingItem({
-        beforeSaving: () => true,
-      });
-      const vm = new SelectSettingItemViewModel({ id: 1 });
-      await vm.saveSetting('2');
-      expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith({
-        id: 2,
-      });
-    });
-
-    it('should supports number as value and source', async () => {
-      mockSettingItemEntity({
-        valueSetter: jest.fn(),
-        source: [1, 2],
-      });
-      mockSettingItem({
-        beforeSaving: () => true,
-      });
-      const vm = new SelectSettingItemViewModel({ id: 1 });
-      await vm.saveSetting('2');
-      expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith(2);
-    });
-
-    it('should supports string as value and source', async () => {
-      mockSettingItemEntity({
-        valueSetter: jest.fn(),
-        source: ['A', 'B'],
-      });
-      mockSettingItem({
-        beforeSaving: () => true,
-      });
-      const vm = new SelectSettingItemViewModel({ id: 1 });
-      await vm.saveSetting('B');
-      expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith('B');
     });
 
     it('should supports string as value and source', async () => {
@@ -143,20 +89,8 @@ describe('SelectSettingItemViewModel', () => {
         beforeSaving: () => false,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
-      await vm.saveSetting('B');
+      await vm.saveSetting('B', 'B');
       expect(vm.settingItemEntity.valueSetter).not.toHaveBeenCalled();
-    });
-
-    it('should throw error when source is invalid', async () => {
-      mockSettingItemEntity({
-        valueSetter: jest.fn(),
-        source: [{ customId: 1 }, { customId: 2 }],
-      });
-      mockSettingItem({
-        beforeSaving: () => true,
-      });
-      const vm = new SelectSettingItemViewModel({ id: 1 });
-      await expect(vm.saveSetting('2')).rejects.toThrow();
     });
   });
 });

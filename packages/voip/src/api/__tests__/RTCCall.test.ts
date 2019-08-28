@@ -828,7 +828,7 @@ describe('RTC call', () => {
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
       call.answer();
-      session.mockSignal('accepted');
+      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
       call.transfer('');
       setImmediate(() => {
         expect(account.onCallActionFailed).toBeCalledWith(
@@ -843,20 +843,24 @@ describe('RTC call', () => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
-      session.transfer.mockResolvedValue(null);
+      jest.spyOn(session, 'transfer').mockResolvedValue(session._referClientContext);
       call.answer();
-      session.mockSignal('accepted');
+      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
       call.transfer('123');
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.TRANSFER,
-      );
       setImmediate(() => {
-        expect(account.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.TRANSFER,
-          {},
-        );
-        done();
+        setImmediate(() => {
+          session._referClientContext.emit(RC_REFER_EVENT.REFER_REQUEST_ACCEPTED);
+          session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
+          setImmediate(() => {
+            expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+            expect(session.transfer).toHaveBeenCalled();
+            expect(account.onCallActionSuccess).toBeCalledWith(
+              RTC_CALL_ACTION.TRANSFER,
+              {},
+            );
+            done();
+          });
+        });
       });
     });
 
@@ -864,20 +868,44 @@ describe('RTC call', () => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
-      session.transfer.mockResolvedValue(null);
+      jest.spyOn(session, 'transfer').mockResolvedValue(session._referClientContext);
       call.answer();
-      session.mockSignal('accepted');
+      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
       call.transfer('123');
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-        RTC_CALL_ACTION.TRANSFER,
-      );
       setImmediate(() => {
-        expect(account.onCallActionFailed).toBeCalledWith(
-          RTC_CALL_ACTION.TRANSFER,
-          -1,
-        );
-        done();
+        setImmediate(() => {
+          session._referClientContext.emit(RC_REFER_EVENT.REFER_REQUEST_REJECTED);
+          setImmediate(() => {
+            expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+            expect(session.transfer).toHaveBeenCalled();
+            expect(account.onCallActionFailed).toBeCalledWith(
+              RTC_CALL_ACTION.TRANSFER,
+              -1,
+            );
+            done();
+          });
+        });
+      });
+    });
+
+    it('should notify transfer failed when transfer in connected state and session notify transfer failed. [JPT-675]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      jest.spyOn(session, 'transfer').mockRejectedValue(null);
+      call.answer();
+      session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
+      call.transfer('123');
+      setImmediate(() => {
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+          expect(session.transfer).toHaveBeenCalled();
+          expect(account.onCallActionFailed).toBeCalledWith(
+            RTC_CALL_ACTION.TRANSFER,
+            -1,
+          );
+          done();
+        });
       });
     });
   });
@@ -971,9 +999,8 @@ describe('RTC call', () => {
       setImmediate(() => {
         setImmediate(() => {
           sessionA._referClientContext.emit(RC_REFER_EVENT.REFER_REQUEST_REJECTED);
-          sessionA.mockSignal(WEBPHONE_SESSION_STATE.BYE);
           setImmediate(() => {
-            expect(callA.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+            expect(callA.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
             expect(sessionA.warmTransfer).toHaveBeenCalled();
             expect(account.onCallActionFailed).toBeCalledWith(
               RTC_CALL_ACTION.WARM_TRANSFER,

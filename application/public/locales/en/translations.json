@@ -1166,6 +1166,22 @@
     "prompt": {
       "updateRegionalSettingsBackendError": "Sorry, something went wrong on our end and we weren't able to save your region settings. Try again later.",
       "updateRegionalSettingsNetworkError": "Sorry, we weren't able to save your region settings due to a poor network connection. Try again."
+    },
+    "conversationPreferences": {
+      "entry": "Notification preferences",
+      "title": "Conversation notification preferences",
+      "muted": "Mute all notifications everywhere",
+      "desktopNotifications": "Enable desktop notifications",
+      "audioNotifications": "Enable desktop sound notifications",
+      "pushNotifications": "Enable mobile notifications",
+      "emailNotifications": "Enable email notifications",
+      "options": {
+        "mobileNotifications": {
+          "0": "Off",
+          "1": "Every message",
+          "firstonly": "First new message only"
+        }
+      }
     }
   },
   "viewer": {
