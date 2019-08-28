@@ -30,6 +30,7 @@ type FuzzySearchContactOptions = {
   asIdsOrder?: boolean;
   recentFirst?: boolean;
   ignoreEmail?: boolean;
+  meFirst?: boolean;
   sortFunc?: (
     personA: SortableModel<Person>,
     personB: SortableModel<Person>,

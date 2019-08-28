@@ -33,6 +33,7 @@ import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
 import { jobScheduler } from './framework/utils/jobSchedule';
 import { UserConfigService } from './module/config';
+import { CrashManager } from './module/crash';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -51,7 +52,9 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) {}
+  ) {
+    CrashManager.getInstance().monitor();
+  }
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
@@ -209,6 +212,7 @@ class Sdk {
     ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
+    CrashManager.getInstance().dispose();
   }
 
   updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {

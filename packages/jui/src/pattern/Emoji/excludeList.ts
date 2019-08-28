@@ -253,6 +253,7 @@ const ExcludeList = [
   'e-mail',
   'eye-in-speech-bubble',
   'non-potable_water',
+  'rainbow-flag',
 ];
 
 const ConvertList = [

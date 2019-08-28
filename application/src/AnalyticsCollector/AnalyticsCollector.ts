@@ -14,7 +14,7 @@ import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
-import { ConversationType, NewConversationSource } from './types';
+import { ConversationType, NewConversationSource, SendTrigger } from './types';
 
 class AnalyticsCollector {
   constructor() {
@@ -84,14 +84,16 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_phone_outboundCall', info);
   }
 
-  // [FIJI-3202] Segment - Add event - Send post
+  // [FIJI-3202] Segment - Add event - Send post / [FIJI-8303] Post Button for Attachments
   sendPost(
+    trigger: SendTrigger,
     source: string,
     postType: string,
     destination: string,
     atTeam = 'no',
   ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
+      trigger,
       source,
       postType,
       destination,
@@ -321,6 +323,20 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_general_toggleLeftNavigationPanel', {
       state,
     });
+  }
+
+  directToTransferPage() {
+    dataAnalysis.page('Jup_Web/DT_phone_transferCall');
+  }
+
+  clickTransferActions(action: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_transferActions', {
+      action,
+    });
+  }
+  // [FIJI-8195]
+  login() {
+    dataAnalysis.track('Jup_Web/DT_general_login');
   }
 }
 

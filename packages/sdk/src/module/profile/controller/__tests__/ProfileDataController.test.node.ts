@@ -8,12 +8,14 @@ import { Profile } from '../../entity';
 import { MockEntitySourceController } from './MockEntitySourceController';
 import { buildEntityCacheController } from 'sdk/framework/controller';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from '../../constants';
 import { SettingService } from 'sdk/module/setting';
 import GroupService from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ProfileEntityObservable } from '../ProfileEntityObservable';
+import { ConversationPreferenceHandler } from '../ConversationPreferenceHandler';
 
 jest.mock('../../../../api/glip/profile');
+jest.mock('../ProfileEntityObservable');
 jest.mock('sdk/framework/controller/interface/IEntitySourceController');
 jest.mock('sdk/framework/controller/impl/EntityCacheController');
 jest.mock('sdk/module/group');
@@ -31,12 +33,15 @@ describe('ProfileDataController', () => {
   let mockEntityCacheController: IEntityCacheController<Profile>;
   let settingService: SettingService;
   let groupService: GroupService;
+  let mockProfileObservable: ProfileEntityObservable;
   beforeEach(() => {
     mockEntitySourceController = new MockEntitySourceController();
     mockEntityCacheController = buildEntityCacheController();
+    mockProfileObservable = new ProfileEntityObservable();
     profileDataController = new ProfileDataController(
       mockEntitySourceController,
       mockEntityCacheController,
+      mockProfileObservable,
     );
     settingService = new SettingService();
     groupService = new GroupService();
@@ -175,83 +180,36 @@ describe('ProfileDataController', () => {
     });
   });
 
-  describe('_getGlobalSetting()', () => {
-    it.each`
-      global_setting                                         | isTeam   | expectRes
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF}            | ${true}  | ${true}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE}    | ${true}  | ${false}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION} | ${true}  | ${true}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF}            | ${false} | ${true}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE}    | ${false} | ${false}
-      ${DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION} | ${false} | ${false}
-      ${undefined}                                           | ${false} | ${false}
-      ${undefined}                                           | ${true}  | ${true}
-    `(
-      'should return $expectRes when global setting is $global_setting and isTeam is $isTeam',
-      async ({ global_setting, isTeam, expectRes }) => {
-        const groupId = 1;
-        groupService.getById = jest.fn().mockReturnValue({ is_team: isTeam });
-        settingService.getById = jest
-          .fn()
-          .mockReturnValue({ value: global_setting });
-        const result = await profileDataController['_getGlobalSetting'](
-          groupId,
-        );
-        expect(result).toEqual(expectRes);
-      },
-    );
-  });
-
   describe('isNotificationMute()', () => {
     it.each`
-      muted        | desktop_notifications | global_setting | expectRes
-      ${undefined} | ${true}               | ${true}        | ${false}
-      ${undefined} | ${true}               | ${false}       | ${false}
-      ${undefined} | ${false}              | ${true}        | ${true}
-      ${undefined} | ${false}              | ${false}       | ${true}
-      ${undefined} | ${undefined}          | ${true}        | ${true}
-      ${undefined} | ${undefined}          | ${false}       | ${false}
-      ${false}     | ${true}               | ${true}        | ${false}
-      ${false}     | ${true}               | ${false}       | ${false}
-      ${false}     | ${false}              | ${true}        | ${true}
-      ${false}     | ${false}              | ${false}       | ${true}
-      ${false}     | ${undefined}          | ${true}        | ${true}
-      ${false}     | ${undefined}          | ${false}       | ${false}
-      ${true}      | ${true}               | ${true}        | ${true}
-      ${true}      | ${true}               | ${false}       | ${true}
-      ${true}      | ${false}              | ${true}        | ${true}
-      ${true}      | ${false}              | ${false}       | ${true}
-      ${true}      | ${undefined}          | ${true}        | ${true}
-      ${true}      | ${undefined}          | ${false}       | ${true}
+      muted    | desktopNotifications | expectRes
+      ${true}  | ${true}              | ${true}
+      ${true}  | ${false}             | ${true}
+      ${false} | ${true}              | ${false}
+      ${false} | ${false}             | ${true}
     `(
-      'should return $expectRes when mute is $mute and desktop_notification is $desktop_notifications and global_setting is $global_setting',
-      async ({ muted, desktop_notifications, global_setting, expectRes }) => {
+      'should return $expectRes when mute is $mute and desktop_notifications is $desktop_notifications',
+      async ({ muted, desktopNotifications, expectRes }) => {
         const groupId = 1;
-        profileDataController['_getGlobalSetting'] = jest
+        profileDataController.getConversationPreference = jest
           .fn()
-          .mockReturnValue(global_setting);
-        profileDataController.getProfile = jest.fn().mockReturnValue({
-          conversation_level_notifications: {
-            [groupId]: {
-              muted,
-              desktop_notifications,
-            },
-          },
-        });
+          .mockResolvedValue({
+            muted,
+            desktopNotifications,
+          });
         const result = await profileDataController.isNotificationMute(groupId);
         expect(result).toEqual(expectRes);
       },
     );
-    it('should return global setting when profile.conversation_level_notifications is undefined', async () => {
-      const groupId = 1;
-      profileDataController['_getGlobalSetting'] = jest
-        .fn()
-        .mockReturnValue(true);
-      profileDataController.getProfile = jest.fn().mockReturnValue({
-        conversation_level_notifications: undefined,
-      });
-      const result = await profileDataController.isNotificationMute(groupId);
-      expect(result).toEqual(true);
+  });
+  describe('getConversationPreference', () => {
+    it('should call buildEntity', async () => {
+      profileDataController.getProfile = jest.fn();
+      profileDataController[
+        '_conversationPreferenceHandler'
+      ].buildEntityInfo = jest.fn().mockResolvedValue(1);
+      const result = await profileDataController.getConversationPreference(1);
+      expect(result).toEqual(1);
     });
   });
 });

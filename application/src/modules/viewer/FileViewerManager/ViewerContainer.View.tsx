@@ -21,7 +21,7 @@ const ThumbnailBar: SFC<Type> = memo((props: Type) => {
   const { dataModule, handlePageIdxChanged } = props;
   if (dataModule.pages) {
     const items = dataModule.pages.map(page => {
-      return <JuiImageWithStatusView src={page.url} key={page.url} />;
+      return <JuiImageWithStatusView src={page.url || ''} key={page.url} />;
     });
     return (
       <JuiViewerSidebar
@@ -44,7 +44,7 @@ const ViewerDocument = (props: Type) => {
         cmp: (
           <JuiImageWithStatusView
             background={'paper'}
-            src={page.url}
+            src={page.url || ''}
             key={page.url}
           />
         ),

@@ -95,6 +95,19 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       networkExecutor.retryCount = 3;
       networkExecutor.retryCounter = 0;
+      fakeResponse.status = RESPONSE_STATUS_CODE.BAD_GATEWAY;
+      const spy = jest.spyOn(networkExecutor, '_retry');
+      networkExecutor.onFailure(fakeResponse);
+      expect(spy).toHaveBeenCalled();
+      networkExecutor.retryStrategy.cancel();
+    });
+
+    it('should retry when receive network error and ignoreNetwork is true', () => {
+      const networkExecutor: NetworkRequestExecutor = setupExecutor();
+      networkExecutor.request.ignoreNetwork = true;
+      networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
+      networkExecutor.retryCount = 3;
+      networkExecutor.retryCounter = 0;
       fakeResponse.status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
       const spy = jest.spyOn(networkExecutor, '_retry');
       networkExecutor.onFailure(fakeResponse);

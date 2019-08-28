@@ -12,6 +12,8 @@ type ProfileMiniCardPersonProps = {
 
 type ProfileMiniCardPersonViewProps = {
   id: number;
+  colonsEmoji: string;
+  statusPlainText: string;
   person: PersonModel;
   isMe: boolean;
 };

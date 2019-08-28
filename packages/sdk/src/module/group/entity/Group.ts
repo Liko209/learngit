@@ -79,6 +79,7 @@ type FuzzySearchGroupOptions = {
   fetchAllIfSearchKeyEmpty?: boolean;
   myGroupsOnly?: boolean;
   recentFirst?: boolean;
+  meFirst?: boolean;
   filterFunc?: (group: Group) => boolean;
   sortFunc?: (
     groupA: SortableModel<Group>,
