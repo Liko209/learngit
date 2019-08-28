@@ -52,7 +52,7 @@ class TransferViewModel extends StoreViewModel<Props> {
     analyticsCollector.completeTransfer();
     const res = await this._telephonyService.transfer(
       TRANSFER_TYPE.WARM_TRANSFER,
-      this.transferNumber,
+      this._transferCallUUID,
     );
     res &&
       this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
@@ -86,6 +86,11 @@ class TransferViewModel extends StoreViewModel<Props> {
     return this.isMultipleCall
       ? this._telephonyStore.rawCalls[1].callState === CALL_STATE.CONNECTED
       : false;
+  }
+
+  @computed
+  private get _transferCallUUID() {
+    return this._telephonyStore.rawCalls.reverse()[0].uuid;
   }
 }
 

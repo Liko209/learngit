@@ -845,15 +845,12 @@ class TelephonyStore {
     this.isTransferPage = false;
     this.isRecentCalls = this._isRecentCallsInDialerPage;
     this.resetValidInputStringNumber();
-    if (!this.isWarmTransferPage) {
-      if (this._dialerString.length) {
-        this.inputString = this._dialerString;
-        this._dialerString = '';
-        return;
-      }
-      this.inputString = '';
+    if (this._dialerString.length) {
+      this.inputString = this._dialerString;
+      this._dialerString = '';
       return;
     }
+    this.inputString = '';
     return;
   };
 
