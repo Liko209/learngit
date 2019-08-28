@@ -189,6 +189,16 @@ class RCInfoService extends EntityBaseService<IdModel>
     return result;
   }
 
+  async isOrganizeConferenceAvailable(): Promise<boolean>{
+    const result =
+    this.isRCAccount &&
+    (await this.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
+    ));
+    mainLogger.debug(`isWebPhoneAvailable: ${result}`);
+    return result;
+  }
+
   async isWebPhoneAvailable(): Promise<boolean> {
     const result =
       this.isRCAccount &&
