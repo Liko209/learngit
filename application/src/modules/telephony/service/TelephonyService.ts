@@ -67,9 +67,6 @@ import { ISoundNotification } from '@/modules/notification/interface';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
-import {
-  CALL_STATE,
-} from 'sdk/module/telephony/entity';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -460,9 +457,9 @@ class TelephonyService {
     );
 
     this._callStateDisposer = reaction(
-      () => this._telephonyStore.callState,
-      callState => {
-        if (callState === CALL_STATE.DISCONNECTING) {
+      () => !!this._telephonyStore.endCall,
+      hasCallEnd => {
+        if (hasCallEnd) {
           this._telephonyStore.end();
           this._resetCallState();
         }

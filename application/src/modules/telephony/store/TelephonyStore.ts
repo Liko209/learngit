@@ -251,7 +251,9 @@ class TelephonyStore {
           this.transferString = this.inputString;
         }
         this.resetCallItem();
-        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(this.inputString);
+        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(
+          this.inputString,
+        );
       },
     );
 
@@ -422,6 +424,11 @@ class TelephonyStore {
   end = () => {
     const history = this._history;
 
+    // if end call isn't active call and incoming state reply don't reset state
+    if (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) {
+      return;
+    }
+
     switch (true) {
       case this.isMultipleCall:
         this.endMultipleIncomingCall();
@@ -453,7 +460,13 @@ class TelephonyStore {
       this.leaveWarmTransferPage();
     }
 
-    this.isContactMatched = false;
+    if (
+      (this.phoneNumber !== '' || !this.isMultipleCall) &&
+      !this.isEndOtherCall
+    ) {
+      this.isContactMatched = false;
+    }
+
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
   };
@@ -748,7 +761,7 @@ class TelephonyStore {
 
   @computed
   get phoneNumber() {
-    if (!this.call) return '';
+    if (!this.call) return undefined;
     const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
     return phoneNumber !== ANONYMOUS_NUM ? phoneNumber : '';
   }
@@ -782,6 +795,18 @@ class TelephonyStore {
   @computed
   get rawCalls() {
     return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+  }
+
+  @computed
+  get endCall() {
+    return this._rawCalls.find(
+      call => call.callState === CALL_STATE.DISCONNECTING,
+    );
+  }
+
+  @computed
+  get isEndOtherCall() {
+    return this.endCall && this.call && this.endCall.id !== this.call.id;
   }
 
   @action
@@ -825,7 +850,7 @@ class TelephonyStore {
       this._dialerString = '';
       return;
     }
-    return this.inputString = '';
+    return (this.inputString = '');
   };
 
   @action
@@ -863,7 +888,7 @@ class TelephonyStore {
       phoneNumber: '',
       index: NaN,
     };
-  }
+  };
 
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
