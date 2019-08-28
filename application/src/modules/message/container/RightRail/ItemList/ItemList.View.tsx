@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { computed } from 'mobx';
-import { observer } from 'mobx-react';
+import { observer, Observer } from 'mobx-react';
 import { DataList } from '@/modules/common/container/DataList';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
@@ -73,16 +73,20 @@ class ItemListComponent extends React.Component<ItemListViewProps> {
         )}
         <JuiAutoSizer>
           {({ height }: Size) => (
-            <DataList
-              listHandler={listHandler}
-              initialDataCount={INITIAL_DATA_COUNT}
-              InfiniteListProps={Object.assign(this._infiniteListProps, {
-                height,
-                noRowsRenderer: this._emptyView,
-              })}
-            >
-              {this._renderItems()}
-            </DataList>
+            <Observer>
+              {() => (
+                <DataList
+                  listHandler={listHandler}
+                  initialDataCount={INITIAL_DATA_COUNT}
+                  InfiniteListProps={Object.assign(this._infiniteListProps, {
+                    height,
+                    noRowsRenderer: this._emptyView,
+                  })}
+                >
+                  {this._renderItems()}
+                </DataList>
+              )}
+            </Observer>
           )}
         </JuiAutoSizer>
       </JuiRightShelfContent>
