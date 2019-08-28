@@ -206,7 +206,7 @@ class Media implements IMedia {
     this._outputDevices =
       o.outputDevices && Array.isArray(o.outputDevices)
         ? o.outputDevices
-        : o.outputDevices === null
+        : o.outputDevices === null || o.outputDevices === undefined
         ? null
         : trackManager.getAllOutputDevicesId();
 
