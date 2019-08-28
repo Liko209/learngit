@@ -2,14 +2,12 @@
  * @Author: Mia Cai (mia.cai@ringcentral.com)
  */
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import * as _ from 'lodash';
 import { IGroup, ITestMeta } from "../../v2/models";
-import { MessageSettingPage } from '../../v2/page-models/AppRoot/HomePage/SettingTab/MessageSettingPage';
 
 fixture('ConversationList/maxConversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))

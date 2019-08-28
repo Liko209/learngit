@@ -14,6 +14,7 @@ import {
 } from 'jui/components/Dialog';
 import { Favorite } from '@/containers/common/Favorite';
 import { Privacy } from '@/containers/common/Privacy';
+import { Mute } from '@/containers/common/Mute';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
 import { TeamSettingButton } from '@/containers/common/TeamSettingButton';
@@ -33,6 +34,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
       <>
         <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
         <JuiDialogHeaderActions>
+          <Mute groupId={id} />
           <Privacy id={id} size="medium" analysisSource="profileDialog" />
           <Favorite
             id={id}
@@ -43,7 +45,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
             }}
           />
           {group.isMember && <TeamSettingButton id={id} size="medium" />}
-          {group.isTeam && <More id={id} size="medium" />}
+          {group.isTeam && <More id={id} size="medium" automationId="team-profile-more" />}
           <JuiIconButton
             onClick={this.dismiss}
             tooltipTitle={t('common.dialog.close')}
