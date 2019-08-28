@@ -3,7 +3,7 @@
  * @Date: 2018-10-23 13:16:58
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
@@ -32,6 +32,7 @@ import {
   JuiIconography,
   JuiIconographyProps,
 } from '../../../foundation/Iconography';
+import { DotsLoading } from './dotsCssLoading';
 
 const ITEM_WIDTH = 84;
 const FILE_CARD_HEIGHT = 68;
@@ -98,8 +99,9 @@ const FileStatusButton = styled(Fab)`
     background-color: ${palette('common', 'white')};
     ${typography('body1')};
     box-shadow: ${({ theme }) => theme.shadows[13]};
-    display: flex;
-    flex-direction: column;
+    > span {
+      flex-direction: column;
+    }
   }
 `;
 
@@ -122,26 +124,40 @@ const FileCard = styled(JuiCard)`
   cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `;
 
-type FileCardMediaWrapperProps = JuiCardMediaProps & { disabled?: boolean };
+type FileCardMediaWrapperProps = JuiCardMediaProps & {
+  disabled?: boolean;
+  total: number;
+};
 
 const FileCardMediaWrapper = ({
   disabled,
+  total = 0,
   ...rest
-}: FileCardMediaWrapperProps) => (
-  <JuiCardMedia {...rest}>
-    <FileStatusButton>
-      <JuiIconography symbol={ViewSvg} />
-      {disabled ? '...' : '1/24'}
-    </FileStatusButton>
-  </JuiCardMedia>
-);
+}: FileCardMediaWrapperProps) => {
+  const [isHover, setHover] = useState(false);
+  const handleOnMouseEnter = useCallback(() => setHover(true), []);
+  const handleOnMouseOver = useCallback(() => setHover(false), []);
+  return (
+    <JuiCardMedia
+      {...rest}
+      onMouseEnter={handleOnMouseEnter}
+      onMouseOver={handleOnMouseEnter}
+      onMouseLeave={handleOnMouseOver}
+    >
+      {isHover && (
+        <FileStatusButton>
+          <JuiIconography symbol={ViewSvg} />
+          {disabled ? <DotsLoading /> : `1/${total}`}
+        </FileStatusButton>
+      )}
+    </JuiCardMedia>
+  );
+};
 
 const FileCardMedia = styled(FileCardMediaWrapper)`
   position: relative;
   height: ${height(50)};
   background-color: ${palette('accent', 'ash')};
-  opacity: ${({ disabled, theme }) =>
-    disabled ? theme.palette.action.hoverOpacity * 3 : 1};
 `;
 
 const FileCardContent = styled(MuiCardContent)`

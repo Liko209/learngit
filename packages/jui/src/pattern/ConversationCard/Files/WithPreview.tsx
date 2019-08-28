@@ -16,6 +16,7 @@ type JuiFileWithPreviewProps = {
   iconType: string;
   handleFileClick?: (ev: React.MouseEvent<HTMLElement>) => void;
   disabled?: boolean;
+  total?: number;
 };
 
 class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
@@ -28,6 +29,7 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
       iconType,
       handleFileClick,
       disabled = true,
+      total = 0,
     } = this.props;
 
     return (
@@ -38,6 +40,7 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
         <Jui.FileCardMedia
           image={url}
           disabled={disabled}
+          total={total}
           data-test-automation-id={'fileCardMedia'}
         />
         <Jui.FileCardContent>
