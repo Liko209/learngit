@@ -8,6 +8,8 @@ import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
+import Fab from '@material-ui/core/Fab';
+import ViewSvg from '../../../assets/jupiter-icon/icon-view.svg';
 import {
   JuiTypography,
   JuiTypographyProps,
@@ -82,6 +84,25 @@ const FileInfo = styled(MuiListItemText)`
   }
 `;
 
+const FileStatusButton = styled(Fab)`
+  && {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    opacity: 0.8;
+    width: ${spacing(18)};
+    height: ${spacing(18)};
+    background-color: ${palette('common', 'white')};
+    ${typography('body1')};
+    box-shadow: ${({ theme }) => theme.shadows[13]};
+    display: flex;
+    flex-direction: column;
+  }
+`;
+
 const FileActionsWrapper = styled.span`
   margin-left: ${spacing(2)};
   display: flex;
@@ -106,9 +127,17 @@ type FileCardMediaWrapperProps = JuiCardMediaProps & { disabled?: boolean };
 const FileCardMediaWrapper = ({
   disabled,
   ...rest
-}: FileCardMediaWrapperProps) => <JuiCardMedia {...rest} />;
+}: FileCardMediaWrapperProps) => (
+  <JuiCardMedia {...rest}>
+    <FileStatusButton>
+      <JuiIconography symbol={ViewSvg} />
+      {disabled ? '...' : '1/24'}
+    </FileStatusButton>
+  </JuiCardMedia>
+);
 
 const FileCardMedia = styled(FileCardMediaWrapper)`
+  position: relative;
   height: ${height(50)};
   background-color: ${palette('accent', 'ash')};
   opacity: ${({ disabled, theme }) =>
