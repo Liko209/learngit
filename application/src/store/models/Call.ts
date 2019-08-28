@@ -3,7 +3,7 @@
  * @Date: 2019-05-28 13:43:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable } from 'mobx';
+import { observable, autorun } from 'mobx';
 import Base from './Base';
 import {
   Call,
@@ -13,6 +13,7 @@ import {
   MUTE_STATE,
   RECORD_STATE,
 } from 'sdk/module/telephony/entity';
+import { getDisplayNameByCaller } from '@/modules/telephony/helpers';
 
 export default class CallModel extends Base<Call> {
   @observable
@@ -60,6 +61,9 @@ export default class CallModel extends Base<Call> {
   @observable
   toName: string;
 
+  @observable
+  displayName: string;
+
   constructor(data: Call) {
     super(data);
     const {
@@ -95,6 +99,10 @@ export default class CallModel extends Base<Call> {
     this.muteState = mute_state;
     this.fromName = from_name;
     this.toName = to_name;
+
+    autorun(async () => {
+      this.displayName = await getDisplayNameByCaller(this);
+    });
   }
 
   static fromJS(data: Call) {

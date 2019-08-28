@@ -18,11 +18,13 @@ import { Hold } from '../Hold';
 import { Add } from '../Add';
 import { Record } from '../Record';
 import { CallActions } from '../CallActions';
+import { Transfer } from '../Transfer';
 import { CallCtrlPanelViewProps } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Avatar } from '@/containers/Avatar';
 import { getDisplayName } from '../../helpers';
 import { DialerTitleBar } from '../DialerTitleBar';
+import { WarmTransferHeader } from '../WarmTransferHeader';
 
 type Props = WithTranslation & CallCtrlPanelViewProps;
 
@@ -43,20 +45,27 @@ class CallCtrlViewComponent extends React.Component<Props> {
   private callActions = [Mute, Keypad, Hold, Add, Record, CallActions];
 
   render() {
-    const { isExt, phone, t, name, direction } = this.props;
+    const { isExt, phone, t, name, direction, isWarmTransferPage } = this.props;
     if (direction) {
       return (
         <>
           <JuiHeaderContainer>
             <DialerTitleBar />
-            <JuiHeader
-              Avatar={this._Avatar}
-              name={getDisplayName(t, direction, name)}
-              phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
-              showDialerInputField={false}
-            />
+            {isWarmTransferPage ? (
+              <WarmTransferHeader />
+            ) : (
+              <JuiHeader
+                Avatar={this._Avatar}
+                name={getDisplayName(t, direction, name)}
+                phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
+                showDialerInputField={false}
+              />
+            )}
           </JuiHeaderContainer>
-          <JuiContainer CallAction={End} KeypadActions={this.callActions} />
+          <JuiContainer
+            CallAction={isWarmTransferPage ? Transfer : End}
+            KeypadActions={this.callActions}
+          />
         </>
       );
     }

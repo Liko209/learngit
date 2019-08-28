@@ -43,7 +43,18 @@ class TransferViewModel extends StoreViewModel<Props> {
       TRANSFER_TYPE.BLIND_TRANSFER,
       this.transferNumber,
     );
-    res && this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
+    res &&
+      this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
+  };
+
+  completeTransfer = async () => {
+    analyticsCollector.completeTransfer();
+    const res = await this._telephonyService.transfer(
+      TRANSFER_TYPE.WARM_TRANSFER,
+      this.transferNumber,
+    );
+    res &&
+      this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
   };
 
   @computed
@@ -57,6 +68,11 @@ class TransferViewModel extends StoreViewModel<Props> {
   @computed
   private get _isValidNumber() {
     return this._telephonyStore.isValidInputStringNumber;
+  }
+
+  @computed
+  get isWarmTransferPage() {
+    return this._telephonyStore.isWarmTransferPage;
   }
 }
 

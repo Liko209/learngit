@@ -9,11 +9,27 @@ import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props } from './types';
 import { TelephonyStore } from '../../store';
+import { TelephonyService } from '../../service';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { analyticsCollector } from '@/AnalyticsCollector';
+
+const ASK_FIRST = 'askFirst';
 
 class AskFirstViewModel extends StoreViewModel<Props> {
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
-  directToAskFirst = () => {};
+  directToAskFirst = async () => {
+    analyticsCollector.clickTransferActions(ASK_FIRST);
+    console.log(this.transferNumber, 'shining');
+    await this._telephonyService.makeCall(this.transferNumber, undefined, {
+      extraCall: true,
+    });
+    this._telephonyStore.backToDialerFromTransferPage();
+    this._telephonyStore.directToWarmTransferPage();
+  };
 
   @computed
   get transferNumber() {

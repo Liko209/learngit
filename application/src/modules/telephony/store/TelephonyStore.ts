@@ -164,6 +164,12 @@ class TelephonyStore {
   isTransferPage: boolean = false;
 
   @observable
+  isWarmTransferPage: boolean = false;
+
+  @observable
+  isCompleteTransfer: boolean = false;
+
+  @observable
   selectedCallItem: SelectedCallItem = {
     phoneNumber: '',
     index: NaN,
@@ -262,7 +268,12 @@ class TelephonyStore {
     reaction(
       () => this.isMultipleCall,
       isMultipleCall => {
-        if (isMultipleCall) this.changeBackToDefaultPos(true);
+        if (isMultipleCall) {
+          this.changeBackToDefaultPos(true)
+          return;
+        };
+        this.leaveWarmTransferPage();
+        return;
       },
     );
   }
@@ -438,6 +449,9 @@ class TelephonyStore {
     if (this.isTransferPage) {
       this.backToDialerFromTransferPage();
     }
+    if (this.isWarmTransferPage) {
+      this.leaveWarmTransferPage();
+    }
 
     this.isContactMatched = false;
     this.hasManualSelected = false;
@@ -603,16 +617,16 @@ class TelephonyStore {
   // TODO: it should current call
   @computed
   get call(): CallModel | undefined {
-    if (!this._rawCalls.length) return undefined;
+    if (!this.rawCalls.length) return undefined;
 
     // for transfer call switch current call
     if (this.currentCallId) {
-      return this._rawCalls.find(
+      return this.rawCalls.find(
         call => call.id === this.currentCallId,
       ) as CallModel;
     }
     // The latest call
-    return reverse(sortBy(this._rawCalls, ['startTime']))[0];
+    return reverse(sortBy(this.rawCalls, ['startTime']))[0];
   }
 
   @computed
@@ -766,7 +780,7 @@ class TelephonyStore {
   }
 
   @computed
-  private get _rawCalls() {
+  get rawCalls() {
     return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
   }
 
@@ -813,6 +827,27 @@ class TelephonyStore {
     }
     return this.inputString = '';
   };
+
+  @action
+  directToWarmTransferPage = () => {
+    this.isWarmTransferPage = true;
+    // this.backToDialerFromTransferPage();
+  }
+
+  @action
+  leaveWarmTransferPage = () => {
+    this.isWarmTransferPage = false;
+  }
+
+  @action
+  completeTransfer = () => {
+    this.isCompleteTransfer = true;
+  }
+
+  @action
+  processTransfer = () => {
+    this.isCompleteTransfer = false;
+  }
 
   @action
   setCallItem = (phoneNumber: string, index: number) => {

@@ -20,7 +20,8 @@ import {
   MAKE_CALL_ERROR_CODE,
   CALL_ACTION_ERROR_CODE,
   RINGER_ADDITIONAL_TYPE,
-  TRANSFER_TYPE
+  TRANSFER_TYPE,
+  CallOptions
 } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
@@ -526,7 +527,7 @@ class TelephonyService {
     return fromNumber;
   }
 
-  private _makeCall = async (toNumber: string, callback?: Function) => {
+  private _makeCall = async (toNumber: string, callback?: Function, options?: CallOptions) => {
     const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
@@ -554,7 +555,7 @@ class TelephonyService {
     );
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
-      { fromNumber },
+      { fromNumber, ...options },
     );
 
     switch (true) {
@@ -600,7 +601,7 @@ class TelephonyService {
     return true;
   };
 
-  makeCall = async (toNumber: string, callback?: Function) => {
+  makeCall = async (toNumber: string, callback?: Function, options?: CallOptions) => {
     if (!(await this.isShortNumber(toNumber))) {
       // is long number, need to check e911
       if (!this._serverTelephonyService.isEmergencyAddrConfirmed()) {
@@ -623,7 +624,7 @@ class TelephonyService {
       }
     }
 
-    return this._makeCall(toNumber, callback);
+    return this._makeCall(toNumber, callback, options);
   };
 
   switchCall = async (otherDeviceCall: ActiveCall) => {
@@ -662,12 +663,13 @@ class TelephonyService {
     return this.makeCall(toNumber);
   };
 
-  hangUp = () => {
-    if (this._callEntityId) {
+  hangUp = (callId: number) => {
+    const callEntityId = callId || this._callEntityId;
+    if (callEntityId) {
       mainLogger.info(
-        `${TelephonyService.TAG}Hang up call id=${this._callEntityId}`,
+        `${TelephonyService.TAG}Hang up call id=${callEntityId}`,
       );
-      this._serverTelephonyService.hangUp(this._callEntityId);
+      this._serverTelephonyService.hangUp(callEntityId);
       this._resetCallState();
     }
   };
@@ -832,6 +834,10 @@ class TelephonyService {
       isHeld = !isHeld;
     }
   };
+
+  // holdCall = async (callId: number) => {
+  //   returnthis._serverTelephonyService.unhold(callId);
+  // }
 
   startOrStopRecording = async () => {
     if (!this._callEntityId || this._telephonyStore.recordDisabled) {
