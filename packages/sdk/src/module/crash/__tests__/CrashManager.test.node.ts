@@ -14,14 +14,15 @@ describe('CrashManager', () => {
   const whiteScreenChecker = {
     isWhiteScreen: jest.fn(),
   };
+  const prepare = () => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    Pal.instance = {
+      getWhiteScreenChecker: () => whiteScreenChecker,
+    };
+  };
   describe('monitor()', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
-      Pal.instance = {
-        getWhiteScreenChecker: () => whiteScreenChecker,
-      };
-    });
+    beforeEach(prepare);
     it('should listener to error, unhandledrejection', () => {
       const crashManager = new CrashManager();
       crashManager.monitor();
@@ -36,10 +37,7 @@ describe('CrashManager', () => {
     });
   });
   describe('dispose()', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
-    });
+    beforeEach(prepare);
     it('should remove listener to error, unhandledrejection', () => {
       const crashManager = new CrashManager();
       crashManager.dispose();
@@ -54,10 +52,7 @@ describe('CrashManager', () => {
     });
   });
   describe('onCrash()', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
-    });
+    beforeEach(prepare);
     it('should not call whiteScreenHandler when is not white screen', () => {
       const crashManager = new CrashManager();
       whiteScreenChecker.isWhiteScreen.mockReturnValue(false);
@@ -71,7 +66,7 @@ describe('CrashManager', () => {
       const crashManager = new CrashManager();
       whiteScreenChecker.isWhiteScreen.mockReturnValue(true);
       jest.spyOn(crashManager['_whiteScreenHandler'], 'onCrash');
-      crashManager.onCrash();
+      crashManager._onCrash();
       expect(crashManager['_whiteScreenHandler']['onCrash']).toHaveBeenCalled();
     });
   });
