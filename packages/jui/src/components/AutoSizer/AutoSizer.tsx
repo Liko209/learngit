@@ -42,9 +42,14 @@ const JuiAutoSizer = ({
       const computedStyle = getComputedStyle(ref.current);
       const paddingTop = parseInt(computedStyle.paddingTop || '0', 10);
       const paddingBottom = parseInt(computedStyle.paddingBottom || '0', 10);
+      const width = offsetWidth;
+      const height = offsetHeight - paddingTop - paddingBottom;
+      if (!width || !height) {
+        return;
+      }
       setSize({
-        width: offsetWidth,
-        height: offsetHeight - paddingTop - paddingBottom,
+        width,
+        height,
       });
     }
   };
