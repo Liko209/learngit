@@ -18,7 +18,7 @@ const personService = {
 };
 const dismiss = jest.fn();
 function getVM() {
-  const vm = new SingleImageViewerViewModel(1, dismiss);
+  const vm = new SingleImageViewerViewModel({ url, titleName: name, dismiss });
   return vm;
 }
 
@@ -26,12 +26,6 @@ describe('SingleImageViewerViewModel', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     ServiceLoader.getInstance = jest.fn().mockReturnValue(personService);
-    const person = {
-      headshotVersion: 1,
-      headshot: '11',
-      displayName: name,
-    };
-    (getEntity as jest.Mock).mockReturnValue(person);
   });
   describe('viewerDestroyer()', () => {
     it('should dismiss be call when call viewerDestroyer function', () => {
@@ -43,8 +37,11 @@ describe('SingleImageViewerViewModel', () => {
 
   describe('pages()', () => {
     it('should be return url null when person and personId undefined', () => {
-      (getEntity as jest.Mock).mockReturnValue({});
-      const vm = new SingleImageViewerViewModel(null, dismiss);
+      const vm = new SingleImageViewerViewModel({
+        url: null,
+        titleName: null,
+        dismiss,
+      });
       expect(vm.pages).toEqual([
         {
           url: '',
@@ -56,11 +53,6 @@ describe('SingleImageViewerViewModel', () => {
       ]);
     });
     it('should be return url when has person and personId ', () => {
-      (getEntity as jest.Mock).mockReturnValue({
-        headshotVersion: 1,
-        hasHeadShot: true,
-        headshot: '11',
-      });
       const vm = getVM();
       expect(vm.pages).toEqual([
         {
