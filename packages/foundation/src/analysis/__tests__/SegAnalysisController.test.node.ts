@@ -5,6 +5,8 @@
  */
 
 import { SegAnalysisController } from '../SegAnalysisController';
+import Segment from 'load-segment';
+jest.mock('load-segment');
 
 class MockSegment {
   identify = jest.fn();
@@ -20,8 +22,26 @@ describe('SegAnalysisController', () => {
   beforeEach(() => {
     segAnalysisController = new SegAnalysisController();
     segment = new MockSegment();
+    Segment.mockReturnValue(segment);
     Object.assign(segAnalysisController, { _segment: segment });
   });
+
+
+  describe('init', ()=>{
+    it('should not init segment when key is empty', ()=>{
+      Object.assign(segAnalysisController, { _segment: undefined });
+      expect(segAnalysisController['_segment']).toBeUndefined();
+      segAnalysisController.init('');
+      expect(segAnalysisController['_segment']).toBeUndefined();
+    });
+    it('should init segment when key is not empty', ()=>{
+      Object.assign(segAnalysisController, { _segment: undefined });
+      expect(segAnalysisController['_segment']).toBeUndefined();
+      segAnalysisController.init('1');
+      expect(segAnalysisController['_segment']).not.toBeUndefined();
+    });
+  });
+
   describe('getEndPoint', () => {
     it('should return web when there is not key "jupiterElectron" in window', () => {
       window['jupiterElectron'] = undefined;

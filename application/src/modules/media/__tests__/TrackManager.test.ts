@@ -120,6 +120,19 @@ describe('TrackManager', () => {
       expect(trackManager.getAllOutputDevicesId()).toEqual(newDevices)
     })
   })
+  describe('creatTrack()', () => {
+    it('should return exist track when create track', () => {
+      const trackManager = new TrackManager();
+      trackManager.createTrack({
+        id: 'exampleTrack'
+      });
+      expect(trackManager.tracks.length).toEqual(1);
+      trackManager.createTrack({
+        id: 'exampleTrack',
+      });
+      expect(trackManager.tracks.length).toEqual(1);
+    })
+  })
   describe('updateAllOutputDevices()', () => {
     it('should update all output devices', () => {
       const newDevices = ['device1', 'device2'];
