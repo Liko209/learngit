@@ -78,6 +78,11 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
     );
   }
 
+  private _showIncomingCallNotification = async () => {
+    const shouldShowNotification = await this.shouldShowNotification();
+    shouldShowNotification && this._showNotification();
+  };
+
   init() {
     const incomingCallDisposer = reaction(
       () => ({
@@ -85,7 +90,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         isIncomingCall: this._telephonyStore.isIncomingCall,
         isContactMatched: this._telephonyStore.isContactMatched,
       }),
-      async ({
+      ({
         callState,
         isIncomingCall,
         isContactMatched,
@@ -95,8 +100,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         isContactMatched: boolean;
       }) => {
         if (isIncomingCall && isContactMatched) {
-          const shouldShowNotification = await this.shouldShowNotification();
-          shouldShowNotification && this._showNotification();
+          this._showIncomingCallNotification();
         } else {
           const shouldCloseNotification = [
             CALL_STATE.IDLE,

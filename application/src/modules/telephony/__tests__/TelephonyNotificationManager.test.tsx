@@ -144,19 +144,23 @@ describe('TelephonyNotificationManager', () => {
       jest
         .spyOn(telephonyNotificationManager, '_showNotification')
         .mockImplementation();
-        telephonyNotificationManager.shouldShowNotification = jest.fn();
+        jest.spyOn(telephonyNotificationManager, '_showIncomingCallNotification');
       telephonyNotificationManager.init();
       call.callState = CALL_STATE.IDLE;
       call.direction = CALL_DIRECTION.INBOUND;
       Object.assign(telephonyStore, {
         isContactMatched: true,
       });
-      expect(telephonyNotificationManager.shouldShowNotification).toHaveBeenCalled();
+      expect(telephonyNotificationManager._showIncomingCallNotification).toHaveBeenCalled();
+      expect(telephonyNotificationManager._showNotification).not.toHaveBeenCalled();
+      await telephonyNotificationManager._showIncomingCallNotification();
+      expect(telephonyNotificationManager._showNotification).toHaveBeenCalled();
     });
-    it('should not call _showNotification() when incomingCallsSettingItem value is off', () => {
+    it('should not call _showNotification() when incomingCallsSettingItem value is off', async () => {
       jest
         .spyOn(telephonyNotificationManager, '_showNotification')
         .mockImplementation();
+        jest.spyOn(telephonyNotificationManager, '_showIncomingCallNotification');
       call.callState = CALL_STATE.IDLE;
       call.direction = CALL_DIRECTION.INBOUND;
       Object.assign(telephonyStore, {
@@ -164,6 +168,8 @@ describe('TelephonyNotificationManager', () => {
       });
       setUpMock(NOTIFICATION_OPTIONS.OFF);
       telephonyNotificationManager.init();
+      expect(telephonyNotificationManager._showIncomingCallNotification).not.toHaveBeenCalled();
+      await telephonyNotificationManager._showIncomingCallNotification();
       expect(
         telephonyNotificationManager._showNotification,
       ).not.toHaveBeenCalled();
