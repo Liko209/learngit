@@ -104,7 +104,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I hover on expand button', async () => {
-    await t.hover(rightRail.expandStatusButton);
+    await t.hover(rightRail.expandStatusButton, {speed: 0.1});
   });
 
   const expandButtonTooltip = 'Show details';
