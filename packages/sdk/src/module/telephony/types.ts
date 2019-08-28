@@ -69,6 +69,8 @@ enum CALL_ACTION_ERROR_CODE {
   INVALID = -1,
   OTHER_ACTION_IN_PROGRESS = -6,
   ACR_ON = -8,
+  NOT_NETWORK = -9,
+  INVALID_PHONE_NUMBER = -10,
   OTHERS,
 }
 
@@ -85,6 +87,7 @@ type TelephonyDataCollectionInfoConfigType = {
 enum RINGER_ADDITIONAL_TYPE {
   ALL = 'all',
   OFF = 'off',
+  DEFAULT = 'default',
 }
 type CallOptions = RTCCallOptions & {
   replaceName?: string;

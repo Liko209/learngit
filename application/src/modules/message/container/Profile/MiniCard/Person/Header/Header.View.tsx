@@ -9,6 +9,8 @@ import { observer } from 'mobx-react';
 import { ProfileMiniCardPersonHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar/Avatar';
 import { Presence } from '@/containers/Presence';
+import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
 import {
   JuiProfileMiniCardHeader,
   JuiProfileMiniCardHeaderLeft,
@@ -25,8 +27,8 @@ class ProfileMiniCardPersonHeaderView extends Component<
   ProfileMiniCardPersonHeaderViewProps
 > {
   render() {
-    const { id, person } = this.props;
-    const { userDisplayName, awayStatus, jobTitle } = person;
+    const { id, person, colonsEmoji, statusPlainText } = this.props;
+    const { userDisplayName, jobTitle } = person;
     const presence = <Presence uid={id} size="large" borderSize="large" />;
     return (
       <JuiProfileMiniCardHeader>
@@ -43,7 +45,13 @@ class ProfileMiniCardPersonHeaderView extends Component<
             {userDisplayName}
           </JuiProfileMiniCardPersonName>
           <JuiProfileMiniCardPersonStatus data-test-automation-id="profileMiniCardPersonState">
-            {awayStatus}
+            <Emoji
+              emoji={colonsEmoji || ''}
+              set="emojione"
+              size={16}
+              backgroundImageFn={backgroundImageFn}
+            />
+            {statusPlainText}
           </JuiProfileMiniCardPersonStatus>
           <JuiProfileMiniCardPersonTitle data-test-automation-id="profileMiniCardPersonTitle">
             {jobTitle}
