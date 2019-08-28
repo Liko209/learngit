@@ -101,10 +101,20 @@ class ZoomElementAnimation extends React.PureComponent<
   }
 
   playEnterAnimation() {
-    const { originalElement, targetElement, onEntered } = this.props;
+    const { originalElement, targetElement } = this.props;
 
     if (!originalElement) {
-      onEntered && onEntered();
+      requestAnimationFrame(() => {
+        targetElement.style.cssText = `
+        opacity: 0;
+      `;
+        requestAnimationFrame(() => {
+          targetElement.style.cssText = `
+          opacity: 1;
+          ${this._getTransition()}
+        `;
+        });
+      });
       return;
     }
     const startPosition = originalElement.getBoundingClientRect();
