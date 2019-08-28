@@ -245,7 +245,9 @@ class TelephonyStore {
           this.transferString = this.inputString;
         }
         this.resetCallItem();
-        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(this.inputString);
+        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(
+          this.inputString,
+        );
       },
     );
 
@@ -410,6 +412,11 @@ class TelephonyStore {
   @action
   end = () => {
     const history = this._history;
+
+    // if end call isn't active call and incoming state reply don't reset state
+    if (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) {
+      return;
+    }
 
     switch (true) {
       case this.isMultipleCall:
@@ -770,6 +777,18 @@ class TelephonyStore {
     return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
   }
 
+  @computed
+  get endCall() {
+    return this._rawCalls.find(
+      call => call.callState === CALL_STATE.DISCONNECTING,
+    );
+  }
+
+  @computed
+  get isEndOtherCall() {
+    return this.endCall && this.call && this.endCall.id !== this.call.id;
+  }
+
   @action
   changeBackToDefaultPos = (status: boolean) => {
     this.isBackToDefaultPos = status;
@@ -811,7 +830,7 @@ class TelephonyStore {
       this._dialerString = '';
       return;
     }
-    return this.inputString = '';
+    return (this.inputString = '');
   };
 
   @action
@@ -828,7 +847,7 @@ class TelephonyStore {
       phoneNumber: '',
       index: NaN,
     };
-  }
+  };
 
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
