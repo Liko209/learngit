@@ -16,7 +16,7 @@ type Props = ViewProps & WithTranslation;
 @observer
 class WarmTransferHeaderViewComponent extends React.Component<Props> {
   private _EndCall = () => {
-    const { endCall } = this.props;
+    const { t, endCall } = this.props;
     return (
       <JuiFabButton
         color="semantic.negative"
@@ -25,6 +25,8 @@ class WarmTransferHeaderViewComponent extends React.Component<Props> {
         tooltipPlacement="bottom"
         iconName="hand_up"
         onClick={endCall}
+        tooltipTitle={t('telephony.action.end')}
+        aria-label={t('telephony.action.end')}
       />
     );
   };
@@ -35,13 +37,13 @@ class WarmTransferHeaderViewComponent extends React.Component<Props> {
       <JuiSwitchCallHeader>
         {switchCallItems.length &&
           switchCallItems.map((item, inx) => {
-            const { holdState, displayName, id } = item;
+            const { holdState, displayName, id, time } = item;
             const active = holdState === HOLD_STATE.IDLE;
             return (
               <JuiSwitchCallChip
                 active={active}
                 name={displayName}
-                time="00: 00"
+                time={time}
                 icon={active ? 'phone' : 'hold'}
                 EndCall={inx === 0 ? this._EndCall : undefined}
                 onClick={() => switchCall(id)}

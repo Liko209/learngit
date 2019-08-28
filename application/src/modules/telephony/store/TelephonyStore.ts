@@ -799,7 +799,7 @@ class TelephonyStore {
 
   @computed
   get endCall() {
-    return this._rawCalls.find(
+    return this.rawCalls.find(
       call => call.callState === CALL_STATE.DISCONNECTING,
     );
   }
@@ -845,18 +845,22 @@ class TelephonyStore {
     this.isTransferPage = false;
     this.isRecentCalls = this._isRecentCallsInDialerPage;
     this.resetValidInputStringNumber();
-    if (this._dialerString.length) {
-      this.inputString = this._dialerString;
-      this._dialerString = '';
+    if (!this.isWarmTransferPage) {
+      if (this._dialerString.length) {
+        this.inputString = this._dialerString;
+        this._dialerString = '';
+        return;
+      }
+      this.inputString = '';
       return;
     }
-    return (this.inputString = '');
+    return;
   };
 
   @action
   directToWarmTransferPage = () => {
     this.isWarmTransferPage = true;
-    // this.backToDialerFromTransferPage();
+    this.backToDialerFromTransferPage();
   }
 
   @action

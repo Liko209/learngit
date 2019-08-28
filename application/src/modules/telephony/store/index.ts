@@ -5,3 +5,4 @@
  */
 
 export * from './TelephonyStore';
+export * from './TelephonyTimeStore';

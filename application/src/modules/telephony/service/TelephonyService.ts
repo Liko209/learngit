@@ -288,7 +288,9 @@ class TelephonyService {
         // restore things to default values
         if (!hasActiveOutBoundCall) {
           runInAction(() => {
-            this.deleteInputString(true);
+            if (!this._telephonyStore.isWarmTransferPage) {
+              this.deleteInputString(true);
+            }
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }

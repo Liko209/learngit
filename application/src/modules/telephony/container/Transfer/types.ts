@@ -11,6 +11,7 @@ type ViewProps = {
   completeTransfer: () => void;
   transferNumber: string;
   isWarmTransferPage: boolean;
+  isTransferCallConnected: boolean;
 };
 
 export { Props, ViewProps };

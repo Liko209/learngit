@@ -25,6 +25,7 @@ import { Avatar } from '@/containers/Avatar';
 import { getDisplayName } from '../../helpers';
 import { DialerTitleBar } from '../DialerTitleBar';
 import { WarmTransferHeader } from '../WarmTransferHeader';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type Props = WithTranslation & CallCtrlPanelViewProps;
 
@@ -43,6 +44,11 @@ class CallCtrlViewComponent extends React.Component<Props> {
   });
 
   private callActions = [Mute, Keypad, Hold, Add, Record, CallActions];
+
+  componentDidMount() {
+    const { isWarmTransferPage } = this.props;
+    isWarmTransferPage && analyticsCollector.directToWarmTransferPage();
+  }
 
   render() {
     const { isExt, phone, t, name, direction, isWarmTransferPage } = this.props;

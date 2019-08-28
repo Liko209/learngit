@@ -350,6 +350,10 @@ class AnalyticsCollector {
     });
   }
 
+  directToWarmTransferPage() {
+    dataAnalysis.page('	Jup_Web/DT_phone_completeTransfer');
+  }
+
   completeTransfer() {
     dataAnalysis.track('Jup_Web/DT_phone_completeTransferCall');
   }

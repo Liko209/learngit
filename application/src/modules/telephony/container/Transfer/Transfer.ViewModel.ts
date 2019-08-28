@@ -18,6 +18,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 
 const TRANSFER_NOW_ACTION = 'transferNow';
 
@@ -73,6 +74,18 @@ class TransferViewModel extends StoreViewModel<Props> {
   @computed
   get isWarmTransferPage() {
     return this._telephonyStore.isWarmTransferPage;
+  }
+
+  @computed
+  get isMultipleCall() {
+    return this._telephonyStore.isMultipleCall;
+  }
+
+  @computed
+  get isTransferCallConnected() {
+    return this.isMultipleCall
+      ? this._telephonyStore.rawCalls[1].callState === CALL_STATE.CONNECTED
+      : false;
   }
 }
 

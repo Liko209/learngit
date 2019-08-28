@@ -21,17 +21,20 @@ class TransferViewComponent extends Component<Props> {
       isWarmTransferPage,
       transferCall,
       completeTransfer,
+      isTransferCallConnected,
     } = this.props;
     return isWarmTransferPage ? (
       <JuiFabButton
         color="semantic.positive"
-        disableToolTip
         onClick={completeTransfer}
         size="moreLarge"
         showShadow={false}
         tooltipPlacement="top"
+        tooltipTitle={t('telephony.action.completeTransfer')}
+        aria-label={t('telephony.action.completeTransfer')}
         iconName="transfer-call"
         data-test-automation-id="complete-transfer-call-btn"
+        disabled={!isTransferCallConnected}
       />
     ) : (
       <JuiTransferAction>

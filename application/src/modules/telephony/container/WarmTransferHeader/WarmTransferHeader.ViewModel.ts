@@ -11,7 +11,7 @@ import { Props } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
-// import { analyticsCollector } from '@/AnalyticsCollector';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class WarmTransferHeaderViewModel extends StoreViewModel<Props> {
   @observable
@@ -31,6 +31,7 @@ class WarmTransferHeaderViewModel extends StoreViewModel<Props> {
   };
 
   endCall = () => {
+    analyticsCollector.cancelTransferCall();
     this._telephonyService.hangUp(this.switchCallItems[0].id);
   };
 }
