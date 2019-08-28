@@ -162,8 +162,9 @@ describe('MeetingViewModel', () => {
   @testable
   class joinMeeting {
     @test('should be openwindow if called')
+    @mockService(MeetingsService, 'getJoinUrl', "link")
     @mockEntity({})
-    t1() {
+    async t1() {
       const electronService = {
         openWindow: jest.fn(),
       }
@@ -172,13 +173,14 @@ describe('MeetingViewModel', () => {
         writable: true,
         value: {openWindow: () => 123}
       })
-      meetingVM.joinMeeting();
+      await meetingVM.joinMeeting();
       expect(electronService.openWindow).toHaveBeenCalled();
     }
 
     @test('should call window.open when window.jupiterElectron does not exist')
+    @mockService(MeetingsService, 'getJoinUrl', "link")
     @mockEntity({})
-    t2() {
+    async t2() {
       Object.defineProperty(window, 'jupiterElectron', {
         writable: true,
         value: false
@@ -187,7 +189,7 @@ describe('MeetingViewModel', () => {
         writable: true,
         value: jest.fn()
       })
-      meetingVM.joinMeeting();
+      await meetingVM.joinMeeting();
       expect(window.open).toHaveBeenCalled();
     }
   }
