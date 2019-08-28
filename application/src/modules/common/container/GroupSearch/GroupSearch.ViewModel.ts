@@ -32,7 +32,10 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
         const personModel = new PersonModel(sortableModel.entity as Person);
-        return { Item: ContactSearchItem, props: { itemId: personModel.id } };
+        return {
+          Item: ContactSearchItem,
+          props: { itemId: personModel.id, size: 'large' },
+        };
       }
       default: {
         const groupModel = new GroupModel(sortableModel.entity as Group);
