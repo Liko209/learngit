@@ -1,7 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/Setting/Phone/GeneralSettings.ts"
+      "fixtures/TeamSetting/Notification.ts"
     ],
     "browsers": [
       "selenium:chrome"

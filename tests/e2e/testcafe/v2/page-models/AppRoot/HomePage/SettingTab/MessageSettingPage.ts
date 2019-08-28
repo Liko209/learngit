@@ -1,5 +1,4 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
-import * as assert from 'assert';
 
 export class MessageSettingPage extends BaseWebComponent {
   get self() {
