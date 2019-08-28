@@ -49,7 +49,7 @@ class IncomingViewComponent extends Component<Props> {
 
   componentDidMount() {
     const { isMultipleCall } = this.props;
-    const type = isMultipleCall ? 'singleCall' : 'multiCall';
+    const type = isMultipleCall ? 'multiCall' : 'singleCall';
     analyticsCollector.seeIncomingCallPage(type);
   }
 
