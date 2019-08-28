@@ -637,6 +637,7 @@
   },
   "telephony": {
     "Phone": "Phone",
+    "conferenceCall": "Conference call",
     "Ext": "Ext.",
     "action": {
       "minimize": "Minimize",

@@ -538,6 +538,9 @@ class TelephonyService {
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
     const { accessCode } = options;
+    if (accessCode) {
+      this._telephonyStore.isConference = true;
+    }
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
       { fromNumber, accessCode },

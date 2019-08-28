@@ -11,6 +11,8 @@ import { JuiAvatar, JuiAvatarProps } from '..';
 import { JuiPresence, PRESENCE } from '../../Presence';
 
 import avatar from './img/avatar.jpg';
+import { JuiIconography } from '../../../foundation/Iconography';
+import conference from '../../../assets/jupiter-icon/icon-conference.svg';
 
 const knobs = {
   size: () =>
@@ -59,6 +61,17 @@ storiesOf('Components/Avatar', module)
     return (
       <JuiAvatar size={knobs.size()} color={knobs.color()}>
         SH
+      </JuiAvatar>
+    );
+  })
+  .add('Icon', () => {
+    let iconSize: any = knobs.size();
+    if (iconSize === 'xlarge') {
+      iconSize = 'moreLarge'
+    }
+    return (
+      <JuiAvatar size={knobs.size()} color={knobs.color()}>
+        <JuiIconography iconSize={iconSize} iconColor={['primary', '500']} symbol={conference} desc={'ha'} />
       </JuiAvatar>
     );
   })
