@@ -98,12 +98,12 @@ exports[`Storyshots Pattern/SearchInput empty: Pattern/SearchInput empty 1`] = `
 </div>
 `;
 
-exports[`Storyshots Pattern/SearchInput large: Pattern/SearchInput large 1`] = `
-.c2 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
+.c7.c7.c7.c7.disabled {
+  background-color: inherit;
+}
+
+.c7.c7.c7.c7.disabled .icon {
+  color: rgba(0,0,0,0.12);
 }
 
 .c3 {

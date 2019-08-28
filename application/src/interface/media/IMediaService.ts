@@ -24,6 +24,8 @@ interface IMediaService {
   getMedia(mediaId: string): IMedia | null;
 
   canPlayType(mimeType: string): boolean;
+
+  createTrack(trackId: string, weight?: number): string;
 }
 
 export { IMediaService };

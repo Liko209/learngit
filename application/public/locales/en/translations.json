@@ -111,6 +111,8 @@
     "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
+    "shareStatus": "Share status",
+    "clearStatus": "Clear Status",
     "aboutRingCentral": "About RingCentral",
     "sendFeedback": "Send Feedback",
     "version": "Version",
@@ -663,7 +665,10 @@
       "customForward": "Custom...",
       "flip": "Flip",
       "recentCall": "Recent calls",
-      "backToDialer": "Back to dialer"
+      "backToDialer": "Back to dialer",
+      "transfer": "Transfer",
+      "toVoiceMail": "To Voicemail",
+      "askFirst": "Ask first"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -727,6 +732,10 @@
         "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
         "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
         "callEnded": "Your call with {{displayName}} is ended."
+      },
+      "transferCall": {
+        "backendError": "Transfer failed",
+        "transferSuccess": "Call transferred"
       },
       "voicemailDeleted": "The voicemail was deleted."
     },
@@ -1199,6 +1208,22 @@
     "issueTitle": "Summary",
     "issueDescription": "What happened?",
     "sendingInBackground": "Sending feedback..."
+  },
+  "customstatus": {
+    "title": "Share Status",
+    "items": {
+      "item1": "Out of office",
+      "item2": "In a meeting",
+      "item3": "Out sick",
+      "item4": "Working remotely",
+      "item5": "Vacationing",
+      "item6": "Traveling"
+    },
+    "placeHolder": "Share custom status",
+    "shareCustomStatusNetworkError": "Sorry, we weren't able to share your custom status. Check your network connection, then try again.",
+    "clearCustomStatusNetworkError": "Sorry, we weren't able to clear your custom status. Check your network connection, then try again.",
+    "shareCustomStatusServerError": "Sorry, something went wrong on our end, we weren't able to share your custom status. Try again later.",
+    "clearCustomStatusServerError": "Sorry, something went wrong on our end, we weren't able to clear your custom status. Try again later."
   },
   "electron": {
     "upgrade": {

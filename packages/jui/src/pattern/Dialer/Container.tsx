@@ -17,7 +17,7 @@ import {
 type Props = {
   removeMargin: boolean;
   removePadding: boolean;
-  CallAction?: React.ComponentType;
+  CallAction?: React.ComponentType<any>[] | React.ComponentType<any>;
   CallerIdSelector?: React.ComponentType | JSX.Element | null;
   KeypadActions: React.ComponentType[] | JSX.Element;
   keypadFullSize: boolean;
@@ -39,6 +39,19 @@ const StyledContainer = styled('div')<{ removePadding: boolean }>`
 const StyledCallAction = styled('div')`
   && {
     align-self: center;
+  }
+`;
+
+const StyledCallActionBar = styled('div')<{ removePadding: boolean }>`
+  && {
+    display: flex;
+    justify-content: space-between;
+    align-self: center;
+    width: 100%;
+    padding: ${({ removePadding }) => (removePadding ? spacing(0, 6, 6) : 0)};
+    box-sizing: ${({ removePadding }) =>
+      removePadding ? 'border-box' : 'content-box'};
+    cursor: pointer;
   }
 `;
 
@@ -74,6 +87,25 @@ const JuiKeypadAction = styled('div')`
     & > span {
       color: ${grey('700')};
       ${typography('caption1')};
+      &.disabled {
+        color: ${({ theme }) =>
+          palette('action', 'disabledBackground')({ theme })};
+      }
+    }
+  }
+`;
+
+const JuiTransferAction = styled('div')`
+  && {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: ${spacing(6)};
+    width: ${width(18.5)};
+    & > span {
+      color: ${grey('700')};
+      ${typography('caption1')};
+      margin-top: ${spacing(2)};
       &.disabled {
         color: ${({ theme }) =>
           palette('action', 'disabledBackground')({ theme })};
@@ -150,9 +182,18 @@ class JuiContainer extends PureComponent<Props> {
           )}
           {CallerIdSelector}
         </StyledKeypadActionsContainer>
-        {CallAction && (
+        {CallAction && Array.isArray(CallAction) ? (
+          <StyledCallActionBar
+            onMouseDown={this._onFocus}
+            removePadding={removePadding}
+          >
+            {CallAction.map((Action: React.ComponentType) => (
+              <Action key={Action.displayName} />
+            ))}
+          </StyledCallActionBar>
+        ) : (
           <StyledCallAction onMouseDown={this._onFocus}>
-            <CallAction />
+            {CallAction && <CallAction />}
           </StyledCallAction>
         )}
       </StyledContainer>
@@ -241,6 +282,7 @@ const CallerIdContainer = (elm: React.FunctionComponent<any>) => styled(elm)<{}>
 export {
   JuiContainer,
   JuiKeypadAction,
+  JuiTransferAction,
   KeypadHeaderContainer,
   ContactSearchContainer,
   ContactSearchItemContent,

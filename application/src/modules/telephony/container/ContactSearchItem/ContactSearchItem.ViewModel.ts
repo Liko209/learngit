@@ -13,10 +13,14 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
 import PhoneNumberModel from '@/store/models/PhoneNumber';
+import { container } from 'framework/ioc';
+import { TelephonyStore } from '../../store';
 
 export class ContactSearchItemViewModel extends StoreViewModel<
-ContactSearchItemProps
+  ContactSearchItemProps
 > {
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+
   @observable.shallow
   _person?: any;
 
@@ -30,9 +34,9 @@ ContactSearchItemProps
     this._personFrame = requestAnimationFrame(() => {
       this._person = this.props.personId
         ? getEntity<Person, PersonModel>(
-          ENTITY_NAME.PERSON,
-          this.props.personId,
-        )
+            ENTITY_NAME.PERSON,
+            this.props.personId,
+          )
         : undefined;
       delete this._personFrame;
     });
@@ -43,13 +47,13 @@ ContactSearchItemProps
         : undefined;
       delete this._phoneNumberFrame;
     });
-  }
+  };
 
   dispose = () => {
     this._personFrame && cancelAnimationFrame(this._personFrame);
     this._phoneNumberFrame && cancelAnimationFrame(this._phoneNumberFrame);
     super.dispose();
-  }
+  };
 
   @computed
   get uid() {
@@ -86,7 +90,12 @@ ContactSearchItemProps
   }
 
   @computed
-  get selected() {
-    return this.props.selected;
+  get isTransferPage() {
+    return this._telephonyStore.isTransferPage;
+  }
+
+  @computed
+  get selectedCallItemIndex() {
+    return this._telephonyStore.selectedCallItem.index;
   }
 }
