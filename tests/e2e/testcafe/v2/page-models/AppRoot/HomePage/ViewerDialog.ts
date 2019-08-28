@@ -197,9 +197,3 @@ export class ViewerDialog extends BaseWebComponent {
 
 }
 
-
-export class AvatarViewDialog extends ViewerDialog {
-  get fullName() {
-    return this.title.find('h2');
-  }
-}

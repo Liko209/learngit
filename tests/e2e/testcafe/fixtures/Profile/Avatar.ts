@@ -843,16 +843,15 @@ test.meta(<ITestMeta>{
     await profileDialog.clickAvatar();
   });
 
-  const avatarViewer = app.homePage.avatarViewerDialog;
+  const avatarViewer = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('Then The avatar was open in the full-screen image viewer with the full-size photo.', async () => {
     await avatarViewer.ensureLoaded();
     await avatarViewer.shouldBeFullScreen();
-    await t.expect(avatarViewer.zoomScale.textContent).eql('100%');
   }, true);
 
   await h(t).withLog('And the avatar viewer show title: {fullName}', async (step) => {
     step.setMetadata('fullName', fullName);
-    await t.expect(avatarViewer.fullName.textContent).eql(fullName);
+    await t.expect(avatarViewer.avatarUserName.textContent).eql(fullName);
   });
 
   await h(t).withLog('And the avatar viewer show close button', async () => {
@@ -860,12 +859,13 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And the avatar viewer show zoom in/out icon', async () => {
+    await t.hover(avatarViewer.imageCanvas);
     await t.expect(avatarViewer.zoomInButton.exists).ok();
     await t.expect(avatarViewer.zoomOutButton.exists).ok();
   });
 
   await h(t).withLog('And the avatar viewer show reset icon', async () => {
-    await t.expect(avatarViewer.viewerResetButton.exists).ok();
+    await t.expect(avatarViewer.zoomResetButton.exists).ok();
   });
 
   await h(t).withLog('When I click close button', async () => {
@@ -886,7 +886,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I press esc', async () => {
-    await avatarViewer.clickCloseButton();
+    await avatarViewer.quitByPressEsc();
   });
 
   await h(t).withLog('Then Should see profile dialog.', async () => {

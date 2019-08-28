@@ -22,7 +22,7 @@ import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
 import { TelephonyDialog, TelephonyMinimizeWindow, ContactSearchList } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
-import { ViewerDialog, AvatarViewDialog } from './ViewerDialog';
+import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
@@ -267,10 +267,6 @@ export class HomePage extends BaseWebComponent {
 
   get viewerDialog() {
     return this.getComponent(ViewerDialog);
-  }
-
-  get avatarViewerDialog() {
-    return this.getComponent(AvatarViewDialog);
   }
 
   get searchDialog() {
