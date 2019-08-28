@@ -83,7 +83,8 @@ exports[`Storyshots Pattern/DialogSetting SettingItem: Pattern/DialogSetting Set
 }
 
 .c0 {
-  padding: 6px 0px 42px 0px;
+  padding: 6px 0px 0px 0px;
+  margin-bottom: -6px;
 }
 
 @media (max-width:480px) {
