@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-08-28 15:44:20
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { IDataImporter, IDataExporter } from './types';
 
 import { importDB, exportDB } from 'dexie-export-import';
