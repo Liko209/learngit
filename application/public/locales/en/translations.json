@@ -341,7 +341,8 @@
       "initializing": "Initializing...",
       "failure": "The message service failed to start.",
       "tryAgain": " Please try again later."
-    }
+    },
+    "postButton": "Post"
   },
   "item": {
     "activity": {

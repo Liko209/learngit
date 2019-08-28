@@ -13,7 +13,6 @@ import {
   JuiListItemSecondaryAction,
 } from 'jui/components/Lists';
 import { Thumbnail } from '../../Thumbnail';
-import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';
@@ -21,11 +20,14 @@ import { SecondaryText } from '../common/SecondaryText.View';
 import { postParser } from '@/common/postParser';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { container } from 'framework/ioc';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 
 const SQUARE_SIZE = 36;
 
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
     const { fileName, id, personName, modifiedTime, downloadUrl, groupId } = this.props;
@@ -60,7 +62,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     if (!this._thumbnailRef.current.vm.thumbsUrlWithSize) return;
     const { id, groupId } = this.props;
     const target = event.currentTarget;
-    showImageViewer(groupId, id, {
+    this._viewerService.showImageViewer(groupId, id, {
       thumbnailSrc: this._thumbnailRef.current.vm.thumbsUrlWithSize,
       initialWidth: SQUARE_SIZE,
       initialHeight: SQUARE_SIZE,

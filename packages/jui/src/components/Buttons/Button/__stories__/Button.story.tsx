@@ -17,8 +17,8 @@ function getKnobs() {
   const size = select<JuiButtonProps['size']>(
     'size',
     {
-      small: 'small',
       large: 'large',
+      medium: 'medium',
     },
     'large',
   );

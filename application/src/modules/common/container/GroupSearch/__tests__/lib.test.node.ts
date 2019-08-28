@@ -37,23 +37,41 @@ describe('GroupSearch/lib', () => {
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(userId);
     expect(mapGroupModelToItem(Team)).toEqual({
       Item: GroupSearchItem,
-      props: { itemId: groupId },
+      props: {
+        itemId: groupId,
+        size: 'large',
+      },
     });
     expect(mapGroupModelToItem(Group)).toEqual({
       Item: GroupSearchItem,
-      props: { itemId: groupId },
+      props: {
+        itemId: groupId,
+        size: 'large',
+      },
     });
     expect(mapGroupModelToItem(One2One)).toEqual({
       Item: ContactSearchItem,
-      props: { itemId: 1 },
+      props: {
+        itemId: 1,
+        showEmail: false,
+        size: 'large',
+      },
     });
     expect(mapGroupModelToItem(Me)).toEqual({
       Item: ContactSearchItem,
-      props: { itemId: userId },
+      props: {
+        itemId: userId,
+        showEmail: false,
+        size: 'large',
+      },
     });
     expect(mapGroupModelToItem(SMS)).toEqual({
       Item: ContactSearchItem,
-      props: { itemId: 1 },
+      props: {
+        itemId: 1,
+        showEmail: false,
+        size: 'large',
+      },
     });
   });
 });
