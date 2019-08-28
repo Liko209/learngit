@@ -27,15 +27,16 @@ interface Props {
   groupId?: number;
 }
 
-const share = (
-  <JuiIconography iconColor={['grey', '500']} iconSize="small">
-    share
-  </JuiIconography>
-);
+
 const FileShareAction = (props: Props) => {
   const { t } = useTranslation();
   const { fileId, groupId } = props;
   let postId = props.postId;
+  const share = (
+    <JuiIconography iconColor={['grey', '500']} iconSize="small">
+      share
+    </JuiIconography>
+  );
   const shareToConversation = async (contact: { id: number }) => {
     portalManager.dismissLast();
     dataAnalysis.track('Jup_Web/DT_msg_shareFileToConversation', {
