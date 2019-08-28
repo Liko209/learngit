@@ -8,7 +8,6 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import portalManager from '@/common/PortalManager';
 import { getConversationId } from '@/common/goToConversation';
 import { wrapHandleError, NOTIFICATION_TYPE } from '@/common/catchError';
-import { ERROR_CODES_SDK } from 'sdk/error';
 import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import i18nT from '@/utils/i18nT';
@@ -17,6 +16,7 @@ import { getEntity } from '@/store/utils';
 import { Item } from 'sdk/module/item/entity';
 import { ENTITY_NAME } from '@/store';
 import FileItemModel from '@/store/models/FileItem';
+import { errorHandler } from './errorHandler';
 
 interface Props {
   fileId: number,
@@ -60,27 +60,7 @@ const FileShareAction = (props: Props) => {
         dismissible: false,
       })
     } catch (e) {
-      let message = ''
-      switch (e.code) {
-        case ERROR_CODES_SDK.POST_DEACTIVATED:
-        case ERROR_CODES_SDK.ITEM_DEACTIVATED:
-          message = 'shareFileDeleted'
-          break;
-        case ERROR_CODES_SDK.GROUP_ARCHIVED:
-          message = 'shareFileTeamArchived'
-          break;
-        case ERROR_CODES_SDK.GROUP_DEACTIVATED:
-          message = 'shareFileTeamDeleted'
-          break;
-        case ERROR_CODES_SDK.GROUP_NOT_MEMBER:
-          message = 'shareFileNotMember'
-          break;
-        case ERROR_CODES_SDK.GROUP_NO_PERMISSION:
-          message = 'shareFileNoAuth'
-          break;
-        default:
-          throw e;
-      }
+     const  message = errorHandler(e)
       Notification.flashToast({
         message: await i18nT(`item.prompt.${message}`),
         type: ToastType.ERROR,
