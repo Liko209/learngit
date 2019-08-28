@@ -315,7 +315,9 @@
     "fileAction": {
       "deleteFile": "Delete file",
       "editFileName": "Edit filename",
-      "viewInPost": "View in post"
+      "viewInPost": "View in post",
+      "viewInBrowser": "View in browser",
+      "viewInNewTab": "View in new tab"
     },
     "Messages": "Messages",
     "message": "Message",
