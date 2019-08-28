@@ -21,14 +21,14 @@ class RCVAdaptorController implements IMeetingAdaptorController {
     return true;
   }
 
-  cancelMeeting(meetingId: number): Promise<void> {
+  cancelMeeting(itemId: number): Promise<void> {
     const controller = this.getSuitableController();
-    return controller.cancelMeeting(meetingId);
+    return controller.cancelMeeting(itemId);
   }
 
-  getJoinUrl(meetingId: number): Promise<string> {
+  getJoinUrl(itemId: number): Promise<string> {
     const controller = this.getSuitableController();
-    return controller.getJoinUrl(meetingId);
+    return controller.getJoinUrl(itemId);
   }
 
   private getSuitableController() {

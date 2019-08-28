@@ -8,8 +8,8 @@ import { StartMeetingResultType } from '../../types';
 interface IMeetingAdaptorController {
   startMeeting(groupIds: number[]): Promise<StartMeetingResultType>;
   isRCVideo(): boolean;
-  cancelMeeting(meetingId: number): Promise<void>;
-  getJoinUrl(meetingId: number): Promise<string>;
+  cancelMeeting(itemId: number): Promise<void>;
+  getJoinUrl(itemId: number): Promise<string>;
 }
 
 export { IMeetingAdaptorController };

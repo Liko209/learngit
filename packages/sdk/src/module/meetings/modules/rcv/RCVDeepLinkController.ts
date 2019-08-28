@@ -33,13 +33,13 @@ class RCVDeepLinkController implements IMeetingController {
     };
   }
 
-  async cancelMeeting(meetingId: number): Promise<void> {
-    await ItemAPI.cancelRCV(meetingId);
+  async cancelMeeting(itemId: number): Promise<void> {
+    await ItemAPI.cancelRCV(itemId);
   }
 
-  async getJoinUrl(meetingId: number): Promise<string> {
+  async getJoinUrl(itemId: number): Promise<string> {
     const { baseUrl, glipToken } = this._getBaseUrlAndToken();
-    return `${baseUrl}/api/rcv/join-call/waiting-page?meeting_item_id=${meetingId}?tk=${glipToken}`;
+    return `${baseUrl}/api/rcv/join-call/waiting-page?meeting_item_id=${itemId}?tk=${glipToken}`;
   }
 
   private _getBaseUrlAndToken() {

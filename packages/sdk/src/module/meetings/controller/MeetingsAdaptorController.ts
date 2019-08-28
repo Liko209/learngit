@@ -53,16 +53,16 @@ class MeetingsAdaptorController {
     return MEETING_SERVICE_TYPE.ZOOM;
   }
 
-  cancelMeeting(meetingId: number): Promise<void> {
-    const type = this._getMeetingTypeById(meetingId);
+  cancelMeeting(itemId: number): Promise<void> {
+    const type = this._getMeetingTypeById(itemId);
     const controller = this._getSuitableMeetingController(type);
-    return controller.cancelMeeting(meetingId);
+    return controller.cancelMeeting(itemId);
   }
 
-  getJoinUrl(meetingId: number): Promise<string> {
-    const type = this._getMeetingTypeById(meetingId);
+  getJoinUrl(itemId: number): Promise<string> {
+    const type = this._getMeetingTypeById(itemId);
     const controller = this._getSuitableMeetingController(type);
-    return controller.getJoinUrl(meetingId);
+    return controller.getJoinUrl(itemId);
   }
 
   private _getMeetingTypeById(meetingId: number) {

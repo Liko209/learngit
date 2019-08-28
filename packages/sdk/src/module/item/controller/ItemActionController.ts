@@ -29,6 +29,7 @@ const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_LINK, 'link'],
   [TypeDictionary.TYPE_ID_CODE, 'code'],
   [TypeDictionary.TYPE_ID_CONFERENCE, 'conference'],
+  [TypeDictionary.TYPE_ID_MEETING, 'meeting']
 ]);
 class ItemActionController {
   constructor(
@@ -62,8 +63,13 @@ class ItemActionController {
       ...partialPost,
       status: 'cancelled',
     });
-    const doUpdateModel = async (updateItem: Item) =>
-      await this._buildItemRequestController('meeting').put(updateItem);
+    const doUpdateModel = async (updateItem: Item) => {
+      const requestController = this._buildItemRequestController(
+        itemPathMap.get(GlipTypeUtil.extractTypeId(id)) as string,
+      );
+      return await requestController.put(updateItem);
+    }
+
 
     await this._partialModifyController.updatePartially({
       entityId: id,

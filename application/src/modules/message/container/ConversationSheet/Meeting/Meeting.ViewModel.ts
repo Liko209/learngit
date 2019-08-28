@@ -83,12 +83,15 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     return a;
   };
 
-  joinMeeting = () => {
+  joinMeeting = async () => {
+    const joinUrl = await ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).getJoinUrl(this.props.ids[0]);
     if (window.jupiterElectron && window.jupiterElectron.openWindow) {
       const _electronService = container.get<ElectronService>(ElectronService);
-      _electronService.openWindow(this.joinUrl);
+      _electronService.openWindow(joinUrl);
     } else {
-      window.open(this.joinUrl);
+      window.open(joinUrl);
     }
   };
 
@@ -108,7 +111,7 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   cancelMeeting = async () => {
     await ServiceLoader.getInstance<MeetingsService>(
       ServiceConfig.MEETINGS_SERVICE,
-    ).cancelMeeting(this.meetingId);
+    ).cancelMeeting(this.props.ids[0]);
   };
 
   @computed
@@ -134,10 +137,7 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     }
     return '';
   }
-  @computed
-  get joinUrl() {
-    return this.meetingItem.joinUrl;
-  }
+
   @computed
   get duration() {
     const { duration } = this.meetingItem;
