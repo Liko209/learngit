@@ -17,7 +17,7 @@ import {
 import { ENTITY_NAME } from '@/store';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
-import { VOICEMAILS_ROOT_PATH } from './interface/constant';
+import { VOICEMAILS_ROOT_PATH, CALL_LOG_ROOT_PATH } from './interface/constant';
 import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
 
 /**
@@ -104,12 +104,16 @@ export async function getDisplayNameByCaller(caller: ActiveCall) {
   return formatPhoneNumber(phoneNumber);
 }
 
-export const onVoicemailNotificationClick = (id: number) => {
+const linkWhenRouteInactive = (pathname: string) => {
   const { location, push } = history;
 
-  if (!location.pathname.includes(VOICEMAILS_ROOT_PATH)) {
-    push(VOICEMAILS_ROOT_PATH);
+  if (!location.pathname.includes(pathname)) {
+    push(pathname);
   }
+}
+
+export const onVoicemailNotificationClick = (id: number) => {
+  linkWhenRouteInactive(VOICEMAILS_ROOT_PATH);
 
   const voicemail = getEntity<Voicemail, VoicemailModel>(
     ENTITY_NAME.VOICE_MAIL,
@@ -128,4 +132,8 @@ export const onVoicemailNotificationClick = (id: number) => {
       dismissible: false,
     });
   }
+};
+
+export const onMissedCallNotificationClick = () => {
+  linkWhenRouteInactive(CALL_LOG_ROOT_PATH);
 };
