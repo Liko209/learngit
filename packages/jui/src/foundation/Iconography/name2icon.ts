@@ -154,6 +154,7 @@ const name2icon = {
   speaker: 'speaker',
   'speaker-mute': 'speaker-mute',
   view: 'view',
+  mute: 'mute-notification',
   'item-list-selected': 'item-list-selected',
   'transfer-call': 'transfer-call',
   askfirst: 'askfirst',

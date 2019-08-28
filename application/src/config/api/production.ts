@@ -33,5 +33,6 @@ const config: DeepPartial<ApiConfig> = {
     rcv: { baseUrl: 'https://v.ringcentral.com', dialInNumber: '+16504191505' },
   },
   data_collection: 'https://jupedc.ringcentral.com',
+  segment: "caLH3xAG2alfJm6DdJbTzrBmDeJRXNzO",
 };
 export default config;

@@ -34,6 +34,7 @@
         "execpath",
         "filepath",
         "filesize",
+        "firstonly",
         "flexbox",
         "flexbugs",
         "focusable",

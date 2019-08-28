@@ -103,7 +103,6 @@ class Sdk {
       }
     }
     this._subscribeNotification();
-    this._initDataAnalysis();
     mainLogger.tags(LOG_TAG).info('sdk init finished');
   }
 
@@ -253,10 +252,6 @@ class Sdk {
     sleepModeDetector.subScribe(this._sleepModeKey, (interval: number) => {
       notificationCenter.emit(SERVICE.WAKE_UP_FROM_SLEEP, interval);
     });
-  }
-
-  private _initDataAnalysis() {
-    dataAnalysis.init();
   }
 
   private _resetDataAnalysis() {
