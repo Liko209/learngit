@@ -3,7 +3,7 @@
  * @Date: 2019-05-28 13:43:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, autorun } from 'mobx';
+import { observable, autorun, computed, reaction } from 'mobx';
 import Base from './Base';
 import {
   Call,
@@ -14,8 +14,12 @@ import {
   RECORD_STATE,
 } from 'sdk/module/telephony/entity';
 import { getDisplayNameByCaller } from '@/modules/telephony/helpers';
+import { TelephonyTimeStore } from '@/modules/telephony/store/telephonyTimeStore';
 
 export default class CallModel extends Base<Call> {
+  @observable
+  private _telephonyTimeStore: TelephonyTimeStore;
+
   @observable
   uuid: string;
 
@@ -103,9 +107,24 @@ export default class CallModel extends Base<Call> {
     autorun(async () => {
       this.displayName = await getDisplayNameByCaller(this);
     });
+
+    reaction(
+      () => this.connectTime,
+      connectTime => {
+        if (connectTime && !this._telephonyTimeStore) {
+          this._telephonyTimeStore = new TelephonyTimeStore(connectTime);
+        }
+      },
+    );
   }
 
   static fromJS(data: Call) {
     return new CallModel(data);
+  }
+
+  @computed
+  get time() {
+    if (!this._telephonyTimeStore) return '';
+    return this._telephonyTimeStore.timing;
   }
 }
