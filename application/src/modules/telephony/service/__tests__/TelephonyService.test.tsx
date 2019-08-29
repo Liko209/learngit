@@ -157,6 +157,24 @@ describe('TelephonyService', () => {
     }
 
     beforeEach() {}
+
+    @test(
+      'should not call if there is already another call going on',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 1 },
+    ])
+    @mockService(itemService, 'startConference')
+    t0() {
+      let ts;
+      runInAction(async () => {
+        ts = new TelephonyService();
+        const result = await ts.startAudioConference(123);
+        expect(result).toBe(true);
+        expect(itemService.startConference).not.toHaveBeenCalled()
+      });
+    }
+
     @test(
       'should not call api if has no active DL',
     )
