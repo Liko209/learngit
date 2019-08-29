@@ -77,13 +77,13 @@ const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
   }
 `;
 
-const JuiKeypadAction = styled('div')`
+const JuiKeypadAction = styled.div<{ removeMargin?: boolean }>`
   && {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: ${width(16)};
-    margin-bottom: ${spacing(5)};
+    margin-bottom: ${({ removeMargin }) => (removeMargin ? 0 : spacing(5))};
     & > span {
       color: ${grey('700')};
       ${typography('caption1')};

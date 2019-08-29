@@ -22,7 +22,7 @@ class CallViewModel extends StoreViewModel<CallProps> {
     const { caller, entity, tabName } = this.props;
     const toNumber = caller.extensionNumber || caller.phoneNumber;
     // actions ensure caller exist
-    await this._telephonyService.makeCall(toNumber!);
+    await this._telephonyService.directCall(toNumber!);
     analyticsCollector.phoneCallBack(
       entity === ENTITY_TYPE.CALL_LOG ? 'callHistory' : 'voicemailList',
     );

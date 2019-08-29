@@ -637,6 +637,7 @@
   },
   "telephony": {
     "Phone": "Phone",
+    "conferenceCall": "Conference call",
     "Ext": "Ext.",
     "action": {
       "minimize": "Minimize",
@@ -661,6 +662,11 @@
       "flip": "Flip",
       "recentCall": "Recent calls",
       "backToDialer": "Back to dialer",
+      "ignore": "Ignore",
+      "voicemail": "To Voicemail",
+      "answer": "Answer",
+      "more": "More",
+      "endAndAnswer": "End & Answer",
       "transfer": "Transfer",
       "toVoiceMail": "To Voicemail",
       "askFirst": "Ask first"
@@ -685,12 +691,13 @@
     "sendToVoicemail": "Send to voicemail",
     "moreOptions": "More options",
     "answerTheCall": "Answer the call",
+    "endAndAnswerTheCall": "End and Answer the call",
     "unknownCaller": "Unknown Caller",
     "unknownCallee": "Unknown",
     "prompt": {
       "emergencyAddressIsUnknown": "You emergency address is unknown. You are limited to making outbound calls to extensions in your organization only.",
       "e911ServiceMayBeLimitedOrUnavailable": "E911 Service may be limited or unavailable. Your specific location may not be automatically communicated to the dispatcher.",
-      "e911ExtensionNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
+      "noDLNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
       "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
       "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
@@ -887,6 +894,7 @@
     "noMatchesFound": "No matches found",
     "noCallLogAvailable": "No call logs",
     "noVoicemailAvailable": "No voicemail records",
+    "startConference": "Start conference call",
     "prompt": {
       "numberHasBeenBlocked": "The number has been blocked",
       "numberHasBeenUnblocked": "The number has been unblocked",
@@ -1161,6 +1169,22 @@
     "prompt": {
       "updateRegionalSettingsBackendError": "Sorry, something went wrong on our end and we weren't able to save your region settings. Try again later.",
       "updateRegionalSettingsNetworkError": "Sorry, we weren't able to save your region settings due to a poor network connection. Try again."
+    },
+    "conversationPreferences": {
+      "entry": "Notification preferences",
+      "title": "Conversation notification preferences",
+      "muted": "Mute all notifications everywhere",
+      "desktopNotifications": "Enable desktop notifications",
+      "audioNotifications": "Enable desktop sound notifications",
+      "pushNotifications": "Enable mobile notifications",
+      "emailNotifications": "Enable email notifications",
+      "options": {
+        "mobileNotifications": {
+          "0": "Off",
+          "1": "Every message",
+          "firstonly": "First new message only"
+        }
+      }
     }
   },
   "viewer": {

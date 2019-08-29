@@ -14,6 +14,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_MEDIA_ACTION,
+  RTC_CALL_ACTION_DIRECTION,
 } from '../api/types';
 import {
   WEBPHONE_SESSION_STATE,
@@ -151,20 +152,6 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (outputDeviceId !== '') {
       this._setAudioOutputDevice(outputDeviceId);
     }
-  }
-
-  private _onReferRequestAccepted() {
-    this.emit(
-      CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      RTC_CALL_ACTION.WARM_TRANSFER,
-    );
-  }
-
-  private _onReferRequestRejected() {
-    this.emit(
-      CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-      RTC_CALL_ACTION.WARM_TRANSFER,
-    );
   }
 
   private _onSessionAccepted() {
@@ -318,10 +305,25 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   transfer(target: string) {
     this._session
       .transfer(target)
-      .then(() => {
-        this.emit(
-          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.TRANSFER,
+      .then((referClientContext: any) => {
+        this._referClientContext = referClientContext;
+        this._referClientContext.on(
+          RC_REFER_EVENT.REFER_REQUEST_ACCEPTED,
+          () => {
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+              RTC_CALL_ACTION.TRANSFER,
+            );
+          },
+        );
+        this._referClientContext.on(
+          RC_REFER_EVENT.REFER_REQUEST_REJECTED,
+          () => {
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+              RTC_CALL_ACTION.TRANSFER,
+            );
+          },
         );
       })
       .catch(() => {
@@ -337,13 +339,19 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         this._referClientContext.on(
           RC_REFER_EVENT.REFER_REQUEST_ACCEPTED,
           () => {
-            this._onReferRequestAccepted();
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+              RTC_CALL_ACTION.WARM_TRANSFER,
+            );
           },
         );
         this._referClientContext.on(
           RC_REFER_EVENT.REFER_REQUEST_REJECTED,
           () => {
-            this._onReferRequestRejected();
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+              RTC_CALL_ACTION.WARM_TRANSFER,
+            );
           },
         );
       })
@@ -424,15 +432,48 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       });
   }
 
-  mute() {
+  mute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      this._session.mute();
+      if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
+        rtcLogger.info(LOG_TAG, 'Mute Local media steams success');
+        this._session.mute();
+      } else {
+        rtcLogger.info(LOG_TAG, 'Mute Remote media steams success');
+        this.toggleRemoteMute(true);
+      }
     }
   }
 
-  unmute() {
+  unmute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      this._session.unmute();
+      if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
+        rtcLogger.info(LOG_TAG, 'Unmute Local media steams success');
+        this._session.unmute();
+      } else {
+        rtcLogger.info(LOG_TAG, 'Unmute Remote media steams success');
+        this.toggleRemoteMute(false);
+      }
+    }
+  }
+
+  toggleRemoteMute(mute: boolean): void {
+    if (
+      !this._session.sessionDescriptionHandler ||
+      !this._session.sessionDescriptionHandler.peerConnection
+    ) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'there is not peer connection so mute remote failed',
+      );
+      return;
+    }
+    const pc = this._session.sessionDescriptionHandler.peerConnection;
+    if (pc.getReceivers) {
+      pc.getReceivers().forEach((receivers: any) => {
+        if (receivers.track) {
+          receivers.track.enabled = !mute;
+        }
+      });
     }
   }
 
