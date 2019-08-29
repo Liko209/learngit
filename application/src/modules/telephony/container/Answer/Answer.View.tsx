@@ -9,30 +9,33 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { AnswerViewProps } from './types';
 import { JuiFabButton } from 'jui/components/Buttons';
+import { StyledActionText } from 'jui/pattern/Dialer';
 
 type Props = AnswerViewProps & WithTranslation;
 
 @observer
 class AnswerViewComponent extends Component<Props> {
-  private _handleAnswer = async () => {
+  private _handleAnswer = () => {
     const { ignore } = this.props;
     ignore();
-  }
+  };
 
   render() {
     const { t } = this.props;
     return (
-      <JuiFabButton
-        color="semantic.positive"
-        size="midLarge"
-        showShadow={false}
-        tooltipPlacement="top"
-        iconName="answer"
-        tooltipTitle={t('telephony.action.Answer')}
-        aria-label={t('telephony.answerTheCall')}
-        onClick={this._handleAnswer}
-        data-test-automation-id="telephony-answer-btn"
-      />
+      <>
+        <JuiFabButton
+          color="semantic.positive"
+          size="mediumLarge"
+          showShadow={false}
+          tooltipPlacement="top"
+          iconName="answer"
+          aria-label={t('telephony.answerTheCall')}
+          onClick={this._handleAnswer}
+          data-test-automation-id="telephony-answer-btn"
+        />
+        <StyledActionText>{t('telephony.action.answer')}</StyledActionText>
+      </>
     );
   }
 }
