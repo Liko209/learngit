@@ -413,14 +413,13 @@ class TelephonyStore {
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.DETACHED_WINDOW]();
   };
 
+  private get _shouldKeepPrevState() {
+    return (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) || (this.isMultipleCall && this.isEndCurrentCall);
+  }
+
   @action
   end = () => {
     const history = this._history;
-
-    // if end call isn't active call and incoming state reply don't reset state
-    if (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) {
-      return;
-    }
 
     switch (true) {
       case this.isMultipleCall:
@@ -438,6 +437,12 @@ class TelephonyStore {
         break;
       default:
         break;
+    }
+
+    // if end call isn't active call and incoming state reply don't reset state;
+    // if multiple call and end current call don't reset state;
+    if (this._shouldKeepPrevState) {
+      return;
     }
 
     this.resetReply();
@@ -797,6 +802,11 @@ class TelephonyStore {
   @computed
   get isEndOtherCall() {
     return this.endCall && this.call && this.endCall.id !== this.call.id;
+  }
+
+  @computed
+  get isEndCurrentCall() {
+    return this.endCall && this.call && this.endCall.id === this.call.id;
   }
 
   @action
