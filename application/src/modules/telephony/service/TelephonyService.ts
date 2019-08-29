@@ -10,6 +10,8 @@ import { jupiter } from 'framework/Jupiter';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import {
   TelephonyService as ServerTelephonyService,
@@ -90,6 +92,9 @@ class TelephonyService {
   private _voicemailService = ServiceLoader.getInstance<VoicemailService>(
     ServiceConfig.VOICEMAIL_SERVICE,
   );
+  private _callLogService = ServiceLoader.getInstance<CallLogService>(
+    ServiceConfig.CALL_LOG_SERVICE,
+  );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
   private _ringtone?: IMedia;
   private _muteRingtone: boolean = false;
@@ -111,6 +116,7 @@ class TelephonyService {
   private _currentSoundTrackForBeep: number | null;
   private _canPlayOgg: boolean = this._mediaService.canPlayType('audio/ogg');
   protected _voicemailNotificationObserver: IEntityChangeObserver;
+  protected _callLogNotificationObserver: IEntityChangeObserver<CallLog>;
 
   private _onMadeOutgoingCall = () => {
     // TODO: This should be a list in order to support multiple call
@@ -166,8 +172,10 @@ class TelephonyService {
     }
     const muted = isCurrentUserDND() || this._muteRingtone;
 
+    const trackId = this._telephonyStore.mediaTrackIds.telephony;
+
     this._ringtone = this._soundNotification.create(name, {
-      trackId: 'telephony',
+      trackId,
       loop: true,
       muted,
       outputDevices: this._outputDevices,
@@ -481,6 +489,8 @@ class TelephonyService {
     this._getCallerPhoneNumberList();
 
     this._subscribeVoicemailNotification();
+
+    this._subscribeMissedCallNotification();
   };
 
   async makeRCPhoneCall(phoneNumber: string) {
@@ -982,6 +992,9 @@ class TelephonyService {
     this._voicemailService.removeEntityNotificationObserver(
       this._voicemailNotificationObserver,
     );
+    this._callLogService.removeEntityNotificationObserver(
+      this._callLogNotificationObserver,
+    );
 
     this._stopRingtone();
     this._telephonyStore.hasManualSelected = false;
@@ -1263,6 +1276,23 @@ class TelephonyService {
 
   private _handleVoicemailEntityChanged = (voicemails: Voicemail[]) => {
     this._telephonyStore.updateVoicemailNotification(voicemails[0]);
+  }
+
+  private _subscribeMissedCallNotification = () => {
+    this._callLogNotificationObserver = {
+      onEntitiesChanged:
+        isFirefox && isWindows
+          ? throttle(this._handleMissedCallEntityChanged, NOTIFY_THROTTLE_FACTOR)
+          : this._handleMissedCallEntityChanged,
+    };
+
+    this._callLogService.addEntityNotificationObserver(
+      this._callLogNotificationObserver,
+    );
+  }
+
+  private _handleMissedCallEntityChanged = (missedCalls: CallLog[]) => {
+    this._telephonyStore.updateMissedCallNotification(missedCalls[0]);
   }
 };
 

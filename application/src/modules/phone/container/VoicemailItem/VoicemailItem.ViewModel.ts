@@ -181,9 +181,12 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       if (oldCache && oldCache.downloadUrl === ret) {
         return true;
       }
+
+      const trackId = this._phoneStore.mediaTrackIds.voicemail;
+
       const media = this._mediaService.createMedia({
+        trackId,
         id: id.toString(),
-        trackId: 'voicemail-track',
         src: ret,
         outputDevices: null,
       });

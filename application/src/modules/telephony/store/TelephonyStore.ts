@@ -16,6 +16,7 @@ import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { Person, PhoneNumberModel } from 'sdk/module/person/entity';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 import { v4 } from 'uuid';
 import {
   CALL_WINDOW_STATUS,
@@ -42,7 +43,8 @@ import { ENTITY } from 'sdk/service';
 import CallModel from '@/store/models/Call';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { formatSeconds } from './utils';
-import { VoicemailNotification } from './types';
+import { IMediaService } from '@/interface/media';
+import { VoicemailNotification, MissedCallNotification } from './types';
 
 type SelectedCallItem = { phoneNumber: string; index: number };
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
@@ -58,6 +60,8 @@ class TelephonyStore {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
+
+  @IMediaService private _mediaService: IMediaService;
 
   maximumInputLength = 30;
 
@@ -201,6 +205,9 @@ class TelephonyStore {
   @observable
   voicemailNotification: VoicemailNotification;
 
+  @observable
+  missedCallNotification: MissedCallNotification;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -278,6 +285,13 @@ class TelephonyStore {
         return;
       },
     );
+
+    reaction(
+      () => this.hasActiveCall,
+      hasActiveCall => {
+        hasActiveCall ? this._mediaService.setDuckVolume(0.7) : this._mediaService.setDuckVolume(1);
+      }
+    )
   }
 
   @computed
@@ -420,14 +434,13 @@ class TelephonyStore {
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.DETACHED_WINDOW]();
   };
 
+  private get _shouldKeepPrevState() {
+    return (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) || (this.isMultipleCall && this.isEndCurrentCall);
+  }
+
   @action
   end = () => {
     const history = this._history;
-
-    // if end call isn't active call and incoming state reply don't reset state
-    if (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) {
-      return;
-    }
 
     switch (true) {
       case this.isMultipleCall:
@@ -445,6 +458,12 @@ class TelephonyStore {
         break;
       default:
         break;
+    }
+
+    // if end call isn't active call and incoming state reply don't reset state;
+    // if multiple call and end current call don't reset state;
+    if (this._shouldKeepPrevState) {
+      return;
     }
 
     this.resetReply();
@@ -810,6 +829,11 @@ class TelephonyStore {
     return this.endCall && this.call && this.endCall.id !== this.call.id;
   }
 
+  @computed
+  get isEndCurrentCall() {
+    return this.endCall && this.call && this.endCall.id === this.call.id;
+  }
+
   @action
   changeBackToDefaultPos = (status: boolean) => {
     this.isBackToDefaultPos = status;
@@ -894,11 +918,25 @@ class TelephonyStore {
 
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
+    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
 
     this.voicemailNotification = {
       id,
-      title: await this._getNotificationCallerInfo(from),
+      title: `${displayName} ${displayNumber}`,
       body: this._getVoicemailNotificationBody(attachments),
+    };
+  };
+
+  @action
+  updateMissedCallNotification = async (callLog: CallLog) => {
+    const { id, from } = callLog;
+    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
+
+    this.missedCallNotification = {
+      id,
+      displayNumber,
+      title: i18nP('telephony.result.missedcall'),
+      body: `${displayName} ${displayNumber}`
     };
   };
 
@@ -907,7 +945,7 @@ class TelephonyStore {
     const contactNumber = extensionNumber || phoneNumber;
 
     if (!contactNumber) {
-      return i18nP('telephony.unknownCaller');
+      return { displayName: i18nP('telephony.unknownCaller'), displayNumber: '' };
     }
 
     const displayNumber = this._formatPhoneNumber(contactNumber);
@@ -916,7 +954,7 @@ class TelephonyStore {
 
     const displayName = matchPerson ? matchPerson.userDisplayName : caller.name;
 
-    return `${displayName} ${await displayNumber}`;
+    return { displayName, displayNumber: await displayNumber };
   };
 
   private _getVoicemailNotificationBody = (
@@ -927,6 +965,14 @@ class TelephonyStore {
 
     return audio ? `${text} ${formatSeconds(audio.vmDuration)}` : text;
   };
+
+  @computed
+  get mediaTrackIds() {
+    const telephonyMediaTrackId = this._mediaService.createTrack('telephony', 200);
+    return {
+      telephony: telephonyMediaTrackId,
+    }
+  }
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE, SelectedCallItem };

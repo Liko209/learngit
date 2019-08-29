@@ -54,28 +54,6 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
   }}
 `;
 
-function injectSvgFile() {
-  import('./icon-symbol.svg').then(({ default: file }) => {
-    fetch(file)
-      .then(res => res.text())
-      .then((data: string) => {
-        const body = document.body;
-        const x = document.createElement('x');
-        x.innerHTML = data;
-        let svg;
-        svg = x.getElementsByTagName('svg')[0];
-        if (svg) {
-          svg.setAttribute('aria-hidden', 'true');
-          svg.style.position = 'absolute';
-          svg.style.width = '0';
-          svg.style.height = '0';
-          svg.style.overflow = 'hidden';
-          body.insertBefore(svg, body.firstChild);
-        }
-      });
-  });
-}
-
 const RuiIconographyComponent: React.FunctionComponent<RuiIconographyProps> = (
   props: RuiIconographyProps,
 ) => {
@@ -93,6 +71,5 @@ const RuiIconographyComponent: React.FunctionComponent<RuiIconographyProps> = (
 
 RuiIconographyComponent.displayName = 'RuiIconography';
 
-injectSvgFile();
 const RuiIconography = React.memo(RuiIconographyComponent);
 export { RuiIconographyProps, RuiIconography, IconSize };

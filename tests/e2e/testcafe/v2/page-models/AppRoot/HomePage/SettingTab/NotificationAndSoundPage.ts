@@ -35,12 +35,12 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get microphoneSourceSelectBox() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-microphoneSource"
+      "selectBox-microphoneSource"
     );
   }
 
   get microphoneSourceItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   get speakerSourceLabel() {
@@ -54,19 +54,19 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get speakerSourceSelectBox() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-speakerSource");
+    return this.getSelectorByAutomationId("selectBox-speakerSource");
   }
 
   get speakerSourceItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   get ringerSourceSelectBox() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-ringerSource");
+    return this.getSelectorByAutomationId("selectBox-ringerSource");
   }
 
   get ringerSourceItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   get ringerSourceLabel() {
@@ -103,13 +103,13 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get microphoneSourceDefaultItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-microphoneSource-default"
+      "selectBoxItem-microphoneSource-default"
     );
   }
 
   get ringerSourceAllAudioSourcesItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-ringerSource-all"
+      "selectBoxItem-ringerSource-all"
     );
   }
 
@@ -119,7 +119,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get ringSourceSelectBoxOffItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-ringerSource-off"
+      "selectBoxItem-ringerSource-off"
     );
   }
 
@@ -324,17 +324,17 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
   get newMessageItemSelectBox() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-newMessages");
+    return this.getSelectorByAutomationId("selectBox-newMessages");
   }
 
   get newMessageItemSelectOff() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-newMessages-never"
+      "selectBoxItem-newMessages-never"
     );
   }
 
   get newMessageDropDownItems() {
-    return this.getSelectorByAutomationClass("settingItemSelectBoxItem");
+    return this.getSelectorByAutomationClass("selectBoxItem");
   }
 
   async hoverNewMessageItemSelectOff() {
@@ -425,7 +425,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   /// Direct messages
   get directMessagesSelectBox() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-notificationDirectMessages"
+      "selectBox-notificationDirectMessages"
     );
   }
 
@@ -435,7 +435,7 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get directMessagesOffItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-notificationDirectMessages-0"
+      "selectBoxItem-notificationDirectMessages-0"
     );
   }
 
@@ -451,16 +451,15 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   }
 
 
-
   get directMessagesAndMentionsOnlyItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-newMessageBadgeCount-groups_and_mentions"
+      "selectBoxItem-newMessageBadgeCount-groups_and_mentions"
     );
   }
 
   get allNewMessagesItem() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-newMessageBadgeCount-all"
+      "selectBoxItem-newMessageBadgeCount-all"
     );
   }
 
@@ -486,21 +485,21 @@ export class SoundsSection extends BaseWebComponent {
 
   get soundDirectMessages() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-soundDirectMessages"
+      "selectBox-soundDirectMessages"
     )
       .find("div")
       .find("p");
   }
 
   get soundMentions() {
-    return this.getSelectorByAutomationId("settingItemSelectBox-soundMentions")
+    return this.getSelectorByAutomationId("selectBox-soundMentions")
       .find("div")
       .find("p");
   }
 
   get soundTeamMessages() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-soundTeamMessages"
+      "selectBox-soundTeamMessages"
     )
       .find("div")
       .find("p");
@@ -508,7 +507,7 @@ export class SoundsSection extends BaseWebComponent {
 
   get soundIncomingCall() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-soundIncomingCall"
+      "selectBox-soundIncomingCall"
     )
       .find("div")
       .find("p");
@@ -536,7 +535,7 @@ export class SoundsSection extends BaseWebComponent {
 
   get soundDirectMessagesSelectBoxItem(){
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-soundDirectMessages-0"
+      "selectBoxItem-soundDirectMessages-0"
     );
   }
   async hoverSoundDirectMessagesSelectBoxItem(){
@@ -546,7 +545,7 @@ export class SoundsSection extends BaseWebComponent {
   // Sound Incoming voice calls
   get incomingVoiceCalls(){
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-soundIncomingCall"
+      "selectBox-soundIncomingCall"
     );
   }
   async clickIncomingVoiceCalls(){
@@ -562,7 +561,7 @@ export class SoundsSection extends BaseWebComponent {
   }
   get incomingVoiceCallsSelectBoxItemTop(){
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-soundIncomingCall-PhoneRing.wav"
+      "selectBoxItem-soundIncomingCall-PhoneRing.wav"
     );
   }
   async hoverIncomingVoiceCallsSelectBoxItemTop(){
@@ -571,7 +570,7 @@ export class SoundsSection extends BaseWebComponent {
 
   get incomingVoiceCallsSelectBoxItemOff(){
     return this.getSelectorByAutomationId(
-      "settingItemSelectBoxItem-soundIncomingCall-0"
+      "selectBoxItem-soundIncomingCall-0"
     );
   }
   async hoverIncomingVoiceCallsSelectBoxItemOff(){

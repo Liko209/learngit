@@ -8,6 +8,7 @@ import { IImageDownloader } from './downloader';
 import { IErrorReporter } from './errorReporter';
 import { IApplicationInfo } from './applicationInfo';
 import { INotificationPermission } from './notificationPermission';
+import { IWhiteScreenChecker } from './whiteScreenChecker';
 
 class Pal {
   private static _sPalInstance: Pal;
@@ -15,6 +16,7 @@ class Pal {
   private _errorReporter: IErrorReporter;
   private _applicationInfo: IApplicationInfo;
   private _notificationPermission: INotificationPermission;
+  private _whiteScreenChecker: IWhiteScreenChecker;
 
   static get instance(): Pal {
     if (!this._sPalInstance) {
@@ -54,6 +56,15 @@ class Pal {
   getNotificationPermission(): INotificationPermission {
     return this._notificationPermission;
   }
+
+  setWhiteScreenChecker(whiteScreenChecker: IWhiteScreenChecker) {
+    this._whiteScreenChecker = whiteScreenChecker;
+  }
+
+  getWhiteScreenChecker(): IWhiteScreenChecker {
+    return this._whiteScreenChecker;
+  }
+
 }
 
 export { Pal };

@@ -141,7 +141,6 @@ export class ConversationCard extends React.Component<
       creator,
       name,
       createTime,
-      customStatus,
       showProgressActions,
       itemTypeIds,
       mode,
@@ -150,6 +149,8 @@ export class ConversationCard extends React.Component<
       cardRef,
       onAnimationStart,
       onHighlightAnimationStart,
+      colonsEmoji,
+      statusPlainText,
       isEditMode,
       showActivityStatus,
       ...rest
@@ -185,7 +186,8 @@ export class ConversationCard extends React.Component<
           data-name="header"
           name={name}
           time={showProgressActions ? '' : createTime}
-          status={customStatus}
+          statusPlainText={statusPlainText}
+          colonsEmoji={colonsEmoji}
           notification={showActivityStatus && activity}
           repliedEntity={this._renderRepliedEntity}
           from={from}

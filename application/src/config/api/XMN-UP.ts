@@ -24,5 +24,6 @@ const config: DeepPartial<ApiConfig> = {
       dialInNumber: '+18582073116',
     },
   },
+  data_collection: '',
 };
 export default config;

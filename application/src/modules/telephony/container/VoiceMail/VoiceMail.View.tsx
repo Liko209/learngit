@@ -21,8 +21,8 @@ class VoiceMailViewComponent extends Component<Props> {
   };
 
   render() {
-    const { t, isTransferPage, transferNumber } = this.props;
-    return isTransferPage ? (
+    const { t, isTransferPage, transferNumber, isIncomingCall } = this.props;
+    return isTransferPage && !isIncomingCall ? (
       <JuiTransferAction>
         <JuiIconButton
           shouldPersistBg
@@ -38,19 +38,19 @@ class VoiceMailViewComponent extends Component<Props> {
         <span>{t('telephony.action.toVoiceMail')}</span>
       </JuiTransferAction>
     ) : (
-        <>
-          <JuiFabButton
-            color="semantic.negative"
-            size="mediumLarge"
-            showShadow={false}
-            tooltipPlacement="top"
-            iconName="voicemail"
-            aria-label={t('telephony.sendToVoicemail')}
-            onClick={this._handleVoiceMail}
-            data-test-automation-id="telephony-voice-mail-btn"
-          />
-          <StyledActionText>{t('telephony.action.voicemail')}</StyledActionText>
-        </>
+      <>
+        <JuiFabButton
+          color="semantic.negative"
+          size="mediumLarge"
+          showShadow={false}
+          tooltipPlacement="top"
+          iconName="voicemail"
+          aria-label={t('telephony.sendToVoicemail')}
+          onClick={this._handleVoiceMail}
+          data-test-automation-id="telephony-voice-mail-btn"
+        />
+        <StyledActionText>{t('telephony.action.voicemail')}</StyledActionText>
+      </>
     );
   }
 }

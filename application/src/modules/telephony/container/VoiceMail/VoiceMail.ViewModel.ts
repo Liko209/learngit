@@ -48,12 +48,18 @@ class VoiceMailViewModel extends StoreViewModel<VoiceMailProps>
       TRANSFER_TYPE.TO_VOICEMAIL,
       this.transferNumber,
     );
-    res && this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
+    res &&
+      this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
   };
 
   @computed
   get isTransferPage() {
     return this._telephonyStore.isTransferPage;
+  }
+
+  @computed
+  get isIncomingCall() {
+    return this._telephonyStore.isIncomingCall;
   }
 
   @computed

@@ -10,4 +10,11 @@ type VoicemailNotification = {
   body: string;
 };
 
-export { VoicemailNotification };
+type MissedCallNotification = {
+  id: string;
+  title: string;
+  body: string;
+  displayNumber: string;
+}
+
+export { VoicemailNotification, MissedCallNotification };

@@ -18,5 +18,6 @@ const config: DeepPartial<ApiConfig> = {
   upload: {
     server: 'https://glpdevxmn.asialab.glip.net:8443',
   },
+  segment: '5Xfm2pIidwm2h5a4OclkUw2OsnWCAlxY'
 };
 export default config;
