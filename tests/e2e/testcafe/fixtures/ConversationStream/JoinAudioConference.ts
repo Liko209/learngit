@@ -60,7 +60,6 @@ test.meta(<ITestMeta>{
 
   const postCard = app.homePage.messageTab.conversationPage.nthPostItem(-1);
   const audioConference = postCard.audioConference;
-  const number = audioConference.audioConferenceLink.innerText;
   const telephonyDialog = app.homePage.telephonyDialog;
 
   await h(t).withLog('And Single click the dia-in number', async () => {
@@ -72,7 +71,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(number).toEqual(telephonyDialog.extension);
     await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   })
 
@@ -89,7 +87,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(number).toEqual(telephonyDialog.extension);
     await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   });
 },
@@ -139,7 +136,6 @@ test.meta(<ITestMeta>{
 
   const postCard = app.homePage.messageTab.conversationPage.nthPostItem(-1);
   const audioConference = postCard.audioConference;
-  const number = audioConference.audioConferenceLink.innerText;
   const telephonyDialog = app.homePage.telephonyDialog;
 
   await h(t).withLog('And Single click the dia-in number', async () => {
@@ -151,7 +147,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(number).toEqual(telephonyDialog.extension);
     await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   })
 
@@ -168,7 +163,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(number).toEqual(telephonyDialog.extension);
     await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   });
 },
