@@ -138,12 +138,16 @@ class AppModule extends AbstractModule {
       }
     };
 
-    const injectPermissionControllers = () =>{
+    const injectPermissionControllers = () => {
       const permissionService = ServiceLoader.getInstance<PermissionService>(
         ServiceConfig.PERMISSION_SERVICE,
       );
-      permissionService.injectControllers(new LaunchDarklyController());
-      permissionService.injectControllers(new SplitIOController());
+      const ld = new LaunchDarklyController();
+      ld.initClient();
+      const split = new SplitIOController();
+      permissionService.injectControllers(ld);
+      split.initClient();
+      permissionService.injectControllers(split);
     }
 
     const setStaticHttpServer = (url?: string) => {
