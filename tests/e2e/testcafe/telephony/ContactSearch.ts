@@ -64,7 +64,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then a call should be initiated', async () => {
     await t.expect(telephonyDialog.hangupButton.exists).ok();
-    await t.expect(telephonyDialog.extension.withText(extension).exists).ok();
+    await t.expect(telephonyDialog.phoneNumber.withText(extension).exists).ok();
   });
 
   await h(t).withLog('When I end the call', async () => {
@@ -84,7 +84,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then a call should be initiated', async () => {
     await t.expect(telephonyDialog.hangupButton.exists).ok();
-    await t.expect(telephonyDialog.extension.withText(extension).exists).ok();
+    await t.expect(telephonyDialog.phoneNumber.withText(extension).exists).ok();
   });
 });
 
