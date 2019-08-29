@@ -204,7 +204,6 @@ class TelephonyService extends EntityBaseService<Call>
     type: TRANSFER_TYPE,
     transferTo: string,
   ) => {
-    console.log('vicky service', callId, transferTo);
     await this.telephonyController
       .getAccountController()
       .transfer(callId, type, transferTo);

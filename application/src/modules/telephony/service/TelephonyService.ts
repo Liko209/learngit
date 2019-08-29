@@ -296,9 +296,7 @@ class TelephonyService {
         // restore things to default values
         if (!hasActiveOutBoundCall) {
           runInAction(() => {
-            if (!this._telephonyStore.isWarmTransferPage) {
-              this.deleteInputString(true);
-            }
+            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -843,10 +841,6 @@ class TelephonyService {
       isHeld = !isHeld;
     }
   };
-
-  // holdCall = async (callId: number) => {
-  //   returnthis._serverTelephonyService.unhold(callId);
-  // }
 
   startOrStopRecording = async () => {
     if (!this._callEntityId || this._telephonyStore.recordDisabled) {

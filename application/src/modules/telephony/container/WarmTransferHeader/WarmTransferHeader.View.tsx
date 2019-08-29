@@ -36,7 +36,7 @@ class WarmTransferHeaderViewComponent extends React.Component<Props> {
     const { switchCallItems, switchCall } = this.props;
     return (
       <JuiSwitchCallHeader>
-        {switchCallItems.length &&
+        {switchCallItems &&
           switchCallItems.map((item, inx) => {
             const { holdState, displayName, id, time } = item;
             const active = holdState === HOLD_STATE.IDLE;

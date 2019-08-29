@@ -108,15 +108,6 @@ export default class CallModel extends Base<Call> {
     autorun(async () => {
       this.displayName = await getDisplayNameByCaller(this);
     });
-
-    // reaction(
-    //   () => this.connectTime,
-    //   connectTime => {
-    //     if (connectTime && !this._telephonyTimeStore) {
-    //       this._telephonyTimeStore = new TelephonyTimeStore(connectTime);
-    //     }
-    //   },
-    // );
   }
 
   @computed

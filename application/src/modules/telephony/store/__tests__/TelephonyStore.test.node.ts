@@ -446,7 +446,7 @@ describe('Telephony store', () => {
 
   it('backToDialerFromWarmTransferPage()', () => {
     const store = createStore();
-    store.backToDialerFromWarmTransferPage();
+    store.backToDialerFromTransferPage();
     expect(store.isWarmTransferPage).toBeFalsy();
   });
 
