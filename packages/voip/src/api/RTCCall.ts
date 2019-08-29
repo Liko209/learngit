@@ -170,46 +170,31 @@ class RTCCall {
 
   answer(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'answer');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.ANSWER,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.ANSWER);
     this._fsm.answer();
   }
 
   reject(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'reject');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.REJECT,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.REJECT);
     this._fsm.reject();
   }
 
   ignore(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'ignore');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.IGNORE,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.IGNORE);
     this._fsm.ignore();
   }
 
   sendToVoicemail(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'sendToVoicemail');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.SEND_TO_VM,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.SEND_TO_VM);
     this._fsm.sendToVoicemail();
   }
 
   startReply(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'startReply');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.START_REPLY,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.START_REPLY);
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.START_REPLY,
@@ -222,10 +207,7 @@ class RTCCall {
 
   replyWithMessage(message: string): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'replyWithMessage');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.REPLY_WITH_MSG,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.REPLY_WITH_MSG);
     if (!message || message.length === 0) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.REPLY_WITH_MSG,
@@ -249,10 +231,7 @@ class RTCCall {
     timeUnit: RTC_REPLY_MSG_TIME_UNIT = RTC_REPLY_MSG_TIME_UNIT.MINUTE,
   ): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'replyWithPattern');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.REPLY_WITH_PATTERN,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.REPLY_WITH_PATTERN);
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.REPLY_WITH_PATTERN,
@@ -264,63 +243,45 @@ class RTCCall {
   }
 
   hangup(): void {
-    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'hangup');
-    this._report.updateCallEvent(CallEventCategory.CallAction, 'hangup');
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, RTC_CALL_ACTION.HANGUP);
+    this._reportCallActionEvent(RTC_CALL_ACTION.HANGUP);
     this._fsm.hangup();
     this._account.removeCallFromCallManager(this._callInfo.uuid);
   }
 
   flip(target: number): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'flip');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.FLIP,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.FLIP);
     this._fsm.flip(target);
   }
 
   startRecord(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'startRecord');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.START_RECORD,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.START_RECORD);
     this._fsm.startRecord();
   }
 
   stopRecord(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'stopRecord');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.STOP_RECORD,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.STOP_RECORD);
     this._fsm.stopRecord();
   }
 
   hold(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'hold');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.HOLD,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.HOLD);
     this._fsm.hold();
   }
 
   unhold(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'unhold');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.UNHOLD,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.UNHOLD);
     this._fsm.unhold();
   }
 
   mute(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'mute');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.MUTE,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.MUTE);
     if (!this._isMute) {
       this._isMute = true;
       this._fsm.mute();
@@ -330,10 +291,7 @@ class RTCCall {
 
   unmute(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'unmute');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.UNMUTE,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.UNMUTE);
     if (this._isMute) {
       this._isMute = false;
       this._fsm.unmute();
@@ -343,19 +301,13 @@ class RTCCall {
 
   park(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'park');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.PARK,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.PARK);
     this._fsm.park();
   }
 
   transfer(target: string): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'transfer');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.TRANSFER,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.TRANSFER);
     if (target.length === 0) {
       this._onCallActionFailed(RTC_CALL_ACTION.TRANSFER, RTC_CALL_ACTION_ERROR_CODE.INVALID,);
       return;
@@ -364,10 +316,7 @@ class RTCCall {
   }
 
   warmTransfer(callUuid: string): void {
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.WARM_TRANSFER,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.WARM_TRANSFER);
     const targetCall = this._account.getCallByUuid(callUuid);
     if (!targetCall || !targetCall.getCallSession()) {
       rtcLogger.warn(
@@ -382,10 +331,7 @@ class RTCCall {
 
   forward(target: string): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'forward');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.FORWARD,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.FORWARD);
     if (target.length === 0 || !this._isIncomingCall) {
       this._onCallActionFailed(RTC_CALL_ACTION.FORWARD, RTC_CALL_ACTION_ERROR_CODE.INVALID,);
       return;
@@ -395,14 +341,18 @@ class RTCCall {
 
   dtmf(digits: string): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'dtmf');
-    this._report.updateCallEvent(
-      CallEventCategory.CallAction,
-      RTC_CALL_ACTION.DTMF,
-    );
+    this._reportCallActionEvent(RTC_CALL_ACTION.DTMF);
     if (digits.length === 0) {
       return;
     }
     this._fsm.dtmf(digits);
+  }
+
+  private _reportCallActionEvent(callAction: RTC_CALL_ACTION) {
+    this._report.updateCallEvent(
+      CallEventCategory.CallAction,
+      callAction,
+    );
   }
 
   onAccountReady() {

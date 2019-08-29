@@ -5,7 +5,6 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { dataAnalysis } from 'foundation/analysis';
-import { CallReport } from '../Call';
 import { RTCCall } from '../../api/RTCCall';
 import { IRTCCallDelegate } from '../../api/IRTCCallDelegate';
 import { IRTCAccount } from '../../account/IRTCAccount';
@@ -148,7 +147,7 @@ const diff: Diff = fsmStatus => {
 dataAnalysis.track = jest.fn();
 
 describe('Check all the report parameters if has call [JPT-1937]', () => {
-  it.only('should has current value when make call [JPT-1937]', async () => {
+  it('should has current value when make call [JPT-1937]', async () => {
     const account = new MockAccountAndCallObserver();
     const session = new MockSession();
     const call = new RTCCall(false, '123', null, account, account, undefined, {
@@ -212,7 +211,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
       ua,
       direction,
       establishment,
-    } = new CallReport();
+    } = call._report;
     expect(!!id).toBeTruthy;
     expect(!!sessionId).toBeTruthy;
     expect(!!ua).toBeTruthy;
@@ -246,7 +245,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     await sleep(10);
     (call as any)._destroy();
 
-    const fsmStatus = new CallReport().fsmStatus;
+    const fsmStatus = call._report.fsmStatus;
     const fsmStatusProps: FsmStatusCategory[] = [
       'idle',
       'replying',
@@ -262,7 +261,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     for (const key of fsmStatusProps) {
       const item = find(fsmStatus, key);
       expect(item!.name).toBeDefined;
-      expect(item!.timestamp).toBeGreaterThan(0);
+      expect(item!.timestamp).toBeDefined();
     }
 
     expect(fsmStatus.length).toBeGreaterThan(0);
@@ -294,7 +293,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     await sleep(10);
     (call as any)._destroy();
 
-    const fsmStatus = new CallReport().fsmStatus;
+    const fsmStatus = call._report.fsmStatus;
     const fsmStatusProps: FsmStatusCategory[] = [
       'idle',
       'pending',
@@ -309,7 +308,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     for (const key of fsmStatusProps) {
       const item = find(fsmStatus, key);
       expect(item!.name).toBeDefined;
-      expect(item!.timestamp).toBeGreaterThan(0);
+      expect(item!.timestamp).toBeDefined();
     }
 
     expect(fsmStatus.length).toBeGreaterThan(0);
@@ -329,7 +328,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     await sleep(10);
     (call as any)._destroy();
 
-    const fsmStatus = new CallReport().fsmStatus;
+    const fsmStatus = call._report.fsmStatus;
     const fsmStatusProps: FsmStatusCategory[] = [
       'idle',
       'forwarding',
@@ -339,7 +338,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     for (const key of fsmStatusProps) {
       const item = find(fsmStatus, key);
       expect(item!.name).toBeDefined;
-      expect(item!.timestamp).toBeGreaterThan(0);
+      expect(item!.timestamp).toBeDefined();
     }
 
     expect(fsmStatus.length).toBeGreaterThan(0);
@@ -368,30 +367,10 @@ describe('check upload call and media report after call is terminated', () => {
     await sleep(10);
     (call as any)._destroy();
 
-    const {
-      id,
-      createTime,
-      sessionId,
-      ua,
-      direction,
-      establishment,
-      fsmStatus,
-      media,
-    } = new CallReport();
-
     expect(dataAnalysis.track).toHaveBeenCalledWith(
       'Jup_Web/DT_phone_call_media_report',
       {
-        info: JSON.stringify({
-          id,
-          createTime,
-          sessionId,
-          ua,
-          direction,
-          establishment,
-          fsmStatus,
-          media,
-        }),
+        info: JSON.stringify(call._report),
         type: 'call',
       },
     );

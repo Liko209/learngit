@@ -65,6 +65,7 @@ enum RTC_CALL_ACTION {
   IGNORE = 'ignore',
   REJECT = 'reject',
   ANSWER = 'answer',
+  HANGUP = 'hangup',
 }
 
 enum RTC_CALL_ACTION_ERROR_CODE {
