@@ -362,7 +362,8 @@
       "started a video chat": "started a video chat",
       "replied": "replied",
       "reply": "replied to",
-      "via": "via"
+      "via": "via",
+      "join": "Join"
     },
     "meeting": {
       "videoCallInProgress": "Video Call in progress",

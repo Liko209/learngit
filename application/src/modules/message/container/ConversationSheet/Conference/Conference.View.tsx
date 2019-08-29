@@ -103,7 +103,7 @@ class Conference extends React.Component<conferenceViewProps> {
             size="medium"
             disabled={disabled}
           >
-            join
+            {t('item.activity.join')}
           </JuiAudioConferenceJoin>
         )}
       </JuiConversationItemCard>
