@@ -16,7 +16,6 @@ type ViewProps = {
   duration: string;
   meetingId: number;
   getDialInNumber(): string;
-  joinUrl: string;
   callbackMeeting: () => void;
   joinMeeting: () => void;
   cancelMeeting: () => void;
