@@ -171,8 +171,10 @@ class TelephonyService {
     }
     const muted = isCurrentUserDND() || this._muteRingtone;
 
+    const trackId = this._telephonyStore.mediaTrackIds.telephony;
+
     this._ringtone = this._soundNotification.create(name, {
-      trackId: 'telephony',
+      trackId,
       loop: true,
       muted,
       outputDevices: this._outputDevices,

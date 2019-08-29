@@ -43,6 +43,7 @@ import { ENTITY } from 'sdk/service';
 import CallModel from '@/store/models/Call';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { formatSeconds } from './utils';
+import { IMediaService } from '@/interface/media';
 import { VoicemailNotification, MissedCallNotification } from './types';
 
 type SelectedCallItem = { phoneNumber: string; index: number };
@@ -59,6 +60,8 @@ class TelephonyStore {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
+
+  @IMediaService private _mediaService: IMediaService;
 
   maximumInputLength = 30;
 
@@ -271,6 +274,13 @@ class TelephonyStore {
         if (isMultipleCall) this.changeBackToDefaultPos(true);
       },
     );
+
+    reaction(
+      () => this.hasActiveCall,
+      hasActiveCall => {
+        hasActiveCall ? this._mediaService.setDuckVolume(0.7) : this._mediaService.setDuckVolume(1);
+      }
+    )
   }
 
   @computed
@@ -918,6 +928,14 @@ class TelephonyStore {
 
     return audio ? `${text} ${formatSeconds(audio.vmDuration)}` : text;
   };
+
+  @computed
+  get mediaTrackIds() {
+    const telephonyMediaTrackId = this._mediaService.createTrack('telephony', 200);
+    return {
+      telephony: telephonyMediaTrackId,
+    }
+  }
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE, SelectedCallItem };
