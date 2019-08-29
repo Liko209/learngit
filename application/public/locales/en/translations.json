@@ -642,6 +642,7 @@
   },
   "telephony": {
     "Phone": "Phone",
+    "conferenceCall": "Conference call",
     "Ext": "Ext.",
     "action": {
       "minimize": "Minimize",
@@ -695,7 +696,7 @@
     "prompt": {
       "emergencyAddressIsUnknown": "You emergency address is unknown. You are limited to making outbound calls to extensions in your organization only.",
       "e911ServiceMayBeLimitedOrUnavailable": "E911 Service may be limited or unavailable. Your specific location may not be automatically communicated to the dispatcher.",
-      "e911ExtensionNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
+      "noDLNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
       "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
       "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
@@ -892,6 +893,7 @@
     "noMatchesFound": "No matches found",
     "noCallLogAvailable": "No call logs",
     "noVoicemailAvailable": "No voicemail records",
+    "startConference": "Start conference call",
     "prompt": {
       "numberHasBeenBlocked": "The number has been blocked",
       "numberHasBeenUnblocked": "The number has been unblocked",

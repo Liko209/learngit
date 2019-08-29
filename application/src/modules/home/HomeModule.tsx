@@ -13,6 +13,7 @@ import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { IMessageService } from '@/modules/message/interface';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { MEETING_SERVICE } from '@/modules/meeting/interface/constant';
+import _ from 'lodash';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 class HomeModule extends AbstractModule {
@@ -72,25 +73,20 @@ class HomeModule extends AbstractModule {
   addAsyncModuleOnInitializedListener() {
     // message should be first
     const services = this.getServices(['message', 'telephony', 'meeting']);
+    const getComponentClassFromModule = (m: object) => {
+      if (m && Object.keys(m).length > 0 && m[Object.keys(m)[0]]) {
+        return m[Object.keys(m)[0]];
+      }
+    };
     this._jupiter.onInitialized(
       services,
       async (MessageService, ...services) => {
-        const promises: any[] | Promise<any>[] = [];
-        services.forEach(service => {
-          promises.push(
-            (async _service => {
-              const headerExtension = await _service.getComponent();
-              if (
-                headerExtension &&
-                Object.keys(headerExtension).length > 0 &&
-                headerExtension[Object.keys(headerExtension)[0]]
-              ) {
-                return headerExtension[Object.keys(headerExtension)[0]];
-              }
-            })(service),
-          );
+        const promises: any[] | Promise<any>[] = services.map(async service => {
+          const modules = await Promise.all([].concat(service.getComponent()));
+          const ms = modules.map(m => getComponentClassFromModule(m));
+          return ms;
         });
-        const components = await Promise.all(promises);
+        const components = _.flatten(await Promise.all(promises));
         MessageService.registerConversationHeaderExtension(components);
       },
     );

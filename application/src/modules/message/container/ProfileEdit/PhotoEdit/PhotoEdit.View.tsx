@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDragZoom, JuiDragZoomOptions } from 'jui/pattern/DragZoom';
 import { JuiImageView } from 'jui/components/ImageView';
+import { withEscTracking } from '@/common/trackData';
 import { JuiModal } from 'jui/components/Dialog';
 import { RuiSlider } from 'rcui/components/Forms/Slider';
 import { JuiButton } from 'jui/components/Buttons';
@@ -181,6 +182,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
           'data-test-automation-id': 'EditProfilePhoto',
           scroll: 'body',
         }}
+        onClose={withEscTracking(this.handleClose)}
       >
         <JuiEditPhotoUploadContent>
           <JuiButton

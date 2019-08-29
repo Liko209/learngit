@@ -54,6 +54,7 @@ enum ERCServiceFeaturePermission {
   READ_CALLLOG,
   READ_MESSAGES,
   WEB_PHONE,
+  ORGANIZE_CONFERENCE,
 }
 
 enum PermissionId {
@@ -68,6 +69,7 @@ enum PermissionId {
   EDIT_BLOCKED_NUMBER = 'EditBlockedNumbers',
   READ_CALLLOG = 'ReadCallLog',
   READ_MESSAGES = 'ReadMessages',
+  ORGANIZE_CONFERENCE = 'OrganizeConference',
 }
 
 enum RCServiceFeatureName {

@@ -288,7 +288,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search ${userNameB} and hover the people result and click message icon`, async () => {
     await searchDialog.typeSearchKeyword(userNameB);
     resultName = await searchDialog.instantPage.nthPeople(0).getName();
-    await searchDialog.instantPage.nthPeople(0).HoverAndClickMessageButton();
+    await searchDialog.instantPage.nthPeople(0).hoverAndClickMessageButton();
   });
 
   await h(t).withLog(`And mouse in the global search box`, async () => {

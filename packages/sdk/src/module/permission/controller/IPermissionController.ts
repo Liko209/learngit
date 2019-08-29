@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import UserPermissionType from '../types';
+import UserPermissionType, { FeatureFlagType } from '../types';
 
 interface IPermissionController {
   hasPermission(type: UserPermissionType): Promise<boolean>;
-  getFeatureFlag(type: UserPermissionType): Promise<number | string>;
+  getFeatureFlag(type: UserPermissionType): Promise<FeatureFlagType>;
   isFlagSupported(type: UserPermissionType): boolean;
   setCallback(callback: () => void): void;
 }

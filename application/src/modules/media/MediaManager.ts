@@ -55,7 +55,7 @@ class MediaManager {
       return;
     }
     this._globalVolume = vol;
-    trackManager.setAllTrackVolume(vol);
+    trackManager.setAllTrackMasterVolume(vol);
   }
 
   setOutputDevices(devices: MediaDeviceType[]) {

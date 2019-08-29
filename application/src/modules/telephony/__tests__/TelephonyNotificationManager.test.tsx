@@ -340,14 +340,14 @@ describe('TelephonyNotificationManager', () => {
     });
 
     it('Should make outbound call back when has displayNumber and click call back [JPT-2814]', () => {
-      const mockMakeCall = jest.spyOn(telephonyNotificationManager._telephonyService, 'makeCall');
+      const mockDirectCall = jest.spyOn(telephonyNotificationManager._telephonyService, 'directCall');
 
       const displayNumber = '123456'
       const callbackAction = telephonyNotificationManager._buildCallbackAction(displayNumber);
 
       callbackAction.handler();
 
-      expect(mockMakeCall).toHaveBeenCalledWith(displayNumber);
+      expect(mockDirectCall).toHaveBeenCalledWith(displayNumber);
     });
   });
 });

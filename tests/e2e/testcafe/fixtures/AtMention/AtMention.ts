@@ -1,8 +1,8 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-13 13:26:25
- * @Last Modified by: alessia.li
- * @Last Modified time: 2019-07-04 12:06:27
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-08-29 11:08:44
  */
 
 import * as _ from 'lodash';

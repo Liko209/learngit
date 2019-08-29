@@ -9,13 +9,13 @@ jest.mock('ua-parser-js');
 
 jest.mock('moize', () => {
   const moize = x => x;
-  moize.promise = (func) => {
+  moize.promise = func => {
     function p() {
       /* eslint-disable */
       return Promise.resolve(Reflect.apply(func, null, arguments));
     }
     return func ? p : Promise.resolve;
-  }
+  };
   return moize;
 });
 
@@ -33,4 +33,11 @@ jest.mock('pubnub', () => {
     decrypt: jest.fn(),
   };
   return () => mock;
+});
+
+jest.mock('dexie-export-import', () => {
+  return {
+    importDB: jest.fn(),
+    exportDB: jest.fn(),
+  };
 });
