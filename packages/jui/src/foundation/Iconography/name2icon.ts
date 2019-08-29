@@ -153,6 +153,10 @@ const name2icon = {
   addmember_border: 'add-member_border',
   speaker: 'speaker',
   'speaker-mute': 'speaker-mute',
+  mute: 'mute-notification',
+  'item-list-selected': 'item-list-selected',
+  'transfer-call': 'transfer-call',
+  askfirst: 'askfirst',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

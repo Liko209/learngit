@@ -14,7 +14,8 @@ import { CALLING_OPTIONS } from 'sdk/module/profile';
 const permission = {
   hasPermission: jest.fn().mockResolvedValue(true),
   isVoipCallingAvailable: jest.fn().mockResolvedValue(true),
-  isWebPhoneAvailable: jest.fn().mockResolvedValueOnce(true),
+  isWebPhoneAvailable: jest.fn().mockResolvedValue(true),
+  isOrganizeConferenceAvailable: jest.fn().mockResolvedValue(true)
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
 jest.mock('@/store/utils');
@@ -55,16 +56,40 @@ describe('FeaturesFlagsService', () => {
   });
 
   describe('canUseConference()', () => {
-    it('should check web phone permission when choose ringcentral', async () => {
+    it('should return web phone permission true when choose ringcentral when has Organize Conference permission', async () => {
       const featuresFlagsService = new FeaturesFlagsService();
       getSingleEntity.mockReturnValueOnce(CALLING_OPTIONS.RINGCENTRAL);
-      expect(await featuresFlagsService.canUseTelephony()).toBeTruthy();
+      expect(await featuresFlagsService.canUseConference()).toBeTruthy();
     });
 
-    it('should check telephony permission when choose glip', async () => {
+    it('should return web phone permission false when choose ringcentral when has Organize Conference permission', async () => {
+      permission.isWebPhoneAvailable.mockResolvedValueOnce(false);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
+      const featuresFlagsService = new FeaturesFlagsService();
+      getSingleEntity.mockReturnValueOnce(CALLING_OPTIONS.RINGCENTRAL);
+      expect(await featuresFlagsService.canUseConference()).toBeFalsy();
+    });
+
+    it('should return telephony permission true when choose glip when has Organize Conference permission', async () => {
+
       const featuresFlagsService = new FeaturesFlagsService();
       getSingleEntity.mockReturnValueOnce(CALLING_OPTIONS.GLIP);
-      expect(await featuresFlagsService.canUseTelephony()).toBeTruthy();
+      expect(await featuresFlagsService.canUseConference()).toBeTruthy();
     });
+
+    it('should return telephony permission false when choose glip when has Organize Conference permission', async () => {
+      permission.isVoipCallingAvailable.mockResolvedValueOnce(false);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
+      const featuresFlagsService = new FeaturesFlagsService();
+      getSingleEntity.mockReturnValueOnce(CALLING_OPTIONS.GLIP);
+      expect(await featuresFlagsService.canUseConference()).toBeFalsy();
+    });
+
+    it('should return false when has not Organize Conference permission', async()=>{
+      permission.isOrganizeConferenceAvailable.mockResolvedValueOnce(false);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
+      const featuresFlagsService = new FeaturesFlagsService();
+      expect(await featuresFlagsService.canUseConference()).toBeFalsy();
+    })
   });
 });

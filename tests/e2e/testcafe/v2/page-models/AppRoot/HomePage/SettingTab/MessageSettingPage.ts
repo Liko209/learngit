@@ -1,5 +1,4 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
-import * as assert from 'assert';
 
 export class MessageSettingPage extends BaseWebComponent {
   get self() {
@@ -23,7 +22,7 @@ export class MessageSettingPage extends BaseWebComponent {
   }
   get maxConversationSelectBox() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBox-maxConversations',
+      'selectBox-maxConversations',
       this.conversationListSection,
     );
   }
@@ -34,7 +33,7 @@ export class MessageSettingPage extends BaseWebComponent {
     );
   }
   get maxConversationDropDownItems() {
-    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+    return this.getSelectorByAutomationClass('selectBoxItem');
   }
 
   async clickMaxConversationSelectBox(){
@@ -43,13 +42,13 @@ export class MessageSettingPage extends BaseWebComponent {
 
   get newMessageBadgeCountDropDown() {
     return this.getSelectorByAutomationId(
-      "settingItemSelectBox-newMessageBadgeCount", this.conversationListSection
+      "selectBox-newMessageBadgeCount", this.conversationListSection
     );
   }
 
   get newMessageBadgeCount() {
     return this.getSelector(
-      `*[data-test-automation-id^="settingItemSelectBoxItem-newMessageBadgeCount-"`
+      `*[data-test-automation-id^="selectBoxItem-newMessageBadgeCount-"`
     );
   }
 

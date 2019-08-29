@@ -77,7 +77,7 @@ class HomeViewComponent extends Component<Props> {
       return;
     }
 
-    const need = needConfirmE911();
+    const need = await needConfirmE911();
     if (!need) {
       return;
     }

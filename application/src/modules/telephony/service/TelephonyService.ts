@@ -10,6 +10,8 @@ import { jupiter } from 'framework/Jupiter';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import {
   TelephonyService as ServerTelephonyService,
@@ -68,6 +70,7 @@ import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -94,6 +97,9 @@ class TelephonyService {
   private _voicemailService = ServiceLoader.getInstance<VoicemailService>(
     ServiceConfig.VOICEMAIL_SERVICE,
   );
+  private _callLogService = ServiceLoader.getInstance<CallLogService>(
+    ServiceConfig.CALL_LOG_SERVICE,
+  );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
   private _ringtone?: IMedia;
   private _muteRingtone: boolean = false;
@@ -114,6 +120,7 @@ class TelephonyService {
   private _currentSoundTrackForBeep: number | null;
   private _canPlayOgg: boolean = this._mediaService.canPlayType('audio/ogg');
   protected _voicemailNotificationObserver: IEntityChangeObserver;
+  protected _callLogNotificationObserver: IEntityChangeObserver<CallLog>;
 
   private _onMadeOutgoingCall = (id: number) => {
     // TODO: This should be a list in order to support multiple call
@@ -470,6 +477,8 @@ class TelephonyService {
     this._getCallerPhoneNumberList();
 
     this._subscribeVoicemailNotification();
+
+    this._subscribeMissedCallNotification();
   };
 
   async makeRCPhoneCall(phoneNumber: string) {
@@ -537,6 +546,9 @@ class TelephonyService {
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
     const { accessCode } = options;
+    if (accessCode) {
+      this._telephonyStore.isConference = true;
+    }
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
       { fromNumber, accessCode },
@@ -948,6 +960,9 @@ class TelephonyService {
     this._voicemailService.removeEntityNotificationObserver(
       this._voicemailNotificationObserver,
     );
+    this._callLogService.removeEntityNotificationObserver(
+      this._callLogNotificationObserver,
+    );
 
     this._stopRingtone();
     this._telephonyStore.hasManualSelected = false;
@@ -1170,16 +1185,16 @@ class TelephonyService {
     this._telephonyStore.switchE911Status(true);
   };
 
-  needConfirmE911 = () => {
-    const hasActiveDL = this._serverTelephonyService.hasActiveDL();
+  needConfirmE911 = async () => {
+    const lines = await this._rcInfoService.getDigitalLines();
     const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed();
-    return hasActiveDL && !isEmergency;
+    return lines.length > 0 && !isEmergency;
   };
 
-  needE911Prompt = () => {
-    const hasActiveDL = this._serverTelephonyService.hasActiveDL();
+  needE911Prompt = async () => {
+    const lines = await this._rcInfoService.getDigitalLines();
     const hasConfirmed = this._serverTelephonyService.isEmergencyAddrConfirmed();
-    return hasActiveDL && hasConfirmed;
+    return lines.length > 0 && hasConfirmed;
   };
 
   startAudioConference = async (groupId: number) => {
@@ -1212,6 +1227,37 @@ class TelephonyService {
     return ret;
   }
 
+  transfer = async (type: TRANSFER_TYPE, transferTo: string) => {
+    if (!this._callEntityId) {
+      return false;
+    }
+    try {
+      await this._serverTelephonyService.transfer(
+        this._callEntityId,
+        type,
+        transferTo
+      );
+    } catch (error) {
+      switch (true) {
+        case CALL_ACTION_ERROR_CODE.NOT_NETWORK === error: {
+          ToastCallError.toastNoNetwork();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+        }
+
+        default:
+          ToastCallError.toastTransferError();
+          mainLogger.error(
+            `${TelephonyService.TAG}Transfer call error: ${error.toString()}`,
+          );
+          return false;
+      }
+    }
+    return true;
+  };
+
   private _subscribeVoicemailNotification = () => {
     this._voicemailNotificationObserver = {
       onEntitiesChanged:
@@ -1227,6 +1273,23 @@ class TelephonyService {
 
   private _handleVoicemailEntityChanged = (voicemails: Voicemail[]) => {
     this._telephonyStore.updateVoicemailNotification(voicemails[0]);
+  }
+
+  private _subscribeMissedCallNotification = () => {
+    this._callLogNotificationObserver = {
+      onEntitiesChanged:
+        isFirefox && isWindows
+          ? throttle(this._handleMissedCallEntityChanged, NOTIFY_THROTTLE_FACTOR)
+          : this._handleMissedCallEntityChanged,
+    };
+
+    this._callLogService.addEntityNotificationObserver(
+      this._callLogNotificationObserver,
+    );
+  }
+
+  private _handleMissedCallEntityChanged = (missedCalls: CallLog[]) => {
+    this._telephonyStore.updateMissedCallNotification(missedCalls[0]);
   }
 };
 

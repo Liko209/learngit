@@ -50,8 +50,8 @@ class DialerViewModel extends StoreViewModel<DialerProps>
         ) {
           return;
         }
-        const needConfirmE911 = this._telephonyService.needConfirmE911();
-        const needE911Prompt = this._telephonyService.needE911Prompt();
+        const needConfirmE911 = await this._telephonyService.needConfirmE911();
+        const needE911Prompt = await this._telephonyService.needE911Prompt();
         if (needE911Prompt && this.shouldShowPrompt) {
           return this.showPromptDialog();
         }
@@ -98,7 +98,10 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get isIncomingCall() {
-    return this._telephonyStore.isIncomingCall;
+    return (
+      this._telephonyStore.isIncomingCall &&
+      !this._telephonyStore.isTransferPage
+    );
   }
 
   @computed
@@ -128,7 +131,10 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get shouldDisplayDialer() {
-    return this._telephonyStore.shouldDisplayDialer;
+    return (
+      this._telephonyStore.shouldDisplayDialer ||
+      this._telephonyStore.isTransferPage
+    );
   }
 
   @computed

@@ -15,6 +15,7 @@ import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { Person, PhoneNumberModel } from 'sdk/module/person/entity';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 import { v4 } from 'uuid';
 import {
   CALL_WINDOW_STATUS,
@@ -39,16 +40,23 @@ import {
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 import { formatSeconds } from './utils';
-import { VoicemailNotification } from './types';
+import { VoicemailNotification, MissedCallNotification } from './types';
 
+type SelectedCallItem = { phoneNumber: string; index: number };
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
   private _intervalReplyId?: NodeJS.Timeout;
   private _history: Set<CALL_DIRECTION | typeof DIALING> = new Set();
+  private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
+    ServiceConfig.PHONE_NUMBER_SERVICE,
+  );
 
   maximumInputLength = 30;
+
+  @observable
+  isConference: boolean = false;
 
   @observable
   canUseTelephony: boolean = false;
@@ -93,6 +101,16 @@ class TelephonyStore {
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   forwardString: string = '';
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
+  @observable
+  transferString: string = '';
+
+  @observable
+  private _dialerString: string = '';
+
+  @observable
+  isValidInputStringNumber: boolean = false;
 
   @observable
   dialerInputFocused: boolean = false;
@@ -139,6 +157,18 @@ class TelephonyStore {
   @observable
   isRecentCalls: boolean = false;
 
+  @observable
+  private _isRecentCallsInDialerPage: boolean = false;
+
+  @observable
+  isTransferPage: boolean = false;
+
+  @observable
+  selectedCallItem: SelectedCallItem = {
+    phoneNumber: '',
+    index: NaN,
+  };
+
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   firstLetterEnteredThroughKeypadForInputString: boolean;
@@ -157,6 +187,9 @@ class TelephonyStore {
 
   @observable
   voicemailNotification: VoicemailNotification;
+
+  @observable
+  missedCallNotification: MissedCallNotification;
 
   constructor() {
     type FSM = '_callWindowFSM';
@@ -188,10 +221,13 @@ class TelephonyStore {
     // TODO: move out of telephony store when minization won't destroy the telephony dialog
     reaction(
       () => this.inputString.length,
-      length => {
+      async (length: number) => {
         if (!length) {
           this.resetFirstLetterThroughKeypadForInputString();
+          this.transferString = this.inputString;
         }
+        this.resetCallItem();
+        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(this.inputString);
       },
     );
 
@@ -297,6 +333,11 @@ class TelephonyStore {
   };
 
   @action
+  private _clearTransferString = () => {
+    this.transferString = '';
+  };
+
+  @action
   openKeypad = () => {
     this.keypadEntered = true;
   };
@@ -365,9 +406,14 @@ class TelephonyStore {
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
+    this._clearTransferString();
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
+    }
 
     this.isContactMatched = false;
     this.hasManualSelected = false;
+    this.isConference = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
 
     // for TelephonyNotificationManger can get call disconnected state.
@@ -436,6 +482,11 @@ class TelephonyStore {
   @action
   resetFirstLetterThroughKeypadForForwardString = () => {
     this.firstLetterEnteredThroughKeypadForForwardString = false;
+  };
+
+  @action
+  resetValidInputStringNumber = () => {
+    this.isValidInputStringNumber = false;
   };
 
   @computed
@@ -519,10 +570,7 @@ class TelephonyStore {
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
-    return (
-      [undefined, CALL_STATE.DISCONNECTED].includes(this.callState) ||
-      this.incomingState === INCOMING_STATE.FORWARD
-    );
+    return [undefined, CALL_STATE.DISCONNECTED].includes(this.callState);
   }
 
   @computed
@@ -628,10 +676,12 @@ class TelephonyStore {
 
   @computed
   get shouldDisplayRecentCalls() {
-    return !(
-      this.hasActiveOutBoundCall ||
-      this.hasActiveInBoundCall ||
-      this.isIncomingCall
+    return (
+      !(
+        this.hasActiveOutBoundCall ||
+        this.hasActiveInBoundCall ||
+        this.isIncomingCall
+      ) || this.isTransferPage
     );
   }
 
@@ -654,6 +704,7 @@ class TelephonyStore {
   @action
   backToDialer = () => {
     this.isRecentCalls = false;
+    this.resetCallItem();
   };
 
   @action
@@ -662,13 +713,66 @@ class TelephonyStore {
   };
 
   @action
+  directToTransferPage = () => {
+    this.isTransferPage = true;
+    this._isRecentCallsInDialerPage = this.isRecentCalls;
+    this.backToDialer();
+    if (this.inputString.length) {
+      this._dialerString = this.inputString;
+      this.inputString = '';
+    }
+  };
+
+  @action
+  backToDialerFromTransferPage = () => {
+    this.isTransferPage = false;
+    this.isRecentCalls = this._isRecentCallsInDialerPage;
+    this.resetValidInputStringNumber();
+    if (this._dialerString.length) {
+      this.inputString = this._dialerString;
+      this._dialerString = '';
+      return;
+    }
+    return this.inputString = '';
+  };
+
+  @action
+  setCallItem = (phoneNumber: string, index: number) => {
+    this.selectedCallItem = {
+      phoneNumber,
+      index,
+    };
+  };
+
+  @action
+  resetCallItem = () => {
+    this.selectedCallItem = {
+      phoneNumber: '',
+      index: NaN,
+    };
+  }
+
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
+    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
 
     this.voicemailNotification = {
       id,
-      title: await this._getNotificationCallerInfo(from),
+      title: `${displayName} ${displayNumber}`,
       body: this._getVoicemailNotificationBody(attachments),
+    };
+  };
+
+  @action
+  updateMissedCallNotification = async (callLog: CallLog) => {
+    const { id, from } = callLog;
+    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
+
+    this.missedCallNotification = {
+      id,
+      displayNumber,
+      title: i18nP('telephony.result.missedcall'),
+      body: `${displayName} ${displayNumber}`
     };
   };
 
@@ -677,7 +781,7 @@ class TelephonyStore {
     const contactNumber = extensionNumber || phoneNumber;
 
     if (!contactNumber) {
-      return i18nP('telephony.unknownCaller');
+      return { displayName: i18nP('telephony.unknownCaller'), displayNumber: '' };
     }
 
     const displayNumber = this._formatPhoneNumber(contactNumber);
@@ -686,7 +790,7 @@ class TelephonyStore {
 
     const displayName = matchPerson ? matchPerson.userDisplayName : caller.name;
 
-    return `${displayName} ${await displayNumber}`;
+    return { displayName, displayNumber: await displayNumber };
   };
 
   private _getVoicemailNotificationBody = (
@@ -699,4 +803,4 @@ class TelephonyStore {
   };
 }
 
-export { TelephonyStore, CALL_TYPE, INCOMING_STATE };
+export { TelephonyStore, CALL_TYPE, INCOMING_STATE, SelectedCallItem };

@@ -14,6 +14,7 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
@@ -47,6 +48,7 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -74,6 +76,7 @@ let mockedRCInfoService: any;
 let mockedSettingService: any;
 let mockedAccountService: any;
 let mockedVoicemailService: any;
+let mockedMissedCallService: any;
 
 function initializeCallerId() {
   try{
@@ -178,6 +181,7 @@ describe('TelephonyService', () => {
         setTimeout(() => {}, mockedDelay);
         return MAKE_CALL_ERROR_CODE.NO_ERROR;
       }),
+      transfer: jest.fn(),
       hangUp: jest.fn().mockImplementation(() => {}),
       park: (callUuid: string) => {
         if (callUuid === 'failed') {
@@ -218,6 +222,8 @@ describe('TelephonyService', () => {
 
     mockedVoicemailService = { removeEntityNotificationObserver: jest.fn() };
 
+    mockedMissedCallService = { removeEntityNotificationObserver: jest.fn() };
+
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
@@ -242,6 +248,8 @@ describe('TelephonyService', () => {
           return mockedSettingService as SettingService;
         case ServiceConfig.VOICEMAIL_SERVICE:
           return mockedVoicemailService as VoicemailService;
+        case ServiceConfig.CALL_LOG_SERVICE:
+          return mockedMissedCallService as CallLogService;
         default:
           return {} as PersonService;
       }
@@ -1210,5 +1218,15 @@ describe('TelephonyService', () => {
       // @ts-ignore
       expect(telephonyService._makeCall).not.toHaveBeenCalled();
     });
+  });
+
+  describe('transfer()', () => {
+    it('should transfer call now success', async () => {
+      const callEntityId = 'id_0';
+      const toTransfer = '444555666';
+      telephonyService._callEntityId = callEntityId;
+      await telephonyService.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
+      expect(mockedServerTelephonyService.transfer).toHaveBeenCalledWith(callEntityId, TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
+    })
   })
 });

@@ -35,6 +35,7 @@ type JuiAvatarProps = {
   cover?: boolean;
   mask?: boolean;
   displayName?: string;
+  customColor?: boolean;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -62,7 +63,8 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color }) =>
+    background-color: ${({ color, customColor }) =>
+      customColor ? color :
       color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
@@ -160,7 +162,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   }
 
   if (mask) {
-    avatar = <JuiAvatarMask>{avatar}</JuiAvatarMask>;
+    avatar = <JuiAvatarMask onClick={rest.onClick}>{avatar}</JuiAvatarMask>;
   }
 
   if (tooltip && popupHelper.PopoverProps.open) {

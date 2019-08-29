@@ -11,10 +11,17 @@ import {
 } from '@/interface/media';
 import { MediaTrack } from './MediaTrack';
 
+type PriorityItemType = {
+  position: number;
+  weight: number;
+  ids: string[];
+};
+
 class TrackManager {
   private _tracks: MediaTrack[] = [];
   private _allOutputDevices: MediaDeviceType[] = [];
   private _globalVolume: number = 1;
+  private _priorityPool: PriorityItemType[] = [];
 
   useMediaTrack(trackId?: string) {
     let mediaTrack: MediaTrack;
@@ -40,7 +47,7 @@ class TrackManager {
   setAllTrackVolume(vol: number) {
     this._globalVolume = vol;
     this._tracks.forEach(track => {
-      track.setMasterVolume(vol);
+      track.setVolume(vol);
     });
   }
 
@@ -49,6 +56,11 @@ class TrackManager {
     this._tracks.forEach(track => {
       track.setOutputDevices(devices);
     });
+  }
+
+  setTrackVolume(trackId: string, vol: number) {
+    const track = this._getTrackById(trackId);
+    track && track.setVolume(vol);
   }
 
   getTrack(id: string) {
@@ -60,7 +72,7 @@ class TrackManager {
   }
 
   createTrack(options: MediaTrackOptions) {
-    return this._createTrack(options);
+    return this._getTrackById(options.id) || this._createTrack(options);
   }
 
   updateAllOutputDevices(devices: MediaDeviceType[]) {
@@ -92,7 +104,93 @@ class TrackManager {
       ...options,
     });
     this._tracks.push(newTrack);
+
+    // listen track playing
+    newTrack.onPlaying((isPlaying: boolean) => {
+      if (isPlaying) {
+        this._addPlayingTrackToPool(newTrack.id);
+      } else {
+        this._removePlayingTrackFromPool(newTrack.id);
+      }
+    });
     return newTrack;
+  }
+
+  private _addPlayingTrackToPool(trackId: string) {
+    const mediaTrack = this._getTrackById(trackId);
+    if (!mediaTrack) {
+      return;
+    }
+
+    const priorityItem = this._getPriorityItemByWeight(mediaTrack.weight);
+
+    if (priorityItem && !priorityItem.ids.includes(trackId)) {
+      priorityItem.ids.push(trackId);
+    } else if (!priorityItem) {
+      const newPriorityItem: PriorityItemType = {
+        position: 0,
+        weight: mediaTrack.weight,
+        ids: [trackId],
+      };
+      this._priorityPool.push(newPriorityItem);
+    } else {
+      return;
+    }
+
+    this._updatePriorityPoolVolume();
+  }
+
+  private _removePlayingTrackFromPool(trackId: string) {
+    const mediaTrack = this._getTrackById(trackId);
+    if (!mediaTrack) {
+      return;
+    }
+
+    const priorityItem = this._getPriorityItemByWeight(mediaTrack.weight);
+
+    if (priorityItem && priorityItem.ids.includes(trackId)) {
+      priorityItem.ids = priorityItem.ids.filter(id => trackId !== id);
+    } else {
+      return;
+    }
+
+    this._updatePriorityPoolVolume();
+  }
+
+  private _getPriorityItemByWeight(weight: number, pool?: PriorityItemType[]): PriorityItemType | null {
+    const _pool = pool || this._priorityPool;
+    const priorityItem = _pool.filter(item => {
+      return item.weight === weight;
+    });
+    return priorityItem.length === 0 ? null : priorityItem[0];
+  }
+
+  private _updatePriorityPoolVolume() {
+    const oldPriorityPool = JSON.parse(JSON.stringify(this._priorityPool));
+
+    this._priorityPool = this._priorityPool
+      .sort((a, b) => a.weight - b.weight)
+      .filter(item => item.ids.length !== 0);
+
+    this._priorityPool.forEach((item, idx) => {
+      item.position = idx;
+      const currentPosition = idx;
+      const oldPriorityItem = this._getPriorityItemByWeight(item.weight, oldPriorityPool);
+      const oldPosition =  oldPriorityItem ? oldPriorityItem.position : currentPosition;
+
+      if (currentPosition !== oldPosition) {
+        item.ids.forEach(id => {
+          const track = this._getTrackById(id);
+          if (track) {
+            const volume = currentPosition - oldPosition > 0 ?
+              this._globalVolume * track.volume * 0.7 ** currentPosition :
+              this._globalVolume * track.volume / 0.7 ** oldPosition;
+
+            this.setTrackVolume(id, volume);
+          }
+        });
+      }
+    });
   }
 
   get tracks() {

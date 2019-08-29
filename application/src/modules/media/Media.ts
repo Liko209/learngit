@@ -12,6 +12,7 @@ import {
   MediaEventType,
   DEFAULT_TRACK_ID,
   MediaDeviceType,
+  MediaTrackOptions,
 } from '@/interface/media';
 import { trackManager } from './TrackManager';
 import { MediaTrack } from './MediaTrack';
@@ -109,7 +110,7 @@ class Media implements IMedia {
 
   setVolume(volume: number) {
     if (this._isMediaInTrack()) {
-      this._useTrack.setVolume(volume);
+      this._useTrack.setMediaVolume(volume);
     }
     this._volume = volume;
     return this;
@@ -187,6 +188,9 @@ class Media implements IMedia {
     this._currentTime = 0;
     this._onResetHandlers &&
       this._onResetHandlers.forEach(handler => handler());
+    if (this._isMediaInTrack()) {
+      this._useTrack.dispose();
+    }
   };
 
   private _setup(o: MediaOptions) {
@@ -202,7 +206,7 @@ class Media implements IMedia {
     this._outputDevices =
       o.outputDevices && Array.isArray(o.outputDevices)
         ? o.outputDevices
-        : o.outputDevices === null
+        : o.outputDevices === null || o.outputDevices === undefined
         ? null
         : trackManager.getAllOutputDevicesId();
 
@@ -223,13 +227,13 @@ class Media implements IMedia {
     return this._useTrack.currentMediaId === this._mediaId;
   }
 
-  private _getCurrentMediaOptions() {
+  private _getCurrentMediaOptions(): MediaTrackOptions {
     return {
       id: this._trackId || DEFAULT_TRACK_ID,
       mediaId: this._mediaId,
       src: this._src,
       muted: this._muted,
-      volume: this._volume,
+      mediaVolume: this._volume,
       loop: this._loop,
       autoplay: this._autoplay,
       outputDevices: this._outputDevices,

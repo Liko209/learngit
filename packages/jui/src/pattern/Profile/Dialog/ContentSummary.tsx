@@ -102,6 +102,13 @@ const JuiProfileDialogContentSummaryStatus = styled('div')`
   ${ellipsis()};
   color: ${grey('500')};
   margin-top: ${spacing(1)};
+  && {
+    .emoji-mart-emoji {
+      position: relative;
+      top: 50%;
+      transform: translateY(10%);
+    }
+  }
 `;
 
 const JuiProfileDialogContentSummaryTitle = styled(

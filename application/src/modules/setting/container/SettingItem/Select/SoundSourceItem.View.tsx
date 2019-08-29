@@ -49,7 +49,9 @@ const SoundSourceItem = (props: SoundItemProps) => {
 
 const SoundSourcePlayer = (props: SoundItemProps) => {
   const { value } = props;
-  if ([RINGS_TYPE.Off, SOUNDS_TYPE.Off].includes(value.id)) {
+  if (
+    [RINGS_TYPE.Off, SOUNDS_TYPE.Off, SOUNDS_TYPE.Default].includes(value.id)
+  ) {
     return null;
   }
   const soundName = value.id;
