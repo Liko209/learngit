@@ -3,10 +3,10 @@
  * @Date: 2019-07-22 14:01:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractPermissionController } from '../AbstractPermissionController';
 import {
   IPermissionController,
   UserPermissionType,
+  AbstractPermissionController
 } from 'sdk/module/permission';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyFlagList';
 import { LaunchDarklyClient } from './LaunchDarklyClient';
@@ -47,8 +47,9 @@ class LaunchDarklyController extends AbstractPermissionController
     );
     const person = await personService.getById(userId);
     const host: string = window.location.host;
+    const { clientId } = Api.httpConfig.launchdarkly;
     const params = {
-      clientId: Api.httpConfig.launchdarkly.clientId,
+      clientId,
       user: {
         key: `${userId}`,
         name: (person && person['display_name']) || '',
@@ -67,7 +68,6 @@ class LaunchDarklyController extends AbstractPermissionController
         mainLogger.log('incoming event launchDarklyUpdateCallback');
       },
     };
-    const { clientId } = Api.httpConfig.launchdarkly;
     const isRunningE2E = EnvConfig.getIsRunningE2E();
     if (clientId && !isRunningE2E) {
       this.launchDarklyClient = new LaunchDarklyClient(params);
