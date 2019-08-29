@@ -155,6 +155,7 @@ const name2icon = {
   'speaker-mute': 'speaker-mute',
   end_and_answer: 'end--answer',
   ignore: 'ignore',
+  mute: 'mute-notification',
   'item-list-selected': 'item-list-selected',
   'transfer-call': 'transfer-call',
   askfirst: 'askfirst',

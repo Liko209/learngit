@@ -455,7 +455,7 @@ describe('Telephony store', () => {
 
       const info = await store._getNotificationCallerInfo(null);
 
-      expect(info).toBe('unknown caller');
+      expect(info.displayName).toBe('unknown caller');
     });
   });
 });

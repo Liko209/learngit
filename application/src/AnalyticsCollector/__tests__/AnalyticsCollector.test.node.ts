@@ -9,10 +9,12 @@ import { dataAnalysis } from 'foundation/analysis';
 import { ENTITY_NAME } from '@/store/constants';
 import * as utils from '@/store/utils';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { EnvConfig } from 'sdk/module/env/config';
 
 jest.mock('@/store/utils');
 jest.mock('foundation/analysis');
 jest.mock('@/containers/VersionInfo/helper');
+jest.mock('sdk/module/env/config');
 
 jest.mock('@/config', () => ({
   isProductionAccount: jest.fn(() => {
@@ -130,6 +132,19 @@ describe('analyticsCollector', () => {
           type: 'multiCall',
         },
       );
+    });
+  });
+
+  describe('init', () => {
+    it('should not init dataAnalysis when is running e2e', () => {
+      EnvConfig.getIsRunningE2E = jest.fn().mockReturnValueOnce(true);
+      analyticsCollector.init();
+      expect(dataAnalysis.init).not.toHaveBeenCalled();
+    });
+    it('should init dataAnalysis when is not running e2e', () => {
+      EnvConfig.getIsRunningE2E = jest.fn().mockReturnValueOnce(false);
+      analyticsCollector.init();
+      expect(dataAnalysis.init).toHaveBeenCalled();
     });
   });
 });
