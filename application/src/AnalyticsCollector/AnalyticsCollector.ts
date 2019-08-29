@@ -27,7 +27,7 @@ class AnalyticsCollector {
     !isRunningE2E && dataAnalysis.init(Api.httpConfig.segment);
   }
 
-  reset(){
+  reset() {
     dataAnalysis.reset();
   }
 
@@ -348,6 +348,13 @@ class AnalyticsCollector {
   seeIncomingCallPage(type: 'singleCall' | 'multiCall') {
     dataAnalysis.page('Jup_Web/DT_phone_incomingCallWindow', {
       type,
+    });
+  }
+
+  startConferenceCall(conversationType: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_startConferenceCall', {
+      conversationType,
+      source,
     });
   }
 
