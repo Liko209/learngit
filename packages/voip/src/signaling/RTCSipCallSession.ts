@@ -160,20 +160,6 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
-  private _onReferRequestAccepted() {
-    this.emit(
-      CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      RTC_CALL_ACTION.WARM_TRANSFER,
-    );
-  }
-
-  private _onReferRequestRejected() {
-    this.emit(
-      CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-      RTC_CALL_ACTION.WARM_TRANSFER,
-    );
-  }
-
   private _onSessionAccepted() {
     this._initAudioDeviceChannel();
     this.emit(CALL_SESSION_STATE.ACCEPTED);
@@ -329,10 +315,25 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   transfer(target: string) {
     this._session
       .transfer(target)
-      .then(() => {
-        this.emit(
-          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.TRANSFER,
+      .then((referClientContext: any) => {
+        this._referClientContext = referClientContext;
+        this._referClientContext.on(
+          RC_REFER_EVENT.REFER_REQUEST_ACCEPTED,
+          () => {
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+              RTC_CALL_ACTION.TRANSFER,
+            );
+          },
+        );
+        this._referClientContext.on(
+          RC_REFER_EVENT.REFER_REQUEST_REJECTED,
+          () => {
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+              RTC_CALL_ACTION.TRANSFER,
+            );
+          },
         );
       })
       .catch(() => {
@@ -348,13 +349,19 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         this._referClientContext.on(
           RC_REFER_EVENT.REFER_REQUEST_ACCEPTED,
           () => {
-            this._onReferRequestAccepted();
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+              RTC_CALL_ACTION.WARM_TRANSFER,
+            );
           },
         );
         this._referClientContext.on(
           RC_REFER_EVENT.REFER_REQUEST_REJECTED,
           () => {
-            this._onReferRequestRejected();
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+              RTC_CALL_ACTION.WARM_TRANSFER,
+            );
           },
         );
       })

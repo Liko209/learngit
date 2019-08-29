@@ -4,9 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import 'emoji-mart/css/emoji-mart.css';
-import {
-  Picker, EmojiData, EmojiSet, EmojiSheetSize,
-} from 'emoji-mart';
+import { Picker, EmojiData, EmojiSet, EmojiSheetSize } from 'emoji-mart';
 import React, { MouseEvent } from 'react';
 import { JuiIconButton, JuiToggleButton } from '../../components/Buttons';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -33,7 +31,7 @@ type Props = {
 };
 type ComponentProps = {
   isToggleWrapShow?: boolean;
-}
+};
 const StyledCutomizedComponentContainer = styled.span<ComponentProps>`
   display: ${({ isToggleWrapShow }) => (isToggleWrapShow ? 'flex' : 'none')};
   align-items: center;
@@ -159,15 +157,15 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
   };
 
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => (
-      <JuiIconButton
-        data-test-automation-id="conversation-chatbar-emoji-button"
-        tooltipTitle={this.props.tooltip}
-        onClick={this._handleClickEvent}
-        size="medium"
-        tooltipForceHide={tooltipForceHide}
-      >
-        {this.props.handlerIcon}
-      </JuiIconButton>
+    <JuiIconButton
+      data-test-automation-id="conversation-chatbar-emoji-button"
+      tooltipTitle={this.props.tooltip}
+      onClick={this._handleClickEvent}
+      size="medium"
+      tooltipForceHide={tooltipForceHide}
+    >
+      {this.props.handlerIcon}
+    </JuiIconButton>
   );
 
   private isIndexOf = (source: string[], target: string[]) => {
@@ -226,7 +224,9 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
               emoji={defaultSelector || ''}
               set={set}
               onClick={this.handleClick}
-              emojisToShowFilter={(emoji: any) => this.isIndexOf(ExcludeList, emoji.short_names)}
+              emojisToShowFilter={(emoji: any) =>
+                this.isIndexOf(ExcludeList, emoji.short_names)
+              }
               backgroundImageFn={backgroundImageFn}
             />
             <StyledCutomizedComponentContainer

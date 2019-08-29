@@ -54,6 +54,7 @@ type ApiConfig = {
     rcv: MeetingsRCV;
   };
   data_collection: string;
+  segment: string;
 };
 
 type HttpConfigType = 'glip' | 'rc' | 'upload' | 'glip_desktop';

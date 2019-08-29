@@ -112,7 +112,15 @@ class ContactFocHandler extends IdModelFocHandler {
           [],
           this._searchTerms,
         );
-        isValid = matchInfo.isMatched;
+
+        isValid =
+          matchInfo.isMatched ||
+          (person.email
+            ? SearchUtils.isFuzzyMatched(
+                person.email.toLowerCase(),
+                this._searchTerms.searchKeyTerms,
+              )
+            : false);
       }
     }
 
