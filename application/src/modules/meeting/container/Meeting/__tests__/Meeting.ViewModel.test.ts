@@ -103,12 +103,8 @@ describe('MeetingViewModel', () => {
       expect(electronService.openWindow).toBeCalled();
     }
 
-    @test.only('should call window.open if openWindow is not exist')
+    @test('should call window.open if openWindow is not exist')
     t2() {
-      // Object.defineProperty(window, 'open', {
-      //   writable: true,
-      //   value: jest.fn()
-      // })
       window.open = jest.fn();
       meetingViewModel = new MeetingViewModel();
       meetingViewModel.openWindow('');
