@@ -371,6 +371,7 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
   }
 
   async transfer(callId: number, type: TRANSFER_TYPE, transferTo: string) {
+    console.log('vicky account', callId, transferTo)
     const callController = this._getCallControllerById(callId);
     return callController && (await callController.transfer(type, transferTo));
   }

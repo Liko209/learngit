@@ -22,7 +22,7 @@ class WarmTransferHeaderViewModel extends StoreViewModel<Props> {
 
   @computed
   get switchCallItems() {
-    return this._telephonyStore.rawCalls.reverse();
+    return this._telephonyStore.rawCalls;
   }
 
   switchCall = (callId: number) => {

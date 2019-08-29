@@ -27,6 +27,7 @@ class WarmTransferHeaderViewComponent extends React.Component<Props> {
         onClick={endCall}
         tooltipTitle={t('telephony.action.end')}
         aria-label={t('telephony.action.end')}
+        data-test-automation-id="cancel-warm-transfer-btn"
       />
     );
   };

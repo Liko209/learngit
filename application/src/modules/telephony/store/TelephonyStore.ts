@@ -639,7 +639,7 @@ class TelephonyStore {
       ) as CallModel;
     }
     // The latest call
-    return reverse(sortBy(this.rawCalls, ['startTime']))[0];
+    return this.rawCalls[0];
   }
 
   @computed
@@ -794,7 +794,8 @@ class TelephonyStore {
 
   @computed
   get rawCalls() {
-    return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+    const calls = this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+    return reverse(sortBy(calls, ['startTime']));
   }
 
   @computed

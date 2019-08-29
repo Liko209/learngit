@@ -561,6 +561,7 @@ class TelephonyCallController implements IRTCCallDelegate {
         reject(CALL_ACTION_ERROR_CODE.NOT_NETWORK);
       }
       if (type === TRANSFER_TYPE.WARM_TRANSFER) {
+        console.log('vicky callcontroller', transferTo);
         this._rtcCall.warmTransfer(transferTo);
       } else {
         const phoneNumberService = ServiceLoader.getInstance<
