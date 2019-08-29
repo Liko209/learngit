@@ -27,6 +27,7 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const hostUser = users[3];
   const participateUser =  users[0];
+  const title = 'Conference call';
 
   const team = <IGroup>{
     name: uuid(),
@@ -72,6 +73,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then Participant join conference success', async () => {
     await expect(number).toEqual(telephonyDialog.extension);
+    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   })
 
   await h(t).withLog('When hang up conference call', async () => {
@@ -88,6 +90,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then Participant join conference success', async () => {
     await expect(number).toEqual(telephonyDialog.extension);
+    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   });
 },
 );
@@ -103,6 +106,7 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const hostUser = users[3];
+  const title = 'Conference call';
 
   const team = <IGroup>{
     name: uuid(),
@@ -148,6 +152,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then Participant join conference success', async () => {
     await expect(number).toEqual(telephonyDialog.extension);
+    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   })
 
   await h(t).withLog('When hang up conference call', async () => {
@@ -164,6 +169,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then Participant join conference success', async () => {
     await expect(number).toEqual(telephonyDialog.extension);
+    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
   });
 },
 );
