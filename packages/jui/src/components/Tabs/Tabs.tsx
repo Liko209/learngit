@@ -25,6 +25,7 @@ import { JuiIconography } from '../../foundation/Iconography';
 
 type States = {
   openMenu: boolean;
+  hideMenu: boolean;
   indexSelected: number; // selected tab index
   indexTabs: number[]; // show tab index
   indexMenus: number[]; // menu tab index, when length > 0, then it has more tab
@@ -100,6 +101,7 @@ class JuiTabs extends PureComponent<Props, States> {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],
       openMenu: false,
+      hideMenu: false,
       indexTabs: [],
       indexMenus: [],
       remeasure: false,
@@ -125,6 +127,12 @@ class JuiTabs extends PureComponent<Props, States> {
       this._moreWidth = 0;
       this._tabTitles = newTabTitles;
       this.setState({ remeasure: true });
+    }
+
+    if (nextProps.width === 0) {
+      this.setState({ hideMenu: true, openMenu: false });
+    } else {
+      this.setState({ hideMenu: false });
     }
   }
   /* eslint-disable */
@@ -251,13 +259,13 @@ class JuiTabs extends PureComponent<Props, States> {
   };
 
   private _renderMoreAndMenu = () => {
-    const { indexMenus, openMenu, anchorEl } = this.state;
-    if (indexMenus.length === 0) {
+    const { indexMenus, openMenu, hideMenu, anchorEl } = this.state;
+    if (indexMenus.length === 0 || hideMenu) {
       return null; // no more tab
     }
     return (
       <JuiPopperMenu
-        Anchor={this._renderMore}
+        Anchor={hideMenu ? () => null : this._renderMore}
         placement="bottom-start"
         open={openMenu}
         value={MORE}
