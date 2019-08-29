@@ -14,6 +14,7 @@ type CallCtrlPanelViewProps = {
   uid?: number;
   direction?: CALL_DIRECTION;
   isWarmTransferPage: boolean;
+  isConference: boolean;
 };
 
 export { CallCtrlPanelProps, CallCtrlPanelViewProps };

@@ -23,7 +23,7 @@ class AskFirstViewModel extends StoreViewModel<Props> {
 
   directToAskFirst = async () => {
     analyticsCollector.clickTransferActions(ASK_FIRST);
-    await this._telephonyService.makeCall(this.transferNumber, undefined, {
+    await this._telephonyService.directCall(this.transferNumber, {
       extraCall: true,
     });
     this._telephonyStore.directToWarmTransferPage();

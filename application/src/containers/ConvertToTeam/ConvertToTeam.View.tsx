@@ -7,6 +7,7 @@ import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ConvertToTeamViewProps } from './types';
+import { withEscTracking } from '@/common/trackData';
 import { JuiModal } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
 import { JuiTopText } from 'jui/pattern/ConvertToTeam';
@@ -209,6 +210,7 @@ class ConvertToTeam extends Component<Props, State> {
         cancelBtnProps={{
           'data-test-automation-id': 'convertToTeamCancelButton',
         }}
+        onClose={withEscTracking(this._handleClose)}
       >
         <Loading loading={saving} alwaysComponentShow delay={0}>
           <JuiTopText>

@@ -23,7 +23,7 @@ describe('AskFirstViewModel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     vm = new AskFirstViewModel();
-    vm._telephonyService.makeCall = jest.fn();
+    vm._telephonyService.directCall = jest.fn();
   });
 
   describe('transferNumber()', () => {
@@ -46,14 +46,14 @@ describe('AskFirstViewModel', () => {
     });
   });
   describe('directToAskFirst()', () => {
-    it('should call makeCall function', async () => {
+    it('should call directCall function', async () => {
       vm._telephonyStore.selectedCallItem = {
         phoneNumber: '123',
         index: 0,
       };
 
       await vm.directToAskFirst();
-      expect(vm._telephonyService.makeCall).toHaveBeenCalledWith(
+      expect(vm._telephonyService.directCall).toHaveBeenCalledWith(
         '123',
         undefined,
         { extraCall: true },

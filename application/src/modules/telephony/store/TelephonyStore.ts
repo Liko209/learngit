@@ -66,6 +66,9 @@ class TelephonyStore {
   maximumInputLength = 30;
 
   @observable
+  isConference: boolean = false;
+
+  @observable
   canUseTelephony: boolean = false;
 
   @observable
@@ -434,10 +437,6 @@ class TelephonyStore {
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.DETACHED_WINDOW]();
   };
 
-  private get _shouldKeepPrevState() {
-    return (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) || (this.isMultipleCall && this.isEndCurrentCall);
-  }
-
   @action
   end = () => {
     const history = this._history;
@@ -462,7 +461,20 @@ class TelephonyStore {
 
     // if end call isn't active call and incoming state reply don't reset state;
     // if multiple call and end current call don't reset state;
-    if (this._shouldKeepPrevState) {
+    if (this.isEndOtherCall) {
+      this.quitKeypad();
+      this._clearEnteredKeys();
+      this._clearTransferString();
+      if (this.isTransferPage) {
+        this.backToDialerFromTransferPage();
+      }
+      return;
+    }
+    // end incoming call
+    if (this.isMultipleCall && this.isEndCurrentCall) {
+      this.resetReply();
+      this._clearForwardString();
+      this.backIncoming();
       return;
     }
 
@@ -472,6 +484,7 @@ class TelephonyStore {
     this._clearEnteredKeys();
     this._clearForwardString();
     this._clearTransferString();
+
     if (this.isTransferPage) {
       this.backToDialerFromTransferPage();
     }
@@ -487,6 +500,7 @@ class TelephonyStore {
     }
 
     this.hasManualSelected = false;
+    this.isConference = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
   };
 
@@ -607,6 +621,11 @@ class TelephonyStore {
   directForward = () => {
     this.incomingState = INCOMING_STATE.FORWARD;
   };
+
+  @action
+  forward = () => {
+    this.incomingState = INCOMING_STATE.IDLE;
+  }
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action

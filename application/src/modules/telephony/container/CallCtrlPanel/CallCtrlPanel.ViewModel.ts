@@ -48,6 +48,11 @@ class CallCtrlPanelViewModel extends StoreViewModel<CallCtrlPanelProps>
   get isWarmTransferPage() {
     return this._telephonyStore.isWarmTransferPage;
   }
+
+  @computed
+  get isConference() {
+    return this._telephonyStore.isConference;
+  }
 }
 
 export { CallCtrlPanelViewModel };
