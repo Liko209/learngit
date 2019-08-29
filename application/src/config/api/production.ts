@@ -7,7 +7,7 @@ const config: DeepPartial<ApiConfig> = {
   },
   glip: {
     server: 'https://app.glip.com',
-    apiServer: 'https://app.glip.com',
+    apiServer: 'https://api.glip.com',
     cacheServer: 'https://cache.glip.com',
     presenceServer: 'https://api.glip.com',
   },
