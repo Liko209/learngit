@@ -45,7 +45,7 @@ import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework'
 import { LaunchDarklyController } from '@/permissions/ld/LaunchDarklyController';
 import { SplitIOController } from '@/permissions/split/SplitIOController';
-import { PermissionService } from 'sdk/src/module/permission';
+import { PermissionService } from 'sdk/module/permission';
 import { EnvConfig } from 'sdk/module/env/config';
 
 /**
