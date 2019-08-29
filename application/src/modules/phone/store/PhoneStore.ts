@@ -7,10 +7,13 @@ import { action, observable, computed } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import { IMediaService } from '@/interface/media';
 
 import { Audio } from '../types';
 
 class PhoneStore {
+  @IMediaService private _mediaService: IMediaService;
+
   @observable audioCache = new Map<number, Audio>();
 
   // if has voicemailId the voicemail should be expansion
@@ -83,6 +86,14 @@ class PhoneStore {
         updateFn();
         media.off('ended', updateFn);
       });
+    }
+  }
+
+  @computed
+  get mediaTrackIds() {
+    const voicemailMediaTrackId = this._mediaService.createTrack('voicemail', 200);
+    return {
+      voicemail: voicemailMediaTrackId,
     }
   }
 }
