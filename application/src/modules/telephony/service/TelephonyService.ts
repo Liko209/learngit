@@ -663,13 +663,14 @@ class TelephonyService {
   directCall = async (toNumber: string, options?: CallOptions) => {
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4275
-    if (this._serverTelephonyService.getAllCallCount() > 0) {
+    if (this._serverTelephonyService.getAllCallCount() > 0 && (!options || (options && !options.extraCall))) {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
+
     const skipE911Check = await this.isShortNumber(toNumber);
     const result = await this.ensureCallPermission(() => {
       return this._makeCall(toNumber, options)
