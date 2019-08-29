@@ -39,4 +39,4 @@ function getFileIcon(typeOrName?: string): string {
   return 'default_file';
 }
 
-export { getFileIcon };
+export { getFileIcon, FILE_ICON_MAP };
