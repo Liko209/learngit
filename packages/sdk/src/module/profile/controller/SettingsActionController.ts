@@ -103,7 +103,7 @@ class SettingsActionController {
         value: audios,
       });
     }
-    this.updateSettingOptions(updateData);
+    await this.updateSettingOptions(updateData);
   }
   private getNotification(notification: Partial<ConversationPreference>) {
     const keyMap = {

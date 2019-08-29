@@ -114,7 +114,6 @@ const JuiVirtualizedSelectInput = React.memo(
 
 const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
   const { input = defaultInput, heightSize, automationId, ...rest } = props;
-
   return React.cloneElement(input, {
     heightSize,
     inputComponent: JuiVirtualizedSelectInput,
