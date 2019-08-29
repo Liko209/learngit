@@ -81,7 +81,7 @@ const DOC_TITLE = {
 function getDocTitle(pathname: string): string {
   const [, category, subPath] = pathname.split('/');
   const docTitle = DOC_TITLE[category.toLocaleLowerCase()];
-  return docTitle(subPath);
+  return docTitle ? docTitle(subPath) : '';
 }
 
 export { getMessagesTitle, getDocTitle };
