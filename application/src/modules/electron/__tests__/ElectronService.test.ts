@@ -1,10 +1,3 @@
-/*
- * @Description: In User Settings Edit
- * @Author: your name
- * @Date: 2019-08-29 09:14:06
- * @LastEditTime: 2019-08-29 13:58:35
- * @LastEditors: Please set LastEditors
- */
 import { ElectronService } from '../service/ElectronService';
 import { testable, test } from 'shield';
 
