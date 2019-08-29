@@ -311,11 +311,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
       className="MuiAvatar-root c2 MuiAvatar-colorDefault"
       color="blueberry"
       size="medium"
-    >
-      <span>
-        JH
-      </span>
-    </div>
+    />
     <div
       className="c3"
     >
