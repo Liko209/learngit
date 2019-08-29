@@ -23,12 +23,28 @@ enum EMAIL_NOTIFICATION_OPTIONS {
   EVERY_15_MESSAGE = '900000',
   OFF = '0',
 }
+const emailNotificationList = [
+  EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+  EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+  EMAIL_NOTIFICATION_OPTIONS.OFF,
+];
 
 enum MOBILE_TEAM_NOTIFICATION_OPTIONS {
   FIRST_UNREAD_ONLY = 'firstonly',
   EVERY_MESSAGE = '1',
   OFF = '0',
 }
+
+const mobileTeamNotificationList = [
+  MOBILE_TEAM_NOTIFICATION_OPTIONS.EVERY_MESSAGE,
+  MOBILE_TEAM_NOTIFICATION_OPTIONS.FIRST_UNREAD_ONLY,
+  MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF,
+];
+
+const mobileDMNotificationList = [
+  MOBILE_TEAM_NOTIFICATION_OPTIONS.EVERY_MESSAGE,
+  MOBILE_TEAM_NOTIFICATION_OPTIONS.OFF,
+];
 
 enum DESKTOP_MESSAGE_NOTIFICATION_OPTIONS {
   ALL_MESSAGE = 'always',
@@ -136,6 +152,10 @@ const RingsList = ringsTypeList.map(id => ({
   url: `${AudioSourceUrl}${id}`,
 }));
 
+const SoundsListWithDefault = [
+  { id: SOUNDS_TYPE.Default, url: `${AudioSourceUrl}${SOUNDS_TYPE.Default}` },
+  ...SoundsList,
+];
 const MAX_LEFTRAIL_GROUP_MAX_VALUE = 59;
 const MAX_LEFTRAIL_GROUP_DEFAULT_VALUE = 10;
 const MAX_LEFTRAIL_GROUP_VALUE_LIST: number[] = Array.from(
@@ -179,6 +199,9 @@ enum SETTING_KEYS {
   AUDIO_MENTIONS = 'at_mention_audio_notifications',
   AUDIO_INCOMING_CALLS = 'phone_audio_notifications',
   AUDIO_NEW_VOICEMAIL = 'meeting_audio_notifications',
+
+  CONVERSATION_NOTIFICATION = 'conversation_level_notifications',
+  CONVERSATION_AUDIO = 'team_specific_audio_notifications',
 }
 type DesktopNotificationsSettingModel = {
   browserPermission: NotificationPermission;
@@ -191,6 +214,9 @@ export {
   NOTIFICATION_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
+  emailNotificationList,
+  mobileTeamNotificationList,
+  mobileDMNotificationList,
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
@@ -201,6 +227,7 @@ export {
   SOUNDS_TYPE,
   RingsList,
   SoundsList,
+  SoundsListWithDefault,
   VIDEO_SERVICE_OPTIONS,
   MAX_LEFTRAIL_GROUP_DEFAULT_VALUE,
   MAX_LEFTRAIL_GROUP_VALUE_LIST,

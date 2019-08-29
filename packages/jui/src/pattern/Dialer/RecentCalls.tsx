@@ -11,11 +11,13 @@ import {
   typography,
   grey,
   width,
+  height,
 } from '../../foundation/utils/styles';
 
 type Props = {
   ref: RefObject<any>;
   children: React.ReactNode;
+  addMargin: boolean;
 };
 
 const RecentCallContainer = styled.div<{}>`
@@ -29,10 +31,11 @@ const RecentCallContainer = styled.div<{}>`
   }
 `;
 
-const StyledRecentCalls = styled.div`
+const StyledRecentCalls = styled.div<{ addMargin: boolean }>`
   && {
-    margin-top: ${spacing(11)};
-    height: calc(100% - ${spacing(11)});
+    margin-top: ${({ addMargin }) => (addMargin ? spacing(11) : 0)};
+    height: ${({ addMargin, theme }) =>
+      `calc(${addMargin ? `100% - ${spacing(11)({ theme })}` : '100%'})`};
     overflow: hidden;
   }
 `;
@@ -67,9 +70,18 @@ const StyledTime = styled.div`
   }
 `;
 
+const StyledSelectedItemIcon = styled.div`
+  height: ${height(5)};
+  text-align: center;
+`;
+
 const JuiRecentCalls = React.forwardRef((props: Props, ref: RefObject<any>) => {
-  const { children } = props;
-  return <StyledRecentCalls ref={ref}>{children}</StyledRecentCalls>;
+  const { children, addMargin } = props;
+  return (
+    <StyledRecentCalls ref={ref} addMargin={addMargin}>
+      {children}
+    </StyledRecentCalls>
+  );
 });
 
 export {
@@ -79,4 +91,5 @@ export {
   StyledContactWrapper,
   StyledCallLogStatusWrapper,
   StyledTime,
+  StyledSelectedItemIcon,
 };

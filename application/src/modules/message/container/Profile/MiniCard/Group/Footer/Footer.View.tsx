@@ -69,7 +69,7 @@ class ProfileMiniCardGroupFooter extends Component<
               source: 'miniProfile',
             }}
           >
-            <JuiButton variant="text" color="primary">
+            <JuiButton variant="text" color="primary" size="small">
               {t('people.team.profile')}
             </JuiButton>
           </OpenProfileDialog>

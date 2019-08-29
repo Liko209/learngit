@@ -83,7 +83,6 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
       onBlur,
       searchKey,
       onClear,
-      showClear,
       t,
     } = this.props;
 
@@ -92,7 +91,6 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
         <JuiGlobalSearchInput
           ref={this.state.ref}
           value={searchKey}
-          showClear={showClear}
           onClear={onClear}
           onClose={onClose}
           onChange={this.onChange}

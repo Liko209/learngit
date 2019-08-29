@@ -4,15 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../../foundation/styled-components';
-import { spacing, height } from '../../../foundation/utils/styles';
+import { spacing } from '../../../foundation/utils/styles';
 
-const JuiDialogHeader = styled.div`
+type JuiDialogHeaderProps = {
+  fullscreen?: boolean;
+};
+const JuiDialogHeader = styled.div<JuiDialogHeaderProps>`
   background-color: white;
-  padding: ${spacing(0, 6)};
-  height: ${height(13)};
-  min-height: ${height(13)};
+  padding: ${({ fullscreen }) => spacing(fullscreen ? 2 : 5, 6)};
   display: flex;
   align-items: center;
 `;
 
-export { JuiDialogHeader };
+export { JuiDialogHeader, JuiDialogHeaderProps };

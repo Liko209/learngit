@@ -15,13 +15,14 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
+import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService } from 'sdk/module/person';
 import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
-import { container, injectable, decorate } from 'framework/ioc';
+import { container } from 'framework/ioc';
 import { jupiter } from 'framework/Jupiter';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ClientService } from '@/modules/common';
@@ -32,7 +33,6 @@ import {
   RECORD_STATE,
   MUTE_STATE,
   CALL_DIRECTION,
-  CALL_STATE,
 } from 'sdk/module/telephony/entity';
 import { observable } from 'mobx';
 import storeManager from '@/store';
@@ -49,6 +49,7 @@ import { MediaService } from '@/modules/media/service';
 import { config } from '../../module.config';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { isCurrentUserDND } from '@/modules/notification/utils';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
 
 jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
@@ -75,6 +76,7 @@ let mockedPhoneNumberService: any;
 let mockedRCInfoService: any;
 let mockedSettingService: any;
 let mockedAccountService: any;
+let mockedVoicemailService: any;
 
 function initializeCallerId() {
   try{
@@ -179,6 +181,7 @@ describe('TelephonyService', () => {
         setTimeout(() => {}, mockedDelay);
         return MAKE_CALL_ERROR_CODE.NO_ERROR;
       }),
+      transfer: jest.fn(),
       hangUp: jest.fn().mockImplementation(() => {}),
       park: (callUuid: string) => {
         if (callUuid === 'failed') {
@@ -216,6 +219,8 @@ describe('TelephonyService', () => {
       isEmergencyAddrConfirmed: jest.fn(),
     };
 
+    mockedVoicemailService = { removeEntityNotificationObserver: jest.fn() };
+
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
       switch (conf) {
         case ServiceConfig.TELEPHONY_SERVICE:
@@ -238,6 +243,8 @@ describe('TelephonyService', () => {
           return mockedPhoneNumberService as PhoneNumberService;
         case ServiceConfig.SETTING_SERVICE:
           return mockedSettingService as SettingService;
+        case ServiceConfig.VOICEMAIL_SERVICE:
+          return mockedVoicemailService as VoicemailService;
         default:
           return {} as PersonService;
       }
@@ -396,7 +403,7 @@ describe('TelephonyService', () => {
 
   describe('The "record" button status tests', () => {
     it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
-      
+
       await (telephonyService as TelephonyService).makeCall(v4());
       call.recordState = RECORD_STATE.DISABLED;
       await (telephonyService as TelephonyService).startOrStopRecording();
@@ -415,7 +422,7 @@ describe('TelephonyService', () => {
 
     it('Start recording if the call is connected [JPT-1600]', async () => {
       mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
-      
+
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
@@ -439,7 +446,7 @@ describe('TelephonyService', () => {
     });
 
     it('Stop recording should work when call is under recording [JPT-1603]', async () => {
-      
+
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
@@ -475,7 +482,7 @@ describe('TelephonyService', () => {
     });
 
     it("Record shouldn't work when a call being holded [JPT-1608]", async () => {
-      
+
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.IDLE;
@@ -501,7 +508,7 @@ describe('TelephonyService', () => {
     });
 
     it('Should restore recording state when unhold [JPT-1608]', async () => {
-      
+
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       call.recordState = RECORD_STATE.IDLE;
@@ -530,7 +537,7 @@ describe('TelephonyService', () => {
 
     it('Should prompt toast when recording disabled in service web [JPT-2427]', async () => {
       mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
-      
+
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       await (telephonyService as TelephonyService).startOrStopRecording();
@@ -546,7 +553,7 @@ describe('TelephonyService', () => {
       mockedServerTelephonyService.startRecord = jest
         .fn()
         .mockImplementation(() => Promise.reject(-8));
-      
+
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       await (telephonyService as TelephonyService).startOrStopRecording();
@@ -732,7 +739,7 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    
+
     const incomingId = v4();
     telephonyService._onReceiveIncomingCall({
       fromName: 'test',
@@ -852,7 +859,7 @@ describe('TelephonyService', () => {
   });
 
   it("Should Can't make outbound call when call permission is disabled [JPT-2381]", async () => {
-    
+
     mockedRCInfoService.isVoipCallingAvailable = jest
       .fn()
       .mockReturnValue(false);
@@ -869,6 +876,9 @@ describe('TelephonyService', () => {
     expect(telephonyService._callStateDisposer).toBeFalsy();
     expect(telephonyService._ringerDisposer).toBeFalsy();
     expect(telephonyService._speakerDisposer).toBeFalsy();
+    expect(
+      telephonyService._voicemailService.removeEntityNotificationObserver,
+    ).toHaveBeenCalled();
   })
 
   describe('onReceiveIncomingCall()', () => {
@@ -1179,6 +1189,16 @@ describe('TelephonyService', () => {
       }
       await telephonyService.switchCall(caller as any);
       expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
+    })
+  })
+
+  describe('transfer()', () => {
+    it('should transfer call now success', async () => {
+      const callEntityId = 'id_0';
+      const toTransfer = '444555666';
+      telephonyService._callEntityId = callEntityId;
+      await telephonyService.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
+      expect(mockedServerTelephonyService.transfer).toHaveBeenCalledWith(callEntityId, TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
     })
   })
 });

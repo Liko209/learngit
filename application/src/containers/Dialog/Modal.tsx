@@ -14,17 +14,22 @@ type Props = {
 function modal(
   component: React.ComponentType<any> | JSX.Element,
   props: Props,
+  key?: string,
 ) {
   const Component = component;
   const Dialog = () => (
-      <JuiDialog {...props}>
-        {Component instanceof Function ? <Component /> : Component}
-      </JuiDialog>
+    <JuiDialog {...props}>
+      {Component instanceof Function ? <Component /> : Component}
+    </JuiDialog>
   );
 
   const { dismiss, show } = portalManager.wrapper(Dialog);
 
-  show();
+  if (key) {
+    show({ key });
+  } else {
+    show();
+  }
   return {
     dismiss,
   };

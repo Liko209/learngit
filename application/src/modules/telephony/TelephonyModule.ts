@@ -76,7 +76,8 @@ class TelephonyModule extends AbstractModule {
     this._telephonyService.dispose();
     this._jupiter.emitModuleDispose(TELEPHONY_SERVICE);
     this._leaveBlockerService.offLeave(this._handleLeave);
-    // TODO unregister extensions
+    // TODO unregister home extensions
+    this._globalSearchService.unregisterExtension('searchItem', Call);
   }
 
   private _handleVoipCallingStateChanged = (enabled: boolean) => {

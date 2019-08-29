@@ -4,7 +4,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { addOneVoicemailFromExt } from '../../fixtures/PhoneTab/Voicemail/utils';
+import { ensuredOneVoicemail } from '../../fixtures/PhoneTab/Voicemail/utils';
 
 
 
@@ -55,7 +55,7 @@ fixture('Phone/Voicemail')
   await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailPage' });
 
   await h(t).withLog('When I add a voicemail', async () => {
-    await addOneVoicemailFromExt(t, caller, callee, app);
+    await ensuredOneVoicemail(t, caller, callee, app);
   });
 
   await h(t).withLog('And I hover the "more" button', async() => {

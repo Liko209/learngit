@@ -18,6 +18,7 @@ import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
 import { TeamSettingButton } from '@/containers/common/TeamSettingButton';
 import { DialogContext } from '@/containers/Dialog';
+import { JuiButtonBar } from 'jui/components/Buttons';
 
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
@@ -33,24 +34,26 @@ class ProfileDialogGroupTitleViewComponent extends Component<
       <>
         <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
         <JuiDialogHeaderActions>
-          <Privacy id={id} size="medium" analysisSource="profileDialog" />
-          <Favorite
-            id={id}
-            size="medium"
-            dataTrackingProps={{
-              source: 'profileDialog',
-              conversationType: group.analysisType,
-            }}
-          />
-          {group.isMember && <TeamSettingButton id={id} size="medium" />}
-          {group.isTeam && <More id={id} size="medium" />}
-          <JuiIconButton
-            onClick={this.dismiss}
-            tooltipTitle={t('common.dialog.close')}
-            ariaLabel={t('common.dialog.close')}
-          >
-            close
-          </JuiIconButton>
+          <JuiButtonBar overlapSize={2}>
+            <Privacy id={id} size="medium" analysisSource="profileDialog" />
+            <Favorite
+              id={id}
+              size="medium"
+              dataTrackingProps={{
+                source: 'profileDialog',
+                conversationType: group.analysisType,
+              }}
+            />
+            {group.isMember && <TeamSettingButton id={id} size="medium" />}
+            {group.isTeam && <More id={id} size="medium" />}
+            <JuiIconButton
+              onClick={this.dismiss}
+              tooltipTitle={t('common.dialog.close')}
+              ariaLabel={t('common.dialog.close')}
+            >
+              close
+            </JuiIconButton>
+          </JuiButtonBar>
         </JuiDialogHeaderActions>
       </>
     );

@@ -8,18 +8,16 @@ import {
   sleep,
   toFirstLetterUpperCase,
   getDisplayNameByCaller,
+  onVoicemailNotificationClick,
 } from '../helpers';
+import * as utils from '@/store/utils';
+import history from '@/history';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { Notification } from '@/containers/Notification';
 
 jest.mock('@/utils/i18nT', () => ({
   i18nP: (key: string) => key,
-}));
-
-jest.mock('@/store/utils', () => ({
-  getEntity: (name: string, id: number) => ({
-    userDisplayName: 'xxx',
-  }),
 }));
 
 jest.mock('@/modules/common/container/PhoneNumberFormat', () => ({
@@ -73,6 +71,9 @@ describe('helpers', () => {
           id: 1,
         }),
       });
+      jest
+        .spyOn(utils, 'getEntity')
+        .mockImplementation(() => ({ userDisplayName: 'xxx' }));
       const activeCall = {
         from: '123',
         to: '456',
@@ -125,6 +126,26 @@ describe('helpers', () => {
       };
       const displayName = await getDisplayNameByCaller(activeCall);
       expect(displayName).toBe('456');
+    });
+  });
+
+  describe('onVoicemailNotificationClick', () => {
+    it('Should open voicemail page when user not in voicemail page [JPT-2823]', () => {
+      history.location = { pathname: '/message' };
+      history.push = jest.fn();
+
+      onVoicemailNotificationClick();
+
+      expect(history.push).toHaveBeenCalled();
+    });
+
+    it('Should flash toast when the voicemail has been deleted [JPT-2824]', () => {
+      jest.spyOn(Notification, 'flashToast');
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => null);
+
+      onVoicemailNotificationClick();
+
+      expect(Notification.flashToast).toHaveBeenCalled();
     });
   });
 });

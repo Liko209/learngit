@@ -5,3 +5,4 @@
  */
 
 export * from './FileViewer.ViewModel';
+export * from './type';

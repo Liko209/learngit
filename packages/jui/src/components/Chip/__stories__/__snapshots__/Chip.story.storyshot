@@ -47,6 +47,10 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   color: #9e9e9e;
 }
 
+.c2.c2.c2.c2.disabled {
+  background-color: inherit;
+}
+
 .c2.c2.c2.c2.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -78,6 +82,10 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
 
 .c1.c1:active {
   opacity: 0.76;
+}
+
+.c1:focus {
+  outline: none;
 }
 
 .c1 > .avatar-short-name {
@@ -168,6 +176,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
+    onMouseMove={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
@@ -215,6 +224,10 @@ exports[`Storyshots Components/Chip with Avatar: Components/Chip with Avatar 1`]
 
 .c1.c1:active {
   opacity: 0.76;
+}
+
+.c1:focus {
+  outline: none;
 }
 
 .c1 > .avatar-short-name {
@@ -338,6 +351,10 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
   color: #9e9e9e;
 }
 
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
 .c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -414,6 +431,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
+    onMouseMove={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}

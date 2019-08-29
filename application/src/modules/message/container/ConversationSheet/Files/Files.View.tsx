@@ -18,7 +18,6 @@ import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
-import { showImageViewer } from '@/modules/viewer/container/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
@@ -103,7 +102,7 @@ class FilesView extends React.Component<FilesViewProps> {
     if (postId < 0) return;
     const target = this._getImageEl(ev);
 
-    showImageViewer(
+    this._viewerService.showImageViewer(
       groupId,
       id,
       {
@@ -129,14 +128,19 @@ class FilesView extends React.Component<FilesViewProps> {
   handleFileMoreIconClicked = () => {};
 
   private _getActions = moize(
-    (downloadUrl: string, fileId: number, postId: number) => [
+    (downloadUrl: string, fileId: number, postId: number, groupId: number) => [
       <Download key="download-action" url={downloadUrl} />,
-      <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
+      <FileActionMenu
+        key="more-action"
+        fileId={fileId}
+        postId={postId}
+        groupId={groupId}
+      />,
     ],
   );
 
   render() {
-    const { files, progresses, urlMap, postId } = this.props;
+    const { files, progresses, urlMap, postId, groupId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -168,7 +172,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 keyword: this.context.keyword,
               }),
               url: accelerateURL(urlMap.get(id)) || '',
-              Actions: this._getActions(downloadUrl, id, postId),
+              Actions: this._getActions(downloadUrl, id, postId, groupId),
             };
             const future = (
               <JuiPreviewImage
@@ -226,7 +230,7 @@ class FilesView extends React.Component<FilesViewProps> {
                     : undefined
                 }
                 disabled={supportFileViewer && !fileReadyForViewer}
-                Actions={this._getActions(downloadUrl, id, postId)}
+                Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
           })}
@@ -248,7 +252,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 })}
                 size={`${getFileSize(size)}`}
                 iconType={iconType}
-                Actions={this._getActions(downloadUrl, id, postId)}
+                Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
           })}

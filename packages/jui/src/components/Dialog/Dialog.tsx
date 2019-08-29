@@ -5,10 +5,12 @@ import MuiDialog, {
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled, { css } from 'styled-components';
 import { HotKeys } from '../../hoc/HotKeys';
+import { width } from '../../foundation/utils';
 
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
   fixedAtTop?: boolean;
+  allowOverflowY?: boolean;
 };
 
 type JuiDialogProps = StyledDialogProps & {
@@ -16,9 +18,11 @@ type JuiDialogProps = StyledDialogProps & {
   onClose?: (event: KeyboardEvent) => void;
 };
 
-const FilteredMuiDialog = ({ fixedAtTop, ...rest }: StyledDialogProps) => (
-  <MuiDialog {...rest} />
-);
+const FilteredMuiDialog = ({
+  fixedAtTop,
+  allowOverflowY,
+  ...rest
+}: StyledDialogProps) => <MuiDialog {...rest} />;
 
 const fixedAtTopStyle = css`
   display: inline-flex;
@@ -27,12 +31,23 @@ const fixedAtTopStyle = css`
 `;
 
 const StyledDialog = styled(FilteredMuiDialog)`
-  & .paper {
-    width: 100%;
-    ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
+  & {
+    .MuiDialog-paperWidthXs {
+      max-width: ${width(100)};
+    }
+
+    .paper {
+      width: 100%;
+      ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
+    }
+
+    .paper.overflow-y {
+      overflow-y: visible;
+    }
   }
-  & .paper.overflow-y {
-    overflow-y: visible;
+  & .MuiDialog-paper {
+    overflow-y: ${(modalProps: { allowOverflowY: boolean }) =>
+      modalProps.allowOverflowY ? 'unset' : 'auto'};
   }
 `;
 

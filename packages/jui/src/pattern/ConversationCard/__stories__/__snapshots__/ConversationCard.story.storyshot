@@ -48,6 +48,10 @@ Array [
   color: #0684bd;
 }
 
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
 .c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -79,6 +83,10 @@ Array [
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -204,10 +212,19 @@ Array [
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  line-height: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+}
+
+.c7.c7 .emoji-mart-emoji {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(16%);
+  -ms-transform: translateY(16%);
+  transform: translateY(16%);
 }
 
 .c10 {
@@ -304,7 +321,28 @@ Array [
             className="c7"
             data-name="cardHeaderUserStatus"
           >
-            🏃 in the meeting
+            <span
+              aria-label="📅, date"
+              className="emoji-mart-emoji"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+              onMouseLeave={[Function]}
+              title={null}
+            >
+              <span
+                style={
+                  Object {
+                    "backgroundImage": "url(/emoji/emojione/64.png)",
+                    "backgroundPosition": "49.01960784313725% 94.11764705882352%",
+                    "backgroundSize": "5200% 5200%",
+                    "display": "inline-block",
+                    "height": 14,
+                    "width": 14,
+                  }
+                }
+              />
+            </span>
+            in the meeting
           </div>
           <div
             className="c8"
@@ -362,6 +400,7 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -441,6 +480,10 @@ Array [
   color: #0684bd;
 }
 
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
 .c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -472,6 +515,10 @@ Array [
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -597,10 +644,19 @@ Array [
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  line-height: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+}
+
+.c7.c7 .emoji-mart-emoji {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(16%);
+  -ms-transform: translateY(16%);
+  transform: translateY(16%);
 }
 
 .c10 {
@@ -697,7 +753,28 @@ Array [
             className="c7"
             data-name="cardHeaderUserStatus"
           >
-            🏃 in the meeting
+            <span
+              aria-label="📅, date"
+              className="emoji-mart-emoji"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+              onMouseLeave={[Function]}
+              title={null}
+            >
+              <span
+                style={
+                  Object {
+                    "backgroundImage": "url(/emoji/emojione/64.png)",
+                    "backgroundPosition": "49.01960784313725% 94.11764705882352%",
+                    "backgroundSize": "5200% 5200%",
+                    "display": "inline-block",
+                    "height": 14,
+                    "width": 14,
+                  }
+                }
+              />
+            </span>
+            in the meeting
           </div>
           <div
             className="c8"
@@ -755,6 +832,7 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
