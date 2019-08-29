@@ -123,4 +123,22 @@ describe('Notification', () => {
       expect(spy).toHaveBeenCalledTimes(4);
     });
   });
+  describe('checkBufferAvailability', () => {
+    const notification = new Notification();
+    const toastData: NotificationProps = {
+      message: 'aaa',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+    };
+    beforeEach(() => {
+      notificationData.clear();
+      Notification._buffer = [];
+    });
+    it('should call _showNotification if count does not reaches max', () => {
+      const spy = jest.spyOn(Notification as any, '_showNotification');
+      Notification.flashToast(toastData);
+      expect(spy).toHaveBeenCalled();
+    });
+  });
 });

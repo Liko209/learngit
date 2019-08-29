@@ -9,6 +9,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { GroupSettingsProps, GroupSettingsViewProps } from './types';
 import { toTitleCase } from '@/utils/string';
 import { JuiModal } from 'jui/components/Dialog';
+import { withEscTracking } from '@/common/trackData';
 import portalManager from '@/common/PortalManager';
 import {
   JuiTeamSettingButtonList as ButtonList,
@@ -49,6 +50,7 @@ class GroupSettingsComponent extends Component<Props> {
         onOK={this._handleOk}
         okText={toTitleCase(t('common.dialog.save'))}
         cancelText={toTitleCase(t('common.dialog.cancel'))}
+        onClose={withEscTracking(this._handleClose)}
       >
         <ButtonList>
           <JuiDivider />
