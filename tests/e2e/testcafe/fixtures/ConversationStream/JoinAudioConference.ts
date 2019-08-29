@@ -71,7 +71,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
+    await t.expect(telephonyDialog.conferenceCall.textContent).eql(title);
   })
 
   await h(t).withLog('When hang up conference call', async () => {
@@ -87,7 +87,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
+    await t.expect(telephonyDialog.conferenceCall.textContent).eql(title);
   });
 },
 );
@@ -146,8 +146,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded(20e3);
   });
 
-  await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
+  await h(t).withLog('Then Host join conference success', async () => {
+    await t.expect(telephonyDialog.conferenceCall.textContent).eql(title);
   })
 
   await h(t).withLog('When hang up conference call', async () => {
@@ -162,8 +162,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded(20e3);
   });
 
-  await h(t).withLog('Then Participant join conference success', async () => {
-    await expect(title).toEqual(telephonyDialog.conferenceCall.innerText);
+  await h(t).withLog('Then Host join conference success', async () => {
+    await t.expect(telephonyDialog.conferenceCall.textContent).eql(title);
   });
 },
 );
