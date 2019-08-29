@@ -49,7 +49,7 @@ describe('MeetingViewModel', () => {
 
   @testable
   class meetingVideoCall {
-    @test.only('should be true if canUseVideoCall')
+    @test('should be true if canUseVideoCall')
     @mockSingleEntity(true)
     t1() {
       meetingViewModel = new MeetingViewModel();
@@ -59,7 +59,7 @@ describe('MeetingViewModel', () => {
 
   @testable
   class startMeeting {
-    @test.only('should be openwindow if called')
+    @test('should be openwindow if called')
     @mockService(MeetingsService, 'startMeeting', {
       action: MEETING_ACTION.DEEP_LINK,
       link: '123123',
@@ -71,7 +71,7 @@ describe('MeetingViewModel', () => {
       expect(meetingViewModel.openWindow).toHaveBeenCalled();
     }
 
-    @test.only('should not be openwindow if link is empty')
+    @test('should not be openwindow if link is empty')
     @mockService(MeetingsService, 'startMeeting', {
       action: MEETING_ACTION.DEEP_LINK,
       link: '',
@@ -82,5 +82,38 @@ describe('MeetingViewModel', () => {
       await meetingViewModel.startMeeting();
       expect(meetingViewModel.openWindow).not.toHaveBeenCalled();
     }
+  }
+
+  @testable
+  class openWindow {
+    @test('should call openWindow if openWindow is exist')
+    t1() {
+      const electronService = {
+        openWindow: jest.fn(),
+      }
+      container.get = jest.fn().mockReturnValue(electronService);
+      Object.defineProperty(window, 'jupiterElectron', {
+        writable: true,
+        value: {
+          openWindow: jest.fn()
+        }
+      })
+      meetingViewModel = new MeetingViewModel();
+      meetingViewModel.openWindow('');
+      expect(electronService.openWindow).toBeCalled();
+    }
+
+    @test.only('should call window.open if openWindow is not exist')
+    t2() {
+      // Object.defineProperty(window, 'open', {
+      //   writable: true,
+      //   value: jest.fn()
+      // })
+      window.open = jest.fn();
+      meetingViewModel = new MeetingViewModel();
+      meetingViewModel.openWindow('');
+      expect(window.open).toBeCalled();
+    }
+
   }
 });
