@@ -7,6 +7,7 @@ import React from 'react';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import portalManager from '@/common/PortalManager';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { dataAnalysis } from 'foundation/analysis';
 
 type BaseType = {
   isAlert?: boolean;
@@ -14,9 +15,7 @@ type BaseType = {
 } & JuiModalProps;
 
 const BaseDialogComponent = (props: BaseType & WithTranslation) => {
-  const {
-    isAlert, loading, t, ...newConfig
-  } = props;
+  const { isAlert, loading, t, ...newConfig } = props;
   const defaultBtnText = {
     okText: t('common.dialog.OK'),
     cancelText: t('common.dialog.cancel'),
@@ -37,13 +36,9 @@ const BaseDialogComponent = (props: BaseType & WithTranslation) => {
 const BaseDialog = withTranslation('translations')(BaseDialogComponent);
 
 function dialog(config: BaseType) {
-  const {
-    onOK, onCancel, isAlert, ...newConfig
-  } = config;
+  const { onOK, onCancel, isAlert, ...newConfig } = config;
 
-  const {
-    dismiss, show, startLoading, stopLoading,
-  } = portalManager.wrapper(
+  const { dismiss, show, startLoading, stopLoading } = portalManager.wrapper(
     BaseDialog,
   );
 
@@ -57,8 +52,17 @@ function dialog(config: BaseType) {
         dismiss();
       }
     },
-    onCancel() {
-      onCancel && onCancel();
+    onCancel(event: React.MouseEvent) {
+      onCancel && onCancel(event);
+      dismiss();
+    },
+    onClose(event: React.MouseEvent, reason: string) {
+      if (reason === 'escapeKeyDown') {
+        dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+          shortcut: 'escape',
+        });
+      }
+      onCancel && onCancel(event);
       dismiss();
     },
   };
