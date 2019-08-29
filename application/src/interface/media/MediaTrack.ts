@@ -15,6 +15,7 @@ type MediaTrackOptions = {
   currentTime?: number;
   outputDevices?: MediaDeviceType[] | null;
   masterVolume?: number;
+  duckVolume?: number;
   mediaId?: string;
   mediaVolume?: number;
   mediaEvents?: MediaEvents[];
