@@ -7,6 +7,8 @@ import React from 'react';
 import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 import { JuiCustomStatus, JuiCustomInput } from 'jui/pattern/CustomStatus';
+import { JuiModal } from 'jui/components/Dialog';
+import { CustomStatusView } from '../CustomStatus.View';
 
 const props = {
   value: 'value',
@@ -54,6 +56,12 @@ describe('CustomStatusView', () => {
       ).toMatchObject({
         placeholder: 'Share custom status',
       });
+    }
+    @test('should contain onClose props when rendering JuiModal ')
+    t3() {
+      const Wrapper = shallow(<CustomStatusView open {...props} />);
+      const modal = Wrapper.find(JuiModal).shallow();
+      expect(modal.props().onClose).toBeTruthy();
     }
   }
 });
