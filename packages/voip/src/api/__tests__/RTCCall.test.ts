@@ -429,7 +429,7 @@ describe('RTC call', () => {
   });
 
   describe('startRecord()', () => {
-    it('should report startRecord success when FSM in connected state and startRecord success [JPT-686]', done => {
+    it('should report startRecord success when FSM in connected state and startRecord success [JPT-686][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
       const session = new MockSession();
@@ -1168,7 +1168,7 @@ describe('RTC call', () => {
       expect(call.isIncomingCall()).toBe(false);
     });
 
-    it('should call state become disconnected when reject call in idle state [JPT-623]', done => {
+    it('should call state become disconnected when reject call in idle state [JPT-623][JPT-2920]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -1177,11 +1177,13 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.reject).toBeCalled();
+        expect(call._report.events[0].info).toBe( "reject");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
 
-    it('should call state become disconnected when send to voicemail in idle state [JPT-624]', done => {
+    it('should call state become disconnected when send to voicemail in idle state [JPT-624][JPT-2920]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -1190,6 +1192,8 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.toVoicemail).toBeCalled();
+        expect(call._report.events[0].info).toBe( "sendToVm");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
@@ -1228,7 +1232,7 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('should call state become connecting when answer in idle state [JPT-625]', done => {
+    it('should call state become connecting when answer in idle state [JPT-625][JPT-2920]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -1237,6 +1241,8 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(session.accept).toBeCalled();
+        expect(call._report.events[0].info).toBe( "answer");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
@@ -1376,7 +1382,7 @@ describe('RTC call', () => {
       });
     });
 
-    it("should state transition from Connecting to Disconnected when receive 'Hang up' event [JPT-606]", done => {
+    it("should state transition from Connecting to Disconnected when receive 'Hang up' event [JPT-606][JPT-2920]", done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(false, '123', null, account, account);
@@ -1388,6 +1394,8 @@ describe('RTC call', () => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.terminate).toBeCalled();
+        expect(call._report.events[0].info).toBe( "hangup");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
@@ -2562,7 +2570,7 @@ describe('RTC call', () => {
       account = new VirturlAccountAndCallObserver();
       call = new RTCCall(true, '', session, account, account);
     }
-    it('should call state changed to Disconnected when call ignore API in idle state. [JPT-1468]', done => {
+    it('should call state changed to Disconnected when call ignore API in idle state. [JPT-1468][JPT-2920]', done => {
       setup();
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
@@ -2571,6 +2579,8 @@ describe('RTC call', () => {
         setImmediate(() => {
           expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
           expect(call._fsm.state()).toBe('disconnected');
+          expect(call._report.events[0].info).toBe( "ignore");
+          expect(call._report.events[0].name).toBe( "CallAction");
           done();
         });
       });
@@ -2755,7 +2765,7 @@ describe('RTC call', () => {
       call = new RTCCall(true, '123', session, account, account);
     }
 
-    it('should report forward failed when forward incoming call without phone number [JPT-1301]', done => {
+    it('should report forward failed when forward incoming call without phone number [JPT-1301][JPT-2920][JPT-2921]', done => {
       setup();
       jest.spyOn(account, 'onCallActionFailed');
       call.forward('');
