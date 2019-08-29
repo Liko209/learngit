@@ -171,7 +171,7 @@ class TelephonyStore {
   isWarmTransferPage: boolean = false;
 
   @observable
-  isCompleteTransfer: boolean = false;
+  canCompleteTransfer: boolean = true;
 
   @observable
   selectedCallItem: SelectedCallItem = {
@@ -894,12 +894,12 @@ class TelephonyStore {
 
   @action
   completeTransfer = () => {
-    this.isCompleteTransfer = true;
+    this.canCompleteTransfer = true;
   }
 
   @action
   processTransfer = () => {
-    this.isCompleteTransfer = false;
+    this.canCompleteTransfer = false;
   }
 
   @action

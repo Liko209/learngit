@@ -80,6 +80,11 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps> {
     );
   }
 
+  @computed
+  get canCompleteTransfer() {
+    return this._telephonyStore.canCompleteTransfer;
+  }
+
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
     this._intervalId = undefined;

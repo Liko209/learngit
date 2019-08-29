@@ -40,10 +40,12 @@ class TransferViewModel extends StoreViewModel<Props> {
 
   transferCall = async () => {
     analyticsCollector.clickTransferActions(TRANSFER_NOW_ACTION);
+    this._telephonyStore.processTransfer();
     const res = await this._telephonyService.transfer(
       TRANSFER_TYPE.BLIND_TRANSFER,
       this.transferNumber,
     );
+    this._telephonyStore.completeTransfer();
     res &&
       this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
   };
@@ -84,9 +86,15 @@ class TransferViewModel extends StoreViewModel<Props> {
   }
 
   @computed
+  private get _canCompleteTransfer() {
+    return this._telephonyStore.canCompleteTransfer;
+  }
+
+  @computed
   get isTransferCallConnected() {
     return this.isMultipleCall
-      ? this._telephonyStore.rawCalls[0].callState === CALL_STATE.CONNECTED
+      ? this._telephonyStore.rawCalls[0].callState === CALL_STATE.CONNECTED &&
+          this._canCompleteTransfer
       : false;
   }
 

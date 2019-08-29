@@ -95,5 +95,22 @@ describe('TransferViewModel', () => {
 
       expect(vm.isTransferCallConnected).toBeTruthy();
     });
+
+    it('should disabled complete transfer action button when in transferring status [JPT-2768]', () => {
+      (getEntity as jest.Mock).mockImplementation((type, id) => {
+        if (type === ENTITY_NAME.CALL) {
+          return { id, callState: CALL_STATE.CONNECTED };
+        }
+        return id;
+      });
+      // @ts-ignore
+      vm._telephonyStore._sortableListHandler.sortableListStore = {
+        getIds: [1, 2],
+      };
+      expect(vm.isTransferCallConnected).toBeTruthy();
+
+      vm._telephonyStore.processTransfer();
+      expect(vm.isTransferCallConnected).toBeFalsy();
+    });
   });
 });
