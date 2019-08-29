@@ -56,6 +56,7 @@ describe('Prompt user to confirm emergency address first when user tries to make
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: false },
+      { method: 'hasActiveDL', data: true },
     ])
     @mockService(RCInfoService, [
       { method: 'isVoipCallingAvailable', data: true },
@@ -128,6 +129,7 @@ describe('Prompt user to confirm emergency address first when user tries to make
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: false },
+      { method: 'hasActiveDL', data: false },
     ])
     @mockService(RCInfoService, [
       { method: 'isVoipCallingAvailable', data: true },
@@ -163,7 +165,7 @@ describe('Prompt user to confirm emergency address first when user tries to make
       link.simulate('click', { preventDefault: jest.fn() });
       await delay();
       expect(Notification.flashToast).toHaveBeenCalledWith({
-        message: 'telephony.prompt.e911ExtensionNotAllowedToMakeCall',
+        message: 'telephony.prompt.noDLNotAllowedToMakeCall',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.CENTER,
         fullWidth: false,

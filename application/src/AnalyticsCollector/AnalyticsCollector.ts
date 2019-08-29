@@ -336,6 +336,13 @@ class AnalyticsCollector {
     });
   }
 
+  startConferenceCall(conversationType: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_startConferenceCall', {
+      conversationType,
+      source,
+    });
+  }
+
   directToTransferPage() {
     dataAnalysis.page('Jup_Web/DT_phone_transferCall');
   }

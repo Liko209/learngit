@@ -14,7 +14,7 @@ import { WebphoneSession } from 'webphone-client';
 import { E911Address } from './e911address';
 
 fixture('Telephony/EndCall')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -24,8 +24,8 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('Show prompt pop-up after user logged out the app', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
@@ -115,8 +115,8 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('The call should be ended after the user logged out & Should navigate to the login main interface', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
@@ -201,8 +201,8 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('The call should be ended after the user logged out', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
@@ -269,8 +269,8 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('User should can ended call successfully when call is active', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
@@ -367,8 +367,8 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('User should can ended call successfully', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const me = users[4]
-  const anotherUser = users[5];
+  const me = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(me).init();
   await h(t).platform(me).init();

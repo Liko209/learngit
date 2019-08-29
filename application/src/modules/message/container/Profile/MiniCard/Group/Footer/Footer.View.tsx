@@ -18,6 +18,7 @@ import { TypeDictionary } from 'sdk/utils';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { ProfileDialogGroup } from '@/modules/message/container/Profile/Dialog/Group';
+import { AudioConference } from '@/modules/telephony/container/AudioConference';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 @observer
@@ -87,6 +88,13 @@ class ProfileMiniCardGroupFooter extends Component<
               chat
             </JuiIconButton>
           )}
+          <AudioConference
+            groupId={id}
+            variant="plain"
+            size="medium"
+            color="primary"
+            analysisSource="miniProfile"
+          />
         </JuiProfileMiniCardFooterRight>
       </>
     );

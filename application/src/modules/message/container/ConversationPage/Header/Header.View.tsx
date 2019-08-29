@@ -47,7 +47,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
   @computed
   private get _ActionButtons() {
-    const { groupId, analysisSource } = this.props;
+    const { groupId } = this.props;
 
     const { conversationHeaderExtensions } = this._messageStore;
     const actionButtons = conversationHeaderExtensions.map(
@@ -55,7 +55,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         <Comp
           key={`ACTION_${groupId}${Comp.displayName}`}
           groupId={groupId}
-          analysisSource={analysisSource}
+          analysisSource="conversationHeader"
         />
       ),
     );
