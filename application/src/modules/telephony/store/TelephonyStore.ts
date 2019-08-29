@@ -59,6 +59,9 @@ class TelephonyStore {
   maximumInputLength = 30;
 
   @observable
+  isConference: boolean = false;
+
+  @observable
   canUseTelephony: boolean = false;
 
   @observable
@@ -420,6 +423,7 @@ class TelephonyStore {
 
     this.isContactMatched = false;
     this.hasManualSelected = false;
+    this.isConference = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
 
     // for TelephonyNotificationManger can get call disconnected state.
