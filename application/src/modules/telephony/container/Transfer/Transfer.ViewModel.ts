@@ -55,6 +55,7 @@ class TransferViewModel extends StoreViewModel<Props> {
       TRANSFER_TYPE.WARM_TRANSFER,
       this._transferCallUuid,
     );
+    this._telephonyStore.leaveWarmTransferPage();
     res &&
       this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
   };

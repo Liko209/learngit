@@ -883,11 +883,13 @@ class TelephonyStore {
   directToWarmTransferPage = () => {
     this.isWarmTransferPage = true;
     this.backToDialerFromTransferPage();
+    this.switchCurrentCall(this.rawCalls[0].id);
   }
 
   @action
   leaveWarmTransferPage = () => {
     this.isWarmTransferPage = false;
+    this.switchCurrentCall();
   }
 
   @action

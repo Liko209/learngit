@@ -66,7 +66,7 @@ describe('TransferViewModel', () => {
   });
 
   describe('isTransferCallConnected()', () => {
-    it('should disabled complete transfer action button [JPT-2809]', () => {
+    it('should disabled complete transfer action button [JPT-2890]', () => {
       (getEntity as jest.Mock).mockImplementation((type, id) => {
         if (type === ENTITY_NAME.CALL) {
           return { id, callState: '' };
@@ -81,7 +81,7 @@ describe('TransferViewModel', () => {
       expect(vm.isTransferCallConnected).toBeFalsy();
     });
 
-    it('should not disabled complete transfer action button [JPT-2809]', () => {
+    it('should not disabled complete transfer action button [JPT-2890]', () => {
       (getEntity as jest.Mock).mockImplementation((type, id) => {
         if (type === ENTITY_NAME.CALL) {
           return { id, callState: CALL_STATE.CONNECTED };

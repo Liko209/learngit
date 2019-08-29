@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WarmTransferHeaderView _viewMethods should check text if exist while pass text as props 1`] = `<JuiSwitchCallHeader />`;

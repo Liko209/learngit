@@ -33,25 +33,24 @@ class WarmTransferHeaderViewComponent extends React.Component<Props> {
   };
 
   render() {
-    const { switchCallItems, switchCall } = this.props;
+    const { switchCallItems, switchCall, currentCallId } = this.props;
     return (
       <JuiSwitchCallHeader>
-        {switchCallItems &&
-          switchCallItems.map((item, inx) => {
-            const { holdState, displayName, id, time } = item;
-            const active = holdState === HOLD_STATE.IDLE;
-            return (
-              <JuiSwitchCallChip
-                active={active}
-                name={displayName}
-                time={time}
-                icon={active ? 'phone' : 'hold'}
-                EndCall={inx === 0 ? this._EndCall : undefined}
-                onClick={() => switchCall(id)}
-                key={holdState}
-              />
-            );
-          })}
+        {switchCallItems.map((item, inx) => {
+          const { holdState, displayName, id, time } = item;
+          const active = holdState === HOLD_STATE.IDLE;
+          return (
+            <JuiSwitchCallChip
+              active={currentCallId === id}
+              name={displayName}
+              time={time}
+              icon={active ? 'phone' : 'hold'}
+              EndCall={inx === 0 ? this._EndCall : undefined}
+              onClick={() => switchCall(id)}
+              key={id}
+            />
+          );
+        })}
       </JuiSwitchCallHeader>
     );
   }

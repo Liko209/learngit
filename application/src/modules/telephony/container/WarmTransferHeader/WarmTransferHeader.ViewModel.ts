@@ -25,6 +25,11 @@ class WarmTransferHeaderViewModel extends StoreViewModel<Props> {
     return this._telephonyStore.rawCalls;
   }
 
+  @computed
+  get currentCallId() {
+    return this._telephonyStore.currentCallId;
+  }
+
   switchCall = (callId: number) => {
     this._telephonyStore.switchCurrentCall(callId);
     this._telephonyService.holdOrUnhold();
@@ -33,6 +38,7 @@ class WarmTransferHeaderViewModel extends StoreViewModel<Props> {
   endCall = () => {
     analyticsCollector.cancelTransferCall();
     this._telephonyService.hangUp(this.switchCallItems[0].id);
+    this._telephonyStore.leaveWarmTransferPage();
   };
 }
 

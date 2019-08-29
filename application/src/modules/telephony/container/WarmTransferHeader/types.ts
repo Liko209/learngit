@@ -11,6 +11,7 @@ type ViewProps = {
   switchCallItems: CallModel[];
   switchCall: (callId: number) => void;
   endCall: () => void;
+  currentCallId: number;
 };
 
 export { Props, ViewProps };
