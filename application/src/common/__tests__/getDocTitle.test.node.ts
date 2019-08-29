@@ -73,4 +73,10 @@ describe('get doc title', () => {
       );
     });
   });
+
+  describe('get undefined title', () => {
+    it('should get empty title when route not defined url', async () => {
+      expect(await getDocTitle('/xxxx')).toEqual('');
+    });
+  });
 });

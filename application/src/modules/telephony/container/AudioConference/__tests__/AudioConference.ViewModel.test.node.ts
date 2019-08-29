@@ -30,7 +30,7 @@ container.bind(FeaturesFlagsService).to(FeaturesFlagsService);
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 
 let vm: AudioConferenceViewModel;
-const group = {
+let group = {
   groupId: 123,
   type: CONVERSATION_TYPES.TEAM,
 };
@@ -48,17 +48,17 @@ const setUp = ({group, telephonyService, featuresFlagsService}: any) => {
   if (telephonyService || featuresFlagsService) {
     container.get = jest.fn((key: any) => {
       if (key === TELEPHONY_SERVICE && telephonyService) {
-        return telephonyService;
+        return telephonyService
       }
 
       if(key === FeaturesFlagsService && featuresFlagsService) {
         return featuresFlagsService
       }
-    });
+    })
   }
-};
+}
 
-setUp({ group, telephonyService, featuresFlagsService });
+setUp({group, telephonyService, featuresFlagsService})
 
 describe('AudioConference.ViewModel', () => {
 
@@ -71,7 +71,7 @@ describe('AudioConference.ViewModel', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.TEAM,
-    };
+    }
     setUp({
       group,
       telephonyService,
@@ -89,7 +89,7 @@ describe('AudioConference.ViewModel', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-    };
+    }
     setUp({
       group,
       telephonyService,

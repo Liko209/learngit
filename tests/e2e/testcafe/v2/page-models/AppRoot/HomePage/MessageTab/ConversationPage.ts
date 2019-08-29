@@ -143,6 +143,14 @@ export class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title', this.header);
   }
 
+  get conferenceButton() {
+    return this.getSelectorByAutomationIdUnderSelf('audio-conference-btn');
+  }
+
+  async clickConferenceButton() {
+    return this.t.click(this.conferenceButton);
+  }
+
   async timeOfPostsShouldOrderByAsc() {
     const count = await this.postTimes.count;
     let lastTime: number;
@@ -461,7 +469,7 @@ export class ConversationPage extends BaseConversationPage {
   get mutedIcon() {
     return this.getSelectorByIcon('mute', this.muteButton);
   }
-  
+
   get messageInputArea() {
     this.warnFlakySelector();
     return this.self.child().find('.ql-editor');
@@ -1090,12 +1098,6 @@ export class PostItem extends BaseWebComponent {
   }
 
   // audio conference
-  get AudioConferenceHeaderNotification() {
-    // FIXME: should take i18n into account
-    this.warnFlakySelector();
-    return this.headerNotification.withText('started an audio conference');
-  }
-
   get audioConference() {
     return this.getComponent(AudioConference, this.getSelectorByAutomationId('conferenceItem', this.self));
   }
@@ -1295,6 +1297,10 @@ class AudioConference extends BaseWebComponent {
 
   clickJoinAudioConferenceBtn() {
     return this.t.click(this.joinAudioConferenceBtn);
+  }
+
+  get phoneNumber() {
+    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self);
   }
 
   get globalNumber() {

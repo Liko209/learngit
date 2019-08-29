@@ -17,6 +17,7 @@ import { getEntity } from '@/store/utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
 import * as common from '@/modules/common/module.config';
 import { observable } from 'mobx';
+import * as media from '@/modules/media/module.config';
 
 jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
@@ -24,6 +25,7 @@ jest.mock('../../../service/TelephonyService');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(common.config);
+jupiter.registerModule(media.config);
 
 let dialpadViewModel: DialpadViewModel;
 

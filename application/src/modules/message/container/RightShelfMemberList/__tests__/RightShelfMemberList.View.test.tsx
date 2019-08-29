@@ -38,6 +38,7 @@ jest.mock('@/containers/Dialog', () => ({
   Dialog: {
     simple: jest.fn(),
   },
+  withEscTracking: jest.fn(),
 }));
 jest.mock('../../Profile/Dialog/Group/Content/AddMembers', () => ({
   AddMembers: () => 'Add Member Dialog',

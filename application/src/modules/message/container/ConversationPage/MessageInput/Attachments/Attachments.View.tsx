@@ -36,6 +36,7 @@ class AttachmentsViewComponent extends Component<
           duplicateFileNames={duplicateFiles.map(({ name }) =>
             postParser(name, { fileName: true }),
           )}
+          onEscTrackedCancel={this.props.onEscTrackedCancelDuplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}

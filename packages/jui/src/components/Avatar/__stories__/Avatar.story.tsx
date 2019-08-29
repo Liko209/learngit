@@ -10,6 +10,7 @@ import { select, boolean } from '@storybook/addon-knobs';
 
 import { JuiAvatar, JuiAvatarProps } from '..';
 import { JuiPresence, PRESENCE } from '../../Presence';
+import TeamAvatar from '../../../assets/jupiter-icon/icon-default-team-avatar.svg';
 
 import avatar from './img/avatar.jpg';
 import { JuiIconography } from '../../../foundation/Iconography';
@@ -82,15 +83,7 @@ storiesOf('Components/Avatar', module)
     );
   })
   .add('Icon', () => {
-    let iconSize: any = knobs.size();
-    if (iconSize === 'xlarge') {
-      iconSize = 'moreLarge'
-    }
-    return (
-      <JuiAvatar size={knobs.size()} color={knobs.color()}>
-        <JuiIconography iconSize={iconSize} iconColor={['primary', '500']} symbol={conference} desc={'ha'} />
-      </JuiAvatar>
-    );
+    return <JuiAvatar size={knobs.size()} iconSymbol={TeamAvatar} />;
   })
   .add('With presence', () => {
     return (
