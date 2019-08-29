@@ -91,17 +91,20 @@ class FeedbackService {
   };
 
   sendFeedback = async (message: string, comments: string): Promise<void> => {
+    logger.debug('feedback: ', { message, comments });
     /* eslint-disable  no-throw-literal */
     if (!Sentry.getCurrentHub().getClient()) {
       throw 'Sentry is not init.';
     }
-    const applicationInfo = await getAppContextInfo();
-    const eventId = Sentry.captureMessage(`[Feedback] ${message}`);
+    const appContextInfo = await getAppContextInfo();
+    const eventId = Sentry.captureMessage(
+      `[Feedback] ${message} ${Date.now()}`,
+    );
     await FeedbackApi.sendFeedback({
       comments,
       event_id: eventId,
-      email: applicationInfo.email,
-      name: applicationInfo.username,
+      email: appContextInfo.email,
+      name: appContextInfo.username,
     });
   };
 }

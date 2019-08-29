@@ -4,12 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
+import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from '../Emoji';
 import {
   spacing,
   typography,
   grey,
   ellipsis,
   width,
+  height,
 } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 import _ from 'lodash';
@@ -32,7 +35,15 @@ const StyledStatus = styled('div')`
   box-sizing: border-box;
   color: ${grey('600')};
   ${typography('caption2')};
+  line-height: ${height(5)};
   ${ellipsis()};
+  && {
+    .emoji-mart-emoji {
+      position: relative;
+      top: 50%;
+      transform: translateY(16%);
+    }
+  }
 `;
 const StyledTime = styled('div')`
   color: ${grey('500')};
@@ -62,7 +73,8 @@ const StyledNotification = styled.div`
 
 type ConversationCardHeaderProps = {
   name: string;
-  status?: string;
+  colonsEmoji: string;
+  statusPlainText: string;
   time: string;
   children?: React.ReactNode;
   from?: JSX.Element;
@@ -138,20 +150,28 @@ class JuiConversationCardHeader extends React.PureComponent<
   render() {
     const {
       name,
-      status,
+      colonsEmoji,
+      statusPlainText,
       notification,
       repliedEntity,
       from,
       time,
       children,
     } = this.props;
+
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
           <StyledName data-name="name">{name}</StyledName>
-          {status ? (
+          {colonsEmoji || statusPlainText ? (
             <StyledStatus data-name="cardHeaderUserStatus">
-              {status}
+              <Emoji
+                emoji={colonsEmoji || ''}
+                set="emojione"
+                size={14}
+                backgroundImageFn={backgroundImageFn}
+              />
+              {statusPlainText}
             </StyledStatus>
           ) : null}
           {notification ? (

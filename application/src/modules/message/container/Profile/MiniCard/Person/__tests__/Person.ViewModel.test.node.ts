@@ -8,7 +8,11 @@ import { getEntity } from '@/store/utils';
 import { ProfileMiniCardPersonViewModel } from '../Person.ViewModel';
 
 jest.mock('@/store/utils');
-
+jest.mock('emoji-mart', () => ({
+  getEmojiDataFromNative: () => ({
+    colons: ':rainbow:',
+  }),
+}));
 const mockData = {
   userDisplayName: 'Person Name',
   awayStatus: 'online',
@@ -48,4 +52,18 @@ describe('ProfileMiniCardPersonViewModel', () => {
       expect(vm.person).toEqual(mockData);
     });
   });
+  describe('emoji', () => {
+    it('should return emoji when get customStatus', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        awayStatus: ':rainbow: in the meeting',
+      })
+      expect(vm.colonsEmoji).toBe(':rainbow:');
+    });
+    it('should return status text when get customStatus', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        awayStatus: 'in the meeting',
+      })
+      expect(vm.statusPlainText).toBe('  inthemeeting');
+    });
+  })
 });

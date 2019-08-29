@@ -14,12 +14,23 @@ import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
+import { EnvConfig } from 'sdk/module/env/config';
+import { Api } from 'sdk/api';
 import { ConversationType, NewConversationSource, SendTrigger } from './types';
 
 class AnalyticsCollector {
   constructor() {
     dataAnalysis.setProduction(config.isProductionAccount());
   }
+  init() {
+    const isRunningE2E = EnvConfig.getIsRunningE2E();
+    !isRunningE2E && dataAnalysis.init(Api.httpConfig.segment);
+  }
+
+  reset() {
+    dataAnalysis.reset();
+  }
+
   async identify() {
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     if (!userId) {
@@ -333,6 +344,15 @@ class AnalyticsCollector {
     this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
   }
 
+  directToTransferPage() {
+    dataAnalysis.page('Jup_Web/DT_phone_transferCall');
+  }
+
+  clickTransferActions(action: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_transferActions', {
+      action,
+    });
+  }
   // [FIJI-8195]
   login() {
     dataAnalysis.track('Jup_Web/DT_general_login');

@@ -10,8 +10,8 @@ import {
 } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { GroupService, Group } from 'sdk/module/group';
-import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { ENTITY_NAME } from '@/store/constants';
+import { getEntity } from '@/store/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupModel from '@/store/models/Group';
 import { Person } from 'sdk/module/person/entity';
@@ -293,45 +293,9 @@ class RightShelfMemberListViewModel
   };
 
   @computed
-  private get _currentUserId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-  }
-
-  @computed
-  private get _isCurrentUserGuest() {
-    return this.group.isThePersonGuest(this._currentUserId);
-  }
-
-  @computed
-  private get _isCurrentUserAdmin() {
-    return this.group.isAdmin;
-  }
-
-  @computed
-  private get _canTeamAddMembers() {
-    const permissionFlags = this._groupService.getTeamUserPermissionFlags(
-      this.group.permissions || {},
-    );
-
-    return Boolean(permissionFlags.TEAM_ADD_MEMBER);
-  }
-
-  @computed
-  private get _canAddTeamMembers() {
-    return this._isCurrentUserAdmin || this._canTeamAddMembers;
-  }
-
-  @computed
   get canAddMembers() {
-    if (!this.isTeam) {
-      return true;
-    }
-
-    if (this._isCurrentUserGuest) {
-      return false;
-    }
-
-    return this._canAddTeamMembers;
+    return !this.isTeam ||
+      this.group.isCurrentUserHasPermissionAddMember;
   }
 }
 

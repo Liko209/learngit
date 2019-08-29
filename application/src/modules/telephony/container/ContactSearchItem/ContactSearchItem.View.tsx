@@ -12,8 +12,12 @@ import { Avatar } from '@/containers/Avatar';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { ContactSearchItemViewProps } from './types';
 import { observer } from 'mobx-react';
-import { ContactSearchItemContent as ItemContent } from 'jui/pattern/Dialer';
+import {
+  ContactSearchItemContent as ItemContent,
+  StyledSelectedItemIcon,
+} from 'jui/pattern/Dialer';
 import { ROW_HEIGHT } from '../ContactSearchList/constants';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 type Props = WithTranslation & ContactSearchItemViewProps;
 @observer
@@ -38,7 +42,10 @@ class ContactSearchItemViewComponent extends Component<Props> {
       phoneNumber,
       t,
       name,
-      selected = false,
+      isTransferPage,
+      selectedCallItemIndex,
+      itemIndex,
+      selected,
     } = this.props;
 
     return (
@@ -63,6 +70,13 @@ class ContactSearchItemViewComponent extends Component<Props> {
               isExt ? `${t('telephony.Ext')} ${phoneNumber}` : phoneNumber
             }
           />
+          {isTransferPage && selectedCallItemIndex === itemIndex && (
+            <StyledSelectedItemIcon>
+              <JuiIconography iconSize="medium">
+                item-list-selected
+              </JuiIconography>
+            </StyledSelectedItemIcon>
+          )}
           {showDialIcon && (
             <JuiIconButton
               variant="plain"
