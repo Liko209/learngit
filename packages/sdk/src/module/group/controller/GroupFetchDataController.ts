@@ -541,6 +541,12 @@ export class GroupFetchDataController {
           break;
         }
 
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+        if (!option.fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
+          isMatched = false;
+          break;
+        }
+
         let visiblePersons: Person[] = [];
         if (group.is_team) {
           groupName = group.set_abbreviation;
@@ -558,12 +564,11 @@ export class GroupFetchDataController {
           lowerCaseName = groupName.toLowerCase();
         }
 
-        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
-        isMatched = option.fetchAllIfSearchKeyEmpty! && searchKeyTerms.length === 0;
-        if (isMatched) {
+        if (option.fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
+          isMatched = true;
           break;
         }
-
+        
         let isFuzzy: boolean = false;
         if (group.is_team) {
           isFuzzy =

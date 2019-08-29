@@ -3,7 +3,7 @@ import { Dialog } from '@/containers/Dialog';
 import React, { useCallback } from 'react';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
-import { SortableModel } from 'sdk/src/framework/model';
+import { SortableModel } from 'sdk/framework/model';
 import { Group } from 'sdk/module/group';
 import { SortUtils } from 'sdk/framework/utils';
 
@@ -12,12 +12,12 @@ const searchFunc = async (searchKey: string) => {
     ServiceConfig.SEARCH_SERVICE,
   );
   const sortFunc = (a: SortableModel<Group>, b: SortableModel<Group>) => {
-    if (a.sortWeights[0] > b.sortWeights[0]) {
-      return -1;
-    }
-
-    if (a.sortWeights[0] < b.sortWeights[0]) {
-      return 1;
+    const result = SortUtils.compareArrayOfSameLens(
+      b.sortWeights,
+      a.sortWeights,
+    );
+    if (result !== 0) {
+      return result;
     }
 
     const mostRecentA = a.entity.most_recent_post_created_at || 0;
