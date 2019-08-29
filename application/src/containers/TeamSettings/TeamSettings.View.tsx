@@ -29,6 +29,7 @@ import { toTitleCase } from '@/utils/string';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiToggleButton, JuiIconButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
+import { withEscTracking } from '@/common/trackData';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { dataAnalysis } from 'foundation/analysis';
 
@@ -338,6 +339,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         okBtnProps={{ disabled: disabledOkBtn, loading: saving }}
         title={t('setting.teamSettings')}
         onCancel={this.handleClose}
+        onClose={withEscTracking(this.handleClose)}
         onOK={this.handleOk}
         okText={toTitleCase(t('common.dialog.save'))}
         cancelText={toTitleCase(t('common.dialog.cancel'))}

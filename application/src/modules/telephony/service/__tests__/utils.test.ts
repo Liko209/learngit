@@ -53,6 +53,7 @@ jest.mock('@/containers/Dialog', () => {
   return {
     __esModule: true,
     Dialog,
+    withEscTracking: jest.fn(),
   };
 });
 
