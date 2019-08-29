@@ -15,7 +15,7 @@ const StyledAppBar = styled(JuiAppBar).attrs({ position: 'static' })`
     background-color: ${({ theme }) => `${theme.palette.common.white}`};
     background: linear-gradient(
       to right,
-      ${palette('primary', '600')},
+      ${palette('primary', 'main')},
       ${palette('primary', '300')}
     );
     box-shadow: none;

@@ -397,7 +397,7 @@ describe('RCInfoService', () => {
       const result = await rcInfoService.isVoipCallingAvailable();
       expect(result).toBeTruthy();
     });
-    it('should return false when user is rc account and has not web_phone permission', async () => {
+    it('should return false when user is rc account and has not web_phone permission [JPT-2924]', async () => {
       mockAccountService.userConfig = {
         getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.RC),
       };
