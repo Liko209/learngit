@@ -179,7 +179,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: PartialScrollPosition) => {
     if (ref.current) {
       if (options === true) {
-        if(index === 0 && offset === 0) {
+        if (index === 0 && offset === 0) {
           ref.current.scrollTop = 0;
         } else {
           ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
@@ -555,7 +555,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
 
-  const EmptyDiv = () => <div style={{ height: minRowHeight }} />;
+  const EmptyDiv = () => (
+    <div style={{ height: minRowHeight || fixedRowHeight }} />
+  );
   const childrenToRender = children
     .filter((_, i) => startIndex <= i && i <= stopIndex)
     .map(child => (child.type ? child : <EmptyDiv key={child.key || 0} />));
