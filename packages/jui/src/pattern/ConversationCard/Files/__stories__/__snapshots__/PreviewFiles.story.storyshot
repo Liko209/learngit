@@ -113,10 +113,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   cursor: default;
 }
 
-.c2 {
+.c2.c2 {
   position: relative;
   height: 200px;
-  background-color: #bfbfbf;
+  background-color: #fafafa;
+  background-size: cover;
 }
 
 .c3.c3 {
