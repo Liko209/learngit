@@ -23,6 +23,7 @@ import { IUser } from '../../../models';
 import { TelephonyDialog, TelephonyMinimizeWindow, ContactSearchList } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
+import { RecentConversationDialog } from './RecentConversationDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
@@ -284,6 +285,11 @@ export class HomePage extends BaseWebComponent {
   get moreActionOnFile() {
     return this.getComponent(MoreActionOnFile);
   }
+
+  get recentConversationDialog(){
+    return this.getComponent(RecentConversationDialog);
+  }
+
 
   get moreActionOnViewer() {
     return this.getComponent(MoreActionOnViewer);
