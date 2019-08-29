@@ -2054,7 +2054,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should enter connected state when hold call failed in holding state. [JPT-823]', done => {
+    it('should enter connected state when hold call failed in holding state. [JPT-823][JPT-2920][JPT-2921]', done => {
       setup();
       session.hold.mockResolvedValue(null);
       call.onAccountReady();
