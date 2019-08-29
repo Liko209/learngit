@@ -112,10 +112,17 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       modalProps,
       fillContent,
       onClose,
+      loading,
     } = this.props;
 
     return (
-      <JuiDialog onClose={onClose} open={open!} size={size} {...modalProps}>
+      <JuiDialog
+        disableEscapeKeyDown={loading}
+        onClose={onClose}
+        open={open!}
+        size={size}
+        {...modalProps}
+      >
         {typeof title === 'string' ? (
           <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
             {title}
