@@ -632,7 +632,7 @@ test.meta(<ITestMeta>{
 
     await h(t).withLog(`And the callee number should be {calleeNumber} then close dialog`, async (step) => {
       step.setMetadata('calleeNumber', calleeNumber)
-      await t.expect(telephonyDialog.extension.withExactText(calleeNumber).exists).ok();
+      await t.expect(telephonyDialog.phoneNumber.withExactText(calleeNumber).exists).ok();
       await telephonyDialog.clickHangupButton();
     });
   }

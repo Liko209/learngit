@@ -344,6 +344,13 @@ class AnalyticsCollector {
     this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
   }
 
+  startConferenceCall(conversationType: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_startConferenceCall', {
+      conversationType,
+      source,
+    });
+  }
+
   directToTransferPage() {
     dataAnalysis.page('Jup_Web/DT_phone_transferCall');
   }

@@ -61,4 +61,13 @@ describe('CallCtrlPanelViewModel', () => {
       expect(callCtrlPanelViewModel.uid).toEqual('bar');
     });
   });
+
+  describe('isConference', () => {
+    it('Should return value of `isConference` on TelephonyStore', () => {
+      Object.defineProperty(callCtrlPanelViewModel._telephonyStore, 'isConference', {
+        get: jest.fn(() => true),
+      });
+      expect(callCtrlPanelViewModel.isConference).toEqual(true);
+    });
+  })
 });

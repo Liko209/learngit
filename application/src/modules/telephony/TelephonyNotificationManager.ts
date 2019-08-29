@@ -195,7 +195,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
       icon: '',
       action: ACTION_NAME_CALL_BACK,
       handler: () => {
-        this._telephonyService.makeCall(displayNumber);
+        this._telephonyService.directCall(displayNumber);
       },
     };
   }

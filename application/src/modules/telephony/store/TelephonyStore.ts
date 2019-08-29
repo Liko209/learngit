@@ -40,6 +40,7 @@ import {
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 import { formatSeconds } from './utils';
+import { IMediaService } from '@/interface/media';
 import { VoicemailNotification, MissedCallNotification } from './types';
 
 type SelectedCallItem = { phoneNumber: string; index: number };
@@ -53,7 +54,12 @@ class TelephonyStore {
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
 
+  @IMediaService private _mediaService: IMediaService;
+
   maximumInputLength = 30;
+
+  @observable
+  isConference: boolean = false;
 
   @observable
   canUseTelephony: boolean = false;
@@ -237,6 +243,13 @@ class TelephonyStore {
         }
       },
     );
+
+    reaction(
+      () => this.hasActiveCall,
+      hasActiveCall => {
+        hasActiveCall ? this._mediaService.setDuckVolume(0.7) : this._mediaService.setDuckVolume(1);
+      }
+    )
   }
 
   @computed
@@ -410,6 +423,7 @@ class TelephonyStore {
 
     this.isContactMatched = false;
     this.hasManualSelected = false;
+    this.isConference = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
 
     // for TelephonyNotificationManger can get call disconnected state.
@@ -797,6 +811,14 @@ class TelephonyStore {
 
     return audio ? `${text} ${formatSeconds(audio.vmDuration)}` : text;
   };
+
+  @computed
+  get mediaTrackIds() {
+    const telephonyMediaTrackId = this._mediaService.createTrack('telephony', 200);
+    return {
+      telephony: telephonyMediaTrackId,
+    }
+  }
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE, SelectedCallItem };

@@ -7,6 +7,7 @@
 import React from 'react';
 import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import { observer } from 'mobx-react';
+import { withEscTracking } from '@/common/trackData';
 import { JuiModal } from 'jui/components/Dialog';
 import { ContactSearch } from '@/containers/Downshift';
 import { Props, ViewProps } from './types';
@@ -64,6 +65,7 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
         onOK={createNewConversation}
         okText={t('common.dialog.create')}
         cancelText={t('common.dialog.cancel')}
+        onClose={withEscTracking(this.handleCancel)}
       >
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiTopText data-test-automation-id="newConversationDescription">
