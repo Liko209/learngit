@@ -902,7 +902,7 @@ class TelephonyStore {
   directToWarmTransferPage = () => {
     this.isWarmTransferPage = true;
     this.backToDialerFromTransferPage();
-    this.switchCurrentCall(this.rawCalls[0].id);
+    this.switchCurrentCall(this.rawCalls[0] && this.rawCalls[0].id);
   }
 
   @action

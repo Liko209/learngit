@@ -53,11 +53,9 @@ describe('AskFirstViewModel', () => {
       };
 
       await vm.directToAskFirst();
-      expect(vm._telephonyService.directCall).toHaveBeenCalledWith(
-        '123',
-        undefined,
-        { extraCall: true },
-      );
+      expect(vm._telephonyService.directCall).toHaveBeenCalledWith('123', {
+        extraCall: true,
+      });
       expect(vm._telephonyStore.isWarmTransferPage).toBeTruthy();
     });
   });
