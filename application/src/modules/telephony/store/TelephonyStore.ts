@@ -413,6 +413,11 @@ class TelephonyStore {
   end = () => {
     const history = this._history;
 
+    // if end call isn't active call and incoming state reply don't reset state
+    if (this.isEndOtherCall && this.incomingState === INCOMING_STATE.REPLY) {
+      return;
+    }
+
     switch (true) {
       case this.isMultipleCall:
         this.endMultipleIncomingCall();
@@ -441,7 +446,10 @@ class TelephonyStore {
       this.backToDialerFromTransferPage();
     }
 
-    if (this.phoneNumber !== '' || !this.isMultipleCall) {
+    if (
+      (this.phoneNumber !== '' || !this.isMultipleCall) &&
+      !this.isEndOtherCall
+    ) {
       this.isContactMatched = false;
     }
 
@@ -773,6 +781,18 @@ class TelephonyStore {
   @computed
   private get _rawCalls() {
     return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+  }
+
+  @computed
+  get endCall() {
+    return this._rawCalls.find(
+      call => call.callState === CALL_STATE.DISCONNECTING,
+    );
+  }
+
+  @computed
+  get isEndOtherCall() {
+    return this.endCall && this.call && this.endCall.id !== this.call.id;
   }
 
   @action
