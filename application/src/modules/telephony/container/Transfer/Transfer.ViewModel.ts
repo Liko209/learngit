@@ -50,7 +50,6 @@ class TransferViewModel extends StoreViewModel<Props> {
 
   completeTransfer = async () => {
     analyticsCollector.completeTransfer();
-    console.log(this._telephonyStore.rawCalls, 'shining');
     this._telephonyStore.switchCurrentCall(this._transferCallId);
     const res = await this._telephonyService.transfer(
       TRANSFER_TYPE.WARM_TRANSFER,
