@@ -83,6 +83,26 @@ describe('RecentCallsViewModel', () => {
     });
   });
 
+  describe('selectCallItem()', () => {
+    it('should cancel the selection of transfer user [JPT-2764]', () => {
+      vm = new RecentCallsViewModel();
+      vm.focusIndex = 0;
+      const telephonyStore: TelephonyStore = container.get(TelephonyStore);
+      telephonyStore.onDialerInputFocus();
+
+      vm.selectCallItem(1);
+      expect(telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '',
+        index: 1,
+      });
+      vm.selectCallItem(1);
+      expect(telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '',
+        index: NaN,
+      });
+    });
+  });
+
   it('dispose()', done => {
     vm = new RecentCallsViewModel();
     setTimeout(() => {

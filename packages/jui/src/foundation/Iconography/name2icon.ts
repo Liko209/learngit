@@ -99,7 +99,7 @@ const name2icon = {
   signal_2: 'signal-2',
   hand_up: 'hand-up',
   mic: 'mic',
-  keypad: 'keypad',
+  keypad: 'dialer',
   hold: 'hold',
   record: 'record',
   stopRecord: 'stop-record',
@@ -153,6 +153,10 @@ const name2icon = {
   addmember_border: 'add-member_border',
   speaker: 'speaker',
   'speaker-mute': 'speaker-mute',
+  mute: 'mute-notification',
+  'item-list-selected': 'item-list-selected',
+  'transfer-call': 'transfer-call',
+  askfirst: 'askfirst',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

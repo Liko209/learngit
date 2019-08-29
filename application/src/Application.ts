@@ -35,6 +35,12 @@ class Application {
   run() {
     Pal.instance.setImageDownloader(new ImageDownloader());
     Pal.instance.setErrorReporter(errorReporter);
+    Pal.instance.setWhiteScreenChecker({
+      isWhiteScreen: () => {
+        const root = document.getElementById('root');
+        return !root || !root.hasChildNodes();
+      },
+    });
     if (config.isProductionAccount()) {
       Performance.instance.setPerformance(new FirebasePerformance());
       Performance.instance.initialize();

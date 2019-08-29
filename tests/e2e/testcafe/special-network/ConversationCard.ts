@@ -63,8 +63,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then I can see an unsent post in conversation stream`, async () => {
     targetPost = messageTab.conversationPage.postItemById(postData.id);
     await t.expect(targetPost.exists).ok();
-    console.log('alex: ', postData);
-    // ALEX TODO: 判断 post 为未发送类型
+    // TODO: 判断 post 为未发送类型
   });
 
   await h(t).withLog(`When I hover "reload" icon`, async () => {

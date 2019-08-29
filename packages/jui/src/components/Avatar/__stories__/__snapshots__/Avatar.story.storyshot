@@ -93,7 +93,7 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
-  background-color: #f5f6fb;
+  background-color: #6FAFEB;
 }
 
 .c0.c0:hover {
@@ -128,6 +128,8 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
 
 <div
   className="MuiAvatar-root c0"
+  color="lake"
+  onClick={[Function]}
   size="medium"
 >
   <img
@@ -181,6 +183,7 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
 <div
   className="MuiAvatar-root c0 MuiAvatar-colorDefault"
   color="lake"
+  onClick={[Function]}
   size="medium"
 >
   SH
@@ -267,6 +270,7 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
   <div
     className="MuiAvatar-root c1 MuiAvatar-colorDefault"
     color="lake"
+    onClick={[Function]}
     size="medium"
   >
     SH
