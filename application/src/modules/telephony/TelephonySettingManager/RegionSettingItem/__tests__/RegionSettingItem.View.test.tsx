@@ -13,7 +13,7 @@ jest.mock('@/containers/Notification');
 
 describe('RegionSettingItemView', () => {
   describe('render()', () => {
-    it('should contain onClose props when rendering JuiModal ', async () => {
+    it('should contain onClose props when rendering JuiModal [JPT-2896]', async () => {
       const props = {
         settingItemEntity: {
           value: {

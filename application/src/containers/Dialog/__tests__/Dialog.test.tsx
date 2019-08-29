@@ -20,7 +20,7 @@ describe('Dialog', () => {
     beforeEach() {
       portalManager.dismissAll();
     }
-    @test('should call data tracking if ivoked on simple dialog')
+    @test('should call data tracking if ivoked on simple dialog [JPT-2896]')
     t1() {
       dataAnalysis.track = jest.fn();
       const Wrapper = mountWithTheme(<ModalPortal />);
@@ -33,7 +33,7 @@ describe('Dialog', () => {
     }
 
     @test(
-      'should mount JuiModal with onClose props when rendered on simple dialog',
+      'should mount JuiModal with onClose props when rendered on simple dialog [JPT-2896]',
     )
     t2() {
       const Wrapper = mountWithTheme(<ModalPortal />);
@@ -41,7 +41,7 @@ describe('Dialog', () => {
       Wrapper.update();
       expect(Wrapper.find(JuiDialog).props().onClose).toBeTruthy();
     }
-    @test('should call data tracking if ivoked on alert dialog')
+    @test('should call data tracking if ivoked on alert dialog [JPT-2896]')
     t3() {
       dataAnalysis.track = jest.fn();
       const Wrapper = mountWithTheme(<ModalPortal />);
@@ -53,7 +53,7 @@ describe('Dialog', () => {
       expect(dataAnalysis.track).toHaveBeenCalled();
     }
     @test(
-      'should mount JuiModal with onClose props when rendered on alert dialog',
+      'should mount JuiModal with onClose props when rendered on alert dialog [JPT-2896]',
     )
     t4() {
       const Wrapper = mountWithTheme(<ModalPortal />);
