@@ -30,10 +30,13 @@ describe('MeetingViewModel', () => {
       meetingViewModel = new MeetingViewModel({
         groupId: 1,
       });
-      expect(meetingViewModel._group).toBe(1);
+      expect(meetingViewModel._group).toEqual(expect.objectContaining({
+        id: 1
+      }));
     }
     @test('should be empty if doesnot input group id')
     t2() {
+      meetingViewModel = new MeetingViewModel();
       expect(meetingViewModel._group).toBeNull();
     }
   }
@@ -100,15 +103,16 @@ describe('MeetingViewModel', () => {
       })
       meetingViewModel = new MeetingViewModel();
       meetingViewModel.openWindow('');
-      expect(electronService.openWindow).toBeCalled();
+      expect(electronService.openWindow).toHaveBeenCalled();
     }
 
     @test('should call window.open if openWindow is not exist')
     t2() {
+      window.jupiterElectron = {};
       window.open = jest.fn();
       meetingViewModel = new MeetingViewModel();
       meetingViewModel.openWindow('');
-      expect(window.open).toBeCalled();
+      expect(window.open).toHaveBeenCalled();
     }
 
   }
