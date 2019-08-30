@@ -30,7 +30,7 @@ let dialBtnViewModel: DialBtnViewModel;
 
 beforeAll(() => {
   dialBtnViewModel = new DialBtnViewModel();
-  dialBtnViewModel._telephonyService.makeCall = jest.fn();
+  dialBtnViewModel._telephonyService.directCall = jest.fn();
   Object.defineProperty(
     dialBtnViewModel._telephonyService,
     'lastCalledNumber',
@@ -42,13 +42,13 @@ beforeAll(() => {
 });
 
 describe('dialBtnViewModel', () => {
-  it('should call makeCall function', () => {
+  it('should call directCall function', () => {
     dialBtnViewModel._telephonyStore.inputString = '123';
     dialBtnViewModel.makeCall();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.makeCall).toBeCalled();
+    expect(_telephonyService.directCall).toHaveBeenCalled();
   });
 
   it('should call updateInputString function', () => {
@@ -58,6 +58,6 @@ describe('dialBtnViewModel', () => {
     expect(
       dialBtnViewModel._telephonyStore
         .enterFirstLetterThroughKeypadForInputString,
-    ).toBeCalled();
+    ).toHaveBeenCalled();
   });
 });

@@ -109,13 +109,39 @@ describe('analyticsCollector', () => {
       expect(dataAnalysis.identify).not.toHaveBeenCalled();
     });
   });
-  describe('init', ()=>{
-    it('should not init dataAnalysis when is running e2e', ()=>{
+
+  describe('endAndAnswerCall', () => {
+    it('should call track with correct parameters', () => {
+      analyticsCollector.endAndAnswerCall();
+      expect(dataAnalysis.track).toHaveBeenCalledWith(
+        'Jup_Web/DT_phone_endAndAnswerCall',
+        {
+          source: 'incomingCallWindow',
+          type: 'multiCall',
+        },
+      );
+    });
+  });
+
+  describe('seeIncomingCallPage', () => {
+    it('should call track with correct parameters', () => {
+      analyticsCollector.seeIncomingCallPage('multiCall');
+      expect(dataAnalysis.page).toHaveBeenCalledWith(
+        'Jup_Web/DT_phone_incomingCallWindow',
+        {
+          type: 'multiCall',
+        },
+      );
+    });
+  });
+
+  describe('init', () => {
+    it('should not init dataAnalysis when is running e2e', () => {
       EnvConfig.getIsRunningE2E = jest.fn().mockReturnValueOnce(true);
       analyticsCollector.init();
       expect(dataAnalysis.init).not.toHaveBeenCalled();
     });
-    it('should init dataAnalysis when is not running e2e', ()=>{
+    it('should init dataAnalysis when is not running e2e', () => {
       EnvConfig.getIsRunningE2E = jest.fn().mockReturnValueOnce(false);
       analyticsCollector.init();
       expect(dataAnalysis.init).toHaveBeenCalled();

@@ -16,6 +16,7 @@ import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { DialogContext } from '@/containers/Dialog';
+import { withEscTracking } from '@/common/trackData';
 import { ViewProps } from './types';
 import {
   ToastType,
@@ -130,6 +131,7 @@ class NewMessageComponent extends React.Component<Props, State> {
             </StyledSnackbarsContent>
           )
         }
+        onClose={withEscTracking(this.onClose)}
         cancelText={t('common.dialog.cancel')}
       >
         {// temporary: ContactAndGroupSearch contain group and person

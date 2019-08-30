@@ -69,7 +69,7 @@ test.meta(<ITestMeta>{
       await bookmarkEntry.enter();
     });
 
-    await h(t).withLog(`And I click the {type} post. (except team name)`, async (step) => {
+    await h(t).withLog(`And I click the {conversationType} post. (except team name)`, async (step) => {
       step.setMetadata('conversationType', conversations[i].type)
       await bookmarkPage.postItemById(postIds[i]).clickSelf();
     });

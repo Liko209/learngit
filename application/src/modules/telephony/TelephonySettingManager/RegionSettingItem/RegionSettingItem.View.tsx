@@ -10,7 +10,8 @@ import { JuiButton } from 'jui/components/Buttons';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { RegionSettingItemViewProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
-import { JuiModal, JuiDialogTitle } from 'jui/components/Dialog';
+import { JuiDialogTitle, JuiModal } from 'jui/components/Dialog';
+import { withEscTracking } from '@/common/trackData';
 import { JuiRegionSelect } from 'jui/components/Selects';
 import { JuiTextField } from 'jui/components/Forms';
 import { JuiTypography } from 'jui/foundation/Typography';
@@ -151,6 +152,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
           cancelBtnProps={{
             'data-test-automation-id': 'dialog-cancelButton-regionSetting',
           }}
+          onClose={withEscTracking(this._onCancel)}
         >
           <JuiTypography
             variant={'caption'}

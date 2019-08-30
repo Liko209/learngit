@@ -26,7 +26,10 @@ jupiter.registerModule({
     {
       name: 'IMediaService',
       value() {
-        return { create: jest.fn().mockName('happy') };
+        return {
+          create: jest.fn().mockName('happy'),
+          createTrack: jest.fn().mockReturnValue('')
+        };
       },
     },
   ],

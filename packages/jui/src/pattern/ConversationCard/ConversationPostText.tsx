@@ -17,7 +17,7 @@ const JuiConversationPostText = styled('div')`
   word-wrap: break-word;
 
   a {
-    color: ${palette('primary', 'light')};
+    color: ${palette('primary', 'main')};
 
     &:hover {
       text-decoration: underline;

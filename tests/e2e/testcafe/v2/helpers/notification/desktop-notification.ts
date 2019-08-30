@@ -34,7 +34,7 @@ export class DesktopNotification extends AbstractNotification {
     Object.defineProperty(window, "_Notification", { value: _Notification });
 
 
-    window['Notification'] = function () {
+    (window['Notification'] as any) = function () {
       let n = new _Notification(arguments[0], arguments[1]);
       if (arguments[1] && arguments[1]['data'] && arguments[1]['data']['id']) {
         window['_notificationIndex'] = window['_notificationIndex'] + 1;
@@ -44,9 +44,8 @@ export class DesktopNotification extends AbstractNotification {
       return n;
     };
 
-    window['Notification'].permission = "granted";
-
-    window['Notification'].requestPermission = function () {
+    (window['Notification'] as any).permission = "granted";
+    (window['Notification'] as any).requestPermission = function () {
       return _Notification.requestPermission();
     }
   });

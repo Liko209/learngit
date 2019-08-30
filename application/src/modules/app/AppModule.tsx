@@ -43,6 +43,9 @@ import { showUpgradeDialog } from '@/modules/electron';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework'
+import { LaunchDarklyController } from '@/permissions/ld/LaunchDarklyController';
+import { SplitIOController } from '@/permissions/split/SplitIOController';
+import { PermissionService } from 'sdk/src/module/permission';
 import { EnvConfig } from 'sdk/module/env/config';
 
 /**
@@ -135,6 +138,18 @@ class AppModule extends AbstractModule {
       }
     };
 
+    const injectPermissionControllers = () => {
+      const permissionService = ServiceLoader.getInstance<PermissionService>(
+        ServiceConfig.PERMISSION_SERVICE,
+      );
+      const ld = new LaunchDarklyController();
+      ld.initClient();
+      const split = new SplitIOController();
+      permissionService.injectControllers(ld);
+      split.initClient();
+      permissionService.injectControllers(split);
+    }
+
     const setStaticHttpServer = (url?: string) => {
       let staticHttpServer = url;
       if (!staticHttpServer) {
@@ -147,6 +162,7 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
       success && updateAccountInfoForGlobalStore();
+      success && injectPermissionControllers();
       success && analyticsCollector.init();
     });
 

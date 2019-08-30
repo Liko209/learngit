@@ -15,7 +15,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip/src';
-import { MAKE_CALL_ERROR_CODE } from '../../types';
+import { MAKE_CALL_ERROR_CODE, TRANSFER_TYPE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
 import { MakeCallController } from '../MakeCallController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
@@ -26,7 +26,6 @@ import { RTC_SLEEP_MODE_EVENT } from 'voip/src/utils/types';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { E911Controller } from '../E911Controller';
-import { TRANSFER_TYPE } from '../../entity/types';
 
 jest.mock('../E911Controller');
 jest.mock('../TelephonyCallController');
@@ -257,6 +256,14 @@ describe('TelephonyAccountController', () => {
       expect(callControllerList.size).toBe(1);
     });
 
+    it('should try to hold active call if it is warm transfer', async () => {
+      accountController['_holdActiveCall'] = jest.fn();
+      accountController['_makeCallInternal'] = jest.fn();
+      await accountController.makeCall(toNum, { extraCall: true });
+      expect(accountController._holdActiveCall).toHaveBeenCalled();
+      expect(accountController._makeCallInternal).toHaveBeenCalled();
+    });
+
     it('should start a call with access code', async () => {
       const code = '123456';
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
@@ -271,6 +278,22 @@ describe('TelephonyAccountController', () => {
         toNum,
         expect.any(Object),
         { accessCode: code },
+      );
+    });
+
+    it('should start an extra call', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      await accountController.makeCall(toNum, { extraCall: true });
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith(
+        toNum,
+        expect.any(Object),
+        { extraCall: true },
       );
     });
 
@@ -297,10 +320,67 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('onCallActionFailed', () => {
+    it('should mute call when call hold is failed for multiple call', () => {
+      const call1 = {
+        muteAll: jest.fn(),
+      };
+      const call2 = {
+        muteAll: jest.fn(),
+      };
+      callControllerList.clear();
+      callControllerList.set(1, call1);
+      callControllerList.set(2, call2);
+      accountController.onCallActionFailed(1, RTC_CALL_ACTION.HOLD, 1);
+      expect(call1.muteAll).toHaveBeenCalled();
+      expect(call2.muteAll).not.toHaveBeenCalled();
+    });
+
+    it('should not mute call when call hold is failed for single call', () => {
+      const call1 = {
+        muteAll: jest.fn(),
+      };
+      callControllerList.clear();
+      callControllerList.set(1, call1);
+      accountController.onCallActionFailed(1, RTC_CALL_ACTION.HOLD, 1);
+      expect(call1.muteAll).not.toHaveBeenCalled();
+    });
+  });
+
   describe('logout', () => {
     it('should call rtcAccount to logout', () => {
       accountController.logout();
       expect(rtcAccount.logout).toHaveBeenCalled();
+    });
+  });
+
+  describe('getCallIdList', () => {
+    it('should return call id list', () => {
+      callControllerList.clear();
+      callControllerList.set(1, {});
+      callControllerList.set(2, {});
+      const res = accountController.getCallIdList();
+      expect(res).toEqual([1, 2]);
+    });
+  });
+
+  describe('_holdActiveCall', () => {
+    it('should hold active call', () => {
+      const call1 = {
+        isOnHold: jest.fn().mockReturnValue(false),
+        hold: jest.fn(),
+        getEntityId: jest.fn().mockReturnValue(1),
+      };
+      const call2 = {
+        isOnHold: jest.fn().mockReturnValue(true),
+        hold: jest.fn(),
+        getEntityId: jest.fn().mockReturnValue(2),
+      };
+      callControllerList.clear();
+      callControllerList.set(1, call1);
+      callControllerList.set(2, call2);
+      accountController._holdActiveCall();
+      expect(call1.hold).toHaveBeenCalled();
     });
   });
 
@@ -567,6 +647,14 @@ describe('TelephonyAccountController', () => {
       TelephonyUserConfig.prototype.setLastCalledNumber = lastCalled;
       accountController.setLastCalledNumber('test');
       expect(lastCalled).toHaveBeenCalledWith('test');
+    });
+  });
+
+  describe('unhold', () => {
+    it('should hold active before unhold call', () => {
+      accountController['_holdActiveCall'] = jest.fn();
+      accountController.unhold(1);
+      expect(accountController['_holdActiveCall']).toHaveBeenCalled();
     });
   });
 
