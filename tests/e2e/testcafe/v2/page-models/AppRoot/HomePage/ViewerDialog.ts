@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-06-10 18:59:44 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-06-13 09:33:26
+ * @Last Modified time: 2019-08-30 13:55:00
  */
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction, t } from "testcafe";

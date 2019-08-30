@@ -12,207 +12,174 @@ import { v4 as uuid } from 'uuid';
 import { IGroup } from '../../v2/models';
 
 fixture('ContentPanel/ShareFile')
-  .beforeEach(setupCase(BrandTire.RC_FIJI_GUEST))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-  test.meta(<ITestMeta>{
-    priority: ['P1'],
-    caseIds: ['JPT-2786'],
-    maintainers: ['Mia.cai'],
-    keywords: ['ContentPanel/ShareFile']
-  })(`Can share a file to one conversation`, async (t) => {
-    const shareFileMenu = 'Share file';
-    const flashToast = 'File shared successfully.';
-    let filenames = ['2Pages.doc', '1.png'];
-    const fp = ['./sources/preview_files/2Pages.doc','./sources/1.png'];
-    const loginUser = h(t).rcData.mainCompany.users[4];
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-2786'],
+  maintainers: ['Mia.cai'],
+  keywords: ['ContentPanel/ShareFile']
+})(`Can share a file to one conversation`, async (t) => {
+  const shareFileMenu = 'Share file';
+  const flashToast = 'File shared successfully.';
+  const imageName = '1.png';
+  const imagePath = './sources/1.png';
+  const fileName = '2Pages.doc';
+  const filePath = './sources/preview_files/2Pages.doc'
+  const loginUser = h(t).rcData.mainCompany.users[4];
 
-    let team1 = <IGroup>{
-      type: "Team",
-      name: 'team1'+uuid(),
-      owner: loginUser,
-      members: [loginUser]
-    }
-    let team2 = <IGroup>{
-      type: "Team",
-      name: 'team2'+uuid(),
-      owner: loginUser,
-      members: [loginUser]
-    }
-    let team3 = <IGroup>{
-      type: "Team",
-      name: 'team3'+uuid(),
-      owner: loginUser,
-      members: [loginUser]
-    }
-    let team4 = <IGroup>{
-      type: "Team",
-      name: 'team4'+uuid(),
-      owner: loginUser,
-      members: [loginUser]
-    }
-    let teams =[team1,team2,team3,team4]
+  let team1 = <IGroup>{
+    type: "Team",
+    name: 'team1-' + uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  let team2 = <IGroup>{
+    type: "Team",
+    name: 'team2-' + uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
 
-    await h(t).withLog(`Given I have 4 teams`, async () => {
-      await h(t).scenarioHelper.createTeams(teams);
+  await h(t).withLog(`Given I have 2 teams`, async () => {
+    await h(t).scenarioHelper.createTeams([team1, team2]);
+  });
+
+  await h(t).withLog('And I send one image post and one file post in team1', async () => {
+    await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths: imagePath,
+      group: team1,
+      operator: loginUser,
+    });
+    await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths: filePath,
+      group: team1,
+      operator: loginUser,
+    });
+  });
+
+  const app = new AppRoot(t);
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const moreActionOnFile = app.homePage.moreActionOnFile;
+  const recentConversationDialog = app.homePage.recentConversationDialog;
+
+
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I open team1', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team1.glipId).enter();
+  });
+
+  const shareFileToTeam2 = async (useSearchText: boolean = false) => {
+    await h(t).withLog(`And I click the ${shareFileMenu} menu of the file`, async () => {
+      await moreActionOnFile.clickShareFileMenu();
     });
 
-    let postId: string;
-    await h(t).withLog('And I send a file in one team', async () => {
-      postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
-        filePaths:fp[0],
-        group: teams[0],
-        operator: loginUser,
-        text: uuid()
-      });
+    await h(t).withLog(`Then will show the recent conversation dialog`, async () => {
+      await recentConversationDialog.ensureLoaded();
     });
 
-    const app = new AppRoot(t);
-    const conversationPage = app.homePage.messageTab.conversationPage;
-    const moreActionOnFile = app.homePage.moreActionOnFile;
-    const moreActionOnViewer = app.homePage.moreActionOnViewer;
-    const recentConversationDialog = app.homePage.recentConversationDialog;
-    const rightRail = app.homePage.messageTab.rightRail;
-    await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog('And I open the team', async () => {
-      await app.homePage.messageTab.teamsSection.conversationEntryById(teams[0].glipId).enter();
-    });
-
-    const posts = app.homePage.messageTab.conversationPage.posts;
-    const filesTabItem = rightRail.filesTab.nthItem(0);
-    const viewerDialog = app.homePage.fileAndImagePreviewer;
-    const postItem = app.homePage.messageTab.conversationPage.nthPostItem(0);
-    const Entries =[postItem,filesTabItem,viewerDialog];
-
-    let j=0
-    for(let i = 0 ; i < Entries.length; i++ ){
-
-      if( i == 0 ){
-        await h(t).withLog(`When I click the more button of the file(Entry1: conversation history)`, async() => {
-          await moreActionOnFile.clickMore();
-        });
-      }else if( i == 1 ){
-        await h(t).withLog(`When I click Files Tab on the right self(Entry2:right self)`, async () => {
-          await rightRail.filesEntry.enter();
-          await rightRail.filesEntry.shouldBeOpened();
-        });
-
-        await h(t).withLog(`And I hover the file item`, async () => {
-          await filesTabItem.nameShouldBe(filenames[0]);
-          await t.hover(filesTabItem.self)
-        });
-
-        await h(t).withLog(`And I click the more button of the file`, async() => {
-          await filesTabItem.clickMore();
-        });
-
-      }else{
-        await h(t).withLog('When I click the file(Entry3:file viewer)', async () => {
-          await conversationPage.waitUntilPostsBeLoaded();
-          await t.click(postItem.fileThumbnail);
-          await viewerDialog.ensureLoaded();
-        });
-        await h(t).withLog(`And I click the more button of the file`, async() => {
-          await moreActionOnFile.clickMore();
-        });
-
+    await h(t).withLog(`When I select team2 (using search text: {useSearchText})`, async (step) => {
+      step.setMetadata("useSearchText", useSearchText.toString());
+      if (useSearchText) {
+        await recentConversationDialog.enterNameInSearchBox(team2.name);
       }
-
-      await h(t).withLog(`And I click the ${shareFileMenu} menu of the file`, async() => {
-        await moreActionOnFile.clickShareFileMenu();
-      });
-
-      const recentConversationDialog = app.homePage.recentConversationDialog;
-      await h(t).withLog(`Then will show the recent conversation dialog`, async() => {
-        await recentConversationDialog.ensureLoaded();
-      });
-
-      j=j+1;
-      await h(t).withLog(`When I select one conversation ${teams[j].name}`, async () => {
-        recentConversationDialog.clickConversationWithName(teams[j].name);
-      });
-
-      await h(t).withLog(`Then close the dialog`, async () => {
-          await recentConversationDialog.ensureDismiss();
-      });
-
-      await h(t).withLog(`And show a flash toast: ${flashToast}`, async () => {
-        await app.homePage.alertDialog.shouldBeShowMessage(flashToast);
-      });
-
-      await h(t).withLog(`When I go to the conversation`, async () => {
-        if(i ==2){
-            await t.pressKey('esc');
-            await viewerDialog.ensureDismiss();
-        }
-        await app.homePage.messageTab.teamsSection.conversationEntryByName(teams[j].name).enter();
-      });
-
-      await h(t).withLog(`Then the file shared to the conversation ${teams[j].name} successfully`, async () => {
-        await conversationPage.lastPostItem.waitForPostToSend();
-        await t.expect(conversationPage.lastPostItem.fileNames.count).eql(1);
-      }, true);
-    }
-
-    // Search one conversation to share file(image)
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teams[3].glipId).enter();
-    await h(t).withLog('When I send a file to one team', async () => {
-      postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
-        filePaths:fp[1],
-        group: teams[3],
-        operator: loginUser,
-        text: uuid()
-      });
-    });
-    await h(t).withLog('And I click the image thumbnail', async () => {
-      await t.click(posts.nth(-1).find('[data-test-automation-class="image"]'));
+      recentConversationDialog.clickConversationWithName(team2.name);
     });
 
-    await h(t).withLog('Then the image previewer should be showed', async () => {
-      await viewerDialog.ensureLoaded();
-      await viewerDialog.shouldBeFullScreen();
+    await h(t).withLog(`Then the dialog dismiss`, async () => {
+      await recentConversationDialog.ensureDismiss();
     });
 
-    await h(t).withLog(`When I click the more button of the image`, async() => {
-        await moreActionOnViewer.clickMore();
-        await moreActionOnViewer.ensureLoaded();
+    await h(t).withLog(`And show a flash toast: {flashToast}`, async (step) => {
+      step.initMetadata({ flashToast });
+      await app.homePage.alertDialog.shouldBeShowMessage(flashToast);
     });
+  }
 
-    await h(t).withLog(`And I click the ${shareFileMenu} menu of the image`, async() => {
-        await moreActionOnViewer.clickShareFileMenu();
-        await recentConversationDialog.ensureLoaded();
-    });
+  await h(t).withLog(`When I click the more button of the image (Entry1: conversation history)`, async () => {
+    await t.hover(conversationPage.nthPostItem(0).imageCard);
+    await conversationPage.nthPostItem(0).clickFileActionMoreButton();
+  });
 
-    await h(t).withLog(`And I search the conversation name ${teams[2].name}`, async () => {
-        await recentConversationDialog.enterNameInSearchBox(teams[2].name);
-    });
+  await shareFileToTeam2();
 
-    await h(t).withLog(`And I select the conversation ${teams[2].name}`, async () => {
-        recentConversationDialog.clickConversationWithName(teams[2].name);
-      });
+  const rightRail = app.homePage.messageTab.rightRail;
+  await h(t).withLog(`When I click Files Tab on the right self(Entry2:right self)`, async () => {
+    await rightRail.filesEntry.enter();
+    await rightRail.filesEntry.shouldBeOpened();
+  });
 
-    await h(t).withLog(`Then close the dialog`, async () => {
-        await recentConversationDialog.ensureDismiss();
-    });
+  await h(t).withLog(`And I hover the file item And click the more button of the file`, async () => {
+    const filesTabItem = rightRail.filesTab.nthItem(0);
+    await filesTabItem.hoverSelf();
+    await filesTabItem.clickMore();
+  });
 
-    await h(t).withLog(`And show a flash toast: ${flashToast}`, async () => {
-        await app.homePage.alertDialog.shouldBeShowMessage(flashToast);
-    });
+  await shareFileToTeam2();
 
-    await h(t).withLog(`When closed the viewer and I go to the conversation ${teams[2].name}`, async () => {
-        await t.pressKey('esc');
-        await app.homePage.messageTab.teamsSection.conversationEntryByName(teams[2].name).enter();
-    });
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
+  await h(t).withLog('When I open the image view(Entry3:image viewer)', async () => {
+    await t.click(conversationPage.nthPostItem(0).images)
+    await viewerDialog.ensureLoaded();
+  });
 
-    await h(t).withLog(`Then the image shared to the conversation ${teams[2].name} successfully`, async () => {
-        await conversationPage.lastPostItem.waitForPostToSend();
-        await t.expect(conversationPage.lastPostItem.fileNames.count).eql(1);
-      }, true);
+  await h(t).withLog(`And I click the more button of the viewer `, async () => {
+    await viewerDialog.clickMoreButton();
+  });
 
+  await shareFileToTeam2();
+
+  await h(t).withLog(`And I click the more button of the viewer `, async () => {
+    await viewerDialog.clickCloseButton();
+  });
+
+  await h(t).withLog('When I click the file(Entry4:file viewer)', async () => {
+    await t.click(conversationPage.nthPostItem(1).fileThumbnail);
+    await viewerDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I click the more button of the viewer `, async () => {
+    await viewerDialog.clickMoreButton();
+  });
+
+  await shareFileToTeam2(true);
+
+  await h(t).withLog(`And I quit the viewer by Esc`, async () => {
+    await t.pressKey('esc');
+  });
+
+  await h(t).withLog(`When I go to the team2`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team2.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await t.expect(conversationPage.posts.count).eql(4);
+  }, true);
+
+  await h(t).withLog(`Then the No.1 post should be the image`, async () => {
+    await t.hover(conversationPage.nthPostItem(0).imageCard);
+    await t.expect(conversationPage.nthPostItem(0).fileNames.withText(imageName)).ok();
+  });
+
+  await h(t).withLog(`And the No.2 post should be the file`, async () => {
+    await t.expect(conversationPage.nthPostItem(1).fileNames.withText(fileName)).ok();
+  });
+
+  await h(t).withLog(`And the No.3 post should be the image`, async () => {
+    await t.hover(conversationPage.nthPostItem(2).imageCard);
+    await t.expect(conversationPage.nthPostItem(2).fileNames.withText(imageName)).ok();
+  });
+
+  await h(t).withLog(`And the No.4 post should be the file`, async () => {
+    await t.expect(conversationPage.nthPostItem(3).fileNames.withText(fileName)).ok();
+  });
 });
 
 
