@@ -14,6 +14,7 @@ const LaunchDarklyDefaultPermissions = {
   LEFT_RAIL_MAX_COUNT: 80,
   CAN_MENTION_TEAM: false,
   CAN_USE_VIDEO_CALL: false,
+  USERS_BLACKLIST: false,
   SENTRY_ERROR_FILTER: [],
 };
 
