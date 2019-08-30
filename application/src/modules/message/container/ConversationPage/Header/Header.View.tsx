@@ -12,7 +12,7 @@ import {
   JuiConversationPageHeaderSubtitle,
 } from 'jui/pattern/ConversationPageHeader';
 import { JuiButtonBar } from 'jui/components/Buttons';
-import { Favorite, Privacy, Member } from '@/containers/common';
+import { Favorite, Privacy, Member, Mute } from '@/containers/common';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 import { IMessageStore } from '@/modules/message/interface';
@@ -47,7 +47,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
   @computed
   private get _ActionButtons() {
-    const { groupId, analysisSource } = this.props;
+    const { groupId } = this.props;
 
     const { conversationHeaderExtensions } = this._messageStore;
     const actionButtons = conversationHeaderExtensions.map(
@@ -55,7 +55,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         <Comp
           key={`ACTION_${groupId}${Comp.displayName}`}
           groupId={groupId}
-          analysisSource={analysisSource}
+          analysisSource="conversationHeader"
         />
       ),
     );
@@ -88,6 +88,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
             />
           ) : null}
           <Member id={groupId} />
+          <Mute groupId={groupId} />
         </JuiButtonBar>
       </JuiConversationPageHeaderSubtitle>
     );

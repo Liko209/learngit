@@ -11,6 +11,7 @@ import { GroupAvatar } from '@/containers/Avatar';
 import { JuiIconButton, JuiRoundButton } from 'jui/components/Buttons';
 
 import { ViewProps } from './types';
+import { AudioConference } from '@/modules/telephony';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 type GroupItemProps = ViewProps & WithTranslation & { automationId?: string };
@@ -58,15 +59,29 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
     this.goToConversation();
   };
 
-  private _gotoConversationFromHover = (evt: React.MouseEvent) => {
-    const { group, dataTrackingDomain } = this.props;
-    analyticsCollector.gotoConversationFromSearch(
-      group.isTeam
-        ? `${dataTrackingDomain}_teamHoverMessage`
-        : `${dataTrackingDomain}_groupHoverMessage`,
+  private get _conversationActions() {
+    const { t, group, analysisSource } = this.props;
+
+    return (
+      <>
+        <JuiIconButton
+          data-test-automation-id="goToConversationIcon"
+          tooltipTitle={t('message.message')}
+          onClick={this.handleGoToConversation}
+          variant="plain"
+          size="small"
+        >
+          messages
+        </JuiIconButton>
+        <AudioConference
+          groupId={group.id}
+          variant="plain"
+          size="small"
+          analysisSource={`globalSearch_${analysisSource}`}
+        />
+      </>
     );
-    this.handleGoToConversation(evt);
-  };
+  }
 
   render() {
     const {
@@ -87,6 +102,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
     if (shouldHidden) {
       return null;
     }
+
     const joinTeamBtn = (
       <JuiRoundButton
         data-test-automation-id="joinButton"
@@ -94,17 +110,6 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
       >
         {t('people.team.joinButtonTitle')}
       </JuiRoundButton>
-    );
-    const goToConversationIcon = (
-      <JuiIconButton
-        data-test-automation-id="goToConversationIcon"
-        tooltipTitle={t('message.message')}
-        onClick={this._gotoConversationFromHover}
-        variant="plain"
-        size="small"
-      >
-        messages
-      </JuiIconButton>
     );
     return (
       <JuiSearchItem
@@ -116,7 +121,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         value={displayName}
         terms={terms}
         data-test-automation-id={automationId}
-        Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
+        Actions={canJoinTeam ? joinTeamBtn : this._conversationActions}
         isPrivate={isPrivate}
         isJoined={isJoined}
         joinedStatusText={t('people.team.joinedStatus')}

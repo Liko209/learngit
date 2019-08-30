@@ -25,6 +25,7 @@ import {
   kSwitchBackProxyMaxInterval,
   kSwitchBackProxyMinInterval,
 } from './constants';
+import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
 
 const WebPhone = require('ringcentral-web-phone');
 
@@ -152,6 +153,25 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       inviteOptions.extraHeaders.push(
         `rc-tap: rcc;accessCode=${options.accessCode}`,
       );
+    }
+
+    const inputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioInput();
+    if (inputDeviceId) {
+      rtcLogger.info(
+        LOG_TAG,
+        `set input audio device ${inputDeviceId} when make outgoing call`,
+      );
+      const sessionDescriptionHandlerOptions = {
+        constraints: {
+          audio: {
+            deviceId: {
+              exact: inputDeviceId,
+            },
+          },
+          video: false,
+        },
+      };
+      inviteOptions.sessionDescriptionHandlerOptions = sessionDescriptionHandlerOptions;
     }
 
     CallReport.instance().updateEstablishment(

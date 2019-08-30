@@ -12,7 +12,7 @@ import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Call } from '../Call';
 
 const telephonyService = {
-  makeCall: jest.fn(),
+  directCall: jest.fn(),
 };
 
 describe('message', () => {
@@ -31,7 +31,7 @@ describe('message', () => {
         />,
       );
       wrapper.find(JuiIconButton).simulate('click');
-      expect(telephonyService.makeCall).toHaveBeenCalledWith('123');
+      expect(telephonyService.directCall).toHaveBeenCalledWith('123');
     }
   }
 

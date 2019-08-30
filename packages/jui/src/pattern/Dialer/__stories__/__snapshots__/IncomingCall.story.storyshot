@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
-.c5 {
+exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Call 1`] = `
+.c11 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -16,10 +16,10 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   stroke: currentColor;
   fill: currentColor;
   pointer-events: none;
-  font-size: 32px;
+  font-size: 24px;
 }
 
-.c6 {
+.c12 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -27,32 +27,29 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   stroke: currentColor;
   fill: currentColor;
   pointer-events: none;
-  font-size: 12px;
+  font-size: 16px;
 }
 
-.c4.c4 {
+.c10.c10 {
   min-height: 0;
-}
-
-.c14.c14 {
-  background-color: #f44336;
-  width: 64px;
-  height: 64px;
+  background-color: #eeeeee;
+  width: 32px;
+  height: 32px;
   box-shadow: none;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
-  color: #fff;
+  color: rgba(0,0,0,0.87);
 }
 
-.c14.c14:hover,
-.c14.c14:active {
-  background-color: rgb(219,60,48);
+.c10.c10:hover,
+.c10.c10:active {
+  background-color: rgb(214,214,214);
 }
 
-.c14.c14 .rippleVisible {
-  color: rgb(246,104,94);
+.c10.c10 .rippleVisible {
+  color: rgb(241,241,241);
   opacity: 0.24;
   -webkit-transform: scale(1);
   -ms-transform: scale(1);
@@ -61,51 +58,18 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   animation-name: cBKRfH;
 }
 
-.c14.c14[disabled] {
-  background-color: #f44336;
-  color: #fff;
+.c10.c10[disabled] {
+  background-color: #eeeeee;
+  color: rgba(0,0,0,0.87);
   box-shadow: none;
-  opacity: 0.12;
-}
-
-.c3.c3 {
-  background-color: #fff;
-  width: 20px;
-  height: 20px;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px -1px rgba(0,0,0,0.12);
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  color: rgba(0,0,0,0.87);
-}
-
-.c3.c3:hover,
-.c3.c3:active {
-  background-color: rgb(229,229,229);
-}
-
-.c3.c3 .rippleVisible {
-  color: rgb(255,255,255);
-  opacity: 0.24;
-  -webkit-transform: scale(1);
-  -ms-transform: scale(1);
-  transform: scale(1);
-  -webkit-animation-name: cBKRfH;
-  animation-name: cBKRfH;
-}
-
-.c3.c3[disabled] {
-  background-color: #fff;
-  color: rgba(0,0,0,0.87);
-  box-shadow: 0px 8px 10px -5px rgba(0,0,0,0.2),0px 16px 24px 2px rgba(0,0,0,0.14),0px 6px 30px 5px rgba(0,0,0,0.12);
   opacity: 0.12;
 }
 
 .c16.c16 {
-  background-color: #26a304;
-  width: 64px;
-  height: 64px;
+  min-height: 0;
+  background-color: #f44336;
+  width: 48px;
+  height: 48px;
   box-shadow: none;
   font-size: 0.75rem;
   font-weight: 400;
@@ -116,11 +80,11 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
 
 .c16.c16:hover,
 .c16.c16:active {
-  background-color: rgb(34,146,3);
+  background-color: rgb(219,60,48);
 }
 
 .c16.c16 .rippleVisible {
-  color: rgb(81,181,54);
+  color: rgb(246,104,94);
   opacity: 0.24;
   -webkit-transform: scale(1);
   -ms-transform: scale(1);
@@ -130,31 +94,50 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
 }
 
 .c16.c16[disabled] {
-  background-color: #26a304;
+  background-color: #f44336;
   color: #fff;
   box-shadow: none;
   opacity: 0.12;
 }
 
-.c17.c17 {
-  background-color: #eeeeee;
-  width: 64px;
-  height: 64px;
-  box-shadow: none;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  color: rgba(0,0,0,0.87);
+.c14.c14 {
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+  border-radius: 0;
 }
 
-.c17.c17:hover,
-.c17.c17:active {
-  background-color: rgb(214,214,214);
+.c14.c14 .icon,
+.c14.c14 .icon svg {
+  font-size: 48px;
 }
 
-.c17.c17 .rippleVisible {
-  color: rgb(241,241,241);
+.c14.c14:hover {
+  background-color: transparent;
+}
+
+.c14.c14:hover .icon {
+  color: rgba(158,158,158,0.88);
+}
+
+.c14.c14:active .icon {
+  color: #9e9e9e;
+}
+
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
+.c14.c14.c14.c14.disabled .icon {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 .rippleVisible {
+  color: #9e9e9e;
   opacity: 0.24;
   -webkit-transform: scale(1);
   -ms-transform: scale(1);
@@ -163,16 +146,9 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   animation-name: cBKRfH;
 }
 
-.c17.c17[disabled] {
-  background-color: #eeeeee;
-  color: rgba(0,0,0,0.87);
-  box-shadow: none;
-  opacity: 0.12;
-}
-
-.c7.c7 {
+.c2.c2 {
   width: 280px;
-  height: 280px;
+  height: 220px;
   border-radius: unset;
   position: static;
   display: -webkit-box;
@@ -192,7 +168,7 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   background-color: #6E6EC0;
 }
 
-.c7 span {
+.c2 span {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -211,6 +187,10 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   background-color: #fff;
 }
 
+.c2:focus {
+  outline: none;
+}
+
 .c0.c0 {
   width: 280px;
   margin: 32px;
@@ -221,12 +201,12 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   cursor: move;
 }
 
-.c10 {
+.c5 {
   white-space: nowrap;
   overflow: hidden;
 }
 
-.c11 {
+.c6 {
   display: inline-block;
   text-indent: 0;
 }
@@ -236,13 +216,7 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   background-color: #fff;
 }
 
-.c2 {
-  position: absolute;
-  right: 8px;
-  top: 6px;
-}
-
-.c9 {
+.c4 {
   font-size: 1.5rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -251,7 +225,7 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   text-align: center;
 }
 
-.c12 {
+.c7 {
   font-size: 0.875rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -261,7 +235,7 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   text-align: center;
 }
 
-.c8 {
+.c3 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -277,16 +251,53 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
   padding: 0px 24px;
 }
 
-.c13 {
+.c9 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  padding: 0px 24px 12px;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 74px;
+  margin: 0px 8px 24px 0px;
+}
+
+.c9.c9:nth-child(even) {
+  margin-right: 0px;
+}
+
+.c8 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding: 0px 32px;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.c13 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 1.66;
+  color: #616161;
+  text-align: center;
+  margin: 4px 0px 0px;
 }
 
 <div
@@ -297,208 +308,218 @@ exports[`Storyshots Pattern Incoming Call: Pattern Incoming Call 1`] = `
     className="c1"
   >
     <div
-      className="c2"
-    >
-      <button
-        aria-describedby={null}
-        className="MuiButtonBase-root MuiFab-root c3 c4"
-        disabled={false}
-        onBlur={[Function]}
-        onContextMenu={[Function]}
-        onFocus={[Function]}
-        onKeyDown={[Function]}
-        onKeyUp={[Function]}
-        onMouseDown={[Function]}
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onMouseUp={[Function]}
-        onTouchEnd={[Function]}
-        onTouchMove={[Function]}
-        onTouchStart={[Function]}
-        tabIndex="0"
-        title={null}
-        type="button"
-      >
-        <span
-          className="MuiFab-label"
-        >
-          <span
-            className=" close icon c5"
-          >
-            <svg
-              className="c6"
-              role="img"
-              size="extraSmall"
-            >
-              <use
-                href="#icon-close"
-                xlinkHref="#icon-close"
-              />
-            </svg>
-          </span>
-        </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
-    <div
-      className="MuiAvatar-root MuiAvatar-colorDefault c7"
+      className="MuiAvatar-root c2 MuiAvatar-colorDefault"
       color="blueberry"
       size="medium"
-    >
-      <span>
-        JH
-      </span>
-    </div>
+    />
     <div
-      className="c8"
+      className="c3"
     >
       <div
-        className="c9 c10"
+        className="c4 c5"
       >
         <span
-          className="c11"
+          className="c6"
           title="Terry Webster"
         >
           Terry Webster
         </span>
       </div>
       <div
-        className="c12"
+        className="c7"
       >
         (650) 555-1234
       </div>
     </div>
     <div
-      className="c13"
+      className="c8"
+      onMouseDown={[Function]}
     >
-      <button
-        aria-describedby={null}
-        className="MuiButtonBase-root MuiFab-root c14 c4"
-        disabled={false}
-        onBlur={[Function]}
-        onContextMenu={[Function]}
-        onFocus={[Function]}
-        onKeyDown={[Function]}
-        onKeyUp={[Function]}
-        onMouseDown={[Function]}
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onMouseUp={[Function]}
-        onTouchEnd={[Function]}
-        onTouchMove={[Function]}
-        onTouchStart={[Function]}
-        tabIndex="0"
-        title={null}
-        type="button"
+      <div
+        className="c9"
       >
-        <span
-          className="MuiFab-label"
+        <button
+          className="MuiButtonBase-root MuiFab-root c10"
+          disabled={false}
+          onBlur={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
         >
           <span
-            className=" hand_up icon c5"
+            className="MuiFab-label"
           >
-            <svg
-              className="c15"
-              role="img"
-              size="moreLarge"
+            <span
+              className=" ignore icon c11"
             >
-              <use
-                href="#icon-hand-up"
-                xlinkHref="#icon-hand-up"
-              />
-            </svg>
+              <svg
+                className="c12"
+                role="img"
+                size="small"
+              >
+                <use
+                  href="#icon-ignore"
+                  xlinkHref="#icon-ignore"
+                />
+              </svg>
+            </span>
           </span>
-        </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
-      </button>
-      <button
-        aria-describedby={null}
-        className="MuiButtonBase-root MuiFab-root c16 c4"
-        disabled={false}
-        onBlur={[Function]}
-        onContextMenu={[Function]}
-        onFocus={[Function]}
-        onKeyDown={[Function]}
-        onKeyUp={[Function]}
-        onMouseDown={[Function]}
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onMouseUp={[Function]}
-        onTouchEnd={[Function]}
-        onTouchMove={[Function]}
-        onTouchStart={[Function]}
-        tabIndex="0"
-        title={null}
-        type="button"
+        </button>
+        <p
+          className="c13"
+        >
+          Ignore
+        </p>
+      </div>
+      <div
+        className="c9"
       >
-        <span
-          className="MuiFab-label"
+        <button
+          className="MuiButtonBase-root MuiFab-root c10"
+          disabled={false}
+          onBlur={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
         >
           <span
-            className=" phone icon c5"
+            className="MuiFab-label"
           >
-            <svg
-              className="c15"
-              role="img"
-              size="moreLarge"
+            <span
+              className=" call_more icon c11"
             >
-              <use
-                href="#icon-phone"
-                xlinkHref="#icon-phone"
-              />
-            </svg>
+              <svg
+                className="c12"
+                role="img"
+                size="small"
+              >
+                <use
+                  href="#icon-call-more"
+                  xlinkHref="#icon-call-more"
+                />
+              </svg>
+            </span>
           </span>
-        </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
-      </button>
-      <button
-        aria-describedby={null}
-        className="MuiButtonBase-root MuiFab-root c17 c4"
-        disabled={false}
-        onBlur={[Function]}
-        onContextMenu={[Function]}
-        onFocus={[Function]}
-        onKeyDown={[Function]}
-        onKeyUp={[Function]}
-        onMouseDown={[Function]}
-        onMouseLeave={[Function]}
-        onMouseOver={[Function]}
-        onMouseUp={[Function]}
-        onTouchEnd={[Function]}
-        onTouchMove={[Function]}
-        onTouchStart={[Function]}
-        tabIndex="0"
-        title={null}
-        type="button"
+        </button>
+        <p
+          className="c13"
+        >
+          More
+        </p>
+      </div>
+      <div
+        className="c9"
       >
-        <span
-          className="MuiFab-label"
+        <button
+          aria-haspopup={true}
+          aria-label=""
+          aria-owns={null}
+          className="MuiButtonBase-root MuiIconButton-root c14"
+          disabled={false}
+          onBlur={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+          onMouseMove={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+          variant="plain"
         >
           <span
-            className=" call_more icon c5"
+            className="MuiIconButton-label"
           >
-            <svg
-              className="c15"
-              role="img"
-              size="moreLarge"
+            <span
+              className="  icon c11"
             >
-              <use
-                href="#icon-call-more"
-                xlinkHref="#icon-call-more"
-              />
-            </svg>
+              <svg
+                className="c15"
+                role="img"
+              >
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
+              </svg>
+            </span>
           </span>
-        </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
-      </button>
+        </button>
+        <p
+          className="c13"
+        >
+          End & Answer
+        </p>
+      </div>
+      <div
+        className="c9"
+      >
+        <button
+          className="MuiButtonBase-root MuiFab-root c16"
+          disabled={false}
+          onBlur={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+        >
+          <span
+            className="MuiFab-label"
+          >
+            <span
+              className=" voicemail icon c11"
+            >
+              <svg
+                className="c15"
+                role="img"
+                size="large"
+              >
+                <use
+                  href="#icon-voicemail"
+                  xlinkHref="#icon-voicemail"
+                />
+              </svg>
+            </span>
+          </span>
+        </button>
+        <p
+          className="c13"
+        >
+          To Voicemail
+        </p>
+      </div>
     </div>
   </div>
 </div>

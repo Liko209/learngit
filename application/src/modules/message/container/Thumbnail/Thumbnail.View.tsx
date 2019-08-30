@@ -13,21 +13,23 @@ import { accelerateURL } from '@/common/accelerateURL';
 
 @observer
 class ThumbnailView extends React.Component<ViewProps & Props> {
+  private static _placeHolder = (
+    <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
+  );
+
   private _renderIcon = () => {
     const { thumbsUrlWithSize, onClick } = this.props;
-    const imagePreview = (
-      <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
-    );
     if (!thumbsUrlWithSize) {
-      return imagePreview;
+      return ThumbnailView._placeHolder;
     }
     const url = accelerateURL(thumbsUrlWithSize) || thumbsUrlWithSize;
     return (
-      <PreloadImg url={url} placeholder={imagePreview}>
+      <PreloadImg url={url} placeholder={ThumbnailView._placeHolder}>
         <JuiThumbnail url={url} onClick={onClick} />
       </PreloadImg>
     );
-  }
+  };
+
   render() {
     const { icon, type, onClick } = this.props;
     return type === 'image' ? (

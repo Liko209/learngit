@@ -24,6 +24,8 @@ jest.mock('@/store/utils', () => {
   return mockedUtils;
 });
 
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
+
 const personID = +new Date();
 const email = 'user20474@jupitertest523.ru';
 const formattedPhoneNumber = '20474';

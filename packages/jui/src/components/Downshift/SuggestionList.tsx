@@ -68,7 +68,7 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
       <StyledPaper square data-test-automation-id={automationId}>
         <VirtualizedListWithAutoSizer
           highlightedIndex={highlightedIndex || 0}
-          minRowHeight={minRowHeight}
+          fixedRowHeight={minRowHeight}
           onRenderedRangeChange={this._handleRenderedRangeChange}
           style={VL_STYLE}
         >

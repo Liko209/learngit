@@ -16,7 +16,7 @@ import tearOff from '../../../assets/jupiter-icon/icon-tear-off.svg';
 import signal2 from '../../../assets/jupiter-icon/icon-signal-2.svg';
 import previous from '../../../assets/jupiter-icon/icon-previous.svg';
 import mic from '../../../assets/jupiter-icon/icon-mic.svg';
-import keypad from '../../../assets/jupiter-icon/icon-keypad.svg';
+import dialer from '../../../assets/jupiter-icon/icon-dialer.svg';
 import hold from '../../../assets/jupiter-icon/icon-hold.svg';
 import callAdd from '../../../assets/jupiter-icon/icon-call-add.svg';
 import record from '../../../assets/jupiter-icon/icon-record.svg';
@@ -121,7 +121,7 @@ const KeypadAction = () => (
       color="grey.900"
       disableToolTip
       size="xxlarge"
-      symbol={keypad}
+      symbol={dialer}
     />
     <span>Keypad</span>
   </JuiKeypadAction>
@@ -197,7 +197,7 @@ const KeypadActions = [
 const EndCall = () => (
   <JuiFabButton
     color="semantic.negative"
-    size="smallMedium"
+    size="mediumLarge"
     showShadow={false}
     tooltipPlacement="bottom"
     iconName="hand_up"

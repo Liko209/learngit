@@ -15,6 +15,7 @@ import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import copy from 'copy-to-clipboard';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { NotificationPreferences } from '@/containers/NotificationPreferences';
 
 @observer
 class More extends React.Component<WithTranslation & MoreViewProps> {
@@ -44,8 +45,11 @@ class More extends React.Component<WithTranslation & MoreViewProps> {
     analyticsCollector.copyTeamEmail();
   };
 
+  onClickNotificationPreferences = () =>
+    NotificationPreferences.show({ groupId: this.props.id });
+
   render() {
-    const { t } = this.props;
+    const { t, automationId } = this.props;
     return (
       <JuiPopoverMenu
         Anchor={this.renderAnchor}
@@ -58,7 +62,13 @@ class More extends React.Component<WithTranslation & MoreViewProps> {
           horizontal: 'center',
         }}
       >
-        <JuiMenuList>
+        <JuiMenuList data-test-automation-id={automationId ? automationId : 'more'}>
+          <JuiMenuItem
+            onClick={this.onClickNotificationPreferences}
+            data-test-automation-id="notificationPreferences"
+          >
+            {t('setting.conversationPreferences.entry')}
+          </JuiMenuItem>
           <JuiMenuItem onClick={this.onClickCopyUrl}>
             {t('people.profile.copyUrl')}
           </JuiMenuItem>

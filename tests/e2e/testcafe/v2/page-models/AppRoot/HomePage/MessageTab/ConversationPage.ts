@@ -81,6 +81,14 @@ class HeaderMoreMenu extends BaseWebComponent {
     return await this.t.click(this.profile);
   }
 
+  get notificationPreferences() {
+    return this.getSelectorByAutomationId('notificationPreferencesEntry')
+  }
+
+  async  clickNotificationPreferences() {
+    await this.t.click(this.notificationPreferences);
+  }
+
   get adminActions() {
     return this.self.find('li').withText('Admin actions');
   }
@@ -133,6 +141,14 @@ export class BaseConversationPage extends BaseWebComponent {
 
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title', this.header);
+  }
+
+  get conferenceButton() {
+    return this.getSelectorByAutomationIdUnderSelf('audio-conference-btn');
+  }
+
+  async clickConferenceButton() {
+    return this.t.click(this.conferenceButton);
   }
 
   async timeOfPostsShouldOrderByAsc() {
@@ -446,6 +462,14 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.memberCountIcon);
   }
 
+  get muteButton() {
+    return this.getSelectorByAutomationIdUnderSelf('muted');
+  }
+
+  get mutedIcon() {
+    return this.getSelectorByIcon('mute', this.muteButton);
+  }
+
   get messageInputArea() {
     this.warnFlakySelector();
     return this.self.child().find('.ql-editor');
@@ -736,7 +760,7 @@ export class PostItem extends BaseWebComponent {
   get postId() {
     return this.self.getAttribute('data-id');
   }
-  get linkPreviewCard(){
+  get linkPreviewCard() {
     return this.self.find('[data-test-automation-id="linkItemsWrapper"]');
   }
   get actionBarMoreMenu() {
@@ -1074,12 +1098,6 @@ export class PostItem extends BaseWebComponent {
   }
 
   // audio conference
-  get AudioConferenceHeaderNotification() {
-    // FIXME: should take i18n into account
-    this.warnFlakySelector();
-    return this.headerNotification.withText('started an audio conference');
-  }
-
   get audioConference() {
     return this.getComponent(AudioConference, this.getSelectorByAutomationId('conferenceItem', this.self));
   }
@@ -1265,8 +1283,24 @@ class AudioConference extends BaseWebComponent {
     return this.self.find('div').withText('Dial-in Number'); // todo i18n
   }
 
+  get audioConferenceLink() {
+    return this.getSelectorByAutomationId('audioConferenceLink', this.self);
+  }
+
+  get joinAudioConferenceBtn() {
+    return this.getSelectorByAutomationId('joinConferenceBtn', this.self);
+  }
+
+  clickAudioConferenceLink() {
+    return this.t.click(this.audioConferenceLink);
+  }
+
+  clickJoinAudioConferenceBtn() {
+    return this.t.click(this.joinAudioConferenceBtn);
+  }
+
   get phoneNumber() {
-    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self);
   }
 
   get globalNumber() {

@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { container } from 'framework/ioc';
 import {
   JuiListItemText,
-  JuiListItemWithHover,
   JuiListItemSecondaryAction,
+  JuiListItem,
 } from 'jui/components/Lists';
 import { JuiLeftRailListItemIcon } from 'jui/pattern/LeftRail';
-import { Thumbnail } from '@/modules/message/container/Thumbnail';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import {
   isSupportFileViewer,
@@ -24,69 +24,93 @@ import { SecondaryText } from '../common/SecondaryText.View';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
 import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
-import FileItemModel from '@/store/models/FileItem';
 import { postParser } from '@/common/postParser';
+import { JuiThumbnail } from 'jui/components/Thumbnail/Thumbnail';
+import { HoverHelper } from '../common/HoverHelper';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {
-  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _hoverHelper = new HoverHelper();
 
-  private _handleFileClick = ({ id }: FileItemModel) => () => {
-    this._viewerService.open({ groupId: this.props.groupId, itemId: id });
+  private _openFileViewer = () => {
+    if (this._readyForViewer) {
+      this._viewerService.open({
+        groupId: this.props.groupId,
+        itemId: this.props.file.id,
+      });
+    }
   };
-  private _renderItem = () => {
-    const { file, personName, modifiedTime, downloadUrl, id ,groupId} = this.props;
-    const fileInfo = file || {};
-    const { name, status, type } = fileInfo;
-    const supportFileViewer = isSupportFileViewer(type);
-    const fileReadyForViewer = isFileReadyForViewer(status);
-    return (hover: boolean) => {
-      return (
-        <>
-          <JuiLeftRailListItemIcon
-            disabled={supportFileViewer && !fileReadyForViewer}
-          >
-            <Thumbnail id={id} type="file" />
-          </JuiLeftRailListItemIcon>
-          <JuiListItemText
-            primary={
-              <FileName>
-                {postParser(name, {
-                  fileName: true,
-                })}
-              </FileName>
-            }
-            secondary={<SecondaryText name={personName} time={modifiedTime} />}
-          />
-          {hover && (
-            <JuiListItemSecondaryAction>
-              <JuiButtonBar isStopPropagation overlapSize={-2}>
-                <Download url={downloadUrl} />
-                <FileActionMenu fileId={id} disablePortal groupId={groupId} />
-              </JuiButtonBar>
-            </JuiListItemSecondaryAction>
-          )}
-        </>
-      );
-    };
-  };
+
+  @computed
+  private get _handleFileClick() {
+    return this._supportViewer ? this._openFileViewer : undefined;
+  }
+
+  @computed
+  private get _supportViewer() {
+    return isSupportFileViewer(this.props.file.type);
+  }
+
+  @computed
+  private get _readyForViewer() {
+    return isFileReadyForViewer(this.props.file.status);
+  }
+
+  @computed
+  private get _primary() {
+    return (
+      <FileName>
+        {postParser(this.props.file.name, {
+          fileName: true,
+        })}
+      </FileName>
+    );
+  }
+
+  @computed
+  private get _secondary() {
+    const { personName, modifiedTime } = this.props;
+    return <SecondaryText name={personName} time={modifiedTime} />;
+  }
+
+  @computed
+  private get _icon() {
+    return (
+      <JuiLeftRailListItemIcon
+        disabled={this._supportViewer && !this._readyForViewer}
+      >
+        <JuiThumbnail iconType={this.props.file.iconType} />
+      </JuiLeftRailListItemIcon>
+    );
+  }
+
+  @computed
+  private get _itemText() {
+    return (
+      <JuiListItemText primary={this._primary} secondary={this._secondary} />
+    );
+  }
 
   render() {
-    const { file } = this.props;
-    const fileInfo = file || {};
-    const { status, type } = fileInfo;
-    const supportFileViewer = isSupportFileViewer(type);
-    const fileReadyForViewer = isFileReadyForViewer(status);
+    const { downloadUrl, id ,groupId} = this.props;
     return (
-      <JuiListItemWithHover
-        render={this._renderItem()}
-        onClick={
-          supportFileViewer && fileReadyForViewer
-            ? this._handleFileClick(file)
-            : undefined
-        }
+      <JuiListItem
         data-test-automation-id="rightRail-file-item"
-      />
+        onClick={this._handleFileClick}
+        {...this._hoverHelper.TriggerProps}
+      >
+        {this._icon}
+        {this._itemText}
+        {this._hoverHelper.hovered && (
+          <JuiListItemSecondaryAction>
+            <JuiButtonBar isStopPropagation overlapSize={-2}>
+              <Download url={downloadUrl} />
+              <FileActionMenu scene="rightShelf" fileId={id} disablePortal groupId={groupId}/>
+            </JuiButtonBar>
+          </JuiListItemSecondaryAction>
+        )}
+      </JuiListItem>
     );
   }
 }

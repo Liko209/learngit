@@ -14,13 +14,12 @@ import { JuiFade } from '../Animation';
 import { TransitionProps } from '@material-ui/core/transitions/transition';
 
 type PaperProps = {
-  x: number;
-  y: number;
   open: boolean;
+  position: { x: number; y: number };
   dragRef?: React.RefObject<any>;
   onStart?: DraggableEventHandler;
   onStop?: DraggableEventHandler;
-  onDrag?: DraggableEventHandler;
+  handlerDrag?: DraggableEventHandler;
   handle?: string;
   TransitionComponent?: React.ComponentType<TransitionProps | any>;
 } & JuiPaperProps;
@@ -33,24 +32,23 @@ type JuiDraggableDialogProps = PaperProps &
   };
 
 const PaperComponent = ({
-  x,
-  y,
   open,
   dragRef,
   onStart,
   onStop,
-  onDrag,
+  handlerDrag,
   handle,
+  position,
   TransitionComponent = JuiFade,
   ...rest
 }: PaperProps) => (
   <Draggable
     bounds="body"
-    defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
+    position={position}
     ref={dragRef}
     onStart={onStart}
     onStop={onStop}
-    onDrag={onDrag}
+    onDrag={handlerDrag}
     handle={handle}
   >
     <div>
@@ -97,11 +95,11 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
 
   render(): React.ReactNode {
     const {
-      x,
-      y,
       dragRef,
       onStart,
       onStop,
+      handlerDrag,
+      position,
       handle,
       PaperProps,
       open,
@@ -112,10 +110,10 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       ...rest
     } = this.props;
     const paperProps = {
-      x,
-      y,
       open,
       dragRef,
+      position,
+      handlerDrag,
       TransitionComponent,
       ...PaperProps,
     } as PaperProps;

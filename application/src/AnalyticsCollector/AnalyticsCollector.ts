@@ -14,12 +14,23 @@ import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
+import { EnvConfig } from 'sdk/module/env/config';
+import { Api } from 'sdk/api';
 import { ConversationType, NewConversationSource, SendTrigger } from './types';
 
 class AnalyticsCollector {
   constructor() {
     dataAnalysis.setProduction(config.isProductionAccount());
   }
+  init() {
+    const isRunningE2E = EnvConfig.getIsRunningE2E();
+    !isRunningE2E && dataAnalysis.init(Api.httpConfig.segment);
+  }
+
+  reset() {
+    dataAnalysis.reset();
+  }
+
   async identify() {
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     if (!userId) {
@@ -277,7 +288,7 @@ class AnalyticsCollector {
   }
 
   profileDialog(category: string, source: string) {
-    dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
+    dataAnalysis.page('Jup_Web/DT_profile_profileDialog', {
       category,
       source,
     });
@@ -322,6 +333,43 @@ class AnalyticsCollector {
 
     dataAnalysis.track('Jup_Web/DT_general_toggleLeftNavigationPanel', {
       state,
+    });
+  }
+
+  createTeamDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_createTeamDialog', { source });
+  }
+
+  newMessageDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
+  }
+  // [FIJI-8153]
+  endAndAnswerCall() {
+    dataAnalysis.track('Jup_Web/DT_phone_endAndAnswerCall', {
+      source: 'incomingCallWindow',
+      type: 'multiCall',
+    });
+  }
+
+  // [FIJI-8153]
+  seeIncomingCallPage(type: 'singleCall' | 'multiCall') {
+    dataAnalysis.page('Jup_Web/DT_phone_incomingCallWindow', {
+      type,
+    });
+  }
+
+  startConferenceCall(conversationType: string, source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_startConferenceCall', {
+      conversationType,
+      source,
+    });
+  }
+
+  joinConferenceCall(type?: string) {
+    const source =
+      type === 'link' ? 'click dial-in number' : 'click join button';
+    dataAnalysis.track('Jup_Web/DT_msg_joinConferenceCall', {
+      source,
     });
   }
 

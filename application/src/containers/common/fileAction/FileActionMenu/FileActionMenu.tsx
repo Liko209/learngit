@@ -10,11 +10,17 @@ import {
   FileNameEditAction,
   FileNameEditActionProps,
 } from '../FileNameEditAction';
+import { ViewInBrowserTabAction } from '../ViewInBrowserTab';
 import { ViewInPostAction } from '../ViewInPostAction';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { FileShareAction } from '../FileShareAction/FileShareAction';
+import { IFileActionBaseViewModel } from '../common/types';
+import { observer } from 'mobx-react';
+import { getFileType } from '@/common/getFileType';
+import { FileType } from '@/store/models/FileItem';
+import { Scene } from '../dataTrackings';
 
 type FileActionMenuProps = {
   fileId: number;
@@ -24,13 +30,19 @@ type FileActionMenuProps = {
   showViewInPostAction?: boolean;
   groupId: number;
   asyncOperationDecorator?: FunctionDecorator;
+  scene: Scene;
 } & FileDeleteActionProps &
   FileNameEditActionProps &
   WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
-class InnerComponent extends Component<FileActionMenuProps, State> {
-  static defaultProps: Partial<FileActionMenuProps> = {
+
+type InnerComponentProps = FileActionMenuProps &
+  WithTranslation &
+  IFileActionBaseViewModel;
+@observer
+class InnerComponent extends Component<InnerComponentProps, State> {
+  static defaultProps: Partial<InnerComponentProps> = {
     variant: 'plain',
     showViewInPostAction: false,
   };
@@ -78,8 +90,11 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
       groupId,
       disablePortal,
       asyncOperationDecorator,
+      scene,
+      item,
       ...rest
     } = this.props;
+    const isImage = getFileType(item).type === FileType.image;
     return (
       <JuiPopperMenu
         Anchor={this._Anchor}
@@ -91,6 +106,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
       >
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
           <FileShareAction fileId={fileId} postId={postId} groupId={groupId} />
+          {isImage && <ViewInBrowserTabAction scene={scene} item={item} />}
           <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
           {showViewInPostAction && groupId && (
             <ViewInPostAction
@@ -106,6 +122,6 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
   }
 }
 
-const FileActionMenu = withTranslation('translations')(InnerComponent);
+const FileActionMenuView = withTranslation('translations')(InnerComponent);
 
-export { FileActionMenu, FileActionMenuProps };
+export { FileActionMenuView, FileActionMenuProps };

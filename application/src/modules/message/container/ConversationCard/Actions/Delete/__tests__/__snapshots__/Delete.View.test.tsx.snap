@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeleteView render() should render correct delete post dialog. [JPT-473] 1`] = `"{\\"modalProps\\":{\\"data-test-automation-id\\":\\"deleteConfirmDialog\\"},\\"okBtnProps\\":{\\"data-test-automation-id\\":\\"deleteOkButton\\"},\\"cancelBtnProps\\":{\\"data-test-automation-id\\":\\"deleteCancelButton\\"},\\"title\\":\\"message.prompt.deletePostTitle\\",\\"content\\":\\"message.prompt.deletePostContent\\",\\"okText\\":\\"common.dialog.delete\\",\\"okType\\":\\"negative\\",\\"cancelText\\":\\"common.dialog.cancel\\"}"`;

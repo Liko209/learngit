@@ -13,6 +13,7 @@ import { Loading } from 'jui/hoc/withLoading';
 import { ViewProps } from './types';
 import { menuItemsConfig } from './config';
 import { JuiCustomStatus } from 'jui/pattern/CustomStatus';
+import { withEscTracking } from '@/common/trackData';
 
 const sheetSize = 64;
 const set = 'emojione';
@@ -112,6 +113,7 @@ class CustomStatusComponent extends React.Component<
         size="small"
         title={t('customstatus.title')}
         onCancel={this._onClose}
+        onClose={withEscTracking(this._onClose)}
         onOK={this._onSave}
         modalProps={{ allowOverflowY: true, scroll: 'body' }}
         okText={t('common.dialog.save')}

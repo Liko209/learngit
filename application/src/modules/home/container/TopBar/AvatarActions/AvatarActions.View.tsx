@@ -16,6 +16,7 @@ import {
 } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
+import { analyticsCollector } from '@/AnalyticsCollector';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { dataAnalysis } from 'foundation/analysis';
 import { PresenceMenu } from '../PresenceMenu';
@@ -89,6 +90,11 @@ class AvatarActionsComponent extends React.Component<Props> {
 
   openProfile = () => {
     OpenProfile.show(this.props.currentUserId);
+
+    analyticsCollector.profileDialog(
+      'Person',
+      'topbar_dropdown',
+    );
   };
 
   handleDropdown = () => {

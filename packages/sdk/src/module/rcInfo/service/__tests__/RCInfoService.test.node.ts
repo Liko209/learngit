@@ -397,7 +397,7 @@ describe('RCInfoService', () => {
       const result = await rcInfoService.isVoipCallingAvailable();
       expect(result).toBeTruthy();
     });
-    it('should return false when user is rc account and has not web_phone permission', async () => {
+    it('should return false when user is rc account and has not web_phone permission [JPT-2924]', async () => {
       mockAccountService.userConfig = {
         getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.RC),
       };
@@ -413,6 +413,36 @@ describe('RCInfoService', () => {
         });
       const result = await rcInfoService.isVoipCallingAvailable();
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('isWebPhoneAvailable', () => {
+    it('should return false if user is not rc account', async () => {
+      mockAccountService.userConfig = {
+        getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.GLIP),
+      };
+      const result = await rcInfoService.isWebPhoneAvailable();
+      expect(result).toBeFalsy();
+    });
+    it('should return false if user has not web phone permission', async () => {
+      mockAccountService.userConfig = {
+        getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.RC),
+      };
+      rcInfoService.isRCFeaturePermissionEnabled = jest
+        .fn()
+        .mockResolvedValue(false);
+      const result = await rcInfoService.isWebPhoneAvailable();
+      expect(result).toBeFalsy();
+    });
+    it('should return false if user is rc account and  has not web phone permission', async () => {
+      mockAccountService.userConfig = {
+        getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.RC),
+      };
+      rcInfoService.isRCFeaturePermissionEnabled = jest
+        .fn()
+        .mockResolvedValue(true);
+      const result = await rcInfoService.isWebPhoneAvailable();
+      expect(result).toBeTruthy();
     });
   });
 

@@ -65,7 +65,7 @@ class GroupSearchViewComponent extends React.Component<
       return (
         <Item
           {...props}
-          key={index}
+          key={id}
           isHighlighted={isHighlighted}
           avatar={this._renderAvatar(props.itemId)}
           data-test-automation-id="groupSearchItem"
@@ -78,7 +78,12 @@ class GroupSearchViewComponent extends React.Component<
   };
 
   private _handleRenderedRangeChange = (renderedRange: IndexRange) => {
-    this.setState({ renderedRange });
+    if (
+      renderedRange.startIndex !== this.state.renderedRange.startIndex ||
+      renderedRange.stopIndex !== this.state.renderedRange.stopIndex
+    ) {
+      this.setState({ renderedRange });
+    }
   };
 
   private _handleClear = () => {

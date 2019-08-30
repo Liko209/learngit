@@ -64,7 +64,7 @@ describe('Media', () => {
       expect(media.volume).toEqual(1);
       expect(media.muted).toBeFalsy();
       expect(media.loop).toBeFalsy();
-      expect(media.outputDevices).toEqual([]);
+      expect(media.outputDevices).toEqual(null);
     });
     it('should set loop when setup loop', () => {
       const media = new Media(

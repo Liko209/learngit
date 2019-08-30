@@ -15,7 +15,7 @@ import { WebphoneSession } from 'webphone-client';
 import { E911Address } from './e911address';
 
 fixture('Telephony/Keypad')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -25,8 +25,8 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('Navigate to the "keypad" page', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
@@ -46,7 +46,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('And send a message to ensure chat in list', async () => {
     await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
-  
+
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -88,8 +88,8 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('Hide the keypad page', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
@@ -202,8 +202,8 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('Can end the call on the keypad page', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
@@ -322,8 +322,8 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('DTMF instruction executed successfully', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();

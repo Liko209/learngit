@@ -12,11 +12,9 @@ class ElectronService {
       );
     }
   }
-
-  openWindow(option: any) {
-    window.jupiterElectron.openWindow &&
-      window.jupiterElectron.openWindow(option);
-  }
+  openWindow = (link: string) => {
+    window.jupiterElectron && window.jupiterElectron.openWindow({ url: link });
+  };
 
   setBadgeCount(count: number) {
     window.jupiterElectron.setBadgeCount &&

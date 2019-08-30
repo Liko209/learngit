@@ -5,12 +5,16 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
+import { select, boolean } from '@storybook/addon-knobs';
 
 import { JuiAvatar, JuiAvatarProps } from '..';
 import { JuiPresence, PRESENCE } from '../../Presence';
+import TeamAvatar from '../../../assets/jupiter-icon/icon-default-team-avatar.svg';
 
 import avatar from './img/avatar.jpg';
+import { JuiIconography } from '../../../foundation/Iconography';
+import conference from '../../../assets/jupiter-icon/icon-conference.svg';
 
 const knobs = {
   size: () =>
@@ -24,7 +28,6 @@ const knobs = {
       },
       'medium',
     ),
-
   color: () =>
     select(
       'color',
@@ -39,6 +42,8 @@ const knobs = {
       },
       'lake',
     ),
+  cover: () => boolean('cover', false),
+  mask: () => boolean('mask', false),
   presence: () =>
     select(
       'presence',
@@ -53,20 +58,40 @@ const knobs = {
 };
 storiesOf('Components/Avatar', module)
   .add('Image', () => {
-    return <JuiAvatar size={knobs.size()} src={avatar} />;
+    return (
+      <JuiAvatar
+        size={knobs.size()}
+        color={knobs.color()}
+        cover={knobs.cover()}
+        mask={knobs.mask()}
+        src={avatar}
+        onClick={action('click')}
+      />
+    );
   })
   .add('Name', () => {
     return (
-      <JuiAvatar size={knobs.size()} color={knobs.color()}>
+      <JuiAvatar
+        size={knobs.size()}
+        color={knobs.color()}
+        cover={knobs.cover()}
+        mask={knobs.mask()}
+        onClick={action('click')}
+      >
         SH
       </JuiAvatar>
     );
+  })
+  .add('Icon', () => {
+    return <JuiAvatar size={knobs.size()} iconSymbol={TeamAvatar} />;
   })
   .add('With presence', () => {
     return (
       <JuiAvatar
         size={knobs.size()}
         color={knobs.color()}
+        cover={knobs.cover()}
+        mask={knobs.mask()}
         presence={
           <JuiPresence
             presence={knobs.presence()}
@@ -74,6 +99,7 @@ storiesOf('Components/Avatar', module)
             borderSize={knobs.size()}
           />
         }
+        onClick={action('click')}
       >
         SH
       </JuiAvatar>

@@ -32,7 +32,7 @@ global.requestAnimationFrame = fn => setTimeout(fn, 0);
 
 beforeEach(() => {
   dialerPanelViewModel = new DialerPanelViewModel();
-  dialerPanelViewModel._telephonyService.makeCall = jest.fn();
+  dialerPanelViewModel._telephonyService.directCall = jest.fn();
   dialerPanelViewModel._telephonyService.onAfterDialerOpen = jest.fn();
   dialerPanelViewModel._telephonyStore.end = jest.fn();
 });
@@ -47,13 +47,13 @@ describe('DialerPanelViewModel', () => {
       dialerPanelViewModel.onAfterDialerOpen();
       expect(
         dialerPanelViewModel._telephonyService.onAfterDialerOpen,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
   describe('makeCall', () => {
-    it('should call end() on TelephonyStore when TelephonyService.makeCall() returns false', async () => {
-      dialerPanelViewModel._telephonyService.makeCall = jest
+    it('should call end() on TelephonyStore when TelephonyService.directCall() returns false', async () => {
+      dialerPanelViewModel._telephonyService.directCall = jest
         .fn()
         .mockReturnValue(false);
 
@@ -61,11 +61,11 @@ describe('DialerPanelViewModel', () => {
       await new Promise(resolve => {
         setTimeout(resolve, 10);
       });
-      expect(dialerPanelViewModel._telephonyStore.end).toBeCalled();
+      expect(dialerPanelViewModel._telephonyStore.end).toHaveBeenCalled();
     });
 
-    it('should not call end() on TelephonyStore when TelephonyService.makeCall() returns true', async () => {
-      dialerPanelViewModel._telephonyService.makeCall = jest
+    it('should not call end() on TelephonyStore when TelephonyService.directCall() returns true', async () => {
+      dialerPanelViewModel._telephonyService.directCall = jest
         .fn()
         .mockReturnValue(true);
 
@@ -73,7 +73,7 @@ describe('DialerPanelViewModel', () => {
       await new Promise(resolve => {
         setTimeout(resolve, 10);
       });
-      expect(dialerPanelViewModel._telephonyStore.end).not.toBeCalled();
+      expect(dialerPanelViewModel._telephonyStore.end).not.toHaveBeenCalled();
     });
   });
 

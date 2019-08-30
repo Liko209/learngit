@@ -6,20 +6,19 @@
 
 import FileItemModel from '@/store/models/FileItem';
 
-type FileViewModelProps = {
+type FileProps = {
   id: number;
-};
-
-type FileProps = FileViewModelProps & {
   groupId: number;
 };
 
-type FileViewProps = FileViewModelProps & {
+type FileViewModelProps = {
   file: FileItemModel;
   fileName: string;
   personName: string;
   modifiedTime: string;
   downloadUrl: string;
 };
+
+type FileViewProps = FileProps & FileViewModelProps;
 
 export { FileProps, FileViewProps, FileViewModelProps };
