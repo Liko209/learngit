@@ -188,7 +188,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverSettingMenu() {
-    await this.t.hover(this.topBarAvatar, {speed: 0.1});
+    await this.t.hover(this.topBarAvatar, { speed: 0.1 });
   }
 
   async openDialer(closeE911Prompt: boolean = true) {
@@ -230,7 +230,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverDialpadButton() {
-    await this.t.hover(this.dialpadButton, {speed: 0.1});
+    await this.t.hover(this.dialpadButton, { speed: 0.1 });
   }
 
   get joinTeamDialog() {
