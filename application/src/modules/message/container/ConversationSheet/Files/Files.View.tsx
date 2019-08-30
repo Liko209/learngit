@@ -24,6 +24,7 @@ import { getFileIcon } from '@/common/getFileIcon';
 import {
   isSupportFileViewer,
   isFileReadyForViewer,
+  isDoc,
 } from '@/common/getFileType';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
@@ -140,7 +141,13 @@ class FilesView extends React.Component<FilesViewProps> {
   );
 
   render() {
-    const { files, progresses, urlMap, postId } = this.props;
+    const {
+      files,
+      progresses,
+      urlMap,
+      postId,
+      getFilePreviewBackgroundContainPermission,
+    } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -207,7 +214,12 @@ class FilesView extends React.Component<FilesViewProps> {
           {files[FileType.document].map((file: ExtendFileItem) => {
             const { item, previewUrl } = file;
             const { size, type, id, name, downloadUrl } = item;
-            const status = item.latestVersion && item.latestVersion.status;
+            const latestVersion = item.latestVersion;
+            const status = latestVersion && latestVersion.status;
+            const total =
+              latestVersion &&
+              latestVersion.pages &&
+              latestVersion.pages.length;
             const iconType = getFileIcon(type);
             const supportFileViewer = isSupportFileViewer(type);
             const fileReadyForViewer = isFileReadyForViewer(status);
@@ -221,6 +233,9 @@ class FilesView extends React.Component<FilesViewProps> {
                   fileName: true,
                   keyword: this.context.keyword,
                 })}
+                needBackgroundContain={
+                  getFilePreviewBackgroundContainPermission.get() && isDoc(type)
+                }
                 size={`${getFileSize(size)}`}
                 url={accelerateURL(previewUrl)!}
                 iconType={iconType}
@@ -229,6 +244,7 @@ class FilesView extends React.Component<FilesViewProps> {
                     ? this._handleFileClick(item)
                     : undefined
                 }
+                total={total}
                 disabled={supportFileViewer && !fileReadyForViewer}
                 Actions={this._getActions(downloadUrl, id, postId)}
               />

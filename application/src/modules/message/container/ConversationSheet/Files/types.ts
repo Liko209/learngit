@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FileType, ExtendFileItem } from '@/store/models/FileItem';
+import { PromisedComputedValue } from 'computed-async-mobx';
 import { Post } from 'sdk/module/post/entity';
 
 type FilesProps = {
@@ -28,10 +29,9 @@ type FilesViewProps = {
   dispose: () => void;
   urlMap: Map<number, string>;
   getShowDialogPermission: () => boolean;
+  getFilePreviewBackgroundContainPermission: PromisedComputedValue<boolean>;
   getCropImage: () => Promise<void>;
   isRecentlyUploaded: (id: number) => boolean;
 };
 
-export {
-  FilesProps, FilesViewProps, FileType, ExtendFileItem,
-};
+export { FilesProps, FilesViewProps, FileType, ExtendFileItem };

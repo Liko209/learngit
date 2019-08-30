@@ -44,4 +44,4 @@ function getFileIcon(typeOrName?: string): string {
   return 'default_file';
 }
 
-export { getFileIcon, getFileExtension };
+export { getFileIcon, FILE_ICON_MAP, etFileExtension };
