@@ -1,5 +1,8 @@
 import i18next from 'i18next';
-import { promisedComputed } from 'computed-async-mobx';
+// use this function to disable reaction checking
+// since when error happens, check reaction will change nothing but just throw errors
+// so disable it.
+import { promisedComputedInternal } from 'computed-async-mobx/built/src/promisedComputed';
 
 function hasLoadedNamespace() {
   const lng = i18next.languages[0];
@@ -40,7 +43,7 @@ function i18nP(key: string, options?: i18next.TOptions | string): string {
   if (i18next.isInitialized && hasLoadedNamespace()) {
     return i18next.t(key, options);
   }
-  return promisedComputed('', async () => await i18nT(key, options)).get();
+  return promisedComputedInternal('', async () => await i18nT(key, options)).get();
 }
 
 export type i18nTValueProps = string | Promise<string>;
