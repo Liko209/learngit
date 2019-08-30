@@ -93,6 +93,11 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     OpenProfile.show(this.props.groupId, null, null, {
       disableRestoreFocus: true,
     });
+
+    analyticsCollector.profileDialog(
+      this.props.isTeam ? 'Team' : 'Group',
+      'rightShelf_showAll',
+    );
   };
 
   addTeamMembers() {

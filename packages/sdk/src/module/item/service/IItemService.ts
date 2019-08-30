@@ -55,6 +55,8 @@ interface IItemService {
 
   doNotRenderItem(id: number, type: string): Promise<void>;
 
+  cancelZoomMeeting(id: number): Promise<void>;
+
   getGroupItemsCount(
     groupId: number,
     typeId: number,

@@ -15,6 +15,7 @@ const LaunchDarklyDefaultPermissions = {
   CAN_MENTION_TEAM: false,
   CAN_USE_VIDEO_CALL: false,
   CAN_VIEW_FILE_PREVIEW_BACKGROUND_CONTAIN: false,
+  USERS_BLACKLIST: false,
   SENTRY_ERROR_FILTER: [],
 };
 

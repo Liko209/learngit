@@ -8,7 +8,7 @@ import { Read } from './Read';
 import { Block } from './Block';
 import { Delete } from './Delete';
 import { Download } from './Download';
-import { ENTITY_TYPE, BUTTON_BUFFER_COUNT } from '../constants';
+import { ENTITY_TYPE } from '../constants';
 import { Message } from './Message';
 import { Call } from './Call';
 
@@ -25,20 +25,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
     }
   }
 
-  get _actions() {
-    const { entity, shouldShowBlock, person, isBlock, isPseudo } = this.props;
-
-    return [
-      !isBlock && Call,
-      person !== null && Message,
-      entity === ENTITY_TYPE.VOICEMAIL && Read,
-      entity === ENTITY_TYPE.VOICEMAIL && Download,
-      shouldShowBlock && Block,
-      !isPseudo && Delete,
-    ].filter(item => !!item);
-  }
-
-  getButtons = (buttons: (false | ComponentType<any>)[], type: BUTTON_TYPE) => {
+  getButtons = (buttons: ComponentType<any>[], type: BUTTON_TYPE) => {
     const { id, entity, caller, person, phoneNumber } = this.props;
     /* eslint-disable react/no-array-index-key */
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
@@ -57,38 +44,90 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
     });
   };
 
-  getButtonsConfig = () => {
-    const { maxButtonCount } = this.props;
+  private get _voicemailActions() {
+    const { shouldShowBlock, person, isBlock, isPseudo } = this.props;
 
-    if (maxButtonCount + BUTTON_BUFFER_COUNT < this._actions.length) {
-      const buttons = this._actions.slice(0, maxButtonCount);
-      const dropdownItems = this._actions.slice(
+    const actionsConfig = [
+      !isBlock && Call,
+      person !== null && Message,
+      !isPseudo && Delete,
+    ].filter(item => item) as ComponentType<any>[];
+
+    const dropdownConfig = [Read, Download, shouldShowBlock && Block].filter(
+      item => item,
+    ) as ComponentType<any>[];
+
+    return this._getButtonConfig(actionsConfig, dropdownConfig);
+  }
+
+  get _callLogActions() {
+    const { shouldShowBlock, person, isBlock, isPseudo } = this.props;
+
+    const actionsConfig = [
+      !isBlock && Call,
+      person !== null && Message,
+      !isPseudo && Delete,
+      shouldShowBlock && Block,
+    ].filter(item => item) as ComponentType<any>[];
+
+    return this._getButtonConfig(actionsConfig, null);
+  }
+
+  private _getButtonConfig = (
+    actionsConfig: ComponentType<any>[],
+    dropdownConfig: ComponentType<any>[] | null,
+  ) => {
+    const { maxButtonCount } = this.props;
+    if (dropdownConfig && dropdownConfig.length === 1) {
+      actionsConfig.push(dropdownConfig.pop() as ComponentType<any>);
+    }
+    if (actionsConfig.length >= maxButtonCount) {
+      const buttons = actionsConfig.slice(0, maxButtonCount);
+      const moreButtons = actionsConfig.slice(
         maxButtonCount,
-        this._actions.length,
+        actionsConfig.length,
       );
       return {
         buttons: this.getButtons(buttons, BUTTON_TYPE.ICON),
-        dropdownItems: this.getButtons(dropdownItems, BUTTON_TYPE.MENU_ITEM),
+        dropdownItems: this.getButtons(
+          dropdownConfig ? [...moreButtons, ...dropdownConfig] : moreButtons,
+          BUTTON_TYPE.MENU_ITEM,
+        ),
       };
     }
-
     return {
-      buttons: this.getButtons(this._actions, BUTTON_TYPE.ICON),
-      dropdownItems: null,
+      buttons: this.getButtons(actionsConfig, BUTTON_TYPE.ICON),
+      dropdownItems: dropdownConfig
+        ? this.getButtons(dropdownConfig, BUTTON_TYPE.MENU_ITEM)
+        : null,
     };
   };
 
   renderButtons = () => {
-    const { buttons, dropdownItems } = this.getButtonsConfig();
+    let buttons;
+    let dropdownItems;
     const { entity } = this.props;
+    if (entity === ENTITY_TYPE.VOICEMAIL) {
+      buttons = this._voicemailActions.buttons;
+      dropdownItems = this._voicemailActions.dropdownItems;
+    } else {
+      buttons = this._callLogActions.buttons;
+      dropdownItems = this._callLogActions.dropdownItems;
+    }
 
-    if (dropdownItems) {
-      buttons.push(
-        <More key="more" automationId={`${entity}-more-button`}>
-          {dropdownItems}
-        </More>,
+    if (dropdownItems && dropdownItems.length > 0) {
+      return (
+        <>
+          {buttons}
+          {dropdownItems ? (
+            <More key="more" automationId={`${entity}-more-button`}>
+              {dropdownItems}
+            </More>
+          ) : null}
+        </>
       );
     }
+
     return buttons;
   };
 

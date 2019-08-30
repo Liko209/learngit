@@ -35,7 +35,6 @@ const ClearButton = styled.span<{ withCloseIcon: boolean }>`
 
 type JuiSearchInputProps = {
   clearText: string;
-  showClear: boolean;
   onClear: () => void;
   onClose?: () => void;
   withCloseIcon?: boolean;
@@ -48,12 +47,12 @@ const ONE_ICON = ['search'];
 const JuiSearchInput = memo(
   forwardRef((props: JuiSearchInputProps, ref) => {
     const {
-      showClear,
       onClear,
       onClose,
       clearText,
       withCloseIcon = true,
       size = 'large',
+      value,
       ...rest
     } = props;
 
@@ -74,14 +73,14 @@ const JuiSearchInput = memo(
     const MemoClearButton = useMemo(
       () => (
         <ClearButton
-          data-test-automation-id="global-search-clear"
+          data-test-automation-id="search-input-clear"
           onClick={handleClearClick}
           withCloseIcon={withCloseIcon}
         >
           {clearText}
         </ClearButton>
       ),
-      [handleClearClick, withCloseIcon, clearText],
+      [handleClearClick, withCloseIcon, clearText, value],
     );
 
     return (
@@ -91,7 +90,8 @@ const JuiSearchInput = memo(
         onClickIconRight={withCloseIcon ? onClose : undefined}
         size={size}
         ref={inputRef as any}
-        inputAfter={showClear && MemoClearButton}
+        inputAfter={value !== '' && MemoClearButton}
+        value={value}
         {...rest}
       />
     );
