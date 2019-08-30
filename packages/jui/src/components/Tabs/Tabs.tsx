@@ -31,6 +31,7 @@ type States = {
   indexLazyLoadComponents: number[]; // lazy load container component index
   remeasure: boolean;
   anchorEl: EventTarget & Element | null;
+  disableIndicatorTransition: boolean;
 };
 
 type Props = {
@@ -104,6 +105,7 @@ class JuiTabs extends PureComponent<Props, States> {
       indexMenus: [],
       remeasure: false,
       anchorEl: null,
+      disableIndicatorTransition: true,
     };
   }
 
@@ -229,7 +231,11 @@ class JuiTabs extends PureComponent<Props, States> {
     if (!indexLazyLoadComponents.includes(indexSelected)) {
       indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
     }
-    this.setState({ indexSelected, indexLazyLoadComponents });
+    this.setState({
+      indexSelected,
+      indexLazyLoadComponents,
+      disableIndicatorTransition: false,
+    });
     if (tag) {
       this._setLocalSelectedIndex(indexSelected);
     }
@@ -412,8 +418,14 @@ class JuiTabs extends PureComponent<Props, States> {
   };
 
   renderTabs = () => {
+    const {
+      indexTabs,
+      indexSelected,
+      disableIndicatorTransition,
+    } = this.state;
+
     const { position, forceFlex } = this.props;
-    const { indexSelected, indexTabs } = this.state;
+
     // Notice:
     // 1. when first execute render, then indexTabs length equal 0
     // 2. when right rail hide, then indexTabs length equal 0
@@ -426,6 +438,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (this._moreWidth === 0) {
       measure = true; // The width needs to be remeasured
     }
+
     return (
       <StyledTabs
         forceFlex={forceFlex}
@@ -435,6 +448,7 @@ class JuiTabs extends PureComponent<Props, States> {
         indicatorColor="primary"
         textColor="primary"
         ref={this._containerRef}
+        disableIndicatorTransition={disableIndicatorTransition}
       >
         {measure ? this._renderForMeasure() : this._renderForShow()}
       </StyledTabs>
