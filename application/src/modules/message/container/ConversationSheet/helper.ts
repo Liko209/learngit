@@ -17,7 +17,7 @@ type SheetsType = { [type: string]: number[] };
 function getDateAndTime(timestamp: number): string {
   const getAMOrPM: string = dateFormatter.localTime(moment(timestamp));
   const date: string = recentlyTwoDayAndOther(timestamp);
-  return `${i18nP('common.time.at', { date, time: getAMOrPM })}`;
+  return `${i18nP('common.time.dataAtTime', { date, time: getAMOrPM })}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number): string {

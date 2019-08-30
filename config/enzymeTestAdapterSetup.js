@@ -29,6 +29,7 @@ const mockReactI18nNext = {
   withTranslation,
   useTranslation,
   initReactI18next: reactI18next.initReactI18next,
+  Trans: (props)=>JSON.stringify(props.values)
 };
 
 jest.mock('react-i18next', () => mockReactI18nNext);
