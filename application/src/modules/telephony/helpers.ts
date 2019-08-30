@@ -47,7 +47,7 @@ export const focusCampo = (inputField: HTMLInputElement | any) => {
 
 export const getDisplayName = (
   t: Function,
-  direction: CALL_DIRECTION,
+  direction?: CALL_DIRECTION,
   name?: string,
 ): string =>
   typeof name !== 'string'

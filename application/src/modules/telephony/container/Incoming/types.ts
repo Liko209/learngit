@@ -13,6 +13,7 @@ type IncomingViewProps = {
   phone?: string;
   isExt: boolean;
   incomingState: INCOMING_STATE;
+  isMultipleCall: boolean;
 };
 
 export { IncomingProps, IncomingViewProps };

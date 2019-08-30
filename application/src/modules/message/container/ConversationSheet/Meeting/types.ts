@@ -16,6 +16,10 @@ type ViewProps = {
   duration: string;
   meetingId: number;
   getDialInNumber(): string;
+  callbackMeeting: () => void;
+  joinMeeting: () => void;
+  cancelMeeting: () => void;
+  isMeetingOwner: boolean;
 };
 
 enum MEETING_TITLE {

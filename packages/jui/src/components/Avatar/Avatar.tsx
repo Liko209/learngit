@@ -91,7 +91,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
 const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   && {
     width: ${width(70)};
-    height: ${height(70)};
+    height: ${height(55)};
     border-radius: unset;
     position: static;
     display: flex;

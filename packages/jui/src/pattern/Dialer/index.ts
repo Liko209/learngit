@@ -21,5 +21,6 @@ export * from './RecentCalls';
 export * from './RecentCallBtn';
 export * from './EmptyPage';
 export * from './CallSwitch';
+export * from './StyledActionText';
 export * from './SwitchCallChip';
 export * from './CallListItem';

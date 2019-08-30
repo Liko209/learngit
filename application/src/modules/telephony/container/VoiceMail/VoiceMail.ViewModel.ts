@@ -10,7 +10,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { VoiceMailProps, VoiceMailViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
-import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/types';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -48,12 +48,18 @@ class VoiceMailViewModel extends StoreViewModel<VoiceMailProps>
       TRANSFER_TYPE.TO_VOICEMAIL,
       this.transferNumber,
     );
-    res && this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
+    res &&
+      this._onActionSuccess('telephony.prompt.transferCall.transferSuccess');
   };
 
   @computed
   get isTransferPage() {
     return this._telephonyStore.isTransferPage;
+  }
+
+  @computed
+  get isIncomingCall() {
+    return this._telephonyStore.isIncomingCall;
   }
 
   @computed
