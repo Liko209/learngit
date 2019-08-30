@@ -23,7 +23,7 @@ describe('AskFirstViewModel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     vm = new AskFirstViewModel();
-    vm._telephonyService.directCall = jest.fn();
+    vm._telephonyService.directCall = jest.fn().mockResolvedValue(true);
   });
 
   describe('transferNumber()', () => {

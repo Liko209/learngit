@@ -12,7 +12,7 @@ import { WarmTransferHeaderView } from '../WarmTransferHeader.View';
 describe('WarmTransferHeaderView', () => {
   @testable
   class _viewMethods {
-    @test('should match snapshot [JPT-2762]')
+    @test('should match snapshot if is correct [JPT-2762]')
     t1() {
       const props = {
         endCall: () => {},

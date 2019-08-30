@@ -653,13 +653,14 @@ describe('TelephonyService', () => {
 
     it('should call directCall', async () => {
       const toNumber = '000';
+      const options = {};
       telephonyService._makeCall = jest.fn();
       mockedServerTelephonyService.getAllCallCount.mockReturnValue(1);
-      await telephonyService.directCall(toNumber);
+      await telephonyService.directCall(toNumber, options);
       expect(telephonyService._makeCall).not.toHaveBeenCalled();
       mockedServerTelephonyService.getAllCallCount.mockReturnValue(0);
-      await telephonyService.directCall(toNumber);
-      expect(telephonyService._makeCall).toHaveBeenCalledWith(toNumber);
+      await telephonyService.directCall(toNumber, options);
+      expect(telephonyService._makeCall).toHaveBeenCalledWith(toNumber, options);
     });
 
     it('should call muteOrUnmute', () => {

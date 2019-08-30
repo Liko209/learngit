@@ -453,13 +453,13 @@ describe('Telephony store', () => {
   it('completeTransfer()', () => {
     const store = createStore();
     store.completeTransfer();
-    expect(store.isCompleteTransfer).toBeTruthy();
+    expect(store.canCompleteTransfer).toBeTruthy();
   });
 
   it('processTransfer()', () => {
     const store = createStore();
     store.processTransfer();
-    expect(store.isCompleteTransfer).toBeFalsy();
+    expect(store.canCompleteTransfer).toBeFalsy();
   });
 
   it('resetCallItem() [JPT-2764]', () => {
