@@ -42,7 +42,7 @@ const config: SubModuleConfig = {
     title: 'telephony.Phone',
     umi: <PhoneUMI type={PhoneUMIType.ALL} />,
     placement: 'top',
-    disable: !(await container.get(FeaturesFlagsService).canUseTelephony()),
+    disable: async () => !container.get(FeaturesFlagsService).canUseTelephony(),
   }),
   moduleConfigLoader: () =>
     import(/*
