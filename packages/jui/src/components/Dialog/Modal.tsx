@@ -117,8 +117,6 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       disableEscapeKeyDown,
     } = this.props;
 
-    console.log('nye disableEsc ', loading || disableEscapeKeyDown);
-    console.log('nye loading ', loading);
     return (
       <JuiDialog
         disableEscapeKeyDown={loading || disableEscapeKeyDown}
