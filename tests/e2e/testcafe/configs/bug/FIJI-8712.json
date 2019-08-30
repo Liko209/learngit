@@ -1,7 +1,9 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/PhoneTab/**/*.ts", "./fixtures/LeftNav/*.ts"
+      "./fixtures/PhoneTab/DisablePhoneUser.ts",
+      "./fixtures/PhoneTab/Tab.ts",
+      "./fixtures/LeftNav/*.ts"
     ],
     "browsers": [
       "selenium:chrome"
