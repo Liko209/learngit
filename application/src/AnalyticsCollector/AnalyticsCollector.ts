@@ -27,7 +27,7 @@ class AnalyticsCollector {
     !isRunningE2E && dataAnalysis.init(Api.httpConfig.segment);
   }
 
-  reset(){
+  reset() {
     dataAnalysis.reset();
   }
 
@@ -333,6 +333,21 @@ class AnalyticsCollector {
 
     dataAnalysis.track('Jup_Web/DT_general_toggleLeftNavigationPanel', {
       state,
+    });
+  }
+
+  // [FIJI-8153]
+  endAndAnswerCall() {
+    dataAnalysis.track('Jup_Web/DT_phone_endAndAnswerCall', {
+      source: 'incomingCallWindow',
+      type: 'multiCall',
+    });
+  }
+
+  // [FIJI-8153]
+  seeIncomingCallPage(type: 'singleCall' | 'multiCall') {
+    dataAnalysis.page('Jup_Web/DT_phone_incomingCallWindow', {
+      type,
     });
   }
 

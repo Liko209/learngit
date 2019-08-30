@@ -6,6 +6,8 @@ import { observable } from 'mobx';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('@/store/utils');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
+
 decorate(injectable(), TelephonyStore);
 
 container.bind(TelephonyStore).to(TelephonyStore);

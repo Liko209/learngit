@@ -473,7 +473,7 @@ class CallSwitchController {
     if (payload.type === EVENT_TYPES.UPDATE) {
       const call: Call[] = Array.from(payload.body.entities.values());
       const hasCallEnded = call.some((item: Call) => {
-        return item.call_state === CALL_STATE.DISCONNECTED;
+        return item.call_state === CALL_STATE.DISCONNECTING;
       });
 
       hasCallEnded && this._updateBannerStatus();

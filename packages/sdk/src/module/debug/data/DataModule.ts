@@ -22,10 +22,6 @@ const FILE_NAME_MAP = {
   LOCAL_STORAGE: 'localStorage.json',
 };
 
-// type ExportStorage = {
-//   [key: string]: string | null;
-// };
-
 export class DataModule extends BaseDebugModule {
   dexie: DexieImportExporter;
   localStorage: LocalStorageImportExporter;
