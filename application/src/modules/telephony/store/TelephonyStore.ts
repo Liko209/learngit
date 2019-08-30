@@ -284,8 +284,6 @@ class TelephonyStore {
           this.changeBackToDefaultPos(true)
           return;
         };
-        this.leaveWarmTransferPage();
-        return;
       },
     );
 
@@ -467,6 +465,9 @@ class TelephonyStore {
       this._clearTransferString();
       if (this.isTransferPage) {
         this.backToDialerFromTransferPage();
+      }
+      if (this.isWarmTransferPage) {
+        this.leaveWarmTransferPage();
       }
       return;
     }
