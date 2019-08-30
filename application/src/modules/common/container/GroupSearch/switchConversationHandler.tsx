@@ -10,7 +10,6 @@ import { Dialog } from '@/containers/Dialog';
 import { goToConversation } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { isDialogOpen } from '@/containers/Dialog/utils';
 
 const DIALOG_KEY = 'GroupSearch';
 export function switchToConversation({ id }: { id: number }) {
@@ -24,7 +23,6 @@ export function switchToConversation({ id }: { id: number }) {
 export function switchConversationHandler() {
   analyticsCollector.shortcuts('quickSwitcher');
   if (portalManager.isOpened(DIALOG_KEY)) return;
-  if (isDialogOpen()) return;
   const { dismiss } = Dialog.simple(
     <GroupSearch onSelectChange={switchToConversation} />,
     {

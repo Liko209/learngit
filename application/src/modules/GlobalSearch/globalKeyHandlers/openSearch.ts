@@ -6,10 +6,8 @@
 import { container } from 'framework/ioc';
 import { GlobalSearchService } from '@/modules/GlobalSearch/service';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { isDialogOpen } from '@/containers/Dialog/utils';
 
 function openSearch() {
-  if (isDialogOpen()) return;
   const globalSearchService = container.get<GlobalSearchService>(
     GlobalSearchService,
   );
