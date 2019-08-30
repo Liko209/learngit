@@ -365,6 +365,14 @@ class AnalyticsCollector {
     });
   }
 
+  joinConferenceCall(type?: string) {
+    const source =
+      type === 'link' ? 'click dial-in number' : 'click join button';
+    dataAnalysis.track('Jup_Web/DT_msg_joinConferenceCall', {
+      source,
+    });
+  }
+
   directToTransferPage() {
     dataAnalysis.page('Jup_Web/DT_phone_transferCall');
   }

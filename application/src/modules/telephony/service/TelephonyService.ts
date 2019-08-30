@@ -1245,6 +1245,21 @@ class TelephonyService {
     });
   }
 
+  joinAudioConference = async (phoneNumber: string, accessCode: string) => {
+    if (this._serverTelephonyService.getAllCallCount() > 0) {
+      mainLogger.warn(
+        `${TelephonyService.TAG}Only allow to make one call at the same time`,
+      );
+      return;
+    }
+    const skipE911Check = await this.isShortNumber(phoneNumber);
+    const ret = await this.ensureCallPermission(() => {
+      return this._makeCall(phoneNumber, { accessCode })
+    }, { skipE911Check });
+
+    return ret;
+  }
+
   transfer = async (type: TRANSFER_TYPE, transferTo: string) => {
     if (!this._callEntityId) {
       return false;
