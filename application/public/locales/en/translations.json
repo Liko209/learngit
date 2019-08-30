@@ -677,7 +677,9 @@
       "endAndAnswer": "End & Answer",
       "transfer": "Transfer",
       "toVoiceMail": "To Voicemail",
-      "askFirst": "Ask first"
+      "askFirst": "Ask first",
+      "transferring": "Transferring...",
+      "completeTransfer": "Complete transfer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
