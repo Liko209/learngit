@@ -142,12 +142,8 @@ class AppModule extends AbstractModule {
       const permissionService = ServiceLoader.getInstance<PermissionService>(
         ServiceConfig.PERMISSION_SERVICE,
       );
-      const ld = new LaunchDarklyController();
-      ld.initClient();
-      const split = new SplitIOController();
-      permissionService.injectControllers(ld);
-      split.initClient();
-      permissionService.injectControllers(split);
+      permissionService.injectControllers(new LaunchDarklyController());
+      permissionService.injectControllers(new SplitIOController());
     }
 
     const setStaticHttpServer = (url?: string) => {
@@ -162,7 +158,6 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
       success && updateAccountInfoForGlobalStore();
-      success && injectPermissionControllers();
       success && analyticsCollector.init();
     });
 
@@ -203,6 +198,7 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
+    injectPermissionControllers();
     await sdk.init({
       api,
       db,
