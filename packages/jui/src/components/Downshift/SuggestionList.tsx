@@ -25,9 +25,12 @@ type JuiDownshiftSuggestionListState = {
   renderedRange: IndexRange;
 };
 
-class JuiDownshiftSuggestionList extends React.PureComponent<JuiDownshiftSuggestionListProps, JuiDownshiftSuggestionListState> {
+class JuiDownshiftSuggestionList extends React.PureComponent<
+  JuiDownshiftSuggestionListProps,
+  JuiDownshiftSuggestionListState
+> {
   state = {
-    renderedRange: { startIndex: 0, stopIndex: 0 }
+    renderedRange: { startIndex: 0, stopIndex: 0 },
   };
 
   private _handleRenderedRangeChange = (renderedRange: IndexRange) => {
@@ -38,18 +41,40 @@ class JuiDownshiftSuggestionList extends React.PureComponent<JuiDownshiftSuggest
     const { MenuItem, highlightedIndex, getItemProps } = this.props;
 
     const isHighlighted = highlightedIndex === index;
-    if (this.state.renderedRange.startIndex <= index && index <= this.state.renderedRange.stopIndex) {
-      return <MenuItem {...getItemProps({ item: suggestionItem })} itemId={suggestionItem.id} key={suggestionItem.id} isHighlighted={isHighlighted} />;
+    if (
+      this.state.renderedRange.startIndex <= index &&
+      index <= this.state.renderedRange.stopIndex
+    ) {
+      return (
+        <MenuItem
+          {...getItemProps({ item: suggestionItem, index })}
+          itemId={suggestionItem.id}
+          key={suggestionItem.id}
+          isHighlighted={isHighlighted}
+        />
+      );
     }
     return { key: suggestionItem.id || 0 };
   }
   render() {
-    const { automationId, suggestionItems, minRowHeight } = this.props;
+    const {
+      automationId,
+      suggestionItems,
+      minRowHeight,
+      highlightedIndex,
+    } = this.props;
 
     return (
       <StyledPaper square data-test-automation-id={automationId}>
-        <VirtualizedListWithAutoSizer minRowHeight={minRowHeight} onRenderedRangeChange={this._handleRenderedRangeChange} style={VL_STYLE}>
-          {suggestionItems.map((suggestionItem: SelectedItem, index: number) => this._renderItem(suggestionItem, index))}
+        <VirtualizedListWithAutoSizer
+          highlightedIndex={highlightedIndex || 0}
+          fixedRowHeight={minRowHeight}
+          onRenderedRangeChange={this._handleRenderedRangeChange}
+          style={VL_STYLE}
+        >
+          {suggestionItems.map((suggestionItem: SelectedItem, index: number) =>
+            this._renderItem(suggestionItem, index),
+          )}
         </VirtualizedListWithAutoSizer>
       </StyledPaper>
     );

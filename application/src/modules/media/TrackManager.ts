@@ -21,6 +21,7 @@ class TrackManager {
   private _tracks: MediaTrack[] = [];
   private _allOutputDevices: MediaDeviceType[] = [];
   private _globalVolume: number = 1;
+  private _duckVolume: number = 1;
   private _priorityPool: PriorityItemType[] = [];
 
   useMediaTrack(trackId?: string) {
@@ -44,10 +45,10 @@ class TrackManager {
     return mediaTrack;
   }
 
-  setAllTrackVolume(vol: number) {
+  setAllTrackMasterVolume(vol: number) {
     this._globalVolume = vol;
     this._tracks.forEach(track => {
-      track.setVolume(vol);
+      track.setMasterVolume(vol);
     });
   }
 
@@ -72,11 +73,18 @@ class TrackManager {
   }
 
   createTrack(options: MediaTrackOptions) {
-    return this._createTrack(options);
+    return this._getTrackById(options.id) || this._createTrack(options);
   }
 
   updateAllOutputDevices(devices: MediaDeviceType[]) {
     this._allOutputDevices = devices;
+  }
+
+  setDuckVolume(volume: number) {
+    this._duckVolume = volume;
+    this._tracks.forEach(track => {
+      track.setDuckVolume(volume);
+    });
   }
 
   dispose() {
@@ -87,6 +95,7 @@ class TrackManager {
     this._tracks = [];
     this._allOutputDevices = [];
     this._globalVolume = 1;
+    this._duckVolume = 1;
   }
 
   private _getTrackById(id: string) {
@@ -101,6 +110,7 @@ class TrackManager {
   private _createTrack(options: MediaTrackOptions) {
     const newTrack = new MediaTrack({
       masterVolume: this._globalVolume,
+      duckVolume: this._duckVolume,
       ...options,
     });
     this._tracks.push(newTrack);
@@ -147,6 +157,7 @@ class TrackManager {
     }
 
     const priorityItem = this._getPriorityItemByWeight(mediaTrack.weight);
+    const oldPosition = (priorityItem && priorityItem.position) || 0;
 
     if (priorityItem && priorityItem.ids.includes(trackId)) {
       priorityItem.ids = priorityItem.ids.filter(id => trackId !== id);
@@ -155,9 +166,13 @@ class TrackManager {
     }
 
     this._updatePriorityPoolVolume();
+    mediaTrack.setVolume(mediaTrack.volume / 0.7 ** oldPosition);
   }
 
-  private _getPriorityItemByWeight(weight: number, pool?: PriorityItemType[]): PriorityItemType | null {
+  private _getPriorityItemByWeight(
+    weight: number,
+    pool?: PriorityItemType[],
+  ): PriorityItemType | null {
     const _pool = pool || this._priorityPool;
     const priorityItem = _pool.filter(item => {
       return item.weight === weight;
@@ -175,19 +190,27 @@ class TrackManager {
     this._priorityPool.forEach((item, idx) => {
       item.position = idx;
       const currentPosition = idx;
-      const oldPriorityItem = this._getPriorityItemByWeight(item.weight, oldPriorityPool);
-      const oldPosition =  oldPriorityItem ? oldPriorityItem.position : currentPosition;
+      const oldPriorityItem = this._getPriorityItemByWeight(
+        item.weight,
+        oldPriorityPool,
+      );
+      const oldPosition = oldPriorityItem
+        ? oldPriorityItem.position
+        : currentPosition;
 
-      item.ids.forEach(id => {
-        const track = this._getTrackById(id);
-        if (track) {
-          const volume = currentPosition - oldPosition > 0 ?
-            this._globalVolume * track.volume * 0.7 ** currentPosition :
-            this._globalVolume * track.volume / 0.7 ** oldPosition;
+      if (currentPosition !== oldPosition) {
+        item.ids.forEach(id => {
+          const track = this._getTrackById(id);
+          if (track) {
+            const volume =
+              currentPosition - oldPosition > 0
+                ? track.volume * 0.7 ** currentPosition
+                : track.volume / 0.7 ** oldPosition;
 
-          this.setTrackVolume(id, volume);
-        }
-      });
+            this.setTrackVolume(id, volume);
+          }
+        });
+      }
     });
   }
 
@@ -197,6 +220,10 @@ class TrackManager {
 
   get volume() {
     return this._globalVolume;
+  }
+
+  get duckVolume() {
+    return this._duckVolume;
   }
 
   get outputDevices() {

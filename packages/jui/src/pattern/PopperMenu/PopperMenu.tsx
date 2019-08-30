@@ -29,9 +29,26 @@ type JuiPopperMenuProps = {
   onMouseLeave?: (event: React.MouseEvent) => void;
 };
 
+
+const MODIFIERS = {
+  flip: {
+    enabled: true,
+  },
+  preventOverflow: {
+    enabled: true,
+    boundariesElement: 'viewport',
+  },
+};
+
 class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
   stopRippleEffect(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     e.stopPropagation();
+  }
+
+  private _handleClickAway = () => {
+    if(this.props.open && this.props.onClose) {
+      this.props.onClose();
+    }
   }
 
   render() {
@@ -44,7 +61,6 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
       open,
       noTransition,
       anchorEl,
-      onClose,
       disablePortal,
       onMouseEnter,
       onMouseLeave,
@@ -52,7 +68,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
     const id = open ? 'popper-menu' : '';
     /* eslint-disable jsx-a11y/no-static-element-interactions */
     return (
-      <ClickAwayListener onClickAway={onClose}>
+      <ClickAwayListener onClickAway={this._handleClickAway}>
         {/*
        ClickAwayListener only finds the first child
        so must be use div include Anchor and JuiPopper
@@ -69,15 +85,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
             data-test-automation-id={automationId}
             transition
             disablePortal={disablePortal}
-            modifiers={{
-              flip: {
-                enabled: true,
-              },
-              preventOverflow: {
-                enabled: true,
-                boundariesElement: 'viewport',
-              },
-            }}
+            modifiers={MODIFIERS}
           >
             {({ TransitionProps }) => (
                 <Grow

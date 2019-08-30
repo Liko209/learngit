@@ -7,6 +7,7 @@
 import React, { ComponentType, ComponentClass } from 'react';
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
+import { DraggableData, DraggableEvent } from 'react-draggable';
 import { JuiDraggableDialog } from 'jui/components/Dialog';
 import { container } from 'framework/ioc';
 import { TelephonyStore } from '../store';
@@ -24,6 +25,12 @@ const FOCUS_IN_EVT = 'focusin';
 const BLUR = 'blur';
 const SYNC_DIALER_ENTERED = 300;
 const RESIZE = 'resize';
+
+const getDefaultPos = () => ({
+  x: (document.body.clientWidth - 344) / 2,
+  y: (document.body.clientHeight - 552) / 2,
+});
+
 /*eslint-disable*/
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
@@ -114,10 +121,18 @@ function withDialogOrNewWindow<T>(
     private _dragRef = React.createRef<any>();
     private _containerRef = React.createRef<any>();
     private _handleResize = () => {};
+    private _timer: NodeJS.Timeout;
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
+
+    state = {
+      controlledPosition: {
+        x: getDefaultPos().x,
+        y: getDefaultPos().y,
+      },
+    };
 
     private _createBackdrop = () => {
       const backdrop = document.createElement('div');
@@ -134,6 +149,18 @@ function withDialogOrNewWindow<T>(
     };
 
     private _backdrop = this._createBackdrop();
+
+    private _backToDefaultPos = () => {
+      const {
+        changeBackToDefaultPos,
+        isBackToDefaultPos,
+      } = this._telephonyStore;
+      const { x, y } = getDefaultPos();
+
+      this.setState({ controlledPosition: { x, y } }, () => {
+        isBackToDefaultPos && changeBackToDefaultPos(false);
+      });
+    };
 
     private _createWindow = () => {
       if (this._window == null || this._window.closed) {
@@ -173,6 +200,11 @@ function withDialogOrNewWindow<T>(
       document.body.appendChild(this._backdrop);
     };
 
+    private _handleDrag = (e: DraggableEvent, position: DraggableData) => {
+      const { x, y } = position;
+      this.setState({ controlledPosition: { x, y } });
+    };
+
     private _handleStop = () => {
       document.body.removeChild(this._backdrop);
     };
@@ -206,8 +238,34 @@ function withDialogOrNewWindow<T>(
       }
     };
 
+    componentWillUpdate() {
+      const { isBackToDefaultPos, callWindowState, ids } = this._telephonyStore;
+      const open =
+        callWindowState === CALL_WINDOW_STATUS.MINIMIZED ? false : true;
+
+      const { x: defaultX, y: defaultY } = getDefaultPos();
+
+      const isPosChange =
+        this.state.controlledPosition.x !== defaultX ||
+        this.state.controlledPosition.y !== defaultY;
+
+      // Init state and Avoid animation when closed
+      if (!open && ids.length === 0 && isPosChange) {
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+          this._backToDefaultPos();
+        }, 200);
+        return;
+      }
+
+      if (isBackToDefaultPos && isPosChange) {
+        this._backToDefaultPos();
+      }
+    }
+
     componentDidUpdate() {
       const { startMinimizeAnimation } = this._telephonyStore;
+
       const dragEl = ReactDOM.findDOMNode(
         this._dragRef.current,
       ) as HTMLDivElement;
@@ -246,6 +304,7 @@ function withDialogOrNewWindow<T>(
       window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
       window.removeEventListener(BLUR, this._onBlur);
       window.removeEventListener(RESIZE, this._handleResize);
+      clearTimeout(this._timer);
     }
 
     componentDidMount() {
@@ -265,6 +324,8 @@ function withDialogOrNewWindow<T>(
         this._closeWindow();
       }
 
+      const { controlledPosition } = this.state;
+
       this._goToTop = open
         ? this._goToTop
           ? true
@@ -276,13 +337,13 @@ function withDialogOrNewWindow<T>(
       return (
         <JuiDraggableDialog
           container={container}
+          position={controlledPosition}
           open={open}
-          x={(document.body.clientWidth - 344) / 2}
-          y={(document.body.clientHeight - 552) / 2}
           dragRef={this._dragRef}
           TransitionComponent={DialerTransitionComponent}
           onStart={this._handleStart}
           onStop={this._handleStop}
+          handlerDrag={this._handleDrag}
           ref={this._containerRef}
           onEntered={this._handleEntered}
           onExited={this._handleExited}
@@ -298,4 +359,4 @@ function withDialogOrNewWindow<T>(
   return ComponentWithDialogOrNewWindow;
 }
 
-export { withDialogOrNewWindow };
+export { withDialogOrNewWindow, getDefaultPos };

@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/LeftNav/SwitchTab.ts"
+    ],
+    "include_tags": [
+      "JPT-2927"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
+

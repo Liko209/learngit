@@ -11,7 +11,7 @@ import {
   JuiProfileMiniCardFooterLeft,
   JuiProfileMiniCardFooterRight,
 } from 'jui/pattern/Profile/MiniCard';
-import { JuiIconButton, JuiLinkButton } from 'jui/components/Buttons';
+import { JuiIconButton, JuiButton } from 'jui/components/Buttons';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
@@ -95,7 +95,9 @@ class ProfileMiniCardPersonFooter extends Component<
               source: 'miniProfile',
             }}
           >
-            <JuiLinkButton>{t('people.team.profile')}</JuiLinkButton>
+            <JuiButton size="medium" variant={'text'}>
+              {t('people.team.profile')}
+            </JuiButton>
           </OpenProfileDialog>
         </JuiProfileMiniCardFooterLeft>
         <JuiProfileMiniCardFooterRight>

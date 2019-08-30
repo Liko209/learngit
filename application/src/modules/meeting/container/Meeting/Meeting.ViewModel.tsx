@@ -38,9 +38,9 @@ class MeetingViewModel extends AbstractViewModel<MeetingProps> {
   };
 
   openWindow = (link: string) => {
-    if (window.jupiterElectron) {
+    if (window.jupiterElectron && window.jupiterElectron.openWindow) {
       const electronService = container.get(ElectronService);
-      electronService.openWindow({ url: link });
+      electronService.openWindow(link);
     } else {
       window.open(link);
     }

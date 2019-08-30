@@ -40,6 +40,8 @@ const StyledContactWrapper = styled.div`
 const StyledActionWrapper = styled.div`
   max-width: 35%;
   width: 35%;
+  display: flex;
+  justify-content: flex-end;
 `;
 
 export * from './VoicemailSummary';

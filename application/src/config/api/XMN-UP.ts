@@ -6,17 +6,17 @@ const config: DeepPartial<ApiConfig> = {
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
   },
   glip: {
-    server: 'https://xmnup.asialab.glip.net',
-    apiServer: 'https://xmnup.asialab.glip.net:8443',
-    cacheServer: 'https://xmnup.asialab.glip.net:31337',
-    presenceServer: 'https://xmnup.asialab.glip.net:8443',
+    server: 'https://app-xmnup.asialab.glip.net',
+    apiServer: 'https://app-xmnup.asialab.glip.net',
+    cacheServer: 'https://cache-xmnup.asialab.glip.net:31337',
+    presenceServer: 'https://api-xmnup.asialab.glip.net',
   },
   glip_desktop: {
-    server: 'https://xmnup.asialab.glip.net',
+    server: 'https://app-xmnup.asialab.glip.net',
     pathPrefix: 'v1.0/desktop',
   },
   upload: {
-    server: 'https://xmnup.asialab.glip.net:8443',
+    server: 'https://api-xmnup.asialab.glip.net',
   },
   meetingsConfig: {
     rcv: {
@@ -24,5 +24,6 @@ const config: DeepPartial<ApiConfig> = {
       dialInNumber: '+18582073116',
     },
   },
+  data_collection: '',
 };
 export default config;

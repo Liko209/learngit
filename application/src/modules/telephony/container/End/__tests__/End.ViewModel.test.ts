@@ -15,6 +15,8 @@ import { getEntity } from '@/store/utils';
 jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
 jest.mock('@/modules/telephony/HOC/withDialogOrNewWindow');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
+
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 

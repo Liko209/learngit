@@ -107,6 +107,14 @@ export class MiniProfile extends BaseWebComponent {
     await this.t.click(this.messageButton);
   }
 
+  get conferenceButton() {
+    return this.getSelectorByAutomationIdUnderSelf('audio-conference-btn');
+  }
+  
+  async clickConferenceButton() {
+    await this.t.click(this.conferenceButton);
+  }
+
   get unFavoriteStatusIcon() {
     return this.getSelectorByIcon("star_border", this.header);
   }
@@ -227,6 +235,14 @@ export class ProfileDialog extends BaseWebComponent {
 
   async goToMessages() {
     await this.t.click(this.messageButton);
+  }
+
+  get conferenceIcon() {
+    return this.getSelectorByIcon('conference', this.summary);
+  }
+
+  async clickConferenceIcon() {
+    await this.t.click(this.conferenceIcon);
   }
 
   get editProfileButton() {

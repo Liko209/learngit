@@ -402,7 +402,7 @@ class JuiTabs extends PureComponent<Props, States> {
           <StyledContainer
             key={index}
             className={className}
-            offset={this._containerWidth}
+            style={{ right: 10 * this._containerWidth }}
           >
             {indexLazyLoadComponents.includes(index) && child.props.children}
           </StyledContainer>

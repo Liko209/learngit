@@ -19,30 +19,30 @@ describe('ZoomDeepLinkController', () => {
   let personService: PersonService;
   let itemService: ItemService;
 
+  function setUp() {
+    personService = new PersonService();
+    itemService = new ItemService();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
+        if (config === ServiceConfig.ITEM_SERVICE) {
+          return itemService;
+        }
+      });
+    itemService.handleIncomingData = jest.fn().mockResolvedValueOnce('');
+    const controller = new ZoomDeepLinkController();
+    return controller;
+  }
+
   describe('startMeeting', () => {
     beforeEach(() => {
       jest.resetAllMocks();
       jest.clearAllMocks();
       jest.restoreAllMocks();
     });
-
-    function setUp() {
-      personService = new PersonService();
-      itemService = new ItemService();
-      ServiceLoader.getInstance = jest
-        .fn()
-        .mockImplementation((config: string) => {
-          if (config === ServiceConfig.PERSON_SERVICE) {
-            return personService;
-          }
-          if (config === ServiceConfig.ITEM_SERVICE) {
-            return itemService;
-          }
-        });
-      itemService.handleIncomingData = jest.fn().mockResolvedValueOnce('');
-      const controller = new ZoomDeepLinkController();
-      return controller;
-    }
     it('should return start link when flow success', async () => {
       const controller = setUp();
       personService.getCurrentPerson = jest.fn().mockResolvedValueOnce({
@@ -80,6 +80,38 @@ describe('ZoomDeepLinkController', () => {
       ItemAPI.startZoomMeeting = jest.fn().mockReturnValueOnce({});
       const result = await controller.startMeeting([1]);
       expect(result.action).toEqual(MEETING_ACTION.ERROR);
+    });
+  });
+
+  describe('cancelMeeting', () => {
+    it('should call cancelZoomMeeting', async () => {
+      itemService.cancelZoomMeeting = jest.fn().mockResolvedValueOnce('');
+      const controller = setUp();
+      await controller.cancelMeeting(1);
+      expect(itemService.cancelZoomMeeting).toHaveBeenCalled();
+    });
+  });
+
+  describe('getJoinUrl', () => {
+    it('should return join url if item has it', async () => {
+      const url = "https://meetings.ringcentral.com/j/1493969621";
+      const controller = setUp();
+      itemService.getById = jest.fn().mockResolvedValueOnce({
+        join_url: url
+      })
+      expect(await controller.getJoinUrl(1)).toEqual(url);
+
+    });
+    it('should return empty string if could not get this model', async () => {
+      const controller = setUp();
+      itemService.getById = jest.fn().mockResolvedValueOnce(undefined)
+      expect(await controller.getJoinUrl(1)).toEqual('');
+    });
+
+    it('should return empty string if item has not join url', async () => {
+      const controller = setUp();
+      itemService.getById = jest.fn().mockResolvedValueOnce({})
+      expect(await controller.getJoinUrl(1)).toEqual('');
     });
   });
 });

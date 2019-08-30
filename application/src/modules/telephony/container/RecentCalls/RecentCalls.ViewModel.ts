@@ -70,7 +70,7 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
       return;
     }
     analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
-    return this._telephonyService.makeCall(this.phoneNumber);
+    return this._telephonyService.directCall(this.phoneNumber);
   };
 
   @computed

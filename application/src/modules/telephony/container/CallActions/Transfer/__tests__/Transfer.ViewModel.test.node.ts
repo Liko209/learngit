@@ -11,6 +11,7 @@ import { HOLD_STATE, RECORD_STATE } from 'sdk/module/telephony/entity';
 import { observable } from 'mobx';
 
 jest.mock('@/store/utils');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 decorate(injectable(), TelephonyStore);
 

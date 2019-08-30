@@ -24,7 +24,7 @@ import {
 } from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
-import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
+import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSourceItem.View';
 import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
 import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
 import {
