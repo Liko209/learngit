@@ -9,6 +9,8 @@ import {
   RTCSipEmergencyServiceAddr as EmergencyServiceAddress,
   RTCCallOptions,
   RTCSipProvisionInfo as SipProvisionInfo,
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
 } from 'voip';
 import { CALL_DIRECTION } from './entity';
 
@@ -74,6 +76,20 @@ enum CALL_ACTION_ERROR_CODE {
   OTHERS,
 }
 
+interface CallDelegate {
+  onCallStateChange(callId: number, state: RTC_CALL_STATE): void;
+  onCallActionSuccess(
+    callId: number,
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ): void;
+  onCallActionFailed(
+    callId: number,
+    callAction: RTC_CALL_ACTION,
+    code: number,
+  ): void;
+}
+
 type TelephonyDataCollectionInfoUserInfoType = {
   userId: number;
   companyId: number;
@@ -89,12 +105,20 @@ enum RINGER_ADDITIONAL_TYPE {
   OFF = 'off',
   DEFAULT = 'default',
 }
+
 type CallOptions = RTCCallOptions & {
   replaceName?: string;
   replaceNumber?: string;
   callDirection?: CALL_DIRECTION;
   accessCode?: string;
+  extraCall?: boolean;
 };
+
+enum TRANSFER_TYPE {
+  BLIND_TRANSFER,
+  TO_VOICEMAIL,
+  WARM_TRANSFER,
+}
 
 export {
   RTC_ACCOUNT_STATE,
@@ -111,4 +135,6 @@ export {
   TelephonyDataCollectionInfoConfigType,
   SipProvisionInfo,
   notificationCallback,
+  CallDelegate,
+  TRANSFER_TYPE,
 };

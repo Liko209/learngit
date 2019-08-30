@@ -44,6 +44,11 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
     return this._telephonyStore.incomingState;
   }
 
+  @computed
+  get isMultipleCall() {
+    return this._telephonyStore.isMultipleCall;
+  }
+
   @observable
   windowActivated?: boolean;
 

@@ -663,6 +663,11 @@
       "flip": "Flip",
       "recentCall": "Recent calls",
       "backToDialer": "Back to dialer",
+      "ignore": "Ignore",
+      "voicemail": "To Voicemail",
+      "answer": "Answer",
+      "more": "More",
+      "endAndAnswer": "End & Answer",
       "transfer": "Transfer",
       "toVoiceMail": "To Voicemail",
       "askFirst": "Ask first"
@@ -687,6 +692,7 @@
     "sendToVoicemail": "Send to voicemail",
     "moreOptions": "More options",
     "answerTheCall": "Answer the call",
+    "endAndAnswerTheCall": "End and Answer the call",
     "unknownCaller": "Unknown Caller",
     "unknownCallee": "Unknown",
     "prompt": {
