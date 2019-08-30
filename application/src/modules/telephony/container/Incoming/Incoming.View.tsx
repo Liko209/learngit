@@ -12,6 +12,7 @@ import { IncomingViewProps } from './types';
 import { JuiIncomingCall } from 'jui/pattern/Dialer';
 import { Ignore } from '../Ignore';
 import { Answer } from '../Answer';
+import { EndAndAnswer } from '../EndAndAnswer';
 import { CallActions, CallActionsProps } from '../CallActions';
 import { VoiceMail } from '../VoiceMail';
 import { Reply } from '../Reply';
@@ -19,6 +20,7 @@ import { Forward } from '../Forward';
 import { INCOMING_STATE } from '../../store';
 import { getDisplayName } from '../../helpers';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 const More = (props: CallActionsProps) => (
   <CallActions showLabel={false} {...props} shouldPersistBg />
@@ -26,7 +28,8 @@ const More = (props: CallActionsProps) => (
 
 More.displayName = 'more';
 
-const Actions = [VoiceMail, Answer, More];
+const incomingCallActions = [Ignore, More, VoiceMail, Answer];
+const multipleIncomingCallActions = [Ignore, More, EndAndAnswer, VoiceMail];
 
 type Props = IncomingViewProps & WithTranslation;
 
@@ -44,8 +47,26 @@ class IncomingViewComponent extends Component<Props> {
     );
   });
 
+  componentDidMount() {
+    const { isMultipleCall } = this.props;
+    const type = isMultipleCall ? 'multiCall' : 'singleCall';
+    analyticsCollector.seeIncomingCallPage(type);
+  }
+
   render() {
-    const { name, phone, t, isExt, incomingState, uid } = this.props;
+    const {
+      name,
+      phone,
+      t,
+      isExt,
+      incomingState,
+      uid,
+      isMultipleCall,
+    } = this.props;
+
+    const Actions = isMultipleCall
+      ? multipleIncomingCallActions
+      : incomingCallActions;
 
     switch (incomingState) {
       case INCOMING_STATE.REPLY:
@@ -60,7 +81,6 @@ class IncomingViewComponent extends Component<Props> {
             name={getDisplayName(t, CALL_DIRECTION.INBOUND, name)}
             phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             Actions={Actions}
-            Ignore={Ignore}
             Avatar={uid || name ? this._Avatar : this._DefaultAvatar}
           />
         );

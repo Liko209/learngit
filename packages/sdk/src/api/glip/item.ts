@@ -159,6 +159,14 @@ class ItemAPI extends Api {
       path: '/conference',
     });
   }
+
+  static cancelRCV(id: number) {
+    // empty response
+    return this.glipNetworkClient.post({
+      path: '/rcv/cancel-call',
+      data: { meeting_item_id: id },
+    });
+  }
 }
 
 export default ItemAPI;

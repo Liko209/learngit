@@ -166,4 +166,42 @@ describe('ItemActionController', () => {
       expect(a).toEqual(conference);
     });
   });
+  describe('cancelZoomMeeting', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      requestController.put = jest.fn();
+      progressService.deleteProgress = jest.fn();
+      notificationCenter.emitEntityDelete = jest.fn();
+      partialUpdateController.updatePartially = jest.fn();
+    });
+    it('cancelZoomMeeting', async () => {
+      const normalId = Math.abs(
+        GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_MEETING),
+      );
+      partialUpdateController.updatePartially = jest
+        .fn()
+        .mockImplementation((params: PartialUpdateParams<any>) => {
+          const { entityId, preHandlePartialEntity, doUpdateEntity } = params;
+          expect(entityId).toBe(normalId);
+          expect(
+            preHandlePartialEntity!(
+              { id: normalId, status: 'cancelled' },
+              { id: normalId, status: 'not_start', name: 'name' },
+            ),
+          ).toEqual({ id: normalId, status: 'cancelled' });
+          doUpdateEntity!({ id: normalId, status: 'cancelled' });
+        });
+      await itemActionController.cancelZoomMeeting(normalId);
+      expect(partialUpdateController.updatePartially).toHaveBeenCalledWith({
+        entityId: normalId,
+        preHandlePartialEntity: expect.anything(),
+        doUpdateEntity: expect.anything(),
+      });
+      expect(requestController.put).toHaveBeenCalledWith({
+        id: normalId,
+        status: 'cancelled',
+      });
+    })
+  })
 });

@@ -31,11 +31,6 @@ import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 import { PhoneParserUtility } from './utils/phoneParser';
 import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
-import {
-  PermissionService,
-  LaunchDarklyController,
-  SplitIOController,
-} from 'sdk/module/permission';
 import { jobScheduler } from './framework/utils/jobSchedule';
 import { UserConfigService } from './module/config';
 import { CrashManager } from './module/crash';
@@ -57,7 +52,6 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-    public permissionService: PermissionService,
   ) {
     CrashManager.getInstance().monitor();
   }
@@ -109,9 +103,6 @@ class Sdk {
   async onStartLogin() {
     mainLogger.tags(LOG_TAG).info('onStartLogin');
     await this.daoManager.initDatabase(this.clearAllData);
-
-    this.permissionService.injectControllers(new LaunchDarklyController());
-    this.permissionService.injectControllers(new SplitIOController());
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);

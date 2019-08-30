@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "telephony/ContactSearch.ts"
+    ],
+    "include_tags": [
+      "JPT-2182"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -154,7 +154,7 @@ export class SocketManager {
     this._reconnectRetryCount = this._reconnectRetryCount + 1;
     this.error(
       `${errMsg}, clearing socket address$ and re do index, nth:${
-        this._reconnectRetryCount
+      this._reconnectRetryCount
       }`,
     );
   }
@@ -299,7 +299,7 @@ export class SocketManager {
     }
     this.info(
       `Not renew socketFSM: _hasLoggedIn[${this._hasLoggedIn}], _isOffline[${
-        this._isOffline
+      this._isOffline
       }]`,
     );
     if (this._hasLoggedIn && !this._isOffline) {
@@ -347,7 +347,7 @@ export class SocketManager {
   private _canConnectCallback(id: number) {
     this.info(
       `_startFSM can reconnect callback _startRealFSM id:${id} this._currentId:${
-        this._currentId
+      this._currentId
       }`,
     );
     if (id === this._currentId) {
