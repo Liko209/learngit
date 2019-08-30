@@ -288,7 +288,7 @@ class AnalyticsCollector {
   }
 
   profileDialog(category: string, source: string) {
-    dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
+    dataAnalysis.page('Jup_Web/DT_profile_profileDialog', {
       category,
       source,
     });
