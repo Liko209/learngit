@@ -4,16 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing, grey, typography } from '../../foundation/utils';
 import { JuiSearchInput } from '../SearchBar/SearchInput';
 import {
   JuiDialogHeaderTitle,
   JuiDialogHeaderActions,
+  JuiDialogHeader,
 } from '../../components/Dialog';
 import { JuiIconButton } from '../../components/Buttons';
-import Downshift, { GetItemPropsOptions } from 'downshift';
+import Downshift, { GetItemPropsOptions, DownshiftInterface } from 'downshift';
 
 export type SelectItem = {
   id: number;
@@ -35,15 +36,16 @@ export type GroupSearchProps<T> = {
   }) => React.ReactElement;
   closeIconTooltip: string;
   closeIconAriaLabel?: string;
+  onDialogClose: () => void;
+  itemCount: number;
+  onKeyDownEscape: () => void;
+  /**
+   * needed for downshift to transform item to string
+   */
+  itemToString: (item: T) => string;
 };
 
 const LIST_HEIGHT = '392px';
-
-const StyledHeader = styled.div`
-  padding: ${spacing(5, 6)};
-  display: flex;
-  align-items: center;
-`;
 
 const Container = styled.div`
   display: flex;
@@ -65,22 +67,6 @@ const StyledListTitle = styled.div`
   padding: ${spacing(5, 0, 3, 0)};
 `;
 
-function stateReducer(state: any, changes: any) {
-  // this prevents the highlightIndex changing closed when the user
-  // selects an item with a keyboard or mouse
-  switch (changes.type) {
-    case Downshift.stateChangeTypes.keyDownEnter:
-    case Downshift.stateChangeTypes.clickItem:
-      return {
-        ...changes,
-        isOpen: true,
-        highlightedIndex: state.highlightedIndex,
-      };
-    default:
-      return changes;
-  }
-}
-
 export function JuiGroupSearch<T extends SelectItem>({
   children,
   dialogTitle,
@@ -93,7 +79,72 @@ export function JuiGroupSearch<T extends SelectItem>({
   clearText,
   closeIconTooltip,
   closeIconAriaLabel,
+  onDialogClose,
+  itemCount,
+  onKeyDownEscape,
+  itemToString,
 }: GroupSearchProps<T>) {
+  const ref = useRef<DownshiftInterface<any>>(null);
+  const _onInputChange = useCallback(
+    e => {
+      if (ref && ref.current) {
+        // @ts-ignore
+        ref.current.setHighlightedIndex(0);
+        onInputChange(e);
+      }
+    },
+    [onInputChange],
+  );
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<any>) => {
+      if (e.key === 'Escape') {
+        // Prevent Downshift's default 'escape' behavior.
+        // @ts-ignore
+        e.nativeEvent.preventDownshiftDefault = true;
+        onKeyDownEscape();
+      }
+    },
+    [onKeyDownEscape],
+  );
+
+  const stateReducer = useCallback(
+    function stateReducer(state: any, changes: any) {
+      // this prevents the highlightIndex changing closed when the user
+      // selects an item with a keyboard or mouse
+      switch (changes.type) {
+        case Downshift.stateChangeTypes.keyDownSpaceButton:
+        case Downshift.stateChangeTypes.keyDownEscape:
+        case Downshift.stateChangeTypes.blurInput:
+          return {};
+        case Downshift.stateChangeTypes.keyDownEnter:
+        case Downshift.stateChangeTypes.clickItem:
+          return {
+            ...changes,
+            isOpen: true,
+            highlightedIndex: state.highlightedIndex,
+          };
+        case Downshift.stateChangeTypes.keyDownArrowUp: {
+          if (state.highlightedIndex === 0) {
+            return {};
+          }
+          return changes;
+        }
+        case Downshift.stateChangeTypes.keyDownArrowDown: {
+          if (state.highlightedIndex === itemCount - 1) {
+            return {};
+          }
+          return changes;
+        }
+
+        default: {
+          return changes;
+        }
+      }
+    },
+    [itemCount],
+  );
+
   return (
     <Downshift
       defaultHighlightedIndex={0}
@@ -101,33 +152,44 @@ export function JuiGroupSearch<T extends SelectItem>({
       stateReducer={stateReducer}
       onChange={onSelectChange}
       initialIsOpen
+      itemCount={itemCount}
+      ref={ref}
+      itemToString={itemToString}
     >
       {({ getInputProps, getItemProps, highlightedIndex, getRootProps }) => {
         return (
-          <Container {...getRootProps()}>
-            <StyledHeader>
-              <JuiDialogHeaderTitle>{dialogTitle}</JuiDialogHeaderTitle>
+          <Container data-test-automation-id="groupSearch" {...getRootProps()}>
+            <JuiDialogHeader>
+              <JuiDialogHeaderTitle data-test-automation-id="groupSearchTitle">
+                {dialogTitle}
+              </JuiDialogHeaderTitle>
               <JuiDialogHeaderActions>
                 <JuiIconButton
                   tooltipTitle={closeIconTooltip}
                   ariaLabel={closeIconAriaLabel}
+                  onClick={onDialogClose}
+                  data-test-automation-id="groupSearchCloseButton"
                 >
                   close
                 </JuiIconButton>
               </JuiDialogHeaderActions>
-            </StyledHeader>
+            </JuiDialogHeader>
             <StyledFixedTop>
               <JuiSearchInput
                 onClear={onClear}
                 clearText={clearText}
-                showClear
                 size="medium"
                 withCloseIcon={false}
-                InputProps={getInputProps({
-                  placeholder: searchPlaceHolder,
-                })}
+                InputProps={{
+                  ...getInputProps({
+                    onKeyDown,
+                    placeholder: searchPlaceHolder,
+                    autoFocus: true,
+                  }),
+                  'data-test-automation-id': 'groupSearchInput',
+                }}
                 value={searchKey}
-                onChange={onInputChange}
+                onChange={_onInputChange}
               />
               <StyledListTitle>{listTitle}</StyledListTitle>
             </StyledFixedTop>
