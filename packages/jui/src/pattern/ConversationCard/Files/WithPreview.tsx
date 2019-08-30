@@ -17,6 +17,7 @@ type JuiFileWithPreviewProps = {
   handleFileClick?: (ev: React.MouseEvent<HTMLElement>) => void;
   disabled?: boolean;
   total?: number;
+  needBackgroundContain?: boolean;
 };
 
 class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
@@ -30,6 +31,7 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
       handleFileClick,
       disabled = true,
       total = 0,
+      needBackgroundContain,
     } = this.props;
 
     return (
@@ -39,6 +41,7 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
       >
         <Jui.FileCardMedia
           image={url}
+          needBackgroundContain={needBackgroundContain}
           disabled={disabled}
           total={total}
           data-test-automation-id={'fileCardMedia'}

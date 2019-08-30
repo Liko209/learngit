@@ -127,10 +127,12 @@ const FileCard = styled(JuiCard)`
 type FileCardMediaWrapperProps = JuiCardMediaProps & {
   disabled?: boolean;
   total: number;
+  needBackgroundContain?: boolean;
 };
 
 const FileCardMediaWrapper = ({
   disabled,
+  needBackgroundContain,
   total = 0,
   ...rest
 }: FileCardMediaWrapperProps) => {
@@ -155,9 +157,13 @@ const FileCardMediaWrapper = ({
 };
 
 const FileCardMedia = styled(FileCardMediaWrapper)`
-  position: relative;
-  height: ${height(50)};
-  background-color: ${palette('accent', 'ash')};
+  && {
+    position: relative;
+    height: ${height(50)};
+    background-color: ${palette('background', 'default')};
+    background-size: ${({ needBackgroundContain }) =>
+      needBackgroundContain ? 'contain' : 'cover'};
+  }
 `;
 
 const FileCardContent = styled(MuiCardContent)`
