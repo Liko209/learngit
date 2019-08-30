@@ -34,10 +34,10 @@ class ItemEntityCacheController extends EntityCacheController<Item> {
         id && super.delete(id);
       }
       ids.push(item.id);
-      this._typeIdMap.set(item.type_id, ids);
     }
     else {
-      this._typeIdMap.set(item.type_id, [item.id || 0]);
+      let values = item.id ? [item.id] : [];
+      this._typeIdMap.set(item.type_id, values);
     }
   }
 }

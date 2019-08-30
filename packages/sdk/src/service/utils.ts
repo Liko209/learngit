@@ -71,8 +71,7 @@ const baseHandleData = async (
       const ids = deactivatedData.map((item: any) => item.id)
       await Promise.all([
         daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData),
-        dao.bulkDelete(ids),
-        entitySourceController && entitySourceController.bulkDelete(ids)
+        entitySourceController ? entitySourceController.bulkDelete(ids) : dao.bulkDelete(ids)
       ]);
     }
 
