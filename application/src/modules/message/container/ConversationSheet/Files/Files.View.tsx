@@ -45,7 +45,7 @@ const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
-  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   componentWillUnmount() {
