@@ -15,7 +15,6 @@ import {
 } from '../../foundation/utils/styles';
 
 type Props = {
-  Ignore: React.ComponentType;
   Avatar: React.ComponentType;
   Actions: React.ComponentType<any>[];
   name: string;
@@ -25,12 +24,6 @@ type Props = {
 const StyledIncomingCall = styled('div')`
   position: relative;
   background-color: ${palette('common', 'white')};
-`;
-
-const StyledIgnoreContainer = styled('div')`
-  position: absolute;
-  right: ${spacing(2)};
-  top: ${spacing(1.5)};
 `;
 
 const StyledMarquee = styled(JuiMarquee)`
@@ -54,10 +47,24 @@ const StyledInfo = styled('div')`
   padding: ${spacing(0, 6)};
 `;
 
+const StyledAction = styled('div')`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: ${spacing(18.5)};
+  margin: ${spacing(0, 2, 6, 0)};
+
+  &&:nth-child(even) {
+    margin-right: ${spacing(0)};
+  }
+`;
+
 const StyledActionsContainer = styled('div')`
   display: flex;
-  justify-content: space-between;
-  padding: ${spacing(0, 6, 3)};
+  justify-content: center;
+  padding: ${spacing(0, 8)};
+  flex-wrap: wrap;
 `;
 
 class JuiIncomingCall extends PureComponent<Props> {
@@ -67,12 +74,9 @@ class JuiIncomingCall extends PureComponent<Props> {
     e.preventDefault();
   }
   render() {
-    const { Ignore, Avatar, name, phone, Actions } = this.props;
+    const { Avatar, name, phone, Actions } = this.props;
     return (
       <StyledIncomingCall>
-        <StyledIgnoreContainer>
-          <Ignore />
-        </StyledIgnoreContainer>
         <Avatar />
         <StyledInfo>
           <StyledMarquee text={name} time={15} hoverToStop />
@@ -81,7 +85,9 @@ class JuiIncomingCall extends PureComponent<Props> {
         <StyledActionsContainer onMouseDown={this._handleMouseDown}>
           {Actions &&
             Actions.map((Action: React.ComponentType) => (
-              <Action key={Action.displayName} />
+              <StyledAction key={Action.displayName}>
+                <Action />
+              </StyledAction>
             ))}
         </StyledActionsContainer>
       </StyledIncomingCall>
