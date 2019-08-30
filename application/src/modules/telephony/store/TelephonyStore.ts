@@ -454,6 +454,7 @@ class TelephonyStore {
       this.quitKeypad();
       this._clearEnteredKeys();
       this._clearTransferString();
+      this.isConference = false;
       if (this.isTransferPage) {
         this.backToDialerFromTransferPage();
       }
