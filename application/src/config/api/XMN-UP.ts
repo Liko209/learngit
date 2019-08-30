@@ -7,7 +7,7 @@ const config: DeepPartial<ApiConfig> = {
   },
   glip: {
     server: 'https://app-xmnup.asialab.glip.net',
-    apiServer: 'https://api-xmnup.asialab.glip.net',
+    apiServer: 'https://app-xmnup.asialab.glip.net',
     cacheServer: 'https://cache-xmnup.asialab.glip.net:31337',
     presenceServer: 'https://api-xmnup.asialab.glip.net',
   },

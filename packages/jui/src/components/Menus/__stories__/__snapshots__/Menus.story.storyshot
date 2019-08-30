@@ -1,12 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Menus 2 Lines MenuItem With Avatar 1`] = `
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
 .c4.c4 {
   padding: 0;
 }
@@ -154,6 +148,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   </div>
   <div
     className="MuiListItemText-root c4 MuiListItemText-multiline multiline"
+    flex="1 1 auto"
   >
     <span
       className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"

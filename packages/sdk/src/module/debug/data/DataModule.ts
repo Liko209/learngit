@@ -79,7 +79,6 @@ export class DataModule extends BaseDebugModule {
     const exportZip = await this.getExportZipData();
     saveBlob(`${name}.zip`, exportZip);
   };
-
 }
 
 const data = new DataModule();

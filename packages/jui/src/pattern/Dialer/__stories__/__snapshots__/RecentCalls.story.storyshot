@@ -32,7 +32,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   fill: #ff3737;
 }
 
-.c3.c3 {
+.c5.c5 {
   padding: 8px;
   width: 100%;
   display: -webkit-box;
@@ -43,27 +43,21 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   color: #000;
 }
 
-.c3.c3.Mui-focusVisible {
+.c5.c5.Mui-focusVisible {
   background-color: rgba(0,0,0,0.1);
 }
 
-.c3.c3:hover {
+.c5.c5:hover {
   background-color: rgba(0,0,0,0.05);
 }
 
-.c3.c3 .rippleVisible {
+.c5.c5 .rippleVisible {
   background-color: rgba(0,0,0,0.05);
 }
 
 .c6.c6 {
   margin-right: 8px;
   min-width: 0;
-}
-
-.c8 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
 }
 
 .c8.c8 {
@@ -157,6 +151,29 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
 }
 
 .c2.c2 {
+  padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 8px;
+  color: #000;
+}
+
+.c2.c2.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c2.c2:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c2.c2 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c2.c2 {
   -webkit-box-pack: justify;
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
@@ -165,7 +182,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   cursor: pointer;
 }
 
-.c4 {
+.c3 {
   min-width: 0;
   max-width: 148px;
   -webkit-flex: 1;
@@ -190,7 +207,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   width: 68px;
 }
 
-.c5.c5 {
+.c4.c4 {
   -webkit-box-pack: start;
   -webkit-justify-content: flex-start;
   -ms-flex-pack: start;
@@ -207,7 +224,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   >
     <div
       aria-disabled={false}
-      className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button Mui-selected"
+      className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button Mui-selected"
       onBlur={[Function]}
       onClick={[Function]}
       onDragLeave={[Function]}
@@ -221,14 +238,24 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
       tabIndex={0}
     >
       <div
-        className="c4"
+        className="c3"
       >
         <li
-          className="MuiListItem-root c5 c3 MuiListItem-gutters"
+          className="MuiListItem-root c4 c5 MuiListItem-gutters"
           disabled={false}
+          style={
+            Object {
+              "cursor": "default",
+            }
+          }
         >
           <div
             className="MuiListItemAvatar-root c6"
@@ -245,6 +272,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
           </div>
           <div
             className="MuiListItemText-root c8 MuiListItemText-multiline multiline"
+            flex="1 1 auto"
           >
             <span
               className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -285,7 +313,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
     </div>
     <div
       aria-disabled={false}
-      className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
+      className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
       onBlur={[Function]}
       onClick={[Function]}
       onDragLeave={[Function]}
@@ -299,14 +327,24 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
       tabIndex={0}
     >
       <div
-        className="c4"
+        className="c3"
       >
         <li
-          className="MuiListItem-root c5 c3 MuiListItem-gutters"
+          className="MuiListItem-root c4 c5 MuiListItem-gutters"
           disabled={false}
+          style={
+            Object {
+              "cursor": "default",
+            }
+          }
         >
           <div
             className="MuiListItemAvatar-root c6"
@@ -323,6 +361,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
           </div>
           <div
             className="MuiListItemText-root c8 MuiListItemText-multiline multiline"
+            flex="1 1 auto"
           >
             <span
               className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -363,7 +402,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
     </div>
     <div
       aria-disabled={false}
-      className="MuiButtonBase-root MuiListItem-root c2 c3 MuiListItem-gutters MuiListItem-button"
+      className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
       onBlur={[Function]}
       onClick={[Function]}
       onDragLeave={[Function]}
@@ -377,14 +416,24 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
       tabIndex={0}
     >
       <div
-        className="c4"
+        className="c3"
       >
         <li
-          className="MuiListItem-root c5 c3 MuiListItem-gutters"
+          className="MuiListItem-root c4 c5 MuiListItem-gutters"
           disabled={false}
+          style={
+            Object {
+              "cursor": "default",
+            }
+          }
         >
           <div
             className="MuiListItemAvatar-root c6"
@@ -401,6 +450,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
           </div>
           <div
             className="MuiListItemText-root c8 MuiListItemText-multiline multiline"
+            flex="1 1 auto"
           >
             <span
               className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"

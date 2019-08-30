@@ -30,7 +30,6 @@ type JuiListItemProps = MuiListItemPropsFixed & {
   width?: number;
   isInline?: boolean;
   singleLine?: boolean;
-  disableButton?: boolean;
   /**
    * listItem use this color to calc hover, pressed, selected, disabled  background color, default to black
    */
@@ -43,13 +42,16 @@ const WrappedListItem = React.memo(
     width,
     isInline,
     singleLine,
-    disableButton,
-    ...rests
-  }: JuiListItemProps) => <MuiListItem {...rests} />,
+    baseColor,
+    highlighted,
+    ...rest
+  }: JuiListItemProps) => <MuiListItem {...rest} />,
 );
 
-const StyledListItem = styled<JuiListItemProps>(
-  ({ baseColor, highlighted, ...rest }) => <WrappedListItem {...rest} />,
+const JuiListItem = styled<JuiListItemProps>(WrappedListItem).attrs(
+  ({ onClick }: JuiListItemProps) => ({
+    style: { cursor: onClick ? 'pointer' : 'default' },
+  }),
 )`
   && {
     padding: ${spacing(2)};
@@ -93,17 +95,10 @@ const StyledListItem = styled<JuiListItemProps>(
   }
 `;
 
-const JuiListItemComponent = (props: JuiListItemProps) => (
-  <StyledListItem button={!props.disableButton && true} {...props}>
-    {props.children}
-  </StyledListItem>
-);
-
-JuiListItemComponent.defaultProps = {
+JuiListItem.defaultProps = {
   singleLine: false,
+  button: true,
 };
-JuiListItemComponent.displayName = 'JuiListItem';
-
-const JuiListItem = React.memo(JuiListItemComponent);
+JuiListItem.displayName = 'JuiListItem';
 
 export { JuiListItem, JuiListItemProps };
