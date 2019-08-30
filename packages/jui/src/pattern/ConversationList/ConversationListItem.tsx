@@ -4,11 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { memo } from 'react';
-
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
-import { JuiMenu } from '../../components';
+import { JuiMenu } from '../../components/Menus';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
@@ -50,7 +49,7 @@ const rippleEnter = (theme: Theme) => keyframes`
 
 const StyledIconButtonMore = styled(JuiIconButton)<JuiIconButtonProps>``;
 
-const hoverStyle = css<StyledMuiMenuItemProps>`
+const hoverStyle = css`
   background-color: ${({ theme }) =>
     fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
   ${StyledIconButtonMore} {
@@ -92,16 +91,11 @@ const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
      * Workaround to resolve transition conflicts with react-sortable-hoc
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
      */
-    transition: transform 0s ease,
-      ${({ theme }) =>
-        theme.transitions.create('background-color', {
-          duration: theme.transitions.duration.shortest,
-          easing: theme.transitions.easing.easeInOut,
-        })};
+    transition: transform 0s ease;
   }
 
-  &&&& {
-    ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
+  &&.MuiListItem-button:hover {
+    background: unset;
   }
 
   &&.dragging {
@@ -113,18 +107,16 @@ const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
       umi ? theme.palette.grey['900'] : theme.palette.grey['700']};
   }
 
-  && ${StyledIconButtonMore} {
-    color: ${palette('grey', '400')};
+  ${StyledIconButtonMore} {
     display: none;
-    font-size: ${spacing(5)};
   }
 
-  &&&:hover {
-    ${hoverStyle}
+  &&&& {
+    ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
   }
 
   &&&&.selected {
-    background-color: ${palette('primary', '600')};
+    background-color: ${palette('primary', 'main')};
 
     && ${StyledItemText} {
       color: ${({ theme }) => theme.palette.common.white};

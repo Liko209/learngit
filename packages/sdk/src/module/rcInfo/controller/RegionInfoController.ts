@@ -28,10 +28,14 @@ import {
 } from '../types';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { notificationCenter, RC_INFO, SERVICE } from 'sdk/service';
 import { RCInfoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
+import {
+  ICountryRequest,
+  CountryRecord,
+} from 'sdk/api/ringcentral/types/common';
 
 type StationSetting = {
   newCountryInfo: DialingCountryInfo;
@@ -48,11 +52,14 @@ const DefaultCountryInfo = {
   callingCode: '1',
 };
 const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
+const COUNTRY_PAGE_SIZE = 500;
+const STATE_PAGE_SIZE = 400;
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
   private _notificationKeys: string[];
   private _stateListMap: Map<string, StateRecord[]> = new Map();
+  private _countryList: CountryRecord[] = [];
 
   constructor(
     private _rcInfoFetchController: RCInfoFetchController,
@@ -115,12 +122,26 @@ class RegionInfoController {
     if (list) {
       return list;
     }
-    const request: IStateRequest = { countryId, page: 1, perPage: 400 };
+    const request: IStateRequest = {
+      countryId,
+      page: 1,
+      perPage: STATE_PAGE_SIZE,
+    };
     const result = await this._rcInfoFetchController.requestCountryState(
       request,
     );
     result.length && this._stateListMap.set(countryId, result);
     return result;
+  }
+
+  async getAllCountryList(): Promise<CountryRecord[]> {
+    if (!this._countryList.length) {
+      const request: ICountryRequest = { page: 1, perPage: COUNTRY_PAGE_SIZE };
+      this._countryList = await this._rcInfoFetchController.requestCountryList(
+        request,
+      );
+    }
+    return this._countryList;
   }
 
   async getCurrentCountry(): Promise<DialingCountryInfo> {

@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { CallCtrlPanelProps, CallCtrlPanelViewProps } from './types';
@@ -41,6 +41,11 @@ class CallCtrlPanelViewModel extends StoreViewModel<CallCtrlPanelProps> implemen
   @computed
   get direction() {
     return this._telephonyStore.activeCallDirection;
+  }
+
+  @computed
+  get isConference() {
+    return this._telephonyStore.isConference;
   }
 }
 

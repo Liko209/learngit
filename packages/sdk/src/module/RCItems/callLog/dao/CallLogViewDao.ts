@@ -4,9 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import _ from 'lodash';
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { CallLogView, CallLog } from '../entity';
-import { IDatabase, mainLogger, PerformanceTracer } from 'foundation';
+import { IDatabase } from 'foundation/db';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE, CALL_RESULT } from '../constants';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 import { DEFAULT_FETCH_SIZE, CALL_DIRECTION } from '../../constants';
@@ -14,13 +17,45 @@ import { Nullable } from 'sdk/types';
 import { SortUtils } from 'sdk/framework/utils';
 import { FetchDataOptions } from '../../types';
 import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { IViewDao } from 'sdk/module/base/dao/IViewDao';
+import { RCItemUtils } from '../../utils';
 
 const LOG_TAG = 'CallLogViewDao';
 
-class CallLogViewDao extends BaseDao<CallLogView, string> {
+class CallLogViewDao extends BaseDao<CallLogView, string>
+  implements IViewDao<string, CallLog, CallLogView> {
   static COLLECTION_NAME = 'callLogView';
   constructor(db: IDatabase) {
     super(CallLogViewDao.COLLECTION_NAME, db);
+  }
+
+  toViewItem(callLog: CallLog) {
+    return this.toPartialViewItem(callLog) as CallLogView;
+  }
+
+  toPartialViewItem(partialCallLog: Partial<CallLog>) {
+    const caller = partialCallLog.direction
+      ? partialCallLog.direction === CALL_DIRECTION.INBOUND
+        ? partialCallLog.from
+        : partialCallLog.to
+      : undefined;
+    return _.pickBy(
+      {
+        id: partialCallLog.id,
+        __timestamp: partialCallLog.__timestamp,
+        __localInfo: partialCallLog.__localInfo,
+        caller: caller && RCItemUtils.toCallerView(caller),
+      },
+      value => {
+        return value !== undefined && value !== null;
+      },
+    );
+  }
+
+  getCollection() {
+    return this.getDb().getCollection<CallLogView, string>(
+      CallLogViewDao.COLLECTION_NAME,
+    );
   }
 
   async queryCallLogs(
@@ -100,12 +135,14 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
       }
       return false;
     });
-    return views.sort((lv: CallLogView, rv: CallLogView) => SortUtils.sortModelByKey<CallLogView, string>(
-      lv,
-      rv,
-      ['__timestamp'],
-      desc,
-    ));
+    return views.sort((lv: CallLogView, rv: CallLogView) =>
+      SortUtils.sortModelByKey<CallLogView, string>(
+        lv,
+        rv,
+        ['__timestamp'],
+        desc,
+      ),
+    );
   }
 
   async queryOldestTimestamp(): Promise<Nullable<number>> {
@@ -155,7 +192,7 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
         view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED
           ? CALL_RESULT.MISSED
           : CALL_RESULT.UNKNOWN,
-      __deactivated: false,
+      deleted: false,
     } as CallLog;
   }
 }

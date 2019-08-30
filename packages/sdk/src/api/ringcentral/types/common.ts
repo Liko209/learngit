@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Token } from 'foundation';
+import { Token } from 'foundation/network';
 import { IdModel } from 'sdk/framework/model';
 
 type RCCountryInfo = {
@@ -180,6 +180,31 @@ type ICountryInfo = {
   name: string;
 };
 
+type ICountryRequest = {
+  page: number;
+  perPage: number;
+};
+
+type CountryRecord = {
+  callingCode: string;
+  emergencyCalling: boolean;
+  freeSoftphoneLine: boolean;
+  id: string;
+  isoCode: string;
+  loginAllowed: boolean;
+  name: string;
+  numberSelling: boolean;
+  signupAllowed: boolean;
+  uri: string;
+};
+
+type CountryList = {
+  uri: string;
+  records: CountryRecord[];
+  paging: PagingInfo;
+  navigation: INavigationInfo;
+};
+
 type IPhoneNumberRecord = {
   id: number;
   phoneNumber: string;
@@ -320,4 +345,7 @@ export {
   CountryState,
   StateRecord,
   IStateRequest,
+  ICountryRequest,
+  CountryList,
+  CountryRecord,
 };

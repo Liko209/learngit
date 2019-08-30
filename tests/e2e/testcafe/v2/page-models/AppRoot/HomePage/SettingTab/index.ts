@@ -2,6 +2,7 @@ import { BaseWebComponent } from "../../../BaseWebComponent";
 import { LeftRail } from './LeftRail';
 import { PhoneSettingPage } from './PhoneSettingPage';
 import { NotificationAndSoundSettingPage } from './NotificationAndSoundPage';
+import { MessageSettingPage } from "./MessageSettingPage";
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -23,7 +24,15 @@ class Entry extends BaseWebComponent {
 
 export class SettingTab extends BaseWebComponent {
   get self() {
-    return this.getSelectorByAutomationId('entry-general').parent('div');
+    return this.getSelectorByAutomationId('settingLeftRail').parent(2); //todo: new automation id
+  }
+
+  get subSettings() {
+    return this.self.find('[data-name="sub-setting"]');
+  }
+
+  nthSubSetting(n: number) {
+    return this.getComponent(Entry, this.subSettings.nth(n));
   }
 
   get leftRail() {
@@ -61,6 +70,9 @@ export class SettingTab extends BaseWebComponent {
   // phone setting
   get phoneSettingPage() {
     return this.getComponent(PhoneSettingPage);
+  }
+  get messageSettingPage(){
+    return this.getComponent(MessageSettingPage);
   }
 
   get notificationAndSoundPage() {

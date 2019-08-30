@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDragZoom, JuiDragZoomOptions } from 'jui/pattern/DragZoom';
 import { JuiImageView } from 'jui/components/ImageView';
+import { withEscTracking } from '@/common/trackData';
 import { JuiModal } from 'jui/components/Dialog';
 import { RuiSlider } from 'rcui/components/Forms/Slider';
 import { JuiButton } from 'jui/components/Buttons';
@@ -29,6 +30,7 @@ import { accelerateURL } from '@/common/accelerateURL';
 import { Transform } from 'jui/components/ZoomArea';
 import portalManager from '@/common/PortalManager';
 import { withUploadFile } from 'jui/hoc/withUploadFile';
+import { showNotImageTypeToast } from '../utils';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
 const CONTAINER_SIZE = 280;
@@ -65,7 +67,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
 
   handleClose = () => portalManager.dismissLast();
 
-  private _hideMenuAndShowDialog = () => {
+  private _showUploadFileDialog = () => {
     // for Edge bug: FIJI-2818
     setTimeout(() => {
       const ref = this._uploadRef.current;
@@ -81,13 +83,17 @@ class PhotoEditComponent extends Component<PhotoEdit> {
     transform: Transform;
     canDrag: boolean;
   }) => {
-    this.props.updateTransform(transform);
+    this.props.updateTransform({ ...transform });
   };
 
-  handleFileChanged = (files: FileList) => {
+  handleFileChanged = async (files: FileList) => {
     if (!files) return;
+    const file = files[0];
+    if (!(await showNotImageTypeToast(file.type))) {
+      return;
+    }
     const { updateImageUrl } = this.props;
-    updateImageUrl(files[0]);
+    updateImageUrl(file);
   };
 
   renderZoomContainer = () => {
@@ -174,12 +180,14 @@ class PhotoEditComponent extends Component<PhotoEdit> {
         cancelText={t('common.dialog.cancel')}
         modalProps={{
           'data-test-automation-id': 'EditProfilePhoto',
+          scroll: 'body',
         }}
+        onClose={withEscTracking(this.handleClose)}
       >
         <JuiEditPhotoUploadContent>
           <JuiButton
             variant="outlined"
-            onClick={this._hideMenuAndShowDialog}
+            onClick={this._showUploadFileDialog}
             data-test-automation-id={'photoEditUploadButton'}
           >
             {t('people.profile.edit.editProfilePhotoUploadPhoto')}
@@ -201,12 +209,12 @@ class PhotoEditComponent extends Component<PhotoEdit> {
                 cover
                 automationId="profileEditAvatar"
               />
-            ) : isGifImage || !currentFile ? (
+            ) : !isGifImage && currentFile ? (
+              this.renderZoomContainer()
+            ) : (
               <JuiEditPhotoImageCanNotEdit>
                 {this.renderZoomContainer()}
               </JuiEditPhotoImageCanNotEdit>
-            ) : (
-              this.renderZoomContainer()
             )}
           </JuiEditPhotoImageEditContent>
         </JuiEditPhotoEditContent>

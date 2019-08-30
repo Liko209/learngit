@@ -4,11 +4,16 @@
  */
 export const STORAGE_TYPES = {
   KV: 1,
-  DB: 2,
+  DB: 2
 };
 
 export enum QUERY_DIRECTION {
   OLDER = 'older',
   NEWER = 'newer',
-  BOTH = 'both',
+  BOTH = 'both'
+}
+
+export enum MAINTAIN_DIRECTION {
+  UP = 100,
+  DOWN = 101
 }

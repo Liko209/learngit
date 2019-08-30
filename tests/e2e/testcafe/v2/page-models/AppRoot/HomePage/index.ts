@@ -10,8 +10,9 @@ import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
 import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header, TopBarAvatar } from './header';
-import { MiniProfile, ProfileDialog, EditProfileDialog } from './ViewProfile';
+import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
+import { ShareStatusDialog } from './ShareStatusDialog';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { TelephonyPOC } from './TelephonyPOC'
@@ -32,11 +33,23 @@ import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
 import { DeleteAllCalllDialog } from './PhoneTab/CallHistory';
 import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
 import { BlockNumberDialog } from './PhoneTab/index';
+import { AvatarEditDialog } from './AvatarEditDialog';
+import { ProfileEditDialog } from './ProfileEditDialog';
+import { AddressConfirmDialog, EmergencyConfirmDialog } from './E911';
+import { NotificationPreferencesDialog } from './NotificationPreferences';
 
 export class HomePage extends BaseWebComponent {
-  async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
+  async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
     await this.waitUntilExist(this.leftPanel, timeout)
     await this.waitForAllSpinnersToDisappear();
+    if (confirmE911Form) {
+      if (await this.emergencyConfirmFromEntry.exists) {
+        await this.t
+          .click(this.emergencyConfirmFromEntry)
+          .click(this.emergencyConformButton);
+      }
+    }
+
     if (alwaysFocus)
       await h(this.t).interceptHasFocus(true);
   }
@@ -57,6 +70,17 @@ export class HomePage extends BaseWebComponent {
     await this.ensureLoaded();
   }
 
+  get emergencyConfirmFromEntry() {
+    return this.getSelector('a').withText('Confirm address now.');
+  }
+
+  get emergencyConformButton() {
+    // FIXME
+    return this.getSelectorByAutomationId('e911-DialogOKButton');
+  }
+
+
+
   get leftPanel() {
     return this.getComponent(LeftPanel);
   }
@@ -72,6 +96,7 @@ export class HomePage extends BaseWebComponent {
   get phoneTab() {
     return this.getComponent(PhoneTab);
   }
+
 
   get settingTab() {
     return this.getComponent(SettingTab);
@@ -118,12 +143,20 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(ProfileDialog);
   }
 
-  get editProfileDialog() {
-    return this.getComponent(EditProfileDialog);
+  get profileEditDialog() {
+    return this.getComponent(ProfileEditDialog);
   }
 
   get topBarAvatar() {
     return this.getSelectorByAutomationId('topBarAvatar');
+  }
+
+  get avatarShortName() {
+    return this.topBarAvatar.find('.avatar-short-name');
+  }
+
+  get avatarImage() {
+    return this.topBarAvatar.find('img');
   }
 
   get dialpadButton() {
@@ -136,6 +169,10 @@ export class HomePage extends BaseWebComponent {
 
   get addTeamMemberDialog() {
     return this.getComponent(AddTeamMembers);
+  }
+
+  get ShareStatusDialog() {
+    return this.getComponent(ShareStatusDialog);
   }
 
   get teamSettingDialog() {
@@ -151,15 +188,49 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverSettingMenu() {
-    await this.t.hover(this.topBarAvatar);
+    await this.t.hover(this.topBarAvatar, {speed: 0.1});
   }
 
-  async openDialer() {
+  async openDialer(closeE911Prompt: boolean = true) {
     await this.t.hover('html').click(this.dialpadButton);
+    if (closeE911Prompt) {
+      await this.closeE911Prompt();
+    }
+  }
+
+  get e911AlertDialog() {
+    return this.getSelectorByAutomationId('e911-prompt-dialog');
+  }
+
+  async closeE911Prompt() {
+    const closeButton = this.getSelectorByAutomationId('emergencyConfirmDialogOkButton');
+    if (await closeButton.exists) {
+      await this.t.click(closeButton);
+    }
+  }
+
+  get e911DialogCancelButton() {
+    return this.getSelectorByAutomationId('e911-DialogCancelButton');
+  }
+
+  get e911DialogConfirmButton() {
+    return this.getSelectorByAutomationId('e911-DialogOKButton');
+  }
+
+  async closeE911Form() {
+    if (await this.e911DialogCancelButton.exists) {
+      await this.t.click(this.e911DialogCancelButton);
+    }
+  }
+
+  async confirmE911Form() {
+    if (await this.e911DialogConfirmButton.exists) {
+      await this.t.click(this.e911DialogConfirmButton);
+    }
   }
 
   async hoverDialpadButton() {
-    await this.t.hover(this.dialpadButton);
+    await this.t.hover(this.dialpadButton, {speed: 0.1});
   }
 
   get joinTeamDialog() {
@@ -173,6 +244,8 @@ export class HomePage extends BaseWebComponent {
   get telephonyPOCPage() {
     return this.getComponent(TelephonyPOC);
   }
+
+
   get deleteTeamDialog() {
     return this.getComponent(DeleteTeamDialog);
   }
@@ -235,5 +308,21 @@ export class HomePage extends BaseWebComponent {
 
   get deleteCallHistoryDialog() {
     return this.getComponent(DeleteCallHistoryDialog);
+  }
+
+  get AvatarEditDialog() {
+    return this.getComponent(AvatarEditDialog);
+  }
+
+  get addressConfirmDialog() {
+    return this.getComponent(AddressConfirmDialog);
+  }
+
+  get emergencyConfirmDialog() {
+    return this.getComponent(EmergencyConfirmDialog);
+  }
+
+  get notificationPreferencesDialog() {
+    return this.getComponent(NotificationPreferencesDialog);
   }
 }

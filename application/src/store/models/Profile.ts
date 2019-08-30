@@ -1,4 +1,4 @@
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import { Profile } from 'sdk/module/profile/entity';
 import {
   MOBILE_TEAM_NOTIFICATION_OPTIONS,
@@ -6,6 +6,7 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
   CALLING_OPTIONS,
+  VIDEO_SERVICE_OPTIONS,
 } from 'sdk/module/profile';
 import Base from './Base';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
@@ -69,13 +70,19 @@ export default class ProfileModel extends Base<Profile> {
   desktopVoicemailOption: boolean;
 
   @observable
-  maxLeftRailGroup: number;
-
-  @observable
   lastReadMissed: number | undefined;
 
   @observable
   newMessageBadges: string;
+
+  @observable
+  videoService: string;
+
+  @observable
+  rcvBeta: boolean;
+
+  @observable
+  showLinkPreviews: boolean;
 
   constructor(data: Profile) {
     super(data);
@@ -83,12 +90,13 @@ export default class ProfileModel extends Base<Profile> {
       favorite_post_ids: favoritePostIds = [],
       favorite_group_ids: favoriteGroupIds = [],
       skip_close_conversation_confirmation: skipCloseConversationConfirmation = false,
+      show_link_previews = true,
     } = data;
 
     this.favoritePostIds = favoritePostIds;
     this.favoriteGroupIds = favoriteGroupIds;
     this.skipCloseConversationConfirmation = skipCloseConversationConfirmation;
-
+    this.showLinkPreviews = show_link_previews;
     const hiddenGroupIds: number[] = [];
     Object.keys(data).forEach((key: string) => {
       const m = key.match(new RegExp(`(${'hide_group'})_(\\d+)`));
@@ -98,7 +106,7 @@ export default class ProfileModel extends Base<Profile> {
     });
 
     this.hiddenGroupIds = hiddenGroupIds;
-
+    // TODO, refactor these default value, should move them into a map or standalone file
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;
     this.newMessageBadges =
@@ -131,6 +139,17 @@ export default class ProfileModel extends Base<Profile> {
     this.desktopVoicemailOption =
       data.desktop_notifications_new_voicemails === NOTIFICATION_OPTIONS.ON;
     this.lastReadMissed = data.last_read_missed;
+    // video_service
+    this.videoService =
+      data.video_service || VIDEO_SERVICE_OPTIONS.RINGCENTRAL_MEETINGS;
+    this.rcvBeta = !!data.rcv_beta;
+  }
+
+  @computed
+  get isRCVService() {
+    return (
+      this.videoService === VIDEO_SERVICE_OPTIONS.RINGCENTRAL_VIDEO_EMBEDDED
+    );
   }
 
   static fromJS(data: Profile) {

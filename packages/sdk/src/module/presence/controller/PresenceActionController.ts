@@ -12,7 +12,7 @@ import PresenceAPI from 'sdk/api/glip/presence';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { IPartialEntitySourceController } from 'sdk/framework/controller/interface/IPartialEntitySourceController';
-import { ENTITY } from 'sdk/service';
+import { ENTITY, socketManager } from 'sdk/service';
 import { PresenceController } from './PresenceController';
 import { PartialModifyController } from 'sdk/framework/controller/impl/PartialModifyController';
 
@@ -48,11 +48,20 @@ class PresenceActionController {
       partialModel.presence = status;
       return partialModel;
     };
-    this._partialModifyController.updatePartially({
+    await this._partialModifyController.updatePartially({
       entityId: currentId,
       preHandlePartialEntity: preHandlePartial,
       doUpdateEntity: async (newData: Presence) => {
         return PresenceAPI.setPresence(newData);
+      },
+      handleRollbackPartialEntity: (newData: Presence) => {
+        if (socketManager.isConnected()) {
+          return null;
+        }
+        return {
+          ...newData,
+          presence: PRESENCE.NOTREADY,
+        };
       },
     });
   }

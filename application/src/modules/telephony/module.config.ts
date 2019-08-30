@@ -3,7 +3,7 @@
  * @Date: 2019-03-04 16:12:23
  * Copyright © RingCentral. All rights reserved.
  */
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 import { TelephonyModule } from './TelephonyModule';
 import { TelephonyService } from './service';
 import { TelephonyStore } from './store';
@@ -12,6 +12,8 @@ import { TelephonySettingManager } from './TelephonySettingManager/TelephonySett
 import { TELEPHONY_SERVICE } from './interface/constant';
 import { IRingtonePrefetcher } from './interface/IRingtonePrefetcher';
 import { RingtonePrefetcher } from './service/RingtonePrefetcher';
+import { E911UIConfig } from './E911.config';
+import { DialerUIConfig } from './Dialer.config';
 
 const config: ModuleConfig = {
   entry: TelephonyModule,
@@ -23,6 +25,8 @@ const config: ModuleConfig = {
     TelephonyStore,
     TelephonyNotificationManager,
     TelephonySettingManager,
+    E911UIConfig,
+    DialerUIConfig,
     { name: IRingtonePrefetcher, value: RingtonePrefetcher },
   ],
 };

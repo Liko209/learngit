@@ -8,20 +8,25 @@ import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiTypography } from '../../foundation/Typography';
 import { JuiMenuItem } from '../../components/Menus';
-import { spacing, width, typography, ellipsis } from '../../foundation/utils';
+import { StyledAvatar } from '../../components/Avatar';
+import {
+  spacing,
+  width,
+  height,
+  typography,
+  ellipsis,
+} from '../../foundation/utils';
 
 type JuiDropdownContactInfoProps = {
   Avatar: React.ReactElement;
   name: string | undefined;
   content: string;
   openEditProfile: () => void;
-  handleClick: () => void;
 };
 
 const JuiStyledDropdown = styled('div')`
   width: ${width(61)};
   background: ${({ theme }) => theme.palette.background.paper};
-  cursor: pointer;
 `;
 
 const StyledContactWrapper = styled('div')`
@@ -29,11 +34,25 @@ const StyledContactWrapper = styled('div')`
   align-items: center;
   padding: ${spacing(3, 4)};
   background: ${({ theme }) => theme.palette.grey['100']};
+
+  ${StyledAvatar} {
+    :hover,
+    :active {
+      cursor: default;
+      opacity: 1;
+    }
+  }
 `;
 
 const JuiStyledDropdownMenuItem = styled(JuiMenuItem)`
   && {
     font-size: ${spacing(3.5)};
+    display: block;
+    line-height: ${height(6)};
+    ${ellipsis()};
+    .emoji-mart-emoji {
+      line-height: ${height(2.5)};
+    }
   }
 `;
 
@@ -41,7 +60,9 @@ const StyledContactInfoWrapper = styled('div')`
   flex: 1;
   width: ${width(39)};
   margin-left: ${spacing(4)};
+  overflow: hidden;
 `;
+
 const StyledContactInfoName = styled(JuiTypography)`
   && {
     ${typography('subheading2')};
@@ -65,33 +86,15 @@ const StyledContactInfoEdit = styled('span')`
 
 const JuiDropdownContactInfo = React.memo(
   (props: JuiDropdownContactInfoProps) => {
-    const { Avatar, name, content, openEditProfile, handleClick } = props;
-    const _ref = React.useRef<HTMLDivElement>(null);
-
-    const _clickEventHandler = React.useCallback(
-      (event: React.SyntheticEvent) => {
-        if (!_ref.current || !event.target) {
-          return;
-        }
-
-        if (_ref.current === event.target) return;
-
-        handleClick();
-      },
-      [],
-    );
+    const { Avatar, name, content, openEditProfile } = props;
 
     return (
-      <StyledContactWrapper
-        data-test-automation-id="dropMenuEditProfile"
-        onClick={_clickEventHandler}
-      >
+      <StyledContactWrapper>
         {Avatar}
         <StyledContactInfoWrapper>
           {name && <StyledContactInfoName>{name}</StyledContactInfoName>}
           <StyledContactInfoEdit
-            ref={_ref}
-            data-test-automation-id="avatarEditProfile"
+            data-test-automation-id="dropMenuViewProfile"
             onClick={openEditProfile}
           >
             {content}

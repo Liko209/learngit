@@ -15,7 +15,7 @@ import {
 } from '../../db';
 
 class LokiDB implements IDatabase {
-  private db: Loki;
+  db: Loki;
   private opened: boolean;
   constructor(schema: ISchema) {
     this.db = new Loki(schema.name);
@@ -53,9 +53,9 @@ class LokiDB implements IDatabase {
   async getTransaction(
     mode: string | void,
     collections: IDatabaseCollection<any, DatabaseKeyType>[] | void,
-    callback: () => {},
+    callback: () => Promise<void>,
   ): Promise<void> {
-    callback();
+    await callback();
   }
 
   private _initSchema(schema: ISchema) {

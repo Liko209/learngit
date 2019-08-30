@@ -5,7 +5,7 @@
  */
 
 import { AllCallLogFetchController } from '../AllCallLogFetchController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { CALL_RESULT, LOCAL_INFO_TYPE } from '../../constants';
 import { RCItemApi } from 'sdk/api';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
@@ -59,6 +59,13 @@ describe('AllLogFetchController', () => {
             result: CALL_RESULT.MISSED,
           },
           { id: '2', startTime: mockTime, direction: CALL_DIRECTION.OUTBOUND },
+          {
+            id: '3',
+            startTime: mockTime,
+            sessionId: 'sessionId3',
+            result: CALL_RESULT.VOICEMAIL,
+            deleted: true,
+          },
         ],
         syncInfo: {
           syncType: SYNC_TYPE.ISYNC,
@@ -77,7 +84,7 @@ describe('AllLogFetchController', () => {
           result: CALL_RESULT.MISSED,
           __localInfo: LOCAL_INFO_TYPE.IS_INBOUND | LOCAL_INFO_TYPE.IS_MISSED,
           __timestamp: Date.parse(mockTime),
-          __deactivated: false,
+          deleted: false,
         },
         {
           id: '2',
@@ -85,20 +92,42 @@ describe('AllLogFetchController', () => {
           direction: CALL_DIRECTION.OUTBOUND,
           __localInfo: 0,
           __timestamp: Date.parse(mockTime),
-          __deactivated: false,
+          deleted: false,
+        },
+        {
+          id: '3',
+          startTime: mockTime,
+          sessionId: 'sessionId3',
+          deleted: true,
+          result: CALL_RESULT.VOICEMAIL,
+          __localInfo: 3,
+          __timestamp: 1317826080000,
         },
       ]);
-      expect(mockSourceController.bulkDelete).toHaveBeenCalledWith(['pseudo1']);
+      expect(mockSourceController.bulkDelete).toHaveBeenCalledWith([
+        'pseudo1',
+        '3',
+      ]);
       expect(mockUserConfig.setPseudoCallLogInfo).toHaveBeenCalledWith({});
     });
   });
 
   describe('sendSyncRequest', () => {
-    it('should call api', async () => {
+    it('should call api to do FSync without deleted data', async () => {
       RCItemApi.syncCallLog = jest.fn();
       await controller['sendSyncRequest'](SYNC_TYPE.FSYNC);
       expect(RCItemApi.syncCallLog).toHaveBeenCalledWith({
         syncType: SYNC_TYPE.FSYNC,
+        showDeleted: false,
+      });
+    });
+
+    it('should call api to do ISync with deleted data', async () => {
+      RCItemApi.syncCallLog = jest.fn();
+      await controller['sendSyncRequest'](SYNC_TYPE.ISYNC);
+      expect(RCItemApi.syncCallLog).toHaveBeenCalledWith({
+        syncType: SYNC_TYPE.ISYNC,
+        showDeleted: true,
       });
     });
   });

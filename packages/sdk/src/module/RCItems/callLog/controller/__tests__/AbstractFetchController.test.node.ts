@@ -6,7 +6,7 @@
 
 import { AbstractFetchController } from '../AbstractFetchController';
 import { ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { RCItemApi } from 'sdk/api';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { RCItemSyncController } from 'sdk/module/RCItems/sync';
@@ -77,11 +77,11 @@ describe('AbstractFetchController', () => {
   describe('buildFilterFunc', () => {
     it('should filter valid data by source type', async () => {
       const mockData = [
-        { id: '1', result: CALL_RESULT.MISSED, __deactivated: false },
-        { id: '2', result: CALL_RESULT.VOICEMAIL, __deactivated: false },
-        { id: '3', result: CALL_RESULT.UNKNOWN, __deactivated: false },
-        { id: '4', result: CALL_RESULT.MISSED, __deactivated: true },
-        { id: '5', result: CALL_RESULT.MISSED, __deactivated: false },
+        { id: '1', result: CALL_RESULT.MISSED, deleted: false },
+        { id: '2', result: CALL_RESULT.VOICEMAIL, deleted: false },
+        { id: '3', result: CALL_RESULT.UNKNOWN, deleted: false },
+        { id: '4', result: CALL_RESULT.MISSED, deleted: true },
+        { id: '5', result: CALL_RESULT.MISSED, deleted: false },
       ];
       RCItemFetchController.prototype.buildFilterFunc = jest
         .fn()
@@ -92,8 +92,8 @@ describe('AbstractFetchController', () => {
         callLogSource: CALL_LOG_SOURCE.MISSED,
       });
       expect(mockData.filter(filter)).toEqual([
-        { id: '1', result: CALL_RESULT.MISSED, __deactivated: false },
-        { id: '2', result: CALL_RESULT.VOICEMAIL, __deactivated: false },
+        { id: '1', result: CALL_RESULT.MISSED, deleted: false },
+        { id: '2', result: CALL_RESULT.VOICEMAIL, deleted: false },
       ]);
     });
   });

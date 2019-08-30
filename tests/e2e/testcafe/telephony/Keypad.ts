@@ -12,9 +12,10 @@ import { AppRoot } from "../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
 import { WebphoneSession } from 'webphone-client';
+import { E911Address } from './e911address';
 
 fixture('Telephony/Keypad')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -24,10 +25,12 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('Navigate to the "keypad" page', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
 
   let chat = <IGroup>{
@@ -38,6 +41,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -81,10 +88,12 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('Hide the keypad page', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
 
   let chat = <IGroup>{
@@ -95,6 +104,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -189,10 +202,12 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('Can end the call on the keypad page', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
 
   let chat = <IGroup>{
@@ -203,6 +218,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -303,10 +322,12 @@ test.meta(<ITestMeta>{
   keywords: ['keypad']
 })('DTMF instruction executed successfully', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
 
   let chat = <IGroup>{
@@ -317,6 +338,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {

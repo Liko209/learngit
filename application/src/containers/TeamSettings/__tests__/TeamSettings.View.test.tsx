@@ -16,11 +16,12 @@ import {
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { Trans } from 'react-i18next';
 import { i18nP } from '@/utils/i18nT';
+import { JuiModal } from 'jui/components/Dialog';
 
 jest.mock('react-i18next', () => ({
   Trans: 'Trans',
   withTranslation: () => (comp: React.ComponentType) => comp,
-}))
+}));
 const mockTransition = (text: string, options?: object) => {
   if (!options) {
     return text.substring(text.lastIndexOf('.') + 1);
@@ -116,6 +117,24 @@ describe('TeamSettingsView', () => {
         value: 'SOME INITIAL DESC....',
       });
     });
+    it('should contain onClose props when rendering JuiModal ', async () => {
+      const props: any = {
+        t: mockTransition,
+        initialData: {
+          name: '',
+          description: '',
+        },
+        id: 123,
+        isAdmin: false,
+        isCompanyTeam: false,
+        save: () => {},
+        leaveTeam: () => {},
+        groupName: 'my team',
+      };
+      const Wrapper = shallow(<TeamSettingsComponent {...props} />);
+      const modal = Wrapper.find(JuiModal).shallow();
+      expect(modal.props().onClose).toBeTruthy();
+    });
   });
 
   describe('Confirm dialog', () => {
@@ -145,8 +164,8 @@ describe('TeamSettingsView', () => {
             content: (
               <JuiDialogContentText>
                 <Trans
-                  components={[<strong key='0' />]}
-                  i18nKey='people.team.leaveTeamConfirmContent'
+                  components={[<strong key="0" />]}
+                  i18nKey="people.team.leaveTeamConfirmContent"
                   values={{ teamName: 'my team' }}
                 />
               </JuiDialogContentText>

@@ -1,4 +1,4 @@
-import { jupiter } from 'framework/src';
+import { jupiter } from 'framework/Jupiter';
 import { IMediaService, IMedia } from '@/interface/media';
 import SettingModel from '@/store/models/UserSetting';
 import { getEntity } from '@/store/utils';
@@ -21,7 +21,8 @@ class RingtonePrefetcher {
       src,
       muted: true,
       autoplay: true,
-      trackId: 'trailer',
+      trackId: 'RingtonePrefetchTrailer',
+      outputDevices: null,
     });
     this.media.on('loadeddata', () => {
       this.media.dispose();

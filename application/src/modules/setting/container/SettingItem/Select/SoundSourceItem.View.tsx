@@ -8,12 +8,13 @@ import { i18nP } from '@/utils/i18nT';
 import { AudioPlayerButton } from '@/modules/media/container/AudioPlayerButton';
 import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { JuiAudioStatus } from 'jui/components/AudioPlayer';
-import { container } from 'framework/src';
+import { container } from 'framework/ioc';
 import { ISoundNotification, Sounds } from '@/modules/notification/interface';
 import { IMedia } from '@/interface/media';
 import { AUDIO_SOUNDS_INFO, RINGS_TYPE, SOUNDS_TYPE } from 'sdk/module/profile';
 import { useHotKey } from 'jui/hoc/HotKeys';
 import { useTranslation } from 'react-i18next';
+import { SettingStore } from '../../../store';
 
 type SoundItemProps = {
   value: AUDIO_SOUNDS_INFO;
@@ -25,7 +26,13 @@ function useSound(soundName: Sounds) {
     const soundNotification: ISoundNotification = container.get(
       'SOUND_NOTIFICATION',
     );
-    const media = soundNotification.create(soundName, { trackId: 'setting' });
+    const settingStore: SettingStore = container.get(SettingStore);
+    const trackId = settingStore.mediaTrackIds.setting;
+
+    const media = soundNotification.create(soundName, {
+      trackId,
+      outputDevices: null,
+    });
     setState(media);
     return () => {
       media && media.stop();
@@ -46,7 +53,9 @@ const SoundSourceItem = (props: SoundItemProps) => {
 
 const SoundSourcePlayer = (props: SoundItemProps) => {
   const { value } = props;
-  if ([RINGS_TYPE.Off, SOUNDS_TYPE.Off].includes(value.id)) {
+  if (
+    [RINGS_TYPE.Off, SOUNDS_TYPE.Off, SOUNDS_TYPE.Default].includes(value.id)
+  ) {
     return null;
   }
   const soundName = value.id;

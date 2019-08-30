@@ -18,12 +18,8 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const {
-  GenerateSW
-} = require('workbox-webpack-plugin');
-const {
-  BundleAnalyzerPlugin
-} = require('webpack-bundle-analyzer');
+const { GenerateSW } = require('workbox-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const runtimeCaching = require('./runtimeCaching');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
@@ -81,8 +77,8 @@ module.exports = {
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path
-      .relative(paths.appSrc, info.absoluteResourcePath)
-      .replace(/\\/g, '/'),
+        .relative(paths.appSrc, info.absoluteResourcePath)
+        .replace(/\\/g, '/'),
     globalObject: 'this',
   },
   optimization: {
@@ -111,14 +107,16 @@ module.exports = {
       new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
           parser: safePostCssParser,
-          map: shouldUseSourceMap ? {
-            // `inline: false` forces the sourcemap to be output into a
-            // separate file
-            inline: false,
-            // `annotation: true` appends the sourceMappingURL to the end of
-            // the css file, helping the browser find the sourcemap
-            annotation: true,
-          } : false,
+          map: shouldUseSourceMap
+            ? {
+                // `inline: false` forces the sourcemap to be output into a
+                // separate file
+                inline: false,
+                // `annotation: true` appends the sourceMappingURL to the end of
+                // the css file, helping the browser find the sourcemap
+                annotation: true,
+              }
+            : false,
         },
       }),
     ],
@@ -190,7 +188,7 @@ module.exports = {
         [paths.appPackageJson],
       ),
       new TsconfigPathsPlugin({
-        configFile: paths.appTsConfig
+        configFile: paths.appTsConfig,
       }),
     ],
   },
@@ -207,8 +205,20 @@ module.exports = {
       // Disable require.ensure as it's not a standard language feature.
       {
         parser: {
-          requireEnsure: false
-        }
+          requireEnsure: false,
+        },
+      },
+      {
+        test: /\.worker\.(ts|js)$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          {
+            loader: 'worker-loader',
+            options: {
+              inline: false,
+            },
+          },
+        ],
       },
       {
         test: /\.(ts|tsx)$/,
@@ -222,18 +232,20 @@ module.exports = {
           paths.voipPkg,
         ],
         enforce: 'pre',
-        use: [{
-          options: {
-            formatter: require.resolve('react-dev-utils/eslintFormatter'),
-            eslintPath: require.resolve('eslint'),
-            ignore: true,
-            failOnError: true,
-            cache: true,
-            emitError: true,
-            ...eslintRules,
+        use: [
+          {
+            options: {
+              formatter: require.resolve('react-dev-utils/eslintFormatter'),
+              eslintPath: require.resolve('eslint'),
+              ignore: true,
+              failOnError: true,
+              cache: true,
+              emitError: true,
+              ...eslintRules,
+            },
+            loader: require.resolve('eslint-loader'),
           },
-          loader: require.resolve('eslint-loader'),
-        }],
+        ],
       },
       {
         // "oneOf" will traverse all following loaders until one will
@@ -257,13 +269,15 @@ module.exports = {
           {
             test: /\.(js|jsx|ts|tsx)$/,
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-            use: [{
-              loader: 'ts-loader',
-              options: {
-                transpileOnly: true,
-                configFile: paths.appTsProdConfig,
+            use: [
+              {
+                loader: 'ts-loader',
+                options: {
+                  transpileOnly: true,
+                  configFile: paths.appTsProdConfig,
+                },
               },
-            }, ],
+            ],
           },
           // The notation here is somewhat confusing.
           // "postcss" loader applies autoprefixer to our CSS.
@@ -279,13 +293,16 @@ module.exports = {
           // in the main CSS file.
           {
             test: /\.css$/,
-            loader: [{
+            loader: [
+              {
                 loader: MiniCssExtractPlugin.loader,
-                options: Object.assign({},
-                  shouldUseRelativeAssetPaths ? {
-                    publicPath: '../../'
-                  } :
-                  undefined,
+                options: Object.assign(
+                  {},
+                  shouldUseRelativeAssetPaths
+                    ? {
+                        publicPath: '../../',
+                      }
+                    : undefined,
                 ),
               },
               {
@@ -327,7 +344,8 @@ module.exports = {
           },
           {
             test: /jui\/src\/assets\/.*\.svg$/,
-            use: [{
+            use: [
+              {
                 loader: 'svg-sprite-loader',
                 options: {
                   symbolId: 'icon-[name]',
@@ -336,19 +354,20 @@ module.exports = {
               {
                 loader: 'svgo-loader',
                 options: {
-                  plugins: [{
-                      removeTitle: true
+                  plugins: [
+                    {
+                      removeTitle: true,
                     },
                     {
                       convertColors: {
-                        shorthex: false
-                      }
+                        shorthex: false,
+                      },
                     },
                     {
-                      convertPathData: true
+                      convertPathData: true,
                     },
                     {
-                      reusePaths: true
+                      reusePaths: true,
                     },
                   ],
                 },
@@ -374,16 +393,6 @@ module.exports = {
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.
         ],
-      },
-      {
-        test: /\.worker\.(ts|js)$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [{
-          loader: 'workerize-loader',
-          options: {
-            inline: false
-          }
-        }],
       },
     ],
   },
@@ -449,7 +458,11 @@ module.exports = {
     // solution that requires the user to opt into importing specific locales.
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.ContextReplacementPlugin(
+      /moment[/\\]locale$/,
+      /(de|en-au|en-gb|es-do|es|fr-ca|fr|it|ja|pt-br|zh-cn|zh-hk|zh-tw).js/,
+    ),
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],

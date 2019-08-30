@@ -29,8 +29,9 @@ import { IPersonService } from './IPersonService';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { PerformanceTracer } from 'foundation';
+import { PerformanceTracer } from 'foundation/performance';
 import { EditablePersonInfo, HeadShotInfo } from '../types';
+import { Nullable } from 'sdk/types';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -100,6 +101,10 @@ class PersonService extends EntityBaseService<Person>
     return await this.getPersonController().getPersonsByIds(ids);
   }
 
+  getCurrentPerson(): Promise<Person | null> {
+    return this.getPersonController().getCurrentPerson();
+  }
+
   async getAllCount() {
     return await this.getPersonController().getAllCount();
   }
@@ -126,6 +131,14 @@ class PersonService extends EntityBaseService<Person>
 
   getName(person: Person) {
     return this.getPersonController().getName(person);
+  }
+
+  getFirstName(person: Person): string {
+    return this.getPersonController().getFirstName(person);
+  }
+
+  getLastName(person: Person): string {
+    return this.getPersonController().getLastName(person);
   }
 
   isVisiblePerson(person: Person): boolean {
@@ -167,8 +180,8 @@ class PersonService extends EntityBaseService<Person>
     return cache.getSoundexById(id);
   }
 
-  isCacheValid(person: Person): boolean {
-    return this.getPersonController().isCacheValid(person);
+  isValidPerson(person: Person): boolean {
+    return this.getPersonController().isValidPerson(person);
   }
 
   getPhoneNumbers(
@@ -184,6 +197,13 @@ class PersonService extends EntityBaseService<Person>
     ).getUserConfig() as SyncUserConfig;
 
     return syncConfig && syncConfig.getFetchedRemaining();
+  }
+
+  setCustomStatus(personId: number, status: string): Promise<Nullable<Person>> {
+    return this.getPersonController().personActionController.setCustomStatus(
+      personId,
+      status,
+    );
   }
 
   async editPersonalInfo(

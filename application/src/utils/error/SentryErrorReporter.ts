@@ -5,8 +5,12 @@
  */
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import * as Sentry from '@sentry/browser';
-import { IErrorReporter, UserContextInfo } from './types';
+import { Event } from '@sentry/types';
+import { IErrorReporter, UserContextInfo, ErrorFilterType } from './types';
 import { JUPITER_ENV } from '@/common/envUtils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
+import _ from 'lodash';
 
 const ENV_DSN_MAP = {
   development: 'https://810a779037204886beeced1c4bd7fbba@sentry.io/1419520',
@@ -21,6 +25,7 @@ export class SentryErrorReporter implements IErrorReporter {
       dsn: ENV_DSN_MAP[JUPITER_ENV] || ENV_DSN_MAP['development'],
       debug: false,
       release: deployedVersion,
+      beforeSend: this.beforeSend,
     });
     if (
       window.jupiterElectron &&
@@ -35,11 +40,11 @@ export class SentryErrorReporter implements IErrorReporter {
           );
         });
     }
-  }
+  };
 
   report = (error: Error) => {
     Sentry.captureException(error);
-  }
+  };
 
   setUserContextInfo = (contextInfo: UserContextInfo) => {
     Sentry.configureScope((scope: Sentry.Scope) => {
@@ -50,5 +55,44 @@ export class SentryErrorReporter implements IErrorReporter {
       });
       scope.setTag('env', contextInfo.env);
     });
+  };
+
+  beforeSend = async (event: Event) => {
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    const errorFilter = (await permissionService.getFeatureFlag(
+      UserPermissionType.SENTRY_ERROR_FILTER,
+    )) as ErrorFilterType[];
+    const isMatched = errorFilter.find(
+      (item: ErrorFilterType) =>
+        this._matchTags(item, event) && this._matchMessages(item, event),
+    );
+    return isMatched ? null : event;
+  };
+  private _matchTags(item: ErrorFilterType, event: Event) {
+    const tags = item.tags;
+    return (
+      !tags ||
+      Object.keys(tags).every(
+        key => tags[key] === (event.tags && event.tags[key]),
+      )
+    );
+  }
+  private _matchMessages(item: ErrorFilterType, event: Event) {
+    const errorMessages = (
+      (event.exception && event.exception.values) ||
+      []
+    ).map(item => item.value);
+    if (!item.messages || !errorMessages.length) {
+      return false;
+    }
+    return !!_.intersectionWith(
+      item.messages,
+      errorMessages,
+      (message: string, error: string) => {
+        return !!error.startsWith(message);
+      },
+    ).length;
   }
 }

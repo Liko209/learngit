@@ -3,13 +3,18 @@
  * @Date: 2019-01-08 17:08:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, inject, Jupiter } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { IHomeService } from './interface/IHomeService';
 import { config } from './home.config';
-import { service } from 'sdk';
+import { notificationCenter, SERVICE } from 'sdk/service';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { IMessageService } from '@/modules/message/interface';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { MEETING_SERVICE } from '@/modules/meeting/interface/constant';
+import _ from 'lodash';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class HomeModule extends AbstractModule {
   @IHomeService private _homeService: IHomeService;
@@ -21,8 +26,8 @@ class HomeModule extends AbstractModule {
 
   async bootstrap() {
     // load subModule
-    const { notificationCenter, SERVICE } = service;
     notificationCenter.on(SERVICE.RC_LOGIN, async () => {
+      analyticsCollector.login();
       await this._initialSubModules();
     });
     notificationCenter.on(SERVICE.GLIP_LOGIN, async (success: boolean) => {
@@ -50,17 +55,41 @@ class HomeModule extends AbstractModule {
     }
   };
 
+  getServices = (moduleNames: any[]) => {
+    const serviceList: any[] = [];
+    const moduleServiceMap = {
+      message: IMessageService,
+      telephony: TELEPHONY_SERVICE,
+      meeting: MEETING_SERVICE,
+    };
+    moduleNames.forEach((moduleName: string) => {
+      if (this._homeService.hasModules([moduleName])) {
+        serviceList.push(moduleServiceMap[moduleName]);
+      }
+    });
+    return serviceList;
+  };
+
   addAsyncModuleOnInitializedListener() {
-    if (this._homeService.hasModules(['message', 'telephony'])) {
-      this._jupiter.onInitialized(
-        [IMessageService, TELEPHONY_SERVICE],
-        async (MessageService, TelephonyService) => {
-          // TODO create Call HOC in telephony module and add Call component in home module
-          const { Call } = await TelephonyService.callComponent();
-          MessageService.registerConversationHeaderExtension(Call); // [TelephonyButton, MeetingButton]
-        },
-      );
-    }
+    // message should be first
+    const services = this.getServices(['message', 'telephony', 'meeting']);
+    const getComponentClassFromModule = (m: object) => {
+      if (m && Object.keys(m).length > 0 && m[Object.keys(m)[0]]) {
+        return m[Object.keys(m)[0]];
+      }
+    };
+    this._jupiter.onInitialized(
+      services,
+      async (MessageService, ...services) => {
+        const promises: any[] | Promise<any>[] = services.map(async service => {
+          const modules = await Promise.all([].concat(service.getComponent()));
+          const ms = modules.map(m => getComponentClassFromModule(m));
+          return ms;
+        });
+        const components = _.flatten(await Promise.all(promises));
+        MessageService.registerConversationHeaderExtension(components);
+      },
+    );
   }
 }
 

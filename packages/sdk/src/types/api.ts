@@ -37,6 +37,11 @@ type SumologicConfig = {
   uniqueHttpCollectorCode: string;
 };
 
+type MeetingsRCV = {
+  baseUrl: string;
+  dialInNumber: string;
+};
+
 type ApiConfig = {
   rc: RcConfig;
   glip: GlipConfig;
@@ -45,7 +50,11 @@ type ApiConfig = {
   splitio: SplitIOConfig;
   launchdarkly: LaunchDarklyConfig;
   sumologic: SumologicConfig;
+  meetingsConfig: {
+    rcv: MeetingsRCV;
+  };
   data_collection: string;
+  segment: string;
 };
 
 type HttpConfigType = 'glip' | 'rc' | 'upload' | 'glip_desktop';

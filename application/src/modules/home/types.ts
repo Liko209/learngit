@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RouteProps } from 'react-router-dom';
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 
 type NavConfig = {
-  url: string;
+  url: string | (() => string);
   Icon: React.ReactElement;
   IconSelected: React.ReactElement;
   title: string | Promise<string>;
@@ -16,8 +16,12 @@ type NavConfig = {
   disable?: boolean | Promise<boolean>;
 };
 
+type RouteConfig = {
+  cache?: boolean;
+} & RouteProps;
+
 type SubModuleConfig = {
-  route?: RouteProps;
+  route?: RouteConfig;
   nav?: () => Promise<NavConfig>;
   moduleConfigLoader?: () => Promise<{ config: ModuleConfig }>;
   moduleConfig?: ModuleConfig;
@@ -29,4 +33,4 @@ type HomeConfig = {
   subModules: { [key: string]: SubModuleConfig };
 };
 
-export { HomeConfig, NavConfig, SubModuleConfig };
+export { HomeConfig, NavConfig, SubModuleConfig, RouteConfig };

@@ -7,7 +7,7 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { CallActionsProps, CallActionsViewProps } from './types';
 import { CALL_ACTION } from '../../interface/constant';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 
 class CallActionsViewModel extends StoreViewModel<CallActionsProps>
@@ -27,6 +27,9 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
         shouldShowAction: !this.isIncomingPage,
       },
       [CALL_ACTION.FLIP]: {
+        shouldShowAction: !this.isIncomingPage,
+      },
+      [CALL_ACTION.TRANSFER]: {
         shouldShowAction: !this.isIncomingPage,
       },
     };

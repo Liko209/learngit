@@ -3,8 +3,13 @@
  * @Date: 2018-12-10 09:28:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { Notification, NotificationProps, notificationData } from './../Notification';
+import {
+  Notification,
+  NotificationProps,
+  notificationData,
+} from '../Notification';
 import { ToastType, ToastMessageAlign } from '../../ToastWrapper/Toast/types';
+
 describe('Notification', () => {
   describe('_showNotification', () => {
     beforeEach(() => {
@@ -88,7 +93,7 @@ describe('Notification', () => {
       dismiss && dismiss();
       setImmediate(() => {
         expect(Notification._buffer).toHaveLength(0);
-      })
+      });
     });
 
     it('should call the private method by calling flashToast or flagToast', () => {
@@ -103,6 +108,37 @@ describe('Notification', () => {
       expect(spy).toHaveBeenCalledTimes(1);
       Notification.flagToast(toastData);
       expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should call the private method by calling flagWarningToast', () => {
+      const spy = jest.spyOn(Notification as any, 'flagToast');
+      const message: 'aaa';
+      Notification.flagWarningToast(message);
+      expect(spy).toHaveBeenCalledTimes(1);
+      Notification.flagSuccessToast(message);
+      expect(spy).toHaveBeenCalledTimes(2);
+      Notification.flagErrorToast(message);
+      expect(spy).toHaveBeenCalledTimes(3);
+      Notification.flagInfoToast(message);
+      expect(spy).toHaveBeenCalledTimes(4);
+    });
+  });
+  describe('checkBufferAvailability', () => {
+    const notification = new Notification();
+    const toastData: NotificationProps = {
+      message: 'aaa',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+    };
+    beforeEach(() => {
+      notificationData.clear();
+      Notification._buffer = [];
+    });
+    it('should call _showNotification if count does not reaches max', () => {
+      const spy = jest.spyOn(Notification as any, '_showNotification');
+      Notification.flashToast(toastData);
+      expect(spy).toHaveBeenCalled();
     });
   });
 });

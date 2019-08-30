@@ -3,8 +3,8 @@
  * @Date: 2019-06-03 14:44:12
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { computed, observable } from 'mobx';
+import { container } from 'framework/ioc';
+import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
@@ -15,22 +15,16 @@ import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { getHourMinuteSeconds } from '@/utils/date';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
-import { RCInfoService } from 'sdk/module/rcInfo';
-import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { i18nP } from '@/utils/i18nT';
+import { PhoneStore } from '../../store';
 import { callLogDefaultResponsiveInfo, kHandlers } from './config';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
-  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
-    ServiceConfig.RC_INFO_SERVICE,
-  );
+  private _phoneStore: PhoneStore = container.get(PhoneStore);
 
-  @observable canEditBlockNumbers: boolean = false;
-
-  constructor(props: CallLogItemProps) {
-    super(props);
-    this._fetchBlockPermission();
+  @computed
+  get canEditBlockNumbers() {
+    return this._phoneStore.canEditBlockNumbers;
   }
 
   @computed
@@ -87,19 +81,20 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   @computed
   get callType() {
     if (this.isMissedCall) {
-      return 'telephony.result.missedcall';
+      return i18nP('telephony.result.missedcall');
     }
     const { direction } = this.data;
     return direction === CALL_DIRECTION.INBOUND
-      ? 'telephony.direction.inboundcall'
-      : 'telephony.direction.outboundcall';
+      ? i18nP('telephony.direction.inboundcall')
+      : i18nP('telephony.direction.outboundcall');
   }
 
   @computed
   get duration() {
     const { duration } = this.data;
     const { secondTime, hourTime, minuteTime } = getHourMinuteSeconds(duration);
-    const normalize = (s: number, suffix: string) => (s > 0 ? `${s} ${suffix}` : '');
+    const normalize = (s: number, suffix: string) =>
+      s > 0 ? `${s} ${suffix}` : '';
     const array = [
       normalize(hourTime, i18nP('common.time.hour')),
       normalize(minuteTime, i18nP('common.time.min')),
@@ -128,14 +123,6 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   get callLogResponsiveMap() {
     return this._getResponsiveMap(kHandlers);
   }
-
-  private async _fetchBlockPermission() {
-    this.canEditBlockNumbers = await this._rcInfoService.isRCFeaturePermissionEnabled(
-      ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
-    );
-  }
-
-  shouldShowCall = async () => this._rcInfoService.isVoipCallingAvailable();
 }
 
 export { CallLogItemViewModel };

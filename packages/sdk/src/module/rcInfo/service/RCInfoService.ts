@@ -20,13 +20,14 @@ import {
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IRCInfoService } from './IRCInfoService';
 import { RcInfoSettings } from '../setting';
 import { IdModel } from '../../../framework/model';
 import { RCInfoUserConfig } from '../config';
 import { RC_INFO_HISTORY } from '../config/constants';
 import { SettingService } from 'sdk/module/setting';
+import { CountryRecord } from 'sdk/api';
 
 class RCInfoService extends EntityBaseService<IdModel>
   implements IRCInfoService {
@@ -38,7 +39,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.RC_LOGIN]: this.requestRCInfo,
+        [SERVICE.RC_LOGIN]: this.onRCLogin,
       }),
     );
   }
@@ -53,7 +54,6 @@ class RCInfoService extends EntityBaseService<IdModel>
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.rcInfoSettings);
     this.getRCInfoController().blockNumberController.init();
-    this.getRCInfoController().rcPresenceController.start();
   }
 
   protected onStopped() {
@@ -92,6 +92,11 @@ class RCInfoService extends EntityBaseService<IdModel>
     }
     return this._DBConfig;
   }
+
+  onRCLogin = () => {
+    this.requestRCInfo();
+    this.getRCInfoController().rcPresenceController.start();
+  };
 
   requestRCInfo = () => {
     this.getRCInfoController()
@@ -172,16 +177,43 @@ class RCInfoService extends EntityBaseService<IdModel>
   }
 
   async isVoipCallingAvailable(): Promise<boolean> {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
     const result =
-      userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
+      this.isRCAccount &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.VOIP_CALLING,
+      )) &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.WEB_PHONE,
       ));
     mainLogger.debug(`isVoipCallingAvailable: ${result}`);
     return result;
+  }
+
+  async isOrganizeConferenceAvailable(): Promise<boolean>{
+    const result =
+    this.isRCAccount &&
+    (await this.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
+    ));
+    mainLogger.debug(`isWebPhoneAvailable: ${result}`);
+    return result;
+  }
+
+  async isWebPhoneAvailable(): Promise<boolean> {
+    const result =
+      this.isRCAccount &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.WEB_PHONE,
+      ));
+    mainLogger.debug(`isWebPhoneAvailable: ${result}`);
+    return result;
+  }
+
+  isRCAccount() {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC;
   }
 
   async getAccountMainNumber() {
@@ -293,6 +325,10 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async getStateList(countryId: string): Promise<StateRecord[]> {
     return this.regionInfoController.getStateList(countryId);
+  }
+
+  async getAllCountryList(): Promise<CountryRecord[]> {
+    return this.regionInfoController.getAllCountryList();
   }
 
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {

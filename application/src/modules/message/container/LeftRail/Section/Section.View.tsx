@@ -8,14 +8,13 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import {
   JuiConversationList,
-  JuiConversationListSection
+  JuiConversationListSection,
 } from 'jui/pattern/ConversationList';
 import { ConversationListItem } from '../../ConversationList/ConversationListItem';
 import { toTitleCase } from '@/utils/string';
 import { SectionViewProps, SECTION_TYPE } from './types';
 import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { observer } from 'mobx-react';
-// TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
@@ -60,7 +59,7 @@ class SectionViewComponent extends React.Component<Props> {
       title,
       expanded,
       handleCollapse,
-      handleExpand
+      handleExpand,
     } = this.props;
     let umiType: UMI_SECTION_TYPE;
     if (type === SECTION_TYPE.FAVORITE) {

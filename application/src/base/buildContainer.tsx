@@ -7,7 +7,7 @@ import React, { Component, ComponentType } from 'react';
 import { computed, action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import StoreViewModel from '@/store/ViewModel';
 import { IPlugin } from './IPlugin';
 

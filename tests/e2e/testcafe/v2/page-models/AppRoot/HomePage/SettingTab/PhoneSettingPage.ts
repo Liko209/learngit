@@ -11,7 +11,7 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get headerTitle() {
-    return this.getSelectorByAutomationId('conversation-page-header-title');
+    return this.getSelectorByAutomationId('conversation-page-header-title', this.header);
   }
 
   get generalSection() {
@@ -41,24 +41,24 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   get defaultAppSelectBox() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBox-defaultPhoneApp',
+      'selectBox-defaultPhoneApp',
       this.generalSection,
     );
   }
 
   get phoneAppDropDownItems() {
-    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+    return this.getSelectorByAutomationClass('selectBoxItem');
   }
 
   get ringCentralAppItem() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBoxItem-defaultPhoneApp-glip',
+      'selectBoxItem-defaultPhoneApp-glip',
     );
   }
 
   get ringCentralPhoneItem() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBoxItem-defaultPhoneApp-ringcentral',
+      'selectBoxItem-defaultPhoneApp-ringcentral',
     );
   }
 
@@ -85,11 +85,11 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection,);
+    return this.getSelectorByAutomationId('selectBox-callerID', this.generalSection);
   }
 
   get callerIDDropDownItems() {
-    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+    return this.getSelectorByAutomationClass('selectBoxItem');
   }
 
   get updateRegionDialog() {
@@ -157,6 +157,10 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async clickDefaultAppSelectBox() {
     await this.t.click(this.defaultAppSelectBox);
+  }
+
+  async hoverRingCentralPhone() {
+    await this.t.hover(this.ringCentralPhoneItem);
   }
 
   async clickRingCentralPhone() {
@@ -237,6 +241,23 @@ export class PhoneSettingPage extends BaseWebComponent {
       callerIDList.push(item);
     }
     return callerIDList;
+  }
+
+  /** emergency address */
+  get emergencyAddressSettingLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-E911Setting');
+  }
+
+  get emergencyAddressSettingDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-E911Setting');
+  }
+
+  get emergencyAddressSettingEditButton() {
+    return this.getSelectorByAutomationId('settingItemButton-e911Setting');
+  }
+
+  async clickEmergencyAddressSettingEditButton() {
+    await this.t.click(this.emergencyAddressSettingEditButton);
   }
 
   // Extension setting

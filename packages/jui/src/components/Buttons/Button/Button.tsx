@@ -14,7 +14,6 @@ import {
   typography,
   spacing,
   palette,
-  width,
   rippleEnter,
   height,
   grey,
@@ -27,7 +26,7 @@ type Variant = 'text' | 'contained' | 'outlined';
 type JuiButtonColor = 'primary' | 'secondary' | 'negative' | 'action';
 
 type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
-  size?: 'small' | 'large';
+  size?: 'large' | 'medium';
   variant?: Variant;
   disabled?: boolean;
   color?: JuiButtonColor;
@@ -77,16 +76,19 @@ const ButtonColor = ({
   theme.palette.getContrastText(
     palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
   );
+
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
-    min-width: ${({ theme }) => width(26)({ theme })};
-    padding: ${spacing(2.5, 4)};
     display: flex;
     text-transform: none;
     ${typography('button')};
     color: ${palette('primary', 'main')};
     text-align: center;
     box-shadow: unset;
+    padding: ${spacing(2, 3)};
+    &.MuiButton-sizeLarge {
+      padding: ${spacing(2.5, 4)};
+    }
     &.containedButtonStyle {
       color: ${ButtonColor};
       background-color: ${({ color = 'primary' }) =>

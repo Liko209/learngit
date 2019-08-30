@@ -11,7 +11,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { StateFetchDataController } from './StateFetchDataController';
 import { Raw } from '../../../../framework/model';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
 
 class StateActionController {
@@ -25,6 +25,25 @@ class StateActionController {
     this._partialModifyController = new PartialModifyController<GroupState>(
       this._entitySourceController,
     );
+
+    // todo fixme  just for test
+    (window as any).generateTeamCursorDirtyData = async (
+      teamId: number,
+      count: number = -2,
+    ) => {
+      const state = await this._entitySourceController.get(teamId);
+      mainLogger
+        .tags('[FIX-TEAM-UMI]')
+        .debug(
+          `generateTeamCursorDirtyData team count: ${count}, state:`,
+          state,
+        );
+      this._entitySourceController.update({
+        ...state,
+        marked_as_unread: true,
+        unread_team_mentions_count: count,
+      });
+    };
   }
 
   async updateReadStatus(
@@ -58,9 +77,12 @@ class StateActionController {
       return;
     }
 
-    const lastPostId = group.most_recent_post_id;
+    const lastPostId = Math.max(
+      group.most_recent_post_id || 0,
+      groupState.read_through || 0,
+    );
     const myStateId = this._stateFetchDataController.getMyStateId();
-    if (lastPostId && myStateId > 0) {
+    if (myStateId > 0) {
       await this._partialModifyController.updatePartially({
         entityId: groupId,
         preHandlePartialEntity: (
@@ -78,7 +100,6 @@ class StateActionController {
           return {
             ...partialEntity,
             read_through: lastPostId,
-            last_read_through: lastPostId,
             team_mention_cursor: originEntity.group_team_mention_cursor,
             unread_count: 0,
             unread_mentions_count: 0,

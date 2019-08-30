@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IdModel, ModelIdType } from '../../model';
 import { IDao } from '../../dao';
 import _ from 'lodash';
@@ -27,7 +27,7 @@ class EntitySourceController<
     },
   ) {}
 
-  async put(item: T | T[]): Promise<void> {
+  async put(item: T): Promise<void> {
     await this.entityPersistentController.put(item);
   }
 
@@ -47,7 +47,7 @@ class EntitySourceController<
     await this.entityPersistentController.bulkDelete(keys);
   }
 
-  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+  async update(item: Partial<T>): Promise<void> {
     await this.entityPersistentController.update(item);
   }
 
@@ -169,8 +169,14 @@ class EntitySourceController<
     return await this.entityPersistentController.getTotalCount();
   }
 
-  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
-    return await this.entityPersistentController.getEntities(filterFunc);
+  async getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]> {
+    return await this.entityPersistentController.getEntities(
+      filterFunc,
+      sortFunc,
+    );
   }
 
   getEntityNotificationKey(): string {

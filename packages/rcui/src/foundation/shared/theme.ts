@@ -4,7 +4,7 @@ import {
   Opacity,
   Radius,
   Shadows,
-  ZIndex
+  ZIndex,
 } from '../styles';
 import { css } from '../styled-components';
 
@@ -19,6 +19,18 @@ function spacing(...values: number[]) {
     }
     return theme.spacing(...values);
   };
+}
+
+/**
+ * ellipsis
+ */
+function ellipsis() {
+  return css`
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  `;
 }
 
 /**
@@ -73,11 +85,20 @@ function zIndex(name: keyof ZIndex) {
  */
 function palette<T extends keyof Palette, K extends keyof Palette[T]>(
   name: T,
-  sub?: K
+  sub?: K,
 ) {
   return ({ theme }: any) => {
     return sub ? theme.palette[name][sub] : theme.palette[name];
   };
+}
+
+/**
+ * grey
+ * @param sub
+ * @param opacities
+ */
+function grey(sub: keyof Palette['grey']) {
+  return palette('grey', sub);
 }
 
 /** ******************************************
@@ -90,7 +111,7 @@ function palette<T extends keyof Palette, K extends keyof Palette[T]>(
  */
 function typography<T extends keyof Typography, K extends keyof Typography[T]>(
   name: T,
-  sub?: K
+  sub?: K,
 ) {
   if (name === 'fontFamily' || name === 'codeFontFamily') {
     return css`
@@ -121,7 +142,7 @@ function typography<T extends keyof Typography, K extends keyof Typography[T]>(
 function fontProp<T extends keyof Typography, K extends keyof Typography[T]>(
   name: T,
   sub?: K,
-  key?: any
+  key?: any,
 ) {
   return ({ theme }: any) => {
     const font = sub ? theme.typography[name][sub] : theme.typography[name];
@@ -129,4 +150,4 @@ function fontProp<T extends keyof Typography, K extends keyof Typography[T]>(
   };
 }
 
-export { spacing, opacity, radius, shadows, zIndex, palette, typography };
+export { spacing, opacity, radius, shadows, zIndex, palette, typography, grey, ellipsis };

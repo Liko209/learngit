@@ -21,7 +21,7 @@ import {
 } from 'jui/pattern/ListToggleButton';
 import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { DialogContext } from '@/containers/Dialog';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { ViewProps, INIT_ITEMS } from './types';
 import {
   ToastType,
@@ -29,6 +29,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { TeamSetting } from './CreateTeam.ViewModel';
 import history from '@/history';
+import { withEscTracking } from '@/common/trackData';
 
 type State = {
   items: JuiListToggleItemProps[];
@@ -231,6 +232,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
         size={'medium'}
         title={t('people.team.CreateTeam')}
         onCancel={this.onClose}
+        onClose={withEscTracking(this.onClose)}
         onOK={this.createTeam}
         okText={t('people.team.Create')}
         contentBefore={

@@ -25,7 +25,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       members: [loginUser, users[5]],
     }
     let favoriteChat = <IGroup>{
-      type: 'DirectMessage',
+      type: 'Group',
       owner: loginUser,
       members: [loginUser, users[5], users[6]],
     }
@@ -40,6 +40,11 @@ test(formalName('Close current conversation directly, and navigate to blank page
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat (in favorite) and I team chat', async () => {
       await h(t).scenarioHelper.createTeamsOrChats([privateChat, favoriteChat, team]);
       await h(t).glip(loginUser).favoriteGroups([+favoriteChat.glipId]);
+    });
+
+    await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+      await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+      await h(t).glip(loginUser).clearAllUmi();
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
@@ -133,6 +138,11 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       await h(t).scenarioHelper.createTeamsOrChats([privateChat, team]);
     });
 
+    await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+      await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+      await h(t).glip(loginUser).clearAllUmi();
+    });
+
     let urlBeforeClose, currentGroupId;
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
       await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
@@ -209,9 +219,9 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B', async () => {
     await h(t).scenarioHelper.createTeamsOrChats([privateChat, team]);
   });
-
-  await h(t).withLog('And I clean all UMI before login', async () => {
-    await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+    await h(t).glip(loginUser).clearAllUmi();
   });
 
   await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
@@ -303,8 +313,9 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     await h(t).scenarioHelper.createTeamsOrChats([privateChat, team]);
   });
 
-  await h(t).withLog('And I clean all UMI before login', async () => {
-    await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+    await h(t).glip(loginUser).clearAllUmi();
   });
 
   await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
@@ -402,6 +413,11 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
   await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group team(in favorite)', async () => {
     await h(t).scenarioHelper.createTeamsOrChats([privateChat, favoriteChat, team]);
     await h(t).glip(loginUser).favoriteGroups([+favoriteChat.glipId, +meChatId]);
+  });
+
+  await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+    await h(t).glip(loginUser).clearAllUmi();
   });
 
   const app = new AppRoot(t);

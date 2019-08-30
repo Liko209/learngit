@@ -372,6 +372,8 @@ test.meta(<ITestMeta>{
     postId = await conversationPage.nthPostItem(-1).postId;
   });
 
+  await t.wait(10e3); // wait for websocketManagement.isConnected.
+
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I search keyword {keyword1}`, async (step) => {
@@ -546,10 +548,11 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1965'],
   maintainers: ['potar.he'],
   keywords: ['search', 'HighLight', 'phoneNumber'],
+  accountType: BrandTire.RC_WITH_PHONE_DL,
 })('Phone number from searched list should be hyperlinked and successful ring out', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  const otherUser = users[5];
+  const loginUser = users[2];
+  const otherUser = users[3];
 
   const phoneNumber = "+1(650)399-0766";
   const phoneNumberChunks = phoneNumber.split(/\+|\(|\)|\ |\-/).filter(_.identity);
@@ -629,7 +632,7 @@ test.meta(<ITestMeta>{
 
     await h(t).withLog(`And the callee number should be {calleeNumber} then close dialog`, async (step) => {
       step.setMetadata('calleeNumber', calleeNumber)
-      await t.expect(telephonyDialog.extension.withExactText(calleeNumber).exists).ok();
+      await t.expect(telephonyDialog.phoneNumber.withExactText(calleeNumber).exists).ok();
       await telephonyDialog.clickHangupButton();
     });
   }
@@ -642,7 +645,7 @@ test.meta(<ITestMeta>{
   keywords: ['search', 'HighLight'],
 })('Check can highlight the keyword in full search results that type is Events', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[1];
   await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
 
   const url = 'https://www.google.com';
@@ -768,7 +771,7 @@ test.meta(<ITestMeta>{
   keywords: ['search', 'HighLight'],
 })('Check can highlight keyword in full search results that type is Notes', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[1];
 
   const url = 'https://www.google.com';
   const phoneNumber = "+1(650)399-0766";
@@ -851,8 +854,8 @@ test.meta(<ITestMeta>{
   keywords: ['search', 'HighLight'],
 })('Check can highlight keyword in full search results when type is Tasks', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  const otherUser = users[5];
+  const loginUser = users[1];
+  const otherUser = users[2];
   await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
 
   const url = 'https://www.google.com';

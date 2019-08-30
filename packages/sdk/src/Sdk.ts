@@ -5,15 +5,12 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import {
-  Foundation,
-  NetworkManager,
-  Token,
-  dataAnalysis,
-  sleepModeDetector,
-  mainLogger,
-  Performance,
-} from 'foundation';
+import Foundation from 'foundation/Foundation';
+import { NetworkManager, Token } from 'foundation/network';
+import { dataAnalysis } from 'foundation/analysis';
+import { sleepModeDetector } from 'foundation/utils';
+import { mainLogger } from 'foundation/log';
+import { Performance } from 'foundation/performance';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
@@ -34,13 +31,9 @@ import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 import { PhoneParserUtility } from './utils/phoneParser';
 import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
-import {
-  PermissionService,
-  LaunchDarklyController,
-  SplitIOController,
-} from 'sdk/module/permission';
 import { jobScheduler } from './framework/utils/jobSchedule';
 import { UserConfigService } from './module/config';
+import { CrashManager } from './module/crash';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -59,11 +52,24 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-    public permissionService: PermissionService,
-  ) {}
+  ) {
+    CrashManager.getInstance().monitor();
+  }
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
+    // Use default config value
+    const apiConfig: ApiConfig = merge(
+      {},
+      defaultApiConfig,
+      this._sdkConfig.api,
+    );
+    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
+
+    Foundation.init({
+      dbAdapter: dbConfig.adapter,
+    });
+    Api.init(apiConfig, this.networkManager);
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -86,32 +92,17 @@ class Sdk {
 
     if (!loginResp || !loginResp.success) {
       if (process.env.NODE_ENV !== 'test') {
+        mainLogger.tags(LOG_TAG).info('init() delete database');
         window.indexedDB && window.indexedDB.deleteDatabase('Glip');
       }
     }
     this._subscribeNotification();
-    this._initDataAnalysis();
     mainLogger.tags(LOG_TAG).info('sdk init finished');
   }
 
   async onStartLogin() {
     mainLogger.tags(LOG_TAG).info('onStartLogin');
-    // Use default config value
-    const apiConfig: ApiConfig = merge(
-      {},
-      defaultApiConfig,
-      this._sdkConfig.api,
-    );
-    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
-
-    Foundation.init({
-      dbAdapter: dbConfig.adapter,
-    });
-    Api.init(apiConfig, this.networkManager);
     await this.daoManager.initDatabase(this.clearAllData);
-
-    this.permissionService.injectControllers(new LaunchDarklyController());
-    this.permissionService.injectControllers(new SplitIOController());
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
@@ -213,12 +204,14 @@ class Sdk {
   async onLogout() {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
+    mainLogger.tags(LOG_TAG).info('onLogout() delete database');
     this.daoManager.deleteDatabase();
     ServiceLoader.getInstance<UserConfigService>(
       ServiceConfig.USER_CONFIG_SERVICE,
     ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
+    CrashManager.getInstance().dispose();
   }
 
   updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
@@ -252,15 +245,12 @@ class Sdk {
     });
   }
 
-  private _initDataAnalysis() {
-    dataAnalysis.init();
-  }
-
   private _resetDataAnalysis() {
     dataAnalysis.reset();
   }
 
   clearAllData = async () => {
+    mainLogger.tags(LOG_TAG).info('clearAllData() delete database');
     await this.daoManager.deleteDatabase();
     // remove relevant config
     if (AccountGlobalConfig.getUserDictionary()) {

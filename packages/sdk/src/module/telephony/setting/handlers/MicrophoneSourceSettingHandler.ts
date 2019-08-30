@@ -19,7 +19,7 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ITelephonyService } from '../../service/ITelephonyService';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 
 const TAG = '[DeviceSetting][Microphone]';
 

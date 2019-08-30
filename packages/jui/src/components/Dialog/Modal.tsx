@@ -4,25 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import { DialogActionsProps } from '@material-ui/core/DialogActions';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiDialogTitle } from './DialogTitle';
 import { JuiDialogContent } from './DialogContent';
 import { JuiDialogContentText } from './DialogContentText';
 import { JuiDialogActions } from './DialogActions';
 
-import { spacing } from '../../foundation/utils';
 import { Omit } from '../../foundation/utils/typeHelper';
-import styled from '../../foundation/styled-components';
 import { JuiButton, JuiButtonProps, JuiButtonColor } from '../Buttons/Button';
-
-const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
-  & button,
-  & a {
-    display: inline-block;
-    margin-left: ${spacing(2)};
-  }
-`;
 
 type JuiModalProps = {
   open?: boolean;
@@ -40,15 +29,16 @@ type JuiModalProps = {
   cancelBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void | Promise<boolean> | Promise<void>;
-  onCancel?(event?: React.MouseEvent): void;
+  onCancel?(event: React.MouseEvent): void;
   content?: string | JSX.Element;
   fillContent?: boolean;
   loading?: boolean;
+  onClose?(event: React.MouseEvent, reason?: string): void;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
-JuiDialogProps,
-'open'
+  JuiDialogProps,
+  'open'
 >;
 
 class JuiModal extends PureComponent<JuiModalProps, {}> {
@@ -67,7 +57,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
     } = this.props;
     return (
       <>
-        {cancelText ? (
+        {cancelText && (
           <JuiButton
             onClick={onCancel}
             color="primary"
@@ -79,19 +69,21 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           >
             {cancelText}
           </JuiButton>
-        ) : null}
-        <JuiButton
-          onClick={onOK}
-          color={okType}
-          variant={okVariant}
-          autoFocus={false}
-          data-test-automation-id={'DialogOKButton'}
-          disabled={loading}
-          {...okBtnProps}
-          loading={loading}
-        >
-          {okText}
-        </JuiButton>
+        )}
+        {okText && (
+          <JuiButton
+            onClick={onOK}
+            color={okType}
+            variant={okVariant}
+            autoFocus={false}
+            data-test-automation-id={'DialogOKButton'}
+            disabled={loading}
+            {...okBtnProps}
+            loading={loading}
+          >
+            {okText}
+          </JuiButton>
+        )}
       </>
     );
   }
@@ -99,11 +91,12 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
   renderContent() {
     const { children, content } = this.props;
 
-    const renderString = (type: string | React.ReactNode) => (typeof type === 'string' ? (
+    const renderString = (type: string | React.ReactNode) =>
+      typeof type === 'string' ? (
         <JuiDialogContentText>{type}</JuiDialogContentText>
-    ) : (
-      type
-    ));
+      ) : (
+        type
+      );
 
     return content ? renderString(content) : renderString(children);
   }
@@ -118,10 +111,11 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       contentAfter,
       modalProps,
       fillContent,
+      onClose,
     } = this.props;
 
     return (
-      <JuiDialog open={open!} size={size} {...modalProps}>
+      <JuiDialog onClose={onClose} open={open!} size={size} {...modalProps}>
         {typeof title === 'string' ? (
           <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
             {title}
@@ -137,12 +131,12 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           {this.renderContent()}
         </JuiDialogContent>
         {contentAfter}
-        <StyledActions
+        <JuiDialogActions
           className="modal-actions"
           data-test-automation-id={'DialogActions'}
         >
           {footer ? footer : this.renderDefaultFooter()}
-        </StyledActions>
+        </JuiDialogActions>
       </JuiDialog>
     );
   }

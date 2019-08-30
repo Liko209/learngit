@@ -5,7 +5,7 @@
  */
 
 import { observable, computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { IncomingProps, IncomingViewProps } from './types';
@@ -42,6 +42,11 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
   @computed
   get incomingState() {
     return this._telephonyStore.incomingState;
+  }
+
+  @computed
+  get isMultipleCall() {
+    return this._telephonyStore.isMultipleCall;
   }
 
   @observable

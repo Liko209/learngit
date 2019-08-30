@@ -22,9 +22,10 @@ import {
   DeviceInfo,
   DeviceRecord,
   IStateRequest,
+  CountryRecord,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { RC_INFO } from 'sdk/service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
@@ -40,6 +41,7 @@ import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberContro
 import {
   IExtensionCallerId,
   StateRecord,
+  ICountryRequest,
 } from 'sdk/api/ringcentral/types/common';
 import { Nullable } from 'sdk/types';
 
@@ -283,6 +285,29 @@ class RCInfoFetchController {
     notificationCenter.emit(RC_INFO.DEVICE_INFO, deviceInfo);
   };
 
+  requestCountryList = async (
+    request: ICountryRequest,
+  ): Promise<CountryRecord[]> => {
+    const result: CountryRecord[] = [];
+    await this._requestCountryListByPage(request, result);
+    return result;
+  };
+
+  private async _requestCountryListByPage(
+    request: ICountryRequest,
+    result: CountryRecord[],
+  ) {
+    const response = await RCInfoApi.getCountryInfo(request);
+    response.records && result.push(...response.records.map(data => data));
+
+    const page = _.get(response, 'paging.page', 0);
+    const totalPages = _.get(response, 'paging.totalPages', 0);
+    if (page < totalPages) {
+      request.page += 1;
+      await this._requestCountryListByPage(request, result);
+    }
+  }
+
   requestBlockNumberList = async (): Promise<void> => {
     const params: GetBlockNumberListParams = {
       page: 1,
@@ -421,7 +446,7 @@ class RCInfoFetchController {
 
   async getDigitalLines(): Promise<DeviceRecord[]> {
     const deviceInfo: DeviceInfo = await this.rcInfoUserConfig.getDeviceInfo();
-    return deviceInfo ? deviceInfo.records : [];
+    return deviceInfo && deviceInfo.records ? deviceInfo.records : [];
   }
 
   async getForwardingFlipNumbers(

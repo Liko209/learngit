@@ -1,6 +1,7 @@
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ContactSearchListViewModel } from '../ContactSearchList.ViewModel';
-import { container, decorate, injectable, Jupiter } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
@@ -59,9 +60,9 @@ beforeAll(() => {
     onContactSelected: jest.fn(),
     inputStringProps: 'inputString',
   });
-  contactSearchListViewModel._telephonyService.makeCall = jest.fn();
+  contactSearchListViewModel._telephonyService.directCall = jest.fn();
   contactSearchListViewModel.props.onContactSelected = (args: any) =>
-    contactSearchListViewModel._telephonyService.makeCall(args);
+    contactSearchListViewModel._telephonyService.directCall(args);
 });
 
 afterEach(() => {
@@ -123,13 +124,13 @@ describe('contactSearchListViewModel', () => {
     const searchString = '456';
     contactSearchListViewModel._telephonyStore.inputString = searchString;
     contactSearchListViewModel._telephonyStore.dialerInputFocused = false;
-    contactSearchListViewModel._telephonyService.makeCall = jest.fn();
+    contactSearchListViewModel._telephonyService.directCall = jest.fn();
 
     await sleep();
 
     contactSearchListViewModel.onEnter();
     expect(
-      contactSearchListViewModel._telephonyService.makeCall,
+      contactSearchListViewModel._telephonyService.directCall,
     ).not.toBeCalledWith(searchString);
   });
 
@@ -137,13 +138,13 @@ describe('contactSearchListViewModel', () => {
     const searchString = '123';
     contactSearchListViewModel._telephonyStore.inputString = searchString;
     contactSearchListViewModel._telephonyStore.dialerInputFocused = true;
-    contactSearchListViewModel._telephonyService.makeCall = jest.fn();
+    contactSearchListViewModel._telephonyService.directCall = jest.fn();
 
     await sleep();
 
     contactSearchListViewModel.onEnter();
     expect(
-      contactSearchListViewModel._telephonyService.makeCall,
+      contactSearchListViewModel._telephonyService.directCall,
     ).toBeCalledWith(searchString);
   });
 
@@ -239,4 +240,19 @@ describe('contactSearchListViewModel', () => {
     contactSearchListViewModel.loadInitialData();
     expect(contactSearchListViewModel.hasMore()).toBeFalsy();
   });
+
+  describe('selectCallItem()', () => {
+    it('should cancel the selection of transfer user [JPT-2764]',() => {
+      contactSearchListViewModel.selectCallItem('123', 1);
+      expect(contactSearchListViewModel._telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '123',
+        index: 1,
+      })
+      contactSearchListViewModel.selectCallItem('123', 1);
+      expect(contactSearchListViewModel._telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '',
+        index: NaN,
+      })
+    })
+  })
 });

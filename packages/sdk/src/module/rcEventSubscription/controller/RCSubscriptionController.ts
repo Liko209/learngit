@@ -12,12 +12,10 @@ import {
   ETransportType,
   RcSubscriptionParams,
 } from 'sdk/api/ringcentral/types';
-import {
-  notificationCenter, SERVICE, WINDOW, SUBSCRIPTION,
-} from 'sdk/service';
+import { notificationCenter, SERVICE, WINDOW, SUBSCRIPTION } from 'sdk/service';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import {
   jobScheduler,
   JOB_KEY,
@@ -49,6 +47,7 @@ class RCSubscriptionController {
   private _eventNotificationKeyMap = {
     [RCSubscriptionKeys.MessageStore]: SUBSCRIPTION.MESSAGE_STORE,
     [RCSubscriptionKeys.MissedCall]: SUBSCRIPTION.MISSED_CALLS,
+    [RCSubscriptionKeys.Voicemail]: SUBSCRIPTION.VOICEMAIL,
     [RCSubscriptionKeys.TelephonyDetail]:
       SUBSCRIPTION.PRESENCE_WITH_TELEPHONY_DETAIL,
   };
@@ -319,7 +318,7 @@ class RCSubscriptionController {
   private _handleWakeUp = () => {
     mainLogger.tags(CLASS_NAME).log('receive wake up, try start subscription');
     this.startSubscription();
-  }
+  };
 
   private _handlePermissionChange = (enabled: boolean) => {
     if (enabled) {
@@ -330,7 +329,7 @@ class RCSubscriptionController {
         .log('receive voip permission off, try pause, subscription');
       this.cleanUpSubscription();
     }
-  }
+  };
 
   private _handleOnLine = (value: { onLine: boolean }) => {
     if (value) {
@@ -347,12 +346,12 @@ class RCSubscriptionController {
         this._pauseSubscription();
       }
     }
-  }
+  };
 
   private _handleFocus = () => {
     mainLogger.tags(CLASS_NAME).log('receive focus, try start subscription');
     this.startSubscription();
-  }
+  };
 
   private _startPubNub(newSubscription: RcSubscriptionInfo) {
     const subscribeKey = _.get(newSubscription, 'deliveryMode.subscriberKey');
@@ -404,7 +403,7 @@ class RCSubscriptionController {
     }
 
     this._dispatchMessages(this._decrypt(message));
-  }
+  };
 
   private _decrypt(message: any) {
     return this._pubNub.decrypt(
@@ -443,7 +442,7 @@ class RCSubscriptionController {
 
   private _notifyStatus = (status: any) => {
     mainLogger.tags(CLASS_NAME).log('_notifyStatus', status);
-  }
+  };
 
   private async _buildSubscription(
     events: string[],
@@ -471,6 +470,7 @@ class RCSubscriptionController {
         RCSubscriptionKeys.TelephonyDetail,
         RCSubscriptionKeys.MessageStore,
         RCSubscriptionKeys.MissedCall,
+        RCSubscriptionKeys.Voicemail,
       );
     }
     return events;

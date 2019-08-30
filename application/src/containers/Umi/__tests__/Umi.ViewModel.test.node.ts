@@ -3,15 +3,16 @@
  * @Date: 2019-05-27 16:34:19
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { UmiViewModel } from '../Umi.ViewModel';
 import { UmiProps, UMI_SECTION_TYPE } from '../types';
 import * as utils from '@/store/utils';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
-
-jest.mock('framework');
+import { jupiter } from 'framework/Jupiter';
+import { AppStore } from '@/modules/app/store';
 
 describe('UmiViewModel', () => {
+  jupiter.registerClass(AppStore);
+
   let viewModel: UmiViewModel;
   let currentSetting = {
     value: NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,

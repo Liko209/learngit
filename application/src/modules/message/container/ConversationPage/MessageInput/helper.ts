@@ -7,9 +7,8 @@
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 export function isEmpty(content: string) {
-  const commentText = content.trim();
-  const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+)*<\/p>)+$/gm;
-  return commentText === '' || re.test(commentText);
+  const trimmed = content.replace(/<br>|<br\/>|<p>|<\/p>|\s/g, '');
+  return trimmed === '';
 }
 
 export function isMultipleLine(content: string) {

@@ -16,21 +16,29 @@ import {
 } from '../../components/Buttons/ButtonBar';
 import { Palette } from '../../foundation/theme/theme';
 
+type CustomColor = [keyof Palette, string];
+
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
   margin-bottom: ${spacing(3)};
 `;
 
-const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
+const ItemTitle = styled<
+  { complete?: boolean; customColor?: CustomColor },
+  'span'
+>('span')`
   flex-grow: 1;
   margin: ${spacing(0, 0, 0, 1)};
   text-decoration: ${({ complete }) => (complete ? 'line-through' : '')};
+  color: ${({ customColor }) =>
+    customColor ? palette(customColor[0], customColor[1]) : null};
 `;
+
 const SubTitle = styled.span`
   color: ${palette('text', 'secondary')};
   flex-grow: 2;
 `;
-const HeaderActionsWrapper = styled(JuiButtonBar)<JuiButtonBarProps>`
+const HeaderActionsWrapper = styled(JuiButtonBar) <JuiButtonBarProps>`
   position: absolute;
   right: ${spacing(1.5)};
   top: ${spacing(1.5)};
@@ -53,7 +61,7 @@ function calcActionBarWith(buttonNumber: number) {
 
 type ItemCardProps = {
   buttonNumber: number;
-}
+};
 const ItemCardHeader = styled.div<ItemCardProps>`
   position: relative;
   padding: ${spacing(4)};
@@ -69,9 +77,10 @@ const ItemCardHeader = styled.div<ItemCardProps>`
 
 const ItemCardContent = styled(props => (
   <JuiCardContent {...omit(props, ['hasPadding'])} />
-))<{hasPadding: boolean;}>`
+)) <{ hasPadding: boolean }>`
   &&& {
-    padding: ${({ hasPadding }) => (hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0))};
+    padding: ${({ hasPadding }) =>
+    hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0)};
     ${typography('body1')};
   }
 `;
@@ -89,12 +98,13 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 type JuiConversationItemCardProps = {
   title?: React.ReactChild | (React.ReactChild | null)[] | null;
   Icon: JSX.Element | string;
-  iconColor?: [keyof Palette, string];
+  customColor?: CustomColor;
+  iconColor?: CustomColor;
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
   children?: React.ReactNode;
   contentHasPadding?: boolean;
   isShowLoading?: boolean;
-  subTitle?: string;
+  subTitle?: JSX.Element;
   Footer?: JSX.Element | null;
   footerPadding?: boolean;
   complete?: boolean;
@@ -103,18 +113,19 @@ type JuiConversationItemCardProps = {
 } & React.DOMAttributes<{}>;
 
 class JuiConversationItemCard extends React.PureComponent<
-JuiConversationItemCardProps
-> {
+  JuiConversationItemCardProps
+  > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
-  }
+  };
 
   render() {
     const {
       children,
       title,
       Icon,
+      customColor,
       iconColor = ['primary', 'main'] as [keyof Palette, string],
       Footer,
       footerPadding = true,
@@ -141,12 +152,13 @@ JuiConversationItemCardProps
               {Icon}
             </JuiIconography>
           ) : (
-            Icon
-          )}
+              Icon
+            )}
           {title ? (
             <ItemTitle
               data-test-automation-id="conversation-item-cards-title"
               complete={complete}
+              customColor={customColor}
             >
               {title}
             </ItemTitle>

@@ -57,6 +57,10 @@ const StyledListItem = styled<JuiListButtonItemProps>(WrappedListItem)`
     background-color: ${({ theme }) => theme.palette.background.paper};
   }
 
+  &&.MuiListItem-button {
+    transition: none;
+  }
+
   &&:hover {
     background-color: ${({ theme }) =>
       fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
@@ -68,7 +72,7 @@ const StyledListItem = styled<JuiListButtonItemProps>(WrappedListItem)`
 
   &&&:focus,
   &&&.selected {
-    background-color: ${palette('primary', '600')};
+    background-color: ${palette('primary', 'main')};
     border: none;
 
     & > ${StyledItemText} {

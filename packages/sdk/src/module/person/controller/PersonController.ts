@@ -29,6 +29,7 @@ import { PersonEntityCacheController } from './PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { mainLogger } from 'foundation/log';
 import { PersonActionController } from './PersonActionController';
 import { buildPartialModifyController } from 'sdk/framework/controller';
 
@@ -54,6 +55,8 @@ const HEADSHOT_THUMB_WIDTH = 'width';
 const HEADSHOT_THUMB_HEIGHT = 'height';
 
 const SIZE = 'size';
+
+const LOG_TAG = 'PersonController';
 
 class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
@@ -100,6 +103,13 @@ class PersonController {
     }
 
     return await this._entitySourceController.batchGet(ids);
+  }
+
+  async getCurrentPerson(): Promise<Person | null> {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return this._entitySourceController.get(userConfig.getGlipUserId());
   }
 
   async getAllCount() {
@@ -223,6 +233,22 @@ class PersonController {
     return person.first_name || person.last_name ||'';
   }
 
+  getFirstName(person: Person){
+    let firstName = person.first_name || "";
+    if (person.rc_extension_id) {
+      firstName = person.sanitized_rc_first_name || firstName;
+    }
+    return firstName;
+  }
+
+  getLastName(person: Person){
+    let lastName = person.last_name || "";
+    if (person.rc_extension_id) {
+      lastName = person.sanitized_rc_last_name || lastName;
+    }
+    return lastName;
+  }
+
   getEmailAsName(person: Person) {
     if (person.email) {
       const name = person.email.split('@')[0];
@@ -278,16 +304,15 @@ class PersonController {
     );
   }
 
-  isCacheValid = (person: Person) => (
+  isValidPerson = (person: Person) => !person.is_pseudo_user &&
     !this._isUnregistered(person) &&
-      this._isServicePerson(person) &&
-      !person.is_pseudo_user &&
-      !this._hasBogusEmail(person)
-  );
+    this._isServicePerson(person) &&
+    !this._hasBogusEmail(person) &&
+    !this._isDeactivated(person);
 
   isVisible(person: Person): boolean {
     return (
-      this.isCacheValid(person) &&
+      this.isValidPerson(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
       !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
       !this._isDeactivated(person)
@@ -324,9 +349,7 @@ class PersonController {
     return availNumbers;
   }
 
-  async matchContactByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<Person | null> {
+  async matchContactByPhoneNumber(phoneNumber: string): Promise<Person | null> {
     if (!phoneNumber) {
       return null;
     }
@@ -373,6 +396,11 @@ class PersonController {
       });
     }
 
+    result.length === 0 &&
+      mainLogger
+        .tags(LOG_TAG)
+        .debug(`Cannot match person by phone number: ${phoneNumber}`);
+
     return result.length ? result[0] : null;
   }
 
@@ -384,7 +412,7 @@ class PersonController {
         await this._entitySourceController.update(person);
         notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
       }
-      
+
     }
   }
 

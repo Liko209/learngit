@@ -23,10 +23,13 @@ import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { AccountUserConfig } from '../../../../account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
-import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation';
+import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation/network';
 import { PostDataController } from '../../PostDataController';
 import { GroupService } from 'sdk/module/group/service';
-
+import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySourceController';
+import { MAX_PERMISSION_LEVEL, DEFAULT_USER_PERMISSION_LEVEL, PERMISSION_ENUM } from 'sdk/module/group/constants';
+import { ERROR_CODES_SDK, ERROR_TYPES, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import { ItemService } from 'sdk/module/item';
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
 
@@ -91,6 +94,8 @@ describe('SendPostController', () => {
   let sendPostController: SendPostController;
   let postDataController: PostDataController;
   let postActionController: PostActionController;
+  let mockEntitySourceController: EntitySourceController<Post>;
+  let itemService: ItemService;
   const groupConfigService: GroupConfigService = new GroupConfigService();
   const postDao = new PostDao(null);
   const accountDao = new AccountDao(null);
@@ -98,7 +103,6 @@ describe('SendPostController', () => {
   let preInsertController: IPreInsertController;
   function doMock() {
     postActionController = new PostActionController(
-      null,
       null,
       null,
       null,
@@ -111,6 +115,12 @@ describe('SendPostController', () => {
       null,
       null,
     );
+    mockEntitySourceController = {
+      get: jest.fn()
+    } as any;
+    itemService = {
+      getById: jest.fn(),
+    } as any;
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((config: string) => {
@@ -120,12 +130,16 @@ describe('SendPostController', () => {
         if (config === ServiceConfig.ACCOUNT_SERVICE) {
           return { userConfig: AccountUserConfig.prototype };
         }
+        if (config === ServiceConfig.ITEM_SERVICE) {
+          return itemService;
+        }
       });
     sendPostController = new SendPostController(
       postActionController,
       preInsertController,
       postDataController,
       groupService,
+      mockEntitySourceController,
     );
   }
   beforeEach(() => {
@@ -138,6 +152,7 @@ describe('SendPostController', () => {
   });
   describe('sendPost', () => {
     it('should add user id and company id into parameters', async () => {
+      
       let correct = false;
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
@@ -430,6 +445,7 @@ describe('SendPostController', () => {
       expect(spy).toHaveBeenCalledWith(data, {
         priority: REQUEST_PRIORITY.HIGH,
         retryCount: DEFAULT_RETRY_COUNT,
+        ignoreNetwork: true,
       });
     });
     it('should call with retryCount', async () => {
@@ -513,4 +529,135 @@ describe('SendPostController', () => {
       );
     });
   });
+  describe('shareItem', () => {
+    const prepareShareItemData = () => {
+      sendPostController['_helper'].buildShareItemPost = jest.fn().mockResolvedValue({})
+        jest.spyOn(sendPostController, 'sendPostToServer').mockImplementation(() => {}); 
+        mockEntitySourceController.get.mockResolvedValue({
+          id: 1,
+          text: 'gg',
+  
+        })
+        groupService.isCurrentUserHasPermission.mockReturnValue(true)
+        groupService.getById.mockResolvedValue({
+          id: 2,
+          members: [3, 4],
+          is_team: true,
+          is_archived: false,
+          deactivated: false,
+          permissions: {
+            user: {
+              level: MAX_PERMISSION_LEVEL
+            }
+          }
+        })
+        itemService.getById.mockResolvedValue({
+        });
+        AccountUserConfig.prototype.getGlipUserId = jest
+          .fn()
+          .mockReturnValue(4);
+          jest.spyOn(sendPostController['_helper'], 'buildShareItemPost').mockResolvedValue({} as any)
+    }
+    it('should call buildShareItemPost then sendPostToServer', async () => {
+      prepareShareItemData();
+      await sendPostController.shareItem(1, 2, 3);
+      expect(sendPostController['_helper'].buildShareItemPost).toBeCalled();
+      expect(sendPostController.sendPostToServer).toBeCalled();
+    })
+
+    it('should throw post deactivated error [JPT-2816]', async () => {
+      prepareShareItemData();
+      mockEntitySourceController.get.mockResolvedValue({
+        deactivated: true,
+      })
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.POST_DEACTIVATED
+      }))
+    })
+
+    it('should throw GROUP_NOT_MEMBER error when not in group members [JPT-2816]', async () => {
+      prepareShareItemData();
+      groupService.getById.mockResolvedValue({
+        id: 2,
+        members: [3, 5],
+        is_team: true,
+        is_archived: false,
+        deactivated: false,
+        permissions: {
+          user: {
+            level: MAX_PERMISSION_LEVEL
+          }
+        }
+      })
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.GROUP_NOT_MEMBER
+      }))
+    })
+    it('should throw GROUP_NOT_MEMBER error when NOT_AUTHORIZED to group [JPT-2816]', async () => {
+      prepareShareItemData();
+      groupService.getById.mockRejectedValue(new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, ''))
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.GROUP_NOT_MEMBER
+      }))
+    })
+    it('should throw GROUP_ARCHIVED error when group is archived [JPT-2816]', async () => {
+      prepareShareItemData();
+      groupService.getById.mockResolvedValue({
+        id: 2,
+        members: [3, 4],
+        is_team: true,
+        is_archived: true,
+        deactivated: false,
+        permissions: {
+          user: {
+            level: MAX_PERMISSION_LEVEL
+          }
+        }
+      })
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.GROUP_ARCHIVED
+      }))
+    })
+    it('should throw GROUP_DEACTIVATED error group is deactivated [JPT-2816]', async () => {
+      prepareShareItemData();
+      groupService.getById.mockResolvedValue({
+        id: 2,
+        members: [3, 4],
+        is_team: true,
+        is_archived: false,
+        deactivated: true,
+        permissions: {
+          user: {
+            level: MAX_PERMISSION_LEVEL
+          }
+        }
+      })
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.GROUP_DEACTIVATED
+      }))
+    })
+    it('should throw GROUP_NO_PERMISSION error when uer post permission is disabled [JPT-2816]', async () => {
+      prepareShareItemData();
+      groupService.isCurrentUserHasPermission.mockReturnValue(false);
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.GROUP_NO_PERMISSION
+      }))
+    })
+    it('should throw ITEM_DEACTIVATED error when item is deactivated [JPT-2832]', async () => {
+      prepareShareItemData();
+      itemService.getById.mockResolvedValue({
+        deactivated: true,
+      });
+      await expect(sendPostController.shareItem(1, 2, 3)).rejects.toEqual(expect.objectContaining({
+        type: ERROR_TYPES.SDK,
+        code: ERROR_CODES_SDK.ITEM_DEACTIVATED
+      }))
+    })
+  })
 });

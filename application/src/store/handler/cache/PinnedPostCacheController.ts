@@ -4,18 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { FetchSortableDataListHandler } from '@/store/base';
 import GroupModel from '@/store/models/Group';
-import { PostCacheController } from './PostCacheController';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { PinnedPostListHandler } from '../PinnedPostListHandler';
-import { QUERY_DIRECTION } from 'sdk/dao';
-import { mainLogger } from 'sdk';
-import { Post } from 'sdk/module/post/entity';
+import { DiscontinuousPostCacheController } from './DiscontinuousPostCacheController';
 
-const LOG_TAG = 'PinnedPostCacheController';
-class PinnedPostCacheController extends PostCacheController {
+class PinnedPostCacheController extends DiscontinuousPostCacheController {
   private _pinPostHandlerCache: Map<number, PinnedPostListHandler>;
 
   constructor() {
@@ -27,34 +22,21 @@ class PinnedPostCacheController extends PostCacheController {
     return 'PinnedPostCacheController';
   }
 
-  get(groupId: number): FetchSortableDataListHandler<Post> {
-    if (!this._cacheMap.has(groupId)) {
-      this._initPinnedPostHandler(groupId);
-    }
-
-    return this._cacheMap.get(groupId)!;
-  }
-
-  getPinnedPostHandler(groupId: number) {
-    if (!this._pinPostHandlerCache.has(groupId)) {
-      this._initPinnedPostHandler(groupId);
-    }
-
-    return this._pinPostHandlerCache.get(groupId)!;
-  }
-
-  private _initPinnedPostHandler(groupId: number) {
-    const groupModel = getEntity(ENTITY_NAME.GROUP, groupId) as GroupModel;
-    const pinnedPostIds = groupModel.pinnedPostIds;
+  protected initDiscontinuousHandler(groupId: number) {
     const pinnedPostListHandler = new PinnedPostListHandler(
       groupId,
-      pinnedPostIds,
+      this._getSourceIds(groupId),
     );
 
     const listHandler = pinnedPostListHandler.fetchSortableDataHandler();
     this._pinPostHandlerCache.set(groupId, pinnedPostListHandler);
     this.set(groupId, listHandler);
     listHandler.maintainMode = true;
+  }
+
+  private _getSourceIds(id: number): number[] {
+    const groupModel = getEntity(ENTITY_NAME.GROUP, id) as GroupModel;
+    return groupModel.pinnedPostIds;
   }
 
   protected removeInternal(groupId: number) {
@@ -65,18 +47,6 @@ class PinnedPostCacheController extends PostCacheController {
     }
 
     super.removeInternal(groupId);
-  }
-
-  async doPreFetch(groupId: number) {
-    if (this.shouldPreFetch(groupId, QUERY_DIRECTION.NEWER)) {
-      const foc = this.get(groupId);
-      await foc.fetchData(QUERY_DIRECTION.NEWER);
-      mainLogger.info(LOG_TAG, 'doPrefetch done - ', groupId);
-    }
-  }
-
-  needToCache(groupId: number) {
-    return this.shouldPreFetch(groupId, QUERY_DIRECTION.NEWER);
   }
 }
 

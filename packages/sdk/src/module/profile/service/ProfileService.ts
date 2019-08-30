@@ -6,7 +6,7 @@
 
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { IProfileService } from './IProfileService';
-import { Profile } from '../entity/Profile';
+import { Profile, ConversationPreference } from '../entity/Profile';
 import { daoManager } from '../../../dao';
 import { ProfileDao } from '../dao';
 import { Api } from '../../../api';
@@ -21,6 +21,7 @@ import { ProfileSetting } from '../setting';
 import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
+import { VIDEO_SERVICE_OPTIONS } from '../constants';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -59,6 +60,9 @@ class ProfileService extends EntityBaseService<Profile>
       ).unRegisterModuleSetting(this._profileSetting);
       delete this._profileSetting;
     }
+    this.getProfileController()
+      .getProfileDataController()
+      .unRegisterAllObservers();
 
     super.onStopped();
   }
@@ -161,6 +165,29 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .isNotificationMute(conversationId);
+  }
+
+  isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {
+    return this.getProfileController()
+      .getProfileDataController()
+      .isVideoServiceEnabled(option);
+  }
+
+  getConversationPreference = async (
+    cid: number,
+  ): Promise<ConversationPreference> => {
+    return await this.getProfileController()
+      .getProfileDataController()
+      .getConversationPreference(cid);
+  };
+
+  async updateConversationPreference(
+    cid: number,
+    model: Partial<ConversationPreference>,
+  ): Promise<void> {
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateConversationPreference(cid, model);
   }
 
   private get profileSetting() {

@@ -3,7 +3,7 @@
  * @Date: 2019-07-26 10:50:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { descriptorAOP } from '../core/utils';
 import { mockMethods } from '../shared';
 
@@ -68,13 +68,12 @@ const _fakeInstance = function(
     descriptor: PropertyDescriptor,
   ) {
     const oldFn = descriptor.value;
-    const hasParam = oldFn.length > 0;
 
     const _mockService = () => {
       _mockContainer(key, method, mockData, methodType);
     };
 
-    descriptor.value = descriptorAOP(hasParam, _mockService, oldFn);
+    descriptor.value = descriptorAOP(target, _mockService, oldFn);
     return descriptor;
   };
 };

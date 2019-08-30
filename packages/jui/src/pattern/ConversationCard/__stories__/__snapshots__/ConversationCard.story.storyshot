@@ -2,14 +2,14 @@
 
 exports[`Storyshots Pattern ConversationCard: Pattern ConversationCard 1`] = `
 Array [
-  .c16 {
+  .c15 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c17 {
+.c16 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -20,108 +20,6 @@ Array [
   font-size: 24px;
 }
 
-.c18.c18 .c15,
-.c18.c18 .c15 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c15 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c15,
-.c19.c19 .c15 svg {
-  font-size: 20px;
-}
-
-.c19.c19:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c19.c19:active .c15 {
-  color: #9e9e9e;
-}
-
-.c19.c19.c19.c19.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c15,
-.c20.c20 .c15 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c20.c20:active .c15 {
-  color: #0684bd;
-}
-
-.c20.c20.c20.c20.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c15,
-.c21.c21 .c15 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c21.c21:active .c15 {
-  color: #0684bd;
-}
-
-.c21.c21.c21.c21.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c15,
-.c22.c22 .c15 svg {
-  font-size: 20px;
-}
-
-.c22.c22:hover .c15 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c22.c22:active .c15 {
-  color: #edb63c;
-}
-
-.c22.c22.c22.c22.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c23.c23 .c15,
-.c23.c23 .c15 svg {
-  font-size: 16px;
-}
-
-.c23.c23:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c23.c23:active .c15 {
-  color: #9e9e9e;
-}
-
-.c23.c23.c23.c23.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c14.c14 {
   padding: 0;
   width: 16px;
@@ -130,10 +28,11 @@ Array [
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
-.c14.c14 .c15,
-.c14.c14 .c15 svg {
+.c14.c14 .icon,
+.c14.c14 .icon svg {
   font-size: 16px;
 }
 
@@ -141,15 +40,19 @@ Array [
   background-color: transparent;
 }
 
-.c14.c14:hover .c15 {
+.c14.c14:hover .icon {
   color: rgba(6,132,189,0.88);
 }
 
-.c14.c14:active .c15 {
+.c14.c14:active .icon {
   color: #0684bd;
 }
 
-.c14.c14.c14.c14.disabled .c15 {
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
+.c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -180,6 +83,10 @@ Array [
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -305,10 +212,19 @@ Array [
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  line-height: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+}
+
+.c7.c7 .emoji-mart-emoji {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(16%);
+  -ms-transform: translateY(16%);
+  transform: translateY(16%);
 }
 
 .c10 {
@@ -405,7 +321,28 @@ Array [
             className="c7"
             data-name="cardHeaderUserStatus"
           >
-            🏃 in the meeting
+            <span
+              aria-label="📅, date"
+              className="emoji-mart-emoji"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+              onMouseLeave={[Function]}
+              title={null}
+            >
+              <span
+                style={
+                  Object {
+                    "backgroundImage": "url(/emoji/emojione/64.png)",
+                    "backgroundPosition": "49.01960784313725% 94.11764705882352%",
+                    "backgroundSize": "5200% 5200%",
+                    "display": "inline-block",
+                    "height": 14,
+                    "width": 14,
+                  }
+                }
+              />
+            </span>
+            in the meeting
           </div>
           <div
             className="c8"
@@ -448,7 +385,9 @@ Array [
           title={null}
         >
           <button
+            aria-haspopup={true}
             aria-label=""
+            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
@@ -459,7 +398,9 @@ Array [
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -472,11 +413,10 @@ Array [
               className="MuiIconButton-label"
             >
               <span
-                className="c15 thumbup icon c16"
-                size="small"
+                className=" thumbup icon c15"
               >
                 <svg
-                  className="c17"
+                  className="c16"
                   role="img"
                 >
                   <use
@@ -494,14 +434,14 @@ Array [
       </div>
     </div>
   </div>,
-  .c16 {
+  .c15 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c17 {
+.c16 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -512,108 +452,6 @@ Array [
   font-size: 24px;
 }
 
-.c18.c18 .c15,
-.c18.c18 .c15 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c15 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c15,
-.c19.c19 .c15 svg {
-  font-size: 20px;
-}
-
-.c19.c19:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c19.c19:active .c15 {
-  color: #9e9e9e;
-}
-
-.c19.c19.c19.c19.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c15,
-.c20.c20 .c15 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c20.c20:active .c15 {
-  color: #0684bd;
-}
-
-.c20.c20.c20.c20.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c15,
-.c21.c21 .c15 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c21.c21:active .c15 {
-  color: #0684bd;
-}
-
-.c21.c21.c21.c21.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c15,
-.c22.c22 .c15 svg {
-  font-size: 20px;
-}
-
-.c22.c22:hover .c15 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c22.c22:active .c15 {
-  color: #edb63c;
-}
-
-.c22.c22.c22.c22.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c23.c23 .c15,
-.c23.c23 .c15 svg {
-  font-size: 16px;
-}
-
-.c23.c23:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c23.c23:active .c15 {
-  color: #9e9e9e;
-}
-
-.c23.c23.c23.c23.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c14.c14 {
   padding: 0;
   width: 16px;
@@ -622,10 +460,11 @@ Array [
   opacity: 1;
   padding: 0;
   background-color: inherit;
+  border-radius: 0;
 }
 
-.c14.c14 .c15,
-.c14.c14 .c15 svg {
+.c14.c14 .icon,
+.c14.c14 .icon svg {
   font-size: 16px;
 }
 
@@ -633,15 +472,19 @@ Array [
   background-color: transparent;
 }
 
-.c14.c14:hover .c15 {
+.c14.c14:hover .icon {
   color: rgba(6,132,189,0.88);
 }
 
-.c14.c14:active .c15 {
+.c14.c14:active .icon {
   color: #0684bd;
 }
 
-.c14.c14.c14.c14.disabled .c15 {
+.c14.c14.c14.c14.disabled {
+  background-color: inherit;
+}
+
+.c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -672,6 +515,10 @@ Array [
 
 .c2.c2:active {
   opacity: 0.76;
+}
+
+.c2:focus {
+  outline: none;
 }
 
 .c2 > .avatar-short-name {
@@ -797,10 +644,19 @@ Array [
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  line-height: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+}
+
+.c7.c7 .emoji-mart-emoji {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(16%);
+  -ms-transform: translateY(16%);
+  transform: translateY(16%);
 }
 
 .c10 {
@@ -897,7 +753,28 @@ Array [
             className="c7"
             data-name="cardHeaderUserStatus"
           >
-            🏃 in the meeting
+            <span
+              aria-label="📅, date"
+              className="emoji-mart-emoji"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+              onMouseLeave={[Function]}
+              title={null}
+            >
+              <span
+                style={
+                  Object {
+                    "backgroundImage": "url(/emoji/emojione/64.png)",
+                    "backgroundPosition": "49.01960784313725% 94.11764705882352%",
+                    "backgroundSize": "5200% 5200%",
+                    "display": "inline-block",
+                    "height": 14,
+                    "width": 14,
+                  }
+                }
+              />
+            </span>
+            in the meeting
           </div>
           <div
             className="c8"
@@ -940,7 +817,9 @@ Array [
           title={null}
         >
           <button
+            aria-haspopup={true}
             aria-label=""
+            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
@@ -951,7 +830,9 @@ Array [
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseMove={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -964,11 +845,10 @@ Array [
               className="MuiIconButton-label"
             >
               <span
-                className="c15 thumbup icon c16"
-                size="small"
+                className=" thumbup icon c15"
               >
                 <svg
-                  className="c17"
+                  className="c16"
                   role="img"
                 >
                   <use

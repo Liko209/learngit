@@ -4,14 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, inject, Jupiter } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { IHomeService } from '@/modules/home/interface/IHomeService';
 import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearchService';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';
 import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
@@ -74,7 +76,8 @@ class TelephonyModule extends AbstractModule {
     this._telephonyService.dispose();
     this._jupiter.emitModuleDispose(TELEPHONY_SERVICE);
     this._leaveBlockerService.offLeave(this._handleLeave);
-    // TODO unregister extensions
+    // TODO unregister home extensions
+    this._globalSearchService.unregisterExtension('searchItem', Call);
   }
 
   private _handleVoipCallingStateChanged = (enabled: boolean) => {

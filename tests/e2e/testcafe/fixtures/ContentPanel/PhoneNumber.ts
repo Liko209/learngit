@@ -15,7 +15,7 @@ import { ITestMeta, IGroup } from '../../v2/models';
 
 
 fixture('ContentPanel/CodeSnippet')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 
@@ -26,8 +26,8 @@ test.meta(<ITestMeta>{
   maintainers: ['Potar.He']
 })("Call is placed via RingCentral directly when login app with RC users and web phone is enabled", async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[6];
-  const anotherUser = users[7]
+  const loginUser = users[1];
+  const anotherUser = users[2]
   await h(t).glip(loginUser).init();
 
   let team = <IGroup>{
@@ -150,7 +150,7 @@ test.meta(<ITestMeta>{
   // });
 
   // await h(t).withLog(`Then the telephony dialog should be popup`, async () => {
-  //   await telephonyDialog.ensureLoaded(); 
+  //   await telephonyDialog.ensureLoaded();
   //   await t.wait(5e3);
   //   await telephonyDialog.clickHangupButton();
   //   await t.wait(5e3);
@@ -231,7 +231,7 @@ test.meta(<ITestMeta>{
   // });
 
   // await h(t).withLog(`Then the telephony dialog should be popup`, async () => {
-  //   await telephonyDialog.ensureLoaded(); 
+  //   await telephonyDialog.ensureLoaded();
   //   await t.wait(5e3);
   //   await telephonyDialog.clickHangupButton();
   //   await t.wait(5e3);

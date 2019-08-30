@@ -19,6 +19,7 @@ import {
   CallerIdSelectValue,
 } from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
+import { E911SettingItem } from './E911SettingItem';
 import {
   DefaultPhoneAppSelectItem,
   beforeDefaultPhoneAppSettingSave,
@@ -27,7 +28,7 @@ import {
   CALLING_OPTIONS,
   AUDIO_SOUNDS_INFO,
 } from 'sdk/module/profile/constants';
-import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
+import { SETTING_SECTION } from '@/modules/notification/notificationSettingManager/constant';
 import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
 import {
   SoundSourceItem,
@@ -112,12 +113,18 @@ class TelephonySettingManager {
               weight: 300,
             },
             {
+              id: PHONE_SETTING_ITEM.PHONE_E911,
+              automationId: 'e911Setting',
+              type: E911SettingItem,
+              weight: 400,
+            },
+            {
               id: PHONE_SETTING_ITEM.PHONE_EXTENSIONS,
               automationId: 'extensions',
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
-              weight: 400,
+              weight: 500,
               dataTracking: {
                 name: 'extensionSettings',
                 type: 'phoneGeneral',
@@ -129,7 +136,7 @@ class TelephonySettingManager {
     });
     this._settingService.registerItem(
       this._scope,
-      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      SETTING_SECTION.DESKTOP_NOTIFICATIONS,
       {
         id: PHONE_SETTING_ITEM.NOTIFICATION_INCOMING_CALLS,
         automationId: 'incomingCalls',
@@ -147,7 +154,7 @@ class TelephonySettingManager {
     );
     this._settingService.registerItem(
       this._scope,
-      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      SETTING_SECTION.DESKTOP_NOTIFICATIONS,
       {
         id: PHONE_SETTING_ITEM.NOTIFICATION_CALLS_VOICEMAILS,
         automationId: 'callsAndVoicemails',

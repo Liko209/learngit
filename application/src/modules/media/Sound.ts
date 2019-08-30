@@ -10,7 +10,7 @@ import {
   MediaEvents,
 } from '@/interface/media';
 import { Utils } from './Utils';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 class Sound {
   private _id: SoundOptions['id'];
@@ -29,7 +29,7 @@ class Sound {
   private _ended: boolean;
   private _loadError: boolean;
   private _seek: number;
-  private _hasSinkId: boolean;
+  private _hasSinkId: boolean = false;
   private _holdPlaying: boolean;
 
   private _node: (HTMLMediaElement & { setSinkId?: any; sinkId?: any }) | null;
@@ -120,8 +120,8 @@ class Sound {
     this._node.dispatchEvent(event);
   }
 
-  bindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
-    this._events.push({
+  bindEvent(eventName: MediaEventName, handler: (event: Event) => void, record: boolean = true) {
+    record && this._events.push({
       handler,
       name: eventName,
       type: MediaEventType.ON,
@@ -176,7 +176,13 @@ class Sound {
             this._hasSinkId = true;
             this._holdPlaying && this._soundPlay();
           })
-          .catch(() => {
+          .catch((e: any) => {
+            mainLogger.warn(
+              '[MediaModule] audio set sinkId error',
+              this._id,
+              e.code,
+              e.message,
+            );
             this._hasSinkId = false;
           });
       }, 0);
@@ -229,6 +235,7 @@ class Sound {
             .catch(e => {
               mainLogger.warn(
                 '[MediaModule] audio play catch error',
+                this._id,
                 e.code,
                 e.message,
               );
@@ -252,6 +259,7 @@ class Sound {
       } catch (e) {
         mainLogger.warn(
           '[MediaModule] html5AudioPlay catch error',
+          this._id,
           e.code,
           e.message,
         );
@@ -397,8 +405,13 @@ class Sound {
       typeof Promise !== 'undefined' &&
       (testPlay instanceof Promise || typeof testPlay.then === 'function')
     ) {
-      testPlay.catch(() => {
-        mainLogger.warn("[MediaModule] audio can't be play");
+      testPlay.catch((e: any) => {
+        mainLogger.warn(
+          "[MediaModule] test audio can't be play, please check new Audio can be used",
+          this._id,
+          e.code,
+          e.message,
+        );
       });
     }
 

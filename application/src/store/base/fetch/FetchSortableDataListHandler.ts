@@ -7,7 +7,7 @@
 import _ from 'lodash';
 import { transaction, action } from 'mobx';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
-import { QUERY_DIRECTION } from 'sdk/dao';
+import { QUERY_DIRECTION, MAINTAIN_DIRECTION } from 'sdk/dao';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
@@ -30,7 +30,7 @@ import {
   DeltaDataHandler,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 type CountChangeCallback = (count: number) => void;
 
@@ -39,11 +39,13 @@ export interface IFetchSortableDataListHandlerOptions<
   IdType extends ModelIdType = number,
   SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
 > extends IFetchDataListHandlerOptions<IdType, SortableModel> {
-  isMatchFunc: IMatchFunc<Model>;
+  isMatchFunc: IMatchFunc<Model, IdType, SortableModel>;
   transformFunc: ITransformFunc<Model, IdType, SortableModel>;
   sortFunc?: ISortFunc<IdType, SortableModel>;
   eventName?: string;
   limit?: number;
+  offset?: number;
+  maintainDirection?: MAINTAIN_DIRECTION;
 }
 export interface IFetchSortableDataProvider<
   Model,
@@ -54,6 +56,7 @@ export interface IFetchSortableDataProvider<
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: SortableModel,
+    offset?: number,
   ): Promise<{ data: Model[]; hasMore: HasMore | boolean }>;
 
   totalCount?(): number;
@@ -67,7 +70,7 @@ export class FetchSortableDataListHandler<
   IdType extends ModelIdType = number,
   SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
 > extends FetchDataListHandler<Model, IdType, SortableModel> {
-  private _isMatchFunc: IMatchFunc<Model>;
+  private _isMatchFunc: IMatchFunc<Model, IdType, SortableModel>;
 
   private _transformFunc: ITransformFunc<Model, IdType, SortableModel>;
   private _sortFun?: ISortFunc<IdType, SortableModel>;
@@ -80,6 +83,7 @@ export class FetchSortableDataListHandler<
   private _eventName: string;
 
   private _maintainMode: boolean = false;
+  private _maintainDirection: MAINTAIN_DIRECTION;
 
   constructor(
     dataProvider:
@@ -98,6 +102,8 @@ export class FetchSortableDataListHandler<
     this._entityName = options.entityName;
     this._sortFun = options.sortFunc;
     this._eventName = options.eventName || '';
+    this._maintainDirection =
+      options.maintainDirection || MAINTAIN_DIRECTION.DOWN;
 
     if (options.eventName) {
       this.subscribeNotification(
@@ -147,6 +153,7 @@ export class FetchSortableDataListHandler<
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: SortableModel,
+    offset?: number,
   ) {
     const dataProvider = this._sortableDataProvider;
     if (!dataProvider) {
@@ -154,7 +161,7 @@ export class FetchSortableDataListHandler<
       return [];
     }
     return this.fetchDataBy(direction, () =>
-      dataProvider.fetchData(direction, pageSize, anchor),
+      dataProvider.fetchData(direction, pageSize, anchor, offset),
     );
   }
 
@@ -199,10 +206,14 @@ export class FetchSortableDataListHandler<
       .debug(`refreshData: ${this.listStore.items.length - this._pageSize}`);
     let sortableResult: SortableModel[];
     if (this.listStore.items.length > this._pageSize) {
-      sortableResult = this.listStore.items.slice(
-        this.listStore.items.length - this._pageSize,
-        this.listStore.items.length,
-      );
+      const isMaintainUp = this._maintainDirection === MAINTAIN_DIRECTION.UP;
+      const startIndex = isMaintainUp
+        ? 0
+        : this.listStore.items.length - this._pageSize;
+      const endIndex = isMaintainUp
+        ? this._pageSize
+        : this.listStore.items.length;
+      sortableResult = this.listStore.items.slice(startIndex, endIndex);
       this.handleHasMore({ older: true }, QUERY_DIRECTION.OLDER);
       this.sortableListStore.replaceAll(sortableResult);
     } else {
@@ -278,8 +289,8 @@ export class FetchSortableDataListHandler<
     }
     matchedKeys.forEach((key: IdType) => {
       const model = entities.get(key) as Model;
-      if (this._isMatchFunc(model)) {
-        const sortableModel = this._transformFunc(model);
+      const sortableModel = this._transformFunc(model);
+      if (this._isMatchFunc(model, sortableModel)) {
         if (
           payload.type === EVENT_TYPES.REPLACE ||
           this._isPosChanged(sortableModel)
@@ -303,8 +314,8 @@ export class FetchSortableDataListHandler<
       const differentKeys: IdType[] = _.difference(keys, existKeys);
       differentKeys.forEach((key: IdType) => {
         const model = entities.get(key) as Model;
-        if (this._isMatchFunc(model)) {
-          const sortModel = this._transformFunc(model);
+        const sortModel = this._transformFunc(model);
+        if (this._isMatchFunc(model, sortModel)) {
           const isInRange = this._isInRange(sortModel);
           this._eventName &&
             this._eventName.startsWith('ENTITY.POST') &&
@@ -572,5 +583,9 @@ export class FetchSortableDataListHandler<
         this._totalCountChangeCallback(newTotal);
       }
     }
+  }
+
+  setPageSize(pageSize: number) {
+    this._pageSize = pageSize;
   }
 }

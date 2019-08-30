@@ -18,6 +18,7 @@ import {
   notificationCallback,
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
+  TRANSFER_TYPE,
 } from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
@@ -32,6 +33,7 @@ import {
   RCPresenceEventPayload,
   ActiveCall,
 } from 'sdk/module/rcEventSubscription/types';
+import { RTCSipEmergencyServiceAddr } from 'voip';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
@@ -197,6 +199,16 @@ class TelephonyService extends EntityBaseService<Call>
       .getAccountController()
       .forward(callId, phoneNumber);
 
+  transfer = async (
+    callId: number,
+    type: TRANSFER_TYPE,
+    transferTo: string,
+  ) => {
+    await this.telephonyController
+      .getAccountController()
+      .transfer(callId, type, transferTo);
+  };
+
   replyWithPattern = (
     callId: number,
     pattern: RTC_REPLY_MSG_PATTERN,
@@ -257,16 +269,45 @@ class TelephonyService extends EntityBaseService<Call>
     return this.telephonyController.getRemoteEmergencyAddress();
   };
 
+  hasActiveDL = () => {
+    return this.telephonyController.hasActiveDL();
+  };
+
   getLocalEmergencyAddress = () => {
     return this.telephonyController.getLocalEmergencyAddress();
+  };
+
+  isAddressEqual = (
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) => {
+    return this.telephonyController.isAddressEqual(objAddr, othAddr);
+  };
+
+  setLocalEmergencyAddress = (emergencyAddress: RTCSipEmergencyServiceAddr) => {
+    this.telephonyController.setLocalEmergencyAddress(emergencyAddress);
+  };
+
+  updateLocalEmergencyAddress = (
+    emergencyAddress: RTCSipEmergencyServiceAddr,
+  ) => {
+    this.telephonyController.updateLocalEmergencyAddress(emergencyAddress);
   };
 
   subscribeEmergencyAddressChange = (listener: notificationCallback) => {
     this.telephonyController.subscribeEmergencyAddressChange(listener);
   };
 
-  subscribeSipProvChange = (listener: notificationCallback) => {
-    this.telephonyController.subscribeSipProvChange(listener);
+  subscribeSipProvEAUpdated = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvEAUpdated(listener);
+  };
+
+  subscribeSipProvReceived = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvReceived(listener);
+  };
+
+  getCallIdList = () => {
+    return this.telephonyController.getAccountController().getCallIdList();
   };
 }
 

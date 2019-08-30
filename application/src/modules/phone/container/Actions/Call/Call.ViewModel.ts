@@ -5,7 +5,7 @@
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { TelephonyService } from '@/modules/telephony/service';
 import { analyticsCollector } from '@/AnalyticsCollector';
@@ -22,7 +22,7 @@ class CallViewModel extends StoreViewModel<CallProps> {
     const { caller, entity, tabName } = this.props;
     const toNumber = caller.extensionNumber || caller.phoneNumber;
     // actions ensure caller exist
-    await this._telephonyService.makeCall(toNumber!);
+    await this._telephonyService.directCall(toNumber!);
     analyticsCollector.phoneCallBack(
       entity === ENTITY_TYPE.CALL_LOG ? 'callHistory' : 'voicemailList',
     );

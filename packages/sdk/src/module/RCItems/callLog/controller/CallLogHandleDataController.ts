@@ -24,12 +24,13 @@ import { notificationCenter } from 'sdk/service';
 import { daoManager } from 'sdk/dao';
 import { CallLogDao } from '../dao';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { PseudoCallLogInfo } from '../types';
 import { PhoneNumberType, PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { PersonService } from 'sdk/module/person';
+import { IEntityNotificationController } from 'sdk/framework/controller/interface/IEntityNotificationController';
 
 const LOG_TAG = 'CallLogHandleDataController';
 
@@ -37,6 +38,7 @@ class CallLogHandleDataController {
   constructor(
     private _userConfig: CallLogUserConfig,
     private _sourceController: IEntitySourceController<CallLog, string>,
+    private _notificationController: IEntityNotificationController<CallLog>,
   ) {}
 
   handleMissedCallEvent = async (payload: MissedCallEventPayload) => {
@@ -80,6 +82,7 @@ class CallLogHandleDataController {
 
     // save data and notify
     this._saveDataAndNotify(pseudos, [callLog]);
+    this._notificationController.onReceivedNotification([callLog]);
   };
 
   handleRCPresenceEvent = async (payload: RCPresenceEventPayload) => {
@@ -264,7 +267,7 @@ class CallLogHandleDataController {
       duration: 0,
       __localInfo: localInfo,
       __timestamp: Date.parse(startTime),
-      __deactivated: false,
+      deleted: false,
       __isPseudo: true,
     };
   }

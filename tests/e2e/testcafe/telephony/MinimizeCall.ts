@@ -13,7 +13,7 @@ import { SITE_URL, BrandTire } from '../config';
 import { WebphoneSession } from 'webphone-client';
 
 fixture('Telephony/MinimizeCall')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -23,8 +23,8 @@ test.meta(<ITestMeta>{
   keywords: ['MinimizedCall']
 })('Can end the call in the minimized view', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
@@ -37,6 +37,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -109,8 +113,8 @@ test.meta(<ITestMeta>{
   keywords: ['MinimizedCall']
 })('The content of the “keypad” page is not affected by the minimization function', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
@@ -123,6 +127,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -183,8 +191,8 @@ test.meta(<ITestMeta>{
   keywords: ['MinimizedCall']
 })(' Hover the "end" button then show the tooltip', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   const tooltipText = 'End call';
   await h(t).glip(loginUser).init();
@@ -196,6 +204,10 @@ test.meta(<ITestMeta>{
   }
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -243,8 +255,8 @@ test.meta(<ITestMeta>{
   keywords: ['MinimizedCall']
 })('Hover the "mute"/"unmute" button then show the tooltip', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   const tooltipTextmute = 'Mute';
   const tooltipTextunmute = 'Unmute';
@@ -257,6 +269,10 @@ test.meta(<ITestMeta>{
   }
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;

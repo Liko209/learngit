@@ -8,10 +8,6 @@ enum RTC_NETWORK_EVENT {
   NETWORK_CHANGE = 'networkchange',
 }
 
-enum RTC_SLEEP_MODE_EVENT {
-  WAKE_UP_FROM_SLEEP_MODE = 'wakeupFromSleepMode',
-}
-
 enum RTC_NETWORK_STATE {
   ONLINE = 'online',
   OFFLINE = 'offline',
@@ -31,10 +27,4 @@ type RTCMediaElement = {
   remote: any;
 };
 
-export {
-  RTC_NETWORK_EVENT,
-  RTC_NETWORK_STATE,
-  RTC_SLEEP_MODE_EVENT,
-  RTC_REST_API,
-  RTCMediaElement,
-};
+export { RTC_NETWORK_EVENT, RTC_NETWORK_STATE, RTC_REST_API, RTCMediaElement };

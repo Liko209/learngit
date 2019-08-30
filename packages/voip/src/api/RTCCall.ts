@@ -28,6 +28,7 @@ import {
   RTC_NO_AUDIO_TYPE,
   RTCNoAudioStateEvent,
   RTCNoAudioDataEvent,
+  RTC_CALL_ACTION_DIRECTION,
 } from './types';
 import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
@@ -59,7 +60,8 @@ class RTCCall {
   private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
   private _recordState: RECORD_STATE = RECORD_STATE.IDLE;
-  private _isMute: boolean = false;
+  private _isLocalMute: boolean = false;
+  private _isRemoteMute: boolean = false;
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
@@ -162,7 +164,11 @@ class RTCCall {
   }
 
   isMuted(): boolean {
-    return this._isMute;
+    return this._isLocalMute;
+  }
+
+  isRemoteMuted(): boolean {
+    return this._isRemoteMute;
   }
 
   answer(): void {
@@ -263,21 +269,28 @@ class RTCCall {
     this._fsm.unhold();
   }
 
-  mute(): void {
+  mute(
+    direction: RTC_CALL_ACTION_DIRECTION = RTC_CALL_ACTION_DIRECTION.LOCAL,
+  ): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'mute');
-    if (!this._isMute) {
-      this._isMute = true;
-      this._fsm.mute();
+    if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
+      this._isLocalMute = true;
     }
-    this._onCallActionSuccess(RTC_CALL_ACTION.MUTE, {});
+    if (direction === RTC_CALL_ACTION_DIRECTION.REMOTE) {
+      this._isRemoteMute = true;
+    }
+    this._fsm.mute(direction);
+    this._onCallActionSuccess(RTC_CALL_ACTION.MUTE, {
+      actionDirection: direction,
+    });
   }
 
   unmute(): void {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'unmute');
-    if (this._isMute) {
-      this._isMute = false;
-      this._fsm.unmute();
-    }
+    this._isLocalMute = false;
+    this._isRemoteMute = false;
+    this._fsm.unmute(RTC_CALL_ACTION_DIRECTION.LOCAL);
+    this._fsm.unmute(RTC_CALL_ACTION_DIRECTION.REMOTE);
     this._onCallActionSuccess(RTC_CALL_ACTION.UNMUTE, {});
   }
 
@@ -299,6 +312,7 @@ class RTCCall {
   }
 
   warmTransfer(callUuid: string): void {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'warm transfer');
     const targetCall = this._account.getCallByUuid(callUuid);
     if (!targetCall || !targetCall.getCallSession()) {
       rtcLogger.warn(
@@ -442,7 +456,13 @@ class RTCCall {
       }
       this._setSipInfoIntoCallInfo();
       this._clearHangupTimer();
-      this._isMute ? this._callSession.mute() : this._callSession.unmute();
+      this._isLocalMute
+        ? this._callSession.mute(RTC_CALL_ACTION_DIRECTION.LOCAL)
+        : this._callSession.unmute(RTC_CALL_ACTION_DIRECTION.LOCAL);
+
+      this._isRemoteMute
+        ? this._callSession.mute(RTC_CALL_ACTION_DIRECTION.REMOTE)
+        : this._callSession.unmute(RTC_CALL_ACTION_DIRECTION.REMOTE);
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
@@ -481,12 +501,18 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.STOP_RECORD_ACTION, () => {
       this._onStopRecordAction();
     });
-    this._fsm.on(CALL_FSM_NOTIFY.MUTE_ACTION, () => {
-      this._onMuteAction();
-    });
-    this._fsm.on(CALL_FSM_NOTIFY.UNMUTE_ACTION, () => {
-      this._onUnmuteAction();
-    });
+    this._fsm.on(
+      CALL_FSM_NOTIFY.MUTE_ACTION,
+      (direction: RTC_CALL_ACTION_DIRECTION) => {
+        this._onMuteAction(direction);
+      },
+    );
+    this._fsm.on(
+      CALL_FSM_NOTIFY.UNMUTE_ACTION,
+      (direction: RTC_CALL_ACTION_DIRECTION) => {
+        this._onUnmuteAction(direction);
+      },
+    );
     this._fsm.on(CALL_FSM_NOTIFY.DTMF_ACTION, (digits: string) => {
       this._onDtmfAction(digits);
     });
@@ -734,10 +760,15 @@ class RTCCall {
   }
 
   private _onSessionProgress(response: any) {
-    if (response.status_code === 183) {
+    if (response.statusCode === 183) {
+      rtcLogger.info(
+        LOG_TAG,
+        `receive call ${response.statusCode} status code`,
+      );
       CallReport.instance().updateEstablishment(
         CALL_REPORT_PROPS.RECEIVED_183_TIME,
       );
+      this._setSipInfoIntoCallInfo();
       this._clearHangupTimer();
     }
   }
@@ -837,12 +868,12 @@ class RTCCall {
     }
   }
 
-  private _onMuteAction() {
-    this._callSession.mute();
+  private _onMuteAction(direction: RTC_CALL_ACTION_DIRECTION) {
+    this._callSession.mute(direction);
   }
 
-  private _onUnmuteAction() {
-    this._callSession.unmute();
+  private _onUnmuteAction(direction: RTC_CALL_ACTION_DIRECTION) {
+    this._callSession.unmute(direction);
   }
 
   private _onDtmfAction(digits: string) {

@@ -7,6 +7,7 @@
 import React from 'react';
 import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import { observer } from 'mobx-react';
+import { withEscTracking } from '@/common/trackData';
 import { JuiModal } from 'jui/components/Dialog';
 import { ContactSearch } from '@/containers/Downshift';
 import { Props, ViewProps } from './types';
@@ -47,6 +48,7 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
       group,
       loading,
     } = this.props;
+    const { members } = group;
     return (
       <JuiModal
         modalProps={{
@@ -63,22 +65,29 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
         onOK={createNewConversation}
         okText={t('common.dialog.create')}
         cancelText={t('common.dialog.cancel')}
+        onClose={withEscTracking(this.handleCancel)}
       >
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiTopText data-test-automation-id="newConversationDescription">
-            <Trans
-              defaults={t('people.prompt.newConversationTip')}
-              components={[
-                <JuiLink handleOnClick={this._openConvertToTeam}>
-                  convert to a team
-                </JuiLink>,
-              ]}
-            />
+            {t('people.prompt.newConversationBaseTip')}
+            {members.length > 2 ? (
+              <>
+                &nbsp;
+                <Trans
+                  defaults={t('people.prompt.newConversationGroupTip')}
+                  components={[
+                    <JuiLink handleOnClick={this._openConvertToTeam}>
+                      convert to a team
+                    </JuiLink>,
+                  ]}
+                />
+              </>
+            ) : null}
           </JuiTopText>
           <ContactSearch
             onSelectChange={handleSearchContactChange}
             label={t('people.team.Members')}
-            prefillMembers={group.members}
+            prefillMembers={members}
             error={false}
             helperText=""
             placeholder={t('people.team.SearchContactPlaceholder')}

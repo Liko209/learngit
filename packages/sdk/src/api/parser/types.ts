@@ -1,4 +1,4 @@
-import { BaseResponse } from 'foundation';
+import { BaseResponse } from 'foundation/network';
 import { JError, JNetworkError, ERROR_CODES_NETWORK } from '../../error';
 
 interface IResponseParser {
@@ -27,6 +27,4 @@ export class ResponseParser implements IResponseParser {
   }
 }
 
-export {
-  IResponseParser,
-};
+export { IResponseParser };

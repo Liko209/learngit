@@ -11,6 +11,20 @@ export class SearchDialog extends BaseWebComponent {
     return this.getSelector('[role="document"]');
   }
 
+  async ensureDismiss() {
+    await H.retryUntilPass(async () => {
+      if (!await this.exists) {
+        return
+      }
+      await this.t.expect(this.visible).notOk()
+    })
+  }
+
+  async ensureLoaded() {
+    await this.t.expect(this.exists).ok();
+    await this.t.expect(this.visible).ok();
+  }
+
   get searchIcon() {
     return this.getSelectorByIcon('search', this.self);
   }
@@ -523,8 +537,16 @@ class SearchItem extends BaseWebComponent {
     return this.getSelectorByIcon('messages', this.messageButton);
   }
 
-  async HoverAndClickMessageButton() {
+  get conferenceButton() {
+    return this.getSelectorByAutomationIdUnderSelf('audio-conference-btn');
+  }
+
+  async hoverAndClickMessageButton() {
     await this.t.hover(this.self).click(this.messageButton);
+  }
+
+  async hoverAndClickConferenceButton() {
+    await this.t.hover(this.self).click(this.conferenceButton);
   }
 }
 

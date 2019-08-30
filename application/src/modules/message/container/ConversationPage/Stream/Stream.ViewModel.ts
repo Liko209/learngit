@@ -28,12 +28,13 @@ import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, getErrorType, ERROR_TYPES } from '@/common/catchError';
 import { DIRECTION } from 'jui/components/Lists';
 
 const BLACKLISTED_PROPS = ['viewRef'];
+const LOAD_SIBLING_POST_LIMIT = 30;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
@@ -127,8 +128,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   constructor(props: StreamProps) {
     super(props, BLACKLISTED_PROPS);
-    this.markAsRead = this.markAsRead.bind(this);
+    this.updateIgnoredStatus = this.updateIgnoredStatus.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
+    this.markAsRead = this.markAsRead.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
     this._historyHandler = new HistoryHandler();
     this.initialize();
@@ -247,6 +249,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   };
 
   @action
+  updateIgnoredStatus(isIgnore: boolean) {
+    this._stateService.updateIgnoredStatus([this.props.groupId], isIgnore);
+  }
+  
+  @action
   markAsRead() {
       this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
@@ -262,7 +269,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   dispose() {
     super.dispose();
     this._streamController.dispose();
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+    this.updateIgnoredStatus(false);
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
@@ -292,7 +299,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
       this._streamController.replacePostList([post]);
-      await this._loadPosts(QUERY_DIRECTION.BOTH);
+      await this._loadPosts(QUERY_DIRECTION.BOTH, LOAD_SIBLING_POST_LIMIT);
     } else {
       // TODO error handing
     }
@@ -324,7 +331,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();
     this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
-    globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   };
 

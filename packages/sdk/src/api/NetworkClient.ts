@@ -15,8 +15,8 @@ import {
   HA_PRIORITY,
   REQUEST_PRIORITY,
   NETWORK_FAIL_TEXT,
-  networkLogger,
-} from 'foundation';
+} from 'foundation/network';
+import { networkLogger } from 'foundation/log';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
 import { responseParser } from './parser';
@@ -31,6 +31,7 @@ export type IBaseQuery = {
   params?: object;
   authFree?: boolean;
   retryCount?: number;
+  ignoreNetwork?: boolean;
   requestConfig?: object;
   priority?: REQUEST_PRIORITY;
   HAPriority?: HA_PRIORITY;
@@ -78,8 +79,8 @@ export default class NetworkClient {
   networkRequests: INetworkRequests;
   pathPrefix?: string;
   apiMap: Map<
-  string,
-  { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
+    string,
+    { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
   >;
   defaultVia: NETWORK_VIA;
   networkManager: NetworkManager;
@@ -194,6 +195,7 @@ export default class NetworkClient {
       authFree,
       requestConfig,
       retryCount,
+      ignoreNetwork,
       priority = REQUEST_PRIORITY.NORMAL,
       HAPriority = HA_PRIORITY.BASIC,
       timeout,
@@ -217,6 +219,7 @@ export default class NetworkClient {
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
       .setRetryCount(retryCount || 0)
+      .setIgnoreNetwork(!!ignoreNetwork)
       .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)

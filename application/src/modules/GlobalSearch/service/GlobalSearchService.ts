@@ -5,7 +5,7 @@
  */
 
 import { ComponentType } from 'react';
-import { inject } from 'framework';
+import { inject } from 'framework/ioc';
 import { GlobalSearchStore } from '../store';
 import { SEARCH_VIEW } from '../types';
 
@@ -20,14 +20,19 @@ class GlobalSearchService {
         : SEARCH_VIEW.INSTANT_SEARCH;
     store.setCurrentView(currentView);
     this._globalSearchStore.setOpen(true);
+    this._globalSearchStore.setFocus(true);
   }
 
   closeGlobalSearch() {
     this._globalSearchStore.setOpen(false);
+    this._globalSearchStore.setFocus(false);
   }
 
   registerExtension(key: string, extension: ComponentType) {
     this._globalSearchStore.addExtensions(key, extension);
+  }
+  unregisterExtension(key: string, extension: ComponentType) {
+    this._globalSearchStore.removeExtensions(key, extension);
   }
 }
 

@@ -1,0 +1,7 @@
+{
+    "on_merge": {
+      "fixtures": ["./fixtures/ConversationList/HighlighConversation.ts"],
+      "browsers": ["selenium:chrome"]
+    }
+  }
+  

@@ -1,6 +1,6 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-03-14 15:24:53 
+ * @Author: Potar.He
+ * @Date: 2019-03-14 15:24:53
  * @Last Modified by: Potar.He
  * @Last Modified time: 2019-03-14 15:56:35
  */
@@ -12,22 +12,25 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
+import { E911Address } from './e911address';
 
 fixture('Telephony/EntryPoint')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
-test.meta(<ITestMeta>{
+test.skip.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-1354'],
   maintainers: ['Potar.He'],
   keywords: ['telephony', 'entry']
 })('User should be able to see the 1:1 Call button in different entry points', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  // await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
   await h(t).glip(loginUser).setDefaultPhoneApp('glip');
   const anotherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
@@ -114,7 +117,8 @@ test.meta(<ITestMeta>{
   const profileDialog = app.homePage.profileDialog;
   await h(t).withLog('And hover the extension area', async () => {
     profileDialog.ensureLoaded()
-    await t.hover(profileDialog.extensionArea); // TODO: extensionArea need automation Id
+    await t.hover(profileDialog.extensionArea, {offsetY: 150});
+    await t.hover(profileDialog.extensionArea, {speed: 0.1}); // TODO: extensionArea need automation Id
   })
 
   await h(t).withLog('Then the call button should display', async () => {
@@ -179,10 +183,12 @@ test.meta(<ITestMeta>{
 })('Clear recent search history', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[1];
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).glip(loginUser).resetProfile();
-  const beSearchUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[5].rcId);
+  const beSearchUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[2].rcId);
 
   await h(t).withLog(`Given I login Jupiter with this extension ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);

@@ -8,7 +8,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import i18next from 'i18next';
 
 class ToastCallError {
@@ -135,6 +135,13 @@ class ToastCallError {
   static toastSwitchCallBackendError(): void {
     ToastCallError.toast('telephony.prompt.switchCall.backendError', 3000);
     mainLogger.info("Call error: Unexpected backend error, can't switch call");
+  }
+
+  static toastTransferError(): void {
+    ToastCallError.toast('telephony.prompt.transferCall.backendError', 3000);
+    mainLogger.info(
+      "Call error: Unexpected backend error, can't transfer call",
+    );
   }
 }
 

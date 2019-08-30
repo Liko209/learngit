@@ -127,7 +127,7 @@ describe('PersonEntityCacheController', () => {
 
   describe('putInternal', () => {
     it('should not put to phone number cache and soundex cache when is invalid person', async () => {
-      personService.isCacheValid = jest.fn().mockReturnValue(false);
+      personService.isValidPerson = jest.fn().mockReturnValue(false);
       personEntityCacheController['_setSoundexValue'] = jest.fn();
       personEntityCacheController['_addPhoneNumbers'] = jest.fn();
       personEntityCacheController['putInternal']({ id: 10 } as any);
@@ -140,7 +140,7 @@ describe('PersonEntityCacheController', () => {
     });
 
     it('should not put to phone number cache and soundex cache when is invalid person', async () => {
-      personService.isCacheValid = jest.fn().mockReturnValue(true);
+      personService.isValidPerson = jest.fn().mockReturnValue(true);
       personEntityCacheController['_setSoundexValue'] = jest.fn();
       personEntityCacheController['_addPhoneNumbers'] = jest.fn();
       personEntityCacheController['putInternal']({ id: 10 } as any);

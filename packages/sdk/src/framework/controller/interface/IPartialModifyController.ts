@@ -5,6 +5,7 @@
  */
 
 import { IdModel, Raw, ModelIdType } from '../../model';
+import { Nullable } from 'sdk/types';
 
 type PartialNotifyFunc<T> = (
   originalEntities: T[],
@@ -16,6 +17,11 @@ type PreHandlePartialEntityFunc<T> = (
   partialEntity: Partial<Raw<T>>,
   originalEntity: T,
 ) => Partial<Raw<T>>;
+
+type HandleRollbackPartialEntityFunc<T> = (
+  updatedEntity: T,
+  rollbackPartialEntity: Partial<Raw<T>>,
+) => Nullable<Partial<Raw<T>>>;
 
 type UpdateEntityFunc<T> = (updatedEntity: T) => Promise<T>;
 
@@ -29,6 +35,8 @@ type PartialUpdateParams<
   doPartialNotify?: PartialNotifyFunc<T>;
   saveLocalFirst?: boolean;
   forceDoUpdateEntity?: boolean;
+  shouldRollback?: boolean;
+  handleRollbackPartialEntity?: HandleRollbackPartialEntityFunc<T>;
 };
 
 interface IPartialModifyController<
@@ -50,5 +58,6 @@ export {
   PartialUpdateParams,
   PartialNotifyFunc,
   PreHandlePartialEntityFunc,
+  HandleRollbackPartialEntityFunc,
   UpdateEntityFunc,
 };

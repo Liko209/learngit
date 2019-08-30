@@ -55,12 +55,22 @@ function getSettingsTitle(settingPath: string): string {
   return titleArray.join(' - ');
 }
 
+function getContactsTitle(subPath: string): string {
+  const baseTitle = i18nP('contact.Contacts');
+  const subTitleMap = new Map([
+    ['all-contacts', i18nP('contact.tab.allContacts')],
+    ['company', i18nP('contact.tab.company')],
+  ]);
+  const subTitle = subTitleMap.get(subPath);
+  return subTitle ? `${baseTitle} - ${subTitle}` : baseTitle;
+}
+
 const DOC_TITLE = {
   messages: getMessagesTitle,
   dashboard: (): string => i18nP('dashboard.Dashboard'),
   phone: getPhoneTitle,
   meetings: (): string => i18nP('meeting.Meetings'),
-  contacts: (): string => i18nP('contact.Contacts'),
+  contacts: getContactsTitle,
   calendar: (): string => i18nP('calendar.Calendar'),
   tasks: (): string => i18nP('item.tasks'),
   notes: (): string => i18nP('item.notes'),
@@ -71,7 +81,7 @@ const DOC_TITLE = {
 function getDocTitle(pathname: string): string {
   const [, category, subPath] = pathname.split('/');
   const docTitle = DOC_TITLE[category.toLocaleLowerCase()];
-  return docTitle(subPath);
+  return docTitle ? docTitle(subPath) : '';
 }
 
 export { getMessagesTitle, getDocTitle };

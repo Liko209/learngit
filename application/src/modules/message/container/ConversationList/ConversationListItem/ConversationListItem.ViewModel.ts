@@ -3,7 +3,7 @@
  * @Date: 2018-09-19 14:19:09
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, untracked } from 'mobx';
+import { computed } from 'mobx';
 import { ConversationListItemViewProps } from './types';
 import { GroupService } from 'sdk/module/group';
 import { getEntity, getGlobalValue } from '@/store/utils';
@@ -19,7 +19,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationListItemViewModel extends StoreViewModel<
-ConversationListItemViewProps
+  ConversationListItemViewProps
 > {
   firstUnreadCount: number;
   important?: boolean | undefined;
@@ -69,8 +69,11 @@ ConversationListItemViewProps
   }
 
   onClick = () => {
-    history.push(`/messages/${this.groupId}`);
-  }
+    storeManager
+      .getGlobalStore()
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
+    setTimeout(() => history.push(`/messages/${this.groupId}`), 0);
+  };
 
   @computed
   private get _currentGroupId() {
@@ -80,21 +83,16 @@ ConversationListItemViewProps
   }
 
   @computed
-  get umiHint() {
-    const groupState = getEntity<GroupState, GroupStateModel>(
+  private get _groupState() {
+    return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
-    let hint = !!groupState.unreadCount;
-    untracked(() => {
-      const currentGroupId = getGlobalValue(
-        GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-      );
-      if (this.groupId === currentGroupId) {
-        hint = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI) && hint;
-      }
-    });
-    return hint;
+  }
+
+  @computed
+  get umiHint() {
+    return !!this._groupState.unreadCount;
   }
 
   @computed

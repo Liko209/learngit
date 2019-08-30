@@ -11,6 +11,7 @@ type RTCRegisterAsyncTask = {
 
 enum RTC_PROV_EVENT {
   NEW_PROV = 'newProv',
+  PROV_ARRIVE = 'provArrive',
 }
 
 enum REGISTRATION_ERROR_CODE {
@@ -55,6 +56,12 @@ enum REGISTRATION_FSM_NOTIFY {
   UN_REGISTERED = 'onUnregistered',
 }
 
+enum ALLOW_CALL_FLAG {
+  OUTBOUND_CALL = 'outboundCall',
+  EXTRA_OUTBOUND_CALL = 'extraOutboundCall',
+  INBOUND_CALL = 'inboundCall',
+}
+
 export {
   REGISTRATION_ERROR_CODE,
   REGISTRATION_FSM_STATE,
@@ -62,4 +69,5 @@ export {
   REGISTRATION_EVENT,
   RTC_PROV_EVENT,
   RTCRegisterAsyncTask,
+  ALLOW_CALL_FLAG,
 };

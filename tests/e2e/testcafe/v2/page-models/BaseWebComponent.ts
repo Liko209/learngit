@@ -127,7 +127,11 @@ export abstract class BaseWebComponent {
   }
 
   get spinners() {
-    return this.getSelector('div[role="progressbar"]');
+    return this.getSelector('div[role="progressbar"]:not([data-test-automation-id="conversation-list-spinner"])');
+  }
+
+  get conversationListSpinner() {
+    return this.getSelectorByAutomationId('conversation-list-spinner');
   }
 
   get tooltip() {
@@ -173,7 +177,9 @@ export abstract class BaseWebComponent {
 
   // Some specific scenarios
   async getNumber(sel: Selector) {
-    if (await sel.exists == false) {
+    // there is a chance that UMI won't update immediately
+    await this.t.wait(1e3);
+    if (!await sel.exists) {
       return 0;
     }
     const text = await sel.innerText;

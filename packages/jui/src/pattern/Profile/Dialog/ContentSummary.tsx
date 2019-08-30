@@ -81,6 +81,10 @@ const JuiProfileDialogContentSummaryButton = styled('div')`
   align-items: center;
   cursor: pointer;
   outline: none;
+  margin-right: ${spacing(5)};
+  &:last-child {
+    margin-right: 0;
+  }
   span {
     margin-right: ${spacing(2)};
   }
@@ -98,6 +102,13 @@ const JuiProfileDialogContentSummaryStatus = styled('div')`
   ${ellipsis()};
   color: ${grey('500')};
   margin-top: ${spacing(1)};
+  && {
+    .emoji-mart-emoji {
+      position: relative;
+      top: 50%;
+      transform: translateY(10%);
+    }
+  }
 `;
 
 const JuiProfileDialogContentSummaryTitle = styled(

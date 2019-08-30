@@ -9,7 +9,7 @@ import {
   IHealthModule,
   HealthModuleManager,
   BaseHealthModule,
-} from 'foundation';
+} from 'foundation/health';
 import _ from 'lodash';
 
 class HealthModuleController implements IHealthModuleController {

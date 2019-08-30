@@ -3,7 +3,8 @@
  * @Date: 2019-04-04 12:21:25
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
 import { getEntity } from '@/store/utils';
@@ -13,6 +14,7 @@ import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 import history from '../../../../../history';
 
+jest.mock('sdk/module/config');
 jest.mock('@/containers/Notification');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');

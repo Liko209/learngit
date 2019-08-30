@@ -5,7 +5,7 @@
  */
 
 import { MissedCallLogFetchController } from '../MissedCallLogFetchController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { daoManager } from 'sdk/dao';
 import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../../constants';
 import { RCItemApi } from 'sdk/api';
@@ -74,7 +74,6 @@ describe('MissedCallLogFetchController', () => {
             LOCAL_INFO_TYPE.IS_MISSED |
             LOCAL_INFO_TYPE.IS_MISSED_SOURCE,
           __timestamp: Date.parse(mockTime1),
-          __deactivated: false,
         },
       ]);
     });

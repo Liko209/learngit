@@ -37,7 +37,7 @@ export type GroupState = {
 };
 
 export type TransformedState = {
-  groupStates: GroupState[];
+  groupStates: { [id: number]: GroupState };
   myState?: State;
   isSelf?: boolean;
   ignoreCursorValidate?: boolean;

@@ -10,22 +10,29 @@ import {
 } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { GroupService, Group } from 'sdk/module/group';
-import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { ENTITY_NAME } from '@/store/constants';
+import { getEntity } from '@/store/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupModel from '@/store/models/Group';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import _ from 'lodash';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import { CONVERSATION_TYPES } from '@/constants';
 import {
-  RIGHT_SHELL_DEFAULT_WIDTH,
-  RIGHT_SHELL_MIN_WIDTH,
+  RIGHT_SHELF_DEFAULT_WIDTH,
+  RIGHT_SHELF_MIN_WIDTH,
 } from 'jui/foundation/Layout/Responsive';
+import { LOADING_DELAY } from '../RightRail/constants';
 
+const GUEST_SECTION_HEIGHT = 85;
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
+const AVATAR_MARGIN_BOTTOM = 8;
 const WRAPPER_PADDING = 24;
+const DEFAULT_MEMBER_FETCH_COUNT = 40;
+const DEFAULT_GUEST_FETCH_COUNT = 10;
+const MAX_MEMBER_ROW_COUNT = 3;
 class RightShelfMemberListViewModel
   extends StoreViewModel<RightShelfMemberListProps>
   implements RightShelfMemberListViewProps {
@@ -35,17 +42,31 @@ class RightShelfMemberListViewModel
     ServiceConfig.GROUP_SERVICE,
   );
 
-  @observable
-  private _wrapperWidth: number = RIGHT_SHELL_DEFAULT_WIDTH;
+  private _loadingTimeout: NodeJS.Timeout;
 
   @observable
-  isLoading: boolean = true;
+  private _wrapperWidth: number = RIGHT_SHELF_DEFAULT_WIDTH;
 
   @observable
-  fullMemberIds: number[] = [];
+  membersData: {
+    isLoading: boolean;
+    fullMemberLen: number;
+    fullGuestLen: number;
+    shownMemberIds: number[];
+    shownGuestIds: number[];
+    personNameMap: { [id: number]: string };
+  } = {
+    isLoading: true,
+    fullMemberLen: 0,
+    fullGuestLen: 0,
+    shownMemberIds: [],
+    shownGuestIds: [],
+    personNameMap: {},
+  };
 
-  @observable
-  fullGuestIds: number[] = [];
+  private _fullMemberIds: number[] = [];
+
+  private _fullGuestIds: number[] = [];
 
   private _membersCache: {
     [groupId: string]: number[];
@@ -55,15 +76,30 @@ class RightShelfMemberListViewModel
     super(props);
   }
 
+  dispose = () => {
+    notificationCenter.off(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
+    super.dispose();
+  };
+
   init = () => {
-    notificationCenter.on(SERVICE.FETCH_REMAINING_DONE, () => {
-      this._getMemberAndGuestIds();
-    });
+    notificationCenter.on(
+      SERVICE.FETCH_REMAINING_DONE,
+      this._getMemberAndGuestIds.bind(this),
+    );
     this.reaction(
       () => this.props.groupId,
       (id: number) => {
         if (id === undefined) return;
-        this._getMemberAndGuestIds();
+        this._loadingTimeout = setTimeout(() => {
+          this._setData(true);
+        }, LOADING_DELAY);
+
+        setTimeout(() => {
+          this._getMemberAndGuestIds();
+        });
       },
       { fireImmediately: true },
     );
@@ -98,7 +134,10 @@ class RightShelfMemberListViewModel
     this.reaction(
       () => this._guestCompanyIdsLen,
       (len: number) => {
-        if (len === undefined) return;
+        const cachedIdsLen = (this._membersCache[this.props.groupId] || [])
+          .length;
+        // only react to member length change within the same conversation
+        if (len === undefined || cachedIdsLen <= 0) return;
         this._getMemberAndGuestIds();
       },
     );
@@ -108,14 +147,57 @@ class RightShelfMemberListViewModel
   private async _getMemberAndGuestIds() {
     const originalGroupId = this.props.groupId;
     const {
-      memberIds,
+      realMemberIds,
       guestIds,
-    } = await this._groupService.getMembersAndGuestIds(this.props.groupId);
+      optionalIds,
+    } = await this._groupService.getMemberAndGuestIds(
+      this.props.groupId,
+      DEFAULT_MEMBER_FETCH_COUNT,
+      DEFAULT_GUEST_FETCH_COUNT,
+    );
     if (originalGroupId !== this.props.groupId) return;
     this._membersCache = { [this.props.groupId]: this.group.members };
-    this.isLoading = false;
-    this.fullMemberIds = memberIds;
-    this.fullGuestIds = guestIds;
+    this._fullMemberIds = realMemberIds.concat(optionalIds);
+    this._fullGuestIds = guestIds;
+    clearTimeout(this._loadingTimeout);
+    this._setData(false);
+  }
+
+  @action
+  private _setData(isLoading: boolean = false) {
+    if (isLoading) {
+      this.membersData = {
+        isLoading: true,
+        fullMemberLen: 0,
+        fullGuestLen: 0,
+        shownMemberIds: [],
+        shownGuestIds: [],
+        personNameMap: {},
+      };
+      return;
+    }
+    const { _fullMemberIds, _fullGuestIds } = this;
+    const shownMemberIds = this._getSubset(
+      _fullMemberIds,
+      MAX_MEMBER_ROW_COUNT,
+    );
+    const shownGuestIds = this._getSubset(_fullGuestIds, 1);
+    const personNameMap = {};
+    [...shownMemberIds, ...shownGuestIds].forEach(id => {
+      personNameMap[id] = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        id,
+      ).userDisplayName;
+    });
+
+    this.membersData = {
+      isLoading,
+      fullMemberLen: _fullMemberIds.length,
+      fullGuestLen: _fullGuestIds.length,
+      shownGuestIds,
+      shownMemberIds,
+      personNameMap,
+    };
   }
 
   private _isNewGuestCompanyId(companyId: number) {
@@ -126,8 +208,14 @@ class RightShelfMemberListViewModel
   }
 
   @computed
+  get shouldHide() {
+    const { group } = this;
+    return !group || group.isMocked || group.type === CONVERSATION_TYPES.ME;
+  }
+
+  @computed
   private get _currentCompanyId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+    return this.group.companyId;
   }
 
   @computed
@@ -155,55 +243,60 @@ class RightShelfMemberListViewModel
   }
 
   @computed
-  get countPerRow() {
+  get shouldShowLink() {
+    return ![
+      CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+      CONVERSATION_TYPES.ME,
+      CONVERSATION_TYPES.SMS,
+    ].includes(this.group.type);
+  }
+
+  @computed
+  get loadingH() {
+    if (!this.membersData.isLoading) {
+      return 0;
+    }
+    return (
+      (this._guestCompanyIdsLen > 0 ? GUEST_SECTION_HEIGHT : 0) +
+      Math.min(
+        this.allMemberLength && this.allMemberLength > this._countPerRow
+          ? Math.ceil(this.allMemberLength / this._countPerRow)
+          : 1,
+        MAX_MEMBER_ROW_COUNT,
+      ) *
+        (AVATAR_WIDTH + AVATAR_MARGIN_BOTTOM)
+    );
+  }
+
+  private get _countPerRow() {
     return Math.floor(
       (this._wrapperWidth - WRAPPER_PADDING) / (AVATAR_PADDING + AVATAR_WIDTH),
     );
   }
 
-  @computed
-  get shownMemberIds() {
-    const rowCount = this.fullGuestIds.length > 0 ? 3 : 4;
-    let showCount = Math.min(
-      rowCount * this.countPerRow,
-      this.fullMemberIds.length,
+  private _getSubset(fullIds: number[], maxRowCount: number) {
+    const countPerRow = Math.floor(
+      (this._wrapperWidth - WRAPPER_PADDING) / (AVATAR_PADDING + AVATAR_WIDTH),
     );
-    if (showCount < this.fullMemberIds.length) {
+    let showCount = Math.min(maxRowCount * countPerRow, fullIds.length);
+    if (showCount < fullIds.length) {
       showCount = showCount - 1;
     }
-    return this.fullMemberIds.slice(0, showCount);
-  }
-
-  @computed
-  get shownGuestIds() {
-    const rowCount = 1;
-    let showCount = Math.min(
-      rowCount * this.countPerRow,
-      this.fullGuestIds.length,
-    );
-    if (showCount < this.fullGuestIds.length) {
-      showCount = showCount - 1;
-    }
-    return this.fullGuestIds.slice(0, showCount);
-  }
-
-  @computed
-  get personNameMap() {
-    const map = {};
-    [...this.shownGuestIds, ...this.shownMemberIds].forEach(id => {
-      map[id] = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        id,
-      ).userDisplayName;
-    });
-    return map;
+    return fullIds.slice(0, showCount);
   }
 
   @action
   setWrapperWidth = (width: number) => {
     this._wrapperWidth =
-      width < RIGHT_SHELL_MIN_WIDTH ? RIGHT_SHELL_MIN_WIDTH : width;
+      width < RIGHT_SHELF_MIN_WIDTH ? RIGHT_SHELF_MIN_WIDTH : width;
+    this._setData();
   };
+
+  @computed
+  get canAddMembers() {
+    return !this.isTeam ||
+      this.group.isCurrentUserHasPermissionAddMember;
+  }
 }
 
 export { RightShelfMemberListViewModel };

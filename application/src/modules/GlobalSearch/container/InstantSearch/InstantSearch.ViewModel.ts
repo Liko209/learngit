@@ -5,7 +5,7 @@
  */
 
 import { observable, action, comparer } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import storeManager from '@/store/base/StoreManager';
 import { SearchService } from 'sdk/module/search';
 import { GroupService } from 'sdk/module/group';
@@ -141,8 +141,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     );
 
     const [persons, groups, teams] = await Promise.all([
-      searchService.doFuzzySearchPersons({
-        searchKey: key,
+      searchService.doFuzzySearchPersons(key, {
         excludeSelf: false,
         recentFirst: true,
       }),

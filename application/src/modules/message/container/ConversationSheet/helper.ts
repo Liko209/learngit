@@ -94,15 +94,30 @@ function getDurationTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
-function filterIDsByType(sheets: SheetsType, type: any) {
+function filterIDsByArrayType(sheets: SheetsType, type: any): number[] {
   let ids: number[] = [];
+  (type as Array<number>).forEach(subType => {
+    ids = [...ids, ...(sheets[subType] || [])];
+  });
+  return ids;
+}
+
+function filterIDsByFuncType(sheets: SheetsType, type: any): number[] {
+  let ids: number[] = [];
+  Object.keys(sheets).forEach((key: string) => {
+    if (type(key)) {
+      ids = [...ids, ...(sheets[key] || [])];
+    }
+  });
+  return ids;
+}
+
+function filterIDsByType(sheets: SheetsType, type: any) {
+  if (Array.isArray(type)) {
+    return filterIDsByArrayType(sheets, type);
+  }
   if (typeof type === 'function') {
-    Object.keys(sheets).forEach((key: string) => {
-      if (type(key)) {
-        ids = ids.concat(sheets[key]);
-      }
-    });
-    return ids;
+    return filterIDsByFuncType(sheets, type);
   }
   return sheets[type] || [];
 }

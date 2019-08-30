@@ -13,7 +13,8 @@ import { daoManager } from 'sdk/dao';
 import { FilterOptions, Caller, FetchDataOptions } from '../../types';
 import { CallLogDao } from '../dao';
 import { JError, ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -46,7 +47,7 @@ string
         callLog.result === CALL_RESULT.MISSED ||
         callLog.result === CALL_RESULT.VOICEMAIL;
       return (
-        !callLog.__deactivated &&
+        !callLog.deleted &&
         (callLogSource === CALL_LOG_SOURCE.ALL ? true : isMissedCall) &&
         filterFunc(callLog)
       );

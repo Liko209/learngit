@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';
@@ -30,7 +30,10 @@ import {
   GroupCanBeShownResponse,
 } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
-import { GROUP_CAN_NOT_SHOWN_REASON } from '../constants';
+import {
+  GROUP_CAN_NOT_SHOWN_REASON,
+  TEAM_ADDITION_MOVE_PROPERTIES,
+} from '../constants';
 import { AccountService } from '../../account/service';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { GroupHandleDataController } from './GroupHandleDataController';
@@ -435,7 +438,7 @@ export class GroupActionController {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
-    isIncludeSelf = group.members.includes(currentUserId);
+    isIncludeSelf = group.members && group.members.includes(currentUserId);
 
     if (!isValid) {
       if (group.deactivated) {
@@ -503,13 +506,29 @@ export class GroupActionController {
 
   private _getTeamRequestController() {
     if (!this.teamRequestController) {
-      this.teamRequestController = buildRequestController<Group>({
-        basePath: '/team',
-        networkClient: Api.glipNetworkClient,
-      });
+      this.teamRequestController = this._omitPutCursor(
+        buildRequestController<Group>({
+          basePath: '/team',
+          networkClient: Api.glipNetworkClient,
+        }),
+      );
     }
     return this.teamRequestController;
   }
+
+  // todo remove it after db upgrade
+  private _omitPutCursor = (requestController: IRequestController<Group>) => {
+    const rawPut = requestController.put;
+    const wrapPut = (data: Partial<Group>, ...arg: any) =>
+      rawPut.apply(requestController, [
+        _.omit(data, TEAM_ADDITION_MOVE_PROPERTIES),
+        ...arg,
+      ]);
+    return {
+      ...requestController,
+      put: wrapPut,
+    };
+  };
 
   private async _requestUpdateTeamMembers(
     teamId: number,

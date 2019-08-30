@@ -7,10 +7,11 @@
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 enum CALL_STATE {
-  IDLE = 'idle',
-  CONNECTING = 'connecting',
-  CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
+  IDLE = 'Idle',
+  CONNECTING = 'Connecting',
+  CONNECTED = 'Connected',
+  DISCONNECTING = 'Disconnecting',
+  DISCONNECTED = 'Disconnected',
 }
 
 enum HOLD_STATE {

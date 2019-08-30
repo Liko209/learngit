@@ -5,7 +5,8 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { ViewProps, MEETING_STATUS } from './types';
+import { ViewProps } from './types';
+import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
@@ -22,6 +23,8 @@ import {
   HighlightContextInfo,
   SearchHighlightContext,
 } from '@/common/postParser';
+import { MeetingStatus } from './MeetingStatus.View';
+import moize from 'moize';
 
 type meetingProps = WithTranslation & ViewProps;
 
@@ -30,9 +33,9 @@ class Meeting extends React.Component<meetingProps> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   private _renderMeetingContent = () => {
-    const { t, meetingItem } = this.props;
-    const { zoomMeetingId, joinUrl } = meetingItem;
-    const dialNumber = meetingItem.getDialInNumber();
+    const { t, meetingItem, meetingId, getDialInNumber } = this.props;
+    const { joinUrl } = meetingItem;
+    const dialNumber = getDialInNumber();
     return (
       <>
         <JuiItemContent title={t('item.meeting.meetingUrl')}>
@@ -44,7 +47,7 @@ class Meeting extends React.Component<meetingProps> {
         </JuiItemContent>
         <JuiItemContent title={t('item.meeting.meetingId')}>
           <JuiItemTextValue
-            description={postParser(String(zoomMeetingId), {
+            description={postParser(String(meetingId), {
               keyword: this.context.keyword,
             })}
           />
@@ -67,9 +70,10 @@ class Meeting extends React.Component<meetingProps> {
   private _renderContent() {
     return null;
   }
+
   private _handleRenderSequence() {
     const { meetingItem } = this.props;
-    const { status } = meetingItem;
+    const status = meetingItem.meetingStatus;
     switch (status) {
       case MEETING_STATUS.LIVE:
         return this._renderMeetingContent();
@@ -79,18 +83,33 @@ class Meeting extends React.Component<meetingProps> {
         return this._renderContent();
     }
   }
+
+  private _getStatusClick = moize((status: MEETING_STATUS) => {
+    const statusClickStrategy = {
+      [MEETING_STATUS.NO_ANSWER]: this.props.callbackMeeting,
+      [MEETING_STATUS.NOT_STARTED]: this.props.cancelMeeting,
+      [MEETING_STATUS.LIVE]: this.props.joinMeeting,
+    };
+    return statusClickStrategy[status];
+  });
+
   render() {
-    const {
-      t, meetingTitle, meetingItem, duration,
-    } = this.props;
-    const { status } = meetingItem;
-    const isEnded = status === MEETING_STATUS.ENDED;
+    const { t, meetingTitle, meetingItem, duration, isMeetingOwner } = this.props;
+    const status = meetingItem.meetingStatus;
     return (
       <JuiConversationItemCard
         title={postParser(t(meetingTitle), { keyword: this.context.keyword })}
         Icon="meetings"
-        subTitle={isEnded ? `${t('item.meeting.duration')}: ${duration}` : ''}
-        isShowLoading={status === MEETING_STATUS.NOT_STARTED}
+        subTitle={
+          <MeetingStatus
+            status={status}
+            duration={`${t('item.meeting.duration')}: ${duration}`}
+            onStatusClick={this._getStatusClick(status)}
+            isOwner={isMeetingOwner}
+          />
+        }
+        isShowLoading={status === MEETING_STATUS.NOT_STARTED
+        }
       >
         {this._handleRenderSequence()}
       </JuiConversationItemCard>

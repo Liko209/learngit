@@ -17,15 +17,24 @@ type StateHandleTask = {
   ignoreCursorValidate?: boolean;
 };
 
-type GroupStateHandleTask = {
-  type: TASK_DATA_TYPE.GROUP_STATE;
-  data: NotificationEntityPayload<GroupState>;
-};
-
 type GroupCursorHandleTask = {
   type: TASK_DATA_TYPE.GROUP_CURSOR;
   data: Partial<Group>[];
   ignoreCursorValidate?: boolean;
+};
+
+type StateAndGroupCursorHandleTask = {
+  type: TASK_DATA_TYPE.STATE_AND_GROUP_CURSOR;
+  data: {
+    states: Partial<State>[];
+    groups: Partial<Group>[];
+  };
+  ignoreCursorValidate?: boolean;
+};
+
+type GroupStateHandleTask = {
+  type: TASK_DATA_TYPE.GROUP_STATE;
+  data: NotificationEntityPayload<GroupState>;
 };
 
 type GroupEntityHandleTask = {
@@ -51,8 +60,9 @@ enum INIT_STATUS {
 
 export {
   StateHandleTask,
-  GroupStateHandleTask,
   GroupCursorHandleTask,
+  StateAndGroupCursorHandleTask,
+  GroupStateHandleTask,
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
   GroupBadge,

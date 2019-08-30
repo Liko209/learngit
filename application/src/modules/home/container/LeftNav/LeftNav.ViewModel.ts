@@ -4,12 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import StoreViewModel from '@/store/ViewModel';
 import storeManager from '@/store/base/StoreManager';
-import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { HomeStore } from '../../store';
 import { NavConfig } from '../../types';
 import { LeftNavProps } from './types';
@@ -41,11 +40,6 @@ class LeftNavViewModel extends StoreViewModel {
       .map(removePlacement);
 
     return [topIcons, bottomIcons];
-  }
-
-  @computed
-  get groupIds() {
-    return SectionGroupHandler.getInstance().groupIds;
   }
 
   @computed

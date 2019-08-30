@@ -13,6 +13,7 @@ enum ENTITY_NAME {
   'GLOBAL' = 'global',
   'PROGRESS' = 'progress',
   'USER_PERMISSION' = 'userPermission',
+  'CONVERSATION_PREFERENCE' = 'conversationPreference',
   'USER_SETTING' = 'userSetting',
   'PHONE_NUMBER' = 'phoneNumber',
   'CALL' = 'call',
@@ -52,4 +53,8 @@ enum GLOBAL_KEYS {
   INCOMING_CALL = 'INCOMING_CALL',
 }
 
-export { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS };
+enum PERMISSION_KEYS {
+  CAN_USE_VIDEO_CALL = 'canUseVideoCall',
+}
+
+export { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS, PERMISSION_KEYS };

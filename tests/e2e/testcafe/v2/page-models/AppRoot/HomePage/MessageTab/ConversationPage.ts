@@ -81,8 +81,19 @@ class HeaderMoreMenu extends BaseWebComponent {
     return await this.t.click(this.profile);
   }
 
+  get notificationPreferences() {
+    return this.getSelectorByAutomationId('notificationPreferencesEntry')
+  }
+
+  async  clickNotificationPreferences() {
+    await this.t.click(this.notificationPreferences);
+  }
+
   get adminActions() {
     return this.self.find('li').withText('Admin actions');
+  }
+  get adminActionsByClass() {
+    return this.self.find('*[class=" arrow_right icon sc-htpNat dQnPez"]');
   }
 
   async enterAdminActions() {
@@ -129,9 +140,17 @@ export class BaseConversationPage extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('conversation-page-header-title');
+    return this.getSelectorByAutomationId('conversation-page-header-title', this.header);
   }
 
+  get conferenceButton() {
+    return this.getSelectorByAutomationIdUnderSelf('audio-conference-btn');
+  }
+
+  async clickConferenceButton() {
+    return this.t.click(this.conferenceButton);
+  }
+  
   async timeOfPostsShouldOrderByAsc() {
     const count = await this.postTimes.count;
     let lastTime: number;
@@ -443,6 +462,14 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.memberCountIcon);
   }
 
+  get muteButton() {
+    return this.getSelectorByAutomationIdUnderSelf('muted');
+  }
+
+  get mutedIcon() {
+    return this.getSelectorByIcon('mute', this.muteButton);
+  }
+  
   get messageInputArea() {
     this.warnFlakySelector();
     return this.self.child().find('.ql-editor');
@@ -470,7 +497,7 @@ export class ConversationPage extends BaseConversationPage {
       const containerTop = await this.self.getBoundingClientRectProperty('top');
       const headerHeight = await this.header.getBoundingClientRectProperty('height');
       const targetTop = await sel.getBoundingClientRectProperty('top');
-      assert.ok(Math.abs( containerTop + headerHeight - targetTop) < 5, 'element is not on the top of conversation page');
+      assert.ok(Math.abs(containerTop + headerHeight - targetTop) < 5, 'element is not on the top of conversation page');
     });
   }
 
@@ -577,6 +604,14 @@ export class ConversationPage extends BaseConversationPage {
 
   get messageFilesArea() {
     return this.getSelectorByAutomationId('attachment-list');
+  }
+
+  get postButton() {
+    return this.getSelectorByAutomationId('post-button');
+  }
+
+  async clickPostButton() {
+    await this.t.click(this.postButton);
   }
 
   get uploadFileInput() {
@@ -725,7 +760,9 @@ export class PostItem extends BaseWebComponent {
   get postId() {
     return this.self.getAttribute('data-id');
   }
-
+  get linkPreviewCard() {
+    return this.self.find('[data-test-automation-id="linkItemsWrapper"]');
+  }
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
   }
@@ -1061,12 +1098,6 @@ export class PostItem extends BaseWebComponent {
   }
 
   // audio conference
-  get AudioConferenceHeaderNotification() {
-    // FIXME: should take i18n into account
-    this.warnFlakySelector();
-    return this.headerNotification.withText('started an audio conference');
-  }
-
   get audioConference() {
     return this.getComponent(AudioConference, this.getSelectorByAutomationId('conferenceItem', this.self));
   }
@@ -1105,6 +1136,36 @@ export class PostItem extends BaseWebComponent {
     return this.getComponent(ConversationCardItem, this.self.find('.conversation-item-cards'))
   }
 
+  get linkCardDiv() {
+    return this.getSelectorByAutomationIdUnderSelf('linkItemsWrapper');
+  }
+
+  nthLinkCard(n: number) {
+    return this.getComponent(LinkCard, this.linkCardDiv.nth(n));
+  }
+}
+
+class LinkCard extends BaseWebComponent {
+  get title() {
+    return this.getSelectorByAutomationIdUnderSelf('linkItemTitle');
+  }
+
+  get href() {
+    return this.title.find('a').getAttribute('href');
+  }
+
+  get summary() {
+    return this.getSelectorByAutomationIdUnderSelf('linkItemSummary');
+  }
+
+  get closeButton() {
+    return this.getSelectorByAutomationIdUnderSelf('linkPreviewCloseBtn');
+  }
+
+
+  async clickCloseButton() {
+    await this.t.click(this.closeButton);
+  }
 }
 
 class ConversationCardItem extends BaseWebComponent {
@@ -1223,7 +1284,7 @@ class AudioConference extends BaseWebComponent {
   }
 
   get phoneNumber() {
-    return this.getSelectorByAutomationId('phoneNumberLink', this.self);
+    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self);
   }
 
   get globalNumber() {

@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-04-17 15:12:44
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-19 19:21:59
+ * @Last Modified by: isaac.liu
+ * @Last Modified time: 2019-08-02 17:32:58
  */
 
 import { h } from '../v2/helpers'
@@ -11,9 +11,10 @@ import { AppRoot } from "../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
 import { WebphoneSession } from 'webphone-client';
+import { E911Address } from './e911address';
 
 fixture('Telephony/EndCall')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -23,10 +24,14 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('Show prompt pop-up after user logged out the app', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
+  await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const title = "Log out?";
   const content = "Your call will be disconnected if you log out. Do you want to log out and end the call?";
@@ -110,10 +115,14 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('The call should be ended after the user logged out & Should navigate to the login main interface', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -123,6 +132,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Given I have a 1:1 chat', async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   let session: WebphoneSession;
@@ -188,10 +201,12 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('The call should be ended after the user logged out', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
 
 
@@ -254,11 +269,13 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('User should can ended call successfully when call is active', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -274,6 +291,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And I have a 1:1 conversation with antherUser '`, async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -346,10 +367,12 @@ test.meta(<ITestMeta>{
   keywords: ['EndCall']
 })('User should can ended call successfully', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const me = users[4]
-  const anotherUser = users[5];
+  const me = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(me).init();
+  await h(t).platform(me).init();
+  await h(t).platform(me).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(me);
   await h(t).glip(me).resetProfileAndState();
 
@@ -367,6 +390,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And I have a 1:1 conversation with that user'`, async () => {
     await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, me);
   });
 
   await h(t).withLog(`And I login Jupiter with my extension: ${me.company.number}#${me.extension}`, async () => {

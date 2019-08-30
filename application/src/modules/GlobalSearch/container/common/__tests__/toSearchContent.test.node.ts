@@ -3,7 +3,8 @@
  * @Date: 2019-04-10 19:56:19
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { getGlobalValue } from '@/store/utils';
 jest.mock('@/store/utils');
 
@@ -11,6 +12,7 @@ import { toSearchContent } from '../toSearchContent';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
 import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../../types';
+jest.mock('sdk/module/config');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

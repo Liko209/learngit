@@ -15,7 +15,7 @@ import CallLogModel from '@/store/models/CallLog';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import PhoneNumberModel from '@/store/models/PhoneNumber';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
@@ -70,7 +70,32 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
       return;
     }
     analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
-    return this._telephonyService.makeCall(this.phoneNumber);
+    return this._telephonyService.directCall(this.phoneNumber);
+  };
+
+  @computed
+  get selectedCallItemIndex() {
+    return this._telephonyStore.selectedCallItem.index;
+  }
+
+  @action
+  selectCallItem = (focusIndex?: number) => {
+    if (!this.dialerInputFocused) {
+      return;
+    }
+    if (typeof focusIndex === 'number') {
+      this.focusIndex = focusIndex;
+    }
+
+    // analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
+    if (this.selectedCallItemIndex === this.focusIndex) {
+      this._telephonyStore.setCallItem('', NaN);
+      return;
+    }
+    return this._telephonyStore.setCallItem(
+      this.phoneNumber || '',
+      this.focusIndex || 0,
+    );
   };
 
   @computed
@@ -160,6 +185,11 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
   onErrorReload = () => {
     this.isError = false;
   };
+
+  @computed
+  get isTransferPage() {
+    return this._telephonyStore.isTransferPage;
+  }
 
   dispose = () => {
     this._recentCallLogsHandler && this._recentCallLogsHandler.dispose();

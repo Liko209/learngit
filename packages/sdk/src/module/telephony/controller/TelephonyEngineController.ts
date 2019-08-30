@@ -5,11 +5,11 @@
  */
 import {
   ITelephonyNetworkDelegate,
-  IRequest,
   ITelephonyDaoDelegate,
-  telephonyLogger,
-} from 'foundation';
-import { RTCEngine } from 'voip';
+} from 'foundation/telephony';
+import { telephonyLogger } from 'foundation/log';
+import { IRequest } from 'foundation/network';
+import { RTCEngine, RTCSipEmergencyServiceAddr } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
 import { ITelephonyDelegate } from 'sdk/module/telephony';
@@ -26,8 +26,8 @@ import { AccountService } from 'sdk/module/account';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { Call } from '../entity';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
-import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
 import { notificationCallback } from '../types';
+import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -208,29 +208,51 @@ class TelephonyEngineController {
     TelephonyGlobalConfig.onEmergencyAddressChange(listener);
   }
 
-  subscribeSipProvChange(listener: notificationCallback) {
+  subscribeSipProvEAUpdated(listener: notificationCallback) {
     notificationCenter.on(
-      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_UPDATED,
+      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_EA_UPDATED,
+      listener,
+    );
+  }
+
+  subscribeSipProvReceived(listener: notificationCallback) {
+    notificationCenter.on(
+      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_RECEIVED,
       listener,
     );
   }
 
   getLocalEmergencyAddress() {
-    return TelephonyGlobalConfig.getEmergencyAddress();
+    return this._accountController
+      ? this._accountController.getLocalEmergencyAddress()
+      : undefined;
+  }
+
+  setLocalEmergencyAddress(emergencyAddress: RTCSipEmergencyServiceAddr) {
+    this._accountController.setLocalEmergencyAddress(emergencyAddress);
+  }
+
+  updateLocalEmergencyAddress(emergencyAddress: RTCSipEmergencyServiceAddr) {
+    this._accountController.updateLocalEmergencyAddress(emergencyAddress);
   }
 
   getRemoteEmergencyAddress() {
-    return this._accountController.getEmergencyAddress();
+    return this._accountController.getRemoteEmergencyAddress();
+  }
+
+  hasActiveDL() {
+    return !!this.getRemoteEmergencyAddress();
   }
 
   isEmergencyAddrConfirmed() {
-    if (!this._accountController.getSipProv()) {
-      // Sip Provision is not ready
-      return true;
-    }
-    return (
-      !!this.getRemoteEmergencyAddress() && !!this.getLocalEmergencyAddress()
-    );
+    return this._accountController.isEmergencyAddrConfirmed();
+  }
+
+  isAddressEqual(
+    objAddr: RTCSipEmergencyServiceAddr,
+    othAddr: RTCSipEmergencyServiceAddr,
+  ) {
+    return this._accountController.isAddressEqual(objAddr, othAddr);
   }
 }
 

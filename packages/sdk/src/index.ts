@@ -12,32 +12,30 @@ import './module/debug';
 import Sdk from './Sdk';
 import { container } from './container';
 import { registerConfigs } from './registerConfigs';
+import { Container } from 'foundation/ioc';
 
 export * from './framework';
 export {
   default as GlipTypeDictionary,
 } from './utils/glip-type-dictionary/types';
-export { LogControlManager } from './service/uploadLogControl';
+export { LogControlManager } from './module/log';
 
-registerConfigs.classes.forEach(config => container.registerClass(config));
-// registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
-registerConfigs.constants.forEach(config =>
-  container.registerConstantValue(config),);
+class ContainerRegister {
+  static hasRegister: boolean = false;
+  static registerAll(c: Container) {
+    if (!ContainerRegister.hasRegister) {
+      registerConfigs.classes.forEach(config => c.registerClass(config));
+      // registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
+      registerConfigs.constants.forEach(config =>
+        c.registerConstantValue(config),
+      );
+      ContainerRegister.hasRegister = true;
+    }
+  }
+}
+
+ContainerRegister.registerAll(container);
 
 const sdk: Sdk = container.get(Sdk.name);
 
-export {
- sdk, service, utils, dao, api, error
-};
-
-export {
-  mainLogger,
-  ILogger,
-  dataAnalysis,
-  logManager,
-  SessionManager,
-  DateFormatter,
-  PerformanceTracer,
-  powerMonitor,
-  PowerMonitor,
-} from 'foundation';
+export { sdk, service, utils, dao, api, error };

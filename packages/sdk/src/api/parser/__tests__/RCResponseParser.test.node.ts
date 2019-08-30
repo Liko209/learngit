@@ -5,7 +5,7 @@
  */
 
 import { RCResponseParser } from '../RCResponseParser';
-import { HttpResponse, HttpResponseBuilder } from 'foundation';
+import { HttpResponse, HttpResponseBuilder } from 'foundation/network';
 import { JRCError, ERROR_CODES_RC } from '../../../error';
 
 function createResponse(obj: any): HttpResponse {

@@ -8,6 +8,9 @@ type VoiceMailProps = {};
 
 type VoiceMailViewProps = {
   sendToVoiceMail: () => void;
+  isTransferPage: boolean;
+  transferNumber: string;
+  isIncomingCall: boolean;
 };
 
 export { VoiceMailProps, VoiceMailViewProps };

@@ -20,8 +20,8 @@ import {
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
-
-import { JuiIconography } from '../../foundation/Iconography';
+import { JuiIconography, SvgSymbol } from '../../foundation/Iconography';
+import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
 import { StyledMaskWrapper, StyledMask } from './Mask';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
@@ -34,6 +34,8 @@ type JuiAvatarProps = {
   cover?: boolean;
   mask?: boolean;
   displayName?: string;
+  customColor?: boolean;
+  iconSymbol?: SvgSymbol;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -61,7 +63,8 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color }) =>
+    background-color: ${({ color, customColor }) =>
+      customColor ? color :
       color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
@@ -70,6 +73,10 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     &:active {
       opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
     }
+  }
+
+  &:focus {
+    outline: none;
   }
 
   > .avatar-short-name {
@@ -84,7 +91,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
 const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   && {
     width: ${width(70)};
-    height: ${height(70)};
+    height: ${height(55)};
     border-radius: unset;
     position: static;
     display: flex;
@@ -92,10 +99,11 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     justify-content: center;
     font-size: ${spacing(12)};
     color: ${({ color }) =>
-      color ? palette('avatar', color) : primary('600')};
+      color ? palette('avatar', color) : primary('main')};
     background-color: ${({ color }) =>
-      color ? palette('avatar', color) : primary('600')};
+      color ? palette('avatar', color) : primary('main')};
   }
+
   & span {
     display: flex;
     justify-content: center;
@@ -105,6 +113,20 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     border-radius: 50%;
     background-color: ${palette('common', 'white')};
   }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const StyledIconAvatar = styled(({ size, ...rest }: any) => (
+  <JuiIconography
+    iconSize="inherit"
+    iconColor={['primary', 'light']}
+    {...rest}
+  />
+))<{ size: Size; symbol: SvgSymbol }>`
+  font-size: ${({ size }) => sizes[size] * 4}px;
 `;
 
 const StyledPresenceWrapper = styled.div`
@@ -113,55 +135,71 @@ const StyledPresenceWrapper = styled.div`
   right: 0;
 `;
 
-const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, cover, tooltip, mask, displayName, ...rest } = props;
-  const maskWithIcon = (
-    <StyledMask>
-      <JuiIconography iconSize="small" color="common.white">
-        edit
-      </JuiIconography>
-    </StyledMask>
+const JuiAvatarMask = (props: JuiAvatarProps) => {
+  const { onClick, children } = props;
+  return (
+    <StyledMaskWrapper onClick={onClick}>
+      {children}
+      <StyledMask>
+        <JuiIconography iconSize="small" color="common.white">
+          edit
+        </JuiIconography>
+      </StyledMask>
+    </StyledMaskWrapper>
   );
+};
+JuiAvatarMask.displayName = 'JuiAvatarMask';
+
+const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
+  const {
+    tooltip,
+    cover,
+    mask,
+    presence,
+    displayName,
+    children,
+    iconSymbol,
+    ...rest
+  } = props;
+  const popupHelper = usePopupHelper({ variant: 'popover' });
+
+  let avatar: JSX.Element;
+  const popupTriggerProps = tooltip ? popupHelper.HoverProps : {};
 
   if (cover) {
-    const coverWithMask = mask ? (
-      <StyledMaskWrapper>
-        <StyledCoverAvatar {...rest} />
-        {maskWithIcon}
-      </StyledMaskWrapper>
-    ) : (
-      <StyledCoverAvatar {...rest} />
+    avatar = <StyledCoverAvatar {...rest} {...popupTriggerProps} />;
+  } else {
+    let iconChildren;
+    if (iconSymbol) {
+      iconChildren = (
+        <StyledIconAvatar size={rest.size || 'medium'} symbol={iconSymbol} />
+      );
+    }
+
+    avatar = (
+      <StyledAvatar {...rest} {...popupTriggerProps}>
+        {iconChildren || children}
+      </StyledAvatar>
     );
-    return tooltip ? (
-      <RuiTooltip title={tooltip}>{coverWithMask}</RuiTooltip>
-    ) : (
-      coverWithMask
-    );
+    if (presence) {
+      avatar = (
+        <StyledWrapper size={rest.size} style={rest.style}>
+          {avatar}
+          <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+        </StyledWrapper>
+      );
+    }
   }
 
-  const avatar = presence ? (
-    <StyledWrapper size={rest.size} style={rest.style}>
-      <StyledAvatar {...rest} />
-      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-    </StyledWrapper>
-  ) : (
-    <StyledAvatar {...rest} />
-  );
+  if (mask) {
+    avatar = <JuiAvatarMask onClick={rest.onClick}>{avatar}</JuiAvatarMask>;
+  }
 
-  const avatarWithMask = mask ? (
-    <StyledMaskWrapper onClick={rest.onClick}>
-      {avatar}
-      {maskWithIcon}
-    </StyledMaskWrapper>
-  ) : (
-    avatar
-  );
+  if (tooltip && popupHelper.PopoverProps.open) {
+    avatar = <RuiTooltip title={tooltip}>{avatar}</RuiTooltip>;
+  }
 
-  return tooltip ? (
-    <RuiTooltip title={tooltip}>{avatarWithMask}</RuiTooltip>
-  ) : (
-    avatarWithMask
-  );
+  return avatar;
 });
 
 JuiAvatar.defaultProps = {
@@ -170,4 +208,4 @@ JuiAvatar.defaultProps = {
 };
 JuiAvatar.displayName = 'JuiAvatar';
 
-export { JuiAvatarProps, JuiAvatar };
+export { JuiAvatarProps, JuiAvatar, StyledAvatar };

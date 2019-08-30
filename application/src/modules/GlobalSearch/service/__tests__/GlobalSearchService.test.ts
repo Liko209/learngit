@@ -3,7 +3,8 @@
  * @Date: 2019-04-03 12:51:29
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { GlobalSearchStore } from '../../store/GlobalSearchStore';
 import { GlobalSearchService } from '../GlobalSearchService';
 import { config } from '../../module.config';
@@ -29,6 +30,7 @@ describe('GlobalSearchService', () => {
       globalSearchStore.setSearchKey('');
       globalSearchService.openGlobalSearch();
       expect(globalSearchStore.open).toBeTruthy();
+      expect(globalSearchStore.needFocus).toBeTruthy();
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.RECENT_SEARCH);
     });
     it('if search key is not empty should be open instant search', () => {
@@ -42,6 +44,7 @@ describe('GlobalSearchService', () => {
     it('global search store open should be false', () => {
       globalSearchService.closeGlobalSearch();
       expect(globalSearchStore.open).toBeFalsy();
+      expect(globalSearchStore.needFocus).toBeFalsy();
     });
   });
   describe('registerExtension()', () => {

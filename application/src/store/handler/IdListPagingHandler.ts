@@ -23,10 +23,11 @@ type IdListPaginationOptions<T, K, IdType extends ModelIdType = number> = {
   entityDataProvider: IEntityDataProvider<T, IdType>;
   filterFunc: IMatchFunc<K>;
   transformFunc?: ITransformFunc<T, IdType>;
-  isMatchFunc?: IMatchFunc<T>;
+  isMatchFunc?: IMatchFunc<T, IdType>;
   sortFunc?: ISortFunc<IdType>;
   defaultHasMoreUp?: boolean;
   defaultHasMoreDown?: boolean;
+  pageSize?: number;
 };
 
 class IdListPaginationHandler<
@@ -74,6 +75,7 @@ class IdListPaginationHandler<
     );
 
     return new FetchSortableDataListHandler<T, IdType>(this._idsDataProvider, {
+      pageSize: options.pageSize,
       isMatchFunc: options.isMatchFunc || this.defaultIsMatchFunc,
       sortFunc: options.sortFunc || this.defaultSortFunc,
       transformFunc: options.transformFunc || this.defaultTransformFunc,
@@ -88,7 +90,8 @@ class IdListPaginationHandler<
     return this._foc;
   }
 
-  protected defaultIsMatchFunc = (model: T) => this._sourceIds.includes(model.id);
+  protected defaultIsMatchFunc = (model: T) =>
+    this._sourceIds.includes(model.id);
 
   protected defaultSortFunc = (
     lhs: ISortableModel<IdType>,

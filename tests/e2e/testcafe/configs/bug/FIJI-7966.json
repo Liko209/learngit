@@ -1,0 +1,8 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./telephony/Park.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

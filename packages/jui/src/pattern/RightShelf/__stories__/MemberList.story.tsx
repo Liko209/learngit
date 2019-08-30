@@ -55,7 +55,7 @@ storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
           addmember_border
         </JuiIconButton>
       </JuiRightShellMemberListHeader>
-      <JuiRightShellMemberListBody loading={loading}>
+      <JuiRightShellMemberListBody loading={loading} height="auto">
         <JuiRightShellMemberListAvatarWrapper>
           {Array(memberCount)
             .fill(1)

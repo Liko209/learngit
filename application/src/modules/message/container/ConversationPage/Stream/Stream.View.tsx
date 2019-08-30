@@ -5,10 +5,11 @@
  */
 import _ from 'lodash';
 import React, { Component, RefObject, createRef, cloneElement } from 'react';
-import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger, PerformanceTracer, dataAnalysis } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -32,7 +33,7 @@ import {
   ItemWrapper,
   ScrollInfo,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
+import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
@@ -62,13 +63,13 @@ class StreamViewComponent extends Component<Props> {
     { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
   );
 
-  @observable
-  private _isAboveScrollToLatestCheckPoint = false;
+  @observable private _isAboveScrollToLatestCheckPoint = false;
+  // use isAtBottom is null to indicate mounting state
+  @observable private _isAtBottom: null | boolean = null;
 
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
   > = React.createRef();
-  private _globalStore = storeManager.getGlobalStore();
   @observable private _historyViewed: boolean | null = null;
   private _timeout: NodeJS.Timeout | null;
   private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
@@ -93,6 +94,8 @@ class StreamViewComponent extends Component<Props> {
       } as React.CSSProperties),
   );
 
+  private _firstTracer: boolean = false;
+
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -104,7 +107,6 @@ class StreamViewComponent extends Component<Props> {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
       jumpToPostId: prevJumpToPostId,
-      loadingStatus: prevLoadingStatus,
     } = prevProps;
     const {
       postIds,
@@ -112,12 +114,11 @@ class StreamViewComponent extends Component<Props> {
       hasMore,
       lastPost,
       jumpToPostId,
-      loadingStatus,
     } = this.props;
 
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
-        storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+        this._updateIgnoredStatus(false);
       }
     }
     const newPostAddedAtEnd =
@@ -140,14 +141,8 @@ class StreamViewComponent extends Component<Props> {
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
 
-    if (
-      loadingStatus === STATUS.SUCCESS &&
-      prevLoadingStatus === STATUS.PENDING
-    ) {
-      this._performanceTracer.end({
-        key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
-        count: postIds.length,
-      });
+    if (this._isAtBottom === null && this._listRef.current) {
+      this._isAtBottom = this._listRef.current.isAtBottom();
     }
   }
 
@@ -283,9 +278,22 @@ class StreamViewComponent extends Component<Props> {
       items,
       firstHistoryUnreadPostId = 0,
       historyReadThrough = 0,
+      postIds,
     } = this.props;
+    if (!this._firstTracer) {
+      this._performanceTracer.end({
+        key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+        count: postIds.length,
+      });
+      this._firstTracer = true;
+    }
+
+
     const listEl = this._listRef.current;
     const lastPostVisible = stopIndex === items.length - 1;
+
+    this._isAtBottom = lastPostVisible;
+
     if (lastPostVisible) {
       this._isAboveScrollToLatestCheckPoint = false;
     } else if (!this._isAboveScrollToLatestCheckPoint) {
@@ -296,9 +304,11 @@ class StreamViewComponent extends Component<Props> {
 
     if (startIndex === -1 || stopIndex === -1 || !listEl) return;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
+
     if (this._historyViewed) {
       return;
     }
+
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;
     if (firstPostItem) {
       const i = firstPostItem.value;
@@ -329,15 +339,14 @@ class StreamViewComponent extends Component<Props> {
   @action
   handleMostRecentViewed = () => {
     if (document.hasFocus()) {
-      this.props.markAsRead();
       this.props.disableNewMessageSeparatorHandler();
-      this._setUmiDisplay(false);
+      this._updateIgnoredStatus(true);
     }
   };
 
   handleMostRecentHidden = () => {
     this.props.enableNewMessageSeparatorHandler();
-    this._setUmiDisplay(true);
+    this._updateIgnoredStatus(false);
   };
 
   findPost = (i: StreamItem) => i.type === StreamItemType.POST;
@@ -373,19 +382,15 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _focusHandler = () => {
-    const { markAsRead } = this.props;
-    const atBottom =
-      this._listRef.current && this._listRef.current.isAtBottom();
-    if (atBottom) {
-      markAsRead();
+    if (this._isAtBottom) {
       this.props.disableNewMessageSeparatorHandler();
-      this._setUmiDisplay(false);
+      this._updateIgnoredStatus(true);
     }
   };
 
   private _blurHandler = () => {
     this.props.enableNewMessageSeparatorHandler();
-    this._setUmiDisplay(true);
+    this._updateIgnoredStatus(false);
   };
   private _renderNewMessagesDivider() {
     const { t } = this.props;
@@ -439,9 +444,8 @@ class StreamViewComponent extends Component<Props> {
       refresh();
     }
   }
-
-  private _setUmiDisplay(value: boolean) {
-    this._globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, value);
+  private _updateIgnoredStatus(isIgnored: boolean) {
+    this.props.updateIgnoredStatus(isIgnored);
   }
 
   render() {
@@ -454,16 +458,17 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread,
       historyUnreadCount,
     } = this.props;
+
     const anchorButtonProps = {
       jumpToLatest: this._jumpToLatest,
-
       firstHistoryUnreadInPage,
       hasHistoryUnread,
       historyUnreadCount,
       historyViewed: this._historyViewed,
       jumpToFirstUnreadLoading: this._jumpToFirstUnreadLoading,
       jumpToFirstUnread: this._jumpToFirstUnread,
-      hasMore,
+      hasMoreDown: hasMore(DIRECTION.DOWN),
+      isAtBottom: this._isAtBottom,
       isAboveScrollToLatestCheckPoint: this._isAboveScrollToLatestCheckPoint,
     };
     const initialPosition = this.props.jumpToPostId
@@ -483,28 +488,28 @@ class StreamViewComponent extends Component<Props> {
                 loadingStatus === STATUS.FAILED ? (
                   this._onInitialDataFailed
                 ) : (
-                  <>
-                    <AnchorButton {...anchorButtonProps} />
-                    <JuiInfiniteList
-                      contentStyle={this._contentStyleGen(height)}
-                      ref={this._listRef}
-                      height={height}
-                      stickToBottom
-                      loadMoreStrategy={this._loadMoreStrategy}
-                      initialScrollToIndex={initialPosition}
-                      minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
-                      loadInitialData={this._loadInitialPosts}
-                      loadMore={loadMore}
-                      loadingRenderer={this._defaultLoading}
-                      hasMore={hasMore}
-                      loadingMoreRenderer={this._defaultLoadingMore}
-                      onVisibleRangeChange={this._handleVisibilityChanged}
-                      onBottomStatusChange={this._bottomStatusChangeHandler}
-                    >
-                      {this._renderStreamItems()}
-                    </JuiInfiniteList>
-                  </>
-                )
+                    <>
+                      <AnchorButton {...anchorButtonProps} />
+                      <JuiInfiniteList
+                        contentStyle={this._contentStyleGen(height)}
+                        ref={this._listRef}
+                        height={height}
+                        stickToBottom
+                        loadMoreStrategy={this._loadMoreStrategy}
+                        initialScrollToIndex={initialPosition}
+                        minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
+                        loadInitialData={this._loadInitialPosts}
+                        loadMore={loadMore}
+                        loadingRenderer={this._defaultLoading}
+                        hasMore={hasMore}
+                        loadingMoreRenderer={this._defaultLoadingMore}
+                        onVisibleRangeChange={this._handleVisibilityChanged}
+                        onBottomStatusChange={this._bottomStatusChangeHandler}
+                      >
+                        {this._renderStreamItems()}
+                      </JuiInfiniteList>
+                    </>
+                  )
               }
             </Observer>
           )}

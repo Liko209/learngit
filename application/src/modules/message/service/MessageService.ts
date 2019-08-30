@@ -9,11 +9,13 @@ import portalManager from '@/common/PortalManager';
 import { EditProfile } from '../container/ProfileEdit';
 import { IMessageService, IMessageStore } from '../interface';
 
+const ROUTE_ROOT_PATH = '/messages';
+
 class MessageService implements IMessageService {
   @IMessageStore private _messageStore: IMessageStore;
 
-  registerConversationHeaderExtension(extension: ReactNode) {
-    this._messageStore.addConversationHeaderExtension(extension);
+  registerConversationHeaderExtension(extensions: ReactNode[]) {
+    this._messageStore.addConversationHeaderExtension(extensions);
   }
 
   enterEditMode(id: number, draft: string) {
@@ -29,6 +31,7 @@ class MessageService implements IMessageService {
   }
 
   setEditInputFocus = (id: number) => {
+    this._messageStore.currentFocusedInput = undefined;
     window.requestAnimationFrame(
       () => (this._messageStore.currentFocusedInput = id),
     );
@@ -45,6 +48,16 @@ class MessageService implements IMessageService {
 
   getCurrentInputFocus() {
     return this._messageStore.currentFocusedInput;
+  }
+
+  setLastGroutId(id: number) {
+    this._messageStore.setLastGroutId(id);
+  }
+
+  getNavUrl() {
+    return this._messageStore.lastGroupId
+      ? `${ROUTE_ROOT_PATH}/${this._messageStore.lastGroupId}`
+      : ROUTE_ROOT_PATH;
   }
 }
 

@@ -303,6 +303,10 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   let otherUserPostId;
   await h(t).withLog('And anotherUser send a mention loginUser post', async () => {
     otherUserPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`Other post ${uuid()}`, chat, anotherUser);

@@ -7,13 +7,8 @@ import { computed, action } from 'mobx';
 import { ListStore } from './ListStore';
 import { ISortFunc, ISortableModel } from './types';
 import _ from 'lodash';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ModelIdType } from 'sdk/framework/model';
-
-// const defaultSortFunc: ISortFunc<ISortableModel> = (
-//   first: ISortableModel,
-//   second: ISortableModel,
-// ) => first.sortValue - second.sortValue;
 
 export class SortableListStore<
   IdType extends ModelIdType = number,
@@ -39,7 +34,8 @@ export class SortableListStore<
         _.isEqualWith(
           unionAndSortIds,
           this._items,
-          (objValue: ISortableModel, otherValue: ISortableModel) => objValue.id === otherValue.id,
+          (objValue: ISortableModel, otherValue: ISortableModel) =>
+            objValue.id === otherValue.id,
         )
       ) {
         mainLogger.debug(
