@@ -4,7 +4,6 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk/mockService';
 import { TelephonyService as ServerTelephonyService } from 'sdk/module/telephony';
-import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
 import { OpenDialogE911 } from '../../container/E911';
 import { runInAction } from 'mobx';
@@ -16,6 +15,7 @@ import { config } from '@/modules/telephony/module.config';
 import { TelephonyService } from '../TelephonyService';
 import { Notification } from '@/containers/Notification';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
+import { errorHelper } from 'sdk/error';
 
 const globalConfigService = {
   name: ServiceConfig.GLOBAL_CONFIG_SERVICE,
@@ -152,11 +152,6 @@ describe('TelephonyService', () => {
 
   @testable
   class startAudioConference {
-    beforeAll() {
-      jupiter.registerModule(config);
-    }
-
-    beforeEach() {}
     @test(
       'should not call api if has no active DL',
     )
@@ -203,6 +198,37 @@ describe('TelephonyService', () => {
         expect(result).toBe(true);
         expect(itemService.startConference).toHaveBeenCalled()
         expect(ts._telephonyStore.isConference).toBe(true)
+      });
+    }
+
+    @test(
+      'should show toast when error occurs when starting conference',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'isEmergencyAddrConfirmed', data: true },
+      { method: 'hasActiveDL', data: true },
+      { method: 'makeCall', data: MAKE_CALL_ERROR_CODE.NO_ERROR },
+    ])
+    @mockService.reject(itemService, 'startConference', new Error('message'))
+    @mockService(rcInfoService, 'isVoipCallingAvailable', true)
+    @mockService(globalConfigService)
+    @mockService(phoneNumberService)
+    t3(done: any) {
+      Notification.flashToast = jest.fn()
+      let ts;
+      runInAction(async () => {
+        jest.spyOn(errorHelper, 'isNetworkConnectionError').mockReturnValue(true);
+        ts = new TelephonyService();
+        ts.isValidNumber = jest.fn().mockResolvedValue({ isValid: true })
+        ts._isJupiterDefaultApp = jest.fn().mockResolvedValue(true)
+        ts._getFromNumber = jest.fn().mockResolvedValue('123123233')
+        const result = await ts.startAudioConference(123);
+        expect(result).toBe(false);
+        expect(itemService.startConference).toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith(expect.objectContaining({
+          message: 'telephony.prompt.audioConferenceNetworkError'
+        }));
+        done();
       });
     }
   }

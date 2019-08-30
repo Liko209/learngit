@@ -71,6 +71,7 @@ import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
 import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
+import { errorHelper } from 'sdk/error';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -1203,13 +1204,20 @@ class TelephonyService {
     return await this.ensureCallPermission(async () => {
       try {
         const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
-        return this._makeCall(phoneNumber, { accessCode: hostCode })
-      } catch(err) {
-        // need toast, toast message should be provided from PM
+        return this._makeCall(phoneNumber, { accessCode: hostCode });
+      } catch(error) {
         mainLogger.error(
           `${TelephonyService.TAG} Error when start a conference`,
-          err
+          error
         );
+        Notification.flashToast({
+          message: errorHelper.isNetworkConnectionError(error) ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        });
+        return false;
       }
     });
   }
