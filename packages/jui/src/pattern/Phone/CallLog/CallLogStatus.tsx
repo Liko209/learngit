@@ -1,10 +1,5 @@
 /*
  * @Author: isaac.liu
- * @Date: 2019-06-04 13:17:29
- * Copyright © RingCentral. All rights reserved.
- */
-/*
- * @Author: isaac.liu
  * @Date: 2019-06-03 14:44:12
  * Copyright © RingCentral. All rights reserved.
  */
@@ -24,9 +19,7 @@ type Props = {
 };
 
 const CallLogStatus = (props: Props) => {
-  const {
-    icon, callType, duration, isMissedCall, isShowCallInfo,
-  } = props;
+  const { icon, callType, duration, isMissedCall, isShowCallInfo } = props;
   const color: IconColor = isMissedCall
     ? ['accent', 'tomato']
     : ['grey', '600'];
@@ -36,7 +29,7 @@ const CallLogStatus = (props: Props) => {
     : ['grey', '900'];
 
   return (
-    <ContactItem disableButton isUnread={false}>
+    <ContactItem button={false} isUnread={false}>
       <JuiListItemAvatar>
         <JuiIconography iconSize="medium" iconColor={color}>
           {icon}
