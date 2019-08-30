@@ -102,7 +102,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
-              <FileActionMenu fileId={id} disablePortal />
+              <FileActionMenu scene="rightShelf" fileId={id} disablePortal />
             </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}
