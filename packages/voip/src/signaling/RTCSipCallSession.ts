@@ -21,6 +21,7 @@ import {
   WEBPHONE_SESSION_EVENT,
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
   RC_REFER_EVENT,
+  AcceptOptions,
 } from './types';
 import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
@@ -43,9 +44,17 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _referClientContext: any = null;
 
   private _onInputDeviceChanged = (deviceId: string) => {
+    rtcLogger.info(
+      LOG_TAG,
+      `set input audio device ${deviceId} when input device changed`,
+    );
     this._setAudioInputDevice(deviceId);
   };
   private _onOutputDeviceChanged = (deviceId: string) => {
+    rtcLogger.info(
+      LOG_TAG,
+      `set output audio device ${deviceId} when output device changed`,
+    );
     this._setAudioOutputDevice(deviceId);
   };
 
@@ -55,6 +64,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._mediaElement = RTCMediaElementManager.instance().createMediaElement(
       this._uuid,
     );
+    const outputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioOutput();
+    if (outputDeviceId) {
+      rtcLogger.info(
+        LOG_TAG,
+        `set output audio device ${outputDeviceId} when new call session`,
+      );
+      this._setAudioOutputDevice(outputDeviceId);
+    }
     this._mediaStatsManager = new RTCMediaStatsManager();
   }
   destroy() {
@@ -143,24 +160,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
 
-  private _initAudioDeviceChannel() {
-    const inputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioInput();
-    if (inputDeviceId !== '') {
-      this._setAudioInputDevice(inputDeviceId);
-    }
-    const outputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioOutput();
-    if (outputDeviceId !== '') {
-      this._setAudioOutputDevice(outputDeviceId);
-    }
-  }
-
   private _onSessionAccepted() {
-    this._initAudioDeviceChannel();
     this.emit(CALL_SESSION_STATE.ACCEPTED);
   }
 
   private _onSessionConfirmed(response: any) {
-    this._initAudioDeviceChannel();
     this.emit(CALL_SESSION_STATE.CONFIRMED, response);
   }
 
@@ -479,7 +483,28 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   answer() {
     if (this._session) {
-      this._session.accept();
+      const inputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioInput();
+      if (inputDeviceId) {
+        rtcLogger.info(
+          LOG_TAG,
+          `set input audio device ${inputDeviceId} when accept incoming call`,
+        );
+        const sessionDescriptionHandlerOptions = {
+          constraints: {
+            audio: {
+              deviceId: {
+                exact: inputDeviceId,
+              },
+            },
+            video: false,
+          },
+        };
+        const acceptOptions: AcceptOptions = {};
+        acceptOptions.sessionDescriptionHandlerOptions = sessionDescriptionHandlerOptions;
+        this._session.accept(acceptOptions);
+      } else {
+        this._session.accept();
+      }
     }
   }
 
