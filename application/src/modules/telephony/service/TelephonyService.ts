@@ -611,13 +611,14 @@ class TelephonyService {
     return true;
   };
 
-  ensureCallPermission = async (action: Function, options: { skipE911Check?: boolean } = {}) => {
+  ensureCallPermission = async (action: Function, options: { isShortNumber?: boolean } = {}) => {
+
     const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
     if (!callAvailable) {
       ToastCallError.toastPermissionError();
       return false;
     }
-    if (!this._serverTelephonyService.hasActiveDL()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.hasActiveDL()) {
       Notification.flashToast({
         message: 'telephony.prompt.noDLNotAllowedToMakeCall',
         type: ToastType.ERROR,
@@ -629,7 +630,7 @@ class TelephonyService {
       return false;
     }
 
-    if (!options.skipE911Check && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
       this.openE911(action);
       return true;
     }
@@ -661,6 +662,7 @@ class TelephonyService {
   }
 
   directCall = async (toNumber: string) => {
+
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4275
     if (this._serverTelephonyService.getAllCallCount() > 0) {
@@ -670,10 +672,11 @@ class TelephonyService {
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-    const skipE911Check = await this.isShortNumber(toNumber);
+
+    const isShortNumber = await this.isShortNumber(toNumber);
     const result = await this.ensureCallPermission(() => {
       return this._makeCall(toNumber)
-    }, { skipE911Check });
+    }, { isShortNumber });
     return result;
   };
 
