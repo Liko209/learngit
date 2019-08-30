@@ -336,6 +336,13 @@ class AnalyticsCollector {
     });
   }
 
+  createTeamDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_createTeamDialog', { source });
+  }
+
+  newMessageDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
+  }
   // [FIJI-8153]
   endAndAnswerCall() {
     dataAnalysis.track('Jup_Web/DT_phone_endAndAnswerCall', {
