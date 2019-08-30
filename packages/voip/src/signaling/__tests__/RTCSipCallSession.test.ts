@@ -18,6 +18,7 @@ import {
 } from '../../api/types';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 import { CallReport } from '../../report/Call';
+import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 const mockUuid = 'mock_uuid';
 
