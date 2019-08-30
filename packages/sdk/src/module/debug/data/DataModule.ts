@@ -22,9 +22,9 @@ const FILE_NAME_MAP = {
   LOCAL_STORAGE: 'localStorage.json',
 };
 
-type ExportStorage = {
-  [key: string]: string | null;
-};
+// type ExportStorage = {
+//   [key: string]: string | null;
+// };
 
 export class DataModule extends BaseDebugModule {
   dexie: DexieImportExporter;
@@ -83,7 +83,6 @@ export class DataModule extends BaseDebugModule {
     const exportZip = await this.getExportZipData();
     saveBlob(`${name}.zip`, exportZip);
   };
-
 }
 
 const data = new DataModule();

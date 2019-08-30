@@ -60,7 +60,7 @@ describe('CommonResponseParser', () => {
       ).toEqual(
         new JNetworkError(
           ERROR_CODES_NETWORK.LOCAL_TIMEOUT,
-          'Api Error: Please check network crash',
+          'Api Error: Please check local network crash',
         ),
       );
     });

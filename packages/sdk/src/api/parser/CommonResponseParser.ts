@@ -36,7 +36,7 @@ export class CommonResponseParser implements IResponseParser {
     if (status === RESPONSE_STATUS_CODE.LOCAL_TIME_OUT) {
       return new JNetworkError(
         ERROR_CODES_NETWORK.LOCAL_TIMEOUT,
-        'Api Error: Please check network crash',
+        'Api Error: Please check local network crash',
       );
     }
     if (
