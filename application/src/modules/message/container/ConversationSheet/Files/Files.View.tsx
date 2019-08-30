@@ -46,7 +46,7 @@ const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
-  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   componentWillUnmount() {
@@ -131,7 +131,12 @@ class FilesView extends React.Component<FilesViewProps> {
   private _getActions = moize(
     (downloadUrl: string, fileId: number, postId: number) => [
       <Download key="download-action" url={downloadUrl} />,
-      <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
+      <FileActionMenu
+        scene="conversationHistory"
+        key="more-action"
+        fileId={fileId}
+        postId={postId}
+      />,
     ],
   );
 
