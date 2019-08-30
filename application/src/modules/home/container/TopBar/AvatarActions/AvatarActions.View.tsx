@@ -22,12 +22,9 @@ import { dataAnalysis } from 'foundation/analysis';
 import { PresenceMenu } from '../PresenceMenu';
 import { OpenProfile } from '@/common/OpenProfile';
 import { DropdownContactInfo } from '../DropdownContactInfo';
-import { Emoji, getEmojiDataFromNative } from 'emoji-mart';
-import data from 'emoji-mart/data/all.json';
-import { backgroundImageFn } from 'jui/pattern/Emoji';
+import { ShareStatusItem } from '../ShareStatus';
 
 type Props = ViewProps & WithTranslation;
-const set = 'emojione';
 
 @observer
 class AvatarActionsComponent extends React.Component<Props> {
@@ -115,7 +112,6 @@ class AvatarActionsComponent extends React.Component<Props> {
       awayStatus,
       colons,
     } = this.props;
-    const emojiData = getEmojiDataFromNative(colons, set, data);
 
     return (
       <JuiAvatarActions
@@ -138,40 +134,12 @@ class AvatarActionsComponent extends React.Component<Props> {
             content={t('home.viewProfile')}
           />
           <JuiMenuList data-test-automation-id="avatarMenu">
-            {awayStatus || colons ? (
-              <JuiStyledDropdownMenuItem
-                onClick={this.handleClearStatus}
-                aria-label={t('home.clearStatus')}
-                data-test-automation-id="clearStatus"
-              >
-                {t('home.clearStatus')}
-              </JuiStyledDropdownMenuItem>
-            ) : (
-              <JuiStyledDropdownMenuItem
-                onClick={this.handleCustomStatus}
-                aria-label={t('home.shareStatus')}
-                data-test-automation-id="shareStatus"
-              >
-                {t('home.shareStatus')}
-              </JuiStyledDropdownMenuItem>
-            )}
-            {awayStatus || colons ? (
-              <JuiStyledDropdownMenuItem
-                onClick={this.handleCustomStatus}
-                aria-label={t('home.shareStatus')}
-                data-test-automation-id="sharedStatus"
-              >
-                {colons ? (
-                  <Emoji
-                    emoji={(emojiData && emojiData.colons) || ''}
-                    set={set}
-                    size={16}
-                    backgroundImageFn={backgroundImageFn}
-                  />
-                ) : null}
-                {awayStatus}
-              </JuiStyledDropdownMenuItem>
-            ) : null}
+            <ShareStatusItem
+              awayStatus={awayStatus}
+              colons={colons}
+              handleClearStatus={this.handleClearStatus}
+              handleCustomStatus={this.handleCustomStatus}
+            />
             <PresenceMenu presence={presence} title={this.title} />
             <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}
