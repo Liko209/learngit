@@ -28,9 +28,7 @@ class LeftNavViewModel extends StoreViewModel {
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLocalExpand);
 
     this.autorun(async () => {
-      let navConfigs = this._homeStore.navConfigs;
-      const disablePromises: boolean[] = await Promise.all(navConfigs.map(({disable}) => disable ? disable() : false));
-      navConfigs = navConfigs.filter((value: NavConfig, index: number) => !disablePromises[index]);
+      const navConfigs = this._homeStore.navConfigs;
       const topIcons = navConfigs
         .filter((navItem: NavConfig) => navItem.placement === 'top')
         .map(removePlacement);
