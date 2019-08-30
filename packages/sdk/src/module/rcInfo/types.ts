@@ -83,6 +83,7 @@ enum RCServiceFeatureName {
   CONFERENCING = 'Conferencing',
   CALL_FORWARDING = 'CallForwarding',
   WEB_PHONE = 'WebPhone',
+  PRESENCE = 'Presence',
 }
 
 enum RCBrandType {

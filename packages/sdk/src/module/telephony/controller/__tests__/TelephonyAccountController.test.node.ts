@@ -575,4 +575,22 @@ describe('TelephonyAccountController', () => {
       expect(spy).toHaveBeenCalledWith(callId);
     });
   });
+
+  describe('setLocalEmergencyAddress', () => {
+    it('should set to e911 controller', () => {
+      const data = {} as any;
+      accountController['_e911Controller'].setLocalEmergencyAddress = jest.fn();
+      accountController.setLocalEmergencyAddress(data);
+      expect(accountController['_e911Controller'].setLocalEmergencyAddress).toHaveBeenCalledWith(data);
+    });
+  });
+
+  describe('updateLocalEmergencyAddress', () => {
+    it('should update to e911 controller', () => {
+      const data = {} as any;
+      accountController['_e911Controller'].updateLocalEmergencyAddress = jest.fn();
+      accountController.updateLocalEmergencyAddress(data);
+      expect(accountController['_e911Controller'].updateLocalEmergencyAddress).toHaveBeenCalledWith(data);
+    });
+  });
 });
