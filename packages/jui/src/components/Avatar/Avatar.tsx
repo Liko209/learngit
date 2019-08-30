@@ -64,8 +64,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
     background-color: ${({ color, customColor }) =>
-      customColor ? color :
-      color ? palette('avatar', color) : grey('100')};
+      customColor ? color : color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -91,7 +90,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
 const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   && {
     width: ${width(70)};
-    height: ${height(70)};
+    height: ${height(55)};
     border-radius: unset;
     position: static;
     display: flex;

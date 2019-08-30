@@ -17,15 +17,15 @@ export class AddActionMenu extends BaseWebComponent {
     return this.getComponent(AddActionMenuEntry, this.self.find('li').nth(nth));
   }
 
-  get createTeamEntry() {
-    return this.nthEntry(0);
-  }
-
   private getEntryById(id: string) {
     return this.getComponent(AddActionMenuEntry, this.getSelectorByAutomationId(id));
   }
 
   get sendNewMessageEntry() {
     return this.getEntryById('sendNewMessage');
+  }
+
+  get createTeamEntry() {
+    return this.getEntryById('createTeam');
   }
 }

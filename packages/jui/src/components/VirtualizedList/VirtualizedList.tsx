@@ -84,6 +84,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     contentStyle,
     onBottomStatusChange = noop,
     stickToLastPosition = true,
+    highlightedIndex,
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
@@ -178,7 +179,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: PartialScrollPosition) => {
     if (ref.current) {
       if (options === true) {
-        if(index === 0 && offset === 0) {
+        if (index === 0 && offset === 0) {
           ref.current.scrollTop = 0;
         } else {
           ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
@@ -261,6 +262,16 @@ const JuiVirtualizedList: RefForwardingComponent<
   const minIndex = 0;
   const maxIndex = childrenCount - 1;
 
+  const scrollIntoViewIfNeeded = (index: number) => {
+    if (ref.current) {
+      if (index < visibleRange.startIndex) {
+        jumpToPosition({ index, options: true });
+      } else if (index > visibleRange.stopIndex) {
+        jumpToPosition({ index, options: false });
+      }
+    }
+  };
+
   //
   // Forward ref
   //
@@ -269,16 +280,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     () => ({
       scrollToTop,
       scrollToBottom,
+      scrollIntoViewIfNeeded,
       scrollToPosition: jumpToPosition,
-      scrollIntoViewIfNeeded: (index: number) => {
-        if (ref.current) {
-          if (index < visibleRange.startIndex) {
-            jumpToPosition({ index, options: true });
-          } else if (index > visibleRange.stopIndex) {
-            jumpToPosition({ index, options: false });
-          }
-        }
-      },
       getScrollPosition: () => scrollPosition,
       isAtBottom: () => prevAtBottomRef.current,
       scrollToIndex: (index: number, options?: boolean) => {
@@ -466,6 +469,8 @@ const JuiVirtualizedList: RefForwardingComponent<
   // position issue while load more data.
   //
   useLayoutEffect(() => {
+    if (!stickToLastPosition) return;
+
     if (ref.current) {
       ref.current.style.pointerEvents = 'none';
     }
@@ -475,7 +480,12 @@ const JuiVirtualizedList: RefForwardingComponent<
       }
     }, 10);
     return () => clearTimeout(timeout);
-  }, [scrollEffectTriggerRef.current, height, childrenCount]);
+  }, [
+    stickToLastPosition,
+    scrollEffectTriggerRef.current,
+    height,
+    childrenCount,
+  ]);
 
   //
   // Emit visible range change
@@ -484,17 +494,15 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (!ref.current) {
       return;
     }
-    const { scrollHeight, clientHeight, scrollTop } = ref.current;
-    const scrollInfo = { scrollHeight, clientHeight, scrollTop };
-    if (isFirstRenderRef.current) {
+    if (isFirstRenderRef.current && minRowHeight) {
       // [THE RANGE PROBLEM]
       // The first time list rendered, initial visible range was computed
       // from height/minRowHeight, which is not really represent what
       // the user can see. Sot, we need to recompute visible range before
       // Emit visible range change event.
-      onVisibleRangeChange(computeVisibleRange(), scrollInfo);
+      onVisibleRangeChange(computeVisibleRange(), ref.current);
     } else {
-      onVisibleRangeChange(visibleRange, scrollInfo);
+      onVisibleRangeChange(visibleRange, ref.current);
     }
   }, [keyMapper(visibleRange.startIndex), keyMapper(visibleRange.stopIndex)]);
 
@@ -502,7 +510,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Emit rendered range change
   //
   useLayoutEffect(() => {
-    if (isFirstRenderRef.current) {
+    if (isFirstRenderRef.current && minRowHeight) {
       // The first time list rendered, initial rendered range has same problem
       // as initial visible range. See [THE RANGE PROBLEM] for more.
       onRenderedRangeChange(computeRenderedRange(computeVisibleRange()));
@@ -528,6 +536,10 @@ const JuiVirtualizedList: RefForwardingComponent<
     ensureNoBlankArea();
   });
 
+  useEffect(() => {
+    if (highlightedIndex !== undefined)
+      scrollIntoViewIfNeeded(highlightedIndex);
+  }, [highlightedIndex]);
   //
   // Scrolling
   //
@@ -548,7 +560,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
 
-  const EmptyDiv = () => <div style={{ height: minRowHeight }} />;
+  const EmptyDiv = () => (
+    <div style={{ height: minRowHeight || fixedRowHeight }} />
+  );
   const childrenToRender = children
     .filter((_, i) => startIndex <= i && i <= stopIndex)
     .map(child => (child.type ? child : <EmptyDiv key={child.key || 0} />));

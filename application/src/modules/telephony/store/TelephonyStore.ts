@@ -6,6 +6,7 @@
 
 import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed, action, reaction } from 'mobx';
+import { sortBy, reverse } from 'lodash';
 import { PersonService } from 'sdk/module/person';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -38,7 +39,9 @@ import {
   CALL_STATE,
   CALL_DIRECTION,
 } from 'sdk/module/telephony/entity';
+import { ENTITY } from 'sdk/service';
 import CallModel from '@/store/models/Call';
+import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { formatSeconds } from './utils';
 import { IMediaService } from '@/interface/media';
 import { VoicemailNotification, MissedCallNotification } from './types';
@@ -50,6 +53,10 @@ class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
   private _intervalReplyId?: NodeJS.Timeout;
   private _history: Set<CALL_DIRECTION | typeof DIALING> = new Set();
+  /**
+   * foc
+   */
+  private _sortableListHandler: FetchSortableDataListHandler<Call>;
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
@@ -74,9 +81,6 @@ class TelephonyStore {
 
   @observable
   isContactMatched: boolean = false;
-
-  @observable
-  id: number | undefined = undefined;
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -184,9 +188,16 @@ class TelephonyStore {
   @observable
   isExt: boolean = false;
 
+  // TODO: current call id
+  @observable
+  currentCallId?: number;
+
   // only exist one e911 dialog
   @observable
   hasShowE911: boolean = false;
+
+  @observable
+  isBackToDefaultPos: boolean = false;
 
   @observable
   voicemailNotification: VoicemailNotification;
@@ -197,6 +208,20 @@ class TelephonyStore {
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
+
+    this._sortableListHandler = new FetchSortableDataListHandler<Call>(
+      undefined,
+      {
+        entityName: ENTITY_NAME.CALL,
+        isMatchFunc: (call: Call) =>
+          call.call_state !== CALL_STATE.DISCONNECTED,
+        transformFunc: i => ({
+          id: i.id,
+          sortValue: i.id,
+        }),
+        eventName: ENTITY.CALL,
+      },
+    );
 
     [['_callWindowFSM', 'callWindowState']].forEach(
       ([fsm, observableProp]: [FSM, FSMProps]) => {
@@ -230,7 +255,9 @@ class TelephonyStore {
           this.transferString = this.inputString;
         }
         this.resetCallItem();
-        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(this.inputString);
+        this.isValidInputStringNumber = await this._phoneNumberService.isValidNumber(
+          this.inputString,
+        );
       },
     );
 
@@ -241,6 +268,13 @@ class TelephonyStore {
         if (!length) {
           this.resetFirstLetterThroughKeypadForForwardString();
         }
+      },
+    );
+
+    reaction(
+      () => this.isMultipleCall,
+      isMultipleCall => {
+        if (isMultipleCall) this.changeBackToDefaultPos(true);
       },
     );
 
@@ -397,6 +431,9 @@ class TelephonyStore {
     const history = this._history;
 
     switch (true) {
+      case this.isMultipleCall:
+        this.endMultipleIncomingCall();
+        break;
       case history.has(CALL_DIRECTION.INBOUND) &&
         history.has(DIALING) &&
         this.shouldKeepDialog:
@@ -411,25 +448,46 @@ class TelephonyStore {
         break;
     }
 
+    // if end call isn't active call and incoming state reply don't reset state;
+    // if multiple call and end current call don't reset state;
+    if (this.isEndOtherCall) {
+      this.quitKeypad();
+      this._clearEnteredKeys();
+      this._clearTransferString();
+      if (this.isTransferPage) {
+        this.backToDialerFromTransferPage();
+      }
+      return;
+    }
+    // end incoming call
+    if (this.isMultipleCall && this.isEndCurrentCall) {
+      this.resetReply();
+      this._clearForwardString();
+      this.backIncoming();
+      return;
+    }
+
     this.resetReply();
     this.backIncoming();
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
     this._clearTransferString();
+
     if (this.isTransferPage) {
       this.backToDialerFromTransferPage();
     }
 
-    this.isContactMatched = false;
+    if (
+      (this.phoneNumber !== '' || !this.isMultipleCall) &&
+      !this.isEndOtherCall
+    ) {
+      this.isContactMatched = false;
+    }
+
     this.hasManualSelected = false;
     this.isConference = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
-
-    // for TelephonyNotificationManger can get call disconnected state.
-    Promise.resolve().then(() => {
-      this.id = undefined;
-    });
   };
 
   @action
@@ -550,6 +608,11 @@ class TelephonyStore {
     this.incomingState = INCOMING_STATE.FORWARD;
   };
 
+  @action
+  forward = () => {
+    this.incomingState = INCOMING_STATE.IDLE;
+  }
+
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   backIncoming = () => {
@@ -580,7 +643,7 @@ class TelephonyStore {
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
-    return [undefined, CALL_STATE.DISCONNECTED].includes(this.callState);
+    return !this.call || this.callDisconnecting;
   }
 
   @computed
@@ -588,64 +651,83 @@ class TelephonyStore {
     return this.callState === CALL_STATE.IDLE && this.isInbound;
   }
 
+  // TODO: it should current call
   @computed
-  get call(): CallModel {
-    const id = this.id || NaN;
-    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, id);
+  get call(): CallModel | undefined {
+    if (!this._rawCalls.length) return undefined;
+
+    // for transfer call switch current call
+    if (this.currentCallId) {
+      return this._rawCalls.find(
+        call => call.id === this.currentCallId,
+      ) as CallModel;
+    }
+    // The latest call
+    return reverse(sortBy(this._rawCalls, ['startTime']))[0];
   }
 
   @computed
   get holdState(): HOLD_STATE {
+    if (!this.call) return HOLD_STATE.DISABLED;
     return this.call.holdState;
   }
 
   @computed
   get recordState(): RECORD_STATE {
+    if (!this.call) return RECORD_STATE.DISABLED;
     return this.call.recordState;
   }
 
   @computed
   get callState(): CALL_STATE {
+    if (!this.call) return CALL_STATE.IDLE;
     return this.call.callState;
   }
 
   @computed
   get isMute(): boolean {
+    if (!this.call) return false;
     return this.call.muteState === MUTE_STATE.MUTED;
   }
 
   @computed
   get activeCallTime(): number {
+    if (!this.call) return 0;
     return this.call.connectTime;
   }
 
   @computed
   get callConnectingTime(): number {
+    if (!this.call) return 0;
     return this.call.connectingTime;
   }
 
   @computed
   get isInbound(): boolean {
+    if (!this.call) return false;
     return this.call.direction === CALL_DIRECTION.INBOUND;
   }
 
   @computed
   get isOutbound(): boolean {
+    if (!this.call) return false;
     return this.call.direction === CALL_DIRECTION.OUTBOUND;
   }
 
   @computed
   get activeCallDirection() {
+    if (!this.call) return undefined;
     return this.call && this.call.direction;
   }
 
   @computed
-  get callDisconnected(): boolean {
-    return this.callState === CALL_STATE.DISCONNECTED;
+  get callDisconnecting(): boolean {
+    return this.callState === CALL_STATE.DISCONNECTING;
   }
 
   @computed
   get uuid() {
+    if (!this.call) return '';
     return this.call.uuid;
   }
 
@@ -697,11 +779,13 @@ class TelephonyStore {
 
   @computed
   get callerName() {
+    if (!this.call) return '';
     return this.isInbound ? this.call.fromName : this.call.toName;
   }
 
   @computed
   get phoneNumber() {
+    if (!this.call) return undefined;
     const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
     return phoneNumber !== ANONYMOUS_NUM ? phoneNumber : '';
   }
@@ -723,6 +807,58 @@ class TelephonyStore {
   };
 
   @action
+  switchCurrentCall = (callId?: number) => {
+    this.currentCallId = callId;
+  };
+
+  @computed
+  get ids() {
+    return this._sortableListHandler.sortableListStore.getIds;
+  }
+
+  @computed
+  private get _rawCalls() {
+    return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+  }
+
+  @computed
+  get endCall() {
+    return this._rawCalls.find(
+      call => call.callState === CALL_STATE.DISCONNECTING,
+    );
+  }
+
+  @computed
+  get isEndOtherCall() {
+    return this.endCall && this.call && this.endCall.id !== this.call.id;
+  }
+
+  @computed
+  get isEndCurrentCall() {
+    return this.endCall && this.call && this.endCall.id === this.call.id;
+  }
+
+  @action
+  changeBackToDefaultPos = (status: boolean) => {
+    this.isBackToDefaultPos = status;
+  };
+
+  @action
+  endMultipleIncomingCall() {
+    if (!this.isMultipleCall) return;
+    this.isBackToDefaultPos = true;
+  }
+
+  @computed
+  get isMultipleCall() {
+    return this.ids.length > 1;
+  }
+
+  @computed
+  get isThirdCall() {
+    return this.ids.length > 2;
+  }
+
   directToTransferPage = () => {
     this.isTransferPage = true;
     this._isRecentCallsInDialerPage = this.isRecentCalls;
@@ -743,7 +879,7 @@ class TelephonyStore {
       this._dialerString = '';
       return;
     }
-    return this.inputString = '';
+    return (this.inputString = '');
   };
 
   @action
@@ -760,7 +896,7 @@ class TelephonyStore {
       phoneNumber: '',
       index: NaN,
     };
-  }
+  };
 
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
@@ -786,21 +922,27 @@ class TelephonyStore {
     };
   };
 
-  private _getNotificationCallerInfo = async (caller: Voicemail['from']) => {
-    const { extensionNumber = '', phoneNumber = '' } = caller || {};
-    const contactNumber = extensionNumber || phoneNumber;
+  private _getNotificationCallerInfo = async ({
+    name = '',
+    phoneNumber = '',
+    extensionNumber = '',
+  } = {}) => {
+    let displayNumber = extensionNumber || phoneNumber;
+    let displayName = name || i18nP('phone.unknownCaller');
 
-    if (!contactNumber) {
-      return { displayName: i18nP('telephony.unknownCaller'), displayNumber: '' };
+    if (!displayNumber) {
+      return { displayName, displayNumber };
     }
 
-    const displayNumber = this._formatPhoneNumber(contactNumber);
+    const { userDisplayName = '' } = await this._matchPersonByPhoneNumber(displayNumber) || {};
 
-    const matchPerson = await this._matchPersonByPhoneNumber(contactNumber);
+    displayNumber = await this._formatPhoneNumber(displayNumber);
 
-    const displayName = matchPerson ? matchPerson.userDisplayName : caller.name;
+    if (userDisplayName) {
+      displayName = userDisplayName;
+    }
 
-    return { displayName, displayNumber: await displayNumber };
+    return { displayName, displayNumber };
   };
 
   private _getVoicemailNotificationBody = (

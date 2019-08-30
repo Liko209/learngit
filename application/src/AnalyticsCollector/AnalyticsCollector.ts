@@ -27,7 +27,7 @@ class AnalyticsCollector {
     !isRunningE2E && dataAnalysis.init(Api.httpConfig.segment);
   }
 
-  reset(){
+  reset() {
     dataAnalysis.reset();
   }
 
@@ -288,7 +288,7 @@ class AnalyticsCollector {
   }
 
   profileDialog(category: string, source: string) {
-    dataAnalysis.track('Jup_Web/DT_profile_profileDialog', {
+    dataAnalysis.page('Jup_Web/DT_profile_profileDialog', {
       category,
       source,
     });
@@ -336,9 +336,39 @@ class AnalyticsCollector {
     });
   }
 
+  createTeamDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_createTeamDialog', { source });
+  }
+
+  newMessageDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
+  }
+  // [FIJI-8153]
+  endAndAnswerCall() {
+    dataAnalysis.track('Jup_Web/DT_phone_endAndAnswerCall', {
+      source: 'incomingCallWindow',
+      type: 'multiCall',
+    });
+  }
+
+  // [FIJI-8153]
+  seeIncomingCallPage(type: 'singleCall' | 'multiCall') {
+    dataAnalysis.page('Jup_Web/DT_phone_incomingCallWindow', {
+      type,
+    });
+  }
+
   startConferenceCall(conversationType: string, source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_startConferenceCall', {
       conversationType,
+      source,
+    });
+  }
+
+  joinConferenceCall(type?: string) {
+    const source =
+      type === 'link' ? 'click dial-in number' : 'click join button';
+    dataAnalysis.track('Jup_Web/DT_msg_joinConferenceCall', {
       source,
     });
   }

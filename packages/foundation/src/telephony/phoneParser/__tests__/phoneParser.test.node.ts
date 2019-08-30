@@ -11,12 +11,13 @@ import { ModuleParams, ModuleClass, ModuleType } from '../types';
 import { localPhoneDataPath } from '../..';
 
 describe('PhoneParser', () => {
+  let phoneParserModule: ModuleType;
+
   it('should create phoneParser', async done => {
     const defaultPhoneData = fs
       .readFileSync(path.resolve(__dirname, `.${localPhoneDataPath}`))
       .toString();
     (fetch as any) = undefined;
-    let phoneParserModule: ModuleType;
 
     const initParams: ModuleParams = {
       onRuntimeInitialized: () => {
@@ -91,4 +92,67 @@ describe('PhoneParser', () => {
     const PhoneParserModule: ModuleClass = Module;
     phoneParserModule = new PhoneParserModule(initParams);
   }, 30000);
+
+  it('Can make external VoIP call successfully with OCP, JPT-2190', () => {
+    phoneParserModule.SetStationLocation(
+      '1',
+      '205',
+      1210,
+      8,
+      false,
+      '',
+      5,
+      '8',
+    );
+    let phoneParser = phoneParserModule.NewPhoneParser('82059950333', phoneParserModule.GetStationSettingsKey());
+    expect(phoneParser.GetE164Extended(true)).toEqual('+12059950333');
+    phoneParser = phoneParserModule.NewPhoneParser('2059950333', phoneParserModule.GetStationSettingsKey());
+    expect(phoneParser.GetE164Extended(true)).toEqual('+12059950333');
+    phoneParser = phoneParserModule.NewPhoneParser('89950333', phoneParserModule.GetStationSettingsKey());
+    expect(phoneParser.GetE164Extended(true)).toEqual('+12059950333');
+  });
+
+  it('Can make internal VoIP call successfully without OCP, JPT-2194', () => {
+    phoneParserModule.SetStationLocation(
+      '1',
+      '205',
+      1210,
+      8,
+      false,
+      '',
+      5,
+      '8',
+    );
+    let phoneParser = phoneParserModule.NewPhoneParser('9950333', phoneParserModule.GetStationSettingsKey());
+    expect(phoneParser.GetE164Extended(true)).toEqual('9950333');
+  });
+
+  it.each`
+  countryCode | areaCode  | phoneNumber | expectedNumber    
+  ${'1'}      | ${'205'}  | ${'211'}    | ${'+1211'}
+  ${'52'}     | ${'223'}  | ${'088'}    | ${'+52088'}
+  ${'61'}     | ${''}     | ${'000'}    | ${'+61000'}
+  ${'44'}     | ${'1200'} | ${'155'}    | ${'+44155'}
+  ${'33'}     | ${'800'}  | ${'114'}    | ${'+33114'}
+`(
+    'Other country(Excludes US/CA): Can make call to N11, JPT-2423, countryCode : $countryCode', ({
+      countryCode,
+      areaCode,
+      phoneNumber,
+      expectedNumber,
+    }) => {
+      phoneParserModule.SetStationLocation(
+        countryCode,
+        areaCode,
+        61,
+        8,
+        false,
+        '',
+        5,
+        '8',
+      );
+      let phoneParser = phoneParserModule.NewPhoneParser(phoneNumber, phoneParserModule.GetStationSettingsKey());
+      expect(phoneParser.GetE164Extended(true)).toEqual(expectedNumber);
+      expect(phoneParser.IsSpecialNumber()).toBeTruthy();
+    });
 });

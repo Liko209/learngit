@@ -3,11 +3,10 @@
  * @Date: 2019-07-22 14:23:46
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { AbstractPermissionController } from '../AbstractPermissionController';
 import {
   IPermissionController,
   UserPermissionType,
+  AbstractPermissionController,
 } from 'sdk/module/permission';
 import { SplitIODefaultPermissions } from './SplitIOFlagList';
 import { SplitIOClient } from './SplitIOClient';

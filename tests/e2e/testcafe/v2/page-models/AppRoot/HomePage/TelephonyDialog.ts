@@ -39,6 +39,10 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-header-phone');
   }
 
+  get conferenceCall() {
+    return this.getSelectorByAutomationId('telephony-dialer-header-name');
+  }
+
   get hangupButton() {
     return this.getSelectorByAutomationId('telephony-end-btn');
   }
@@ -220,6 +224,11 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.buttonOfIcon('deletenumber');
   }
 
+  //Multiple call
+  get endAndAnswerButton() {
+    return this.getSelectorByAutomationId('telephony-end-answer-btn');
+  }
+
   //contact search
 
   get contactSearchAvatar() {
@@ -347,6 +356,10 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async hoverIgnoreButton() {
     await this.t.hover(this.ignoreButton);
+  }
+
+  async clickEndAndAnswerButton() {
+    await this.t.click(this.endAndAnswerButton);
   }
 
   async hoverSendToVoiceMailButton() {

@@ -251,6 +251,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     );
   }
 
+  cancelZoomMeeting(id: number): Promise<void> {
+    return this._itemServiceController.itemActionController.cancelZoomMeeting(
+      id,
+    );
+  }
+
   async requestSyncGroupItems(groupId: number) {
     await this.itemServiceController.itemSyncController.requestSyncGroupItems(
       groupId,
