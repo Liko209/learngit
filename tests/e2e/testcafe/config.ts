@@ -30,7 +30,7 @@ const ENV_OPTS = {
     ACCOUNT_POOL_FOR_DEBUG_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998',
     ACCOUNT_POOL_ENV: 'xmn-up',
     RC_PLATFORM_BASE_URL: 'https://api-xmnup.lab.nordigy.ru',
-    GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
+    GLIP_SERVER_BASE_URL: 'https://api-xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
     WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
