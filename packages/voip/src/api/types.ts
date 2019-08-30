@@ -30,12 +30,19 @@ type RTCCallOptions = {
   replacesCallId?: string;
   replacesFromTag?: string;
   replacesToTag?: string;
+  extraCall?: boolean;
   accessCode?: string;
 };
 
 type RTCCallActionSuccessOptions = {
   parkExtension?: string;
+  actionDirection?: RTC_CALL_ACTION_DIRECTION;
 };
+
+enum RTC_CALL_ACTION_DIRECTION {
+  LOCAL = 'local',
+  REMOTE = 'remote',
+}
 
 enum RTC_CALL_STATE {
   IDLE = 'Idle',
@@ -66,6 +73,8 @@ enum RTC_CALL_ACTION {
   REJECT = 'reject',
   ANSWER = 'answer',
   HANGUP = 'hangup',
+  LOCAL_MUTE = 'localMute',
+  REMOTE_MUTE = 'remoteMute',
 }
 
 enum RTC_CALL_ACTION_ERROR_CODE {
@@ -231,4 +240,5 @@ export {
   RTCNoAudioDataEvent,
   RTCSipProvisionInfo,
   RTCSipEmergencyServiceAddr,
+  RTC_CALL_ACTION_DIRECTION,
 };

@@ -24,6 +24,7 @@ class MediaTrack {
   private _autoplay: boolean = false;
   private _mediaVolume: number = 1;
   private _trackVolume: number = 1;
+  private _duckVolume: number = 1;
   private _currentTime: number = 0;
 
   private _id: string;
@@ -152,7 +153,15 @@ class MediaTrack {
     }
 
     this._masterVolume = vol;
-    this.setVolume(this._trackVolume);
+    this._action('setVolume', this._computedSoundVolume());
+  }
+
+  setDuckVolume(vol: number) {
+    if (!Utils.isValidVolume(vol)) {
+      return;
+    }
+    this._duckVolume = vol;
+    this._action('setVolume', this._computedSoundVolume());
   }
 
   setMediaVolume(vol: number) {
@@ -161,7 +170,7 @@ class MediaTrack {
     }
 
     this._mediaVolume = vol;
-    this.setVolume(this._trackVolume);
+    this._action('setVolume', this._computedSoundVolume());
   }
 
   setOptions(options: MediaTrackOptions) {
@@ -222,6 +231,10 @@ class MediaTrack {
       options.masterVolume !== undefined
         ? options.masterVolume
         : this._masterVolume;
+    this._duckVolume =
+      options.duckVolume !== undefined
+        ? options.duckVolume
+        : this._duckVolume;
     this._mediaVolume =
       options.mediaVolume !== undefined &&
       Utils.isValidVolume(options.mediaVolume)
@@ -465,11 +478,15 @@ class MediaTrack {
   }
 
   private _computedSoundVolume() {
-    return this._masterVolume * this._trackVolume * this._mediaVolume;
+    return this._masterVolume * this._trackVolume * this._mediaVolume * this._duckVolume;
   }
 
   get masterVolume() {
     return this._masterVolume;
+  }
+
+  get duckVolume() {
+    return this._duckVolume;
   }
 
   get id() {
@@ -543,6 +560,10 @@ class MediaTrack {
 
   get weight() {
     return this._weight;
+  }
+
+  get currentSoundVolume() {
+    return this._computedSoundVolume();
   }
 }
 

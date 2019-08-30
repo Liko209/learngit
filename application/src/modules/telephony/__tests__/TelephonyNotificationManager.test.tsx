@@ -28,6 +28,7 @@ jest.mock('@/modules/media/service');
 jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');
 jest.mock('@/modules/common/container/PhoneNumberFormat');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
   matchContactByPhoneNumber: jest.fn().mockResolvedValue({}),
@@ -177,7 +178,6 @@ describe('TelephonyNotificationManager', () => {
 
     it.each`
       CALL_STATE
-      ${CALL_STATE.DISCONNECTED}
       ${CALL_STATE.CONNECTING}
       ${CALL_STATE.CONNECTED}
       ${CALL_STATE.IDLE}
@@ -340,14 +340,14 @@ describe('TelephonyNotificationManager', () => {
     });
 
     it('Should make outbound call back when has displayNumber and click call back [JPT-2814]', () => {
-      const mockMakeCall = jest.spyOn(telephonyNotificationManager._telephonyService, 'makeCall');
+      const mockDirectCall = jest.spyOn(telephonyNotificationManager._telephonyService, 'directCall');
 
       const displayNumber = '123456'
       const callbackAction = telephonyNotificationManager._buildCallbackAction(displayNumber);
 
       callbackAction.handler();
 
-      expect(mockMakeCall).toHaveBeenCalledWith(displayNumber);
+      expect(mockDirectCall).toHaveBeenCalledWith(displayNumber);
     });
   });
 });

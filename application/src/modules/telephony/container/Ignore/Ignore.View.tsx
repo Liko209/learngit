@@ -9,28 +9,32 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { IgnoreViewProps } from './types';
 import { JuiFabButton } from 'jui/components/Buttons';
+import { StyledActionText } from 'jui/pattern/Dialer';
 
 type Props = IgnoreViewProps & WithTranslation;
 
 @observer
 class IgnoreViewComponent extends Component<Props> {
-  private _handleIgnore = async () => {
+  private _handleIgnore = () => {
     const { ignore } = this.props;
     ignore();
-  }
+  };
 
   render() {
     const { t } = this.props;
     return (
-      <JuiFabButton
-        color="common.white"
-        size="small"
-        iconName="close"
-        tooltipTitle={t('telephony.ignoreTheCall')}
-        aria-label={t('telephony.ignoreTheCall')}
-        onClick={this._handleIgnore}
-        data-test-automation-id="telephony-ignore-btn"
-      />
+      <>
+        <JuiFabButton
+          color="grey.200"
+          size="medium"
+          showShadow={false}
+          iconName="minimize"
+          aria-label={t('telephony.ignoreTheCall')}
+          onClick={this._handleIgnore}
+          data-test-automation-id="telephony-ignore-btn"
+        />
+        <StyledActionText>{t('telephony.action.ignore')}</StyledActionText>
+      </>
     );
   }
 }

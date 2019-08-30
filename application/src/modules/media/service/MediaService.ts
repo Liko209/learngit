@@ -59,6 +59,10 @@ class MediaService implements IMediaService {
     return newTrack.id;
   }
 
+  setDuckVolume(volume: number) {
+    trackManager.setDuckVolume(volume);
+  }
+
   @computed
   get volumeEntity() {
     return getEntity<UserSettingEntity, SettingModel>(

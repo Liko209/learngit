@@ -28,7 +28,8 @@ export type IconSize =
   | 'large'
   | 'inherit'
   | 'moreLarge'
-  | 'extraLarge';
+  | 'extraLarge'
+  | 'mediumLarge';
 
 type JuiIconographyProps = {
   iconColor?: IconColor;

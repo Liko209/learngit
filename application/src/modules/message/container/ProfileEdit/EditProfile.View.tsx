@@ -7,6 +7,7 @@
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { withEscTracking } from '@/common/trackData';
 import { JuiModal } from 'jui/components/Dialog';
 import { Avatar } from '@/containers/Avatar';
 import {
@@ -177,6 +178,7 @@ class EditProfileViewComponent extends Component<
           'data-test-automation-id': 'EditProfile',
           scroll: 'body',
         }}
+        onClose={withEscTracking(this.handleClose)}
       >
         <UploadArea
           onFileChanged={this.handleFileChanged}

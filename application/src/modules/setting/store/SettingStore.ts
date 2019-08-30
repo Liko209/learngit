@@ -10,8 +10,10 @@ import {
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
 import { SettingStoreScope } from './SettingStoreScope';
 import { isItemVisible } from './helper';
+import { IMediaService } from '@/interface/media';
 
 class SettingStore {
+  @IMediaService private _mediaService: IMediaService;
   // NOTE
   // We can not add @observable to _storeScopes because
   // mobx didn't support using symbol as key of a Map. As
@@ -141,6 +143,14 @@ class SettingStore {
     leftId: SettingItem['id'],
     rightId: SettingItem['id'],
   ) => this.getItemById(leftId)!.weight - this.getItemById(rightId)!.weight
+
+  @computed
+  get mediaTrackIds() {
+    const settingMediaTrackId = this._mediaService.createTrack('setting', 400);
+    return {
+      setting: settingMediaTrackId,
+    }
+  }
 }
 
 export { SettingStore, SettingStoreScope };

@@ -12,6 +12,7 @@ type ViewProps = {
   isPrivate: boolean;
   isJoined: boolean;
   shouldHidden: boolean;
+  analysisSource: string;
 } & BaseViewProps;
 
 export { Props, ViewProps, GroupModel };

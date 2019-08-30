@@ -42,6 +42,11 @@ class CallCtrlPanelViewModel extends StoreViewModel<CallCtrlPanelProps> implemen
   get direction() {
     return this._telephonyStore.activeCallDirection;
   }
+
+  @computed
+  get isConference() {
+    return this._telephonyStore.isConference;
+  }
 }
 
 export { CallCtrlPanelViewModel };

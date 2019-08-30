@@ -16,8 +16,8 @@ import {
   RCAuthApi,
   HandleByRingCentral,
 } from '../../../api';
-import notificationCenter from '../../../service/notificationCenter';
-import { SERVICE, SOCKET } from '../../../service/eventKey';
+import notificationCenter, { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
+import { SERVICE, SOCKET, ENTITY } from '../../../service/eventKey';
 import { ProfileService } from '../../profile';
 import { setRCToken } from '../../../authenticator/utils';
 import { AccountGlobalConfig } from '../config';
@@ -37,6 +37,8 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { Nullable, UndefinedAble } from '../../../types';
 import { ISubscribeController } from 'sdk/framework/controller/interface/ISubscribeController';
 import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
+import { UserPermission } from 'sdk/module/permission/entity';
+import { UserPermissionType } from 'sdk/module/permission';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 const LOG_TAG = 'AccountService';
@@ -63,6 +65,7 @@ class AccountService extends AbstractService
     this._subscribeController = SubscribeController.buildSubscriptionController(
       {
         [SOCKET.LOGOUT]: this.onGlipForceLogout,
+        [ENTITY.USER_PERMISSION]: this.onPermissionUpdated
       },
     );
   }
@@ -201,6 +204,16 @@ class AccountService extends AbstractService
   checkServerStatus(callback: (success: boolean, retryAfter: number) => void) {
     RCAuthApi.requestServerStatus(callback);
   }
+
+  onPermissionUpdated = (payload: NotificationEntityUpdatePayload<UserPermission>) => {
+    if (payload) {
+      const userPermissions: UserPermission[] = Array.from(payload.body.entities.values());
+      if (userPermissions && userPermissions[0].permissions[UserPermissionType.USERS_BLACKLIST]) {
+          mainLogger.tags(LOG_TAG).info('User in blacklist, then force logout.');
+          this.onForceLogout(true);
+      }
+    }
+  };
 
   onRefreshTokenFailure(forceLogout: boolean) {
     mainLogger
