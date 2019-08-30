@@ -270,6 +270,12 @@ class RCPermissionController {
           featureName: RCServiceFeatureName.WEB_PHONE,
         },
       ],
+      [
+        ERCServiceFeaturePermission.RC_PRESENCE,
+        {
+          featureName: RCServiceFeatureName.PRESENCE,
+        },
+      ],
     ]);
   }
 }
