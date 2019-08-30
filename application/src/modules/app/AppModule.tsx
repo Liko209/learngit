@@ -43,6 +43,9 @@ import { showUpgradeDialog } from '@/modules/electron';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework'
+import { LaunchDarklyController } from '@/permissions/ld/LaunchDarklyController';
+import { SplitIOController } from '@/permissions/split/SplitIOController';
+import { PermissionService } from 'sdk/module/permission';
 import { EnvConfig } from 'sdk/module/env/config';
 
 /**
@@ -135,6 +138,14 @@ class AppModule extends AbstractModule {
       }
     };
 
+    const injectPermissionControllers = () => {
+      const permissionService = ServiceLoader.getInstance<PermissionService>(
+        ServiceConfig.PERMISSION_SERVICE,
+      );
+      permissionService.injectControllers(new LaunchDarklyController());
+      permissionService.injectControllers(new SplitIOController());
+    }
+
     const setStaticHttpServer = (url?: string) => {
       let staticHttpServer = url;
       if (!staticHttpServer) {
@@ -187,6 +198,7 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
+    injectPermissionControllers();
     await sdk.init({
       api,
       db,

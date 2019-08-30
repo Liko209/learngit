@@ -23,6 +23,8 @@ import {
   HighlightContextInfo,
   SearchHighlightContext,
 } from '@/common/postParser';
+import { MeetingStatus } from './MeetingStatus.View';
+import moize from 'moize';
 
 type meetingProps = WithTranslation & ViewProps;
 
@@ -68,6 +70,7 @@ class Meeting extends React.Component<meetingProps> {
   private _renderContent() {
     return null;
   }
+
   private _handleRenderSequence() {
     const { meetingItem } = this.props;
     const status = meetingItem.meetingStatus;
@@ -80,16 +83,33 @@ class Meeting extends React.Component<meetingProps> {
         return this._renderContent();
     }
   }
+
+  private _getStatusClick = moize((status: MEETING_STATUS) => {
+    const statusClickStrategy = {
+      [MEETING_STATUS.NO_ANSWER]: this.props.callbackMeeting,
+      [MEETING_STATUS.NOT_STARTED]: this.props.cancelMeeting,
+      [MEETING_STATUS.LIVE]: this.props.joinMeeting,
+    };
+    return statusClickStrategy[status];
+  });
+
   render() {
-    const { t, meetingTitle, meetingItem, duration } = this.props;
+    const { t, meetingTitle, meetingItem, duration, isMeetingOwner } = this.props;
     const status = meetingItem.meetingStatus;
-    const isEnded = status === MEETING_STATUS.ENDED;
     return (
       <JuiConversationItemCard
         title={postParser(t(meetingTitle), { keyword: this.context.keyword })}
         Icon="meetings"
-        subTitle={isEnded ? `${t('item.meeting.duration')}: ${duration}` : ''}
-        isShowLoading={status === MEETING_STATUS.NOT_STARTED}
+        subTitle={
+          <MeetingStatus
+            status={status}
+            duration={`${t('item.meeting.duration')}: ${duration}`}
+            onStatusClick={this._getStatusClick(status)}
+            isOwner={isMeetingOwner}
+          />
+        }
+        isShowLoading={status === MEETING_STATUS.NOT_STARTED
+        }
       >
         {this._handleRenderSequence()}
       </JuiConversationItemCard>

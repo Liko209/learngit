@@ -24,7 +24,7 @@ class ProfileMiniCard {
     return this;
   }
 
-  show({ anchor, id }: MiniCardShowProfileParams) {
+  show({ anchor, cardContent }: MiniCardShowProfileParams) {
     this.dismiss();
     this.anchor = anchor;
     this.div = document.createElement('div');
@@ -35,7 +35,7 @@ class ProfileMiniCard {
 
     ReactDOM.render(
       <ThemeProvider>
-        <ProfileWrapper dismiss={this.dismiss} id={id} />
+        <ProfileWrapper cardContent={cardContent} dismiss={this.dismiss} />
       </ThemeProvider>,
       this.div,
     );

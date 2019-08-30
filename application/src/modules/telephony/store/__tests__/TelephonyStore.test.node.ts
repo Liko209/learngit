@@ -472,12 +472,27 @@ describe('Telephony store', () => {
   });
 
   describe('_getNotificationCallerInfo', () => {
-    it('Should show unknown caller when SDK notification without from caller [JPT-2822]', async () => {
-      i18n.i18nP = jest.fn().mockReturnValue('unknown caller');
+    beforeEach(() => {
+      jest.spyOn(i18n, 'i18nP').mockReturnValueOnce('unknown caller');
+    });
 
+    it('Should show unknown caller when SDK notification without caller [JPT-2822]', async () => {
       const store = createStore();
 
-      const info = await store._getNotificationCallerInfo(null);
+      const info = await store._getNotificationCallerInfo();
+
+      expect(info.displayName).toBe('unknown caller');
+    });
+
+    it('Should show unknown caller when SDK notification has not caller name and cannot match contact [JPT-2822]', async () => {
+      const store = createStore();
+
+      const extensionNumber = '123456';
+
+      jest.spyOn(store, '_formatPhoneNumber').mockReturnValueOnce(extensionNumber);
+      jest.spyOn(store, '_matchPersonByPhoneNumber').mockReturnValueOnce(null);
+
+      const info = await store._getNotificationCallerInfo({ extensionNumber });
 
       expect(info.displayName).toBe('unknown caller');
     });

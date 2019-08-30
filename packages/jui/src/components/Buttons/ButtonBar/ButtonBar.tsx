@@ -12,7 +12,7 @@ import { spacing } from '../../../foundation/utils/styles';
 type JuiButtonBarProps = {
   overlapSize: number;
   direction?: 'horizontal' | 'vertical';
-  children: JSX.Element | (JSX.Element | Element | null)[];
+  children: React.ReactNode;
 } & {
   className?: string;
   style?: React.CSSProperties;

@@ -83,7 +83,7 @@ describe('VoicemailItemViewModel', () => {
       const vm = new VoicemailItemViewModel({ id: 1, width: 1000 });
       expect(vm.voiceMailResponsiveMap).toEqual({
         audioMode: JuiAudioMode.FULL,
-        buttonToShow: 3,
+        buttonToShow: 4,
         showTranscriptionText: true,
         dateFormat: 'full',
       });

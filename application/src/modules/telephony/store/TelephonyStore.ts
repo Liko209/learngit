@@ -961,21 +961,27 @@ class TelephonyStore {
     };
   };
 
-  private _getNotificationCallerInfo = async (caller: Voicemail['from']) => {
-    const { extensionNumber = '', phoneNumber = '' } = caller || {};
-    const contactNumber = extensionNumber || phoneNumber;
+  private _getNotificationCallerInfo = async ({
+    name = '',
+    phoneNumber = '',
+    extensionNumber = '',
+  } = {}) => {
+    let displayNumber = extensionNumber || phoneNumber;
+    let displayName = name || i18nP('phone.unknownCaller');
 
-    if (!contactNumber) {
-      return { displayName: i18nP('telephony.unknownCaller'), displayNumber: '' };
+    if (!displayNumber) {
+      return { displayName, displayNumber };
     }
 
-    const displayNumber = this._formatPhoneNumber(contactNumber);
+    const { userDisplayName = '' } = await this._matchPersonByPhoneNumber(displayNumber) || {};
 
-    const matchPerson = await this._matchPersonByPhoneNumber(contactNumber);
+    displayNumber = await this._formatPhoneNumber(displayNumber);
 
-    const displayName = matchPerson ? matchPerson.userDisplayName : caller.name;
+    if (userDisplayName) {
+      displayName = userDisplayName;
+    }
 
-    return { displayName, displayNumber: await displayNumber };
+    return { displayName, displayNumber };
   };
 
   private _getVoicemailNotificationBody = (

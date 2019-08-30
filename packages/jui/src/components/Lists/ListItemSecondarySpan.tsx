@@ -13,14 +13,7 @@ type JuiListItemSecondarySpanProps = {
   children?: React.ReactNode;
 };
 
-const WrappedListItemSecondarySpan = ({
-  isEllipsis,
-  ...rest
-}: {
-  isEllipsis: boolean;
-}) => <span {...rest} />;
-
-const StyledListItemSecondarySpan = styled(WrappedListItemSecondarySpan)`
+const StyledListItemSecondarySpan = styled('span')`
   && {
     ${({ isEllipsis }: { isEllipsis: boolean }) => isEllipsis && ellipsis()};
   }
@@ -38,8 +31,8 @@ const JuiListItemSecondarySpanComponent = (
   );
 };
 
-JuiListItemSecondarySpanComponent.displayName = 'JuiListItemSecondarySpan';
+JuiListItemSecondarySpanComponent.displayName = 'JuiListItemSecondarySpanComponent';
 
 const JuiListItemSecondarySpan = memo(JuiListItemSecondarySpanComponent);
-
+JuiListItemSecondarySpan.displayName = 'JuiListItemSecondarySpan';
 export { JuiListItemSecondarySpan, JuiListItemSecondarySpanProps };
