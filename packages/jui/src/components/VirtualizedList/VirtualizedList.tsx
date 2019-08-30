@@ -84,6 +84,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     contentStyle,
     onBottomStatusChange = noop,
     stickToLastPosition = true,
+    highlightedIndex,
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
@@ -261,6 +262,16 @@ const JuiVirtualizedList: RefForwardingComponent<
   const minIndex = 0;
   const maxIndex = childrenCount - 1;
 
+  const scrollIntoViewIfNeeded = (index: number) => {
+    if (ref.current) {
+      if (index < visibleRange.startIndex) {
+        jumpToPosition({ index, options: true });
+      } else if (index > visibleRange.stopIndex) {
+        jumpToPosition({ index, options: false });
+      }
+    }
+  };
+
   //
   // Forward ref
   //
@@ -269,16 +280,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     () => ({
       scrollToTop,
       scrollToBottom,
+      scrollIntoViewIfNeeded,
       scrollToPosition: jumpToPosition,
-      scrollIntoViewIfNeeded: (index: number) => {
-        if (ref.current) {
-          if (index < visibleRange.startIndex) {
-            jumpToPosition({ index, options: true });
-          } else if (index > visibleRange.stopIndex) {
-            jumpToPosition({ index, options: false });
-          }
-        }
-      },
       getScrollPosition: () => scrollPosition,
       isAtBottom: () => prevAtBottomRef.current,
       scrollToIndex: (index: number, options?: boolean) => {
@@ -533,6 +536,10 @@ const JuiVirtualizedList: RefForwardingComponent<
     ensureNoBlankArea();
   });
 
+  useEffect(() => {
+    if (highlightedIndex !== undefined)
+      scrollIntoViewIfNeeded(highlightedIndex);
+  }, [highlightedIndex]);
   //
   // Scrolling
   //
@@ -553,7 +560,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
 
-  const EmptyDiv = () => <div style={{ height: minRowHeight }} />;
+  const EmptyDiv = () => (
+    <div style={{ height: minRowHeight || fixedRowHeight }} />
+  );
   const childrenToRender = children
     .filter((_, i) => startIndex <= i && i <= stopIndex)
     .map(child => (child.type ? child : <EmptyDiv key={child.key || 0} />));

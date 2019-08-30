@@ -18,6 +18,12 @@ type ImageViewerViewModuleProps = {
   dismiss: () => void;
 };
 
+type SingleImageViewerViewModuleProps = {
+  titleName: string;
+  url: string;
+  dismiss: () => void;
+};
+
 type ImageViewerViewModule = {
   init: () => void;
   currentItemId: number;
@@ -70,4 +76,5 @@ export {
   ImageViewerProps,
   ImageViewerOptions,
   ImageViewerBuild,
+  SingleImageViewerViewModuleProps,
 };

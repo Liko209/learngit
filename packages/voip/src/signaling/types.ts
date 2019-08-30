@@ -93,6 +93,11 @@ type InviteOptions = {
   homeCountryId?: string;
   extraHeaders?: any;
   RTCConstraints?: any;
+  sessionDescriptionHandlerOptions?: any;
+};
+
+type AcceptOptions = {
+  sessionDescriptionHandlerOptions?: any;
 };
 
 type MediaStatsReport = {
@@ -112,4 +117,5 @@ export {
   MediaStatsReport,
   RC_REFER_EVENT,
   InviteOptions,
+  AcceptOptions,
 };

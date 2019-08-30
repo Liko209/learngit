@@ -2111,7 +2111,7 @@ describe('RTC call', () => {
       });
     });
 
-    describe('should set "isLocalMute","isRemoteMute" false, report unmute succeed and not unmute session if call state is not connected when unmute call [JPT-2732]', () => {
+    describe('should set "isLocalMute","isRemoteMute" false, report unmute succeed and not unmute session if call state is not connected when unmute call [JPT-2732][JPT-2920][JPT-2921]', () => {
       it("idle", done => {
         setupCall();
         expect(call._fsm.state()).toBe('idle');

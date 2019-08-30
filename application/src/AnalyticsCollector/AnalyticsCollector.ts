@@ -336,6 +336,13 @@ class AnalyticsCollector {
     });
   }
 
+  createTeamDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_createTeamDialog', { source });
+  }
+
+  newMessageDialog(source = 'newActionsMenu') {
+    this.page('Jup_Web/DT_msg_sendNewMessageDialog', { source });
+  }
   // [FIJI-8153]
   endAndAnswerCall() {
     dataAnalysis.track('Jup_Web/DT_phone_endAndAnswerCall', {
@@ -354,6 +361,14 @@ class AnalyticsCollector {
   startConferenceCall(conversationType: string, source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_startConferenceCall', {
       conversationType,
+      source,
+    });
+  }
+
+  joinConferenceCall(type?: string) {
+    const source =
+      type === 'link' ? 'click dial-in number' : 'click join button';
+    dataAnalysis.track('Jup_Web/DT_msg_joinConferenceCall', {
       source,
     });
   }

@@ -1228,6 +1228,29 @@ describe('TelephonyService', () => {
     })
   })
 
+  describe('joinAudioConference()', () => {
+    it('Join conf failed when user has no any active DL. JPT-[2755]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(false);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('1', '2');
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
+
+    it('Join conf failed when user webRTC permission removed JPT-[2756]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(true);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(false);
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('1', '2');
+      expect(ToastCallError.toastPermissionError).toHaveBeenCalled();
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
+  });
+
   describe('multiple calls', () => {
     it('Can NOT make call when user on a call. [JPT-2772]', async () => {
       mockedServerTelephonyService.getAllCallCount = jest.fn().mockReturnValue(2);

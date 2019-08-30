@@ -13,6 +13,8 @@ import { JuiPresence, PRESENCE } from '../../Presence';
 import TeamAvatar from '../../../assets/jupiter-icon/icon-default-team-avatar.svg';
 
 import avatar from './img/avatar.jpg';
+import { JuiIconography } from '../../../foundation/Iconography';
+import conference from '../../../assets/jupiter-icon/icon-conference.svg';
 
 const knobs = {
   size: () =>

@@ -24,6 +24,7 @@ import { IUser } from '../../../models';
 import { TelephonyDialog, TelephonyMinimizeWindow, ContactSearchList } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
+import { RecentConversationDialog } from './RecentConversationDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
@@ -188,7 +189,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverSettingMenu() {
-    await this.t.hover(this.topBarAvatar, {speed: 0.1});
+    await this.t.hover(this.topBarAvatar, { speed: 0.1 });
   }
 
   async openDialer(closeE911Prompt: boolean = true) {
@@ -230,7 +231,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async hoverDialpadButton() {
-    await this.t.hover(this.dialpadButton, {speed: 0.1});
+    await this.t.hover(this.dialpadButton, { speed: 0.1 });
   }
 
   get joinTeamDialog() {
@@ -288,6 +289,10 @@ export class HomePage extends BaseWebComponent {
 
   get moreActionOnFile() {
     return this.getComponent(MoreActionOnFile);
+  }
+
+  get recentConversationDialog(){
+    return this.getComponent(RecentConversationDialog);
   }
 
   get moreActionOnViewer() {

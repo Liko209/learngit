@@ -35,11 +35,6 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
     return this._globalSearchStore.currentView;
   }
 
-  @computed
-  get showClear() {
-    return this._globalSearchStore.searchKey !== '';
-  }
-
   @action
   onClear = () => {
     this._globalSearchStore.clearSearchKey();

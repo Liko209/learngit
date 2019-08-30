@@ -30,7 +30,7 @@ interface IViewerView {
       origWidth: number;
     };
   }[];
-  title?: TitleType;
+  title?: any;
   viewerDestroyer: Function;
   currentPageIdx: number;
   currentScale: number;
