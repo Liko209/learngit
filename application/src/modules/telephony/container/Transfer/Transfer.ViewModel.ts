@@ -11,7 +11,7 @@ import { Props } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
-import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
+import { TRANSFER_TYPE } from 'sdk/module/telephony/types';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,

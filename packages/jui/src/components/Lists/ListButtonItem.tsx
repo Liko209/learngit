@@ -72,7 +72,7 @@ const StyledListItem = styled<JuiListButtonItemProps>(WrappedListItem)`
 
   &&&:focus,
   &&&.selected {
-    background-color: ${palette('primary', '600')};
+    background-color: ${palette('primary', 'main')};
     border: none;
 
     & > ${StyledItemText} {

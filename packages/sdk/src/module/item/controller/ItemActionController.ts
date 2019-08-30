@@ -3,7 +3,7 @@
  * @Date: 2019-01-04 13:10:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item, ConferenceItem } from '../entity';
+import { Item, ConferenceItem, ZoomMeetingItem } from '../entity';
 import { Raw } from '../../../framework/model';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { buildRequestController } from '../../../framework/controller';
@@ -29,6 +29,7 @@ const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_LINK, 'link'],
   [TypeDictionary.TYPE_ID_CODE, 'code'],
   [TypeDictionary.TYPE_ID_CONFERENCE, 'conference'],
+  [TypeDictionary.TYPE_ID_MEETING, 'meeting']
 ]);
 class ItemActionController {
   constructor(
@@ -47,6 +48,28 @@ class ItemActionController {
 
     const doUpdateModel = async (updateItem: Item) =>
       await this._buildItemRequestController(type).put(updateItem);
+
+    await this._partialModifyController.updatePartially({
+      entityId: id,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: doUpdateModel,
+    });
+  }
+
+  async cancelZoomMeeting(id: number) {
+    const preHandlePartial = (
+      partialPost: Partial<Raw<ZoomMeetingItem>>,
+    ): Partial<Raw<ZoomMeetingItem>> => ({
+      ...partialPost,
+      status: 'cancelled',
+    });
+    const doUpdateModel = async (updateItem: Item) => {
+      const requestController = this._buildItemRequestController(
+        itemPathMap.get(GlipTypeUtil.extractTypeId(id)) as string,
+      );
+      return await requestController.put(updateItem);
+    }
+
 
     await this._partialModifyController.updatePartially({
       entityId: id,

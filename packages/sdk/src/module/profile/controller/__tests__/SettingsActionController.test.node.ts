@@ -176,5 +176,26 @@ describe('SettingsActionController', () => {
         },
       ]);
     });
+
+    it('should reject error when update fail', async () => {
+      settingsActionController.updateSettingOptions = jest.fn();
+      const audio2 = { gid: 2, sound: '' };
+      mockProfileDataController.getLocalProfile = jest.fn().mockResolvedValue({
+        [SETTING_KEYS.CONVERSATION_NOTIFICATION]: {
+          [groupId]: { muted: true, desktop_notifications: false },
+        },
+        [SETTING_KEYS.CONVERSATION_AUDIO]: [
+          { sound: SOUNDS_TYPE.Default, gid: groupId },
+          audio2,
+        ],
+      });
+      const error = '';
+      settingsActionController.updateSettingOptions = jest
+        .fn()
+        .mockRejectedValue(error);
+      await expect(
+        settingsActionController.updateConversationPreference(groupId, model),
+      ).rejects.toEqual(error);
+    });
   });
 });

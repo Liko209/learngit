@@ -83,18 +83,24 @@ describe('MediaManager', () => {
 
   describe('setVolume()', () => {
     it('should set all track volume when media manager set volume', () => {
-      const setAllTrackVolume = jest.spyOn(trackManager, 'setAllTrackVolume');
+      const setAllTrackMasterVolume = jest.spyOn(
+        trackManager,
+        'setAllTrackMasterVolume',
+      );
       const mediaManager = new MediaManager();
       mediaManager.setGlobalVolume(0.5);
       expect(mediaManager.globalVolume).toEqual(0.5);
-      expect(setAllTrackVolume).toHaveBeenCalled();
+      expect(setAllTrackMasterVolume).toHaveBeenCalled();
     });
     it('should not set all track volume when volume value is inValid', () => {
-      const setAllTrackVolume = jest.spyOn(trackManager, 'setAllTrackVolume');
+      const setAllTrackMasterVolume = jest.spyOn(
+        trackManager,
+        'setAllTrackMasterVolume',
+      );
       const mediaManager = new MediaManager();
       mediaManager.setGlobalVolume(1.5);
       expect(mediaManager.globalVolume).toEqual(1);
-      expect(setAllTrackVolume).not.toHaveBeenCalled();
+      expect(setAllTrackMasterVolume).not.toHaveBeenCalled();
     });
   });
   describe('setOutputDevices()', () => {

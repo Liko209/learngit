@@ -56,7 +56,6 @@ exports[`Storyshots Components/Selects BoxSelect: Components/Selects BoxSelect 1
 .c0 {
   width: 100%;
   text-align: left;
-  padding-bottom: 12px;
   max-width: 232px;
 }
 

@@ -39,6 +39,7 @@ type AttachmentsViewProps = {
   cancelDuplicateFiles: () => void;
   uploadDuplicateFiles: () => void;
   updateDuplicateFiles: () => void;
+  onEscTrackedCancelDuplicateFiles: () => void;
   cleanFiles: () => void;
   reloadFiles: () => void;
   sendFilesOnlyPost: () => Promise<void>;

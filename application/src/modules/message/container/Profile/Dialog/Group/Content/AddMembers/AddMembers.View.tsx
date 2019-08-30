@@ -6,6 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
+import { withEscTracking } from '@/common/trackData';
 import { JuiModal } from 'jui/components/Dialog';
 import { ContactSearch } from '@/containers/Downshift/ContactSearch';
 import portalManager from '@/common/PortalManager';
@@ -47,6 +48,7 @@ class AddMembers extends React.Component<ViewProps> {
           },
           scroll: 'body',
         }}
+        onClose={withEscTracking(this.handleClose)}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}

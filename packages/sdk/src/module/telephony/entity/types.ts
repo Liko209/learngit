@@ -7,10 +7,11 @@
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 enum CALL_STATE {
-  IDLE = 'idle',
-  CONNECTING = 'connecting',
-  CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
+  IDLE = 'Idle',
+  CONNECTING = 'Connecting',
+  CONNECTED = 'Connected',
+  DISCONNECTING = 'Disconnecting',
+  DISCONNECTED = 'Disconnected',
 }
 
 enum HOLD_STATE {
@@ -31,17 +32,4 @@ enum MUTE_STATE {
   MUTED = 'muted',
 }
 
-enum TRANSFER_TYPE {
-  BLIND_TRANSFER,
-  TO_VOICEMAIL,
-  WARM_TRANSFER,
-}
-
-export {
-  CALL_STATE,
-  HOLD_STATE,
-  RECORD_STATE,
-  CALL_DIRECTION,
-  MUTE_STATE,
-  TRANSFER_TYPE,
-};
+export { CALL_STATE, HOLD_STATE, RECORD_STATE, CALL_DIRECTION, MUTE_STATE };

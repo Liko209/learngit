@@ -10,8 +10,8 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
 import { observable, computed } from 'mobx';
 import GroupModel from '@/store/models/Group';
-import { SortableModel } from 'sdk/src/framework/model';
-import { Group } from 'sdk/src/module/group/entity';
+import { SortableModel } from 'sdk/framework/model';
+import { Group } from 'sdk/module/group/entity';
 import { mapGroupModelToItem } from './lib';
 
 export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>

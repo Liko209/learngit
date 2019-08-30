@@ -91,7 +91,7 @@ async function expectVoicemailItemInPlayStatus(t, voicemailItem) {
 async function expectVoicemailPlaying(t, itemId, app) {
 
   // '[' and ']' need to be escaped
-  const audioId = `\\[voicemail-track\\]-\\[${itemId}\\]`;
+  const audioId = `\\[voicemail\\]-\\[${itemId}\\]`;
   await t.expect(app.getSelector(`#${audioId}`).exists).ok();
   assert.strictEqual(await audioElementPaused(app, audioId), false, 'expect paused of audio is false but it is true');
 }
