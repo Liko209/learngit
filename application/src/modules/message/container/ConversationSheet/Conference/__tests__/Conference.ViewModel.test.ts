@@ -15,10 +15,16 @@ import { TelephonyService } from '@/modules/telephony/service/TelephonyService';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import * as media from '@/modules/media/module.config';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
+jest.mock('computed-async-mobx', () => ({
+  promisedComputed: (name: string, factory: any) => Promise.resolve(factory())
+}))
 jest.mock('@/modules/common/container/PhoneNumberFormat');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 jest.mock('sdk/module/config');
 jest.mock('@/store/utils');
+jest.mock('@/AnalyticsCollector');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
@@ -42,6 +48,9 @@ const mockGlobalValue = {
 let viewModel: any;
 
 beforeAll(() => {
+  jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+    matchContactByPhoneNumber: jest.fn(),
+  });
   (getEntity as jest.Mock).mockReturnValue({});
   viewModel = new ConferenceViewModel({ ids: [1] });
 });
@@ -81,14 +90,32 @@ describe('Conference View Model', () => {
   });
 
   it('Should NOT show [Join] button and link if login user has no WebRTC permission', () => {
-    expect(viewModel.canUseConference.cached.value).toEqual(false);
+    (getEntity as jest.Mock).mockReturnValue(mockData);
+    viewModel._featuresFlagsService.canUseConference = jest.fn().mockReturnValue(true);
+    expect(viewModel.canUseConference).toBeTruthy();
+
+    viewModel._featuresFlagsService.canUseConference = jest.fn().mockReturnValue(false);
+    expect(viewModel.canUseConference.value).toBeUndefined();
   });
 
   it('[Join] button and dial-in number are disabled when user is already making a call(inbound/outbound) [JPT-2897]', () => {
-    viewModel._telephonyStore.id = undefined;
-    expect(viewModel.disabled).toBeFalsy();
-
-    viewModel._telephonyStore.id = 1;
     expect(viewModel.disabled).toBeTruthy();
+    // @ts-ignore
+    viewModel._telephonyStore._sortableListHandler.sortableListStore = {
+      getIds: [],
+    };
+    expect(viewModel.disabled).toBeFalsy();
+  });
+
+  it('isRCUser', () => {
+    expect(viewModel.isRCUser).toBeUndefined();
+  });
+
+  it('joinAudioConference', () => {
+    (getEntity as jest.Mock).mockReturnValue(mockData);
+    viewModel._telephonyService.joinAudioConference = jest.fn();
+    viewModel.joinAudioConference('link');
+    expect(viewModel._telephonyService.joinAudioConference).toHaveBeenCalled();
+    expect(analyticsCollector.joinConferenceCall).toBeCalledWith('link');
   });
 });

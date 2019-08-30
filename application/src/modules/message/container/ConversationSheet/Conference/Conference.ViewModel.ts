@@ -87,7 +87,7 @@ class ConferenceViewModel extends StoreViewModel<Props> implements ViewProps {
   // :TODO when multiple call will change
   @computed
   get disabled() {
-    return !!this._telephonyStore.id;
+    return !!this._telephonyStore.ids.length;
   }
 }
 
