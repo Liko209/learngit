@@ -5,6 +5,7 @@
  */
 
 import { DialogContext } from '@/containers/Dialog';
+import { withEscTracking } from '@/common/trackData';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { observer } from 'mobx-react';
@@ -26,8 +27,8 @@ import { Loading } from 'jui/hoc/withLoading';
 type State = {};
 
 type Props = UploadRecentLogsViewProps &
-UploadRecentLogsViewModelProps &
-WithTranslation;
+  UploadRecentLogsViewModelProps &
+  WithTranslation;
 
 @observer
 class UploadRecentLogsComponent extends React.Component<Props, State> {
@@ -97,9 +98,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
   onClose = () => this.context();
 
   render() {
-    const {
-      handleTitleChange, handleDescChange, isLoading, t,
-    } = this.props;
+    const { handleTitleChange, handleDescChange, isLoading, t } = this.props;
     return (
       <JuiModal
         open
@@ -110,6 +109,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
         okText={t('feedback.submit')}
         cancelText={t('common.dialog.cancel')}
         loading={isLoading}
+        onClose={withEscTracking(this.onClose)}
       >
         <Loading loading={isLoading} alwaysComponentShow delay={0}>
           <JuiTextField

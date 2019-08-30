@@ -19,6 +19,7 @@ import { FullSearch } from '../FullSearch';
 import { InstantSearch } from '../InstantSearch';
 import { RecentSearch } from '../RecentSearch';
 import { InputContext } from '../context';
+import { withEscTracking } from '@/common/trackData';
 
 type GlobalSearchProps = GlobalSearchViewProps & WithTranslation;
 
@@ -83,16 +84,14 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
       onBlur,
       searchKey,
       onClear,
-      showClear,
       t,
     } = this.props;
 
     return (
-      <JuiGlobalSearch open={open} onClose={onClose}>
+      <JuiGlobalSearch open={open} onClose={withEscTracking(onClose)}>
         <JuiGlobalSearchInput
           ref={this.state.ref}
           value={searchKey}
-          showClear={showClear}
           onClear={onClear}
           onClose={onClose}
           onChange={this.onChange}

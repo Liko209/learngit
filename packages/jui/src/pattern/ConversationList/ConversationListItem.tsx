@@ -116,7 +116,7 @@ const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
   }
 
   &&&&.selected {
-    background-color: ${palette('primary', '600')};
+    background-color: ${palette('primary', 'main')};
 
     && ${StyledItemText} {
       color: ${({ theme }) => theme.palette.common.white};

@@ -5,9 +5,10 @@
  */
 
 import { ContactFocHandler, CONTACT_TAB_TYPE } from '../ContactFocHandler';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Person } from 'sdk/module/person/entity';
 import { SortUtils } from 'sdk/framework/utils';
+import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 
 describe('ContactFocHandler', () => {
   const personService = {
@@ -15,6 +16,10 @@ describe('ContactFocHandler', () => {
     getFullName: jest.fn(),
     isVisiblePerson: jest.fn(),
     getEntitySource: jest.fn(),
+  };
+
+  const searchService = {
+    generateMatchedInfo: jest.fn(),
   };
 
   const entitySourceController = {
@@ -30,9 +35,17 @@ describe('ContactFocHandler', () => {
   }
 
   function setUp() {
-    ServiceLoader.getInstance = jest.fn().mockImplementation(() => {
-      return personService;
-    });
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
+
+        if (serviceName === ServiceConfig.SEARCH_SERVICE) {
+          return searchService;
+        }
+      });
   }
 
   beforeEach(() => {
@@ -60,35 +73,114 @@ describe('ContactFocHandler', () => {
     expect(SortUtils.compareLowerCaseString).toHaveBeenCalledWith('cbc', 'bca');
   });
 
-  it('should call filter foc when type is all', () => {
-    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.ALL);
-    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
-      return true;
-    });
-    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
-  });
+  describe('foc filter', () => {
+    it('should call filter foc when type is all with name matched', () => {
+      const handler = new ContactFocHandler(CONTACT_TAB_TYPE.ALL, 'test');
+      personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+        return true;
+      });
 
-  it('should call filter foc when type is personal', () => {
-    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.PERSONAL);
-    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
-      return true;
-    });
-    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
-  });
+      personService.getFullName = jest.fn().mockReturnValue('Test displayName');
 
-  it('should call filter foc when type is glip contact', () => {
-    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.GLIP_CONTACT);
-    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
-      return true;
-    });
-    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
-  });
+      const matchedInfo = {
+        nameMatched: true,
+        phoneNumberMatched: false,
+        isMatched: true,
+        matchedNumbers: [],
+      };
+      searchService.generateMatchedInfo = jest
+        .fn()
+        .mockReturnValue(matchedInfo);
 
-  it('should call filter foc when type is cloud contact', () => {
-    const handler = new ContactFocHandler(CONTACT_TAB_TYPE.CLOUD_CONTACT);
-    personService.isVisiblePerson = jest.fn().mockImplementation(() => {
-      return true;
+      expect(
+        handler.filterFunc({
+          id: 1,
+          display_name: 'Test displayName',
+        } as Person),
+      ).toBe(true);
     });
-    expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+
+    it('should call filter foc when type is all with no matched', async () => {
+      const handler = new ContactFocHandler(CONTACT_TAB_TYPE.ALL, 'test');
+
+      SearchUtils.isFuzzyMatched = jest.fn().mockReturnValue(false);
+
+      personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+        return true;
+      });
+
+      personService.getFullName = jest.fn().mockReturnValue('displayName');
+
+      const matchedInfo = {
+        nameMatched: false,
+        phoneNumberMatched: false,
+        isMatched: false,
+        matchedNumbers: [],
+      };
+      searchService.generateMatchedInfo = jest
+        .fn()
+        .mockReturnValue(matchedInfo);
+
+      expect(
+        handler.filterFunc({
+          id: 1,
+          display_name: 'displayName',
+          email: 'email@ringcentral.com',
+        } as Person),
+      ).toBe(false);
+    });
+
+    it('should call filter foc when type is all with email matched', () => {
+      const handler = new ContactFocHandler(CONTACT_TAB_TYPE.ALL, 'email');
+      personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+        return true;
+      });
+
+      SearchUtils.isFuzzyMatched = jest.fn().mockReturnValue(true);
+
+      personService.getFullName = jest.fn().mockReturnValue('Test displayName');
+
+      const matchedInfo = {
+        nameMatched: false,
+        phoneNumberMatched: false,
+        isMatched: false,
+        matchedNumbers: [],
+      };
+      searchService.generateMatchedInfo = jest
+        .fn()
+        .mockReturnValue(matchedInfo);
+
+      expect(
+        handler.filterFunc({
+          id: 1,
+          display_name: 'Test displayName',
+          email: 'email@ringcentral.com',
+        } as Person),
+      ).toBe(true);
+    });
+
+    it('should call filter foc when type is personal', () => {
+      const handler = new ContactFocHandler(CONTACT_TAB_TYPE.PERSONAL);
+      personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+        return true;
+      });
+      expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+    });
+
+    it('should call filter foc when type is glip contact', () => {
+      const handler = new ContactFocHandler(CONTACT_TAB_TYPE.GLIP_CONTACT);
+      personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+        return true;
+      });
+      expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+    });
+
+    it('should call filter foc when type is cloud contact', () => {
+      const handler = new ContactFocHandler(CONTACT_TAB_TYPE.CLOUD_CONTACT);
+      personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+        return true;
+      });
+      expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+    });
   });
 });

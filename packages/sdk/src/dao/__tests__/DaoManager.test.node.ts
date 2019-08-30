@@ -21,6 +21,7 @@ import { AccountGlobalConfig } from 'sdk/module/account/config';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import Dexie from 'dexie';
+import schema from '../schema';
 
 jest.mock('sdk/module/env/index');
 
@@ -172,6 +173,16 @@ describe('DaoManager', () => {
     it('should delete database', async () => {
       await daoManager.deleteDatabase();
       expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
+    });
+
+    it('should delete lokiDB when deleting database failed', async () => {
+      daoManager['dbManager'].deleteDatabase = jest.fn().mockImplementationOnce(() => {
+        throw 'error';
+      });
+      daoManager['dbManager'].initDatabase = jest.fn();
+      await daoManager.deleteDatabase();
+      expect(daoManager['dbManager'].initDatabase).toBeCalledWith(schema, DatabaseType.LokiDB);
+      expect(daoManager['dbManager'].deleteDatabase).toHaveBeenCalledTimes(2);
     });
   });
 

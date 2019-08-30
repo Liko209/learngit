@@ -130,7 +130,7 @@ export abstract class BaseWebComponent {
     return this.getSelector('div[role="progressbar"]:not([data-test-automation-id="conversation-list-spinner"])');
   }
 
-  get  conversationListSpinner() {
+  get conversationListSpinner() {
     return this.getSelectorByAutomationId('conversation-list-spinner');
   }
 
@@ -177,7 +177,9 @@ export abstract class BaseWebComponent {
 
   // Some specific scenarios
   async getNumber(sel: Selector) {
-    if (await sel.exists == false) {
+    // there is a chance that UMI won't update immediately
+    await this.t.wait(1e3);
+    if (!await sel.exists) {
       return 0;
     }
     const text = await sel.innerText;

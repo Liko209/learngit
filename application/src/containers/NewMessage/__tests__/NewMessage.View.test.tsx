@@ -7,6 +7,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { NewMessageView } from '../NewMessage.View';
 import { Notification } from '@/containers/Notification';
+import { JuiModal } from 'jui/components/Dialog';
 
 jest.mock('@/containers/Notification');
 jest.mock('react-i18next', () => {
@@ -40,6 +41,12 @@ describe('NewMessageView', () => {
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       shallow(<NewMessageView {...props} />);
       expect(Notification.flashToast).toHaveBeenCalled();
+    });
+    it('should contain onClose props when rendering JuiModal ', async () => {
+      const props = { t: () => {} };
+      const Wrapper = shallow(<NewMessageView {...props} />);
+      const modal = Wrapper.find(JuiModal).shallow();
+      expect(modal.props().onClose).toBeTruthy();
     });
   });
 });

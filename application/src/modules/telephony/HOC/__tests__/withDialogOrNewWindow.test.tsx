@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { withDialogOrNewWindow } from '../withDialogOrNewWindow';
+import { withDialogOrNewWindow, getDefaultPos } from '../withDialogOrNewWindow';
 import { TelephonyService } from '../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store/TelephonyStore';
@@ -28,6 +28,9 @@ container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
 container.bind(CLIENT_SERVICE).to(ClientService);
 
+const defaultX = (document.body.clientWidth - 344) / 2;
+const defaultY = (document.body.clientHeight - 552) / 2;
+
 describe('withDialogOrNewWindow', () => {
   it('should return a react component that wrap an original component', () => {
     const Dummy = () => null;
@@ -35,5 +38,22 @@ describe('withDialogOrNewWindow', () => {
 
     const wrapper = shallow(<Wrapped />);
     expect(wrapper.find(Dummy).length).toBe(1);
+  });
+
+  it('should return a current pos getDefaultPos', () => {
+    const { x, y } = getDefaultPos();
+    expect(x).toBe(defaultX);
+    expect(y).toBe(defaultY);
+  });
+
+  it.only('should return a current state', () => {
+    const Dummy = () => null;
+    const Wrapped = withDialogOrNewWindow(Dummy);
+
+    const wrapper = shallow(<Wrapped />);
+
+    const { x, y } = wrapper.state('controlledPosition');
+    expect(x).toBe(defaultX);
+    expect(y).toBe(defaultY);
   });
 });

@@ -21,6 +21,7 @@ import { TAB_CONFIG, TabConfig } from './ItemList/config';
 import { PinnedList } from './PinnedList';
 import { IMessageStore } from '@/modules/message/interface';
 import { RightShelfMemberList } from '../RightShelfMemberList';
+import { computed } from 'mobx';
 
 type Props = {
   id: number;
@@ -131,8 +132,8 @@ class TriggerButtonComponent extends React.Component<
 
 @observer
 class RightRailComponent extends React.Component<Props> {
-  state = { tabIndex: 0 };
-  private _renderHeader = () => {
+  @computed
+  private get _header () {
     const { t } = this.props;
     return (
       <JuiRightShelfHeader id="right-rail-header">
@@ -143,34 +144,21 @@ class RightRailComponent extends React.Component<Props> {
     );
   };
 
-  private _handleTabChanged = (index: number) => {
-    this.setState({ tabIndex: index });
-  };
-
   private _renderListView = (
     type: RIGHT_RAIL_ITEM_TYPE,
     id: number,
-    active: boolean,
     width: number,
     height: number,
   ) => {
     if (type === RIGHT_RAIL_ITEM_TYPE.PIN_POSTS) {
       return <PinnedList groupId={id} width={width} height={height} />;
     }
-    return (
-      <ItemList
-        type={type}
-        groupId={id}
-        active={active}
-        width={width}
-        height={height}
-      />
-    );
+    return <ItemList type={type} groupId={id} width={width} height={height} />;
   };
+
   /* eslint-disable react/no-array-index-key */
   private _renderTabs = () => {
     const { t, id } = this.props;
-    const { tabIndex } = this.state;
     return (
       <ReactResizeDetector handleWidth handleHeight>
         {({ width: w, height: h }: { width: number; height: number }) => {
@@ -185,7 +173,6 @@ class RightRailComponent extends React.Component<Props> {
                   defaultActiveIndex={0}
                   tag="right-shelf"
                   width={w}
-                  onChangeTab={this._handleTabChanged}
                   moreText={t('common.more')}
                 >
                   {TAB_CONFIG.map(
@@ -201,7 +188,6 @@ class RightRailComponent extends React.Component<Props> {
                         {this._renderListView(
                           type,
                           id,
-                          tabIndex === index,
                           width,
                           height - HEIGHT_TABS - HEADER_HEIGHT,
                         )}
@@ -224,9 +210,9 @@ class RightRailComponent extends React.Component<Props> {
     }
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
-        {this._renderHeader()}
-        {isShow ? <RightShelfMemberList groupId={id} /> : null}
-        {this._renderTabs()}
+        {this._header}
+        {isShow && <RightShelfMemberList groupId={id} />}
+        {isShow && this._renderTabs()}
       </JuiRightShelf>
     );
   }

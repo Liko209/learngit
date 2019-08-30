@@ -57,7 +57,7 @@ test.meta(<ITestMeta>{
   });
 });
 
-test.meta(<ITestMeta>{
+test.skip.meta(<ITestMeta>{
   caseIds: ['JPT-1905'],
   priority: ['P2'],
   maintainers: ['Lex.Huang'],

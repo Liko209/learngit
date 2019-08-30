@@ -18,7 +18,7 @@ import {
   JuiVirtualizedListHandles,
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
-import { IndexRange, ScrollInfo } from './types';
+import { IndexRange } from './types';
 import { useMountState } from './hooks';
 import { DIRECTION } from '../Lists';
 
@@ -34,7 +34,7 @@ type JuiInfiniteListProps = {
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
-  onVisibleRangeChange?: (range: IndexRange, info: ScrollInfo) => void;
+  onVisibleRangeChange?: (range: IndexRange, target: HTMLElement) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
   loadingRenderer?: (() => JSX.Element) | null;

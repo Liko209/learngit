@@ -12,7 +12,7 @@ type ChildrenProps = {
   trigger: MousetrapInstance['trigger'];
 };
 
-type keyMapValue =
+type KeyMapValue =
   | ((
       e: KeyboardEvent,
       combo: string,
@@ -31,7 +31,7 @@ type HotKeysProps = {
   customStyle?: React.CSSProperties;
   children?: React.ReactNode | ((props: ChildrenProps) => React.ReactNode);
   keyMap: {
-    [key: string]: keyMapValue;
+    [key: string]: KeyMapValue;
   };
 };
 
@@ -103,7 +103,7 @@ class HotKeys extends PureComponent<HotKeysProps, {}> {
       display: 'flex',
       height: '100%',
       flexDirection: 'column',
-    };
+    } as React.CSSProperties;
   }
 
   render() {

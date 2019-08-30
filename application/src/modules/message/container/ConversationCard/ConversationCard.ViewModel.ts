@@ -23,6 +23,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import {  Item } from 'sdk/module/item/entity';
+import { getColonsEmoji, getStatusPlainText } from '@/common/getSharedStatus';
 import { repliedEntityHandlers } from './utils';
 import { getIntegration } from '../ConversationSheet/IntegrationItem/getIntegration';
 
@@ -113,11 +114,6 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   }
 
   @computed
-  get customStatus() {
-    return this.creator.awayStatus;
-  }
-
-  @computed
   get createTime() {
     const { createdAt } = this.post;
     if (this.props.mode === 'navigation') {
@@ -157,6 +153,17 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
     }
 
     return repliedEntityHandlers[typeId](rest);
+  }
+  @computed
+  get colonsEmoji() {
+    const status = this.creator.awayStatus || '';
+    return getColonsEmoji(status);
+  }
+  @computed
+  get statusPlainText() {
+    const status = this.creator.awayStatus || '';
+
+    return getStatusPlainText(status);
   }
 }
 

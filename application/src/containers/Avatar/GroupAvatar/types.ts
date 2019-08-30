@@ -6,13 +6,14 @@
 
 // import GroupModel from '@/store/models/Group';
 import { JuiAvatarProps } from 'jui/components/Avatar';
+import { SvgSymbol } from 'jui/foundation/Iconography';
 
 type GroupAvatarProps = JuiAvatarProps & {
   cid: number;
 };
 
 type GroupAvatarViewProps = JuiAvatarProps & {
-  src: string;
+  icon: SvgSymbol;
 };
 
 export { GroupAvatarProps, GroupAvatarViewProps };

@@ -78,8 +78,28 @@ describe('RecentCallsViewModel', () => {
     setTimeout(async () => {
       expect(vm.isBlock).toBeFalsy();
       await vm.makeCall();
-      expect(telephonyService.makeCall).toHaveBeenCalledWith(phoneNumber);
+      expect(telephonyService.directCall).toHaveBeenCalledWith(phoneNumber);
       done();
+    });
+  });
+
+  describe('selectCallItem()', () => {
+    it('should cancel the selection of transfer user [JPT-2764]', () => {
+      vm = new RecentCallsViewModel();
+      vm.focusIndex = 0;
+      const telephonyStore: TelephonyStore = container.get(TelephonyStore);
+      telephonyStore.onDialerInputFocus();
+
+      vm.selectCallItem(1);
+      expect(telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '',
+        index: 1,
+      });
+      vm.selectCallItem(1);
+      expect(telephonyStore.selectedCallItem).toEqual({
+        phoneNumber: '',
+        index: NaN,
+      });
     });
   });
 

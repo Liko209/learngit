@@ -31,7 +31,6 @@ import {
   ThresholdStrategy,
   JuiVirtualizedListHandles,
   ItemWrapper,
-  ScrollInfo,
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
@@ -94,6 +93,8 @@ class StreamViewComponent extends Component<Props> {
       } as React.CSSProperties),
   );
 
+  private _firstTracer: boolean = false;
+
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -105,7 +106,6 @@ class StreamViewComponent extends Component<Props> {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
       jumpToPostId: prevJumpToPostId,
-      loadingStatus: prevLoadingStatus,
     } = prevProps;
     const {
       postIds,
@@ -113,7 +113,6 @@ class StreamViewComponent extends Component<Props> {
       hasMore,
       lastPost,
       jumpToPostId,
-      loadingStatus,
     } = this.props;
 
     if (postIds.length && mostRecentPostId) {
@@ -140,16 +139,6 @@ class StreamViewComponent extends Component<Props> {
     }
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
-
-    if (
-      loadingStatus === STATUS.SUCCESS &&
-      prevLoadingStatus === STATUS.PENDING
-    ) {
-      this._performanceTracer.end({
-        key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
-        count: postIds.length,
-      });
-    }
 
     if (this._isAtBottom === null && this._listRef.current) {
       this._isAtBottom = this._listRef.current.isAtBottom();
@@ -282,13 +271,25 @@ class StreamViewComponent extends Component<Props> {
   @action
   private _handleVisibilityChanged = (
     { startIndex, stopIndex }: IndexRange,
-    { scrollHeight, scrollTop, clientHeight }: ScrollInfo,
+    target?: HTMLElement,
   ) => {
+    if(!target) return;
+    const { scrollHeight, scrollTop, clientHeight } = target;
     const {
       items,
       firstHistoryUnreadPostId = 0,
       historyReadThrough = 0,
+      postIds,
     } = this.props;
+    if (!this._firstTracer) {
+      this._performanceTracer.end({
+        key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+        count: postIds.length,
+      });
+      this._firstTracer = true;
+    }
+
+
     const listEl = this._listRef.current;
     const lastPostVisible = stopIndex === items.length - 1;
 
@@ -488,28 +489,28 @@ class StreamViewComponent extends Component<Props> {
                 loadingStatus === STATUS.FAILED ? (
                   this._onInitialDataFailed
                 ) : (
-                  <>
-                    <AnchorButton {...anchorButtonProps} />
-                    <JuiInfiniteList
-                      contentStyle={this._contentStyleGen(height)}
-                      ref={this._listRef}
-                      height={height}
-                      stickToBottom
-                      loadMoreStrategy={this._loadMoreStrategy}
-                      initialScrollToIndex={initialPosition}
-                      minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
-                      loadInitialData={this._loadInitialPosts}
-                      loadMore={loadMore}
-                      loadingRenderer={this._defaultLoading}
-                      hasMore={hasMore}
-                      loadingMoreRenderer={this._defaultLoadingMore}
-                      onVisibleRangeChange={this._handleVisibilityChanged}
-                      onBottomStatusChange={this._bottomStatusChangeHandler}
-                    >
-                      {this._renderStreamItems()}
-                    </JuiInfiniteList>
-                  </>
-                )
+                    <>
+                      <AnchorButton {...anchorButtonProps} />
+                      <JuiInfiniteList
+                        contentStyle={this._contentStyleGen(height)}
+                        ref={this._listRef}
+                        height={height}
+                        stickToBottom
+                        loadMoreStrategy={this._loadMoreStrategy}
+                        initialScrollToIndex={initialPosition}
+                        minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
+                        loadInitialData={this._loadInitialPosts}
+                        loadMore={loadMore}
+                        loadingRenderer={this._defaultLoading}
+                        hasMore={hasMore}
+                        loadingMoreRenderer={this._defaultLoadingMore}
+                        onVisibleRangeChange={this._handleVisibilityChanged}
+                        onBottomStatusChange={this._bottomStatusChangeHandler}
+                      >
+                        {this._renderStreamItems()}
+                      </JuiInfiniteList>
+                    </>
+                  )
               }
             </Observer>
           )}

@@ -6,3 +6,6 @@
 
 export const MODULE_NAME = 'TelephonyModule';
 export const MODULE_IDENTIFY = Symbol(MODULE_NAME);
+export const isOnline = () => {
+  return window.navigator.onLine;
+};

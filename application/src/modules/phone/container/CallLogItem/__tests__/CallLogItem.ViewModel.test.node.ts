@@ -251,7 +251,7 @@ describe('CallLogItemViewModel', () => {
     t1() {
       const vm = new CallLogItemViewModel({ id: 'id' });
       expect(vm.callLogResponsiveMap).toEqual({
-        buttonToShow: 3,
+        buttonToShow: 4,
         showCallInfo: true,
         dateFormat: DATE_FORMAT.full,
       });

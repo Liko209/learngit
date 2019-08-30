@@ -12,6 +12,7 @@ import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header, TopBarAvatar } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
+import { ShareStatusDialog } from './ShareStatusDialog';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { TelephonyPOC } from './TelephonyPOC'
@@ -23,6 +24,7 @@ import { IUser } from '../../../models';
 import { TelephonyDialog, TelephonyMinimizeWindow, ContactSearchList } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
+import { RecentConversationDialog } from './RecentConversationDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
@@ -35,7 +37,7 @@ import { BlockNumberDialog } from './PhoneTab/index';
 import { AvatarEditDialog } from './AvatarEditDialog';
 import { ProfileEditDialog } from './ProfileEditDialog';
 import { AddressConfirmDialog, EmergencyConfirmDialog } from './E911';
-import { MessageSettingPage } from './SettingTab/MessageSettingPage';
+import { NotificationPreferencesDialog } from './NotificationPreferences';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
@@ -170,6 +172,10 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(AddTeamMembers);
   }
 
+  get ShareStatusDialog() {
+    return this.getComponent(ShareStatusDialog);
+  }
+
   get teamSettingDialog() {
     return this.getComponent(TeamSettingDialog)
   }
@@ -285,6 +291,10 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(MoreActionOnFile);
   }
 
+  get recentConversationDialog(){
+    return this.getComponent(RecentConversationDialog);
+  }
+
   get moreActionOnViewer() {
     return this.getComponent(MoreActionOnViewer);
   }
@@ -315,5 +325,9 @@ export class HomePage extends BaseWebComponent {
 
   get emergencyConfirmDialog() {
     return this.getComponent(EmergencyConfirmDialog);
+  }
+
+  get notificationPreferencesDialog() {
+    return this.getComponent(NotificationPreferencesDialog);
   }
 }

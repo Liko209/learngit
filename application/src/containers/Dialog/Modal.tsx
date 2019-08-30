@@ -6,6 +6,7 @@
 import React from 'react';
 import { JuiDialog, JuiDialogProps } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
+import { dataAnalysis } from 'foundation/analysis';
 
 type Props = {
   componentProps?: any;
@@ -14,17 +15,38 @@ type Props = {
 function modal(
   component: React.ComponentType<any> | JSX.Element,
   props: Props,
+  key?: string,
 ) {
+  const { onClose, ...rest } = props;
+  const defaultClose = (
+    e: React.MouseEvent,
+    reason: 'backdropClick' | 'escapeKeyDown',
+  ) => {
+    if (onClose) {
+      onClose && onClose(e);
+    } else {
+      portalManager.dismissLast();
+    }
+    if (reason === 'escapeKeyDown') {
+      dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
+        shortcut: 'escape',
+      });
+    }
+  };
   const Component = component;
   const Dialog = () => (
-      <JuiDialog {...props}>
-        {Component instanceof Function ? <Component /> : Component}
-      </JuiDialog>
+    <JuiDialog {...rest} onClose={defaultClose}>
+      {Component instanceof Function ? <Component /> : Component}
+    </JuiDialog>
   );
 
   const { dismiss, show } = portalManager.wrapper(Dialog);
 
-  show();
+  if (key) {
+    show({ key });
+  } else {
+    show();
+  }
   return {
     dismiss,
   };

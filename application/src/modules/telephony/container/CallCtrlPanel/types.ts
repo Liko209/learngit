@@ -12,7 +12,8 @@ type CallCtrlPanelViewProps = {
   name?: string;
   phone?: string;
   uid?: number;
-  direction: CALL_DIRECTION;
+  direction?: CALL_DIRECTION;
+  isConference: boolean;
 };
 
 export { CallCtrlPanelProps, CallCtrlPanelViewProps };

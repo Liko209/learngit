@@ -12,7 +12,7 @@ export class SearchDialog extends BaseWebComponent {
   }
 
   async ensureDismiss() {
-    await H.retryUntilPass(async ()=>{
+    await H.retryUntilPass(async () => {
       if (!await this.exists) {
         return
       }
@@ -46,7 +46,7 @@ export class SearchDialog extends BaseWebComponent {
   }
 
   get clearButton() {
-    return this.getSelectorByAutomationId('global-search-clear');
+    return this.getSelectorByAutomationId('search-input-clear');
   }
 
   async clickClearButton() {
@@ -537,8 +537,16 @@ class SearchItem extends BaseWebComponent {
     return this.getSelectorByIcon('messages', this.messageButton);
   }
 
-  async HoverAndClickMessageButton() {
+  get conferenceButton() {
+    return this.getSelectorByAutomationIdUnderSelf('audio-conference-btn');
+  }
+
+  async hoverAndClickMessageButton() {
     await this.t.hover(this.self).click(this.messageButton);
+  }
+
+  async hoverAndClickConferenceButton() {
+    await this.t.hover(this.self).click(this.conferenceButton);
   }
 }
 

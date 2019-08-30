@@ -3,16 +3,14 @@
  * @Date: 2019-03-08 16:01:57
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
 import 'emoji-mart/css/emoji-mart.css';
-import {
-  Picker, EmojiData, EmojiSet, EmojiSheetSize,
-} from 'emoji-mart';
-import React, { MouseEvent } from 'react';
+import { Picker, EmojiData, EmojiSet, EmojiSheetSize } from 'emoji-mart';
 import { JuiIconButton, JuiToggleButton } from '../../components/Buttons';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { ExcludeList } from './excludeList';
 import { JuiPopperMenu, AnchorProps } from '../PopperMenu';
-import { HotKeys } from '../../hoc/HotKeys';
+import { HotKeys, HotKeysProps } from '../../hoc/HotKeys';
 import styled from '../../foundation/styled-components';
 import { grey, spacing, height } from '../../foundation/utils';
 import { withTheme } from 'styled-components';
@@ -33,7 +31,7 @@ type Props = {
 };
 type ComponentProps = {
   isToggleWrapShow?: boolean;
-}
+};
 const StyledCutomizedComponentContainer = styled.span<ComponentProps>`
   display: ${({ isToggleWrapShow }) => (isToggleWrapShow ? 'flex' : 'none')};
   align-items: center;
@@ -82,7 +80,6 @@ let emojiMartContainer: HTMLCollectionOf<Element>;
 
 type State = {
   open: boolean;
-  anchorEl: EventTarget & Element | null;
   isToggleWrapShow: boolean;
 };
 
@@ -95,12 +92,17 @@ function backgroundImageFn(set: EmojiSet, sheetSize: EmojiSheetSize) {
 }
 
 class JuiEmoji extends React.PureComponent<EmojiProps, State> {
+  private _buttonRef = React.createRef<HTMLButtonElement>();
+  private _keyMap: HotKeysProps['keyMap'];
+
   constructor(props: EmojiProps) {
     super(props);
     this.state = {
-      anchorEl: null,
       open: false,
       isToggleWrapShow: true,
+    };
+    this._keyMap = {
+      esc: this._handleClose,
     };
   }
 
@@ -129,18 +131,16 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
     this.setState({ isToggleWrapShow: true });
   };
 
-  handleClose = () => {
+  private _handleClose = () => {
     this.setState({
       open: false,
       isToggleWrapShow: true,
     });
   };
 
-  private _handleClickEvent = (evt: MouseEvent) => {
-    const { currentTarget } = evt;
+  private _handleClickEvent = () => {
     this.setState(
       state => ({
-        anchorEl: currentTarget,
         open: !state.open,
       }),
       () => {
@@ -159,18 +159,19 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
   };
 
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => (
-      <JuiIconButton
-        data-test-automation-id="conversation-chatbar-emoji-button"
-        tooltipTitle={this.props.tooltip}
-        onClick={this._handleClickEvent}
-        size="medium"
-        tooltipForceHide={tooltipForceHide}
-      >
-        {this.props.handlerIcon}
-      </JuiIconButton>
+    <JuiIconButton
+      buttonRef={this._buttonRef}
+      data-test-automation-id="conversation-chatbar-emoji-button"
+      tooltipTitle={this.props.tooltip}
+      onClick={this._handleClickEvent}
+      size="medium"
+      tooltipForceHide={tooltipForceHide}
+    >
+      {this.props.handlerIcon}
+    </JuiIconButton>
   );
 
-  private isIndexOf = (source: string[], target: string[]) => {
+  private _isIndexOf = (source: string[], target: string[]) => {
     let isIndex = true;
     target.forEach(name => {
       if (source.indexOf(name as string) > -1) {
@@ -179,17 +180,21 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
     });
     return isIndex;
   };
-  handleClick = (emoji: EmojiData) => {
+
+  private _handleClick = (emoji: EmojiData) => {
     const { handleEmojiClick, isKeepOpen } = this.props;
     handleEmojiClick(emoji, () => {
       if (!isKeepOpen) {
-        this.handleClose();
+        this._handleClose();
       }
     });
   };
 
+  private _filterEmoji = (emoji: any) =>
+    this._isIndexOf(ExcludeList, emoji.short_names);
+
   render() {
-    const { anchorEl, open } = this.state;
+    const { open } = this.state;
     const {
       sheetSize,
       set,
@@ -202,17 +207,13 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
       i18nObj,
     } = this.props;
     return (
-      <HotKeys
-        keyMap={{
-          esc: this.handleClose,
-        }}
-      >
+      <HotKeys keyMap={this._keyMap}>
         <StyledEmojiWrapper>
           <JuiPopperMenu
             automationId="conversation-chatbar-emoji-menu"
             open={open}
-            anchorEl={anchorEl}
-            onClose={this.handleClose}
+            anchorEl={this._buttonRef.current}
+            onClose={this._handleClose}
             Anchor={this._IconButton}
             placement="bottom-start"
             noTransition
@@ -225,8 +226,8 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
               title={title || ''}
               emoji={defaultSelector || ''}
               set={set}
-              onClick={this.handleClick}
-              emojisToShowFilter={(emoji: any) => this.isIndexOf(ExcludeList, emoji.short_names)}
+              onClick={this._handleClick}
+              emojisToShowFilter={this._filterEmoji}
               backgroundImageFn={backgroundImageFn}
             />
             <StyledCutomizedComponentContainer

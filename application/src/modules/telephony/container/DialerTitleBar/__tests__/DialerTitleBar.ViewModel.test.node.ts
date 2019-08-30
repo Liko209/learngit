@@ -11,7 +11,9 @@ import { getEntity } from '@/store/utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { observable } from 'mobx';
 
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 jest.mock('@/store/utils');
+
 decorate(injectable(), TelephonyStore);
 
 container.bind(TelephonyStore).to(TelephonyStore);
@@ -37,7 +39,7 @@ describe('dialerTitleBarViewModel', () => {
     expect((dialerTitleBarViewModel as any)._intervalId).toBeDefined();
     obj.callState = CALL_STATE.CONNECTING;
     expect(dialerTitleBarViewModel.isDialer).toBeFalsy();
-    obj.callState = CALL_STATE.DISCONNECTED;
+    obj.callState = CALL_STATE.DISCONNECTING;
     expect(dialerTitleBarViewModel.isDialer).toBeTruthy();
     expect((dialerTitleBarViewModel as any)._intervalId).toBeUndefined();
   });

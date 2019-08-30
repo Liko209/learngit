@@ -47,6 +47,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   color: #9e9e9e;
 }
 
+.c4.c4.c4.c4.disabled {
+  background-color: inherit;
+}
+
 .c4.c4.c4.c4.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -88,9 +92,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -139,8 +141,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 }
 
 .c2 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -286,6 +287,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   color: #9e9e9e;
 }
 
+.c7.c7.c7.c7.disabled {
+  background-color: inherit;
+}
+
 .c7.c7.c7.c7.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -326,6 +331,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 
 .c4.c4:active .icon {
   color: #edb63c;
+}
+
+.c4.c4.c4.c4.disabled {
+  background-color: inherit;
 }
 
 .c4.c4.c4.c4.disabled .icon {
@@ -369,9 +378,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -420,8 +427,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 }
 
 .c2 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -706,6 +712,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   color: #9e9e9e;
 }
 
+.c12.c12.c12.c12.disabled {
+  background-color: inherit;
+}
+
 .c12.c12.c12.c12.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
@@ -746,6 +756,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 
 .c9.c9:active .icon {
   color: #edb63c;
+}
+
+.c9.c9.c9.c9.disabled {
+  background-color: inherit;
 }
 
 .c9.c9.c9.c9.disabled .icon {
@@ -829,9 +843,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -880,8 +892,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 }
 
 .c7 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;

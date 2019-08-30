@@ -2,6 +2,9 @@
 
 exports[`RecentCallItemView render should render each record item [JPT-2316, JPT-2317] 1`] = `
 <Styled(JuiListItem)
+  button={true}
+  onClick={[Function]}
+  singleLine={false}
   tabIndex={0}
 >
   <styled.div>

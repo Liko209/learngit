@@ -18,9 +18,12 @@ import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { alertE911Dialog } from '../E911Dialog';
 import { DialerUIConfig } from '../../Dialer.config';
 
-class DialerViewModel extends StoreViewModel<DialerProps> implements DialerViewProps {
+class DialerViewModel extends StoreViewModel<DialerProps>
+  implements DialerViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  private _telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
   private _DialerUIConfig: DialerUIConfig = container.get(DialerUIConfig);
 
   dialerId = this._telephonyStore.dialerId;
@@ -41,7 +44,10 @@ class DialerViewModel extends StoreViewModel<DialerProps> implements DialerViewP
     this.reaction(
       () => this.callWindowState,
       async (callWindowState: CALL_WINDOW_STATUS) => {
-        if (!this.shouldDisplayDialer || callWindowState === CALL_WINDOW_STATUS.MINIMIZED) {
+        if (
+          !this.shouldDisplayDialer ||
+          callWindowState === CALL_WINDOW_STATUS.MINIMIZED
+        ) {
           return;
         }
         const needConfirmE911 = await this._telephonyService.needConfirmE911();
@@ -52,7 +58,11 @@ class DialerViewModel extends StoreViewModel<DialerProps> implements DialerViewP
         // getDialerMarked()
         // if user open e911 dialog and click cancel.
         // Next time open dialer not show confirm dialog
-        if (needConfirmE911 && this.shouldShowConfirm && !this._DialerUIConfig.getDialerMarked()) {
+        if (
+          needConfirmE911 &&
+          this.shouldShowConfirm &&
+          !this._DialerUIConfig.getDialerMarked()
+        ) {
           return this.showConfirmDialog();
         }
       },
@@ -118,7 +128,10 @@ class DialerViewModel extends StoreViewModel<DialerProps> implements DialerViewP
 
   @computed
   get shouldDisplayDialer() {
-    return this._telephonyStore.shouldDisplayDialer;
+    return (
+      this._telephonyStore.shouldDisplayDialer ||
+      this._telephonyStore.isTransferPage
+    );
   }
 
   @computed
