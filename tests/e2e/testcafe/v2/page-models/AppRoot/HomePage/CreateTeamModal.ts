@@ -142,7 +142,7 @@ class BaseTeamSetting extends BaseWebComponent {
 
 export class CreateTeamModal extends BaseTeamSetting {
   get exists() {
-    return this.title.withExactText('Create Team').exists
+    return this.title.withExactText('Create team').exists
   }
 
   get cancelButton() {

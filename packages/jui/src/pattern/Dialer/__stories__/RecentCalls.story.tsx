@@ -23,7 +23,7 @@ import {
 } from '..';
 
 const ContactInfo = () => (
-  <ContactItem disableButton isUnread={false}>
+  <ContactItem button={false} isUnread={false}>
     <JuiListItemAvatar>
       <JuiAvatar src={avatarImg} />
     </JuiListItemAvatar>
@@ -32,7 +32,7 @@ const ContactInfo = () => (
 );
 
 const ContactInfo1 = () => (
-  <ContactItem disableButton isUnread={false}>
+  <ContactItem button={false} isUnread={false}>
     <JuiListItemAvatar>
       <JuiAvatar src={avatarImg} />
     </JuiListItemAvatar>

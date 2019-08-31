@@ -23,7 +23,7 @@ import {
   CALL_ACTION_ERROR_CODE,
   RINGER_ADDITIONAL_TYPE,
   TRANSFER_TYPE,
-  CallOptions,
+  CallOptions
 } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
@@ -565,7 +565,7 @@ class TelephonyService {
     }
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
-      { fromNumber, accessCode },
+      { fromNumber, ...options },
     );
 
     switch (true) {
@@ -661,11 +661,10 @@ class TelephonyService {
     return this._serverTelephonyService.getSwitchCall();
   }
 
-  directCall = async (toNumber: string) => {
-
+  directCall = async (toNumber: string, options?: CallOptions) => {
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4275
-    if (this._serverTelephonyService.getAllCallCount() > 0) {
+    if (this._serverTelephonyService.getAllCallCount() > 0 && (!options || (options && !options.extraCall))) {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
@@ -675,17 +674,18 @@ class TelephonyService {
 
     const isShortNumber = await this.isShortNumber(toNumber);
     const result = await this.ensureCallPermission(() => {
-      return this._makeCall(toNumber)
+      return this._makeCall(toNumber, options)
     }, { isShortNumber });
     return result;
   };
 
-  hangUp = () => {
-    if (this._callEntityId) {
+  hangUp = (callId?: number) => {
+    const callEntityId = callId || this._callEntityId;
+    if (callEntityId) {
       mainLogger.info(
-        `${TelephonyService.TAG}Hang up call id=${this._callEntityId}`,
+        `${TelephonyService.TAG}Hang up call id=${callEntityId}`,
       );
-      this._serverTelephonyService.hangUp(this._callEntityId);
+      this._serverTelephonyService.hangUp(callEntityId);
       this._resetCallState();
     }
   };
@@ -1246,6 +1246,21 @@ class TelephonyService {
         );
       }
     });
+  }
+
+  joinAudioConference = async (phoneNumber: string, accessCode: string) => {
+    if (this._serverTelephonyService.getAllCallCount() > 0) {
+      mainLogger.warn(
+        `${TelephonyService.TAG}Only allow to make one call at the same time`,
+      );
+      return;
+    }
+    const isShortNumber = await this.isShortNumber(phoneNumber);
+    const ret = await this.ensureCallPermission(() => {
+      return this._makeCall(phoneNumber, { accessCode })
+    }, { isShortNumber });
+
+    return ret;
   }
 
   transfer = async (type: TRANSFER_TYPE, transferTo: string) => {

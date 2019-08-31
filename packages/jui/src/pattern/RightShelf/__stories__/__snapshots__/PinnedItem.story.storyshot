@@ -20,12 +20,6 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
   fill: #9e9e9e;
 }
 
-.c6 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
 .c6.c6 {
   padding: 0;
 }
@@ -185,6 +179,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
         <div
           className="MuiListItemText-root c6"
           data-test-automation-id="pinned-creator"
+          flex="1 1 auto"
         >
           <span
             className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -257,6 +252,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
         <div
           className="MuiListItemText-root c6"
           data-test-automation-id="pinned-creator"
+          flex="1 1 auto"
         >
           <span
             className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -329,6 +325,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
         <div
           className="MuiListItemText-root c6"
           data-test-automation-id="pinned-creator"
+          flex="1 1 auto"
         >
           <span
             className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -401,6 +398,7 @@ exports[`Storyshots Pattern/ConversationRightShelf PinnedItem: Pattern/Conversat
         <div
           className="MuiListItemText-root c6"
           data-test-automation-id="pinned-creator"
+          flex="1 1 auto"
         >
           <span
             className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
