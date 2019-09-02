@@ -462,22 +462,28 @@ class TelephonyStore {
     if (this.isWarmTransferPage) {
       this.leaveWarmTransferPage();
     }
-    if (this.isTransferPage) {
-      this.backToDialerFromTransferPage();
-    }
+
     if (this.isEndOtherCall) {
       this.quitKeypad();
       this._clearEnteredKeys();
       this._clearTransferString();
       this.isConference = false;
+      if (this.isTransferPage) {
+        this.backToDialerFromTransferPage();
+      }
       return;
     }
+
     // end incoming call
     if (this.isMultipleCall && this.isEndCurrentCall) {
       this.resetReply();
       this._clearForwardString();
       this.backIncoming();
       return;
+    }
+
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
     }
 
     this.resetReply();
