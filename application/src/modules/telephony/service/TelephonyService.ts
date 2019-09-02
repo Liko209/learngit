@@ -1217,14 +1217,14 @@ class TelephonyService {
   startAudioConference = async (groupId: number) => {
 
     if (this._isStartingConference) {
-      return Promise.resolve(true);
+      return true;
     }
     if (this._serverTelephonyService.getAllCallCount() > 0) {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
       // when multiple call don't hangup
-      return Promise.resolve(true);
+      return true;
     }
 
     this._isStartingConference = true;
