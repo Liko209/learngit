@@ -302,4 +302,5 @@ export {
   NOTIFICATION_TYPE,
   ERROR_TYPES,
   getErrorType,
+  wrapHandleError,
 };

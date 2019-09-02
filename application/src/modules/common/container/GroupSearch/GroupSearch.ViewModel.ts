@@ -6,18 +6,20 @@
 
 import { GroupSearchProps, IGroupSearchViewModel } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { SearchService } from 'sdk/module/search';
 import { observable, computed } from 'mobx';
 import GroupModel from '@/store/models/Group';
 import { SortableModel } from 'sdk/framework/model';
 import { Group } from 'sdk/module/group/entity';
 import { mapGroupModelToItem } from './lib';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import PersonModel from '@/store/models/Person';
+import { Person } from 'sdk/module/person/entity';
+import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactSearchItem';
 
 export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
   implements IGroupSearchViewModel {
   @observable list: number[] = [];
-  searchResult: SortableModel<Group>[];
+  searchResult: SortableModel<Group | Person>[];
 
   @computed
   get size() {
@@ -26,27 +28,25 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
 
   getItemComponent = (id: number) => {
     const sortableModel = this.searchResult[this.list.indexOf(id)];
-    const groupModel = new GroupModel(sortableModel.entity);
-    return mapGroupModelToItem(groupModel);
+    const type = GlipTypeUtil.extractTypeId(id);
+    switch (type) {
+      case TypeDictionary.TYPE_ID_PERSON: {
+        const personModel = new PersonModel(sortableModel.entity as Person);
+        return {
+          Item: ContactSearchItem,
+          props: { itemId: personModel.id, size: 'large' },
+        };
+      }
+      default: {
+        const groupModel = new GroupModel(sortableModel.entity as Group);
+        return mapGroupModelToItem(groupModel);
+      }
+    }
   };
 
   searchGroups = async (searchKey: string) => {
-    const searchService = ServiceLoader.getInstance<SearchService>(
-      ServiceConfig.SEARCH_SERVICE,
-    );
-    const result = await searchService.doFuzzySearchAllGroups(searchKey, {
-      myGroupsOnly: true,
-      fetchAllIfSearchKeyEmpty: true,
-      sortFunc: (lhs, rhs) => {
-        const lhsModifiedAt = lhs.entity.most_recent_content_modified_at;
-        const rhsModifiedAt = rhs.entity.most_recent_content_modified_at;
-
-        if (lhsModifiedAt < rhsModifiedAt) return 1;
-        if (lhsModifiedAt > rhsModifiedAt) return -1;
-        return 0;
-      },
-    });
-    this.searchResult = result.sortableModels;
-    this.list = result.sortableModels.map(item => item.id);
+    const result = await this.props.searchFunc(searchKey);
+    this.searchResult = result;
+    this.list = result.map(item => item.id);
   };
 }
