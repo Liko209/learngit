@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/Setting/NotificationAndSounds/MessageSettings.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}
