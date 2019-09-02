@@ -808,26 +808,6 @@ describe('TelephonyService', () => {
     ).toBe('12345');
   });
 
-  it('should decrease the string length on the input field', () => {
-    telephonyService.maximize();
-    const inputString = '1234';
-    telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.deleteInputString(false, 3, 3);
-    expect(
-      (telephonyService as TelephonyService)._telephonyStore.inputString,
-    ).toBe('123');
-  });
-
-  it('should clear all the string length on the input field', () => {
-    telephonyService.maximize();
-    const inputString = '1234';
-    telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.deleteInputString(true);
-    expect(
-      (telephonyService as TelephonyService)._telephonyStore.inputString,
-    ).toBe('');
-  });
-
   it('Should show the toast when initiate a call to an invalid number from matched result [JPT-254]', async () => {
     mockedPhoneNumberService.isValidNumber = jest.fn().mockReturnValue(false);
     await (telephonyService as TelephonyService).directCall(v4());
@@ -1145,6 +1125,21 @@ describe('TelephonyService', () => {
         telephonyService.makeRCPhoneCall('666');
         expect(urlTester).toHaveBeenCalledWith(
           `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
+        );
+      }),);
+    ['RC', 'ATT', 'TELUS'].forEach(i =>
+      it(`should build correct url for ${i} when given access code`, () => {
+        const RCPhoneCallURL = {
+          RC: 'rcmobile',
+          ATT: 'attvr20',
+          TELUS: 'rctelus',
+        };
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockImplementation(() => ({ rcBrand: i }));
+        telephonyService.makeRCPhoneCall('666', '123');
+        expect(urlTester).toHaveBeenCalledWith(
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666,,123#')}`,
         );
       }),);
     it('should show dialog when rc phone is uninstalled [JPT-2403]', async () => {
