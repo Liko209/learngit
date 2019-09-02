@@ -10,6 +10,7 @@ import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { HoverControllerViewModel } from '@/modules/common/container/Layout/HoverController';
 import {
   ActiveVoicemailId,
   FetchVoicemailData,
@@ -20,7 +21,6 @@ import {
 } from './types';
 import { INITIAL_COUNT } from './config';
 import { VoicemailListHandler } from './VoicemailListHandler';
-import { HoverControllerViewModel } from '../HoverController';
 import { container } from 'framework/ioc';
 import { PhoneStore } from '../../store';
 

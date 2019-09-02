@@ -8,8 +8,13 @@ import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
+import { getEntity } from '@/store/utils';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { ENTITY_NAME } from '@/store';
 
 jest.mock('../../../service/TelephonyService');
+jest.mock('@/store/utils');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
@@ -57,6 +62,55 @@ describe('TransferViewModel', () => {
         TELEPHONY_SERVICE,
       );
       expect(_telephonyService.transfer).toHaveBeenCalled();
+    });
+  });
+
+  describe('isTransferCallConnected()', () => {
+    it('should disabled complete transfer action button [JPT-2890]', () => {
+      (getEntity as jest.Mock).mockImplementation((type, id) => {
+        if (type === ENTITY_NAME.CALL) {
+          return { id, callState: '' };
+        }
+        return id;
+      });
+      // @ts-ignore
+      vm._telephonyStore._sortableListHandler.sortableListStore = {
+        getIds: [1, 2],
+      };
+
+      expect(vm.isTransferCallConnected).toBeFalsy();
+    });
+
+    it('should not disabled complete transfer action button [JPT-2890]', () => {
+      (getEntity as jest.Mock).mockImplementation((type, id) => {
+        if (type === ENTITY_NAME.CALL) {
+          return { id, callState: CALL_STATE.CONNECTED };
+        }
+        return id;
+      });
+      // @ts-ignore
+      vm._telephonyStore._sortableListHandler.sortableListStore = {
+        getIds: [1, 2],
+      };
+
+      expect(vm.isTransferCallConnected).toBeTruthy();
+    });
+
+    it('should disabled complete transfer action button when in transferring status [JPT-2768]', () => {
+      (getEntity as jest.Mock).mockImplementation((type, id) => {
+        if (type === ENTITY_NAME.CALL) {
+          return { id, callState: CALL_STATE.CONNECTED };
+        }
+        return id;
+      });
+      // @ts-ignore
+      vm._telephonyStore._sortableListHandler.sortableListStore = {
+        getIds: [1, 2],
+      };
+      expect(vm.isTransferCallConnected).toBeTruthy();
+
+      vm._telephonyStore.processTransfer();
+      expect(vm.isTransferCallConnected).toBeFalsy();
     });
   });
 });

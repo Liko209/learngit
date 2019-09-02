@@ -152,6 +152,14 @@ class AnalyticsCollector {
     });
   }
 
+  contactActions(source: string, action: string, contactType: string) {
+    dataAnalysis.track('Jup_Web/DT_contacts_actionOverContact', {
+      action,
+      source,
+      contactType,
+    });
+  }
+
   // [FIJI-4573] Segment - Add event - open contact's min profile
   openMiniProfile(source: string) {
     dataAnalysis.track('Jup_Web/DT_profile_openMiniProfile', {
@@ -365,6 +373,14 @@ class AnalyticsCollector {
     });
   }
 
+  joinConferenceCall(type?: string) {
+    const source =
+      type === 'link' ? 'click dial-in number' : 'click join button';
+    dataAnalysis.track('Jup_Web/DT_msg_joinConferenceCall', {
+      source,
+    });
+  }
+
   directToTransferPage() {
     dataAnalysis.page('Jup_Web/DT_phone_transferCall');
   }
@@ -373,6 +389,18 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_phone_transferActions', {
       action,
     });
+  }
+
+  directToWarmTransferPage() {
+    dataAnalysis.page('	Jup_Web/DT_phone_completeTransfer');
+  }
+
+  completeTransfer() {
+    dataAnalysis.track('Jup_Web/DT_phone_completeTransferCall');
+  }
+
+  cancelTransferCall() {
+    dataAnalysis.track('Jup_Web/DT_phone_cancelTransferCall');
   }
   // [FIJI-8195]
   login() {

@@ -18,7 +18,7 @@ import {
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
-import { HoverControllerBaseProps } from '../HoverController';
+import { HoverControllerBaseProps } from '@/modules/common/container/Layout/HoverController';
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,

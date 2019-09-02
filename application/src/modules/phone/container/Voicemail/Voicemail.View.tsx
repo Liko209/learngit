@@ -30,7 +30,7 @@ import {
 } from './config';
 import noVoicemailImage from '../images/no-voicemail.svg';
 import noResultImage from '../images/no-result.svg';
-import { HoverControllerBaseProps } from '../HoverController';
+import { HoverControllerBaseProps } from '@/modules/common/container/Layout/HoverController';
 
 const DELAY_DEBOUNCE = 300;
 
@@ -73,6 +73,7 @@ class VoicemailWrapper extends Component<
       <JuiPhoneFilter
         placeholder={t('voicemail.inputFilter')}
         clearButtonLabel={t('voicemail.clearFilter')}
+        tooltip={t('common.clear')}
         onChange={this._onFilterChange}
       />
     );

@@ -113,10 +113,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   cursor: default;
 }
 
-.c1 {
+.c1.c1 {
+  position: relative;
   height: 200px;
-  background-color: #bfbfbf;
-  opacity: 0.36;
+  background-color: #fafafa;
+  background-size: cover;
 }
 
 .c2.c2 {
@@ -194,6 +195,9 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     <div
       className="MuiCardMedia-root c1 "
       data-test-automation-id="fileCardMedia"
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -297,6 +301,9 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     <div
       className="MuiCardMedia-root c1 "
       data-test-automation-id="fileCardMedia"
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -400,6 +407,9 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     <div
       className="MuiCardMedia-root c1 "
       data-test-automation-id="fileCardMedia"
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -503,6 +513,9 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     <div
       className="MuiCardMedia-root c1 "
       data-test-automation-id="fileCardMedia"
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",

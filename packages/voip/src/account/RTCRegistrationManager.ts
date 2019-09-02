@@ -180,6 +180,10 @@ class RTCRegistrationManager extends EventEmitter2
     );
   }
 
+  public getRegistrationStatusCode(): number {
+    return !this._userAgent ? -1 : this._userAgent.getStatusCode();
+  }
+
   public makeCall(
     to: string,
     delegate: IRTCCallDelegate,
