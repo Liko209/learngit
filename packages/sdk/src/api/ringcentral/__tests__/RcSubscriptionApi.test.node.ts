@@ -29,13 +29,12 @@ describe('RcSubscriptionApi', () => {
       };
       await RcSubscriptionApi.createSubscription(params);
 
-      expect(RcSubscriptionApi.rcNetworkClient.http).toBeCalledWith({
+      expect(RcSubscriptionApi.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: false,
         data: params,
         headers: { 'Content-Type': 'application/json' },
         method: 'post',
         path: '/v1.0/subscription',
-        retryCount: 3,
         via: 0,
       });
     });
@@ -44,11 +43,10 @@ describe('RcSubscriptionApi', () => {
   describe('renewSubscription', () => {
     it('should be called with correct params', async () => {
       await RcSubscriptionApi.renewSubscription('sub_id');
-      expect(RcSubscriptionApi.rcNetworkClient.http).toBeCalledWith({
+      expect(RcSubscriptionApi.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: false,
         method: 'post',
         path: '/v1.0/subscription/sub_id/renew',
-        retryCount: 3,
         via: 0,
       });
     });
@@ -59,13 +57,12 @@ describe('RcSubscriptionApi', () => {
       await RcSubscriptionApi.updateSubscription('sub_id', {
         event: [],
       } as any);
-      expect(RcSubscriptionApi.rcNetworkClient.http).toBeCalledWith({
+      expect(RcSubscriptionApi.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: false,
         data: { event: [] },
         headers: { 'Content-Type': 'application/json' },
         method: 'put',
         path: '/v1.0/subscription/sub_id',
-        retryCount: 3,
         via: 0,
       });
     });
@@ -74,11 +71,10 @@ describe('RcSubscriptionApi', () => {
   describe('cancelSubscription', () => {
     it('should be called with correct params', async () => {
       await RcSubscriptionApi.cancelSubscription('sub_id');
-      expect(RcSubscriptionApi.rcNetworkClient.http).toBeCalledWith({
+      expect(RcSubscriptionApi.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: false,
         method: 'delete',
         path: '/v1.0/subscription/sub_id',
-        retryCount: 3,
         via: 0,
       });
     });
@@ -87,11 +83,10 @@ describe('RcSubscriptionApi', () => {
   describe('getSubscription', () => {
     it('should be called with correct params', async () => {
       await RcSubscriptionApi.getSubscription('sub_id');
-      expect(RcSubscriptionApi.rcNetworkClient.http).toBeCalledWith({
+      expect(RcSubscriptionApi.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: false,
         method: 'get',
         path: '/v1.0/subscription/sub_id',
-        retryCount: 3,
         via: 0,
       });
     });

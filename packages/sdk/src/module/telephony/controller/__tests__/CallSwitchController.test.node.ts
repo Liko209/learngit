@@ -596,7 +596,7 @@ describe('CallSwitchController', () => {
       });
 
       telephonyService.getById = jest.fn().mockResolvedValue(callEntity);
-      await callSwitchController.onCallEnded(callEntity.id);
+      await callSwitchController['_onCallEnded'](callEntity as any);
       expect(callSwitchController['_endedCalls'].length).toEqual(1);
       expect(callSwitchController['_currentActiveCalls'].length).toEqual(0);
     });
@@ -609,15 +609,15 @@ describe('CallSwitchController', () => {
         to_tag: 't',
       };
 
-      telephonyService.getById = jest.fn().mockResolvedValue(callEntity);
-      await callSwitchController.onCallEnded(callEntity.id);
+      await callSwitchController['_onCallEnded'](callEntity as any);
       expect(callSwitchController['_endedCalls'].length).toEqual(0);
     });
   });
 
   describe('_handleCallStateChanged', () => {
     it('should only handle update type and save ended calls', () => {
-      callSwitchController['_syncLatestPresenceAfterCallEnd'] = jest.fn();
+      (callSwitchController['_syncLatestPresenceAfterCallEnd'] as any) = jest.fn();
+      callSwitchController['_onCallEnded'] = jest.fn();
       callSwitchController['_updateBannerStatus'] = jest.fn();
       const payLoad: any = {
         type: EVENT_TYPES.UPDATE,
@@ -644,8 +644,15 @@ describe('CallSwitchController', () => {
           ]),
         },
       };
+
       callSwitchController['_handleCallStateChanged'](payLoad);
       expect(callSwitchController['_updateBannerStatus']).toHaveBeenCalled();
+      expect(callSwitchController['_onCallEnded']).toHaveBeenCalledWith({
+        call_id: '1',
+        call_state: 'Disconnecting',
+        from_tag: 'f',
+        to_tag: 't',
+      });
       expect(
         callSwitchController['_syncLatestPresenceAfterCallEnd'],
       ).toHaveBeenCalled();

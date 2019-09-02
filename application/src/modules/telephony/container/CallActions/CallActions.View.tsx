@@ -78,7 +78,7 @@ class CallActionsViewComponent extends Component<Props> {
   }
 
   render() {
-    const { callActionsMap, isIncomingPage } = this.props;
+    const { callActionsMap, isIncomingPage, isWarmTransferPage } = this.props;
     return (
       <JuiKeypadAction removeMargin={isIncomingPage}>
         <JuiPopoverMenu
@@ -91,6 +91,7 @@ class CallActionsViewComponent extends Component<Props> {
             vertical: 'top',
             horizontal: 'center',
           }}
+          disabled={isWarmTransferPage}
         >
           <JuiMenuList data-test-automation-id="telephony-more-option-menu">
             {Object.keys(callActions).map((key: string) => {

@@ -20,11 +20,12 @@ import {
   JServerError,
   ERROR_CODES_SERVER,
 } from '../../../error';
-import { AccountService } from '../service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TaskController } from 'sdk/framework/controller/impl/TaskController';
 import { ReLoginGlipStrategy } from '../strategy/ReLoginGlipStrategy';
 import { dataCollectionHelper } from 'sdk/framework';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { AccountService } from '../service';
 
 interface ILogin {
   username: string;
@@ -77,14 +78,26 @@ class AuthController {
   }
 
   async makeSureUserInWhitelist() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+
     const authConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).authUserConfig;
+
     const rc_token_info = authConfig.getRCToken();
     if (rc_token_info && rc_token_info.owner_id) {
-      await this._accountManager.makeSureUserInWhitelist(
-        rc_token_info.owner_id,
-      );
+      const email = await rcInfoService.getUserEmail();
+      if (email) {
+        const prefix = email.split('@').pop();
+        if (prefix) {
+          await this._accountManager.makeSureUserInWhitelist(prefix, rc_token_info.owner_id);
+        }
+      }
+      else {
+        await this._accountManager.makeSureUserInWhitelist("", rc_token_info.owner_id);
+      }
     }
   }
 
