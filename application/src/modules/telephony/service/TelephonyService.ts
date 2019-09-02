@@ -56,7 +56,7 @@ import SettingModel from '@/store/models/UserSetting';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { OpenDialogE911 } from '../container/E911';
-import { IMediaService, IMedia, MediaDeviceType } from '@/interface/media';
+import { IMediaService, IMedia } from '@/interface/media';
 import {
   SETTING_ITEM__RINGER_SOURCE,
   SETTING_ITEM__SPEAKER_SOURCE,
@@ -77,7 +77,7 @@ class TelephonyService {
 
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(CLIENT_SERVICE) private _clientService: IClientService;
-  private _ringtonePrefetcher= new RingtonePrefetcher(this._telephonyStore.mediaTrackIds.telephony, PHONE_SETTING_ITEM.SOUND_INCOMING_CALL)
+  private _ringtonePrefetcher: RingtonePrefetcher
 
   private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
@@ -237,6 +237,7 @@ class TelephonyService {
   };
 
   init = () => {
+    this._ringtonePrefetcher= new RingtonePrefetcher(this._telephonyStore.mediaTrackIds.telephony, PHONE_SETTING_ITEM.SOUND_INCOMING_CALL)
     if (this._canPlayOgg) {
       this._keypadBeepPool = Array(this._telephonyStore.maximumInputLength)
         .fill(1)
