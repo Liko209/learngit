@@ -59,7 +59,7 @@ class SceneConfigFactory {
     return config;
   }
 
-  static getCommonLoginConfig(options: { fpsMode: boolean }): SceneConfig {
+  static getProfileConfig(options: { fpsMode: boolean }): SceneConfig {
     let config = new SceneConfig();
 
     config.passes = config.passes.splice(0, 1);
@@ -74,9 +74,6 @@ class SceneConfigFactory {
     gatherers.push(
       {
         instance: new ProcessGatherer2()
-      },
-      {
-        instance: new LoginGatherer()
       }
     );
 

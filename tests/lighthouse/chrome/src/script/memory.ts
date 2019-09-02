@@ -19,7 +19,7 @@ import { initModel, closeDB, TaskDto, SceneDto } from '../models';
       await MetricService.summaryMemory(scene);
     }
   } catch (err) {
-    console.log(err);
+    //console.log(err);
   } finally {
     await closeDB();
   }
