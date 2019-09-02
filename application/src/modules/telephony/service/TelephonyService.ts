@@ -23,7 +23,7 @@ import {
   CALL_ACTION_ERROR_CODE,
   RINGER_ADDITIONAL_TYPE,
   TRANSFER_TYPE,
-  CallOptions,
+  CallOptions
 } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
@@ -70,6 +70,7 @@ import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
+import { errorHelper } from 'sdk/error';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -300,7 +301,6 @@ class TelephonyService {
         // restore things to default values
         if (!hasActiveOutBoundCall) {
           runInAction(() => {
-            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -565,7 +565,7 @@ class TelephonyService {
     }
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
-      { fromNumber, accessCode },
+      { fromNumber, ...options },
     );
 
     switch (true) {
@@ -611,13 +611,14 @@ class TelephonyService {
     return true;
   };
 
-  ensureCallPermission = async (action: Function, options: { skipE911Check?: boolean } = {}) => {
+  ensureCallPermission = async (action: Function, options: { isShortNumber?: boolean } = {}) => {
+
     const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
     if (!callAvailable) {
       ToastCallError.toastPermissionError();
       return false;
     }
-    if (!this._serverTelephonyService.hasActiveDL()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.hasActiveDL()) {
       Notification.flashToast({
         message: 'telephony.prompt.noDLNotAllowedToMakeCall',
         type: ToastType.ERROR,
@@ -629,7 +630,7 @@ class TelephonyService {
       return false;
     }
 
-    if (!options.skipE911Check && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
       this.openE911(action);
       return true;
     }
@@ -660,29 +661,31 @@ class TelephonyService {
     return this._serverTelephonyService.getSwitchCall();
   }
 
-  directCall = async (toNumber: string) => {
+  directCall = async (toNumber: string, options?: CallOptions) => {
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4275
-    if (this._serverTelephonyService.getAllCallCount() > 0) {
+    if (this._serverTelephonyService.getAllCallCount() > 0 && (!options || (options && !options.extraCall))) {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-    const skipE911Check = await this.isShortNumber(toNumber);
+
+    const isShortNumber = await this.isShortNumber(toNumber);
     const result = await this.ensureCallPermission(() => {
-      return this._makeCall(toNumber)
-    }, { skipE911Check });
+      return this._makeCall(toNumber, options)
+    }, { isShortNumber });
     return result;
   };
 
-  hangUp = () => {
-    if (this._callEntityId) {
+  hangUp = (callId?: number) => {
+    const callEntityId = callId || this._callEntityId;
+    if (callEntityId) {
       mainLogger.info(
-        `${TelephonyService.TAG}Hang up call id=${this._callEntityId}`,
+        `${TelephonyService.TAG}Hang up call id=${callEntityId}`,
       );
-      this._serverTelephonyService.hangUp(this._callEntityId);
+      this._serverTelephonyService.hangUp(callEntityId);
       this._resetCallState();
     }
   };
@@ -974,8 +977,6 @@ class TelephonyService {
     });
   };
 
-  deleteInputString = this.deleteInputStringFactory('inputString');
-
   dispose = () => {
     this._ringtonePrefetcher.dispose()
     this._hasActiveOutBoundCallDisposer &&
@@ -1234,15 +1235,37 @@ class TelephonyService {
     return await this.ensureCallPermission(async () => {
       try {
         const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
-        return this._makeCall(phoneNumber, { accessCode: hostCode })
-      } catch(err) {
-        // need toast, toast message should be provided from PM
+        return this._makeCall(phoneNumber, { accessCode: hostCode });
+      } catch(error) {
         mainLogger.error(
           `${TelephonyService.TAG} Error when start a conference`,
-          err
+          error
         );
+        Notification.flashToast({
+          message: errorHelper.isNetworkConnectionError(error) ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        });
+        return false;
       }
     });
+  }
+
+  joinAudioConference = async (phoneNumber: string, accessCode: string) => {
+    if (this._serverTelephonyService.getAllCallCount() > 0) {
+      mainLogger.warn(
+        `${TelephonyService.TAG}Only allow to make one call at the same time`,
+      );
+      return;
+    }
+    const isShortNumber = await this.isShortNumber(phoneNumber);
+    const ret = await this.ensureCallPermission(() => {
+      return this._makeCall(phoneNumber, { accessCode })
+    }, { isShortNumber });
+
+    return ret;
   }
 
   transfer = async (type: TRANSFER_TYPE, transferTo: string) => {

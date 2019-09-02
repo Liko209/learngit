@@ -11,7 +11,8 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { CallCtrlPanelProps, CallCtrlPanelViewProps } from './types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
-class CallCtrlPanelViewModel extends StoreViewModel<CallCtrlPanelProps> implements CallCtrlPanelViewProps {
+class CallCtrlPanelViewModel extends StoreViewModel<CallCtrlPanelProps>
+  implements CallCtrlPanelViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   @computed
@@ -41,6 +42,11 @@ class CallCtrlPanelViewModel extends StoreViewModel<CallCtrlPanelProps> implemen
   @computed
   get direction() {
     return this._telephonyStore.activeCallDirection;
+  }
+
+  @computed
+  get isWarmTransferPage() {
+    return this._telephonyStore.isWarmTransferPage;
   }
 
   @computed

@@ -34,4 +34,13 @@ type ImageViewerViewProps = {
   deleteItem: boolean;
 };
 
-export { ImageViewerProps, ImageViewerViewProps, ImageViewerOptions };
+type SingleImageViewerTitleViewProp = {
+  displayName: string;
+};
+
+export {
+  ImageViewerProps,
+  ImageViewerViewProps,
+  ImageViewerOptions,
+  SingleImageViewerTitleViewProp,
+};

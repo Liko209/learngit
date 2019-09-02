@@ -157,7 +157,9 @@ export default class PersonModel extends Base<Person> {
     }
     return dName;
   }
-
+  /**
+   *
+   */
   @computed
   get userDisplayName(): string {
     let dName = this._getCommonName();

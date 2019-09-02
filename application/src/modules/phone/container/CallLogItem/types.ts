@@ -5,7 +5,7 @@
  */
 import { Caller } from 'sdk/module/RCItems/types';
 import { RCMessage } from 'sdk/module/RCItems';
-import { HoverControllerBaseViewProps } from '../HoverController';
+import { HoverControllerBaseViewProps } from '@/modules/common/container/Layout/HoverController';
 import { Checker } from '../../types';
 import { CommonResponsiveObject } from '../VoicemailItem/types';
 

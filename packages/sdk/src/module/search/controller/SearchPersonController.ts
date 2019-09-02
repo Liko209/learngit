@@ -152,6 +152,10 @@ class SearchPersonController {
     searchKey: UndefinedAble<string>,
     contactOptions: FuzzySearchContactOptions,
     groupOptions: FuzzySearchGroupOptions,
+    sortFunc?: (
+      lsh: SortableModel<IdModel>,
+      rsh: SortableModel<IdModel>,
+    ) => number,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<IdModel>[];
@@ -210,8 +214,10 @@ class SearchPersonController {
       }
     });
 
-    result.sortableModels.sort((groupA, groupB) => {
-      return SortUtils.compareSortableModel<IdModel>(groupA, groupB);
+    result.sortableModels.sort((lsh, rsh) => {
+      return sortFunc
+        ? sortFunc(lsh, rsh)
+        : SortUtils.compareSortableModel<IdModel>(lsh, rsh);
     });
 
     performanceTracer.end({

@@ -1,5 +1,64 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Storyshots Components/Avatar Cover Name: Components/Avatar Cover Name 1`] = `
+.c0.c0 {
+  width: 280px;
+  height: 220px;
+  border-radius: unset;
+  position: static;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #6FAFEB;
+  background-color: #6FAFEB;
+}
+
+.c0:focus {
+  outline: none;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 132px;
+  width: 132px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+<div
+  className="MuiAvatar-root c0 MuiAvatar-colorDefault"
+  color="lake"
+  size="medium"
+>
+  <span
+    className="c1"
+  >
+    SH
+  </span>
+</div>
+`;
+
 exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
 .c2 {
   display: -webkit-inline-box;

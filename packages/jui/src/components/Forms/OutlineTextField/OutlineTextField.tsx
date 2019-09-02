@@ -11,6 +11,8 @@ import React, {
   forwardRef,
 } from 'react';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
+import { RuiTooltip } from 'rcui/components/Tooltip';
+
 import styled from '../../../foundation/styled-components';
 import {
   grey,
@@ -133,6 +135,7 @@ type JuiOutlineTextFieldProps = {
   iconPosition?: IconPosition;
   iconName?: string | string[];
   className?: string;
+  IconRightToolTip?: string;
 };
 
 type JuiOutlineTextFieldRef = {
@@ -153,6 +156,7 @@ const JuiOutlineTextField = forwardRef(
       onChange,
       IconLeftProps,
       IconRightProps,
+      IconRightToolTip,
       onClickIconLeft,
       onClickIconRight,
       onClick,
@@ -185,6 +189,33 @@ const JuiOutlineTextField = forwardRef(
     };
 
     // console.log(rest, others);
+    const RightButton = () => {
+      if (iconPosition === 'right' || iconPosition === 'both') {
+        if (IconRightToolTip) {
+          return (
+            <RuiTooltip title={IconRightToolTip}>
+              <StyledIconRight
+                {...IconRightProps}
+                iconSize="medium"
+                onClick={onClickIconRight}
+              >
+                {Array.isArray(iconName) ? iconName[1] : iconName}
+              </StyledIconRight>
+            </RuiTooltip>
+          );
+        }
+        return (
+          <StyledIconRight
+            {...IconRightProps}
+            iconSize="medium"
+            onClick={onClickIconRight}
+          >
+            {Array.isArray(iconName) ? iconName[1] : iconName}
+          </StyledIconRight>
+        );
+      }
+      return null;
+    };
 
     return (
       <StyledWrapper
@@ -215,15 +246,7 @@ const JuiOutlineTextField = forwardRef(
           value={value}
           inputRef={inputRef}
         />
-        {(iconPosition === 'right' || iconPosition === 'both') && (
-          <StyledIconRight
-            {...IconRightProps}
-            iconSize="medium"
-            onClick={onClickIconRight}
-          >
-            {Array.isArray(iconName) ? iconName[1] : iconName}
-          </StyledIconRight>
-        )}
+        {RightButton()}
       </StyledWrapper>
     );
   },

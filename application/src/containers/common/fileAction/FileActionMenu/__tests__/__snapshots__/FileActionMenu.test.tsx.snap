@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FileActionMenu should not render viewInBrowser when item is not image 1`] = `
+<JuiPopperMenu
+  Anchor={[Function]}
+  anchorEl={null}
+  data-test-automation-id="fileActionMenu"
+  onClose={[Function]}
+  open={false}
+>
+  <JuiMenuList
+    data-test-automation-id="fileActionMenuList"
+  >
+    <FileShareAction
+      fileId={1}
+    />
+    <Container(FileNameEditActionViewComponent)
+      fileId={1}
+      fileName="filename"
+      t={[Function]}
+      variant="plain"
+    />
+    <Container(FileDeleteActionViewComponent)
+      fileId={1}
+      fileName="filename"
+      t={[Function]}
+      variant="plain"
+    />
+  </JuiMenuList>
+</JuiPopperMenu>
+`;
+
+exports[`FileActionMenu should render correctly 1`] = `
+<JuiPopperMenu
+  Anchor={[Function]}
+  anchorEl={null}
+  data-test-automation-id="fileActionMenu"
+  onClose={[Function]}
+  open={false}
+>
+  <JuiMenuList
+    data-test-automation-id="fileActionMenuList"
+  >
+    <FileShareAction
+      fileId={1}
+    />
+    <ViewInBrowserTabAction
+      item={Object {}}
+      scene="conversationHistory"
+    />
+    <Container(FileNameEditActionViewComponent)
+      fileId={1}
+      fileName="filename"
+      t={[Function]}
+      variant="plain"
+    />
+    <Container(FileDeleteActionViewComponent)
+      fileId={1}
+      fileName="filename"
+      t={[Function]}
+      variant="plain"
+    />
+  </JuiMenuList>
+</JuiPopperMenu>
+`;

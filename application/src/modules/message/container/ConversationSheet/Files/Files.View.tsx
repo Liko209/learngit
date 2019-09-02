@@ -24,6 +24,7 @@ import { getFileIcon } from '@/common/getFileIcon';
 import {
   isSupportFileViewer,
   isFileReadyForViewer,
+  isDoc,
 } from '@/common/getFileType';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
@@ -45,7 +46,7 @@ const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
-  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   componentWillUnmount() {
@@ -128,14 +129,20 @@ class FilesView extends React.Component<FilesViewProps> {
   handleFileMoreIconClicked = () => {};
 
   private _getActions = moize(
-    (downloadUrl: string, fileId: number, postId: number) => [
+    (downloadUrl: string, fileId: number, postId: number, groupId: number) => [
       <Download key="download-action" url={downloadUrl} />,
-      <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
+      <FileActionMenu
+        key="more-action"
+        fileId={fileId}
+        postId={postId}
+        scene="conversationHistory"
+        groupId={groupId}
+      />,
     ],
   );
 
   render() {
-    const { files, progresses, urlMap, postId } = this.props;
+    const { files, progresses, urlMap, postId, groupId,getFilePreviewBackgroundContainPermission } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -167,7 +174,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 keyword: this.context.keyword,
               }),
               url: accelerateURL(urlMap.get(id)) || '',
-              Actions: this._getActions(downloadUrl, id, postId),
+              Actions: this._getActions(downloadUrl, id, postId, groupId),
             };
             const future = (
               <JuiPreviewImage
@@ -202,7 +209,12 @@ class FilesView extends React.Component<FilesViewProps> {
           {files[FileType.document].map((file: ExtendFileItem) => {
             const { item, previewUrl } = file;
             const { size, type, id, name, downloadUrl } = item;
-            const status = item.latestVersion && item.latestVersion.status;
+            const latestVersion = item.latestVersion;
+            const status = latestVersion && latestVersion.status;
+            const total =
+              latestVersion &&
+              latestVersion.pages &&
+              latestVersion.pages.length;
             const iconType = getFileIcon(type);
             const supportFileViewer = isSupportFileViewer(type);
             const fileReadyForViewer = isFileReadyForViewer(status);
@@ -216,6 +228,9 @@ class FilesView extends React.Component<FilesViewProps> {
                   fileName: true,
                   keyword: this.context.keyword,
                 })}
+                needBackgroundContain={
+                  getFilePreviewBackgroundContainPermission.get() && isDoc(type)
+                }
                 size={`${getFileSize(size)}`}
                 url={accelerateURL(previewUrl)!}
                 iconType={iconType}
@@ -224,8 +239,9 @@ class FilesView extends React.Component<FilesViewProps> {
                     ? this._handleFileClick(item)
                     : undefined
                 }
+                total={total}
                 disabled={supportFileViewer && !fileReadyForViewer}
-                Actions={this._getActions(downloadUrl, id, postId)}
+                Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
           })}
@@ -247,7 +263,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 })}
                 size={`${getFileSize(size)}`}
                 iconType={iconType}
-                Actions={this._getActions(downloadUrl, id, postId)}
+                Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
           })}

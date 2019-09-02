@@ -15,7 +15,7 @@ class SearchPage extends Page {
 
   private textItem: string = 'div[data-test-automation-id="search-item-text"]';
 
-  private clear: string = 'span[data-test-automation-id="global-search-clear"]';
+  private clear: string = 'span[data-test-automation-id="search-input-clear"]';
 
   private closeBtn: string = 'span[data-test-automation-id="global-search-close"]';
 

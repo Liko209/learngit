@@ -10,9 +10,10 @@ import FileItemModel from '@/store/models/FileItem';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { StoreViewModel } from '@/store/ViewModel';
-import { FileActionProps } from './types';
+import { FileActionProps, IFileActionBaseViewModel } from './types';
 
-class FileActionViewModel<P = {}> extends StoreViewModel<FileActionProps & P> {
+class FileActionViewModel<P = {}> extends StoreViewModel<FileActionProps & P>
+  implements IFileActionBaseViewModel {
   @computed
   get fileId() {
     return this.props.fileId;

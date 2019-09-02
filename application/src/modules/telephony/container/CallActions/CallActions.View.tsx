@@ -32,7 +32,12 @@ const callActions = {
 @observer
 class CallActionsViewComponent extends Component<Props> {
   private _Anchor = () => {
-    const { t, shouldPersistBg, isIncomingPage } = this.props;
+    const {
+      t,
+      shouldPersistBg,
+      isIncomingPage,
+      isWarmTransferPage,
+    } = this.props;
 
     if (isIncomingPage) {
       return (
@@ -56,6 +61,7 @@ class CallActionsViewComponent extends Component<Props> {
         aria-label={t('telephony.accessibility.callActions')}
         size={shouldPersistBg ? 'small' : 'xxlarge'}
         data-test-automation-id="telephony-call-actions-btn"
+        disabled={isWarmTransferPage}
       >
         call_more
       </JuiIconButton>

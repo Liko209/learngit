@@ -11,8 +11,6 @@ import {
   RTC_CALL_ACTION_DIRECTION,
 } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-
-import { CallReport } from '../report/Call';
 import { FsmStatusCategory } from '../report/types';
 
 const CallFsmState = {
@@ -92,6 +90,7 @@ interface IRTCCallFsmTableDependency {
     time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ): void;
+  onUpdateFsmState(state: FsmStatusCategory): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -552,9 +551,7 @@ class RTCCallFsmTable extends StateMachine {
       ],
       methods: {
         onTransition(lifecycle) {
-          CallReport.instance().updateFsmStatus(
-            lifecycle.to as FsmStatusCategory,
-          );
+          dependency && dependency.onUpdateFsmState(lifecycle.to as FsmStatusCategory);
           rtcLogger.debug(
             'RTC_Call_FSM',
             `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${
