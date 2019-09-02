@@ -25,10 +25,10 @@ class CallViewComponent extends Component<Props> {
   }
 
   render() {
-    const { phoneNumber, doCall, type } = this.props;
-
+    const { phoneNumber, doCall, type, isMe } = this.props;
     return (
-      phoneNumber && (
+      phoneNumber &&
+      !isMe && (
         <ActionButton
           key="call-button"
           icon="phone"

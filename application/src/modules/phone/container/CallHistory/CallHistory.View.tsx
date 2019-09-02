@@ -16,8 +16,7 @@ import { TabConfig, TAB_CONFIG } from './config';
 import ReactResizeDetector from 'react-resize-detector';
 import { More } from '../Actions/More';
 import { DeleteAll } from '../Actions/DeleteAll';
-
-const DELAY_DEBOUNCE = 300;
+import { DELAY_DEBOUNCE } from '../constants';
 
 const useFilter: IUseFilter = (initial: string) => {
   const [value, setValue] = useState(initial);

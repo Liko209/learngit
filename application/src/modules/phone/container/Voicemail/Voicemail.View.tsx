@@ -31,8 +31,7 @@ import {
 import noVoicemailImage from '../images/no-voicemail.svg';
 import noResultImage from '../images/no-result.svg';
 import { HoverControllerBaseProps } from '@/modules/common/container/Layout/HoverController';
-
-const DELAY_DEBOUNCE = 300;
+import { DELAY_DEBOUNCE } from '../constants';
 
 type Props = VoicemailViewProps & WithTranslation & HoverControllerBaseProps;
 
