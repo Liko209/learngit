@@ -139,6 +139,12 @@ const FEATURE_PERMISSION_MAP_VALUE: [ERCServiceFeaturePermission, {}][] = [
       permissionId: PermissionId.ORGANIZE_CONFERENCE,
     }
   ],
+  [
+    ERCServiceFeaturePermission.RC_PRESENCE,
+    {
+      featureName: RCServiceFeatureName.PRESENCE,
+    },
+  ],
 ];
 
 export { FEATURE_PERMISSION_MAP_VALUE }

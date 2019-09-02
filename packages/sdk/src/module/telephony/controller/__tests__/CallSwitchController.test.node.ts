@@ -14,12 +14,14 @@ import {
   RC_INFO,
   ENTITY,
   EVENT_TYPES,
+  WINDOW,
 } from 'sdk/service';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import _ from 'lodash';
 
 jest.mock('../../service');
 jest.mock('sdk/module/setting');
@@ -39,6 +41,7 @@ describe('CallSwitchController', () => {
   let callSwitchController: CallSwitchController;
   let telephonyService: TelephonyService;
   function setUp() {
+    _.debounce = jest.fn().mockReturnValue(jest.fn());
     AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue('1');
     settingService = new SettingService();
     rcInfoService = new RCInfoService();
@@ -98,7 +101,7 @@ describe('CallSwitchController', () => {
     sessionToSequence: any;
     endedCall?: any;
   }) {
-    callSwitchController['_lastBannerStatus'] = p.lastBannerStatus;
+    callSwitchController['_lastBannerIsShown'] = p.lastBannerStatus;
     callSwitchController['_currentActiveCalls'] = p.activeCalls;
     callSwitchController['_sessionToSequence'] = p.sessionToSequence;
     p.endedCall && (callSwitchController['_endedCalls'] = p.endedCall);
@@ -110,18 +113,33 @@ describe('CallSwitchController', () => {
   });
 
   describe('start', () => {
-    it('should start listen changes when can use call switch', async () => {
+    it('should start listen changes when can use call switch [JPT-2574]', async () => {
       setPermission({
         voip: true,
         callSwitch: true,
         webPhone: true,
         setting: true,
       });
+      callSwitchController.handleTelephonyPresence = jest.fn();
+      notificationCenter.on = jest.fn().mockImplementation((key, other) => {
+        if (key === RC_INFO.RC_PRESENCE) {
+          other(1);
+          expect(
+            callSwitchController.handleTelephonyPresence,
+          ).toHaveBeenCalledWith(1, false);
+        }
+      });
 
       await callSwitchController.start();
+
       expect(notificationCenter.on).toHaveBeenCalledWith(
         SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
         callSwitchController['_checkSubscription'],
+      );
+
+      expect(notificationCenter.on).toHaveBeenCalledWith(
+        RC_INFO.RC_PRESENCE,
+        expect.any(Function),
       );
 
       expect(notificationCenter.on).toHaveBeenCalledWith(
@@ -137,6 +155,16 @@ describe('CallSwitchController', () => {
       expect(notificationCenter.on).toHaveBeenCalledWith(
         ENTITY.CALL,
         callSwitchController['_handleCallStateChanged'],
+      );
+
+      expect(notificationCenter.on).toHaveBeenCalledWith(
+        WINDOW.ONLINE,
+        callSwitchController['_clearAndSyncRCPresence'],
+      );
+
+      expect(notificationCenter.on).toHaveBeenCalledWith(
+        SERVICE.WAKE_UP_FROM_SLEEP,
+        callSwitchController['_clearAndSyncRCPresence'],
       );
     });
 
@@ -589,6 +617,7 @@ describe('CallSwitchController', () => {
 
   describe('_handleCallStateChanged', () => {
     it('should only handle update type and save ended calls', () => {
+      callSwitchController['_syncLatestPresenceAfterCallEnd'] = jest.fn();
       callSwitchController['_updateBannerStatus'] = jest.fn();
       const payLoad: any = {
         type: EVENT_TYPES.UPDATE,
@@ -617,6 +646,36 @@ describe('CallSwitchController', () => {
       };
       callSwitchController['_handleCallStateChanged'](payLoad);
       expect(callSwitchController['_updateBannerStatus']).toHaveBeenCalled();
+      expect(
+        callSwitchController['_syncLatestPresenceAfterCallEnd'],
+      ).toHaveBeenCalled();
+    });
+
+    it('should trigger sync rc presence with 5s delay and should not throw error', async () => {
+      rcInfoService.syncUserRCPresence = jest.fn();
+
+      _.debounce = jest.fn().mockImplementation((fn, delay, options) => {
+        return async () => {
+          await fn();
+        };
+      });
+
+      callSwitchController['_lastBannerIsShown'] = true;
+      callSwitchController['_syncRCPresenceTimer'] = { id: 1 } as any;
+
+      rcInfoService.syncUserRCPresence = jest
+        .fn()
+        .mockRejectedValue(new Error());
+      callSwitchController = new CallSwitchController(telephonyService);
+      await callSwitchController['_syncLatestPresenceAfterCallEnd']();
+      expect(rcInfoService.syncUserRCPresence).toHaveBeenCalled();
+    });
+
+    it('should clear active calls when has banner', () => {
+      callSwitchController['_currentActiveCalls'] = [{ id: 1 }] as any;
+      callSwitchController['_lastBannerIsShown'] = true;
+      callSwitchController['_clearAndSyncRCPresence']();
+      expect(callSwitchController['_currentActiveCalls']).toEqual([]);
     });
   });
 });
