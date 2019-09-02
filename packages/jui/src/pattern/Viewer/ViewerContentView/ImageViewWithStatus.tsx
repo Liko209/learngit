@@ -49,15 +49,14 @@ function JuiImageWithStatusView({ src, background }: JuiImageWithStatusProps) {
     )
   }
 
-  return (Status[status] === 'error' || Status[status] === 'loading') && (
+  return (Status[status] === 'error' || Status[status] === 'loading') ? (
     <StyledLoadingPage background={background}>
       {Status[status] === 'error' && (
         <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
           image_broken
         </JuiIconography>
       )}
-    </StyledLoadingPage>
-  )
+    </StyledLoadingPage>) : null
 }
 
 export { JuiImageWithStatusView };
