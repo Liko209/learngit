@@ -36,7 +36,7 @@
     },
     "time": {
       "at": "at",
-      "dataAtTime": "{{date}} at {{time}}",
+      "dateAtTIme": "{{date}} at {{time}}",
       "today": "Today",
       "yesterday": "Yesterday",
       "tomorrow": "Tomorrow",
