@@ -38,8 +38,9 @@ enum WEBPHONE_SESSION_EVENT {
 }
 
 enum WEBPHONE_MEDIA_CONNECTION_STATE_EVENT {
+  MEDIA_CONNECTION_STATE_CHANGED = 'mediaConnectionStateChanged',
   MEDIA_CONNECTION_NEW = 'mediaConnectionStateNew',
-  MEDIA_CONNECTION_CHECKING = 'mediaConnectionStateNew',
+  MEDIA_CONNECTION_CHECKING = 'mediaConnectionStateChecking',
   MEDIA_CONNECTION_CONNECTED = 'mediaConnectionStateConnected',
   MEDIA_CONNECTION_COMPLETED = 'mediaConnectionStateCompleted',
   MEDIA_CONNECTION_FAILED = 'mediaConnectionStateFailed',
@@ -83,15 +84,20 @@ type OutboundRtpReport = {
   packetsSent: number;
 };
 
+type RttMS = {
+  currentRoundTripTime: number;
+};
+
 type InviteOptions = {
   fromNumber?: string;
   homeCountryId?: string;
   extraHeaders?: any;
   RTCConstraints?: any;
+  sessionDescriptionHandlerOptions?: any;
 };
 
-type RttMS = {
-  currentRoundTripTime: number;
+type AcceptOptions = {
+  sessionDescriptionHandlerOptions?: any;
 };
 
 type MediaStatsReport = {
@@ -111,4 +117,5 @@ export {
   MediaStatsReport,
   RC_REFER_EVENT,
   InviteOptions,
+  AcceptOptions,
 };

@@ -18,6 +18,7 @@ type CallActionsViewProps = {
     };
   };
   isIncomingPage: boolean;
+  isWarmTransferPage: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

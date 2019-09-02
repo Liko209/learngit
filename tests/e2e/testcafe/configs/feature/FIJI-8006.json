@@ -1,0 +1,9 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationStream/AudioConference.ts",
+      "./fixtures/ConversationStream/JoinAudioConference.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

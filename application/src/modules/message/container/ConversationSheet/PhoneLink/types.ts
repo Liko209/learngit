@@ -6,6 +6,9 @@
 type PhoneLinkProps = {
   key?: number;
   text: string;
+  type?: 'phone' | 'conference';
+  canUseConference?: boolean;
+  handleClick?: (arg: string) => void;
 };
 
 type PhoneLinkViewProps = PhoneLinkProps & {

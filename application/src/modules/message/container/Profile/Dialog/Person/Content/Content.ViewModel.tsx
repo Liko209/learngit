@@ -15,7 +15,10 @@ import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { getColonsEmoji, getStatusPlainText } from '@/common/getSharedStatus';
+import { PersonService } from 'sdk/module/person';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
+const IMAGE_SIZE = 2000;
 class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
   implements ProfileDialogPersonContentViewProps {
   @computed
@@ -65,6 +68,25 @@ class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
     const status = this.person.awayStatus || '';
 
     return getStatusPlainText(status);
+  }
+
+  @computed
+  get url() {
+    if (this.person && this.person.hasHeadShot && this.id) {
+      const { headshotVersion, headshot = '' } = this.person;
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+      return (
+        personService.getHeadShotWithSize(
+          this.id,
+          headshot,
+          IMAGE_SIZE,
+          headshotVersion,
+        ) || ''
+      );
+    }
+    return '';
   }
 }
 

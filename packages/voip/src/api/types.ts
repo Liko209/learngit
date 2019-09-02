@@ -67,6 +67,14 @@ enum RTC_CALL_ACTION {
   REPLY_WITH_MSG = 'replyWithMessage',
   REPLY_WITH_PATTERN = 'replyWithPattern',
   CALL_TIME_OUT = 'callTimeOut',
+  DTMF = 'dtmf',
+  SEND_TO_VM = 'sendToVm',
+  IGNORE = 'ignore',
+  REJECT = 'reject',
+  ANSWER = 'answer',
+  HANGUP = 'hangup',
+  LOCAL_MUTE = 'localMute',
+  REMOTE_MUTE = 'remoteMute',
 }
 
 enum RTC_CALL_ACTION_ERROR_CODE {

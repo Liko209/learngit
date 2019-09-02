@@ -17,16 +17,21 @@ const FILE_ICON_MAP = {
   image_preview: Array.from(ImageFileExtensions),
 };
 
+function getFileExtension(typeOrName: string) {
+  let type = typeOrName;
+  // treat as file name
+  if (type.includes('.')) {
+    type = type.split('.').pop() || typeOrName;
+  } else if (type.includes('/')) {
+    type = type.split('/').pop() || typeOrName;
+  }
+  type = type.toLowerCase();
+  return type;
+}
+
 function getFileIcon(typeOrName?: string): string {
   if (typeOrName) {
-    let type = typeOrName;
-    // treat as file name
-    if (type.includes('.')) {
-      type = type.split('.').pop() || typeOrName;
-    } else if (type.includes('/')) {
-      type = type.split('/').pop() || typeOrName;
-    }
-    type = type.toLowerCase();
+    const type = getFileExtension(typeOrName);
     const keys: string[] = Object.keys(FILE_ICON_MAP);
     for (let i = 0; i < keys.length; ++i) {
       const icon = keys[i];
@@ -39,4 +44,4 @@ function getFileIcon(typeOrName?: string): string {
   return 'default_file';
 }
 
-export { getFileIcon };
+export { getFileIcon, FILE_ICON_MAP, getFileExtension };

@@ -653,13 +653,14 @@ describe('TelephonyService', () => {
 
     it('should call directCall', async () => {
       const toNumber = '000';
+      const options = {};
       telephonyService._makeCall = jest.fn();
       mockedServerTelephonyService.getAllCallCount.mockReturnValue(1);
-      await telephonyService.directCall(toNumber);
+      await telephonyService.directCall(toNumber, options);
       expect(telephonyService._makeCall).not.toHaveBeenCalled();
       mockedServerTelephonyService.getAllCallCount.mockReturnValue(0);
-      await telephonyService.directCall(toNumber);
-      expect(telephonyService._makeCall).toHaveBeenCalledWith(toNumber);
+      await telephonyService.directCall(toNumber, options);
+      expect(telephonyService._makeCall).toHaveBeenCalledWith(toNumber, options);
     });
 
     it('should call muteOrUnmute', () => {
@@ -1227,6 +1228,30 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
     })
   })
+
+  describe('joinAudioConference()', () => {
+    it('Join conf failed when user has no any active DL. JPT-[2755]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(false);
+      mockedPhoneNumberService.isShortNumber = jest.fn().mockResolvedValue(false);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('12231232312', '2');
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
+
+    it('Join conf failed when user webRTC permission removed JPT-[2756]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(true);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(false);
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('1', '2');
+      expect(ToastCallError.toastPermissionError).toHaveBeenCalled();
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
+  });
 
   describe('multiple calls', () => {
     it('Can NOT make call when user on a call. [JPT-2772]', async () => {

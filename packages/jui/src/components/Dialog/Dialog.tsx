@@ -53,13 +53,7 @@ const StyledDialog = styled(FilteredMuiDialog)`
 `;
 
 const WrapDialog = (props: JuiDialogProps) => {
-  const {
-    disableEscapeKeyDown,
-    onClose,
-    size = 'medium',
-    classes,
-    ...rest
-  } = props;
+  const { onClose, size = 'medium', classes, ...rest } = props;
 
   const initClasses = {
     ...classes,

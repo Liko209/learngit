@@ -42,7 +42,7 @@ import { isProductionVersion } from '@/common/envUtils';
 import { showUpgradeDialog } from '@/modules/electron';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
-import { dataCollectionHelper } from 'sdk/framework'
+import { dataCollectionHelper } from 'sdk/framework';
 import { LaunchDarklyController } from '@/permissions/ld/LaunchDarklyController';
 import { SplitIOController } from '@/permissions/split/SplitIOController';
 import { PermissionService } from 'sdk/module/permission';

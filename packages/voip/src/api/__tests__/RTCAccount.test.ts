@@ -88,6 +88,9 @@ class MockUserAgent extends EventEmitter2 {
   makeCall(phoneNumber: string, options: RTCCallOptions): any {
     return new MockSession();
   }
+  getStatusCode(): number {
+    return 200;
+  }
   unregister = jest.fn();
   reRegister = jest.fn();
   restartUA = jest.fn();

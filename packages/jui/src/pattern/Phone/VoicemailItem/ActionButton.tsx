@@ -14,10 +14,10 @@ type ActionButtonProps = {
   type: BUTTON_TYPE;
   automationId: string;
   screenReader: string;
-  onClick: () => void;
+  onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 };
 
-const ActionButton = function ({
+const ActionButton = function({
   icon,
   type,
   tooltip,
