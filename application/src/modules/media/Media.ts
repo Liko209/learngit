@@ -122,7 +122,7 @@ class Media implements IMedia {
     return this;
   }
 
-  setOutputDevices(devices: MediaOptions['outputDevices']) {
+  setOutputDevices(devices?: MediaOptions['outputDevices']) {
     if (this._isMediaInTrack()) {
       if (Array.isArray(devices)) {
         this._useTrack.setOutputDevices(devices);
