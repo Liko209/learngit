@@ -15,7 +15,7 @@ const telephonyService = {
   directCall: jest.fn(),
 };
 
-describe('message', () => {
+describe('Call button', () => {
   @testable
   class doCall {
     @test('should make a call if click call button [JPT-2878]')
