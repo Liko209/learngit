@@ -36,7 +36,7 @@ class ItemEntityCacheController extends EntityCacheController<Item> {
       ids.push(item.id);
     }
     else {
-      let values = item.id ? [item.id] : [];
+      const values = item.id ? [item.id] : [];
       this._typeIdMap.set(item.type_id, values);
     }
   }
