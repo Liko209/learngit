@@ -137,7 +137,6 @@ class TelephonyService extends EntityBaseService<Call>
 
   hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
-    this._callSwitchController.onCallEnded(callId);
   };
 
   mute = (callId: number) => {

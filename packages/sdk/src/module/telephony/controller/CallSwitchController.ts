@@ -472,11 +472,17 @@ class CallSwitchController {
   ) => {
     if (payload.type === EVENT_TYPES.UPDATE) {
       const call: Call[] = Array.from(payload.body.entities.values());
-      const hasCallEnded = call.some((item: Call) => {
-        return item.call_state === CALL_STATE.DISCONNECTING;
-      });
 
-      hasCallEnded && this._updateBannerStatus();
+      let hasEndedCall = false;
+      call.forEach((item: Call) => {  
+        const isEndedCall =  item.call_state === CALL_STATE.DISCONNECTING;
+        if (isEndedCall) {
+          this._onCallEnded(item);
+          hasEndedCall = true;
+        }
+      });
+      
+      hasEndedCall && this._updateBannerStatus();
     }
   };
 
@@ -497,8 +503,7 @@ class CallSwitchController {
     }
   }
 
-  async onCallEnded(callId: number) {
-    const callEntity = await this._telephonyService.getById(callId);
+  private async _onCallEnded(callEntity: Call) {
     mainLogger.tags(MODULE_NAME).log('onCallEnded, call is', callEntity);
     if (
       callEntity &&
