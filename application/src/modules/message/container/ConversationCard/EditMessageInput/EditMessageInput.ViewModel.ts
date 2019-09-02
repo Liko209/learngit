@@ -19,7 +19,6 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
 import { Dialog } from '@/containers/Dialog';
-import { mainLogger } from 'foundation/log';
 import i18nT from '@/utils/i18nT';
 import { TypeDictionary } from 'sdk/utils';
 import { ItemService } from 'sdk/module/item';
@@ -145,10 +144,10 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         } else {
           // The link card should be deleted if one post with other files
           self._itemLinks.forEach(self._itemService.deleteItem);
-          self._editPost(content, mentionIds, mentionIdsContainTeam);
+          self._editPost(value, mentionIds, mentionIdsContainTeam);
         }
       } else if (value || self._post.itemIds.length) {
-        self._editPost(content, mentionIds, mentionIdsContainTeam);
+        self._editPost(value, mentionIds, mentionIdsContainTeam);
       } else {
         self._handleDelete();
       }
@@ -197,6 +196,10 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     this._handleEditPost(content, ids, mentionIdsContainTeam);
   }
 
+  @catchError.flash({
+    server: 'message.prompt.deletePostFailedForServerIssue',
+    network: 'message.prompt.deletePostFailedForNetworkIssue',
+  })
   private _deletePost = async () => {
     await this._postService.deletePost(this.id);
   };
@@ -212,9 +215,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       okType: 'negative',
       cancelText: await i18nT('common.dialog.cancel'),
       onOK: () => {
-        this._deletePost().catch((e: Error) => {
-          mainLogger.error(`delete post error: ${e}`);
-        });
+        this._deletePost();
       },
     });
   };
