@@ -459,17 +459,17 @@ class TelephonyStore {
 
     // if end call isn't active call and incoming state reply don't reset state;
     // if multiple call and end current call don't reset state;
+    if (this.isWarmTransferPage) {
+      this.leaveWarmTransferPage();
+    }
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
+    }
     if (this.isEndOtherCall) {
       this.quitKeypad();
       this._clearEnteredKeys();
       this._clearTransferString();
       this.isConference = false;
-      if (this.isTransferPage) {
-        this.backToDialerFromTransferPage();
-      }
-      if (this.isWarmTransferPage) {
-        this.leaveWarmTransferPage();
-      }
       return;
     }
     // end incoming call
@@ -488,13 +488,6 @@ class TelephonyStore {
     this._clearTransferString();
 
     this.inputString = '';
-
-    if (this.isTransferPage) {
-      this.backToDialerFromTransferPage();
-    }
-    if (this.isWarmTransferPage) {
-      this.leaveWarmTransferPage();
-    }
 
     if (
       (this.phoneNumber !== '' || !this.isMultipleCall) &&
