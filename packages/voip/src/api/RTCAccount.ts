@@ -164,6 +164,10 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.getCallByUuid(uuid);
   }
 
+  getRegistrationStatusCode(): number {
+    return this._regManager.getRegistrationStatusCode();
+  }
+
   logout() {
     this._regManager.logout();
   }

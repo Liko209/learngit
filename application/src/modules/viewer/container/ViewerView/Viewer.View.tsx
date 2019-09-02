@@ -306,7 +306,7 @@ class ViewerViewComponent extends Component<
             onExited={this.onTransitionExited}
             animation={imageViewerHeaderAnimation}
           >
-            <JuiDialogHeader data-test-automation-id="ViewerHeader">
+            <JuiDialogHeader fullscreen data-test-automation-id="ViewerHeader">
               <TitleRenderer
                 {...dataModule.title}
                 closeViewer={this.closeViewer}

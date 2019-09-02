@@ -82,7 +82,10 @@
     "reload": "Reload",
     "goToConversation": "Go to conversation",
     "country": "Country",
-    "eg": "e.g."
+    "eg": "e.g.",
+    "clear": "Clear",
+    "clearText": "Clear Text",
+    "guest": "Guest"
   },
   "presence": {
     "available": "Available",
@@ -164,6 +167,11 @@
     "Results": "Results ({{count}})",
     "NoMatchesFound": "No matches found",
     "SearchForContactsAndKeywords": "Search for contacts and keywords"
+  },
+  "groupSearch": {
+    "inputGhostText": "Type person or team name",
+    "dialogTitle": "Switch conversation",
+    "listTitle": "Recent conversations"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -275,7 +283,7 @@
       "viewInPostFailedWithNetworkIssue": "Sorry, we weren't able to jump to the post. Check your network connection, then try again.",
       "contentLength": "A maximum of 10000 characters can be sent",
       "contentIllegal": "Javascript not allowed",
-      "deletePostTitle": "Delete Post?",
+      "deletePostTitle": "Delete post?",
       "deleteFileTitle": "Delete the file?",
       "deletePostContent": "Are you sure you want to delete this post?",
       "deleteFileContent": "Are you sure you want to delete this file <0>{{fileName}}</0>?",
@@ -317,7 +325,9 @@
     "fileAction": {
       "deleteFile": "Delete file",
       "editFileName": "Edit filename",
-      "viewInPost": "View in post"
+      "viewInPost": "View in post",
+      "viewInBrowser": "View in browser",
+      "viewInNewTab": "View in new tab"
     },
     "Messages": "Messages",
     "message": "Message",
@@ -362,7 +372,8 @@
       "started a video chat": "started a video chat",
       "replied": "replied",
       "reply": "replied to",
-      "via": "via"
+      "via": "via",
+      "join": "Join"
     },
     "meeting": {
       "videoCallInProgress": "Video Call in progress",
@@ -504,7 +515,7 @@
       "showAllCount": "Show all {{count}}",
       "Members": "Members",
       "SearchContactPlaceholder": "Enter names or email addresses",
-      "CreateTeam": "Create Team",
+      "CreateTeam": "Create team",
       "Create": "Create",
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
       "MembersMayPostMessages": "Allow members to post messages",
@@ -574,7 +585,7 @@
     },
     "company": {},
     "prompt": {
-      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this Team. To join, contact the team administrator.",
+      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this team. To join, contact the team administrator.",
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
@@ -617,7 +628,7 @@
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
       "conversationArchived": "This team was archived. To know more, contact the team administrator.",
-      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator.",
+      "conversationPrivate": "Sorry, you're not a member of this team. To join, contact the team administrator.",
       "newConversationTitle": "New conversation",
       "newConversationBaseTip": "Adding people will start a new conversation without the current message history.",
       "newConversationGroupTip": "If you'd like to keep the history, you can <0>convert to a team</0> instead.",
@@ -627,6 +638,9 @@
   },
   "contact": {
     "Contacts": "Contacts",
+    "noContacts": "No contacts",
+    "filterContacts": "Filter contacts",
+    "noMatchesFound": "No matches found",
     "tab": {
       "allContacts": "All contacts",
       "company": "Company directory"
@@ -669,7 +683,9 @@
       "endAndAnswer": "End & Answer",
       "transfer": "Transfer",
       "toVoiceMail": "To Voicemail",
-      "askFirst": "Ask first"
+      "askFirst": "Ask first",
+      "transferring": "Transferring...",
+      "completeTransfer": "Complete transfer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",

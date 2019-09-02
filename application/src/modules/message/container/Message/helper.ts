@@ -170,7 +170,7 @@ export class MessageRouterChangeHelper {
         'people.prompt.conversationDeleted',
     };
 
-    Notification.flashToast({
+    messageMap[reason] && Notification.flashToast({
       message: messageMap[reason],
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,

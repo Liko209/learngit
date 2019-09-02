@@ -109,17 +109,11 @@ class StreamViewComponent extends Component<Props> {
     } = prevProps;
     const {
       postIds,
-      mostRecentPostId,
       hasMore,
       lastPost,
       jumpToPostId,
     } = this.props;
 
-    if (postIds.length && mostRecentPostId) {
-      if (!postIds.includes(mostRecentPostId)) {
-        this._updateIgnoredStatus(false);
-      }
-    }
     const newPostAddedAtEnd =
       prevPostIds.length !== 0 &&
       // TODO this is a Hotfix for FIJI-4825

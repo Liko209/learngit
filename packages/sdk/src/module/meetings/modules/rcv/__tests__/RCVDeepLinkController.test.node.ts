@@ -85,7 +85,7 @@ describe('RCVDeepLinkController', () => {
 
       const controller = setUp('tk', 'https://app.glip.com');
       const a = await controller.getJoinUrl(1)
-      expect(a).toEqual('https://app.glip.com/api/rcv/join-call/waiting-page?meeting_item_id=1?tk=tk')
+      expect(a).toEqual('https://app.glip.com/api/rcv/join-call/waiting-page?meeting_item_id=1&tk=tk')
     });
   });
 });
