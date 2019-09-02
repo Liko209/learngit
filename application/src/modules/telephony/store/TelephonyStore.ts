@@ -475,6 +475,8 @@ class TelephonyStore {
     this._clearForwardString();
     this._clearTransferString();
 
+    this.inputString = '';
+
     if (this.isTransferPage) {
       this.backToDialerFromTransferPage();
     }

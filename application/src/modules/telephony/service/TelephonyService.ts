@@ -300,7 +300,6 @@ class TelephonyService {
         // restore things to default values
         if (!hasActiveOutBoundCall) {
           runInAction(() => {
-            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -973,8 +972,6 @@ class TelephonyService {
       return;
     });
   };
-
-  deleteInputString = this.deleteInputStringFactory('inputString');
 
   dispose = () => {
     this._ringtonePrefetcher.dispose()
