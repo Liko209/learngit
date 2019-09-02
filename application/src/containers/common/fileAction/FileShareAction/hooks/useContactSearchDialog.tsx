@@ -3,30 +3,48 @@ import { Dialog } from '@/containers/Dialog';
 import React, { useCallback } from 'react';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
-import { SortableModel } from 'sdk/src/framework/model';
+import { SortableModel } from 'sdk/framework/model';
 import { Group } from 'sdk/module/group';
+import { SortUtils } from 'sdk/framework/utils';
+
+const sortFunc = (a: SortableModel<Group>, b: SortableModel<Group>) => {
+  const result = SortUtils.compareArrayOfSameLens(b.sortWeights, a.sortWeights);
+  if (result !== 0) {
+    return result;
+  }
+
+  const mostRecentA = a.entity.most_recent_post_created_at || 0;
+  const mostRecentB = b.entity.most_recent_post_created_at || 0;
+  if (mostRecentA > mostRecentB) {
+    return -1;
+  }
+
+  if (mostRecentA < mostRecentB) {
+    return 1;
+  }
+
+  return SortUtils.compareLowerCaseString(a.lowerCaseName, b.lowerCaseName);
+};
 
 const searchFunc = async (searchKey: string) => {
   const searchService = ServiceLoader.getInstance<SearchService>(
     ServiceConfig.SEARCH_SERVICE,
   );
-  const sortFunc = (a: SortableModel<Group>, b: SortableModel<Group>) =>
-    b.entity.most_recent_content_modified_at -
-    a.entity.most_recent_content_modified_at;
-
   const result = await searchService.doFuzzySearchPersonsAndGroups(
     searchKey,
     {
       excludeSelf: false,
       fetchAllIfSearchKeyEmpty: false,
       meFirst: true,
+      recentFirst: !!searchKey,
     },
     {
       myGroupsOnly: true,
       fetchAllIfSearchKeyEmpty: true,
       meFirst: true,
-      sortFunc,
+      recentFirst: !!searchKey,
     },
+    searchKey ? undefined : sortFunc,
   );
   return result.sortableModels;
 };
@@ -53,4 +71,4 @@ const useContactSearchDialog = (
   }, [onSelect]);
   return [openDialog];
 };
-export { useContactSearchDialog };
+export { useContactSearchDialog, sortFunc };
