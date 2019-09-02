@@ -226,6 +226,7 @@ describe('TelephonyService', () => {
       'should show toast when error occurs when starting conference',
     )
     @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: true },
       { method: 'hasActiveDL', data: true },
       { method: 'makeCall', data: MAKE_CALL_ERROR_CODE.NO_ERROR },

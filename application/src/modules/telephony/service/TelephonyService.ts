@@ -120,6 +120,7 @@ class TelephonyService {
   private _keypadBeepPool: IMedia[];
   private _currentSoundTrackForBeep: number | null;
   private _canPlayOgg: boolean = this._mediaService.canPlayType('audio/ogg');
+  private _isStartingConference = false;
   protected _voicemailNotificationObserver: IEntityChangeObserver;
   protected _callLogNotificationObserver: IEntityChangeObserver<CallLog>;
 
@@ -1232,6 +1233,10 @@ class TelephonyService {
   };
 
   startAudioConference = async (groupId: number) => {
+
+    if (this._isStartingConference) {
+      return Promise.resolve(true);
+    }
     if (this._serverTelephonyService.getAllCallCount() > 0) {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
@@ -1239,7 +1244,10 @@ class TelephonyService {
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-    return await this.ensureCallPermission(async () => {
+
+    this._isStartingConference = true;
+
+    const result = await this.ensureCallPermission(async () => {
       try {
         const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
         return this._makeCall(phoneNumber, { accessCode: hostCode });
@@ -1258,6 +1266,9 @@ class TelephonyService {
         return false;
       }
     });
+
+    this._isStartingConference = false;
+    return result;
   }
 
   joinAudioConference = async (phoneNumber: string, accessCode: string) => {
