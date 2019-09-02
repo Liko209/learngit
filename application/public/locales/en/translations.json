@@ -82,7 +82,10 @@
     "reload": "Reload",
     "goToConversation": "Go to conversation",
     "country": "Country",
-    "eg": "e.g."
+    "eg": "e.g.",
+    "clear": "Clear",
+    "clearText": "Clear Text",
+    "guest": "Guest"
   },
   "presence": {
     "available": "Available",
@@ -635,6 +638,9 @@
   },
   "contact": {
     "Contacts": "Contacts",
+    "noContacts": "No contacts",
+    "filterContacts": "Filter contacts",
+    "noMatchesFound": "No matches found",
     "tab": {
       "allContacts": "All contacts",
       "company": "Company directory"
