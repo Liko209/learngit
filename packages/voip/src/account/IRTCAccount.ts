@@ -23,7 +23,7 @@ interface IRTCAccount {
     uuid: string,
     noAudioDataEvent: RTCNoAudioDataEvent,
   ): void;
-  getCallByUuid(uuid: string): RTCCall | null;
+  getCallByUuid(uuid: string): RTCCall | undefined;
   getRegistrationStatusCode(): number;
 }
 
