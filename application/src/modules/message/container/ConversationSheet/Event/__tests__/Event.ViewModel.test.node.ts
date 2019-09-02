@@ -54,7 +54,7 @@ describe('eventViewModel', () => {
         allDay: false,
       });
       expect((await eventViewModel.timeContent.fetch()).trim()).toBe(
-        'com, 1/4/2019 common.time.dateAtTIme 9:21 AM - 9:21 AM',
+        'com, 1/4/2019 common.time.dateAtTime 9:21 AM - 9:21 AM',
       );
       done();
     });
