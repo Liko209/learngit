@@ -50,6 +50,7 @@ const name2icon = {
   dashboard: 'dashboard',
   dashboard_border: 'dashboard_border',
   chat: 'chat',
+  share: 'share',
   direct_message: 'people',
   team: 'team',
   work: 'work',

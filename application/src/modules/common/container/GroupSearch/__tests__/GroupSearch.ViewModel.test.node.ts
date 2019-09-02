@@ -15,13 +15,14 @@ describe('GroupSearch.ViewModel', () => {
     @mockService.resolve(SearchService, 'doFuzzySearchAllGroups', {
       sortableModels: [{ id: 1 }],
     })
-    async t1(done) {
-      const groupSearchViewModel = new GroupSearchViewModel();
+    async t1() {
+      const groupSearchViewModel = new GroupSearchViewModel({
+        searchFunc: SearchService.doFuzzySearchAllGroups,
+      });
       groupSearchViewModel.searchGroups('key');
       setTimeout(() => {
         expect(groupSearchViewModel.size).toBe(1);
         expect(groupSearchViewModel.list).toEqual([1]);
-        done();
       });
     }
   }

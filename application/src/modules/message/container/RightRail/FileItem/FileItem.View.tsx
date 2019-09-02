@@ -93,7 +93,7 @@ class FileItemView extends Component<FileItemViewProps> {
   }
 
   render() {
-    const { downloadUrl, id } = this.props;
+    const { downloadUrl, id, groupId } = this.props;
     return (
       <JuiListItem
         data-test-automation-id="rightRail-file-item"
@@ -106,7 +106,12 @@ class FileItemView extends Component<FileItemViewProps> {
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
-              <FileActionMenu scene="rightShelf" fileId={id} disablePortal />
+              <FileActionMenu
+                scene="rightShelf"
+                fileId={id}
+                disablePortal
+                groupId={groupId}
+              />
             </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}
