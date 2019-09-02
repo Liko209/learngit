@@ -611,13 +611,14 @@ class TelephonyService {
     return true;
   };
 
-  ensureCallPermission = async (action: Function, options: { skipE911Check?: boolean } = {}) => {
+  ensureCallPermission = async (action: Function, options: { isShortNumber?: boolean } = {}) => {
+
     const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
     if (!callAvailable) {
       ToastCallError.toastPermissionError();
       return false;
     }
-    if (!this._serverTelephonyService.hasActiveDL()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.hasActiveDL()) {
       Notification.flashToast({
         message: 'telephony.prompt.noDLNotAllowedToMakeCall',
         type: ToastType.ERROR,
@@ -629,7 +630,7 @@ class TelephonyService {
       return false;
     }
 
-    if (!options.skipE911Check && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
       this.openE911(action);
       return true;
     }
@@ -671,14 +672,14 @@ class TelephonyService {
       return Promise.resolve(true);
     }
 
-    const skipE911Check = await this.isShortNumber(toNumber);
+    const isShortNumber = await this.isShortNumber(toNumber);
     const result = await this.ensureCallPermission(() => {
       return this._makeCall(toNumber, options)
-    }, { skipE911Check });
+    }, { isShortNumber });
     return result;
   };
 
-  hangUp = (callId: number) => {
+  hangUp = (callId?: number) => {
     const callEntityId = callId || this._callEntityId;
     if (callEntityId) {
       mainLogger.info(
@@ -1254,10 +1255,10 @@ class TelephonyService {
       );
       return;
     }
-    const skipE911Check = await this.isShortNumber(phoneNumber);
+    const isShortNumber = await this.isShortNumber(phoneNumber);
     const ret = await this.ensureCallPermission(() => {
       return this._makeCall(phoneNumber, { accessCode })
-    }, { skipE911Check });
+    }, { isShortNumber });
 
     return ret;
   }
