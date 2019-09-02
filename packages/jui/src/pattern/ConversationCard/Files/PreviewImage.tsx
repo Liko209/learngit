@@ -3,20 +3,22 @@
  * @Date: 2018-10-26 10:35:16
  * Copyright © RingCentral. All rights reserved.
  */
+import moize from 'moize';
 import * as Jui from './style';
 import { FileName } from './FileName';
 import React, { PureComponent, RefObject, createRef } from 'react';
 import {
-  getThumbnailSize,
   ThumbnailInfo,
+  getThumbnailSize,
   getThumbnailForSquareSize,
 } from '../../../foundation/utils/calculateImageSize';
 import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
 import { grey } from '../../../foundation/utils';
+import { Hover } from '../../../foundation/hooks/useHoverHelper';
 import { withDelay } from '../../../hoc/withDelay';
 import { JuiButtonBar } from '../../../components/Buttons';
-import moize from 'moize';
+import { JuiSlide } from '../../../components/Animation';
 
 type SizeType = {
   width: number;
@@ -218,7 +220,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     const imageStyle = this._getImageStyle(width, height);
 
     return (
-      <React.Fragment>
+      <>
         {!loaded && placeholder}
         {postloadURL && !imgLoaded && (
           <img alt="" src={postloadURL} style={{ display: 'none' }} />
@@ -233,30 +235,47 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
           />
         )}
         {loaded && url && (
-          <Jui.ImageCard
-            width={width}
-            data-test-automation-id="imageCard"
-            height={height}
-            onClick={this._handleImageClick}
-          >
-            <StyledImg
-              data-test-automation-class="image"
-              style={imageStyle}
-              src={url}
-            />
-            <Jui.ImageFileInfo width={width} height={height} component="div">
-              <FileName>{fileName}</FileName>
-              {Actions && (
-                <Jui.FileActionsWrapper>
-                  <JuiButtonBar isStopPropagation overlapSize={-2}>
-                    {Actions}
-                  </JuiButtonBar>
-                </Jui.FileActionsWrapper>
-              )}
-            </Jui.ImageFileInfo>
-          </Jui.ImageCard>
+          <Hover>
+            {({ hovered, TriggerProps }) => (
+              <Jui.ImageCard
+                width={width}
+                data-test-automation-id="imageCard"
+                height={height}
+                onClick={this._handleImageClick}
+                {...TriggerProps}
+              >
+                <StyledImg
+                  data-test-automation-class="image"
+                  style={imageStyle}
+                  src={url}
+                />
+                <JuiSlide
+                  mountOnEnter
+                  duration="standard"
+                  easing="sharp"
+                  direction="up"
+                  show={hovered}
+                >
+                  <Jui.ImageFileInfo
+                    width={width}
+                    height={height}
+                    component="div"
+                  >
+                    <FileName>{fileName}</FileName>
+                    {Actions && (
+                      <Jui.FileActionsWrapper>
+                        <JuiButtonBar isStopPropagation overlapSize={-2}>
+                          {Actions}
+                        </JuiButtonBar>
+                      </Jui.FileActionsWrapper>
+                    )}
+                  </Jui.ImageFileInfo>
+                </JuiSlide>
+              </Jui.ImageCard>
+            )}
+          </Hover>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }
