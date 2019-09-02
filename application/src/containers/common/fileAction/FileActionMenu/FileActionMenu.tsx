@@ -32,8 +32,7 @@ type FileActionMenuProps = {
   asyncOperationDecorator?: FunctionDecorator;
   scene: Scene;
 } & FileDeleteActionProps &
-  FileNameEditActionProps &
-  WithTranslation;
+  FileNameEditActionProps;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
 
