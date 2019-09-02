@@ -27,8 +27,8 @@ const SYNC_DIALER_ENTERED = 300;
 const RESIZE = 'resize';
 
 const getDefaultPos = () => ({
-  x: (document.body.clientWidth - 344) / 2,
-  y: (document.body.clientHeight - 552) / 2,
+  x: Math.floor((document.body.clientWidth - 344) / 2),
+  y: Math.floor((document.body.clientHeight - 552) / 2),
 });
 
 /*eslint-disable*/
