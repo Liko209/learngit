@@ -5,11 +5,10 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { dataAnalysis } from 'foundation/analysis';
-import { CallReport } from '../Call';
 import { RTCCall } from '../../api/RTCCall';
 import { IRTCCallDelegate } from '../../api/IRTCCallDelegate';
 import { IRTCAccount } from '../../account/IRTCAccount';
-import { RTC_CALL_STATE, RTC_CALL_ACTION } from '../../api/types';
+import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCNoAudioStateEvent, RTCNoAudioDataEvent } from '../../api/types';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { sleep } from '../util';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
@@ -29,6 +28,14 @@ const MockResponse = {
   },
 };
 class MockAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
+  notifyNoAudioStateEvent(uuid: string, noAudioStateEvent: RTCNoAudioStateEvent): void {
+
+  }
+  notifyNoAudioDataEvent(uuid: string, noAudioDataEvent: RTCNoAudioDataEvent): void {
+  }
+  getCallByUuid(uuid: string): RTCCall | null {
+    return null;
+  }
   createOutgoingCallSession(toNum: string): void {
     this.toNum = toNum;
   }
@@ -47,6 +54,10 @@ class MockAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
 
   isReady(): boolean {
     return this.isReadyReturnValue;
+  }
+
+  getRegistrationStatusCode(): number {
+    return 603;
   }
 }
 
@@ -135,10 +146,6 @@ const diff: Diff = fsmStatus => {
 
 dataAnalysis.track = jest.fn();
 
-afterEach(() => {
-  CallReport.instance().destroySingleton();
-});
-
 describe('Check all the report parameters if has call [JPT-1937]', () => {
   it('should has current value when make call [JPT-1937]', async () => {
     const account = new MockAccountAndCallObserver();
@@ -155,11 +162,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
     (call as any)._callSession.getInviteResponse = jest
       .fn()
       .mockReturnValue(MockResponse);
-
-    await sleep(10);
     (call as any)._callSession.emit(CALL_SESSION_STATE.ACCEPTED);
-    await sleep(10);
-    CallReport.instance().destroySingleton = jest.fn();
     (call as any)._destroy();
 
     const {
@@ -168,7 +171,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
       ua,
       direction,
       establishment,
-    } = CallReport.instance();
+    } = call._report;
 
     expect(!!id).toBeTruthy;
     expect(!!sessionId).toBeTruthy;
@@ -201,16 +204,14 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
     await sleep(10);
     (call as any)._callSession.emit(CALL_SESSION_STATE.CONFIRMED, MockResponse);
     await sleep(10);
-    CallReport.instance().destroySingleton = jest.fn();
     (call as any)._destroy();
-
     const {
       id,
       sessionId,
       ua,
       direction,
       establishment,
-    } = CallReport.instance();
+    } = call._report;
     expect(!!id).toBeTruthy;
     expect(!!sessionId).toBeTruthy;
     expect(!!ua).toBeTruthy;
@@ -242,10 +243,9 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     call.unhold();
     session.mockSignal('bye');
     await sleep(10);
-    CallReport.instance().destroySingleton = jest.fn();
     (call as any)._destroy();
 
-    const fsmStatus = CallReport.instance().fsmStatus;
+    const fsmStatus = call._report.fsmStatus;
     const fsmStatusProps: FsmStatusCategory[] = [
       'idle',
       'replying',
@@ -261,7 +261,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     for (const key of fsmStatusProps) {
       const item = find(fsmStatus, key);
       expect(item!.name).toBeDefined;
-      expect(item!.timestamp).toBeGreaterThan(0);
+      expect(item!.timestamp).toBeDefined();
     }
 
     expect(fsmStatus.length).toBeGreaterThan(0);
@@ -291,10 +291,9 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     await sleep(10);
     session.mockSignal('bye');
     await sleep(10);
-    CallReport.instance().destroySingleton = jest.fn();
     (call as any)._destroy();
 
-    const fsmStatus = CallReport.instance().fsmStatus;
+    const fsmStatus = call._report.fsmStatus;
     const fsmStatusProps: FsmStatusCategory[] = [
       'idle',
       'pending',
@@ -309,7 +308,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     for (const key of fsmStatusProps) {
       const item = find(fsmStatus, key);
       expect(item!.name).toBeDefined;
-      expect(item!.timestamp).toBeGreaterThan(0);
+      expect(item!.timestamp).toBeDefined();
     }
 
     expect(fsmStatus.length).toBeGreaterThan(0);
@@ -327,10 +326,9 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     await sleep(10);
     session.mockSignal('bye');
     await sleep(10);
-    CallReport.instance().destroySingleton = jest.fn();
     (call as any)._destroy();
 
-    const fsmStatus = CallReport.instance().fsmStatus;
+    const fsmStatus = call._report.fsmStatus;
     const fsmStatusProps: FsmStatusCategory[] = [
       'idle',
       'forwarding',
@@ -340,7 +338,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     for (const key of fsmStatusProps) {
       const item = find(fsmStatus, key);
       expect(item!.name).toBeDefined;
-      expect(item!.timestamp).toBeGreaterThan(0);
+      expect(item!.timestamp).toBeDefined();
     }
 
     expect(fsmStatus.length).toBeGreaterThan(0);
@@ -367,33 +365,12 @@ describe('check upload call and media report after call is terminated', () => {
     await sleep(10);
     (call as any)._callSession.emit(CALL_SESSION_STATE.ACCEPTED);
     await sleep(10);
-    CallReport.instance().destroySingleton = jest.fn();
     (call as any)._destroy();
-
-    const {
-      id,
-      createTime,
-      sessionId,
-      ua,
-      direction,
-      establishment,
-      fsmStatus,
-      media,
-    } = CallReport.instance();
 
     expect(dataAnalysis.track).toHaveBeenCalledWith(
       'Jup_Web/DT_phone_call_media_report',
       {
-        info: JSON.stringify({
-          id,
-          createTime,
-          sessionId,
-          ua,
-          direction,
-          establishment,
-          fsmStatus,
-          media,
-        }),
+        info: JSON.stringify(call._report),
         type: 'call',
       },
     );

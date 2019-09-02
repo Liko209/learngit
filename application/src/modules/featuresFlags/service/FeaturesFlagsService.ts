@@ -29,6 +29,11 @@ class FeaturesFlagsService {
     });
   }
 
+  async canUseMessage() {
+    const features = await this.getSupportFeatureModules();
+    return features.includes('Message');
+  }
+
   canUseTelephony = async () => {
     return (
       (await this._rcInfoService.isVoipCallingAvailable()) &&
@@ -42,11 +47,11 @@ class FeaturesFlagsService {
     const organizeConference = await this._rcInfoService.isOrganizeConferenceAvailable();
     if (organizeConference) {
       const useGlip =
-      getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
-      CALLING_OPTIONS.GLIP;
+        getSingleEntity(ENTITY_NAME.PROFILE, 'callOption') ===
+        CALLING_OPTIONS.GLIP;
       return useGlip
-      ? this.canUseTelephony()
-      : this._rcInfoService.isWebPhoneAvailable();
+        ? this.canUseTelephony()
+        : this._rcInfoService.isWebPhoneAvailable();
     }
     return false;
   };

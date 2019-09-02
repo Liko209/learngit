@@ -25,12 +25,14 @@ import { JuiIconography } from '../../foundation/Iconography';
 
 type States = {
   openMenu: boolean;
+  hideMenu: boolean;
   indexSelected: number; // selected tab index
   indexTabs: number[]; // show tab index
   indexMenus: number[]; // menu tab index, when length > 0, then it has more tab
   indexLazyLoadComponents: number[]; // lazy load container component index
   remeasure: boolean;
   anchorEl: EventTarget & Element | null;
+  disableIndicatorTransition: boolean;
 };
 
 type Props = {
@@ -100,10 +102,12 @@ class JuiTabs extends PureComponent<Props, States> {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],
       openMenu: false,
+      hideMenu: false,
       indexTabs: [],
       indexMenus: [],
       remeasure: false,
       anchorEl: null,
+      disableIndicatorTransition: true,
     };
   }
 
@@ -125,6 +129,12 @@ class JuiTabs extends PureComponent<Props, States> {
       this._moreWidth = 0;
       this._tabTitles = newTabTitles;
       this.setState({ remeasure: true });
+    }
+
+    if (nextProps.width === 0) {
+      this.setState({ hideMenu: true, openMenu: false });
+    } else {
+      this.setState({ hideMenu: false });
     }
   }
   /* eslint-disable */
@@ -229,7 +239,11 @@ class JuiTabs extends PureComponent<Props, States> {
     if (!indexLazyLoadComponents.includes(indexSelected)) {
       indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
     }
-    this.setState({ indexSelected, indexLazyLoadComponents });
+    this.setState({
+      indexSelected,
+      indexLazyLoadComponents,
+      disableIndicatorTransition: false,
+    });
     if (tag) {
       this._setLocalSelectedIndex(indexSelected);
     }
@@ -251,13 +265,13 @@ class JuiTabs extends PureComponent<Props, States> {
   };
 
   private _renderMoreAndMenu = () => {
-    const { indexMenus, openMenu, anchorEl } = this.state;
-    if (indexMenus.length === 0) {
+    const { indexMenus, openMenu, hideMenu, anchorEl } = this.state;
+    if (indexMenus.length === 0 || hideMenu) {
       return null; // no more tab
     }
     return (
       <JuiPopperMenu
-        Anchor={this._renderMore}
+        Anchor={hideMenu ? () => null : this._renderMore}
         placement="bottom-start"
         open={openMenu}
         value={MORE}
@@ -402,7 +416,7 @@ class JuiTabs extends PureComponent<Props, States> {
           <StyledContainer
             key={index}
             className={className}
-            offset={this._containerWidth}
+            style={{ right: 10 * this._containerWidth }}
           >
             {indexLazyLoadComponents.includes(index) && child.props.children}
           </StyledContainer>
@@ -412,8 +426,14 @@ class JuiTabs extends PureComponent<Props, States> {
   };
 
   renderTabs = () => {
+    const {
+      indexTabs,
+      indexSelected,
+      disableIndicatorTransition,
+    } = this.state;
+
     const { position, forceFlex } = this.props;
-    const { indexSelected, indexTabs } = this.state;
+
     // Notice:
     // 1. when first execute render, then indexTabs length equal 0
     // 2. when right rail hide, then indexTabs length equal 0
@@ -426,6 +446,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (this._moreWidth === 0) {
       measure = true; // The width needs to be remeasured
     }
+
     return (
       <StyledTabs
         forceFlex={forceFlex}
@@ -435,6 +456,7 @@ class JuiTabs extends PureComponent<Props, States> {
         indicatorColor="primary"
         textColor="primary"
         ref={this._containerRef}
+        disableIndicatorTransition={disableIndicatorTransition}
       >
         {measure ? this._renderForMeasure() : this._renderForShow()}
       </StyledTabs>

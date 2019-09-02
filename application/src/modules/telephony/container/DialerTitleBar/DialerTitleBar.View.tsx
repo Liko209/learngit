@@ -18,14 +18,23 @@ const ACTIONS = [Minimize];
 @observer
 class DialerTitleBarViewComponent extends React.Component<Props> {
   getTitle = () => {
-    const { isForward, isDialer, isTransfer, t, timing } = this.props;
+    const {
+      isForward,
+      isDialer,
+      isTransfer,
+      canCompleteTransfer,
+      t,
+      timing,
+    } = this.props;
 
     switch (true) {
       case isForward:
         return t('telephony.forwardCall');
 
       case isTransfer:
-        return t('telephony.action.transfer');
+        return canCompleteTransfer
+          ? t('telephony.action.transfer')
+          : t('telephony.action.transferring');
 
       case isDialer:
         return t('dialer.newCall');

@@ -24,8 +24,11 @@ const useTranslation = () => ({
   t: i => i,
 });
 
+const Translation = ({ children }) => children(x => x);
+
 const mockReactI18nNext = {
   // this mock makes sure any components using the withTranslation HoC receive the t function as a prop
+  Translation,
   withTranslation,
   useTranslation,
   initReactI18next: reactI18next.initReactI18next,

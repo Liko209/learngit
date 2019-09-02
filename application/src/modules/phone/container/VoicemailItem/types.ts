@@ -7,7 +7,7 @@ import { Caller } from 'sdk/module/RCItems/types';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
 import { JuiAudioMode, JuiAudioStatus } from 'jui/components/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
-import { HoverControllerBaseViewProps } from '../HoverController';
+import { HoverControllerBaseViewProps } from '@/modules/common/container/Layout/HoverController';
 import { Audio, Checker } from '../../types';
 import { ActiveVoicemailId } from '../Voicemail/types';
 

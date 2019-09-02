@@ -53,6 +53,7 @@ const CallHistoryWrapper = (
             placeholder={t('calllog.inputFilter')}
             clearButtonLabel={t('calllog.clearFilter')}
             onChange={setFilterValue}
+            tooltip={t('common.clear')}
           />
         }
       />
