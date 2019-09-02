@@ -64,8 +64,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
     background-color: ${({ color, customColor }) =>
-      customColor ? color :
-      color ? palette('avatar', color) : grey('100')};
+      customColor ? color : color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -91,7 +90,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
 const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   && {
     width: ${width(70)};
-    height: ${height(70)};
+    height: ${height(55)};
     border-radius: unset;
     position: static;
     display: flex;
@@ -104,21 +103,19 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
       color ? palette('avatar', color) : primary('main')};
   }
 
-  & span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: ${height(33)};
-    width: ${width(33)};
-    border-radius: 50%;
-    background-color: ${palette('common', 'white')};
-  }
-
   &:focus {
     outline: none;
   }
 `;
-
+const StyledCoverAvatarContent = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: ${height(33)};
+  width: ${width(33)};
+  border-radius: 50%;
+  background-color: ${palette('common', 'white')};
+`;
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
   <JuiIconography
     iconSize="inherit"
@@ -167,7 +164,11 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   const popupTriggerProps = tooltip ? popupHelper.HoverProps : {};
 
   if (cover) {
-    avatar = <StyledCoverAvatar {...rest} {...popupTriggerProps} />;
+    avatar = (
+      <StyledCoverAvatar {...rest} {...popupTriggerProps}>
+        <StyledCoverAvatarContent>{children}</StyledCoverAvatarContent>
+      </StyledCoverAvatar>
+    );
   } else {
     let iconChildren;
     if (iconSymbol) {

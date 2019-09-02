@@ -88,6 +88,9 @@ class MockUserAgent extends EventEmitter2 {
   makeCall(phoneNumber: string, options: RTCCallOptions): any {
     return new MockSession();
   }
+  getStatusCode(): number {
+    return 200;
+  }
   unregister = jest.fn();
   reRegister = jest.fn();
   restartUA = jest.fn();
@@ -359,8 +362,8 @@ describe('RTCAccount', () => {
     setImmediate(() => {
       const ret2 = account.makeCall('234', listener);
       setImmediate(() => {
-        expect(ret1).not.toBe(null);
-        expect(ret2).toBe(null);
+        expect(ret1).not.toBeUndefined();
+        expect(ret2).toBeUndefined();
         done();
       });
     });

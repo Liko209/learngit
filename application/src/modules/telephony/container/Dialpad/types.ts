@@ -15,7 +15,8 @@ type ViewProps = {
   id: string;
   canUseTelephony: boolean;
   startMinimizeAnimation: boolean;
-  direction: CALL_DIRECTION;
+  direction?: CALL_DIRECTION;
+  isConference: boolean;
 };
 
 export { Props, ViewProps };

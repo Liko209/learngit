@@ -98,10 +98,7 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get isIncomingCall() {
-    return (
-      this._telephonyStore.isIncomingCall &&
-      !this._telephonyStore.isTransferPage
-    );
+    return this._telephonyStore.isIncomingCall;
   }
 
   @computed
@@ -144,7 +141,10 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get shouldDisplayCallCtrl() {
-    return this._hasCall && !this.keypadEntered;
+    return (
+      (this._hasCall && !this.keypadEntered) ||
+      this._telephonyStore.isWarmTransferPage
+    );
   }
 }
 

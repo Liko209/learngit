@@ -18,6 +18,7 @@ import {
   notificationCallback,
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
+  TRANSFER_TYPE,
 } from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
@@ -33,7 +34,6 @@ import {
   ActiveCall,
 } from 'sdk/module/rcEventSubscription/types';
 import { RTCSipEmergencyServiceAddr } from 'voip';
-import { TRANSFER_TYPE } from '../entity/types';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
@@ -137,7 +137,6 @@ class TelephonyService extends EntityBaseService<Call>
 
   hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
-    this._callSwitchController.onCallEnded(callId);
   };
 
   mute = (callId: number) => {
@@ -271,7 +270,7 @@ class TelephonyService extends EntityBaseService<Call>
 
   hasActiveDL = () => {
     return this.telephonyController.hasActiveDL();
-  }
+  };
 
   getLocalEmergencyAddress = () => {
     return this.telephonyController.getLocalEmergencyAddress();
@@ -304,6 +303,10 @@ class TelephonyService extends EntityBaseService<Call>
 
   subscribeSipProvReceived = (listener: notificationCallback) => {
     this.telephonyController.subscribeSipProvReceived(listener);
+  };
+
+  getCallIdList = () => {
+    return this.telephonyController.getAccountController().getCallIdList();
   };
 }
 

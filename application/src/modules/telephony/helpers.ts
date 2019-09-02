@@ -17,6 +17,7 @@ import {
 import { ENTITY_NAME } from '@/store';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import CallModel from '@/store/models/Call';
 import { VOICEMAILS_ROOT_PATH, CALL_LOG_ROOT_PATH } from './interface/constant';
 import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
 
@@ -47,7 +48,7 @@ export const focusCampo = (inputField: HTMLInputElement | any) => {
 
 export const getDisplayName = (
   t: Function,
-  direction: CALL_DIRECTION,
+  direction?: CALL_DIRECTION,
   name?: string,
 ): string =>
   typeof name !== 'string'
@@ -73,8 +74,10 @@ export function toFirstLetterUpperCase(input: string) {
   return `${input[0].toUpperCase()}${input.slice(1, input.length)}`;
 }
 
-export async function getDisplayNameByCaller(caller: ActiveCall) {
-  const { from, fromName, to, toName, direction } = caller;
+export async function getDisplayNameByCaller(caller: ActiveCall | CallModel) {
+  const { fromName, toName, direction } = caller;
+  const from = (caller as ActiveCall).from || (caller as CallModel).fromNum;
+  const to = (caller as ActiveCall).to || (caller as CallModel).toNum;
   const phoneNumber = direction === CALL_DIRECTION.OUTBOUND ? to : from;
   const callerName = direction === CALL_DIRECTION.OUTBOUND ? toName : fromName;
 

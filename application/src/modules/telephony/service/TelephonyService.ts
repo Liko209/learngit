@@ -22,7 +22,8 @@ import {
   MAKE_CALL_ERROR_CODE,
   CALL_ACTION_ERROR_CODE,
   RINGER_ADDITIONAL_TYPE,
-  CallOptions,
+  TRANSFER_TYPE,
+  CallOptions
 } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
@@ -54,7 +55,6 @@ import keypadBeeps from './sounds/sounds.json';
 import SettingModel from '@/store/models/UserSetting';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
-import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { OpenDialogE911 } from '../container/E911';
 import { IMediaService, IMedia } from '@/interface/media';
 import {
@@ -70,7 +70,7 @@ import { isCurrentUserDND } from '@/modules/notification/utils';
 import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
-import { TRANSFER_TYPE } from 'sdk/module/telephony/entity/types';
+import { errorHelper } from 'sdk/error';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
@@ -107,7 +107,7 @@ class TelephonyService {
   @ISoundNotification
   private _soundNotification: ISoundNotification;
 
-  private _callEntityId: number;
+  private _callEntityId?: number;
   private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
@@ -116,46 +116,51 @@ class TelephonyService {
   private _callStateDisposer: IReactionDisposer;
   private _ringerDisposer: IReactionDisposer;
   private _speakerDisposer: IReactionDisposer;
+  private _callEntityIdDisposer: IReactionDisposer;
   private _keypadBeepPool: IMedia[];
   private _currentSoundTrackForBeep: number | null;
   private _canPlayOgg: boolean = this._mediaService.canPlayType('audio/ogg');
   protected _voicemailNotificationObserver: IEntityChangeObserver;
   protected _callLogNotificationObserver: IEntityChangeObserver<CallLog>;
 
-  private _onMadeOutgoingCall = (id: number) => {
+  private _onMadeOutgoingCall = () => {
     // TODO: This should be a list in order to support multiple call
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4274
-    this._telephonyStore.id = id;
-    const { uuid } = this._telephonyStore.call;
-    mainLogger.info(
-      `${TelephonyService.TAG} Call object created, call id=${uuid}`,
-    );
+    // this._telephonyStore.id = id;
     // need factor in new module design
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
-    this._callEntityId = id;
+    // this._callEntityId = id;
 
     this._telephonyStore.directCall();
+
+    if (this._telephonyStore.call) {
+      const { uuid } = this._telephonyStore.call;
+      mainLogger.info(
+        `${TelephonyService.TAG} Call object created, call id=${uuid}`,
+      );
+    }
   };
 
-  private _onReceiveIncomingCall = async (id: number) => {
-    const shouldIgnore = !(await this._isJupiterDefaultApp()) || isCurrentUserDND();
+  private _onReceiveIncomingCall = async () => {
+    const shouldIgnore = !(await this._isJupiterDefaultApp()) || isCurrentUserDND() || this._telephonyStore.isThirdCall;
     if (shouldIgnore) {
       return;
     }
-    this._telephonyStore.id = id;
-    const { fromNum, uuid } = this._telephonyStore.call;
-    this._callEntityId = id;
 
     this._telephonyStore.incomingCall();
     // need factor in new module design
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
-    mainLogger.info(
-      `${
-        TelephonyService.TAG
-      }Call object created, call id=${uuid}, from name=${'fromName'}, from num=${fromNum}`,
-    );
+
+    if (this._telephonyStore.call) {
+      const { fromNum, uuid } = this._telephonyStore.call;
+      mainLogger.info(
+        `${
+          TelephonyService.TAG
+        }Call object created, call id=${uuid}, from name=${'fromName'}, from num=${fromNum}`,
+      );
+    }
   };
 
   private _getCurrentRingtoneSetting = async () => {
@@ -211,7 +216,7 @@ class TelephonyService {
      * Be careful that the server might not respond for the request, so since we design
      * the store as a singleton then we need to restore every single state for the next call.
      */
-    delete this._callEntityId;
+    // delete this._callEntityId;
   }
 
   private _setDialerOpenedCount = () => {
@@ -296,7 +301,6 @@ class TelephonyService {
         // restore things to default values
         if (!hasActiveOutBoundCall) {
           runInAction(() => {
-            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -465,14 +469,22 @@ class TelephonyService {
     );
 
     this._callStateDisposer = reaction(
-      () => this._telephonyStore.call && this._telephonyStore.callState,
-      callState => {
-        if (callState === CALL_STATE.DISCONNECTED) {
+      () => !!this._telephonyStore.endCall,
+      hasCallEnd => {
+        if (hasCallEnd) {
           this._telephonyStore.end();
           this._resetCallState();
         }
       },
     );
+
+    this._callEntityIdDisposer = reaction(
+      () => this._telephonyStore.call && this._telephonyStore.call.id,
+      callId => {
+        this._callEntityId = callId;
+      }
+    );
+
     this._currentSoundTrackForBeep = 0;
 
     // triggering a change of caller id list
@@ -497,7 +509,7 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
-    if (this._telephonyStore.callDisconnected) {
+    if (this._telephonyStore.callDisconnecting) {
       this._telephonyStore.closeDialer();
     }
   }
@@ -553,7 +565,7 @@ class TelephonyService {
     }
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
-      { fromNumber, accessCode },
+      { fromNumber, ...options },
     );
 
     switch (true) {
@@ -599,13 +611,14 @@ class TelephonyService {
     return true;
   };
 
-  ensureCallPermission = async (action: Function, options: { skipE911Check?: boolean } = {}) => {
+  ensureCallPermission = async (action: Function, options: { isShortNumber?: boolean } = {}) => {
+
     const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
     if (!callAvailable) {
       ToastCallError.toastPermissionError();
       return false;
     }
-    if (!this._serverTelephonyService.hasActiveDL()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.hasActiveDL()) {
       Notification.flashToast({
         message: 'telephony.prompt.noDLNotAllowedToMakeCall',
         type: ToastType.ERROR,
@@ -617,7 +630,7 @@ class TelephonyService {
       return false;
     }
 
-    if (!options.skipE911Check && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+    if (!options.isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
       this.openE911(action);
       return true;
     }
@@ -648,29 +661,31 @@ class TelephonyService {
     return this._serverTelephonyService.getSwitchCall();
   }
 
-  directCall = async (toNumber: string) => {
+  directCall = async (toNumber: string, options?: CallOptions) => {
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.
     // Ticket: https://jira.ringcentral.com/browse/FIJI-4275
-    if (this._serverTelephonyService.getAllCallCount() > 0) {
+    if (this._serverTelephonyService.getAllCallCount() > 0 && (!options || (options && !options.extraCall))) {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-    const skipE911Check = await this.isShortNumber(toNumber);
+
+    const isShortNumber = await this.isShortNumber(toNumber);
     const result = await this.ensureCallPermission(() => {
-      return this._makeCall(toNumber)
-    }, { skipE911Check });
+      return this._makeCall(toNumber, options)
+    }, { isShortNumber });
     return result;
   };
 
-  hangUp = () => {
-    if (this._callEntityId) {
+  hangUp = (callId?: number) => {
+    const callEntityId = callId || this._callEntityId;
+    if (callEntityId) {
       mainLogger.info(
-        `${TelephonyService.TAG}Hang up call id=${this._callEntityId}`,
+        `${TelephonyService.TAG}Hang up call id=${callEntityId}`,
       );
-      this._serverTelephonyService.hangUp(this._callEntityId);
+      this._serverTelephonyService.hangUp(callEntityId);
       this._resetCallState();
     }
   };
@@ -680,6 +695,20 @@ class TelephonyService {
       mainLogger.info(
         `${TelephonyService.TAG}answer call id=${this._callEntityId}`,
       );
+      this._serverTelephonyService.answer(this._callEntityId);
+    }
+  };
+
+  endAndAnswer = () => {
+    if (this._callEntityId) {
+      const endCallId = this._telephonyStore.ids.find(id => id !== this._callEntityId);
+
+      if (!endCallId) return;
+
+      mainLogger.info(
+        `${TelephonyService.TAG}end and answer end call id=${endCallId}, answer call id=${this._callEntityId}`,
+      );
+      this._serverTelephonyService.hangUp(endCallId);
       this._serverTelephonyService.answer(this._callEntityId);
     }
   };
@@ -868,6 +897,9 @@ class TelephonyService {
   };
 
   dtmf = (digits: string) => {
+    if (!this._callEntityId) {
+      return;
+    }
     this._telephonyStore.inputKey(digits);
     return this._serverTelephonyService.dtmf(this._callEntityId, digits);
   };
@@ -945,8 +977,6 @@ class TelephonyService {
     });
   };
 
-  deleteInputString = this.deleteInputStringFactory('inputString');
-
   dispose = () => {
     this._ringtonePrefetcher.dispose()
     this._hasActiveOutBoundCallDisposer &&
@@ -959,6 +989,7 @@ class TelephonyService {
     this._callStateDisposer && this._callStateDisposer();
     this._ringerDisposer && this._ringerDisposer();
     this._speakerDisposer && this._speakerDisposer();
+    this._callEntityIdDisposer && this._callEntityIdDisposer();
     this._voicemailService.removeEntityNotificationObserver(
       this._voicemailNotificationObserver,
     );
@@ -981,6 +1012,7 @@ class TelephonyService {
     delete this._defaultCallerPhoneNumberDisposer;
     delete this._ringtone;
     delete this._keypadBeepPool;
+    delete this._callEntityIdDisposer;
     delete this._voicemailNotificationObserver;
   };
 
@@ -1210,15 +1242,37 @@ class TelephonyService {
     return await this.ensureCallPermission(async () => {
       try {
         const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
-        return this._makeCall(phoneNumber, { accessCode: hostCode })
-      } catch(err) {
-        // need toast, toast message should be provided from PM
+        return this._makeCall(phoneNumber, { accessCode: hostCode });
+      } catch(error) {
         mainLogger.error(
           `${TelephonyService.TAG} Error when start a conference`,
-          err
+          error
         );
+        Notification.flashToast({
+          message: errorHelper.isNetworkConnectionError(error) ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        });
+        return false;
       }
     });
+  }
+
+  joinAudioConference = async (phoneNumber: string, accessCode: string) => {
+    if (this._serverTelephonyService.getAllCallCount() > 0) {
+      mainLogger.warn(
+        `${TelephonyService.TAG}Only allow to make one call at the same time`,
+      );
+      return;
+    }
+    const isShortNumber = await this.isShortNumber(phoneNumber);
+    const ret = await this.ensureCallPermission(() => {
+      return this._makeCall(phoneNumber, { accessCode })
+    }, { isShortNumber });
+
+    return ret;
   }
 
   transfer = async (type: TRANSFER_TYPE, transferTo: string) => {

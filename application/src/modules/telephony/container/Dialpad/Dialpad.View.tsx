@@ -10,7 +10,6 @@ import { JuiMinimizedCall, JuiDialpadBtn } from 'jui/pattern/Dialer';
 import { Mute } from '../Mute';
 import { getDisplayName } from '../../helpers';
 import { End } from '../End';
-import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 type DialpadProps = ViewProps & WithTranslation;
 
@@ -27,6 +26,7 @@ class DialpadViewComponent extends React.PureComponent<DialpadProps> {
       startMinimizeAnimation,
       canUseTelephony,
       direction,
+      isConference,
     } = this.props;
 
     if (!canUseTelephony) {
@@ -36,7 +36,7 @@ class DialpadViewComponent extends React.PureComponent<DialpadProps> {
       <JuiMinimizedCall
         onClick={maximize}
         Actions={Actions}
-        name={getDisplayName(t, direction as CALL_DIRECTION, name)}
+        name={isConference ? t('telephony.conferenceCall') : getDisplayName(t, direction, name)}
         label={typeof timing === 'string' ? timing : t(timing.key)}
         data-test-automation-id="telephony-minimized-view"
       />

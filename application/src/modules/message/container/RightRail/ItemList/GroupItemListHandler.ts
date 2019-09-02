@@ -9,9 +9,7 @@ import {
   ISortableModelWithData,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import {
-  action, computed, observable, reaction,
-} from 'mobx';
+import { action, computed, observable, reaction } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { SortUtils } from 'sdk/framework/utils';
 import { ItemNotification, ItemService } from 'sdk/module/item';
@@ -49,7 +47,8 @@ class GroupItemListHandler extends FetchSortableDataListHandler<Item>
     const { sortKey, desc } = getSort(type);
     const typeId = getTypeId(type);
 
-    const isMatchFunc = (model?: Item) => (model ? isExpectedItemOfThisGroup(groupId, type, model) : false);
+    const isMatchFunc = (model?: Item) =>
+      model ? isExpectedItemOfThisGroup(groupId, type, model) : false;
 
     const transformFunc = (model: Item) => {
       const data = { id: model.id };
@@ -72,12 +71,13 @@ class GroupItemListHandler extends FetchSortableDataListHandler<Item>
     const sortFunc = (
       lhs: ISortableModelWithData<Item>,
       rhs: ISortableModelWithData<Item>,
-    ): number => SortUtils.sortModelByKey(
-      lhs.data as Item,
-      rhs.data as Item,
-      [sortKey],
-      desc,
-    );
+    ): number =>
+      SortUtils.sortModelByKey(
+        lhs.data as Item,
+        rhs.data as Item,
+        [sortKey],
+        desc,
+      );
 
     const dataProvider = new GroupItemDataProvider(
       groupId,
@@ -121,7 +121,6 @@ class GroupItemListHandler extends FetchSortableDataListHandler<Item>
     return this.fetchDataInternal(direction, size, anchor);
   }
 
-  @action
   hasMore(direction: QUERY_DIRECTION) {
     if (direction === QUERY_DIRECTION.NEWER) {
       return false;

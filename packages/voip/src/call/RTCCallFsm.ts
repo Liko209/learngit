@@ -11,7 +11,10 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_CALL_ACTION_ERROR_CODE,
+  RTC_CALL_ACTION_DIRECTION,
 } from '../api/types';
+import { FsmStatusCategory } from '../report/types';
+import { CallReport } from '../report/Call';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
@@ -49,9 +52,11 @@ const CallFsmEvent = {
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _callFsmTable: RTCCallFsmTable;
   private _eventQueue: any;
+  private _report: CallReport;
 
-  constructor() {
+  constructor(report: CallReport) {
     super();
+    this._report = report;
     this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = async.queue((task: any, callback: any) => {
       callback(task.params);
@@ -133,15 +138,15 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
   }
 
-  mute(): void {
+  mute(direction: RTC_CALL_ACTION_DIRECTION): void {
     this._eventQueue.push({ name: CallFsmEvent.MUTE }, () => {
-      this._onMute();
+      this._onMute(direction);
     });
   }
 
-  unmute(): void {
+  unmute(direction: RTC_CALL_ACTION_DIRECTION): void {
     this._eventQueue.push({ name: CallFsmEvent.UNMUTE }, () => {
-      this._onUnmute();
+      this._onUnmute(direction);
     });
   }
 
@@ -329,12 +334,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.STOP_RECORD_ACTION);
   }
 
-  onMuteAction() {
-    this.emit(CALL_FSM_NOTIFY.MUTE_ACTION);
+  onMuteAction(direction: RTC_CALL_ACTION_DIRECTION) {
+    this.emit(CALL_FSM_NOTIFY.MUTE_ACTION, direction);
   }
 
-  onUnmuteAction() {
-    this.emit(CALL_FSM_NOTIFY.UNMUTE_ACTION);
+  onUnmuteAction(direction: RTC_CALL_ACTION_DIRECTION) {
+    this.emit(CALL_FSM_NOTIFY.UNMUTE_ACTION, direction);
   }
 
   onReportCallActionFailed(name: string): void {
@@ -426,12 +431,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._callFsmTable.stopRecord();
   }
 
-  private _onMute() {
-    this._callFsmTable.mute();
+  private _onMute(direction: RTC_CALL_ACTION_DIRECTION) {
+    this._callFsmTable.mute(direction);
   }
 
-  private _onUnmute() {
-    this._callFsmTable.unmute();
+  private _onUnmute(direction: RTC_CALL_ACTION_DIRECTION) {
+    this._callFsmTable.unmute(direction);
   }
 
   private _onAnswer() {
@@ -524,6 +529,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onLeaveConnected() {
     this.emit(CALL_FSM_NOTIFY.LEAVE_CONNECTED);
+  }
+
+  onUpdateFsmState(state: FsmStatusCategory): void {
+    this._report.updateFsmStatus(state);
   }
 }
 

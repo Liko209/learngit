@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GroupSearch.View should render correctly [JPT-2789] 1`] = `
+<JuiGroupSearch
+  clearText="globalSearch.clear"
+  closeIconAriaLabel="close-icon"
+  closeIconTooltip="common.dialog.close"
+  itemCount={1}
+  itemToString={[Function]}
+  onClear={[Function]}
+  onDialogClose={[Function]}
+  onInputChange={[Function]}
+  onKeyDownEscape={[Function]}
+  onSelectChange={[Function]}
+  searchKey=""
+  searchPlaceHolder="groupSearch.inputGhostText"
+>
+  <Component />
+</JuiGroupSearch>
+`;

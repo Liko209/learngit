@@ -21,6 +21,7 @@ import * as media from '@/modules/media/module.config';
 
 jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
@@ -73,9 +74,16 @@ describe('DialpadViewModel', () => {
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.maximize).toBeCalled();
+    expect(_telephonyService.maximize).toHaveBeenCalled();
   });
   it('should initialize without fade animation', () => {
     expect(dialpadViewModel.startMinimizeAnimation).toBe(false);
+  });
+
+  it('should return value of `isConference` on TelephonyStore', () => {
+    Object.defineProperty(dialpadViewModel._telephonyStore, 'isConference', {
+      get: jest.fn(() => true),
+    });
+    expect(dialpadViewModel.isConference).toEqual(true);
   });
 });

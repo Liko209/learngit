@@ -109,6 +109,7 @@ class CustomStatusComponent extends React.Component<
     const { isShowMenuList } = this.state;
     return (
       <JuiModal
+        disableEscapeKeyDown={isLoading}
         open
         size="small"
         title={t('customstatus.title')}

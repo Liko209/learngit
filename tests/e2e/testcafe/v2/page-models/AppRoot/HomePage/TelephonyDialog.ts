@@ -39,6 +39,10 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-header-phone');
   }
 
+  get conferenceCall() {
+    return this.getSelectorByAutomationId('telephony-dialer-header-name');
+  }
+
   get hangupButton() {
     return this.getSelectorByAutomationId('telephony-end-btn');
   }
@@ -156,8 +160,21 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-more-option-menu');
   }
 
+  //Transfer
   get transferActionsButton() {
     return this.getSelectorByAutomationId('telephony-transfer-menu-item');
+  }
+
+  get transferAskFirstButton() {
+    return this.getSelectorByAutomationId('telephony-ask-first-btn');
+  }
+
+  get completeTransferButton() {
+    return this.getSelectorByAutomationId('complete-transfer-call-btn');
+  }
+
+  get cancelTransferButton() {
+    return this.getSelectorByAutomationId('cancel-warm-transfer-btn');
   }
 
   get transferNowButton() {
@@ -218,6 +235,11 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get deleteButton() {
     return this.buttonOfIcon('deletenumber');
+  }
+
+  //Multiple call
+  get endAndAnswerButton() {
+    return this.getSelectorByAutomationId('telephony-end-answer-btn');
   }
 
   //contact search
@@ -349,6 +371,10 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.hover(this.ignoreButton);
   }
 
+  async clickEndAndAnswerButton() {
+    await this.t.click(this.endAndAnswerButton);
+  }
+
   async hoverSendToVoiceMailButton() {
     await this.t.hover(this.sendToVoiceMailButton, { speed: 0.1 });
   }
@@ -437,6 +463,26 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async clickTransferActionButton() {
     await this.t.click(this.transferActionsButton);
+  }
+
+  async clickTransferAskFirstButton() {
+    await this.t.click(this.transferAskFirstButton);
+  }
+
+  async hoverCompleteTransferButton() {
+    await this.t.hover(this.completeTransferButton);
+  }
+
+  async clickCompleteTransferButton() {
+    await this.t.click(this.completeTransferButton);
+  }
+
+  async hoverCancelTransferButton() {
+    await this.t.hover(this.cancelTransferButton);
+  }
+
+  async clickCancelTransferButton() {
+    await this.t.click(this.cancelTransferButton);
   }
 
   async clickTransferNowButton() {

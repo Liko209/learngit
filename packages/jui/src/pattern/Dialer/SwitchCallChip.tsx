@@ -64,6 +64,7 @@ const StyledSwitchCallChip = styled<{ active: boolean }, 'div'>('div')`
   padding: ${spacing(1.5)};
   width: ${width(54)};
   height: ${height(7)};
+  box-sizing: border-box;
   ${typography('body1')};
   border-radius: ${radius('xxl')};
   margin-bottom: ${spacing(1)};

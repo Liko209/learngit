@@ -6,7 +6,7 @@
 import { TelephonyService } from '../TelephonyService';
 import { TelephonyEngineController } from '../../controller/TelephonyEngineController';
 import { ITelephonyAccountDelegate } from '../ITelephonyAccountDelegate';
-import { MAKE_CALL_ERROR_CODE } from '../../types';
+import { MAKE_CALL_ERROR_CODE , TRANSFER_TYPE } from '../../types';
 import { MakeCallController } from '../../controller/MakeCallController';
 import { ITelephonyCallDelegate } from '../ITelephonyCallDelegate';
 import {
@@ -23,7 +23,7 @@ import { PhoneSetting } from '../../setting';
 import { SettingService } from 'sdk/module/setting';
 import { CallSwitchController } from '../../controller/CallSwitchController';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
-import { TRANSFER_TYPE } from '../../entity/types';
+
 
 jest.mock('../../controller/CallSwitchController');
 jest.mock('../../controller/TelephonyEngineController');
@@ -187,7 +187,6 @@ describe('TelephonyService', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
       expect(accountController.hangUp).toHaveBeenCalledWith('123');
-      expect(callSwitchController.onCallEnded).toHaveBeenCalledWith('123');
     });
   });
   describe('mute', () => {
@@ -336,6 +335,7 @@ describe('TelephonyService', () => {
       expect(r).toEqual(retData);
     });
   });
+
   describe('transfer', () => {
     it('should call transfer', async () => {
       await telephonyService.transfer(

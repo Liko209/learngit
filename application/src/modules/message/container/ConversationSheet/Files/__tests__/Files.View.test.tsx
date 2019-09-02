@@ -45,6 +45,7 @@ describe('FilesView', () => {
       [],
     ],
     urlMap: { get: () => '1' },
+    getFilePreviewBackgroundContainPermission: { get: () => false },
     isRecentlyUploaded: () => false,
     getCropImage: () => null,
     getShowDialogPermission: () => true,
@@ -120,6 +121,7 @@ describe('FilesView', () => {
     isRecentlyUploaded: () => false,
     getCropImage: () => null,
     getShowDialogPermission: () => true,
+    getFilePreviewBackgroundContainPermission: { get: () => false },
   };
   @testable
   class _handleFileClick {

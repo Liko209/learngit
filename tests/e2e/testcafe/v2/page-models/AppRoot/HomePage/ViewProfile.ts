@@ -466,6 +466,11 @@ export class ProfileDialog extends BaseWebComponent {
     await this.scrollToY(middleHeight);
   }
 
+
+  async clickAvatar() {
+    await this.t.click(this.avatar);
+  }
+
 }
 class Member extends BaseWebComponent {
   get uid() {

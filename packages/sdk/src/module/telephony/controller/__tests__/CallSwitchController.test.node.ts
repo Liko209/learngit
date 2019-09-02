@@ -568,7 +568,7 @@ describe('CallSwitchController', () => {
       });
 
       telephonyService.getById = jest.fn().mockResolvedValue(callEntity);
-      await callSwitchController.onCallEnded(callEntity.id);
+      await callSwitchController['_onCallEnded'](callEntity as any);
       expect(callSwitchController['_endedCalls'].length).toEqual(1);
       expect(callSwitchController['_currentActiveCalls'].length).toEqual(0);
     });
@@ -581,8 +581,7 @@ describe('CallSwitchController', () => {
         to_tag: 't',
       };
 
-      telephonyService.getById = jest.fn().mockResolvedValue(callEntity);
-      await callSwitchController.onCallEnded(callEntity.id);
+      await callSwitchController['_onCallEnded'](callEntity as any);
       expect(callSwitchController['_endedCalls'].length).toEqual(0);
     });
   });
@@ -597,7 +596,7 @@ describe('CallSwitchController', () => {
             [
               1,
               {
-                call_state: 'connected',
+                call_state: 'Connected',
                 call_id: '1',
                 from_tag: 'f',
                 to_tag: 't',
@@ -606,7 +605,7 @@ describe('CallSwitchController', () => {
             [
               2,
               {
-                call_state: 'disconnected',
+                call_state: 'Disconnecting',
                 call_id: '1',
                 from_tag: 'f',
                 to_tag: 't',
@@ -615,8 +614,15 @@ describe('CallSwitchController', () => {
           ]),
         },
       };
+      callSwitchController['_onCallEnded'] = jest.fn();
       callSwitchController['_handleCallStateChanged'](payLoad);
       expect(callSwitchController['_updateBannerStatus']).toHaveBeenCalled();
+      expect(callSwitchController['_onCallEnded']).toHaveBeenCalledWith({
+        call_id: '1',
+        call_state: 'Disconnecting',
+        from_tag: 'f',
+        to_tag: 't',
+      });
     });
   });
 });

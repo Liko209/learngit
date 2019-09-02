@@ -35,6 +35,7 @@ type IconButtonSize =
   | 'large'
   | 'midLarge'
   | 'moreLarge'
+  | 'mediumLarge'
   | 'smallMedium';
 
 // TODO: remove iconname prop
@@ -65,19 +66,27 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   children: React.ReactNode;
 };
 
-type Size = 'small' | 'medium' | 'large' | 'moreLarge' | 'smallMedium';
-type ButtonSize = Size | 'midLarge' | 'smallMedium';
+type Size =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'moreLarge'
+  | 'mediumLarge'
+  | 'smallMedium';
+type ButtonSize = Size | 'midLarge' | 'mediumLarge' | 'smallMedium';
 
 const buttonSizes: { [k in ButtonSize]: number } = {
   moreLarge: 16,
   midLarge: 14,
   large: 15,
+  mediumLarge: 12,
   medium: 8,
   smallMedium: 7,
   small: 5,
 };
 
 const buttonShadows: { [k in Size]: number } = {
+  mediumLarge: 16,
   moreLarge: 16,
   large: 16,
   medium: 1,
@@ -90,6 +99,7 @@ const iconSizesMap: { [k in Size]: IconSize } = {
   moreLarge: 'moreLarge',
   medium: 'small',
   small: 'extraSmall',
+  mediumLarge: 'large',
   smallMedium: 'small',
 };
 

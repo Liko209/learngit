@@ -1,0 +1,21 @@
+
+{
+    "on_merge": {
+        "fixtures": [
+          "./fixtures/ImageViewer/RightRail.ts",
+          "./fixtures/RightRail/EventList",
+          "./fixtures/RightRail/FileList",
+          "./fixtures/RightRail/ImageList",
+          "./fixtures/RightRail/LinkList",
+          "./fixtures/RightRail/Members",
+          "./fixtures/RightRail/NoteList",
+          "./fixtures/RightRail/PinnedPost",
+          "./fixtures/RightRail/TaskList"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}
+
+

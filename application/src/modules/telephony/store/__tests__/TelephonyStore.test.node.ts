@@ -18,6 +18,7 @@ import {
 } from 'sdk/module/telephony/entity';
 
 jest.mock('@/store/utils');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
   matchContactByPhoneNumber: jest.fn(),
@@ -29,8 +30,9 @@ function createStore() {
   return new TelephonyStore();
 }
 describe('Telephony store', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     call = observable({
+      id: 1,
       holdState: HOLD_STATE.IDLE,
       callState: CALL_STATE.IDLE,
       direction: CALL_DIRECTION.INBOUND,
@@ -300,10 +302,108 @@ describe('Telephony store', () => {
     };
     (getEntity as jest.Mock).mockReturnValue(call);
     const store = createStore();
-    store.id = 1;
     expect(store.phoneNumber).toEqual('');
   });
 
+  it('ids', () => {
+    const store = createStore();
+    expect(store.ids).toEqual([1]);
+  });
+
+  it('rawCalls', () => {
+    const store = createStore();
+    expect((store as any).rawCalls).toBeDefined();
+    expect((store as any).rawCalls.length).toEqual(1);
+  });
+
+  it('call', done => {
+    const store = createStore();
+    expect((store as any).rawCalls).toBeDefined();
+    expect((store as any).call).toBeDefined();
+
+    store.switchCurrentCall(1);
+    expect(store.currentCallId).toEqual(1);
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1] };
+    call.id = 1;
+    expect((store as any).call).toBeDefined();
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [] };
+    expect((store as any).rawCalls.length).toEqual(0);
+    expect((store as any).call).toBeUndefined();
+    done();
+  });
+
+  it('isMultipleCall', done => {
+    const store = createStore();
+    expect(store.isMultipleCall).toBeFalsy();
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+    expect(store.isMultipleCall).toBeTruthy();
+    expect(store.isBackToDefaultPos).toBeTruthy();
+    done();
+  });
+
+  it('isThirdCall', done => {
+    const store = createStore();
+    expect(store.isThirdCall).toBeFalsy();
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+    expect(store.isThirdCall).toBeFalsy();
+    done();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2, 3] };
+    expect(store.isThirdCall).toBeTruthy();
+    done();
+  });
+
+  it('isBackToDefaultPos', () => {
+    const store = createStore();
+    expect(store.isBackToDefaultPos).toBeFalsy();
+    expect(store.isMultipleCall).toBeFalsy();
+    store.endMultipleIncomingCall();
+    expect(store.isBackToDefaultPos).toBeFalsy();
+
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+    expect(store.isMultipleCall).toBeTruthy();
+    store.endMultipleIncomingCall();
+    expect(store.isBackToDefaultPos).toBeTruthy();
+
+    store.changeBackToDefaultPos(false);
+    expect(store.isBackToDefaultPos).toBeFalsy();
+  });
+
+  it('callDisconnecting', () => {
+    const store = createStore();
+    expect(store.callDisconnecting).toBeFalsy();
+    call.callState = CALL_STATE.DISCONNECTING;
+    expect(store.callDisconnecting).toBeTruthy();
+  });
+
+  it('call init state', () => {
+    const store = createStore();
+    // @ts-ignore
+    store._sortableListHandler.sortableListStore = { getIds: [] };
+
+    expect(store.holdState).toBe(HOLD_STATE.DISABLED);
+    expect(store.recordState).toBe(RECORD_STATE.DISABLED);
+    expect(store.callState).toBe(CALL_STATE.IDLE);
+    expect(store.isMute).toBeFalsy;
+    expect(store.activeCallTime).toBe(0);
+    expect(store.callConnectingTime).toBe(0);
+    expect(store.isInbound).toBeFalsy;
+    expect(store.isOutbound).toBeFalsy;
+    expect(store.activeCallDirection).toBeUndefined;
+    expect(store.uuid).toBe('');
+  });
   it('resetValidInputStringNumber()', () => {
     const store = createStore();
     store.resetValidInputStringNumber();
@@ -338,22 +438,61 @@ describe('Telephony store', () => {
     expect(store._dialerString).toBe('');
   });
 
+  it('directToWarmTransferPage()', () => {
+    const store = createStore();
+    store.directToWarmTransferPage();
+    expect(store.isWarmTransferPage).toBeTruthy();
+  });
+
+  it('backToDialerFromWarmTransferPage()', () => {
+    const store = createStore();
+    store.backToDialerFromTransferPage();
+    expect(store.isWarmTransferPage).toBeFalsy();
+  });
+
+  it('completeTransfer()', () => {
+    const store = createStore();
+    store.completeTransfer();
+    expect(store.canCompleteTransfer).toBeTruthy();
+  });
+
+  it('processTransfer()', () => {
+    const store = createStore();
+    store.processTransfer();
+    expect(store.canCompleteTransfer).toBeFalsy();
+  });
+
   it('resetCallItem() [JPT-2764]', () => {
     const store = createStore();
     store.resetCallItem();
     expect(store.selectedCallItem).toEqual({
       phoneNumber: '',
       index: NaN,
-    })
-  })
+    });
+  });
 
   describe('_getNotificationCallerInfo', () => {
-    it('Should show unknown caller when SDK notification without from caller [JPT-2822]', async () => {
-      i18n.i18nP = jest.fn().mockReturnValue('unknown caller');
+    beforeEach(() => {
+      jest.spyOn(i18n, 'i18nP').mockReturnValueOnce('unknown caller');
+    });
 
+    it('Should show unknown caller when SDK notification without caller [JPT-2822]', async () => {
       const store = createStore();
 
-      const info = await store._getNotificationCallerInfo(null);
+      const info = await store._getNotificationCallerInfo();
+
+      expect(info.displayName).toBe('unknown caller');
+    });
+
+    it('Should show unknown caller when SDK notification has not caller name and cannot match contact [JPT-2822]', async () => {
+      const store = createStore();
+
+      const extensionNumber = '123456';
+
+      jest.spyOn(store, '_formatPhoneNumber').mockReturnValueOnce(extensionNumber);
+      jest.spyOn(store, '_matchPersonByPhoneNumber').mockReturnValueOnce(null);
+
+      const info = await store._getNotificationCallerInfo({ extensionNumber });
 
       expect(info.displayName).toBe('unknown caller');
     });

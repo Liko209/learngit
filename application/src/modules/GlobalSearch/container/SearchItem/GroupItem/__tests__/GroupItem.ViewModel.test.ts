@@ -7,10 +7,16 @@
 import { getEntity } from '../../../../../../store/utils';
 import { GroupItemViewModel } from '../GroupItem.ViewModel';
 import { Props } from '../types';
+import { Jupiter } from 'framework/Jupiter';
+import { config } from '../../../../module.config';
+import { container } from 'framework/ioc';
+import { GlobalSearchService } from '../../../../service';
+
 
 jest.mock('../../../../../../store/utils');
 // jest.mock('sdk/service/account');
-
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 const mockData = {
   isTeam: true,
   privacy: 'protected',
@@ -159,5 +165,21 @@ describe('GroupItemViewModel', () => {
       const groupItemViewModel = new GroupItemViewModel({} as Props);
       expect(groupItemViewModel.shouldHidden).toBeTruthy();
     });
+  });
+
+  describe('closeGlobalSearch', () => {
+    it('should call globalSearchService close method', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isTeam: true,
+        isMember: true,
+        privacy: 'private',
+      });
+      container.snapshot();
+      const globalSearchService = container.get(GlobalSearchService);
+      globalSearchService.closeGlobalSearch = jest.fn();
+      const groupItemViewModel = new GroupItemViewModel({} as Props);
+      groupItemViewModel.closeGlobalSearch();
+      expect(globalSearchService.closeGlobalSearch).toHaveBeenCalled()
+    })
   });
 });

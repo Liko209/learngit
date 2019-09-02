@@ -14,6 +14,7 @@ class Dialog {
   static simple(
     component: JSX.Element | React.ComponentType<any>,
     config?: JuiDialogFuncProps,
+    key?: string,
   ) {
     const { componentProps = {}, ...rest } = config || {};
     const newConfig = {
@@ -21,7 +22,7 @@ class Dialog {
       ...rest,
       ...componentProps,
     };
-    return modal(component, newConfig);
+    return modal(component, newConfig, key);
   }
 
   static alert(props: JuiModalProps) {
