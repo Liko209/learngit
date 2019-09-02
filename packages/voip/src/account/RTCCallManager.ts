@@ -94,10 +94,10 @@ class RTCCallManager {
     return this.connectedCallList().length;
   }
 
-  getCallByUuid(callUuid: string): RTCCall | null {
+  getCallByUuid(callUuid: string): RTCCall | undefined {
     return this._calls.find(
       (call: any) => call.getCallInfo().uuid === callUuid,
-    ) || null;
+    );
   }
 
   notifyAccountReady() {

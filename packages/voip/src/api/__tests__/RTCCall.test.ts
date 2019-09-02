@@ -39,7 +39,7 @@ describe('RTC call', () => {
     public callAction: RTC_CALL_ACTION;
     public isReadyReturnValue: boolean = false;
     public toNum: string = '';
-    private _call: RTCCall | null = null;
+    private _call: RTCCall | undefined;
 
     onCallStateChange(state: RTC_CALL_STATE): void {
       this.callState = state;
@@ -1029,7 +1029,7 @@ describe('RTC call', () => {
       callA.warmTransfer(callB.getCallInfo().uuid);
       setImmediate(() => {
         expect(callA.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
-        expect(account.getCallByUuid(callB.getCallInfo().uuid)).toBeNull();
+        expect(account.getCallByUuid(callB.getCallInfo().uuid)).toBeUndefined();
         expect(account.onCallActionFailed).toBeCalledWith(
           RTC_CALL_ACTION.WARM_TRANSFER,
           -1,
