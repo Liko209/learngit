@@ -3,7 +3,7 @@
  * @Date: 2018-12-12 12:56:30
  */
 import { DebugGatherer } from ".";
-import { ConversationPage } from "../pages";
+import { ConversationPage, HomePage } from "../pages";
 import { FileService } from "../services";
 import { PptrUtils } from "../utils";
 import { Config } from "../config";
@@ -11,7 +11,8 @@ import { globals } from "../globals";
 import * as bluebird from 'bluebird';
 
 class SwitchConversationGatherer extends DebugGatherer {
-  private conversationIds: Array<string>;
+  private conversationIds: { [key: string]: string };
+
   private metricKeys: Array<string> = [
     'goto_conversation_fetch_posts',
     'goto_conversation_fetch_items',
@@ -22,22 +23,31 @@ class SwitchConversationGatherer extends DebugGatherer {
     'init_group_members',
   ];
 
-  constructor(conversationIds: Array<string>) {
+  constructor() {
     super();
 
-    this.conversationIds = conversationIds;
+    this.conversationIds = Config.switchConversationIds;
   }
 
   async _beforePass(passContext) {
+    await this.disableCache(passContext);
+
     await this.gathererConsole(this.metricKeys, passContext);
   }
 
   async _pass(passContext) {
     let conversationPage = new ConversationPage(passContext);
+    let page = await conversationPage.page();
 
     const driver = passContext.driver;
     // pre loaded
     await this.switchConversion(driver, conversationPage, Config.sceneRepeatCount);
+
+    await bluebird.delay(2000);
+
+    await page.setOfflineMode(true);
+
+    await bluebird.delay(2000);
   }
 
   async _afterPass(passContext) {
@@ -55,19 +65,18 @@ class SwitchConversationGatherer extends DebugGatherer {
     this.beginGathererConsole();
 
     // switch conversation
-    await this.switchConversion(driver, conversationPage, Config.sceneRepeatCount);
+    await this.switchConversion(driver, conversationPage, Config.sceneRepeatCount * Object.keys(this.conversationIds).length);
 
     this.endGathererConsole();
     await PptrUtils.collectGarbage(driver);
     await bluebird.delay(5000);
 
-    globals.stopCollectProcessInfo();
-
     filePath = await FileService.trackingHeapObjects(driver);
     globals.pushMemoryFilePath(filePath);
 
     let result = {};
-    for (let key of this.metricKeys) {
+    let keys = Object.keys(this.consoleMetrics);
+    for (let key of keys) {
       result[key] = {
         api: this.consoleMetrics[key],
         ui: []
@@ -78,51 +87,57 @@ class SwitchConversationGatherer extends DebugGatherer {
   }
 
   async switchConversion(driver, page: ConversationPage, switchCount: number = -1) {
-    if (!this.conversationIds || this.conversationIds.length <= 1) {
-      this.logger.warn("conversationIds size is less than 1, switch fail!");
-      return;
-    }
+    const conversationTypes = Object.keys(this.conversationIds);
 
     let needGC = true;
     if (switchCount <= 0) {
       needGC = false;
-      switchCount = this.conversationIds.length;
+      switchCount = conversationTypes.length;
     }
 
     let halfCount = switchCount / 2;
 
-    let id, index = 0;
+    let type, id, suffix, index = 0;
     while (index < switchCount) {
-      this.clearTmpGatherer(this.metricKeys);
+      try {
+        this.clearTmpGatherer(this.metricKeys);
 
-      id = this.conversationIds[index++ % this.conversationIds.length];
-      this.logger.info(`switch to ${id}`);
-      await page.swichConversationById(id);
+        type = conversationTypes[index++ % conversationTypes.length];
 
-      await page.switchDetailTab();
+        suffix = type === 'mixed' ? '' : type;
 
-      await page.lookupTeamMember();
+        id = this.conversationIds[type];
 
-      this.pushGatherer(this.metricKeys);
+        this.logger.info(`switch to ${id}`);
 
-      await bluebird.delay(2000);
+        await page.swichConversationById(id);
 
-      if (needGC && index > halfCount) {
-        globals.stopCollectProcessInfo();
+        await page.switchDetailTab();
 
-        let filePath = await FileService.trackingHeapObjects(driver);
-        globals.pushMemoryFilePath(filePath);
+        await page.lookupTeamMember();
 
-        await PptrUtils.collectGarbage(driver);
-
-        needGC = false;
-
-        filePath = await FileService.trackingHeapObjects(driver);
-        globals.pushMemoryFilePath(filePath);
+        this.pushGatherer(this.metricKeys, suffix, this.metricKeys);
 
         await bluebird.delay(2000);
 
-        globals.startCollectProcessInfo();
+        if (needGC && index > halfCount) {
+          globals.stopCollectProcessInfo();
+
+          let filePath = await FileService.trackingHeapObjects(driver);
+          globals.pushMemoryFilePath(filePath);
+
+          await PptrUtils.collectGarbage(driver);
+
+          needGC = false;
+
+          filePath = await FileService.trackingHeapObjects(driver);
+          globals.pushMemoryFilePath(filePath);
+
+          await bluebird.delay(2000);
+
+          globals.startCollectProcessInfo();
+        }
+      } catch (err) {
       }
     }
   }

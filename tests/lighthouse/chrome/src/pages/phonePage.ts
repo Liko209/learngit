@@ -5,7 +5,7 @@
 import { Page } from "./page";
 import * as bluebird from "bluebird";
 import { WebPhone } from '../webphone';
-import { PptrUtils, TelephonyUtils } from '../utils';
+import { PptrUtils } from '../utils';
 import { Config } from '../config';
 
 class PhonePage extends Page {
