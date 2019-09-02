@@ -40,6 +40,7 @@ describe('UnifiedLoginAuthenticator', () => {
   const mockRCInfoService = {
     requestRCAccountRelativeInfo: jest.fn(),
     getRCExtensionInfo: jest.fn(),
+    getUserEmail: jest.fn(),
   } as any;
   ServiceLoader.getInstance = jest.fn().mockImplementation((config: string) => {
     if (config === ServiceConfig.ACCOUNT_SERVICE) {
@@ -80,6 +81,7 @@ describe('UnifiedLoginAuthenticator', () => {
       .mockReturnValue({ id: 123 });
     setRCToken = jest.fn();
     setRCAccountType = jest.fn();
+    mockRCInfoService.getUserEmail = jest.fn();
 
     const resp = await unified.authenticate({ code: '123' });
     expect(resp.success).toEqual(true);
