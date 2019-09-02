@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./ConversationStream/**/*.ts"],
+    "fixtures": ["./fixtures/ConversationStream/*.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
