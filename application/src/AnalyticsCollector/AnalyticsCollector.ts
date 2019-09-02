@@ -152,6 +152,14 @@ class AnalyticsCollector {
     });
   }
 
+  contactActions(source: string, action: string, contactType: string) {
+    dataAnalysis.track('Jup_Web/DT_contacts_actionOverContact', {
+      action,
+      source,
+      contactType,
+    });
+  }
+
   // [FIJI-4573] Segment - Add event - open contact's min profile
   openMiniProfile(source: string) {
     dataAnalysis.track('Jup_Web/DT_profile_openMiniProfile', {
