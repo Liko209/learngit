@@ -141,7 +141,7 @@ class FilesView extends React.Component<FilesViewProps> {
   );
 
   render() {
-    const { files, progresses, urlMap, postId, groupId,getFilePreviewBackgroundContainPermission } = this.props;
+    const { files, progresses, urlMap, postId, groupId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -227,7 +227,7 @@ class FilesView extends React.Component<FilesViewProps> {
                   keyword: this.context.keyword,
                 })}
                 needBackgroundContain={
-                  getFilePreviewBackgroundContainPermission.get() && isDoc(type)
+                  isDoc(type)
                 }
                 size={`${getFileSize(size)}`}
                 url={accelerateURL(previewUrl)!}
