@@ -23,6 +23,7 @@ type PopoverMenuProps = {
   className?: string;
   onClose?: (event: React.MouseEvent<HTMLElement>) => void;
   onOpen?: () => void;
+  disabled?: boolean;
 };
 
 const StyledAnchorWrapper = styled.div`
@@ -42,13 +43,17 @@ class JuiPopoverMenu extends React.PureComponent<
   }
 
   handleToggle = (event: React.MouseEvent<HTMLElement>) => {
-    const { onOpen } = this.props;
+    const { onOpen, disabled } = this.props;
+    if (disabled) {
+      return;
+    }
     event.stopPropagation();
     this.setState({
       anchorEl: event.currentTarget,
     });
 
     onOpen && onOpen();
+    return;
   };
 
   handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
