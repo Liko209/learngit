@@ -230,7 +230,7 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
         this._entityCacheController,
       );
 
-      let call: RTCCall | null;
+      let call: RTCCall | undefined;
 
       let finalOptions: RTCCallOptions = { ...options };
       if (options) {

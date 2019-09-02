@@ -362,8 +362,8 @@ describe('RTCAccount', () => {
     setImmediate(() => {
       const ret2 = account.makeCall('234', listener);
       setImmediate(() => {
-        expect(ret1).not.toBe(null);
-        expect(ret2).toBe(null);
+        expect(ret1).not.toBeUndefined();
+        expect(ret2).toBeUndefined();
         done();
       });
     });
