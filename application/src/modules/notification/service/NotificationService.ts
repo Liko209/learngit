@@ -80,7 +80,7 @@ class NotificationService implements INotificationService {
     switch (strategy) {
       case SOUND_AND_UI_NOTIFICATION: {
         if (await this.shouldShowUINotification()) {
-          await this.buildSoundNotification(opts);
+          this.buildSoundNotification(opts);
           this.buildUINotification(title, opts, force);
         }
         break;
@@ -134,20 +134,12 @@ class NotificationService implements INotificationService {
       logger.log('not necessary to play sound');
       return;
     }
-    const media = this._soundNotification.create(source, {
+    this._soundNotification.create(source, {
       trackId: scope,
       autoplay: true,
     });
-    if (media) {
-      return new Promise(resolve => {
-        delete opts.sound;
-        media.on('loadeddata', resolve);
-        media.on('error', () => {
-          logger.log('failed to load data');
-          resolve();
-        });
-      });
-    }
+    delete opts.sound;
+
     return;
   }
 

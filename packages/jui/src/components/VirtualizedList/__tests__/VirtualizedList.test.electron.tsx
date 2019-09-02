@@ -223,7 +223,7 @@ describe('JuiVirtualizedList', () => {
       expect(getRenderedItemIds(wrapper)).toEqual([5, 6, 7, 8, 9]);
     });
 
-    it('should scroll to initial index', () => {
+    it.skip('should scroll to initial index', () => {
       expect(getScrollTop(wrapper)).toEqual(100);
     });
   });

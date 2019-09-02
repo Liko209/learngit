@@ -5,27 +5,35 @@ import { getEntity } from '@/store/utils';
 import { UserSettingEntity } from 'sdk/module/setting';
 import { AUDIO_SOUNDS_INFO, RINGS_TYPE } from 'sdk/module/profile';
 import { ENTITY_NAME } from '@/store';
-import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 import { reaction } from 'mobx';
 import { Disposer } from 'mobx-react';
 
 class RingtonePrefetcher {
   disposer: Disposer;
   media: IMedia;
-  init() {
+  constructor(private trackId: string, private settingId: number) {
     this.subscribeSettingChange();
   }
   prefetch(src: string) {
+    if (this.media && this.media.playing) {
+      this.media.on('pause', () => {
+        this.createMedia(src);
+      });
+    } else {
+      this.createMedia(src);
+    }
+    this.media.on('loadeddata', () => {
+      this.media.stop();
+    });
+  }
+  createMedia(src: string) {
     const mediaService: IMediaService = jupiter.get(IMediaService);
     this.media = mediaService.createMedia({
       src,
+      trackId: this.trackId,
       muted: true,
       autoplay: true,
-      trackId: 'RingtonePrefetchTrailer',
-      outputDevices: [],
-    });
-    this.media.on('loadeddata', () => {
-      this.media.dispose();
+      outputDevices: undefined,
     });
   }
   subscribeSettingChange() {
@@ -34,7 +42,7 @@ class RingtonePrefetcher {
         const { value } = getEntity<
           UserSettingEntity,
           SettingModel<AUDIO_SOUNDS_INFO>
-        >(ENTITY_NAME.USER_SETTING, PHONE_SETTING_ITEM.SOUND_INCOMING_CALL);
+        >(ENTITY_NAME.USER_SETTING, this.settingId);
         if (value) {
           return value;
         }
