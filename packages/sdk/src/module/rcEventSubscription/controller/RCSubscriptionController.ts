@@ -24,7 +24,10 @@ import {
 import { RCSubscriptionKeys, EVENT_PREFIX } from '../constants';
 import { RCEventSubscriptionConfig } from '../config';
 import { PubNubEventPayloadMessage } from './types';
-import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import { SubscriptionProcessor } from './SubscriptionProcessor';
 
 const DECRYPT_INFO = { keyEncoding: 'base64', keyLength: 128, mode: 'ecb' };
@@ -75,16 +78,18 @@ class RCSubscriptionController {
 
   async startSubscription() {
     const processor = new SubscriptionProcessor(
-      Date.now().toString(),
+      `${CLASS_NAME}_${Date.now()}`,
       async () => {
         await this._startSubscription();
       },
     );
 
     if (!this._sequenceSubscriptionHandler) {
-      this._sequenceSubscriptionHandler = new SequenceProcessorHandler({
-        name: CLASS_NAME,
-      });
+      this._sequenceSubscriptionHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+        {
+          name: CLASS_NAME,
+        },
+      );
     }
     this._sequenceSubscriptionHandler.addProcessor(processor);
   }
@@ -92,19 +97,23 @@ class RCSubscriptionController {
   private async _startSubscription() {
     try {
       if (this._initStatus === INIT_STATUS.INPROGRESS) {
-        mainLogger.tags(CLASS_NAME).log('return because is initialing');
+        mainLogger
+          .tags(CLASS_NAME)
+          .log('_startSubscription => return because is initialing');
         return;
       }
 
       if (this._initStatus === INIT_STATUS.UN_INIT) {
         mainLogger
           .tags(CLASS_NAME)
-          .log('need to init subscription before start');
+          .log('_startSubscription => need to init subscription before start');
         await this._init();
       }
 
       if (!navigator.onLine) {
-        mainLogger.tags(CLASS_NAME).log('return because no network');
+        mainLogger
+          .tags(CLASS_NAME)
+          .log('_startSubscription => return because no network');
         return;
       }
 
@@ -113,7 +122,7 @@ class RCSubscriptionController {
         mainLogger
           .tags(CLASS_NAME)
           .log(
-            'can not do subscription, should stop if need',
+            '_startSubscription => can not do subscription, should stop if need',
             this._lastSubscription,
           );
         const isSubscribed = this._hasValidSubscriptionInfo();
@@ -123,7 +132,10 @@ class RCSubscriptionController {
       const { subscription, isUpdated } = await this._loadSubscription();
       mainLogger
         .tags(CLASS_NAME)
-        .log('get subscription success', { subscription, isUpdated });
+        .log('_startSubscription => load subscription success', {
+          subscription,
+          isUpdated,
+        });
 
       if (subscription) {
         await this._saveSubscription(subscription);
@@ -131,7 +143,9 @@ class RCSubscriptionController {
         this._scheduleSubscriptionJob(isUpdated);
       }
     } catch (error) {
-      mainLogger.tags(CLASS_NAME).log('startSubscription failed', error);
+      mainLogger
+        .tags(CLASS_NAME)
+        .log('_startSubscription => startSubscription failed', error);
       await this._pauseSubscription();
     }
   }
@@ -145,7 +159,7 @@ class RCSubscriptionController {
       mainLogger
         .tags(CLASS_NAME)
         .log(
-          'subscription is alive, should update:',
+          '_loadSubscription => subscription is alive, should update:',
           checkNeedUpdateRes.shouldUpdate,
         );
       if (checkNeedUpdateRes.shouldUpdate) {
@@ -163,7 +177,13 @@ class RCSubscriptionController {
     } else {
       mainLogger
         .tags(CLASS_NAME)
-        .log('subscription is not alive, create new subscription');
+        .log(
+          '_loadSubscription => subscription is not alive, create new subscription',
+          {
+            lastExpireTime:
+              this._lastSubscription && this._lastSubscription.expirationTime,
+          },
+        );
       await this._clearSubscription();
       const newEvents = await this._getNeedSubscriptionEvents();
       const params = await this._buildSubscription(newEvents);
@@ -316,7 +336,9 @@ class RCSubscriptionController {
   }
 
   private _handleWakeUp = () => {
-    mainLogger.tags(CLASS_NAME).log('receive wake up, try start subscription');
+    mainLogger
+      .tags(CLASS_NAME)
+      .log('_handleWakeUp => receive wake up, try start subscription');
     this.startSubscription();
   };
 
@@ -326,7 +348,9 @@ class RCSubscriptionController {
     } else {
       mainLogger
         .tags(CLASS_NAME)
-        .log('receive voip permission off, try pause, subscription');
+        .log(
+          '_handlePermissionChange => receive voip permission off, try pause, subscription',
+        );
       this.cleanUpSubscription();
     }
   };
@@ -335,21 +359,23 @@ class RCSubscriptionController {
     if (value) {
       mainLogger
         .tags(CLASS_NAME)
-        .log('receive online, try start subscription', value);
+        .log('_handleOnLine => receive online, try start subscription', value);
 
       if (value.onLine) {
         this.startSubscription();
       } else {
         mainLogger
           .tags(CLASS_NAME)
-          .log('receive offline, try pause, subscription');
+          .log('_handleOnLine => receive offline, try pause, subscription');
         this._pauseSubscription();
       }
     }
   };
 
   private _handleFocus = () => {
-    mainLogger.tags(CLASS_NAME).log('receive focus, try start subscription');
+    mainLogger
+      .tags(CLASS_NAME)
+      .log('_handleFocus => receive focus, try start subscription');
     this.startSubscription();
   };
 
