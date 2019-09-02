@@ -677,7 +677,7 @@ class TelephonyService {
     return result;
   };
 
-  hangUp = (callId: number) => {
+  hangUp = (callId?: number) => {
     const callEntityId = callId || this._callEntityId;
     if (callEntityId) {
       mainLogger.info(
