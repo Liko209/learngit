@@ -77,8 +77,7 @@ const baseHandleData = async (
 
     if (normalData.length > 0) {
       if (!noSavingToDB) {
-        await dao.bulkPut(normalData);
-        entitySourceController && entitySourceController.bulkUpdate(normalData)
+        entitySourceController ? await entitySourceController.bulkUpdate(normalData) : await dao.bulkPut(normalData);
       }
     }
     if (shouldEmitNotification(source)) {
