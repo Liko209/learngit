@@ -6,6 +6,7 @@
 import { RTCCallFsm } from '../RTCCallFsm';
 import { CALL_FSM_NOTIFY } from '../types';
 import { RTC_CALL_ACTION } from '../../api/types';
+import { CallReport } from '../../report/Call';
 
 describe('Call FSM UT', () => {
   class MockCallFsmLisener {
@@ -51,7 +52,7 @@ describe('Call FSM UT', () => {
   }
 
   function createFsm() {
-    const ret = new RTCCallFsm();
+    const ret = new RTCCallFsm(new CallReport());
     return ret;
   }
 
@@ -319,7 +320,7 @@ describe('Call FSM UT', () => {
 
     describe('flip()', () => {
       it("should state transition from Connected to Connected when receive 'flip' event", done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onFlipAction');
         callFsm.accountReady();
         callFsm.sessionAccepted();
@@ -334,7 +335,7 @@ describe('Call FSM UT', () => {
 
     describe('startRecord()', () => {
       it("should state transition from Connected to Connected when receive 'startRecord' event", done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onStartRecordAction');
         callFsm.accountReady();
         callFsm.sessionAccepted();
@@ -349,7 +350,7 @@ describe('Call FSM UT', () => {
 
     describe('stopRecord()', () => {
       it("should state transition from Connected to Connected when receive 'stopRecord' event", done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onStopRecordAction');
         callFsm.accountReady();
         callFsm.sessionAccepted();
@@ -364,7 +365,7 @@ describe('Call FSM UT', () => {
 
     describe('stopRecord()', () => {
       it('should notify transfer failed when transfer call in idle state [JPT-672]', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.transfer('123');
         setImmediate(() => {
@@ -373,7 +374,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should notify transfer failed when transfer call in pending state [JPT-672]', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.accountNotReady();
         callFsm.transfer('123');
@@ -383,7 +384,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should notify transfer failed when transfer call in answering state [JPT-672]', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.answer();
         callFsm.transfer('123');
@@ -393,7 +394,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should notify transfer failed when transfer call in connecting state [JPT-672]', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.accountReady();
         callFsm.transfer('123');
@@ -403,7 +404,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should notify transfer failed when transfer call in disconnected state [JPT-672]', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.hangup();
         callFsm.transfer('123');
@@ -413,7 +414,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should trigger transfer action when transfer call in connected state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onTransferAction');
         callFsm.accountReady();
         callFsm.sessionAccepted();
@@ -428,7 +429,7 @@ describe('Call FSM UT', () => {
 
   describe('park()', () => {
     it('should call park api when fsm in connected state [JPT-821]', done => {
-      const callFsm = new RTCCallFsm();
+      const callFsm = new RTCCallFsm(new CallReport());
       jest.spyOn(callFsm, 'onParkAction');
       callFsm.accountReady();
       callFsm.sessionAccepted();
@@ -444,7 +445,7 @@ describe('Call FSM UT', () => {
   describe('forward()', () => {
     const forwardNumber = '10086';
     it('should FSM enter forwarding state from Idle state when receive ‘forward’ event [JPT-1298]', done => {
-      const callFsm = new RTCCallFsm();
+      const callFsm = new RTCCallFsm(new CallReport());
       jest.spyOn(callFsm, 'onForwardAction');
       callFsm.forward(forwardNumber);
       setImmediate(() => {
@@ -455,7 +456,7 @@ describe('Call FSM UT', () => {
     });
 
     it('should FSM enter disconnected state from forwarding state when receive ‘hangup’ event [JPT-1299]', done => {
-      const callFsm = new RTCCallFsm();
+      const callFsm = new RTCCallFsm(new CallReport());
       callFsm.forward(forwardNumber);
       callFsm.hangup();
       setImmediate(() => {
@@ -465,7 +466,7 @@ describe('Call FSM UT', () => {
     });
 
     it('should FSM enter disconnected state from forwarding state when receive ‘sessionDisconnected’ event [JPT-1319]', done => {
-      const callFsm = new RTCCallFsm();
+      const callFsm = new RTCCallFsm(new CallReport());
       callFsm.forward(forwardNumber);
       callFsm.sessionDisconnected();
       setImmediate(() => {
@@ -475,7 +476,7 @@ describe('Call FSM UT', () => {
     });
 
     it('should FSM enter disconnected state from forwarding state when receive ‘sessionError’ event [JPT-1320]', done => {
-      const callFsm = new RTCCallFsm();
+      const callFsm = new RTCCallFsm(new CallReport());
       callFsm.forward(forwardNumber);
       callFsm.sessionError();
       setImmediate(() => {
@@ -486,7 +487,7 @@ describe('Call FSM UT', () => {
 
     describe('should FSM state does not change when receive ‘forward’ event in non-Idle state [JPT-1300]', () => {
       it('should FSM enter pending state from pending state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountNotReady();
         callFsm.forward(forwardNumber);
         setImmediate(() => {
@@ -496,7 +497,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter answering state from answering state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.answer();
         callFsm.forward(forwardNumber);
         setImmediate(() => {
@@ -506,7 +507,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter forwarding state from forwarding state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.forward(forwardNumber);
         callFsm.forward(forwardNumber);
         setImmediate(() => {
@@ -516,7 +517,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter connecting state from connecting state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountReady();
         callFsm.forward(forwardNumber);
         setImmediate(() => {
@@ -526,7 +527,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter connected state from connected state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.answer();
         callFsm.sessionConfirmed();
         callFsm.forward(forwardNumber);
@@ -537,7 +538,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter holding state from holding state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.answer();
         callFsm.sessionConfirmed();
         callFsm.hold();
@@ -549,7 +550,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter holded state from holded state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.answer();
         callFsm.sessionConfirmed();
         callFsm.hold();
@@ -562,7 +563,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter unholding state from unholding state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.answer();
         callFsm.sessionConfirmed();
         callFsm.hold();
@@ -576,7 +577,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should FSM enter disconnected state from disconnected state when receive ‘forward’ event', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountReady();
         callFsm.hangup();
         callFsm.forward(forwardNumber);
@@ -592,7 +593,7 @@ describe('Call FSM UT', () => {
     describe('should report fail and FSM back to last state if current FSM is in idle/pending/answering/replying/forwarding/connecting/disconnected when call warmTransfer API [JPT-2543]', () => {
       const targetSession = 'targetSession';
       it('should report fail and FSM enter idle state when warmTransfer() in idle state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.warmTransfer(targetSession);
         setImmediate(() => {
@@ -605,7 +606,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should report fail and FSM enter pending state when warmTransfer() in pending state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountNotReady();
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.warmTransfer(targetSession);
@@ -619,7 +620,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should report fail and FSM enter answering state when warmTransfer() in answering state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.answer();
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.warmTransfer(targetSession);
@@ -633,7 +634,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should report fail and FSM enter replying state when warmTransfer() in replying state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.startReplyWithMessage();
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.warmTransfer(targetSession);
@@ -647,7 +648,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should report fail and FSM enter forwarding state when warmTransfer() in forwarding state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.forward('100');
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.warmTransfer(targetSession);
@@ -661,7 +662,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should report fail and FSM enter connecting state when warmTransfer() in connecting state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountReady();
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.warmTransfer(targetSession);
@@ -675,7 +676,7 @@ describe('Call FSM UT', () => {
       });
 
       it('should report fail and FSM enter disconnected state when warmTransfer() in disconnected state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.hangup();
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.warmTransfer(targetSession);
@@ -692,7 +693,7 @@ describe('Call FSM UT', () => {
     describe('should call session WarmTransfer() when current FSM is in connected/holding/holded/unholding state [JPT-2683]', () => {
       const targetSession = 'targetSession';
       it('should call session WarmTransfer() when warmTransfer() in connected state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountReady();
         callFsm.sessionAccepted();
         jest.spyOn(callFsm, 'onWarmTransferAction');
@@ -706,7 +707,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should call session WarmTransfer() when warmTransfer() in holding state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountReady();
         callFsm.sessionAccepted();
         callFsm.hold();
@@ -724,7 +725,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should call session WarmTransfer() when warmTransfer() in holded state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountReady();
         callFsm.sessionAccepted();
         callFsm.hold();
@@ -743,7 +744,7 @@ describe('Call FSM UT', () => {
         });
       });
       it('should call session WarmTransfer() when warmTransfer() in unholding state', done => {
-        const callFsm = new RTCCallFsm();
+        const callFsm = new RTCCallFsm(new CallReport());
         callFsm.accountReady();
         callFsm.sessionAccepted();
         callFsm.hold();

@@ -39,15 +39,19 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 import { IMessageStore } from '@/modules/message/interface';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { dataAnalysis } from 'foundation/analysis';
+import { container } from 'framework/ioc';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 import { Emoji } from 'emoji-mart';
 import { backgroundImageFn } from 'jui/pattern/Emoji';
-
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
   WithTranslation & ProfileDialogPersonContentViewProps
 > {
   @IMessageStore private _messageStore: IMessageStore;
+  private _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+  private _avatarRef: React.RefObject<any> = React.createRef();
 
   renderPresence = () => {
     const { id } = this.props;
@@ -76,7 +80,12 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <JuiIconography iconSize="medium">{key}</JuiIconography>;
   };
 
-  renderIcons = (value: string, aria?: string, showCall?: boolean, fieldName?: string) => {
+  renderIcons = (
+    value: string,
+    aria?: string,
+    showCall?: boolean,
+    fieldName?: string,
+  ) => {
     const { t, id } = this.props;
     const copy = (
       <JuiIconButton
@@ -110,7 +119,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
   };
 
   onClickCopy = (value: string, fieldName?: string) => {
-    fieldName && analyticsCollector.copyProfileField(fieldName)
+    fieldName && analyticsCollector.copyProfileField(fieldName);
     copy(value);
   };
 
@@ -125,8 +134,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }: FormGroupType) => {
     const iconToFieldName = {
       call: 'number',
-      email: 'email'
-    }
+      email: 'email',
+    };
     return (
       <FormGroup key={value}>
         <FormLeft>{icon && this.renderIcon(icon)}</FormLeft>
@@ -134,7 +143,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copyValue && this.renderIcons(copyValue, copyAria, showCall, icon && iconToFieldName[icon])}
+        {copyValue &&
+          this.renderIcons(
+            copyValue,
+            copyAria,
+            showCall,
+            icon && iconToFieldName[icon],
+          )}
       </FormGroup>
     );
   };
@@ -152,7 +167,19 @@ class ProfileDialogPersonContentViewComponent extends Component<
   messageAfterClick = () => {
     analyticsCollector.goToConversation('profileDialog', '1:1 conversation');
     portalManager.dismissLast();
-  }
+  };
+
+  handleAvatarClick = () => {
+    const avatarRef = this._avatarRef.current;
+    if (avatarRef && avatarRef.vm && avatarRef.vm.shouldShowShortName) {
+      return;
+    }
+    dataAnalysis.track('Jup_Web/DT_profile_viewProfilePhotoFullScreen', {
+      source: 'Profile',
+    });
+    const { url, person } = this.props;
+    this._viewerService.showSingleImageViewer(url, person.displayName || '');
+  };
 
   render() {
     const {
@@ -176,6 +203,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
             <Avatar
               uid={id}
               size="xlarge"
+              ref={this._avatarRef}
+              onClick={this.handleAvatarClick}
               presence={this.renderPresence()}
               automationId="profileAvatar"
             />

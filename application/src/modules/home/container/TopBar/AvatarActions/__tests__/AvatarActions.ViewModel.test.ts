@@ -3,13 +3,15 @@
  * @Date: 2018-12-05 18:30:30
  * Copyright © RingCentral. All rights reserved.
  */
+import { getEntity } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { AvatarActionsViewModel } from '../AvatarActions.ViewModel';
 
 let ViewModel: AvatarActionsViewModel;
-
+jest.mock('@/store/utils');
+jest.unmock('@/common/emojiHelpers/map/mapUnicode');
 jest.mock('i18next', () => ({
   languages: ['en'],
   services: {
@@ -31,7 +33,20 @@ describe('AvatarActionsVM', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-
+  describe('awayStatus()', () => {
+    it('should return status start with blank if has emoji', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        awayStatus: '🌻 in the meeting',
+      });
+      expect(ViewModel.awayStatus).toBe('   in the meeting');
+    });
+    it('should return emoji if awayStatus has emoji', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        awayStatus: '🌻 in the meeting',
+      });
+      expect(ViewModel.colons).toBe('🌻');
+    });
+  });
   describe('handleAboutPage()', () => {
     const globalStore = storeManager.getGlobalStore();
     it('should globalStore set isShowDialog [JPT-179]', () => {

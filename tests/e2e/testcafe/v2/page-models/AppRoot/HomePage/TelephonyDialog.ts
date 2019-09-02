@@ -39,6 +39,10 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-header-phone');
   }
 
+  get conferenceCall() {
+    return this.getSelectorByAutomationId('telephony-dialer-header-name');
+  }
+
   get hangupButton() {
     return this.getSelectorByAutomationId('telephony-end-btn');
   }

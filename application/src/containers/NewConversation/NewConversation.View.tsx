@@ -66,6 +66,7 @@ class NewConversationComponent extends React.Component<NewConversationProps> {
         okText={t('common.dialog.create')}
         cancelText={t('common.dialog.cancel')}
         onClose={withEscTracking(this.handleCancel)}
+        disableEscapeKeyDown={loading}
       >
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiTopText data-test-automation-id="newConversationDescription">

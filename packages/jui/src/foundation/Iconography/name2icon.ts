@@ -151,6 +151,7 @@ const name2icon = {
   dial: 'dial',
   forwardcall: 'forwardcall',
   addmember_border: 'add-member_border',
+  view: 'view',
   speaker: 'speaker',
   'speaker-mute': 'speaker-mute',
   end_and_answer: 'end--answer',
