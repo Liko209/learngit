@@ -62,9 +62,18 @@ class AccountManager extends EventEmitter2 {
     if (!resp.accountInfos) {
       throw Error('Auth fail');
     }
-    const mailboxID = resp.accountInfos[0].data.owner_id;
+    const mailbox = resp.accountInfos[0].emailAddress;
+    const userId = resp.accountInfos[0].data.owner_id;
+    if (mailbox) {
+        const suffix = mailbox.split('@').pop();
+        if (suffix) {
+          await this.makeSureUserInWhitelist(suffix, userId);
+        }
+    }
+    else {
+      await this.makeSureUserInWhitelist("", userId);
+    }
 
-    await this.makeSureUserInWhitelist(mailboxID);
     return this._handleAuthResponse(resp);
   }
 
@@ -78,12 +87,15 @@ class AccountManager extends EventEmitter2 {
     return true;
   }
 
-  async makeSureUserInWhitelist(mailboxID: string) {
-    const isValid = await this.sanitizeUser(mailboxID);
-    if (!isValid) {
-      await this.logout();
-      mainLogger.warn('[Auth]User not in the white list');
-      window.location.href = '/';
+  async makeSureUserInWhitelist(mailbox: string, userId: string) {
+    const isValidMailbox = await this.sanitizeUser(mailbox, true);
+    if (!isValidMailbox) {
+      const isValidUserId = await this.sanitizeUser(userId, false);
+      if (!isValidUserId) {
+        await this.logout();
+        mainLogger.warn('[Auth]User not in the white list');
+        window.location.href = '/';
+      }
     }
   }
 
@@ -155,16 +167,16 @@ class AccountManager extends EventEmitter2 {
     return accounts;
   }
 
-  async sanitizeUser(mailboxID: string) {
+  async sanitizeUser(targetId: string, isMailbox: boolean) {
     const env = AppEnvSetting.getEnv();
-    const whiteList = await fetchWhiteList();
+    const whiteList = await fetchWhiteList(isMailbox);
     const allAccount = whiteList[env];
     if (allAccount !== undefined) {
       const isLegalUser = allAccount.some(
-        (account: string) => account === mailboxID,
+        (account: string) => account === targetId,
       );
       mainLogger.info(
-        `[Auth]${mailboxID} ${
+        `[Auth]${targetId} ${
           isLegalUser ? '' : 'not '
         }in whitelist for ${env}`,
       );

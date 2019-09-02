@@ -146,6 +146,12 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getRCExtensionInfo();
   }
 
+  async getUserEmail() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getUserEmail();
+  }
+
   async getRCRolePermissions() {
     return await this.getRCInfoController()
       .getRCInfoFetchController()
