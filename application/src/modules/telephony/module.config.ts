@@ -10,8 +10,7 @@ import { TelephonyStore } from './store';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
 import { TelephonySettingManager } from './TelephonySettingManager/TelephonySettingManager';
 import { TELEPHONY_SERVICE } from './interface/constant';
-import { IRingtonePrefetcher } from './interface/IRingtonePrefetcher';
-import { RingtonePrefetcher } from './service/RingtonePrefetcher';
+
 import { E911UIConfig } from './E911.config';
 import { DialerUIConfig } from './Dialer.config';
 
@@ -27,7 +26,6 @@ const config: ModuleConfig = {
     TelephonySettingManager,
     E911UIConfig,
     DialerUIConfig,
-    { name: IRingtonePrefetcher, value: RingtonePrefetcher },
   ],
 };
 

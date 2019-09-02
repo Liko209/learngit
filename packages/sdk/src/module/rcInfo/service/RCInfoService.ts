@@ -95,7 +95,6 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   onRCLogin = () => {
     this.requestRCInfo();
-    this.getRCInfoController().rcPresenceController.start();
   };
 
   requestRCInfo = () => {
@@ -144,6 +143,12 @@ class RCInfoService extends EntityBaseService<IdModel>
     return await this.getRCInfoController()
       .getRCInfoFetchController()
       .getRCExtensionInfo();
+  }
+
+  async getUserEmail() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getUserEmail();
   }
 
   async getRCRolePermissions() {
@@ -361,8 +366,8 @@ class RCInfoService extends EntityBaseService<IdModel>
     );
   }
 
-  syncUserRCPresence() {
-    this.getRCInfoController().rcPresenceController.syncRCPresence();
+  async syncUserRCPresence() {
+    return await this.getRCInfoController().rcPresenceController.syncRCPresence();
   }
 
   async getDigitalLines() {

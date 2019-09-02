@@ -65,22 +65,20 @@ import { isObject, throttle } from 'lodash';
 import { sleep } from '../helpers';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
-import { ISoundNotification } from '@/modules/notification/interface';
-import { isCurrentUserDND } from '@/modules/notification/utils';
-import { IRingtonePrefetcher } from '../interface/IRingtonePrefetcher';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
 import { errorHelper } from 'sdk/error';
+import { RingtonePrefetcher } from '../../notification/RingtonePrefetcher';
+import { isCurrentUserDND } from '@/modules/notification/utils';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
-
 class TelephonyService {
   static TAG: string = '[UI TelephonyService] ';
 
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(CLIENT_SERVICE) private _clientService: IClientService;
-  @IRingtonePrefetcher private _ringtonePrefetcher:IRingtonePrefetcher
-  // prettier-ignore
+  private _ringtonePrefetcher: RingtonePrefetcher
+
   private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
@@ -101,12 +99,8 @@ class TelephonyService {
     ServiceConfig.CALL_LOG_SERVICE,
   );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
-  private _ringtone?: IMedia;
   private _muteRingtone: boolean = false;
   private _outputDevices: string[] | 'all' | null = null;
-  @ISoundNotification
-  private _soundNotification: ISoundNotification;
-
   private _callEntityId?: number;
   private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
@@ -163,7 +157,9 @@ class TelephonyService {
       );
     }
   };
-
+  private get _ringtone(){
+    return this._ringtonePrefetcher.media
+  }
   private _getCurrentRingtoneSetting = async () => {
     const entity = await ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
@@ -176,38 +172,28 @@ class TelephonyService {
       mainLogger.tags(TelephonyService.TAG).warn('unable to find ringtone');
       return;
     }
-    const muted = isCurrentUserDND() || this._muteRingtone;
-
-    const trackId = this._telephonyStore.mediaTrackIds.telephony;
-
-    this._ringtone = this._soundNotification.create(name, {
-      trackId,
-      loop: true,
-      muted,
-      outputDevices: this._outputDevices,
-    });
-
-    if (!this._ringtone || this._ringtone.playing) {
+    if (!this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
       return;
     }
 
+    const muted = isCurrentUserDND() || this._muteRingtone;
+    this._ringtone.setLoop(true);
+    this._ringtone.setMute(muted);
+    this._ringtone.setOutputDevices(this._outputDevices)
     mainLogger
       .tags(TelephonyService.TAG)
       .info('ready to play the ringtone', new Date());
-
-    this._ringtone.play({
-      startTime: 0,
-    });
+    this._ringtone.play();
   };
 
   private _stopRingtone = async () => {
     mainLogger.tags(TelephonyService.TAG).info(`pause audio, ${new Date()}`);
-
     if (!this._ringtone) {
       return;
     }
     this._ringtone.stop();
-    this._ringtone.dispose();
+    // to avoid new device plugged in, which trigger the ringtone replay.
+    this._ringtone.setMute(true);
     return;
   };
 
@@ -252,6 +238,7 @@ class TelephonyService {
   };
 
   init = () => {
+    this._ringtonePrefetcher= new RingtonePrefetcher(this._telephonyStore.mediaTrackIds.telephony, PHONE_SETTING_ITEM.SOUND_INCOMING_CALL)
     if (this._canPlayOgg) {
       this._keypadBeepPool = Array(this._telephonyStore.maximumInputLength)
         .fill(1)
@@ -285,8 +272,6 @@ class TelephonyService {
       onMadeOutgoingCall: this._onMadeOutgoingCall,
       onReceiveIncomingCall: this._onReceiveIncomingCall,
     });
-    this._ringtonePrefetcher.init()
-
     this._hasActiveOutBoundCallDisposer = reaction(
       () => ({
         hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
@@ -351,8 +336,6 @@ class TelephonyService {
         if(!this._ringtone){
           return;
         }
-
-        this._ringtone.setMute(false);
 
         if (isOffDevice) {
           this._ringtone.setOutputDevices([]);
@@ -1011,7 +994,6 @@ class TelephonyService {
     delete this._ringerDisposer;
     delete this._speakerDisposer;
     delete this._defaultCallerPhoneNumberDisposer;
-    delete this._ringtone;
     delete this._keypadBeepPool;
     delete this._callEntityIdDisposer;
     delete this._voicemailNotificationObserver;

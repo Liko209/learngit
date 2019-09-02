@@ -19,6 +19,7 @@ import {
   RC_INFO,
   ENTITY,
   EVENT_TYPES,
+  WINDOW,
 } from 'sdk/service';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -41,7 +42,8 @@ const AvailableCallStatus = [
   TELEPHONY_STATUS.OnHold,
   TELEPHONY_STATUS.ParkedCall,
 ];
-
+const SYNC_RC_PRESENCE_AFTER_CALL_DELAY = 5 * 1000;
+const SYNC_RC_PRESENCE_DEBOUNCE_TIME = 2 * 1000;
 type ActiveCallWithSequence = ActiveCall & { sequence: number };
 type CallUniqueInfo = {
   callId: string;
@@ -78,8 +80,7 @@ class CallSwitchController {
   private _sessionToSequence: { sessionId: string; sequence: number }[] = [];
   private _endedCalls: CallUniqueRecord[] = [];
   private _currentActiveCalls: ActiveCallWithSequence[] = [];
-  private _lastBannerStatus = false;
-
+  private _lastBannerIsShown = false;
   /* eslint-disable */
   private _updateSwitchCallQueue = new SequenceProcessorHandler({
     name: MODULE_NAME,
@@ -96,7 +97,7 @@ class CallSwitchController {
   constructor(private _telephonyService: ITelephonyService) {}
 
   async start() {
-    await this._checkSubscription();
+    this._listenRCPresence();
 
     notificationCenter.on(
       SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
@@ -105,6 +106,22 @@ class CallSwitchController {
 
     notificationCenter.on(RC_INFO.EXTENSION_INFO, this._checkSubscription);
     notificationCenter.on(ENTITY.CALL, this._handleCallStateChanged);
+    notificationCenter.on(
+      SERVICE.WAKE_UP_FROM_SLEEP,
+      this._clearAndSyncRCPresence,
+    );
+    notificationCenter.on(WINDOW.ONLINE, this._clearAndSyncRCPresence);
+    await this._checkSubscription();
+    this._clearAndSyncRCPresence();
+  }
+
+  private _listenRCPresence() {
+    notificationCenter.on(
+      RC_INFO.RC_PRESENCE,
+      (payload: RCPresenceEventPayload) => {
+        this.handleTelephonyPresence(payload, false);
+      },
+    );
   }
 
   private _checkSubscription = async () => {
@@ -139,10 +156,11 @@ class CallSwitchController {
 
   handleTelephonyPresence = (
     payload: RCPresenceEventPayload,
-    isFromPush: boolean,
+    isFromPush = true,
   ) => {
     mainLogger.tags(MODULE_NAME).log('--- START --- handleTelephonyPresence', {
       payload,
+      isFromPush,
     });
 
     if (isFromPush && payload.extensionId !== this._getExtensionId()) {
@@ -445,8 +463,8 @@ class CallSwitchController {
             hasCall,
             _currentActiveCalls: this._currentActiveCalls,
           });
-        if (this._lastBannerStatus !== hasCall) {
-          this._lastBannerStatus = hasCall;
+        if (this._lastBannerIsShown !== hasCall) {
+          this._lastBannerIsShown = hasCall;
           notificationCenter.emit(
             SERVICE.TELEPHONY_SERVICE.CALL_SWITCH,
             hasCall,
@@ -472,18 +490,53 @@ class CallSwitchController {
   ) => {
     if (payload.type === EVENT_TYPES.UPDATE) {
       const call: Call[] = Array.from(payload.body.entities.values());
-
       let hasEndedCall = false;
-      call.forEach((item: Call) => {  
+      call.forEach((item: Call) => {
         const isEndedCall =  item.call_state === CALL_STATE.DISCONNECTING;
         if (isEndedCall) {
           this._onCallEnded(item);
           hasEndedCall = true;
         }
       });
-      
-      hasEndedCall && this._updateBannerStatus();
+
+      if (hasEndedCall) {
+        this._updateBannerStatus();
+        this._syncLatestPresenceAfterCallEnd();
+      }
     }
+  };
+
+  private _syncLatestPresenceAfterCallEnd = _.debounce(async () => {
+    mainLogger
+      .tags(MODULE_NAME)
+      .log('sync user rc presence after call ended + 5s');
+    await this._syncLatestUserPresence();
+  }, SYNC_RC_PRESENCE_AFTER_CALL_DELAY);
+
+  private _clearAndSyncRCPresence = () => {
+    if (this._lastBannerIsShown) {
+      this._currentActiveCalls = [];
+      this._updateBannerStatus();
+    }
+
+    this._syncLatestUserPresenceDebounce();
+  };
+
+  private _syncLatestUserPresenceDebounce = _.debounce(
+    async () => {
+      await this._syncLatestUserPresence();
+    },
+    SYNC_RC_PRESENCE_DEBOUNCE_TIME);
+
+  private _syncLatestUserPresence = async () => {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    await rcInfoService.syncUserRCPresence().catch(error => {
+      mainLogger
+        .tags(MODULE_NAME)
+        .log('silent sync rc presence is done with error', error);
+    });
   };
 
   private _recordEndedCalls(record: CallUniqueRecord) {
@@ -524,9 +577,11 @@ class CallSwitchController {
 
   private _removeExistCallByCallData(record: CallUniqueRecord) {
     if (this._currentActiveCalls.length) {
-      this._currentActiveCalls = this._currentActiveCalls.filter((call: ActiveCallWithSequence) => {
-        this._isSameCall(this._activeCall2UniqueCallInfo(call), record);
-      });
+      this._currentActiveCalls = this._currentActiveCalls.filter(
+        (call: ActiveCallWithSequence) => {
+          this._isSameCall(this._activeCall2UniqueCallInfo(call), record);
+        },
+      );
     }
   }
 

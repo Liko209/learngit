@@ -6,16 +6,14 @@
 
 import { RCInfoApi } from 'sdk/api/ringcentral';
 import { RCPresenceController } from '../RCPresenceController';
-import { notificationCenter, SERVICE, WINDOW } from 'sdk/service';
-import { TelephonyService } from 'sdk/module/telephony';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { notificationCenter, RC_INFO } from 'sdk/service';
 import { RCPermissionController } from '../RCPermissionController';
 import { ERCServiceFeaturePermission } from '../../types';
 
 jest.mock('sdk/service');
 jest.mock('sdk/api/ringcentral');
-jest.mock('sdk/module/telephony');
 jest.mock('../RCPermissionController');
+jest.mock('sdk/service');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -24,7 +22,6 @@ function clearMocks() {
 }
 
 describe('RCPresenceController', () => {
-  let telephonyService: TelephonyService;
   let rcPermissionController: RCPermissionController;
   let rcPresenceController: RCPresenceController;
   function setUp() {
@@ -35,35 +32,11 @@ describe('RCPresenceController', () => {
     rcPermissionController.isRCFeaturePermissionEnabled = jest
       .fn()
       .mockResolvedValue(true);
-    telephonyService = new TelephonyService();
     rcPresenceController = new RCPresenceController(rcPermissionController);
-
-    ServiceLoader.getInstance = jest.fn().mockImplementation(x => {
-      switch (x) {
-        case ServiceConfig.TELEPHONY_SERVICE:
-          return telephonyService;
-        default:
-          return null;
-      }
-    });
   }
   beforeEach(() => {
     clearMocks();
     setUp();
-  });
-
-  describe('start', () => {
-    it('should subscribe some notification when start [JPT-2574]', async () => {
-      await rcPresenceController.start();
-      expect(notificationCenter.on).toHaveBeenCalledWith(
-        WINDOW.ONLINE,
-        rcPresenceController.syncRCPresence,
-      );
-      expect(notificationCenter.on).toHaveBeenCalledWith(
-        SERVICE.WAKE_UP_FROM_SLEEP,
-        rcPresenceController.syncRCPresence,
-      );
-    });
   });
 
   describe('syncRCPresence', () => {
@@ -74,9 +47,9 @@ describe('RCPresenceController', () => {
 
       setTimeout(() => {
         expect(RCInfoApi.getRCPresence).toHaveBeenCalledTimes(1);
-        expect(telephonyService.handleRCPresence).toHaveBeenCalledWith(
+        expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+          RC_INFO.RC_PRESENCE,
           data,
-          false,
         );
         done();
       });
@@ -94,7 +67,7 @@ describe('RCPresenceController', () => {
 
       setTimeout(() => {
         expect(RCInfoApi.getRCPresence).not.toHaveBeenCalled();
-        expect(telephonyService.handleRCPresence).not.toHaveBeenCalledWith(
+        expect(notificationCenter.emitKVChange).not.toHaveBeenCalledWith(
           data,
           false,
         );
@@ -114,7 +87,7 @@ describe('RCPresenceController', () => {
 
       setTimeout(() => {
         expect(RCInfoApi.getRCPresence).not.toHaveBeenCalled();
-        expect(telephonyService.handleRCPresence).not.toHaveBeenCalledWith(
+        expect(notificationCenter.emitKVChange).not.toHaveBeenCalledWith(
           data,
           false,
         );
@@ -125,15 +98,12 @@ describe('RCPresenceController', () => {
 
   describe('dispose', () => {
     it('should off notification when dispose', () => {
+      const testFn = jest.fn();
+      rcPresenceController['_getQueueHandler'] = jest.fn().mockReturnValue({
+        clear: testFn,
+      });
       rcPresenceController.dispose();
-      expect(notificationCenter.off).toHaveBeenCalledWith(
-        WINDOW.ONLINE,
-        rcPresenceController.syncRCPresence,
-      );
-      expect(notificationCenter.off).toHaveBeenCalledWith(
-        SERVICE.WAKE_UP_FROM_SLEEP,
-        rcPresenceController.syncRCPresence,
-      );
+      expect(testFn).toHaveBeenCalled();
     });
   });
 });
