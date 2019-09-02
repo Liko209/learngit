@@ -8,6 +8,7 @@ import styled from '../../foundation/styled-components';
 import { palette, grey } from '../../foundation/utils';
 
 const JuiRightShelf = styled('div')`
+  -ms-overflow-style: -ms-autohiding-scrollbar;
   width: 100%;
   height: 100%;
   background-color: ${palette('common', 'white')};

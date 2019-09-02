@@ -2,11 +2,11 @@
  * @Author: doyle.wu
  * @Date: 2018-12-11 12:03:33
  */
-import { Scene } from './scene';
+import { LighthouseScene } from './lighthouseScene';
 import { SceneConfigFactory } from './config/sceneConfigFactory';
 import { HomePageGatherer, OfflineGatherer, LoginGatherer } from '../gatherers';
 
-class OfflineScene extends Scene {
+class OfflineScene extends LighthouseScene {
 
   tags(): Array<string> {
     return ["OfflineScene", "Lighthouse"];

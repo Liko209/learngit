@@ -39,7 +39,7 @@ const parseTracing = async (file: string) => {
             for (let n of event.args.data.cpuProfile.nodes) {
               node = new Node(event.id, n.id, n.callFrame);
               if (idToNode[node.key()]) {
-                console.log(idToNode[node.key()], '=====', node)
+                //console.log(idToNode[node.key()], '=====', node)
                 // throw new Error('!!!!!');
               }
 
@@ -106,21 +106,21 @@ const parseTracing = async (file: string) => {
     t.calculateTime();
     if (t.top) {
       if (t.top.totalTime / 1000.0 > 200) {
-        console.log(['task : ', t.top.key(), JSON.stringify(t.top.callFrame), ' -- ', t.top.totalTime / 1000.0].join(''));
+        //console.log(['task : ', t.top.key(), JSON.stringify(t.top.callFrame), ' -- ', t.top.totalTime / 1000.0].join(''));
         // t.toTree();
       }
     } else {
-      console.log('task : top is empty');
+      //console.log('task : top is empty');
     }
   }
   // for (let key of Object.keys(idToNode)) {
   //   if (idToNode[key].parent) {
-  //     console.log(idToNode[key].id, idToNode[key].name, idToNode[key].parent.id)
+  //console.log(idToNode[key].id, idToNode[key].name, idToNode[key].parent.id)
   //   } else {
-  //     console.log(idToNode[key].id, idToNode[key].name);
+  //console.log(idToNode[key].id, idToNode[key].name);
   //   }
   // }
-  console.log(tasks.length);
+  //console.log(tasks.length);
 }
 
 const summariseTracing = async (): Promise<Array<SourceCode>> => {

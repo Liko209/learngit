@@ -9,6 +9,7 @@
     "webphone": "node -r ts-node/register --max-old-space-size=8192 --max-semi-space-size=8192 --expose-gc src/script/webphone.ts",
     "dashboard": "node -r ts-node/register --max-old-space-size=8192 --max-semi-space-size=8192 --expose-gc src/script/dashboard.ts",
     "memory": "node -r ts-node/register --max-old-space-size=8192 --max-semi-space-size=8192 --expose-gc src/script/memory.ts",
+    "profile": "node -r ts-node/register --max-old-space-size=8192 --max-semi-space-size=8192 --expose-gc script/profile.ts",
     "debug": "node -r ts-node/register --max-old-space-size=8192 --max-semi-space-size=8192 --expose-gc src/test.ts"
   },
   "os": [
@@ -17,6 +18,7 @@
     "win32"
   ],
   "dependencies": {
+    "@types/puppeteer": "1.19.0",
     "@types/selenium-webdriver": "^4.0.2",
     "acorn": "^6.1.1",
     "acorn-jsx": "^5.0.1",
@@ -25,6 +27,7 @@
     "chromedriver": "^76.0.0",
     "dateformat": "^3.0.3",
     "dotenv": "^6.1.0",
+    "extract-zip": "^1.6.7",
     "falafel": "^2.1.0",
     "form-data": "^2.3.3",
     "js-beautify": "^1.10.0",
@@ -34,7 +37,7 @@
     "mock-client": "git+ssh://git@git.ringcentral.com:TA/tools/mock-client.git#master",
     "mysql2": "^1.6.4",
     "plist": "^3.0.1",
-    "puppeteer": "^1.15.0",
+    "puppeteer": "1.19.0",
     "qs": "^6.6.0",
     "reflect-metadata": "^0.1.12",
     "selenium-webdriver": "^4.0.0-alpha.4",
@@ -43,7 +46,7 @@
     "source-map": "^0.7.3",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.2",
-    "uuid": "^3.3.2",
+    "uuid": "^3.3.3",
     "webphone-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/webphone-client-10.2.12.tgz"
   },
   "devDependencies": {}

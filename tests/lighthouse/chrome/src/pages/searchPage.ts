@@ -26,7 +26,7 @@ class SearchPage extends Page {
 
     await PptrUtils.waitForSelector(page, this.input);
 
-    await PptrUtils.setText(page, this.input, keyword);
+    await PptrUtils.type(page, this.input, keyword);
 
     await PptrUtils.waitForSelector(page, this.textItem);
   }
@@ -52,9 +52,9 @@ class SearchPage extends Page {
     await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="global-full-search"] li[data-test-automation-id="searchResultsCount"]');
     await bluebird.delay(200);
 
-    await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-messages"]');
-    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="search-message-panel"] li[data-test-automation-id="searchResultsCount"]');
-    await bluebird.delay(200);
+    // await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-messages"]');
+    // await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="search-message-panel"] li[data-test-automation-id="searchResultsCount"]');
+    // await bluebird.delay(200);
   }
 
   async scrollMessageTab() {
