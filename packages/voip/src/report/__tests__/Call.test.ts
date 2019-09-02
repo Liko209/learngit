@@ -8,7 +8,12 @@ import { dataAnalysis } from 'foundation/analysis';
 import { RTCCall } from '../../api/RTCCall';
 import { IRTCCallDelegate } from '../../api/IRTCCallDelegate';
 import { IRTCAccount } from '../../account/IRTCAccount';
-import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCNoAudioStateEvent, RTCNoAudioDataEvent } from '../../api/types';
+import {
+  RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
+} from '../../api/types';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { sleep } from '../util';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
@@ -28,13 +33,16 @@ const MockResponse = {
   },
 };
 class MockAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
-  notifyNoAudioStateEvent(uuid: string, noAudioStateEvent: RTCNoAudioStateEvent): void {
-
-  }
-  notifyNoAudioDataEvent(uuid: string, noAudioDataEvent: RTCNoAudioDataEvent): void {
-  }
-  getCallByUuid(uuid: string): RTCCall | null {
-    return null;
+  notifyNoAudioStateEvent(
+    uuid: string,
+    noAudioStateEvent: RTCNoAudioStateEvent,
+  ): void {}
+  notifyNoAudioDataEvent(
+    uuid: string,
+    noAudioDataEvent: RTCNoAudioDataEvent,
+  ): void {}
+  getCallByUuid(uuid: string): RTCCall | undefined {
+    return undefined;
   }
   createOutgoingCallSession(toNum: string): void {
     this.toNum = toNum;
@@ -165,13 +173,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
     (call as any)._callSession.emit(CALL_SESSION_STATE.ACCEPTED);
     (call as any)._destroy();
 
-    const {
-      id,
-      sessionId,
-      ua,
-      direction,
-      establishment,
-    } = call._report;
+    const { id, sessionId, ua, direction, establishment } = call._report;
 
     expect(!!id).toBeTruthy;
     expect(!!sessionId).toBeTruthy;
@@ -205,13 +207,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
     (call as any)._callSession.emit(CALL_SESSION_STATE.CONFIRMED, MockResponse);
     await sleep(10);
     (call as any)._destroy();
-    const {
-      id,
-      sessionId,
-      ua,
-      direction,
-      establishment,
-    } = call._report;
+    const { id, sessionId, ua, direction, establishment } = call._report;
     expect(!!id).toBeTruthy;
     expect(!!sessionId).toBeTruthy;
     expect(!!ua).toBeTruthy;

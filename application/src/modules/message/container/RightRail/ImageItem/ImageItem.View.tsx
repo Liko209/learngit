@@ -89,7 +89,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     if (file.isMocked || file.id < 0) {
       return <></>;
     }
-    const { downloadUrl, id } = this.props;
+    const { downloadUrl, id, groupId } = this.props;
     return (
       <JuiListItem
         data-test-automation-id="rightRail-image-item"
@@ -102,7 +102,12 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
-              <FileActionMenu scene="rightShelf" fileId={id} disablePortal />
+              <FileActionMenu
+                scene="rightShelf"
+                fileId={id}
+                disablePortal
+                groupId={groupId}
+              />
             </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}

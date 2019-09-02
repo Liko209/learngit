@@ -160,8 +160,21 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-more-option-menu');
   }
 
+  //Transfer
   get transferActionsButton() {
     return this.getSelectorByAutomationId('telephony-transfer-menu-item');
+  }
+
+  get transferAskFirstButton() {
+    return this.getSelectorByAutomationId('telephony-ask-first-btn');
+  }
+
+  get completeTransferButton() {
+    return this.getSelectorByAutomationId('complete-transfer-call-btn');
+  }
+
+  get cancelTransferButton() {
+    return this.getSelectorByAutomationId('cancel-warm-transfer-btn');
   }
 
   get transferNowButton() {
@@ -450,6 +463,26 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async clickTransferActionButton() {
     await this.t.click(this.transferActionsButton);
+  }
+
+  async clickTransferAskFirstButton() {
+    await this.t.click(this.transferAskFirstButton);
+  }
+
+  async hoverCompleteTransferButton() {
+    await this.t.hover(this.completeTransferButton);
+  }
+
+  async clickCompleteTransferButton() {
+    await this.t.click(this.completeTransferButton);
+  }
+
+  async hoverCancelTransferButton() {
+    await this.t.hover(this.cancelTransferButton);
+  }
+
+  async clickCancelTransferButton() {
+    await this.t.click(this.cancelTransferButton);
   }
 
   async clickTransferNowButton() {

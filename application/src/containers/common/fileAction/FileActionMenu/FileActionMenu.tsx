@@ -15,6 +15,7 @@ import { ViewInPostAction } from '../ViewInPostAction';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { FileShareAction } from '../FileShareAction/FileShareAction';
 import { IFileActionBaseViewModel } from '../common/types';
 import { observer } from 'mobx-react';
 import { getFileType } from '@/common/getFileType';
@@ -27,7 +28,7 @@ type FileActionMenuProps = {
   disablePortal?: boolean;
   variant?: IconButtonVariant;
   showViewInPostAction?: boolean;
-  groupId?: number;
+  groupId: number;
   asyncOperationDecorator?: FunctionDecorator;
   scene: Scene;
 } & FileDeleteActionProps &
@@ -103,9 +104,8 @@ class InnerComponent extends Component<InnerComponentProps, State> {
         data-test-automation-id={'fileActionMenu'}
       >
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
-          {isImage && (
-            <ViewInBrowserTabAction scene={scene} item={item} />
-          )}
+          <FileShareAction fileId={fileId} postId={postId} groupId={groupId} />
+          {isImage && <ViewInBrowserTabAction scene={scene} item={item} />}
           <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
           {showViewInPostAction && groupId && (
             <ViewInPostAction

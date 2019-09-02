@@ -1232,10 +1232,11 @@ describe('TelephonyService', () => {
   describe('joinAudioConference()', () => {
     it('Join conf failed when user has no any active DL. JPT-[2755]', async () => {
       mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(false);
+      mockedPhoneNumberService.isShortNumber = jest.fn().mockResolvedValue(false);
       mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
       // @ts-ignore
       telephonyService._makeCall = jest.fn();
-      await telephonyService.joinAudioConference('1', '2');
+      await telephonyService.joinAudioConference('12231232312', '2');
       // @ts-ignore
       expect(telephonyService._makeCall).not.toHaveBeenCalled();
     });

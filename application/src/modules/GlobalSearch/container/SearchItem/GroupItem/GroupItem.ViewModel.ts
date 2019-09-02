@@ -3,7 +3,8 @@
  * @Date: 2019-01-30 14:38:45
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { container } from 'framework/ioc';
+import { computed, action } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { Group } from 'sdk/module/group/entity';
@@ -12,6 +13,7 @@ import { SearchService } from 'sdk/module/search';
 import { Props, RecentSearchTypes, ISearchItemModel } from '../types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { GlobalSearchService } from '../../../service';
 
 class GroupItemViewModel extends SearchViewModel<Props>
   implements ISearchItemModel {
@@ -59,6 +61,11 @@ class GroupItemViewModel extends SearchViewModel<Props>
     const { isMember, deactivated, isArchived } = this.group;
     const shouldHidden = deactivated || isArchived || (!isMember && this.isPrivate);
     return shouldHidden === undefined || shouldHidden;
+  }
+
+  @action
+  closeGlobalSearch = () => {
+    container.get(GlobalSearchService).closeGlobalSearch();
   }
 
   addRecentRecord = () => {

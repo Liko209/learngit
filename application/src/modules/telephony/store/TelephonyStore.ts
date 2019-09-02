@@ -463,6 +463,7 @@ class TelephonyStore {
       this.quitKeypad();
       this._clearEnteredKeys();
       this._clearTransferString();
+      this.isConference = false;
       if (this.isTransferPage) {
         this.backToDialerFromTransferPage();
       }
@@ -485,6 +486,8 @@ class TelephonyStore {
     this._clearEnteredKeys();
     this._clearForwardString();
     this._clearTransferString();
+
+    this.inputString = '';
 
     if (this.isTransferPage) {
       this.backToDialerFromTransferPage();

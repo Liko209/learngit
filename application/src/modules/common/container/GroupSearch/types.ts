@@ -3,10 +3,16 @@
  * @Date: 2019-08-22 16:34:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { Props } from '@/containers/Downshift/GroupSearch/GroupSearchItem/types';
+import { SortableModel } from 'sdk/framework/model';
+
+import { ContactSearchItem } from '@/containers/Downshift/ContactSearch/ContactSearchItem';
+import { GroupSearchItem } from '@/containers/Downshift/GroupSearch/GroupSearchItem';
 
 export type GroupSearchProps = {
-  onSelectChange: (params: { id: number }) => void;
+  onSelect: (params: { id: number }) => void;
+  dialogTitle: string;
+  listTitle: string;
+  searchFunc: (searchKey: string) => Promise<SortableModel<any>[]>;
 };
 
 export interface IGroupSearchViewModel {
@@ -15,6 +21,9 @@ export interface IGroupSearchViewModel {
   list: number[];
   getItemComponent: (
     id: number,
-  ) => { Item: React.ComponentType<Props>; props: { itemId: number } };
+  ) => {
+    Item: typeof ContactSearchItem | typeof GroupSearchItem;
+    props: { itemId: number };
+  };
 }
 export type GroupSearchViewProps = GroupSearchProps & IGroupSearchViewModel;
