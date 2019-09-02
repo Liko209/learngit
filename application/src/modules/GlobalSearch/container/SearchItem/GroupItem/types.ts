@@ -13,6 +13,7 @@ type ViewProps = {
   isJoined: boolean;
   shouldHidden: boolean;
   analysisSource: string;
+  closeGlobalSearch: () => void;
 } & BaseViewProps;
 
 export { Props, ViewProps, GroupModel };
