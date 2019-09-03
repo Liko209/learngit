@@ -3,7 +3,7 @@
  * @Date: 2018-12-28 17:33:08
  * Copyright © RingCentral. All rights reserved.
  */
-enum UA_EVENT {
+export enum UA_EVENT {
   REG_SUCCESS = 'uaRegisterSuccess',
   REG_FAILED = 'uaRegisterFailed',
   REG_UNREGISTER = 'uaUnRegisterFailed',
@@ -13,7 +13,7 @@ enum UA_EVENT {
   PROVISION_UPDATE = 'uaProvisionUpdate',
 }
 
-enum WEBPHONE_SESSION_STATE {
+export enum WEBPHONE_SESSION_STATE {
   ACCEPTED = 'accepted',
   CONFIRMED = 'confirmed',
   BYE = 'bye',
@@ -23,21 +23,21 @@ enum WEBPHONE_SESSION_STATE {
   REINVITE_FAILED = 'reinviteFailed',
 }
 
-enum RC_SIP_HEADER_NAME {
+export enum RC_SIP_HEADER_NAME {
   RC_API_IDS = 'P-Rc-Api-Ids',
 }
 
-enum RC_REFER_EVENT {
+export enum RC_REFER_EVENT {
   REFER_REQUEST_ACCEPTED = 'referRequestAccepted',
   REFER_REQUEST_REJECTED = 'referRequestRejected',
 }
 
-enum WEBPHONE_SESSION_EVENT {
+export enum WEBPHONE_SESSION_EVENT {
   SDH_CREATED = 'SessionDescriptionHandler-created',
   ADD_TRACK = 'addTrack',
 }
 
-enum WEBPHONE_MEDIA_CONNECTION_STATE_EVENT {
+export enum WEBPHONE_MEDIA_CONNECTION_STATE_EVENT {
   MEDIA_CONNECTION_STATE_CHANGED = 'mediaConnectionStateChanged',
   MEDIA_CONNECTION_NEW = 'mediaConnectionStateNew',
   MEDIA_CONNECTION_CHECKING = 'mediaConnectionStateChecking',
@@ -48,14 +48,14 @@ enum WEBPHONE_MEDIA_CONNECTION_STATE_EVENT {
   MEDIA_CONNECTION_CLOSED = 'mediaConnectionStateClosed',
 }
 
-enum WEBPHONE_LOG_LEVEL {
+export enum WEBPHONE_LOG_LEVEL {
   DEBUG = 'debug',
   LOG = 'log',
   WARN = 'warn',
   ERROR = 'error',
 }
 
-type ProvisionDataOptions = {
+export type ProvisionDataOptions = {
   uuid?: string;
   appName?: string;
   appVersion?: string;
@@ -88,7 +88,7 @@ type RttMS = {
   currentRoundTripTime: number;
 };
 
-type InviteOptions = {
+export type InviteOptions = {
   fromNumber?: string;
   homeCountryId?: string;
   extraHeaders?: any;
@@ -96,26 +96,12 @@ type InviteOptions = {
   sessionDescriptionHandlerOptions?: any;
 };
 
-type AcceptOptions = {
+export type AcceptOptions = {
   sessionDescriptionHandlerOptions?: any;
 };
 
-type MediaStatsReport = {
+export type MediaStatsReport = {
   inboundRtpReport?: InboundRtpReport;
   outboundRtpReport?: OutboundRtpReport;
   rttMS?: RttMS;
-};
-
-export {
-  UA_EVENT,
-  WEBPHONE_SESSION_STATE,
-  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
-  WEBPHONE_LOG_LEVEL,
-  RC_SIP_HEADER_NAME,
-  WEBPHONE_SESSION_EVENT,
-  ProvisionDataOptions,
-  MediaStatsReport,
-  RC_REFER_EVENT,
-  InviteOptions,
-  AcceptOptions,
 };

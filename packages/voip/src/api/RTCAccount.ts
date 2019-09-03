@@ -9,7 +9,6 @@ import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
 import {
-  kRTCAnonymous,
   kRTCProvisioningOptions,
   kRetryIntervalList,
 } from '../account/constants';
@@ -70,15 +69,15 @@ class RTCAccount implements IRTCAccount {
     );
   }
 
-  public handleProvisioning() {
+  handleProvisioning() {
     this._provManager.acquireSipProv();
   }
 
-  public clearLocalProvisioning() {
+  clearLocalProvisioning() {
     this._provManager.clearProvInfo();
   }
 
-  public makeCall(
+  makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
@@ -126,22 +125,6 @@ class RTCAccount implements IRTCAccount {
       call.onAccountNotReady();
     }
     return call;
-  }
-
-  public makeAnonymousCall(
-    toNumber: string,
-    delegate: IRTCCallDelegate,
-    options?: RTCCallOptions,
-  ): RTCCall | undefined {
-    let optionsWithAnonymous: RTCCallOptions;
-    if (options) {
-      optionsWithAnonymous = options;
-      optionsWithAnonymous.fromNumber = kRTCAnonymous;
-    } else {
-      optionsWithAnonymous = { fromNumber: kRTCAnonymous };
-    }
-    rtcLogger.debug(LOG_TAG, 'make anonymous call');
-    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
@@ -200,7 +183,7 @@ class RTCAccount implements IRTCAccount {
     }
   }
 
-  public notifyNoAudioStateEvent(
+  notifyNoAudioStateEvent(
     uuid: string,
     noAudioStateEvent: RTCNoAudioStateEvent,
   ) {
@@ -208,10 +191,7 @@ class RTCAccount implements IRTCAccount {
       this._delegate.onNoAudioStateEvent(uuid, noAudioStateEvent);
   }
 
-  public notifyNoAudioDataEvent(
-    uuid: string,
-    noAudioDataEvent: RTCNoAudioDataEvent,
-  ) {
+  notifyNoAudioDataEvent(uuid: string, noAudioDataEvent: RTCNoAudioDataEvent) {
     this._delegate && this._delegate.onNoAudioDataEvent(uuid, noAudioDataEvent);
   }
 

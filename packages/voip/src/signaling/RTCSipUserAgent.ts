@@ -47,10 +47,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _provisionInfo: RTCSipProvisionInfo | null = null;
   private _provisionOptions: ProvisionDataOptions | null = null;
 
-  public restartUA(
-    provisionData: RTCSipProvisionInfo,
-    options: ProvisionDataOptions,
-  ) {
+  restartUA(provisionData: RTCSipProvisionInfo, options: ProvisionDataOptions) {
     if (this._webphone) {
       this._destroy();
     }
@@ -117,7 +114,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._initListener();
   }
 
-  public makeCall(phoneNumber: string, options: RTCCallOptions): any {
+  makeCall(phoneNumber: string, options: RTCCallOptions): any {
     if (!this._webphone) {
       return null;
     }
@@ -174,7 +171,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     return this._webphone.userAgent.invite(phoneNumber, inviteOptions);
   }
 
-  public reRegister() {
+  reRegister() {
     rtcLogger.debug(LOG_TAG, 'Try to restart register with new transport');
     if (!this._webphone || !this._provisionInfo || !this._provisionOptions) {
       return;
@@ -183,7 +180,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._createWebPhone(this._provisionInfo, this._provisionOptions);
   }
 
-  public unregister() {
+  unregister() {
     if (!this._webphone) {
       return;
     }

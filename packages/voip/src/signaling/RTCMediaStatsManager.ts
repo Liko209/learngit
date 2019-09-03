@@ -14,11 +14,11 @@ class RTCMediaStatsManager {
   private _hasReceivedPackages: boolean = false;
   private _mediaStatsReport: MediaStatsReport = {};
 
-  public hasSentPackages(): boolean {
+  hasSentPackages(): boolean {
     return this._hasSentPackages;
   }
 
-  public hasReceivedPackages(): boolean {
+  hasReceivedPackages(): boolean {
     return this._hasReceivedPackages;
   }
 
@@ -46,17 +46,17 @@ class RTCMediaStatsManager {
   }
 
   private _formatMediaStatsReport(mediaStatsReport: any) {
-    if (typeof mediaStatsReport.inboundRtpReport !== 'undefined') {
+    if (mediaStatsReport.inboundRtpReport) {
       this._mediaStatsReport.inboundRtpReport =
         mediaStatsReport.inboundRtpReport;
     }
 
-    if (typeof mediaStatsReport.outboundRtpReport !== 'undefined') {
+    if (mediaStatsReport.outboundRtpReport) {
       this._mediaStatsReport.outboundRtpReport =
         mediaStatsReport.outboundRtpReport;
     }
 
-    if (typeof mediaStatsReport.rttMS !== 'undefined') {
+    if (mediaStatsReport.rttMS) {
       this._mediaStatsReport.rttMS = mediaStatsReport.rttMS;
     }
   }
