@@ -10,7 +10,8 @@ enum SOURCE_TYPE {
   LAST_USED,
   NEW_DEVICE,
   DEVICE_MANAGER,
-  DEFAULT
+  DEVICE_COMPATIBILITY,
+  DEFAULT,
 }
 
 type Disposer = () => void;
@@ -41,5 +42,5 @@ export {
   IStorage,
   IDeviceManager,
   ILastUsedDeviceManager,
-  Disposer
+  Disposer,
 };
