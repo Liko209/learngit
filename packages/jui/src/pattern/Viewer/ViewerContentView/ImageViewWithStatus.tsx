@@ -8,17 +8,13 @@ import { JuiIconography } from '../../../foundation/Iconography';
 import { grey, palette } from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
 
-const StyledImage = styled.img<{ visibility: string }>`
-  visibility: ${({ visibility }) => visibility};
+const StyledImage = styled.img`
   width: 100%;
 `;
 
 const StyledLoadingPage = styled.div<{ background?: 'paper' }>`
-  position: absolute;
   width: 100%;
   height: 100%;
-  top: 0;
-  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,25 +38,25 @@ function JuiImageWithStatusView({ src, background }: JuiImageWithStatusProps) {
 
   const handleOnLoad = () => setStatus(Status['done']);
   const handleOnError = () => setStatus(Status['error']);
-  return (
-    <>
+
+  if (Status[status] !== 'error') {
+    return (
       <StyledImage
         src={src}
         onLoad={handleOnLoad}
         onError={handleOnError}
-        visibility={Status[status] === 'error' ? 'hidden' : 'visible'}
       />
-      {(Status[status] === 'error' || Status[status] === 'loading') && (
-        <StyledLoadingPage background={background}>
-          {Status[status] === 'error' && (
-            <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
-              image_broken
-            </JuiIconography>
-          )}
-        </StyledLoadingPage>
+    )
+  }
+
+  return (Status[status] === 'error' || Status[status] === 'loading') ? (
+    <StyledLoadingPage background={background}>
+      {Status[status] === 'error' && (
+        <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
+          image_broken
+        </JuiIconography>
       )}
-    </>
-  );
+    </StyledLoadingPage>) : null
 }
 
 export { JuiImageWithStatusView };
