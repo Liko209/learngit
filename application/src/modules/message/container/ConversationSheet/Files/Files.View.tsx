@@ -22,7 +22,6 @@ import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import {
-  isSupportFileViewer,
   isFileReadyForViewer,
   isDoc,
 } from '@/common/getFileType';
@@ -142,7 +141,7 @@ class FilesView extends React.Component<FilesViewProps> {
   );
 
   render() {
-    const { files, progresses, urlMap, postId, groupId,getFilePreviewBackgroundContainPermission } = this.props;
+    const { files, progresses, urlMap, postId, groupId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -216,7 +215,6 @@ class FilesView extends React.Component<FilesViewProps> {
               latestVersion.pages &&
               latestVersion.pages.length;
             const iconType = getFileIcon(type);
-            const supportFileViewer = isSupportFileViewer(type);
             const fileReadyForViewer = isFileReadyForViewer(status);
             if (id < 0) {
               return this._renderItem(id, progresses, name);
@@ -229,18 +227,18 @@ class FilesView extends React.Component<FilesViewProps> {
                   keyword: this.context.keyword,
                 })}
                 needBackgroundContain={
-                  getFilePreviewBackgroundContainPermission.get() && isDoc(type)
+                  isDoc(type)
                 }
                 size={`${getFileSize(size)}`}
                 url={accelerateURL(previewUrl)!}
                 iconType={iconType}
                 handleFileClick={
-                  supportFileViewer && fileReadyForViewer
+                  fileReadyForViewer
                     ? this._handleFileClick(item)
                     : undefined
                 }
                 total={total}
-                disabled={supportFileViewer && !fileReadyForViewer}
+                disabled={!fileReadyForViewer}
                 Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
