@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
-import { JuiIconButton } from 'jui/components/Buttons';
+import { JuiFabButton } from 'jui/components/Buttons';
 import { JuiTransferAction } from 'jui/pattern/Dialer';
 
 type Props = ViewProps & WithTranslation;
@@ -23,17 +23,17 @@ class AskFirstViewComponent extends Component<Props> {
     const { t, transferNumber } = this.props;
     return (
       <JuiTransferAction>
-        <JuiIconButton
-          shouldPersistBg
-          size="large"
-          color="grey.900"
+        <JuiFabButton
+          size="mediumLarge"
           aria-label={t('telephony.action.askFirst')}
           onClick={this._handleAskFirstCall}
           data-test-automation-id="telephony-ask-first-btn"
           disabled={!transferNumber}
-        >
-          askfirst
-        </JuiIconButton>
+          showShadow={false}
+          iconName="askfirst"
+          color="grey.200"
+          iconColor={['grey', '900']}
+        />
         <span className={!transferNumber ? 'disabled' : undefined}>
           {t('telephony.action.askFirst')}
         </span>
