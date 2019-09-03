@@ -51,6 +51,7 @@ class SearchUtils {
   static getMatchedWeight(
     lowerCaseSplitNames: string[],
     searchKeyTerms: string[],
+    isPositionMatchedHigher: boolean,
   ) {
     let sortValue = 0;
 
@@ -65,7 +66,7 @@ class SearchUtils {
         ) {
           setKeyMatched.add(searchKeyTerms[j]);
           sortValue +=
-            i === j
+            i === j && isPositionMatchedHigher
               ? kSortingRateWithFirstAndPositionMatched
               : kSortingRateWithFirstMatched;
         }
