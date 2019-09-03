@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`groupSearch should call searchService.doFuzzySearchPersonsAndGroups with correct arguments when called 1`] = `
+"Array [
+  Array [
+    \\"\\",
+    Object {
+      \\"excludeSelf\\": false,
+      \\"fetchAllIfSearchKeyEmpty\\": false,
+      \\"meFirst\\": false,
+      \\"recentFirst\\": false,
+    },
+    Object {
+      \\"fetchAllIfSearchKeyEmpty\\": true,
+      \\"meFirst\\": false,
+      \\"myGroupsOnly\\": true,
+      \\"recentFirst\\": false,
+    },
+    [Function recentFirstSorter],
+  ],
+  Array [
+    \\"\\",
+    Object {
+      \\"excludeSelf\\": false,
+      \\"fetchAllIfSearchKeyEmpty\\": false,
+      \\"meFirst\\": true,
+      \\"recentFirst\\": false,
+    },
+    Object {
+      \\"fetchAllIfSearchKeyEmpty\\": true,
+      \\"meFirst\\": true,
+      \\"myGroupsOnly\\": true,
+      \\"recentFirst\\": false,
+    },
+    [Function recentFirstSorter],
+  ],
+  Array [
+    \\"some\\",
+    Object {
+      \\"excludeSelf\\": false,
+      \\"fetchAllIfSearchKeyEmpty\\": false,
+      \\"meFirst\\": false,
+      \\"recentFirst\\": true,
+    },
+    Object {
+      \\"fetchAllIfSearchKeyEmpty\\": true,
+      \\"meFirst\\": false,
+      \\"myGroupsOnly\\": true,
+      \\"recentFirst\\": true,
+    },
+    undefined,
+  ],
+  Array [
+    \\"some\\",
+    Object {
+      \\"excludeSelf\\": false,
+      \\"fetchAllIfSearchKeyEmpty\\": false,
+      \\"meFirst\\": true,
+      \\"recentFirst\\": true,
+    },
+    Object {
+      \\"fetchAllIfSearchKeyEmpty\\": true,
+      \\"meFirst\\": true,
+      \\"myGroupsOnly\\": true,
+      \\"recentFirst\\": true,
+    },
+    undefined,
+  ],
+]"
+`;

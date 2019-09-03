@@ -45,7 +45,11 @@ export class GroupSearchViewModel extends StoreViewModel<GroupSearchProps>
   };
 
   searchGroups = async (searchKey: string) => {
-    const result = await this.props.searchFunc(searchKey);
+    let result;
+    if (searchKey === '') {
+      result = await this.props.defaultList();
+    }
+    result = await this.props.searchFunc(searchKey);
     this.searchResult = result;
     this.list = result.map(item => item.id);
   };

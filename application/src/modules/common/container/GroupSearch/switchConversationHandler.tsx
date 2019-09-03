@@ -7,45 +7,53 @@
 import React from 'react';
 import { GroupSearch } from './GroupSearch';
 import { Dialog } from '@/containers/Dialog';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversation, getConversationId } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
+import { recentFirstSorter, searchFunc } from './lib';
 
 const DIALOG_KEY = 'GroupSearch';
-export function switchToConversation({ id }: { id: number }) {
+async function switchToConversation({ id }: { id: number }) {
   portalManager.dismissAll();
+
+  const conversationId = await getConversationId(id);
+  if (!conversationId) {
+    // can't create conversation, jest return
+    return;
+  }
+
   setTimeout(() => {
     analyticsCollector.goToConversation('switchConversationDialog');
-    goToConversation({ conversationId: id });
+    goToConversation({ conversationId });
   });
 }
 
-export function switchConversationHandler() {
-  const searchFunc = async (searchKey: string) => {
+function switchConversationHandler() {
+  const getDefaultList = async () => {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const result = await searchService.doFuzzySearchAllGroups(searchKey, {
+    const result = await searchService.doFuzzySearchAllGroups('', {
       myGroupsOnly: true,
       fetchAllIfSearchKeyEmpty: true,
-      sortFunc: (lhs, rhs) => {
-        const lhsModifiedAt = lhs.entity.most_recent_content_modified_at;
-        const rhsModifiedAt = rhs.entity.most_recent_content_modified_at;
-
-        if (lhsModifiedAt < rhsModifiedAt) return 1;
-        if (lhsModifiedAt > rhsModifiedAt) return -1;
-        return 0;
-      },
+      recentFirst: false,
+      sortFunc: recentFirstSorter,
     });
     return result.sortableModels;
-  }
+  };
 
   analyticsCollector.shortcuts('quickSwitcher');
   if (portalManager.isOpened(DIALOG_KEY)) return;
- const {dismiss} = Dialog.simple(
-    <GroupSearch onSelect={switchToConversation} dialogTitle={'groupSearch.dialogTitle'} listTitle={'groupSearch.listTitle'} searchFunc={searchFunc} />,
+  const { dismiss } = Dialog.simple(
+    <GroupSearch
+      onSelect={switchToConversation}
+      dialogTitle={'groupSearch.dialogTitle'}
+      listTitle={'groupSearch.listTitle'}
+      searchFunc={key => searchFunc(key, false)}
+      defaultList={getDefaultList}
+    />,
     {
       size: 'small',
       onClose: () => dismiss(),
@@ -55,3 +63,5 @@ export function switchConversationHandler() {
   );
   return false; // prevent browser default behavior
 }
+
+export { switchConversationHandler, switchToConversation };
