@@ -34,7 +34,9 @@ class AskFirstViewComponent extends Component<Props> {
         >
           askfirst
         </JuiIconButton>
-        <span>{t('telephony.action.askFirst')}</span>
+        <span className={!transferNumber ? 'disabled' : undefined}>
+          {t('telephony.action.askFirst')}
+        </span>
       </JuiTransferAction>
     );
   }

@@ -49,7 +49,9 @@ class TransferViewComponent extends Component<Props> {
         >
           transfer-call
         </JuiIconButton>
-        <span>{t('telephony.action.transfer')}</span>
+        <span className={!transferNumber ? 'disabled' : undefined}>
+          {t('telephony.action.transfer')}
+        </span>
       </JuiTransferAction>
     );
   }

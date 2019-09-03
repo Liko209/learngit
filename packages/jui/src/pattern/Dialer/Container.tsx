@@ -239,9 +239,6 @@ const ContactSearchItemContent = styled.div<{}>`
     & > *:nth-child(1) {
       flex: 1;
     }
-    & > *:nth-child(2) {
-      flex-basis: ${spacing(8)};
-    }
   }
 `;
 

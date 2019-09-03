@@ -35,7 +35,9 @@ class VoiceMailViewComponent extends Component<Props> {
         >
           voicemail
         </JuiIconButton>
-        <span>{t('telephony.action.toVoiceMail')}</span>
+        <span className={!transferNumber ? 'disabled' : undefined}>
+          {t('telephony.action.toVoiceMail')}
+        </span>
       </JuiTransferAction>
     ) : (
       <>
