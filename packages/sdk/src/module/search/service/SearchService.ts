@@ -182,6 +182,10 @@ class SearchService extends AbstractService
       terms,
     );
   }
+
+  generateFormattedTerms = (originalTerms: string[]) => {
+    return this.searchPersonController.generateFormattedTerms(originalTerms);
+  };
 }
 
 export { SearchService };

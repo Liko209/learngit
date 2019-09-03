@@ -440,6 +440,7 @@ export class GroupFetchDataController {
         const keyWeight = SearchUtils.getMatchedWeight(
           memberNames.map(x => x.toLowerCase()),
           searchKeyTerms,
+          false,
         );
         const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
@@ -524,6 +525,7 @@ export class GroupFetchDataController {
 
       let isMatched: boolean = false;
       let keyWeight: number = 0;
+      let meGroupId: UndefinedAble<number>;
       do {
         if (!this.groupService.isValid(group)) {
           break;
@@ -547,19 +549,36 @@ export class GroupFetchDataController {
           break;
         }
 
+        if (this.isMeGroup(group)) {
+          meGroupId = group.id;
+        }
+
         let visiblePersons: Person[] = [];
         if (group.is_team) {
           groupName = group.set_abbreviation;
           lowerCaseName = groupName.toLowerCase();
         } else {
-          const persons = this.getAllPersonOfGroup(
-            group.members,
-            currentUserId,
-          );
-          if (persons.invisiblePersons.length) {
-            break;
+          if (meGroupId) {
+            const personService = ServiceLoader.getInstance<PersonService>(
+              ServiceConfig.PERSON_SERVICE,
+            );
+            const mePerson = personService.getSynchronously(group.members[0]);
+            if (mePerson) {
+              visiblePersons.push(mePerson);
+            } else {
+              mainLogger.error('_getTransformAllGroupFunc: current user is nil, id = ', group.members[0]);
+            }
+          } else {
+            const persons = this.getAllPersonOfGroup(
+              group.members,
+              currentUserId,
+            );
+            if (persons.invisiblePersons.length) {
+              break;
+            }
+            visiblePersons = persons.visiblePersons;
           }
-          visiblePersons = persons.visiblePersons;
+          
           groupName = this.getGroupNameByMultiMembers(visiblePersons).groupName;
           lowerCaseName = groupName.toLowerCase();
         }
@@ -597,18 +616,13 @@ export class GroupFetchDataController {
           break;
         }
 
-        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms);
+        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms, true);
 
         isMatched = true;
 
       } while (false);
 
       if (isMatched) {
-        let meGroupId: UndefinedAble<number>;
-        if (this.isMeGroup(group)) {
-          meGroupId = group.id;
-        }
-
         const mostRecentViewTime = option.recentFirst
           ? this._getMostRecentViewTime(
               group.id,
@@ -616,8 +630,7 @@ export class GroupFetchDataController {
               recentSearchedGroups!,
             )
           : 0;
-
-        const sortWeights = option.meFirst && meGroupId? [group.id === meGroupId? 1 : 0,  keyWeight, mostRecentViewTime] : [keyWeight, mostRecentViewTime];
+        const sortWeights = option.meFirst? [group.id === meGroupId? 1 : 0,  keyWeight, mostRecentViewTime] : [keyWeight, mostRecentViewTime];
         return {
           lowerCaseName,
           id: group.id,
@@ -630,11 +643,11 @@ export class GroupFetchDataController {
     };
   }
 
-  private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[]) {
+  private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[], isPositionMatchedHigher: boolean) {
     const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
       lowerCaseName,
     );
-    return SearchUtils.getMatchedWeight(splitNames, searchKeyTerms);
+    return SearchUtils.getMatchedWeight(splitNames, searchKeyTerms, isPositionMatchedHigher);
   }
 
   // The search results should be ranked as follows: perfect match>start with> fuzzy search> Soundex search
@@ -689,6 +702,7 @@ export class GroupFetchDataController {
         keyWeight = this._getNameMatchWeight(
           lowerCaseAbbreviation,
           searchKeyTerms,
+          true,
         );
 
         isMatched = true;
