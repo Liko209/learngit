@@ -143,7 +143,9 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
           self._handleDelete();
         } else {
           // The link card should be deleted if one post with other files
-          self._itemLinks.forEach(self._itemService.deleteItem);
+          self._itemLinks.forEach((id: number) => {
+            self._itemService.deleteItem(id);
+          });
           self._editPost(value, mentionIds, mentionIdsContainTeam);
         }
       } else if (value || self._post.itemIds.length) {
