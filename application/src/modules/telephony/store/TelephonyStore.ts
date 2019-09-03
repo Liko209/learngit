@@ -518,8 +518,6 @@ class TelephonyStore {
     this._clearTransferString();
     this.isEndMultipleIncomingCall = false;
 
-    // this.inputString = '';
-
     if (
       (this.phoneNumber !== '' || !this.isMultipleCall) &&
       !this.isEndOtherCall
