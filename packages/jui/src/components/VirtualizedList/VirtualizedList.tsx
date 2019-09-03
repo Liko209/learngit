@@ -29,7 +29,6 @@ import {
   useScroll,
   PartialScrollPosition,
   useForceUpdate,
-  useIsFirstRenderRef,
   ScrollPosition,
 } from './hooks';
 import {
@@ -252,6 +251,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       });
       // TODO Don't re-render if range not changed
       setVisibleRange(visibleRange);
+      isFakeVisibleRangeRef.current = false;
     }
   };
 
@@ -312,7 +312,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const scrollEffectTriggerRef = useRef(0);
   const prevAtBottomRef = useRef(false);
-  const isFakeVisibleRangeRef = useIsFirstRenderRef();
+  const isFakeVisibleRangeRef = useRef(true);
 
   //
   // State
@@ -545,6 +545,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (highlightedIndex !== undefined)
       scrollIntoViewIfNeeded(highlightedIndex);
   }, [highlightedIndex]);
+
   //
   // Scrolling
   //
