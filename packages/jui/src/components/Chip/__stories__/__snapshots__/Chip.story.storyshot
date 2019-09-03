@@ -162,9 +162,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
     Basic Chip
   </span>
   <button
-    aria-haspopup={true}
     aria-label="Remove"
-    aria-owns={null}
     className="MuiButtonBase-root MuiIconButton-root MuiChip-deleteIcon deleteIcon c2"
     disabled={false}
     onBlur={[Function]}
@@ -176,7 +174,8 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
-    onMouseMove={[Function]}
+    onMouseOut={[Function]}
+    onMouseOver={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
@@ -417,9 +416,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
     Basic Chip
   </span>
   <button
-    aria-haspopup={true}
     aria-label="Remove"
-    aria-owns={null}
     className="MuiButtonBase-root MuiIconButton-root MuiChip-deleteIcon deleteIcon c1"
     disabled={false}
     onBlur={[Function]}
@@ -431,7 +428,8 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
-    onMouseMove={[Function]}
+    onMouseOut={[Function]}
+    onMouseOver={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}

@@ -21,7 +21,7 @@ import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 import { JuiIconography, SvgSymbol } from '../../foundation/Iconography';
-import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
+import { useHoverHelper } from '../../foundation/hooks/useHoverHelper';
 import { StyledMaskWrapper, StyledMask } from './Mask';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
@@ -158,14 +158,14 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     iconSymbol,
     ...rest
   } = props;
-  const popupHelper = usePopupHelper({ variant: 'popover' });
+  const hoverHelper = useHoverHelper();
 
   let avatar: JSX.Element;
-  const popupTriggerProps = tooltip ? popupHelper.HoverProps : {};
+  const hoverTriggerProps = tooltip ? hoverHelper.TriggerProps : {};
 
   if (cover) {
     avatar = (
-      <StyledCoverAvatar {...rest} {...popupTriggerProps}>
+      <StyledCoverAvatar {...rest} {...hoverTriggerProps}>
         <StyledCoverAvatarContent>{children}</StyledCoverAvatarContent>
       </StyledCoverAvatar>
     );
@@ -178,7 +178,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     }
 
     avatar = (
-      <StyledAvatar {...rest} {...popupTriggerProps}>
+      <StyledAvatar {...rest} {...hoverTriggerProps}>
         {iconChildren || children}
       </StyledAvatar>
     );
@@ -196,7 +196,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     avatar = <JuiAvatarMask onClick={rest.onClick}>{avatar}</JuiAvatarMask>;
   }
 
-  if (tooltip && popupHelper.PopoverProps.open) {
+  if (tooltip && hoverHelper.hovered) {
     avatar = <RuiTooltip title={tooltip}>{avatar}</RuiTooltip>;
   }
 
