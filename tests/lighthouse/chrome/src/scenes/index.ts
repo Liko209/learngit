@@ -17,6 +17,7 @@ import { CallLogScene } from './callLogScene';
 import { SettingScene } from './settingScene';
 import { DocViewerScene } from './docViewerScene';
 import { ImageViewerScene } from './imageViewerScene';
+import { SearchForShareScene } from './searchForShareScene';
 
 const scenes = {
   LoginScene,
@@ -30,6 +31,7 @@ const scenes = {
   CallLogScene,
   SettingScene,
   DocViewerScene,
+  SearchForShareScene,
   // ImageViewerScene
 }
 

@@ -9,7 +9,7 @@ import { globals } from "../globals";
 
 class DocViewerGatherer extends DebugGatherer {
   private conversationIds: { [key: string]: string };
-
+  
   private metricKeys: Array<string> = [
     'ui_viewer_page_render',
   ];
@@ -39,7 +39,6 @@ class DocViewerGatherer extends DebugGatherer {
     globals.startCollectProcessInfo();
     this.beginGathererConsole();
 
-    // switch conversation
     await this.viewDoc(conversationPage, Config.sceneRepeatCount);
 
     this.endGathererConsole();

@@ -20,6 +20,7 @@ import { SettingGatherer } from './settingGatherer';
 import { DocViewerGatherer } from './docViewerGahterer';
 import { ImageViewerGatherer } from './imageViewerGahterer';
 import { LongTaskGatherer } from './longTaskGatherer';
+import { SearchForShareGatherer } from './searchForShareGahterer';
 
 export {
   BaseGatherer,
@@ -40,5 +41,6 @@ export {
   SettingGatherer,
   DocViewerGatherer,
   ImageViewerGatherer,
-  LongTaskGatherer
+  LongTaskGatherer,
+  SearchForShareGatherer
 }
