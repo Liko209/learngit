@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { useState } from 'react';
-import { KeyMapper, RowManager } from '../RowManager';
+import { KeyMapper, DynamicRowManager } from '../DynamicRowManager';
 import { FixedRowManager } from '../FixedRowManager';
 import { AbstractRowManager } from '../AbstractRowManager';
 
@@ -20,7 +20,7 @@ const useRowManager = ({
   const [rowManager] = useState(() => {
     let result: AbstractRowManager;
     if (minRowHeight) {
-      const rowManager = new RowManager({ minRowHeight });
+      const rowManager = new DynamicRowManager({ minRowHeight });
       rowManager.setKeyMapper(keyMapper);
       result = rowManager;
     } else if (fixedRowHeight) {
@@ -34,7 +34,7 @@ const useRowManager = ({
     return result;
   });
 
-  if (rowManager instanceof RowManager) {
+  if (rowManager instanceof DynamicRowManager) {
     rowManager.setKeyMapper(keyMapper);
   }
 

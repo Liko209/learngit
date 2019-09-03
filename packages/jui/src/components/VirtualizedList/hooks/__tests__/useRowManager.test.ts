@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { renderHook } from '../../../../__tests__/renderHook';
-import { RowManager } from '../../RowManager';
+import { DynamicRowManager } from '../../DynamicRowManager';
 import { useRowManager } from '../useRowManager';
 
-jest.mock('../../RowManager');
+jest.mock('../../DynamicRowManager');
 
 describe('useRowManager()', () => {
   it('should create a instance of RowManager with the keyMapper', () => {
@@ -17,7 +17,9 @@ describe('useRowManager()', () => {
     const hookRef = renderHook(() => useRowManager(options));
     const rowManager = hookRef.current;
 
-    expect(rowManager).toBeInstanceOf(RowManager);
-    expect(rowManager.setKeyMapper).toHaveBeenCalledWith(keyMapper);
+    expect(rowManager).toBeInstanceOf(DynamicRowManager);
+    if (rowManager instanceof DynamicRowManager) {
+      expect(rowManager.setKeyMapper).toHaveBeenCalledWith(keyMapper);
+    }
   });
 });

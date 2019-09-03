@@ -7,7 +7,7 @@ import { AbstractRowManager } from './AbstractRowManager';
 
 type KeyMapper = (index: number) => React.Key;
 
-class RowManager extends AbstractRowManager {
+class DynamicRowManager extends AbstractRowManager {
   private _heightMap = new Map<React.Key, number>();
   private _minRowHeight: number;
   private _cacheMap = new Map<React.Key, number>();
@@ -90,4 +90,4 @@ class RowManager extends AbstractRowManager {
   }
 }
 
-export { RowManager, KeyMapper };
+export { DynamicRowManager, KeyMapper };
