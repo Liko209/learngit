@@ -57,8 +57,9 @@ class GlobalKeysManager {
 
   private _buildHandler(handler: globalKeyCb): globalKeyCb {
     return (e, combo) => {
-      if (isDialogOpen()) return;
+      if (isDialogOpen()) return true;
       handler(e, combo);
+      return false;
     };
   }
 

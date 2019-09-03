@@ -40,12 +40,17 @@ export function switchConversationHandler() {
       },
     });
     return result.sortableModels;
-  }
+  };
 
   analyticsCollector.shortcuts('quickSwitcher');
   if (portalManager.isOpened(DIALOG_KEY)) return;
- const {dismiss} = Dialog.simple(
-    <GroupSearch onSelect={switchToConversation} dialogTitle={'groupSearch.dialogTitle'} listTitle={'groupSearch.listTitle'} searchFunc={searchFunc} />,
+  const { dismiss } = Dialog.simple(
+    <GroupSearch
+      onSelect={switchToConversation}
+      dialogTitle={'groupSearch.dialogTitle'}
+      listTitle={'groupSearch.listTitle'}
+      searchFunc={searchFunc}
+    />,
     {
       size: 'small',
       onClose: () => dismiss(),
@@ -53,5 +58,4 @@ export function switchConversationHandler() {
     },
     DIALOG_KEY,
   );
-  return false; // prevent browser default behavior
 }
