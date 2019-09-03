@@ -183,7 +183,7 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async isVoipCallingAvailable(): Promise<boolean> {
     const result =
-      this.isRCAccount &&
+      this.isRCAccount() &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.VOIP_CALLING,
       )) &&
@@ -196,7 +196,7 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async isOrganizeConferenceAvailable(): Promise<boolean> {
     const result =
-      this.isRCAccount &&
+      this.isRCAccount() &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
       ));
@@ -206,7 +206,7 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async isWebPhoneAvailable(): Promise<boolean> {
     const result =
-      this.isRCAccount &&
+      this.isRCAccount() &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.WEB_PHONE,
       ));

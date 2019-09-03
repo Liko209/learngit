@@ -15,29 +15,29 @@ import { config } from '@/modules/telephony/module.config';
 import { TelephonyService } from '../TelephonyService';
 import { Notification } from '@/containers/Notification';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
-import { errorHelper } from 'sdk/error';
+import { errorHelper, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 jupiter.registerModule(config);
 
 const globalConfigService = {
   name: ServiceConfig.GLOBAL_CONFIG_SERVICE,
-  get() {},
-  put() {},
+  get() { },
+  put() { },
 };
 
 const phoneNumberService = {
   name: ServiceConfig.PHONE_NUMBER_SERVICE,
-  isShortNumber() {},
-  isValidNumber() {},
+  isShortNumber() { },
+  isValidNumber() { },
 };
 
 const itemService = {
   name: ServiceConfig.ITEM_SERVICE,
-  startConference() {}
+  startConference() { }
 }
 
 const rcInfoService = {
   name: ServiceConfig.RC_INFO_SERVICE,
-  isVoipCallingAvailable() {}
+  isVoipCallingAvailable() { }
 }
 
 describe('TelephonyService', () => {
@@ -55,7 +55,7 @@ describe('TelephonyService', () => {
     }
 
     @mockEntity(mockVolumeEntity)
-    beforeEach() {}
+    beforeEach() { }
     @test(
       'should needE911Prompt if account has DL and emergency has been confirmed',
     )
@@ -108,7 +108,7 @@ describe('TelephonyService', () => {
       }
     }
     @mockEntity(mockVolumeEntity)
-    beforeEach() {}
+    beforeEach() { }
     @test('should show E911 if not have been show E911')
     @mockService(ServerTelephonyService, [
       { method: 'isEmergencyAddrConfirmed', data: true },
@@ -148,7 +148,6 @@ describe('TelephonyService', () => {
       });
     }
   }
-
 
   @testable
   class startAudioConference {
@@ -213,7 +212,12 @@ describe('TelephonyService', () => {
       { method: 'hasActiveDL', data: true },
       { method: 'makeCall', data: MAKE_CALL_ERROR_CODE.NO_ERROR },
     ])
-    @mockService.reject(itemService, 'startConference', new Error('message'))
+    @mockService.reject(itemService, 'startConference', () => {
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.NETWORK_ERROR,
+        'Api Error: Please check whether server crash',
+      )
+    })
     @mockService(rcInfoService, 'isVoipCallingAvailable', true)
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
@@ -239,7 +243,7 @@ describe('TelephonyService', () => {
 
   @testable
   class directCall {
-    beforeEach() {}
+    beforeEach() { }
     @test(
       'should not display the toast of no digital line when making an extension call [FIJI-8710]',
     )
@@ -261,7 +265,7 @@ describe('TelephonyService', () => {
         expect(ts._makeCall).toHaveBeenCalled();
         expect(Notification.flashToast).not.toHaveBeenCalled();
         done();
-    });
+      });
     }
   }
 });
