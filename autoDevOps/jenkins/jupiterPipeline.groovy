@@ -107,7 +107,7 @@ class Context {
     Boolean getIsSkipUnitTestAndStaticAnalysis() {
         // for a merge event, if target branch is not an stable branch, skip unit test
         // for a push event, skip if not an integration branch
-        isMerge? !isStableBranch(gitlabTargetBranch) : !isIntegrationBranch(gitlabSourceBranch)
+        isMerge? !isStableBranch(gitlabTargetBranch) : !isStableBranch(gitlabSourceBranch)
     }
 
     Boolean getIsSkipEndToEnd() {
@@ -538,10 +538,10 @@ class JupiterJob extends BaseJob {
         jenkins.sh 'grep --version'
         jenkins.sh 'which tr'
         jenkins.sh 'which xargs'
-        jenkins.sh 'yum install gtk3-devel libXScrnSaver xorg-x11-server-Xvfb -y || true'
+        jenkins.sh 'yum install gtk3-devel libXScrnSaver xorg-x11-server-Xvfb alsa-lib -y || true'
 
         // clean npm cache when its size exceed 6G, the unit of default du command is K, so we need to >> 20 to get G
-        long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
+        long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1 || true').trim()?: 0) >> 20
         if (npmCacheSize > 6) {
             jenkins.sh 'npm cache clean --force'
         }
@@ -618,7 +618,7 @@ class JupiterJob extends BaseJob {
         String dependencyLock = jenkins.sh(returnStdout: true, script: '''git ls-files | grep -e package.json -e package-lock.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
         if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
             jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
-            // return
+            return
         }
         jenkins.sh "npm config set registry ${context.npmRegistry}"
         jenkins.sh 'npm run fixed:version pre || true'  // suppress error
@@ -645,9 +645,9 @@ class JupiterJob extends BaseJob {
         if (isSkipUnitTest) return
 
         if (jenkins.sh(returnStatus: true, script: 'which xvfb-run') > 0) {
-            jenkins.sh 'npm run test -- --coverage'
+            jenkins.sh 'npm run test -- --coverage -w 16'
         } else {
-            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage'
+            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1080x24" npm run test -- --coverage -w 16'
         }
 
         String reportName = 'Coverage'
@@ -717,6 +717,7 @@ class JupiterJob extends BaseJob {
                 jenkins.error "Build application is incomplete!"
 
             jenkins.sshagent(credentials: [context.deployCredentialId]) {
+                removeRemoteDir(context.deployUri, context.appHeadHashDir)
                 deployToRemote(sourceDir, context.deployUri, context.appHeadHashDir)
             }
             lockKey(context.lockCredentialId, context.lockUri, context.appLockKey)
@@ -728,9 +729,11 @@ class JupiterJob extends BaseJob {
             // and create copy to branch name based folder
             removeRemoteDir(context.deployUri, context.appLinkDir)
             copyRemoteDir(context.deployUri, context.appHeadHashDir, context.appLinkDir)
-            createGzFiles(context.deployUri, context.appLinkDir)
             // and update version info
             updateRemoteVersionInfo()
+            // create gzip file
+            createGzFiles(context.deployUri, context.appLinkDir)
+
             // for stage build, also create link to stage folder
             if (context.isStageBuild) {
                 removeRemoteDir(context.deployUri, context.appStageLinkDir)
@@ -932,8 +935,7 @@ class JupiterJob extends BaseJob {
     }
 
     Boolean getIsSkipUnitTest() {
-        !context.isMerge || context.gitlabSourceBranch != 'feature/FIJI-7797'
-        // true || context.isSkipUnitTestAndStaticAnalysis || (context.isMerge && hasBeenLocked(context.deployCredentialId, context.lockUri, context.unitTestLockKey))
+        true || context.isSkipUnitTestAndStaticAnalysis || (context.isMerge && hasBeenLocked(context.deployCredentialId, context.lockUri, context.unitTestLockKey))
     }
 
     Boolean getIsSkipStaticAnalysis() {
