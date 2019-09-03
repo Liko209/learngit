@@ -196,7 +196,7 @@ describe('AuthService', () => {
       expect(mockAccountManager.glipLogin).toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
-        false,
+        { success: false, isFirstLogin: true },
       );
     });
 
@@ -212,7 +212,7 @@ describe('AuthService', () => {
       expect(mockAccountManager.glipLogin).toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
-        false,
+        { success: false, isFirstLogin: true },
       );
     });
   });

@@ -49,7 +49,7 @@ describe('RTC call', () => {
       this._call = call;
     }
 
-    getCallByUuid(uuid:string): RTCCall | undefined {
+    getCallByUuid(uuid:string): RTCCall | null {
       return this._call;
     }
     onCallActionSuccess = jest.fn();

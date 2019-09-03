@@ -24,6 +24,11 @@ interface ISdkConfig {
   db?: DeepPartial<DBConfig>;
 }
 
+type LoginInfo = {
+  success: boolean,
+  isFirstLogin?: boolean,
+}
+
 export {
   INewable,
   ISdkConfig,
@@ -32,6 +37,7 @@ export {
   UndefinedAble,
   NonFunctionPropertyNames,
   FunctionPropertyNames,
+  LoginInfo,
 };
 export * from './api';
 export * from './db';
