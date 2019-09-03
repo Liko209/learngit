@@ -13,6 +13,8 @@ import { buildPartialModifyController } from '../../../framework/controller';
 import { mainLogger } from 'foundation/log';
 import { Post } from 'sdk/module/post/entity';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ItemService } from 'sdk/module/item';
 
 const LOG_TAG = 'GroupConfigController';
 class GroupConfigController {
@@ -21,7 +23,7 @@ class GroupConfigController {
 
   constructor(
     public entitySourceController: IEntitySourceController<GroupConfig>,
-  ) {}
+  ) { }
 
   async updateGroupConfigPartialData(params: GroupConfig): Promise<boolean> {
     try {
@@ -188,6 +190,31 @@ class GroupConfigController {
 
   async deleteGroupsConfig(ids: number[]) {
     this.entitySourceController.bulkDelete(ids);
+  }
+
+  async checkIfReallyExistedDraftItems(groupId: number) {
+    const result = await this.entitySourceController.getEntityLocally(groupId);
+    if (result) {
+      const { attachment_item_ids = [] } = result;
+      if (attachment_item_ids.length) {
+        try {
+          const items = await ServiceLoader.getInstance<ItemService>(
+            ServiceConfig.ITEM_SERVICE,
+          ).getEntitySource().getEntitiesLocally(attachment_item_ids, true);
+          const ids = items.map(item => item.id);
+          const errorIds = _.difference(attachment_item_ids, ids);
+          if (errorIds.length) {
+            await this.updateDraft({
+              id: groupId,
+              attachment_item_ids: _.intersection(ids, attachment_item_ids)
+            });
+            mainLogger.warn(`checkIfReallyExistedDraft hit a bug, gid:${groupId}, attachment_item_ids${attachment_item_ids}, errorIds:${errorIds}`)
+          }
+        } catch (e) {
+          mainLogger.error('checkIfReallyExistedDraft error', e);
+        }
+      }
+    }
   }
 }
 

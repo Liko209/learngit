@@ -7,6 +7,7 @@
 import { GroupConfigController } from '../GroupConfigController';
 import { AccountService } from '../../../account';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
+import { ItemService } from 'sdk/module/item';
 
 jest.mock('../../../account');
 
@@ -33,10 +34,12 @@ function getMockHasMore({
 describe('GroupConfigService', () => {
   let groupConfigController: GroupConfigController;
   let accountService: AccountService;
+  let itemService: ItemService;
   const g_UserId = 100;
 
   function setUp() {
     accountService = new AccountService(undefined as any);
+    itemService = new ItemService()
     Object.defineProperty(accountService, 'userConfig', {
       writable: true,
       value: {
@@ -46,8 +49,9 @@ describe('GroupConfigService', () => {
       },
     });
 
-    const serviceMap = new Map([
-      [ServiceConfig.ACCOUNT_SERVICE, accountService],
+    const serviceMap: Map<string, any> = new Map([
+      [ServiceConfig.ACCOUNT_SERVICE, accountService as any],
+      [ServiceConfig.ITEM_SERVICE, itemService as any]
     ]);
     ServiceLoader.getInstance = jest.fn().mockImplementation((name: string) => {
       return serviceMap.get(name);
@@ -363,4 +367,48 @@ describe('GroupConfigService', () => {
       );
     });
   });
+
+  describe('checkIfReallyExistedDraftItems', () => {
+    it('should do nothing when group config is not exits', async () => {
+      entitySourceController.getEntityLocally.mockResolvedValueOnce(null);
+      const getEntitiesLocally = jest.fn();
+      itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
+      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      expect(getEntitiesLocally).not.toHaveBeenCalled();
+    });
+    it('should do nothing when there is not attachment item ids', async () => {
+      entitySourceController.getEntityLocally.mockResolvedValueOnce({});
+      const getEntitiesLocally = jest.fn().mockReturnValueOnce({});
+      itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
+      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      expect(getEntitiesLocally).not.toHaveBeenCalled();
+    });
+    it('should do nothing when attachment item ids are all existed in items', async () => {
+      jest.spyOn(groupConfigController, 'updateDraft').mockResolvedValueOnce('');
+      entitySourceController.getEntityLocally.mockResolvedValueOnce({ attachment_item_ids: [1] });
+      const getEntitiesLocally = jest.fn().mockReturnValueOnce([{ id: 1 }]);
+      itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
+      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      expect(getEntitiesLocally).toHaveBeenCalledWith([1], true);
+      expect(groupConfigController.updateDraft).not.toHaveBeenCalled();
+    });
+    it('should remove the extract ids when they not in items', async () => {
+      jest.spyOn(groupConfigController, 'updateDraft').mockResolvedValueOnce('');
+      entitySourceController.getEntityLocally.mockResolvedValueOnce({ attachment_item_ids: [1, 2] });
+      const getEntitiesLocally = jest.fn().mockReturnValueOnce([{ id: 1 }]);
+      itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
+      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      expect(getEntitiesLocally).toHaveBeenCalledWith([1, 2], true);
+      expect(groupConfigController.updateDraft).toHaveBeenCalledWith({ id: 4932943878, attachment_item_ids: [1] });
+    });
+    it('should catch when some errors happen', async () => {
+      jest.spyOn(groupConfigController, 'updateDraft').mockResolvedValueOnce('');
+      entitySourceController.getEntityLocally.mockResolvedValueOnce({ attachment_item_ids: [1, 2] });
+      const getEntitiesLocally = jest.fn().mockRejectedValue(null);
+      itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
+      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      expect(getEntitiesLocally).toHaveBeenCalledWith([1, 2], true);
+      expect(groupConfigController.updateDraft).not.toHaveBeenCalled();
+    });
+  })
 });
