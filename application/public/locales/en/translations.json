@@ -115,9 +115,9 @@
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "shareStatus": "Share status",
-    "clearStatus": "Clear Status",
+    "clearStatus": "Clear status",
     "aboutRingCentral": "About RingCentral",
-    "sendFeedback": "Send Feedback",
+    "sendFeedback": "Send feedback",
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
@@ -1259,7 +1259,7 @@
     "sendingInBackground": "Sending feedback..."
   },
   "customstatus": {
-    "title": "Share Status",
+    "title": "Share status",
     "items": {
       "item1": "Out of office",
       "item2": "In a meeting",
