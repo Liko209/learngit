@@ -87,6 +87,29 @@ class ConversationPage extends Page {
 
     await bluebird.delay(1000);
   }
+
+  async openShareImageDialog() {
+    let page = await this.page();
+    let postId = await PptrUtils.attr(page, 'div[data-name="conversation-card"]', 'data-id');
+    await PptrUtils.hover(page, `div[data-id="${postId}"] div[data-test-automation-id="imageCard"]`);
+    await PptrUtils.click(page, `div[data-id="${postId}"] button[data-test-automation-id="fileActionMore"]`);
+    await PptrUtils.click(page, 'li[data-test-automation-id="fileShareItem"]');
+    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="groupSearchInput"] input');
+    await bluebird.delay(1000);
+  }
+
+  async searchForShare(keyword: string) {
+    let page = await this.page();
+    await PptrUtils.type(page, 'div[data-test-automation-id="groupSearchInput"] input', keyword);
+    await bluebird.delay(1000);
+    await PptrUtils.click(page, 'span[data-test-automation-id="search-input-clear"]');
+  }
+
+  async closeShareImageDialog() {
+    let page = await this.page();
+    await PptrUtils.click(page, 'div[data-test-automation-id="groupSearch"] button[data-test-automation-id="groupSearchCloseButton"]', { check: true });
+    await bluebird.delay(1000);
+  }
 }
 
 export { ConversationPage };

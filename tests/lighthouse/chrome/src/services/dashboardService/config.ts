@@ -454,6 +454,25 @@ class DashboardConfig {
         }
       }
     },
+    "SearchForShareScene": {
+      "name": "SearchForShareScene",
+      "gatherer": "SearchForShareGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "k": 3,
+      "b": 700,
+      "metric": {
+        "search_all_group": {
+          "name": "search_all_group",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/417",
+          "apiGoal": 2000
+        },
+        "SEARCH_PERSONS_GROUPS": {
+          "name": "SEARCH_PERSONS_GROUPS",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/418",
+          "apiGoal": 2000
+        }
+      }
+    },
   };
 
   constructor() {

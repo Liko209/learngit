@@ -7,17 +7,19 @@ import { ConversationPage } from "../pages";
 import { Config } from "../config";
 import { globals } from "../globals";
 
-class ImageViewerGatherer extends DebugGatherer {
+class SearchForShareGatherer extends DebugGatherer {
+  private keywords: Array<string>;
   private conversationIds: { [key: string]: string };
 
   private metricKeys: Array<string> = [
-    'ui_image_viewer_page_render',
-    'ui_image_viewer_image_render'
+    'search_all_group',
+    'SEARCH_PERSONS_GROUPS'
   ];
 
   constructor() {
     super();
 
+    this.keywords = Config.searchKeywords;
     this.conversationIds = Config.switchConversationIds;
   }
 
@@ -31,7 +33,7 @@ class ImageViewerGatherer extends DebugGatherer {
     let conversationPage = new ConversationPage(passContext);
 
     // pre loaded
-    await this.viewImage(conversationPage, Config.sceneRepeatCount);
+    await this.searchForShare(conversationPage, Config.sceneRepeatCount);
   }
 
   async _afterPass(passContext) {
@@ -40,7 +42,7 @@ class ImageViewerGatherer extends DebugGatherer {
     globals.startCollectProcessInfo();
     this.beginGathererConsole();
 
-    await this.viewImage(conversationPage, Config.sceneRepeatCount);
+    await this.searchForShare(conversationPage, Config.sceneRepeatCount);
 
     this.endGathererConsole();
 
@@ -53,10 +55,11 @@ class ImageViewerGatherer extends DebugGatherer {
       };
     }
 
+    console.log(JSON.stringify(result));
     return result;
   }
 
-  async viewImage(page: ConversationPage, switchCount: number = -1) {
+  async searchForShare(page: ConversationPage, switchCount: number = -1) {
     if (switchCount <= 0) {
       switchCount = Config.sceneRepeatCount;
     }
@@ -68,21 +71,26 @@ class ImageViewerGatherer extends DebugGatherer {
 
     await page.swichConversationById(imageConversationId, false);
 
-    let index = 0;
+    await page.openShareImageDialog();
+
+    let keyword,
+      index = 0;
+
     while (index < switchCount) {
-      index++;
       try {
+        keyword = this.keywords[index++ % this.keywords.length];
+
         this.clearTmpGatherer(this.metricKeys);
 
-        await page.clickImage();
+        await page.searchForShare(keyword);
 
         this.pushGatherer(this.metricKeys);
-
-        await page.closeImageView();
       } catch (err) {
       }
     }
+
+    await page.closeShareImageDialog();
   }
 }
 
-export { ImageViewerGatherer };
+export { SearchForShareGatherer };
