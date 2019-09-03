@@ -630,7 +630,7 @@ export class GroupFetchDataController {
               recentSearchedGroups!,
             )
           : 0;
-        const sortWeights = option.meFirst && meGroupId? [group.id === meGroupId? 1 : 0,  keyWeight, mostRecentViewTime] : [keyWeight, mostRecentViewTime];
+        const sortWeights = option.meFirst? [group.id === meGroupId? 1 : 0,  keyWeight, mostRecentViewTime] : [keyWeight, mostRecentViewTime];
         return {
           lowerCaseName,
           id: group.id,
