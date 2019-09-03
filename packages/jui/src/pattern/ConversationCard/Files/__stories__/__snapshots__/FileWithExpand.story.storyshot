@@ -179,9 +179,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -192,7 +190,8 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -288,9 +287,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -301,7 +298,8 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -397,9 +395,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -410,7 +406,8 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -506,9 +503,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -519,7 +514,8 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -615,9 +611,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
         >
           <div>
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -628,7 +622,8 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}

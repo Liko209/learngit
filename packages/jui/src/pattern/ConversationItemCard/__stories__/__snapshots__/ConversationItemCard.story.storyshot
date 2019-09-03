@@ -789,9 +789,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
         onClick={[Function]}
       >
         <button
-          aria-haspopup={true}
           aria-label="copy"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c8"
           date-test-automation-id="copy"
           disabled={false}
@@ -804,7 +802,8 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -832,9 +831,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           </span>
         </button>
         <button
-          aria-haspopup={true}
           aria-label="download"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c8"
           date-test-automation-id="download"
           disabled={false}
@@ -847,7 +844,8 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1538,9 +1536,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                 >
                   <div />
                   <button
-                    aria-haspopup={true}
                     aria-label="common.expand"
-                    aria-owns={null}
                     className="MuiButtonBase-root MuiIconButton-root c20"
                     data-test-automation-id="expand-button"
                     disabled={false}
@@ -1553,7 +1549,8 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                     onMouseDown={[Function]}
                     onMouseEnter={[Function]}
                     onMouseLeave={[Function]}
-                    onMouseMove={[Function]}
+                    onMouseOut={[Function]}
+                    onMouseOver={[Function]}
                     onMouseUp={[Function]}
                     onTouchEnd={[Function]}
                     onTouchMove={[Function]}
