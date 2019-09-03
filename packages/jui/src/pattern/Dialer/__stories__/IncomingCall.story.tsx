@@ -12,9 +12,12 @@ import { JuiDraggableDialog } from '../../../components/Dialog';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
 import { boolean } from '@storybook/addon-knobs';
 
-import { JuiIncomingCall, JuiDialer, StyledActionText } from '..';
-
-import endAndAnswer from '../../../assets/jupiter-icon/icon-end--answer.svg';
+import {
+  JuiIncomingCall,
+  JuiDialer,
+  StyledActionText,
+  JuiEndAndAnswer,
+} from '..';
 
 const Ignore = () => (
   <>
@@ -62,7 +65,7 @@ Answer.displayName = 'Answer';
 
 const EndAndAnswer = () => (
   <>
-    <JuiIconButton variant="plain" size="xxxlarge" symbol={endAndAnswer} />
+    <JuiEndAndAnswer />
     <StyledActionText>End & Answer</StyledActionText>
   </>
 );
