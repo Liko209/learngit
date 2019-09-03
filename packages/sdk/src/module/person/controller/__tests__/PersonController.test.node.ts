@@ -703,6 +703,7 @@ describe('PersonService', () => {
       PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
         isShortNumber: jest.fn().mockReturnValue(false),
         getE164: jest.fn().mockReturnValue('+16502270033'),
+        isSpecialNumber: jest.fn().mockReturnValue(false),
       });
       phoneNumberService.generateMatchedPhoneNumberList = jest
         .fn()
@@ -725,6 +726,7 @@ describe('PersonService', () => {
       PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
         isShortNumber: jest.fn().mockReturnValue(false),
         getE164: jest.fn().mockReturnValue('+16502270036'),
+        isSpecialNumber: jest.fn().mockReturnValue(false),
       });
       await preparePhoneNumData();
       phoneNumberService.generateMatchedPhoneNumberList = jest
@@ -778,6 +780,27 @@ describe('PersonService', () => {
       );
       expect(result).toBeNull();
     });
+
+    it('should match ext when special number is same as ext', async () => {
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(false),
+        getE164: jest.fn().mockReturnValue('21'),
+        isSpecialNumber: jest.fn().mockReturnValue(true),
+      });
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue(['21']);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(1);
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '21',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result).not.toBeNull();
+      expect(result.id).toBe(21);
+    })
   });
 
   describe('refreshPersonData()', () => {
@@ -858,14 +881,14 @@ describe('PersonService', () => {
     });
   });
 
-  describe('personActionController', ()=>{
-    it('should return instance of PersonActionController', ()=>{
+  describe('personActionController', () => {
+    it('should return instance of PersonActionController', () => {
       expect(personController.personActionController).toBeInstanceOf(PersonActionController);
     })
   });
 
-  describe('getCurrentPerson', ()=>{
-    it('should return current user depends on user id', async()=>{
+  describe('getCurrentPerson', () => {
+    it('should return current user depends on user id', async () => {
       setUp();
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
@@ -878,7 +901,7 @@ describe('PersonService', () => {
     });
   });
 
-  describe('getFirstName', ()=>{
+  describe('getFirstName', () => {
     it.each`
       rcExtensionId | firstName   | lastName    | sRcFirstName  | res
       ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'f_name'}
@@ -888,7 +911,7 @@ describe('PersonService', () => {
       'should return first name of the person $res ',
       ({ rcExtensionId, firstName, lastName, sRcFirstName, res }) => {
         const person: any = {
-          sanitized_rc_first_name:sRcFirstName,
+          sanitized_rc_first_name: sRcFirstName,
           first_name: firstName,
           last_name: lastName,
           rc_extension_id: rcExtensionId
@@ -898,7 +921,7 @@ describe('PersonService', () => {
     );
   });
 
-  describe('getLastName', ()=>{
+  describe('getLastName', () => {
     it.each`
       rcExtensionId | firstName   | lastName    | sRcLastName   | res
       ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'l_name'}

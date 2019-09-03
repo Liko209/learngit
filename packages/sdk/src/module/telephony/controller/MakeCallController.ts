@@ -4,16 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  FEATURE_PERMISSIONS,
-  MAKE_CALL_ERROR_CODE,
-  E911_STATUS,
-} from '../types';
-import { RCInfoService } from '../../rcInfo';
-import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { MAKE_CALL_ERROR_CODE } from '../types';
+import { IPersonService } from 'sdk/module/person/service/IPersonService';
+import { IPhoneNumberService } from 'sdk/module/phoneNumber/service/IPhoneNumberService';
+import { ContactType } from 'sdk/module/person';
+import { IRCInfoService } from 'sdk/module/rcInfo/service/IRCInfoService';
+
 /* eslint-disable */
 class MakeCallController {
+  constructor(
+    private _personService: IPersonService,
+    private _phoneNumberService: IPhoneNumberService,
+    private _rcInfoService: IRCInfoService,
+  ) { }
+
   private _checkInternetConnection() {
     if (!window.navigator.onLine) {
       return MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION;
@@ -21,88 +25,53 @@ class MakeCallController {
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
-  private async _isRCFeaturePermissionEnabled(permission: FEATURE_PERMISSIONS) {
-    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
-      ServiceConfig.RC_INFO_SERVICE,
+  private async _isExtension(phoneNumber: string) {
+    const person = await this._personService.matchContactByPhoneNumber(
+      phoneNumber,
+      ContactType.GLIP_CONTACT,
     );
-    const extInfo = await rcInfoService.getRCExtensionInfo();
-    if (extInfo) {
-      for (const index in extInfo.serviceFeatures) {
-        const feature = extInfo.serviceFeatures[index];
-        if (feature.featureName !== permission) {
-          continue;
-        }
-        return feature.enabled;
-      }
-    }
-    return false;
+    return person !== null;
   }
 
-  private _getRCE911Status() {
-    // It's not implemented, return accpted by default
-    return E911_STATUS.ACCEPTED;
+  private _isSpecialNumber(phoneNumber: string) {
+    return this._phoneNumberService.isSpecialNumber(phoneNumber);
   }
 
-  private async _checkE911Status() {
-    if (
-      (await this._isRCFeaturePermissionEnabled(
-        FEATURE_PERMISSIONS.VOIP_CALLING,
-      )) &&
-      this._getRCE911Status() !== E911_STATUS.ACCEPTED
-    ) {
-      return MAKE_CALL_ERROR_CODE.E911_ACCEPT_REQUIRED;
-    }
-    return MAKE_CALL_ERROR_CODE.NO_ERROR;
-  }
-
-  private async _checkVoipN11Number(phoneNumber: string) {
+  async tryMakeCall(phoneNumber: string) {
     let result = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
-      ServiceConfig.RC_INFO_SERVICE,
+    let finalNumber = await this._phoneNumberService.getE164PhoneNumber(
+      phoneNumber,
     );
-    const phoneNumService = ServiceLoader.getInstance<PhoneNumberService>(
-      ServiceConfig.PHONE_NUMBER_SERVICE,
-    );
-    const specialNumber = await rcInfoService.getSpecialNumberRule();
-    if (specialNumber) {
-      for (const index in specialNumber.records) {
-        // We have no emergency address for now, all N11 numbers
-        // are not allowed to dial out
-        const record = specialNumber.records[index];
-        if (record.phoneNumber === phoneNumber) {
-          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
-          break;
-        }
-        const e164N11Num = await phoneNumService.getE164PhoneNumber(
-          record.phoneNumber,
-        );
-        if (e164N11Num === phoneNumber) {
-          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
-          break;
-        }
-      }
-    }
-    return result;
-  }
-
-  async tryMakeCall(e164PhoneNumber: string): Promise<MAKE_CALL_ERROR_CODE> {
-    let result = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    const dialingCountryInfo = await this._rcInfoService.getCurrentCountry();
+    let countryId = dialingCountryInfo.id;
     do {
       result = this._checkInternetConnection();
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      result = await this._checkE911Status();
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
-      result = await this._checkVoipN11Number(e164PhoneNumber);
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+
+      // check if it is special number
+      if (await this._isSpecialNumber(phoneNumber)) {
+        // check if it's an ext
+        if (await this._isExtension(phoneNumber)) {
+          const countryInfo = await this._rcInfoService.getDefaultCountryInfo();
+          if (countryInfo) {
+            countryId = countryInfo.id;
+          }
+          finalNumber = phoneNumber;
+          break;
+        }
+
+        // should have DL before making call to emergency number
+        const lines = await this._rcInfoService.getDigitalLines();
+        result = lines.length
+          ? MAKE_CALL_ERROR_CODE.NO_ERROR
+          : MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
         break;
       }
     } while (false);
 
-    return result;
+    return { result, finalNumber, countryId };
   }
 }
 
