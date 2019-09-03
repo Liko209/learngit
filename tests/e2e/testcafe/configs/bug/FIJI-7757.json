@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ContentPanel/Note.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}
