@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/Search/HighLight.ts"
+    ],
+    "include_tags": [
+      "JPT-1774"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
