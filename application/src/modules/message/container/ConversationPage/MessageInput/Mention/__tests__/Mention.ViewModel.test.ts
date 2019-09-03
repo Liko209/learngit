@@ -84,6 +84,7 @@ describe('mentionViewModel', () => {
       excludeSelf: true,
       arrangeIds: mockGroupEntityData.members,
       fetchAllIfSearchKeyEmpty: true,
+      recentFirst: true,
     });
     expect(mentionViewModel.membersId).toEqual([1, 2, 3]);
   });
