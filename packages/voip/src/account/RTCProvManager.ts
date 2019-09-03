@@ -46,7 +46,13 @@ class RTCProvManager extends EventEmitter2 {
   private _refreshByRegFailedInterval: number = kRTCProvRefreshByRegFailedInterval; // seconds
 
   // for unit test and log
-  public retrySeconds: number = 0;
+  private _retrySeconds: number = 0;
+  get retrySeconds() {
+    return this._retrySeconds;
+  }
+  set retrySeconds(seconds) {
+    this._retrySeconds = seconds;
+  }
 
   async acquireSipProv() {
     const localSipProvisionInfo = RTCDaoManager.instance().readProvisioning();

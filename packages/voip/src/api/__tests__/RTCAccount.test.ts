@@ -741,8 +741,10 @@ describe('RTCAccount', () => {
     it('Should call createOutgoingCallSession api with options include anonymous when have been called without options param [JPT-976]', done => {
       setupAccount();
       const listener = new MockCallListener();
+      const options: RTCCallOptions = {};
+      options.fromNumber = kRTCAnonymous;
       jest.spyOn(account, 'createOutgoingCallSession');
-      const call = account.makeAnonymousCall('123', listener);
+      const call = account.makeCall('123', listener, options);
       setImmediate(() => {
         expect(call).not.toBe(null);
         account._callManager.notifyAccountReady();
@@ -764,7 +766,8 @@ describe('RTCAccount', () => {
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
       const options: RTCCallOptions = { fromNumber: '234' };
-      const call = account.makeAnonymousCall('123', listener, options);
+      options.fromNumber = kRTCAnonymous;
+      const call = account.makeCall('123', listener, options);
       setImmediate(() => {
         expect(call).not.toBe(null);
         account._callManager.notifyAccountReady();
