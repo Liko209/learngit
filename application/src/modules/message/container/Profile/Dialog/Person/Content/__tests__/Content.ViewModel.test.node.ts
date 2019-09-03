@@ -9,6 +9,7 @@ import { ProfileDialogPersonContentViewModel } from '../Content.ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/phoneNumber/service/PhoneNumberService');
@@ -20,7 +21,10 @@ jest.mock('emoji-mart', () => ({
     colons: ':rainbow:',
   }),
 }));
-
+const url = 'URL';
+const personService = {
+  getHeadShotWithSize: () => url,
+};
 const mockCompanyData = {
   name: 'RingCentral',
 };
@@ -50,6 +54,7 @@ let vm: ProfileDialogPersonContentViewModel;
 
 describe('MemberListItemViewModel', () => {
   beforeAll(() => {
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(personService);
     (getEntity as jest.Mock).mockImplementation((name, id) => {
       return mockMap[name];
     });
@@ -98,17 +103,24 @@ describe('MemberListItemViewModel', () => {
       (formatPhoneNumber as jest.Mock).mockImplementationOnce(() => {
         return phoneNumber;
       });
-      expect(vm.directNumbers).toMatchObject([
-        { phoneNumber: phoneNumber, type: 0 },
-      ]);
+      expect(vm.directNumbers).toMatchObject([{ phoneNumber, type: 0 }]);
     });
   });
   describe('colonsEmoji', () => {
     it('should return emoji when get customStatus', () => {
       (getEntity as jest.Mock).mockReturnValue({
         awayStatus: ':rainbow: in the meeting',
-      })
+      });
       expect(vm.colonsEmoji).toBe(':rainbow:');
     });
-  })
+  });
+  describe('url', () => {
+    it('should return url when has url', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        hasHeadShot: true,
+      });
+      vm = new ProfileDialogPersonContentViewModel(props);
+      expect(vm.url).toEqual(url);
+    });
+  });
 });

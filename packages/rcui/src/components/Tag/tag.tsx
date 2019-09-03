@@ -5,7 +5,12 @@
  */
 import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
-import { typography, palette, spacing, ellipsis } from '../../foundation/shared/theme';
+import {
+  typography,
+  palette,
+  spacing,
+  ellipsis,
+} from '../../foundation/shared/theme';
 
 const colorMap = {
   primary: palette('secondary', 'main'),
@@ -21,7 +26,7 @@ const StyledTag = styled.span<RuiSpanProps>`
   border-radius: ${spacing(2)};
   text-align: center;
   background-color: ${({ color = 'primary' }) => colorMap[color]};
-  padding: ${spacing(0, 2)};
+  padding: ${spacing(0, 1)};
   ${typography('caption1')};
   margin-left: ${spacing(3)};
   min-width: ${spacing(11)};

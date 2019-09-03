@@ -42,11 +42,12 @@ import { isProductionVersion } from '@/common/envUtils';
 import { showUpgradeDialog } from '@/modules/electron';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
-import { dataCollectionHelper } from 'sdk/framework'
+import { dataCollectionHelper } from 'sdk/framework';
 import { LaunchDarklyController } from '@/permissions/ld/LaunchDarklyController';
 import { SplitIOController } from '@/permissions/split/SplitIOController';
 import { PermissionService } from 'sdk/module/permission';
 import { EnvConfig } from 'sdk/module/env/config';
+import { LoginInfo } from 'sdk/types';
 
 /**
  * The root module, we call it AppModule,
@@ -156,9 +157,8 @@ class AppModule extends AbstractModule {
 
     setStaticHttpServer(); // When the browser refreshes, it needs to be fetched locally
 
-    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
-      success && updateAccountInfoForGlobalStore();
-      success && analyticsCollector.init();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (loginInfo: LoginInfo) => {
+      loginInfo.success && updateAccountInfoForGlobalStore();
     });
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {

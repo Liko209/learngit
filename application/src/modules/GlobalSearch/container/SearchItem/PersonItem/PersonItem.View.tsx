@@ -95,7 +95,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
               key={`GLOBAL_SEARCH_EXTENSION_${Extension.displayName}`}
               variant="plain"
               id={id}
-              onClick={this.onCallClose}
+              onCallSuccess={this.onCallClose}
               size="small"
             />
           ),

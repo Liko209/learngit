@@ -45,6 +45,7 @@ describe('FilesView', () => {
       [],
     ],
     urlMap: { get: () => '1' },
+    getFilePreviewBackgroundContainPermission: { get: () => false },
     isRecentlyUploaded: () => false,
     getCropImage: () => null,
     getShowDialogPermission: () => true,
@@ -120,6 +121,7 @@ describe('FilesView', () => {
     isRecentlyUploaded: () => false,
     getCropImage: () => null,
     getShowDialogPermission: () => true,
+    getFilePreviewBackgroundContainPermission: { get: () => false },
   };
   @testable
   class _handleFileClick {
@@ -154,7 +156,7 @@ describe('FilesView', () => {
         ...someFilesProps,
         progresses: { get: () => 1 },
       };
-      props.files[1][0].item.type = 'pdf';
+      props.files[1][0].item.latestVersion.status = 'first_page_ready';
       const wrapper = shallow(<FilesView {...props} />);
       wrapper
         .find(JuiFileWithPreview)

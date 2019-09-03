@@ -20,18 +20,13 @@ type ZoomElementProps = {
 
 type Status = 'mounted' | 'entered' | 'exited';
 class ZoomElementAnimation extends React.PureComponent<
-ZoomElementProps & ThemeProps
+  ZoomElementProps & ThemeProps
 > {
   state = {
     status: 'mounted' as Status,
   };
   handleEntered = () => {
-    const {
-      targetElement,
-      onEntered,
-      theme,
-      duration,
-    } = this.props;
+    const { targetElement, onEntered, theme, duration } = this.props;
     setTimeout(() => {
       if (targetElement) {
         targetElement.style.cssText = '';
@@ -39,18 +34,16 @@ ZoomElementProps & ThemeProps
       onEntered && onEntered();
     }, theme.transitions.duration[duration]);
     this.setState({ status: 'entered' });
-  }
+  };
 
   handleExited = () => {
-    const {
-      onExited, theme, duration, originalElement,
-    } = this.props;
+    const { onExited, theme, duration, originalElement } = this.props;
     setTimeout(() => {
       originalElement && (originalElement.style.visibility = 'visible');
       onExited && onExited();
     }, theme.transitions.duration[duration]);
     this.setState({ status: 'exited' });
-  }
+  };
 
   private _computeCssTransform(
     startPosition: ClientRect | DOMRect,
@@ -110,7 +103,20 @@ ZoomElementProps & ThemeProps
   playEnterAnimation() {
     const { originalElement, targetElement } = this.props;
 
-    if (!originalElement) return;
+    if (!originalElement) {
+      requestAnimationFrame(() => {
+        targetElement.style.cssText = `
+        opacity: 0;
+      `;
+        requestAnimationFrame(() => {
+          targetElement.style.cssText = `
+          opacity: 1;
+          ${this._getTransition()}
+        `;
+        });
+      });
+      return;
+    }
     const startPosition = originalElement.getBoundingClientRect();
     const endPosition = targetElement.getBoundingClientRect();
     const originalTransform = targetElement.style.transform;
@@ -143,10 +149,10 @@ ZoomElementProps & ThemeProps
         originalElement!.style.visibility = 'hidden';
         targetElement.style.cssText = `
             ${this._computeCssTransform(
-    startPosition,
-    endPosition,
-    targetElement,
-  )};
+              startPosition,
+              endPosition,
+              targetElement,
+            )};
             ${this._getTransition()}
          `;
       });

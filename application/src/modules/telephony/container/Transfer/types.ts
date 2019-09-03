@@ -8,7 +8,10 @@ type Props = {};
 
 type ViewProps = {
   transferCall: () => void;
+  completeTransfer: () => void;
   transferNumber: string;
+  isWarmTransferPage: boolean;
+  isTransferCallConnected: boolean;
 };
 
 export { Props, ViewProps };

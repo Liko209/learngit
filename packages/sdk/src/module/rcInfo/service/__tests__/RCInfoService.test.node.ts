@@ -526,7 +526,7 @@ describe('RCInfoService', () => {
     });
   });
 
-  describe('addBlockedNumber()', () => {
+  describe('syncRCPresence()', () => {
     it('should call controller with correct parameter', () => {
       const controller = rcInfoService['getRCInfoController']()
         .rcPresenceController;

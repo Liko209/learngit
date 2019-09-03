@@ -170,7 +170,6 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     if (!this.selected) {
       this.props.onVoicemailPlay(id);
     }
-    await this.voicemailService.updateReadStatus(id, READ_STATUS.READ);
 
     if (this.audio) {
       const ret = await this.voicemailService.buildDownloadUrl(this.audio.uri);
@@ -208,6 +207,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   @action
   onPlay = () => {
     analyticsCollector.playPauseVoicemail(ANALYTICS_KEY.VOICEMAIL_ACTION_PLAY);
+    this.isUnread && this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
     this._mediaPlaying = true;
   };
 

@@ -67,7 +67,10 @@ class WebPhone {
 
     await PptrUtils.setText(this.page, Selectors.dialInput, `${pin}`);
 
-    await PptrUtils.click(this.page, Selectors.seachListItemDialBtn);
+    let retryCount = 10;
+    while (!await PptrUtils.waitForSelector(this.page, Selectors.endCallBtn, { timeout: 1000 }) && retryCount-- > 0) {
+      await PptrUtils.click(this.page, Selectors.seachListItemDialBtn);
+    }
 
     this.status = PhoneStatus.Call;
     return true;

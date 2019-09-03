@@ -26,6 +26,7 @@ class DialpadViewComponent extends React.PureComponent<DialpadProps> {
       startMinimizeAnimation,
       canUseTelephony,
       direction,
+      isConference,
     } = this.props;
 
     if (!canUseTelephony) {
@@ -35,7 +36,7 @@ class DialpadViewComponent extends React.PureComponent<DialpadProps> {
       <JuiMinimizedCall
         onClick={maximize}
         Actions={Actions}
-        name={getDisplayName(t, direction, name)}
+        name={isConference ? t('telephony.conferenceCall') : getDisplayName(t, direction, name)}
         label={typeof timing === 'string' ? timing : t(timing.key)}
         data-test-automation-id="telephony-minimized-view"
       />

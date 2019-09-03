@@ -18,7 +18,7 @@ import {
 } from './types';
 import { INITIAL_COUNT } from '../Voicemail/config';
 import { AllCallsListHandler } from './AllCallsListHandler';
-import { HoverControllerViewModel } from '../HoverController';
+import { HoverControllerViewModel } from '@/modules/common/container/Layout/HoverController';
 
 class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
   @observable

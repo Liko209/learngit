@@ -11,12 +11,13 @@ type AudioConferenceProps = {
   size?: 'small' | 'medium' | 'large';
   color?: string;
   onClick?: () => void;
+  onConferenceSuccess?: () => void;
   analysisSource?: string;
 };
 
 type AudioConferenceViewProps = {
   showIcon: PromisedComputedValue<boolean>;
-  startAudioConference: () => void;
+  startAudioConference: () => Promise<boolean>;
 };
 
 export { AudioConferenceProps, AudioConferenceViewProps };

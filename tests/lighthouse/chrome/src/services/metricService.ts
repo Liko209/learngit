@@ -563,8 +563,8 @@ class MetricService {
     // for (let x = 0; x < n; x++) {
     //   arr2.push([x, k * x + b]);
     // }
-    // console.log(JSON.stringify(arr1));
-    // console.log(JSON.stringify(arr2));
+    //console.log(JSON.stringify(arr1));
+    //console.log(JSON.stringify(arr2));
 
     let startMemory = startArray.reduce((a, b) => a + b).valueOf() / startArray.length;
     let endMemory = endArray.reduce((a, b) => a + b).valueOf() / endArray.length;

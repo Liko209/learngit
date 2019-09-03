@@ -130,5 +130,20 @@ describe('AudioConference.ViewModel', () => {
     vm = new AudioConferenceViewModel({ groupId: 123 });
 
     expect(vm.showIcon).resolves.toBe(true);
-  })
+  });
+
+  it('Should return false when service startAudioConference return falsy', async () => {
+    const group = { groupId: 123, type: CONVERSATION_TYPES.TEAM };
+
+    const telephonyService = {
+      startAudioConference: jest.fn().mockReturnValue(false),
+    };
+
+    setUp({ group, telephonyService, FeaturesFlagsService });
+
+    vm = new AudioConferenceViewModel({ groupId: 123 });
+
+    const isConferenceSuccess = await vm.startAudioConference();
+    expect(isConferenceSuccess).toBeFalsy();
+  });
 });

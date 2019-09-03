@@ -31,6 +31,7 @@ function toastParamsBuilder(message: string) {
     autoHideDuration: 3000,
   };
 }
+jest.unmock('@/common/emojiHelpers/map/mapUnicode');
 const personService = new PersonService();
 const vm: CustomStatusViewModel = new CustomStatusViewModel();
 const mockBackendError = new JServerError(ERROR_CODES_SERVER.GENERAL, '');
@@ -68,9 +69,7 @@ describe('CustomStatusViewModel', () => {
         toastParamsBuilder('customstatus.shareCustomStatusServerError'),
       );
     }
-    @test(
-      'should clear status when no input or input space [JPT-2885]',
-    )
+    @test('should clear status when no input or input space [JPT-2885]')
     @mockService.resolve(personService, 'setCustomStatus', '')
     async t3() {
       const vm = new CustomStatusViewModel({ id: 1 });
@@ -82,7 +81,7 @@ describe('CustomStatusViewModel', () => {
     @mockEntity({ awayStatus: ' my team ' })
     async t4() {
       const vm = new CustomStatusViewModel({ id: 1 });
-      expect(vm.inputValue).toEqual('myteam');
+      expect(vm.inputValue).toEqual(' my team ');
     }
   }
   @testable

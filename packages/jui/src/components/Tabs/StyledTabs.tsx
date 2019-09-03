@@ -14,6 +14,7 @@ type StyledTabsProps = MuiTabsProps & {
   forceFlex?: boolean;
   position?: 'left' | 'center' | 'right';
   ref?: React.RefObject<any>;
+  disableIndicatorTransition?: boolean;
 };
 
 const PositionMap = {
@@ -30,8 +31,16 @@ const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
   .flexContainer {
     ${({ position }) => {
       return position && `justify-content:${PositionMap[position]};`;
-    }}}
+    }}
   }
+
+  .indicator {
+    ${
+      ({ disableIndicatorTransition }) =>
+        disableIndicatorTransition && 'transition: none;'
+    }
+  }
+
   &.root {
     display: ${({ forceFlex }) => (forceFlex ? 'flex' : null)};
     padding: ${spacing(0, 2)};
@@ -47,20 +56,26 @@ const StyledTabs = React.forwardRef(
     { children, position, forceFlex, ...rest }: StyledTabsProps,
     ref: React.RefObject<any>,
   ) => {
+    const classes = {
+      root: 'root',
+      indicator: 'indicator',
+      flexContainer: 'flexContainer',
+    };
+
     const Tabs = (
       <StyledMuiTabs
         {...rest}
+        classes={classes}
         position={position}
         forceFlex={forceFlex}
-        classes={{ flexContainer: 'flexContainer', root: 'root' }}
       >
         {children}
       </StyledMuiTabs>
     );
-    if (ref) {
-      return <RootRef rootRef={ref}>{Tabs}</RootRef>;
-    }
-    return Tabs;
+
+    return ref
+      ? <RootRef rootRef={ref}>{Tabs}</RootRef>
+      : Tabs;
   },
 );
 

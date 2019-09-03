@@ -18,6 +18,10 @@ type GroupItemProps = ViewProps & WithTranslation & { automationId?: string };
 
 @observer
 class GroupItemComponent extends React.Component<GroupItemProps> {
+  onAudioConferenceClick = () => {
+    this.props.closeGlobalSearch();
+  }
+
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -78,6 +82,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
           variant="plain"
           size="small"
           analysisSource={`globalSearch_${analysisSource}`}
+          onConferenceSuccess={this.onAudioConferenceClick}
         />
       </>
     );

@@ -11,4 +11,9 @@ type ContactTabViewProps = RouteComponentProps<{ subPath?: string }> & {
   updateCurrentUrl: (path: string) => void;
 };
 
-export { ContactTabProps, ContactTabViewProps };
+enum NavType {
+  all = 'allContacts',
+  company = 'companyDirectory',
+}
+
+export { ContactTabProps, ContactTabViewProps, NavType };

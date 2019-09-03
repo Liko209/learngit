@@ -21,6 +21,7 @@ import { config } from '@/modules/telephony/module.config';
 jest.mock('../../../../service/TelephonyService');
 jest.mock('@/containers/Notification');
 jest.mock('@/utils/error');
+jest.mock('sdk/module/person');
 
 decorate(injectable(), TelephonyService);
 decorate(injectable(), TelephonyStore);

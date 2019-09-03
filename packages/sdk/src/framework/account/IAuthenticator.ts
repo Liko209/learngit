@@ -8,6 +8,7 @@ interface IAuthParams {}
 interface IAccountInfo {
   type: string;
   data: any;
+  emailAddress?: string;
 }
 
 interface IAuthResponse {

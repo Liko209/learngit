@@ -45,6 +45,7 @@ import { IndexTaskController } from './IndexTaskController';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework';
 import { transform } from 'sdk/service/utils';
+import { LoginInfo } from 'sdk/types';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -134,7 +135,8 @@ class SyncController {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
       this._traceLoginData(true);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      const glipLoginInfo: LoginInfo = { success: true, isFirstLogin: true };
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, glipLoginInfo);
     } catch (e) {
       mainLogger.error(LOG_TAG, 'fetch initial data error');
       this._traceLoginData(false);
@@ -142,7 +144,8 @@ class SyncController {
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig.getAccountType();
       if (accountType === ACCOUNT_TYPE_ENUM.RC) {
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, false);
+        const glipLoginInfo: LoginInfo = { success: false, isFirstLogin: true };
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, glipLoginInfo);
       } else {
         notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
       }

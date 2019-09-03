@@ -15,7 +15,6 @@ import {
 import { JuiLeftRailListItemIcon } from 'jui/pattern/LeftRail';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import {
-  isSupportFileViewer,
   isFileReadyForViewer,
 } from '@/common/getFileType';
 import { FileItemViewProps } from './types';
@@ -34,22 +33,15 @@ class FileItemView extends Component<FileItemViewProps> {
   private _hoverHelper = new HoverHelper();
 
   private _openFileViewer = () => {
-    if (this._readyForViewer) {
-      this._viewerService.open({
-        groupId: this.props.groupId,
-        itemId: this.props.file.id,
-      });
-    }
+    this._viewerService.open({
+      groupId: this.props.groupId,
+      itemId: this.props.file.id,
+    });
   };
 
   @computed
   private get _handleFileClick() {
-    return this._supportViewer ? this._openFileViewer : undefined;
-  }
-
-  @computed
-  private get _supportViewer() {
-    return isSupportFileViewer(this.props.file.type);
+    return this._readyForViewer ? this._openFileViewer : undefined;
   }
 
   @computed
@@ -78,7 +70,7 @@ class FileItemView extends Component<FileItemViewProps> {
   private get _icon() {
     return (
       <JuiLeftRailListItemIcon
-        disabled={this._supportViewer && !this._readyForViewer}
+        disabled={!this._readyForViewer}
       >
         <JuiThumbnail iconType={this.props.file.iconType} />
       </JuiLeftRailListItemIcon>
@@ -93,7 +85,7 @@ class FileItemView extends Component<FileItemViewProps> {
   }
 
   render() {
-    const { downloadUrl, id } = this.props;
+    const { downloadUrl, id, groupId } = this.props;
     return (
       <JuiListItem
         data-test-automation-id="rightRail-file-item"
@@ -106,7 +98,12 @@ class FileItemView extends Component<FileItemViewProps> {
           <JuiListItemSecondaryAction>
             <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
-              <FileActionMenu fileId={id} disablePortal />
+              <FileActionMenu
+                scene="rightShelf"
+                fileId={id}
+                disablePortal
+                groupId={groupId}
+              />
             </JuiButtonBar>
           </JuiListItemSecondaryAction>
         )}
