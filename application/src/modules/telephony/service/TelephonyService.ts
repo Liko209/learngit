@@ -275,17 +275,21 @@ class TelephonyService {
       () => ({
         hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
         defaultCallerPhoneNumber: this._telephonyStore.defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall: this._telephonyStore.isEndMultipleIncomingCall
       }),
       async ({
         hasActiveOutBoundCall,
         defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall
       }: {
         hasActiveOutBoundCall: boolean;
         defaultCallerPhoneNumber: string;
+        isEndMultipleIncomingCall: boolean;
       }) => {
         // restore things to default values
-        if (!hasActiveOutBoundCall) {
+        if (!hasActiveOutBoundCall && !isEndMultipleIncomingCall) {
           runInAction(() => {
+            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -963,6 +967,8 @@ class TelephonyService {
       return;
     });
   };
+
+  deleteInputString = this.deleteInputStringFactory('inputString');
 
   dispose = () => {
     this._ringtonePrefetcher.dispose()
