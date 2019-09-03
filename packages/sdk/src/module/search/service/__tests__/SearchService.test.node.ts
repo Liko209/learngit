@@ -294,4 +294,16 @@ describe('SearchService', () => {
       );
     });
   });
+
+  describe('generateFormattedTerms', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+  });
 });

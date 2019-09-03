@@ -15,6 +15,9 @@ import { Person } from 'sdk/module/person/entity';
 import { SortableModel, IdModel } from 'sdk/framework/model';
 import { Group, FuzzySearchGroupOptions } from 'sdk/module/group/entity';
 import { UndefinedAble } from 'sdk/types';
+import { MatchedInfo } from '../controller/SearchPersonController';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { Terms, FormattedTerms } from 'sdk/framework/search';
 
 interface ISearchService {
   addRecentSearchRecord(
@@ -67,6 +70,15 @@ interface ISearchService {
     terms: string[];
     sortableModels: SortableModel<IdModel>[];
   }>;
+
+  generateMatchedInfo(
+    personId: number,
+    name: string,
+    phoneNumbers: PhoneNumber[],
+    terms: Terms,
+  ): MatchedInfo;
+
+  generateFormattedTerms: (originalTerms: string[]) => FormattedTerms;
 }
 
 export { ISearchService };
