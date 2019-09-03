@@ -42,10 +42,10 @@ class URLParser extends PostParser implements IPostParser {
 
   isValidMatch(match: string, execResult?: RegExpExecArray) {
     if (execResult) {
-      return !!execResult[3];
+      return Markdown.tld_url_regex.test(execResult[3]);
     }
 
-    return !!match;
+    return Markdown.tld_url_regex.test(match);
   }
 
   getRegexp() {
