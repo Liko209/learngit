@@ -3,6 +3,8 @@
  * @Date: 2018-12-11 16:52:10
  */
 import { Scene } from "./scene";
+import { LighthouseScene } from "./lighthouseScene";
+import { IndependenceScene } from "./independenceScene";
 import { LoginScene } from "./loginScene";
 import { OfflineScene } from "./offlineScene";
 import { RefreshScene } from "./refreshScene";
@@ -13,9 +15,10 @@ import { IndexDataScene } from "./indexDataScene";
 import { SearchPhoneScene } from "./searchPhoneScene";
 import { CallLogScene } from './callLogScene';
 import { SettingScene } from './settingScene';
+import { DocViewerScene } from './docViewerScene';
+import { ImageViewerScene } from './imageViewerScene';
 
-export {
-  Scene,
+const scenes = {
   LoginScene,
   OfflineScene,
   RefreshScene,
@@ -25,5 +28,14 @@ export {
   FetchGroupScene,
   SearchPhoneScene,
   CallLogScene,
-  SettingScene
+  SettingScene,
+  DocViewerScene,
+  // ImageViewerScene
+}
+
+export {
+  Scene,
+  LighthouseScene,
+  IndependenceScene,
+  scenes
 };

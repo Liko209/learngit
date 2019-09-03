@@ -2,11 +2,11 @@
  * @Author: doyle.wu
  * @Date: 2018-12-11 12:02:26
  */
-import { Scene } from './scene';
+import { LighthouseScene } from './lighthouseScene';
 import { SceneConfig } from './config/sceneConfig';
 import { LoginGatherer, HomePageGatherer } from '../gatherers';
 
-class RefreshScene extends Scene {
+class RefreshScene extends LighthouseScene {
 
   tags(): Array<string> {
     return ["RefreshScene", "Lighthouse"];

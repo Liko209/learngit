@@ -62,7 +62,7 @@ class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
   private _entityCacheController: IEntityCacheController<Person>;
 
-  constructor() {}
+  constructor() { }
 
   get personActionController() {
     return new PersonActionController(this.partialModifyController, this._entitySourceController);
@@ -230,10 +230,10 @@ class PersonController {
     if (person.first_name && person.last_name) {
       return `${person.first_name} ${person.last_name}`;
     }
-    return person.first_name || person.last_name ||'';
+    return person.first_name || person.last_name || '';
   }
 
-  getFirstName(person: Person){
+  getFirstName(person: Person) {
     let firstName = person.first_name || "";
     if (person.rc_extension_id) {
       firstName = person.sanitized_rc_first_name || firstName;
@@ -241,7 +241,7 @@ class PersonController {
     return firstName;
   }
 
-  getLastName(person: Person){
+  getLastName(person: Person) {
     let lastName = person.last_name || "";
     if (person.rc_extension_id) {
       lastName = person.sanitized_rc_last_name || lastName;
@@ -360,13 +360,12 @@ class PersonController {
     if (!phoneParserUtility) {
       return null;
     }
-    const e164Number = phoneParserUtility.getE164();
-    const isShortNumber = phoneParserUtility.isShortNumber();
+    const isShortNumber = phoneParserUtility.isShortNumber() || phoneParserUtility.isSpecialNumber();
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );
     const numberList = await phoneNumberService.generateMatchedPhoneNumberList(
-      e164Number,
+      phoneNumber,
       phoneParserUtility,
     );
 
@@ -408,7 +407,7 @@ class PersonController {
     const requestController = this._entitySourceController.getRequestController();
     if (requestController) {
       const person = await requestController.get(personId);
-      if(person){
+      if (person) {
         await this._entitySourceController.update(person);
         notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
       }

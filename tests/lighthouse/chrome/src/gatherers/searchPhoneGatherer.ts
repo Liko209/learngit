@@ -5,7 +5,6 @@
 import { DebugGatherer } from ".";
 import { DialerPage } from "../pages";
 import { Config } from "../config";
-import * as bluebird from "bluebird";
 
 class SearchPhoneGatherer extends DebugGatherer {
   private keywords: Array<string>;
@@ -13,10 +12,10 @@ class SearchPhoneGatherer extends DebugGatherer {
     'search_phone_number',
   ];
 
-  constructor(keywords: Array<string>) {
+  constructor() {
     super();
 
-    this.keywords = keywords;
+    this.keywords = Config.searchPhones;
   }
 
   async _beforePass(passContext) {
@@ -27,7 +26,7 @@ class SearchPhoneGatherer extends DebugGatherer {
     let dialerPage = new DialerPage(passContext);
 
     // pre loaded
-    await this.search(dialerPage,  Config.sceneRepeatCount);
+    await this.search(dialerPage, Config.sceneRepeatCount);
   }
 
   async _afterPass(passContext) {

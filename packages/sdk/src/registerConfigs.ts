@@ -99,7 +99,15 @@ const registerConfigs = {
       injects: [AccountManager.name],
     },
     { name: ServiceConfig.SYNC_SERVICE, value: SyncService },
-    { name: ServiceConfig.TELEPHONY_SERVICE, value: TelephonyService },
+    {
+      name: ServiceConfig.TELEPHONY_SERVICE,
+      value: TelephonyService,
+      injects: [
+        ServiceConfig.PERSON_SERVICE,
+        ServiceConfig.PHONE_NUMBER_SERVICE,
+        ServiceConfig.RC_INFO_SERVICE,
+      ],
+    },
     { name: ServiceConfig.GROUP_CONFIG_SERVICE, value: GroupConfigService },
     { name: ServiceConfig.SEARCH_SERVICE, value: SearchService },
     { name: ServiceConfig.SETTING_SERVICE, value: SettingService },

@@ -17,6 +17,9 @@ import { IndexDataGatherer } from './indexDataGatherer';
 import { SearchPhoneGatherer } from './searchPhoneGatherer';
 import { CallLogGatherer } from './callLogGatherer';
 import { SettingGatherer } from './settingGatherer';
+import { DocViewerGatherer } from './docViewerGahterer';
+import { ImageViewerGatherer } from './imageViewerGahterer';
+import { LongTaskGatherer } from './longTaskGatherer';
 
 export {
   BaseGatherer,
@@ -34,5 +37,8 @@ export {
   IndexDataGatherer,
   SearchPhoneGatherer,
   CallLogGatherer,
-  SettingGatherer
+  SettingGatherer,
+  DocViewerGatherer,
+  ImageViewerGatherer,
+  LongTaskGatherer
 }

@@ -160,7 +160,7 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.callCount();
   }
 
-  getCallByUuid(uuid: string): RTCCall | undefined {
+  getCallByUuid(uuid: string): RTCCall | null {
     return this._callManager.getCallByUuid(uuid);
   }
 

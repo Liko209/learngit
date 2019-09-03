@@ -16,6 +16,7 @@ import portalManager from '@/common/PortalManager';
 import { MessageRouter } from './MessageRouter';
 import { MessageViewProps } from './types';
 import { GLIP_LOGIN_STATUS } from 'sdk/framework/account';
+import { LoginInfo } from 'sdk/types';
 
 type Props = MessageViewProps & WithTranslation;
 type State = {
@@ -35,9 +36,9 @@ class MessageComponent extends Component<Props, State> {
       this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.SUCCESS,
   };
 
-  private _handleGlipLogin = (success: boolean) => {
+  private _handleGlipLogin = (loginInfo: LoginInfo) => {
     this.setState({
-      success,
+      success: loginInfo.success,
       initializing: false,
     });
   };

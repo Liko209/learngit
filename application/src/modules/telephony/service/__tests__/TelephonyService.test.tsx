@@ -16,8 +16,8 @@ import { TelephonyService } from '../TelephonyService';
 import { Notification } from '@/containers/Notification';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { errorHelper } from 'sdk/error';
-
 jupiter.registerModule(config);
+
 const globalConfigService = {
   name: ServiceConfig.GLOBAL_CONFIG_SERVICE,
   get() {},

@@ -11,8 +11,10 @@ import { ENTITY } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { Person } from 'sdk/module/person/entity';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import { IPhoneNumberService } from './IPhoneNumberService';
 
-class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
+class PhoneNumberService extends EntityBaseService<PhoneNumber, string>
+  implements IPhoneNumberService {
   private _phoneNumberController: PhoneNumberController;
 
   constructor() {
@@ -59,6 +61,10 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
     return this.getPhoneNumberController().isShortNumber(phoneNumber);
   }
 
+  async isSpecialNumber(phoneNumber: string) {
+    return this.getPhoneNumberController().isSpecialNumber(phoneNumber);
+  }
+
   async generateMatchedPhoneNumberList(
     phoneNumber: string,
     phoneParserUtility: PhoneParserUtility,
@@ -73,9 +79,8 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
     return this.getPhoneNumberController().isValidNumber(toNumber);
   }
 
-  private _handlePersonPayload = (
-    payload: NotificationEntityPayload<Person>,
-  ) => this.getPhoneNumberController().handlePersonPayload(payload);
+  private _handlePersonPayload = (payload: NotificationEntityPayload<Person>) =>
+    this.getPhoneNumberController().handlePersonPayload(payload);
 }
 
 export { PhoneNumberService };

@@ -5,7 +5,7 @@
  */
 
 import { ERCWebUris, ForwardingFlipNumberModel } from '../types';
-import { DialingCountryInfo } from 'sdk/api/ringcentral/types';
+import { DialingCountryInfo, DeviceRecord } from 'sdk/api/ringcentral/types';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 
 interface IRCInfoService {
@@ -24,6 +24,10 @@ interface IRCInfoService {
   getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]>;
 
   getFlipNumberList(): Promise<ForwardingFlipNumberModel[]>;
+
+  getDigitalLines(): Promise<DeviceRecord[]>;
+
+  getDefaultCountryInfo(): Promise<DialingCountryInfo | undefined>;
 }
 
 export { IRCInfoService };

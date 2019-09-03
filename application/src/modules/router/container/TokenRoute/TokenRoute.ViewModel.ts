@@ -16,6 +16,7 @@ import history from '@/history';
 import { ProfileService } from 'sdk/module/profile';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { SERVICE } from 'sdk/service';
+import { LoginInfo } from 'sdk/types';
 
 class TokenRouteViewModel extends StoreViewModel {
   private _LoggedInHandled: boolean = false;
@@ -27,8 +28,8 @@ class TokenRouteViewModel extends StoreViewModel {
       SERVICE.RC_LOGIN,
       this.handleHasLoggedIn.bind(this),
     );
-    this.subscribeNotification(SERVICE.GLIP_LOGIN, async (success: boolean) => {
-      success && (await this.handleHasLoggedIn());
+    this.subscribeNotification(SERVICE.GLIP_LOGIN, async (loginInfo: LoginInfo) => {
+      loginInfo.success && (await this.handleHasLoggedIn());
     });
   }
 

@@ -2,28 +2,23 @@
  * @Author: doyle.wu
  * @Date: 2019-01-11 08:37:56
  */
-import { Scene } from "./scene";
-import { Config } from "../config";
+import { IndependenceScene } from ".";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
-import { LoginGatherer, SearchGatherer } from "../gatherers";
+import { SearchGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
-class SearchScene extends Scene {
-  private keywords: Array<string> = Config.searchKeywords;
+class SearchScene extends IndependenceScene {
 
   tags(): Array<string> {
     return ["SearchScene", "Search", "Post", "People", "Group", "Team", "Memory", "Trace", "API"];
   }
 
   async preHandle() {
-    this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
+    this.config = SceneConfigFactory.getProfileConfig({ fpsMode: this.fpsMode });
 
     this.config.passes[0].gatherers.unshift({
-      instance: new LoginGatherer()
-    });
-    this.config.passes[0].gatherers.unshift({
-      instance: new SearchGatherer(this.keywords)
+      instance: new SearchGatherer()
     });
   }
 
@@ -47,6 +42,10 @@ class SearchScene extends Scene {
 
   supportDashboard(): boolean {
     return true;
+  }
+
+  getProfileUrl(): string {
+    return "http://xia01-i01-kmo01.lab.rcch.ringcentral.com:9000/kamino/performance.zip";
   }
 }
 

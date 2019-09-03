@@ -23,7 +23,7 @@ import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
 import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
-import { ApiConfig, DBConfig, ISdkConfig } from './types';
+import { ApiConfig, DBConfig, ISdkConfig, LoginInfo } from './types';
 import { AccountService } from './module/account';
 import { setGlipToken } from './authenticator/utils';
 import { AccountGlobalConfig } from './module/account/config';
@@ -34,6 +34,7 @@ import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
 import { jobScheduler } from './framework/utils/jobSchedule';
 import { UserConfigService } from './module/config';
 import { CrashManager } from './module/crash';
+import { EnvConfig } from './module/env/config';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -85,6 +86,8 @@ class Sdk {
     );
     configMigrator.observeUserDictionaryStatus();
 
+    this._initDataAnalysis();
+
     // Check is already login
     const loginResp = await this.accountManager.syncLogin(
       AutoAuthenticator.name,
@@ -132,8 +135,9 @@ class Sdk {
 
     this.accountManager.updateSupportedServices();
 
+    const rcLoginInfo: LoginInfo = { success: true, isFirstLogin: authResponse.isFirstLogin };
     if (authResponse.isRCOnlyMode) {
-      notificationCenter.emitKVChange(SERVICE.RC_LOGIN);
+      notificationCenter.emitKVChange(SERVICE.RC_LOGIN, rcLoginInfo);
       const accountService = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       );
@@ -147,12 +151,13 @@ class Sdk {
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig.getAccountType();
       if (accountType === ACCOUNT_TYPE_ENUM.RC) {
-        notificationCenter.emitKVChange(SERVICE.RC_LOGIN);
+        notificationCenter.emitKVChange(SERVICE.RC_LOGIN, rcLoginInfo);
       }
 
       const lastIndexTimestamp = this.syncService.getIndexTimestamp();
       if (lastIndexTimestamp) {
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        const glipLoginInfo: LoginInfo = { success: true, isFirstLogin: authResponse.isFirstLogin };
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, glipLoginInfo);
       } else {
         mainLogger.tags(LOG_TAG).info('start loading');
         isInLoading = true;
@@ -244,6 +249,12 @@ class Sdk {
       notificationCenter.emit(SERVICE.WAKE_UP_FROM_SLEEP, interval);
     });
   }
+
+  private _initDataAnalysis() {
+    const isRunningE2E = EnvConfig.getIsRunningE2E();
+    !isRunningE2E && dataAnalysis.init(Api.httpConfig.segment);
+  }
+
 
   private _resetDataAnalysis() {
     dataAnalysis.reset();
