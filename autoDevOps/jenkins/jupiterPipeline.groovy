@@ -543,7 +543,7 @@ class JupiterJob extends BaseJob {
         // install xvfb on centos if it is not exists
         jenkins.sh 'which xvfb-run || yum install gtk3-devel libXScrnSaver xorg-x11-server-Xvfb alsa-lib -y || true'
         // install diff2html-cli if it is not exists
-        jenkins.sh('npm list -g diff2html-cli || npm install -g nullcc/diff2html-cli')
+        jenkins.sh('npm list -g diff2html-cli || npm install -g http://xmn145.rcoffice.ringcentral.com:9003/packages/diff2html-cli-4.0.0.tgz')
 
         // clean npm cache when its size exceed 6G, the unit of default du command is K, so we need to >> 20 to get G
         long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1 || true').trim()?: 0) >> 20
