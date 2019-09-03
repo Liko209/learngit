@@ -151,7 +151,7 @@ class TelephonyService {
       const { fromNum, uuid } = this._telephonyStore.call;
       mainLogger.info(
         `${
-          TelephonyService.TAG
+        TelephonyService.TAG
         }Call object created, call id=${uuid}, from name=${'fromName'}, from num=${fromNum}`,
       );
     }
@@ -260,7 +260,7 @@ class TelephonyService {
       const globalStore = storeManager.getGlobalStore();
       this._serverTelephonyService.setDataCollectionInfoConfig({
         isProduction: config.isProductionAccount(),
-        userInfo:{
+        userInfo: {
           userId: globalStore.get(GLOBAL_KEYS.CURRENT_USER_ID),
           companyId: globalStore.get(GLOBAL_KEYS.CURRENT_COMPANY_ID),
         }
@@ -332,7 +332,7 @@ class TelephonyService {
           ]
         }
 
-        if(!this._ringtone){
+        if (!this._ringtone) {
           return;
         }
 
@@ -447,7 +447,12 @@ class TelephonyService {
     this._isExtDisposer = reaction(
       () => this._telephonyStore.phoneNumber,
       async phoneNumber => {
-        this._telephonyStore.isExt = await this.isShortNumber(phoneNumber);
+        let result = await this.isShortNumber(phoneNumber);
+        if (!result && phoneNumber && await this.isSpecialNumber(phoneNumber)) {
+          const person = await this.matchContactByPhoneNumber(phoneNumber);
+          result = person !== null;
+        }
+        this._telephonyStore.isExt = result;
       },
     );
 
@@ -539,7 +544,7 @@ class TelephonyService {
 
     mainLogger.info(
       `${
-        TelephonyService.TAG
+      TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
     const { accessCode } = options;
@@ -654,8 +659,7 @@ class TelephonyService {
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-
-    const isShortNumber = await this.isShortNumber(toNumber);
+    const isShortNumber = (await this.isShortNumber(toNumber)) || (await this.isSpecialNumber(toNumber));
     const result = await this.ensureCallPermission(() => {
       return this._makeCall(toNumber, options)
     }, { isShortNumber });
@@ -700,7 +704,7 @@ class TelephonyService {
     if (this._callEntityId) {
       mainLogger.info(
         `${TelephonyService.TAG}send to voicemail call id=${
-          this._callEntityId
+        this._callEntityId
         }`,
       );
       this._serverTelephonyService.sendToVoiceMail(this._callEntityId);
@@ -778,7 +782,7 @@ class TelephonyService {
         : this._serverTelephonyService.mute(this._callEntityId);
       mainLogger.info(
         `${TelephonyService.TAG}${isMute ? 'unmute' : 'mute'} call entity id=${
-          this._callEntityId
+        this._callEntityId
         }`,
       );
     }
@@ -803,7 +807,7 @@ class TelephonyService {
     if (this._telephonyStore.holdDisabled || !this._callEntityId) {
       mainLogger.debug(
         `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${
-          this._telephonyStore.holdDisabled
+        this._telephonyStore.holdDisabled
         }`,
       );
       return;
@@ -907,7 +911,7 @@ class TelephonyService {
     this._telephonyStore.hasManualSelected = true;
     mainLogger.info(
       `${TelephonyService.TAG} set caller phone number: ${
-        this._telephonyStore.chosenCallerPhoneNumber
+      this._telephonyStore.chosenCallerPhoneNumber
       }`,
     );
   };
@@ -1067,6 +1071,12 @@ class TelephonyService {
     return this._phoneNumberService.isShortNumber(toNumber);
   };
 
+  isSpecialNumber = async (
+    toNumber: string = this._telephonyStore.inputString,
+  ) => {
+    return this._phoneNumberService.isSpecialNumber(toNumber);
+  };
+
   isValidNumber = async (
     toNumber: string = this._telephonyStore.inputString,
   ) => {
@@ -1166,8 +1176,8 @@ class TelephonyService {
       await promise;
       return Array.isArray(this._keypadBeepPool)
         ? this._getPlayableSoundTrack(
-            ((cursor as number) + 1) % this._keypadBeepPool.length,
-          )
+          ((cursor as number) + 1) % this._keypadBeepPool.length,
+        )
         : null;
     }
     return [currentSoundTrack, cursor];

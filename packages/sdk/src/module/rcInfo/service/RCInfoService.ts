@@ -194,12 +194,12 @@ class RCInfoService extends EntityBaseService<IdModel>
     return result;
   }
 
-  async isOrganizeConferenceAvailable(): Promise<boolean>{
+  async isOrganizeConferenceAvailable(): Promise<boolean> {
     const result =
-    this.isRCAccount &&
-    (await this.isRCFeaturePermissionEnabled(
-      ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
-    ));
+      this.isRCAccount &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
+      ));
     mainLogger.debug(`isWebPhoneAvailable: ${result}`);
     return result;
   }
@@ -279,6 +279,10 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async setDefaultCountry(isoCode: string) {
     return await this.regionInfoController.setDefaultCountry(isoCode);
+  }
+
+  async getDefaultCountryInfo() {
+    return await this.regionInfoController.getDefaultCountryInfo();
   }
 
   async setAreaCode(areaCode: string) {

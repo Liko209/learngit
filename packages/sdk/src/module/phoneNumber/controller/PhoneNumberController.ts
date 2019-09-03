@@ -36,6 +36,15 @@ class PhoneNumberController {
       : phoneNumber;
   }
 
+  async isSpecialNumber(phoneNumber: string) {
+    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
+      phoneNumber,
+      false,
+    );
+
+    return phoneParserUtility ? phoneParserUtility.isSpecialNumber() : false;
+  }
+
   async isShortNumber(phoneNumber: string) {
     const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
       phoneNumber,
@@ -124,7 +133,7 @@ class PhoneNumberController {
         phoneNumbers,
       );
     }
-  }
+  };
 }
 
 export { PhoneNumberController };
