@@ -20,7 +20,7 @@ import { GroupBadge } from '../types';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { MyStateConfig } from '../config';
-import { UndefinedAble } from 'sdk/types';
+import { UndefinedAble, LoginInfo } from 'sdk/types';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -47,8 +47,9 @@ class StateService extends EntityBaseService<GroupState>
     );
   }
 
-  onGlipLogin(success: boolean) {
-    super.onGlipLogin(success);
+  onGlipLogin(loginInfo: LoginInfo) {
+    const { success } = loginInfo;
+    super.onGlipLogin(loginInfo);
     success && this._initBadge();
   }
 

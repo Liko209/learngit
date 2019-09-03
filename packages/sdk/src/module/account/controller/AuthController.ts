@@ -24,6 +24,7 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TaskController } from 'sdk/framework/controller/impl/TaskController';
 import { ReLoginGlipStrategy } from '../strategy/ReLoginGlipStrategy';
 import { dataCollectionHelper } from 'sdk/framework';
+import { LoginInfo } from 'sdk/types';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { AccountService } from '../service';
 
@@ -145,7 +146,8 @@ class AuthController {
       }
     } catch (err) {
       mainLogger.tags(LOG_TAG).error(err);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, false);
+      const glipLoginInfo: LoginInfo = { success: false, isFirstLogin: true };
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, glipLoginInfo);
       this._accountManager.setGlipLoginStatus(GLIP_LOGIN_STATUS.FAILURE);
       throw err;
     }
