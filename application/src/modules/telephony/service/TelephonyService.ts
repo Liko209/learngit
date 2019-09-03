@@ -67,7 +67,7 @@ import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
-import { errorHelper } from 'sdk/error';
+import { JError, ERROR_TYPES, ERROR_CODES_NETWORK } from 'sdk/error';
 import { RingtonePrefetcher } from '../../notification/RingtonePrefetcher';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 
@@ -156,7 +156,7 @@ class TelephonyService {
       );
     }
   };
-  private get _ringtone(){
+  private get _ringtone() {
     return this._ringtonePrefetcher.media
   }
   private _getCurrentRingtoneSetting = async () => {
@@ -237,7 +237,7 @@ class TelephonyService {
   };
 
   init = () => {
-    this._ringtonePrefetcher= new RingtonePrefetcher(this._telephonyStore.mediaTrackIds.telephony, PHONE_SETTING_ITEM.SOUND_INCOMING_CALL)
+    this._ringtonePrefetcher = new RingtonePrefetcher(this._telephonyStore.mediaTrackIds.telephony, PHONE_SETTING_ITEM.SOUND_INCOMING_CALL)
     if (this._canPlayOgg) {
       this._keypadBeepPool = Array(this._telephonyStore.maximumInputLength)
         .fill(1)
@@ -1228,22 +1228,31 @@ class TelephonyService {
       try {
         const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
         return this._makeCall(phoneNumber, { accessCode: hostCode });
-      } catch(error) {
+      } catch (error) {
         mainLogger.error(
           `${TelephonyService.TAG} Error when start a conference`,
           error
         );
-        Notification.flashToast({
-          message: errorHelper.isNetworkConnectionError(error) ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
-        });
-        return false;
+        return this.handleStartAudioConferenceError(error)
       }
     });
   }
+
+  handleStartAudioConferenceError(error: JError) {
+    const isNetworkError = error.isMatch({
+      type: ERROR_TYPES.NETWORK,
+      codes: [ERROR_CODES_NETWORK.NETWORK_ERROR]
+    });
+    Notification.flashToast({
+      message: isNetworkError ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
+    return false;
+  }
+
 
   joinAudioConference = async (phoneNumber: string, accessCode: string) => {
     if (this._serverTelephonyService.getAllCallCount() > 0) {
