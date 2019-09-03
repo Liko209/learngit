@@ -48,6 +48,7 @@ describe('RecentSearchViewModel', () => {
     });
     searchService.clearRecentSearchRecords = jest.fn();
     searchService.getRecentSearchRecords = jest.fn().mockReturnValue([]);
+    searchService.removeRecentSearchRecords = jest.fn();
     ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
   }
 
@@ -210,7 +211,7 @@ describe('RecentSearchViewModel', () => {
 
   describe('isValidGroup()', () => {
     it('should return false if value is undefined', () => {
-      expect(recentSearchViewModel.isValidGroup()).toBe(false);
+      expect(recentSearchViewModel.isValidGroup(1)).toBe(false);
     });
     it('should return false if catch error', () => {
       (getEntity as jest.Mock).mockImplementation(() => {
@@ -223,7 +224,10 @@ describe('RecentSearchViewModel', () => {
         isTeam: true,
         deactivated: true,
       });
-      expect(recentSearchViewModel.isValidGroup(1)).toBe(false);
+      const recentId = 2;
+      const value = 2;
+      expect(recentSearchViewModel.isValidGroup(recentId, value)).toBe(false);
+      expect(recentSearchViewModel.removeIds).toEqual([recentId])
     });
     it('should return false if group or team is private and not include user', () => {
       (getEntity as jest.Mock).mockReturnValueOnce({
@@ -240,7 +244,10 @@ describe('RecentSearchViewModel', () => {
         privacy: 'private',
         isArchived: true,
       });
-      expect(recentSearchViewModel.isValidGroup(1)).toBe(false);
+      const recentId = 2;
+      const value = 2;
+      expect(recentSearchViewModel.isValidGroup(recentId, value)).toBe(false);
+      expect(recentSearchViewModel.removeIds).toEqual([recentId])
     });
     it('should return true if group or team is private and include user', () => {
       (getEntity as jest.Mock).mockReturnValueOnce({
@@ -248,7 +255,16 @@ describe('RecentSearchViewModel', () => {
         isMember: true,
         privacy: 'private',
       });
-      expect(recentSearchViewModel.isValidGroup(1)).toBe(true);
+      expect(recentSearchViewModel.isValidGroup(1, 1)).toBe(true);
     });
+  });
+
+  describe('fetchRecent', () => {
+
+    it('should remove recent record if has remove id', async () => {
+      recentSearchViewModel.removeIds = [1];
+      await recentSearchViewModel.fetchRecent()
+      expect(searchService.removeRecentSearchRecords).toHaveBeenCalled()
+    }); 
   });
 });
