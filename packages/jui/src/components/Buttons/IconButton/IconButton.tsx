@@ -17,7 +17,7 @@ import {
 import tinycolor from 'tinycolor2';
 import styled, { keyframes } from '../../../foundation/styled-components';
 import { palette, width } from '../../../foundation/utils/styles';
-import { usePopupHelper } from '../../../foundation/hooks/usePopupHelper';
+import { useHoverHelper } from '../../../foundation/hooks/useHoverHelper';
 import { useShallowDependency } from '../../../foundation/hooks/useShallowDependency';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 import { parseColor } from '../../../foundation/utils/parseColor';
@@ -214,7 +214,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     ...rest
   } = props;
   const colorObj = parseColor(color);
-  const popupHelper = usePopupHelper({ variant: 'popover' });
+  const hoverHelper = useHoverHelper();
 
   const icon = useMemo(
     () => <JuiIconography symbol={symbol}>{children as string}</JuiIconography>,
@@ -232,7 +232,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
         className={className}
         classes={MUI_ICON_BUTTON_CLASSES}
         TouchRippleProps={TOUCH_RIPPLE_PROPS}
-        {...popupHelper.HoverProps}
+        {...hoverHelper.TriggerProps}
         {...rest}
       >
         {icon}
@@ -249,10 +249,10 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   );
 
   if (alwaysEnableTooltip) {
-    iconButton = <span {...popupHelper.HoverProps}>{iconButton}</span>;
+    iconButton = <span {...hoverHelper.TriggerProps}>{iconButton}</span>;
   }
 
-  if (!disableToolTip && tooltipTitle && popupHelper.PopoverProps.open) {
+  if (!disableToolTip && tooltipTitle && hoverHelper.hovered) {
     return (
       <RuiTooltip
         title={tooltipTitle}
