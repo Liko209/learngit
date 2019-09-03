@@ -32,7 +32,7 @@ import { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { dataAnalysis } from 'foundation/analysis';
+import { SHORT_CUT_KEYS } from '@/AnalyticsCollector/constants';
 
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
@@ -252,9 +252,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   onEscTrackedCancelDuplicateFiles = () => {
     this.cancelDuplicateFiles();
-    dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
-      shortcut: 'escape',
-    });
+    analyticsCollector.shortcuts(SHORT_CUT_KEYS.ESCAPE);
   }
 
   private _clearUpSelectedFiles = () => {

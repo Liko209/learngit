@@ -34,6 +34,7 @@ type JuiModalProps = {
   fillContent?: boolean;
   loading?: boolean;
   onClose?(event: React.MouseEvent, reason?: string): void;
+  onEscTracking?: (reason?: string) => void;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
@@ -111,8 +112,15 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       contentAfter,
       modalProps,
       fillContent,
-      onClose,
+      onCancel,
+      onEscTracking,
     } = this.props;
+    const onClose = (event: React.MouseEvent, reason?: string): void => {
+      if (onCancel) {
+        onCancel(event);
+        onEscTracking && onEscTracking(reason);
+      }
+    };
 
     return (
       <JuiDialog onClose={onClose} open={open!} size={size} {...modalProps}>

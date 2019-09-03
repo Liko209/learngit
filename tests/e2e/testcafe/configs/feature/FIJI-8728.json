@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/TeamSetting/LeaveTeam.ts", "./fixtures/MessageInput/UploadFiles.ts","./fixtures/Profile/ProfileScreen.ts","./fixtures/Search/*.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

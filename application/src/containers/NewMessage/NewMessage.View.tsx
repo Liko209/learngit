@@ -15,8 +15,7 @@ import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
-import { DialogContext } from '@/containers/Dialog';
-import { withEscTracking } from '@/common/trackData';
+import { DialogContext, withEscTracking } from '@/containers/Dialog';
 import { ViewProps } from './types';
 import {
   ToastType,
@@ -28,7 +27,7 @@ import JuiLink from 'jui/components/Link';
 type State = {
   message: string;
 };
-
+const Modal = withEscTracking(JuiModal);
 const StyledSnackbarsContent = styled<any>(JuiSnackbarContent)`
   && {
     margin: 0 0 ${spacing(4)} 0;
@@ -110,7 +109,7 @@ class NewMessageComponent extends React.Component<Props, State> {
       this.renderFailError();
     }
     return (
-      <JuiModal
+      <Modal
         modalProps={{
           classes: {
             paper: 'overflow-y',
@@ -131,7 +130,6 @@ class NewMessageComponent extends React.Component<Props, State> {
             </StyledSnackbarsContent>
           )
         }
-        onClose={withEscTracking(this.onClose)}
         cancelText={t('common.dialog.cancel')}
       >
         {// temporary: ContactAndGroupSearch contain group and person
@@ -187,7 +185,7 @@ class NewMessageComponent extends React.Component<Props, State> {
             ]}
           />
         </JuiBottomText>
-      </JuiModal>
+      </Modal>
     );
   }
 }

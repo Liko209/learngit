@@ -19,14 +19,14 @@ import { FullSearch } from '../FullSearch';
 import { InstantSearch } from '../InstantSearch';
 import { RecentSearch } from '../RecentSearch';
 import { InputContext } from '../context';
-import { withEscTracking } from '@/common/trackData';
+import { SHORT_CUT_KEYS } from '@/AnalyticsCollector/constants';
 
 type GlobalSearchProps = GlobalSearchViewProps & WithTranslation;
 
 type State = {
   ref: RefObject<JuiOutlineTextFieldRef>;
 };
-
+const ESCAPE_KEY_NAME = 'escapeKeyDown';
 @observer
 class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
   constructor(props: GlobalSearchProps) {
@@ -39,6 +39,13 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { onChange } = this.props;
     onChange(e.target.value);
+  };
+
+  trackGlobalSearchEsc = (e: React.MouseEvent, reason: string) => {
+    this.props.onClose && this.props.onClose();
+    if (reason === ESCAPE_KEY_NAME) {
+      analyticsCollector.shortcuts(SHORT_CUT_KEYS.ESCAPE);
+    }
   };
 
   get currentView() {
@@ -89,7 +96,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
     } = this.props;
 
     return (
-      <JuiGlobalSearch open={open} onClose={withEscTracking(onClose)}>
+      <JuiGlobalSearch open={open} onClose={this.trackGlobalSearchEsc}>
         <JuiGlobalSearchInput
           ref={this.state.ref}
           value={searchKey}

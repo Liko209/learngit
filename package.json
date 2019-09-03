@@ -2,10 +2,6 @@
   "name": "fiji",
   "version": "1.7.2",
   "private": true,
-  "engines": {
-    "node": "10.9.0",
-    "npm": "6.2.0"
-  },
   "config": {
     "jira": "./jira.config.json"
   },
