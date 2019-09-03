@@ -249,8 +249,10 @@ class Context {
             lines.push("**Static Analysis**: ${saSummary}")
         if (coverageSummary)
             lines.push("**Coverage Report**: ${coverageSummary}")
-        if (coverageDiff)
-            lines.push("**Coverage Changes**: ${coverageDiff}")
+        if (coverageDiff) {
+            lines.push("**Coverage Changes**:")
+            lines.push(coverageDiff)
+        }
         if (coverageDiffDetail)
             lines.push("**Coverage Changes Detail**: ${coverageDiffDetail}")
         if (appUrl && buildAppSuccess)
@@ -670,16 +672,18 @@ class JupiterJob extends BaseJob {
             String diffFileName      = './git-minimal.diff'
             String diffScript        = './scripts/git-diff-coverage.js'
             String diffCovResult     = './diff-cov-result.txt'
-            String diffCovReport     = './diff-coverage.html'
+            String diffCovReport     = './diff-coverage/index.html'
+            String diffCovReportDir  = './diff-coverage'
             String diffCovReportName = 'DiffCoverage'
 
             // get diff file
             jenkins.sh "git diff --unified=0 --no-renames -G. --minimal ${context.gitlabTargetNamespace}/${context.gitlabTargetBranch} > ${diffFileName}"
 
             // publish diff coverage report using diff2html-cli
+            jenkins.sh "mkdir -p ${diffCovReportDir}"
             jenkins.sh "cat ${diffFileName} | diff2html -c ${coverageData} -i stdin -F ${diffCovReport}"
             jenkins.publishHTML([
-                reportFiles: diffCovReport, reportName: diffCovReportName, reportTitles: diffCovReportName,
+                reportDir: diffCovReportDir, reportFiles: 'index.html', reportName: diffCovReportName, reportTitles: diffCovReportName,
                 allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
             ])
             context.coverageDiffDetail = "${context.buildUrl}${diffCovReportName}".toString()
@@ -690,7 +694,7 @@ class JupiterJob extends BaseJob {
                     jenkins.sh "npm list parse-diff || npm install -D parse-diff"
                     jenkins.sh "node ${diffScript} < ${diffFileName} > ${diffCovResult}"
                 } finally {
-                    context.coverageDiff =  jenkins.sh(returnStdout: true, script: "cat ${diffCovResult} || echo 'result is not found'")
+                    context.coverageDiff =  jenkins.sh(returnStdout: true, script: "cat ${diffCovResult} || echo 'result is not found'").trim()
                 }
             }
         }
