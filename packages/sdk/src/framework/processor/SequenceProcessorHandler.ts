@@ -57,8 +57,12 @@ class SequenceProcessorHandler extends AbstractProcessor {
     return super.addProcessor(processor);
   }
 
+  protected async process(processor: IProcessor) {
+    return processor.process();
+  }
+
   async execute(): Promise<boolean> {
-    const result = true;
+    let result = true;
     if (this._isExecuting) {
       return result;
     }
@@ -66,12 +70,9 @@ class SequenceProcessorHandler extends AbstractProcessor {
     const processor = this._processors.shift();
     if (processor) {
       this._isExecuting = true;
-
-      await processor
-        .process()
+      result = await this.process(processor)
         .then(() => {
-          this._isExecuting = false;
-          this.execute();
+          return this.onProcessDone(true);
         })
         .catch((error: Error) => {
           mainLogger.info(
@@ -79,13 +80,18 @@ class SequenceProcessorHandler extends AbstractProcessor {
               error,
             )}: `,
           );
-          this._isExecuting = false;
-          this.execute();
+          return this.onProcessDone(false);
         });
     } else {
       mainLogger.info(`SequenceProcessorHandler (${this.name()}): is done`);
     }
 
+    return result;
+  }
+
+  protected onProcessDone(result: boolean) {
+    this._isExecuting = false;
+    this.execute();
     return result;
   }
 

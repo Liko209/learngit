@@ -110,6 +110,10 @@ class CallSwitchController {
       SERVICE.WAKE_UP_FROM_SLEEP,
       this._clearAndSyncRCPresence,
     );
+    notificationCenter.on(
+      SERVICE.RC_EVENT_SUBSCRIPTION.SUBSCRIPTION_CONNECTED,
+      this._handleRCSubscriptionConnected,
+    );
     notificationCenter.on(WINDOW.ONLINE, this._clearAndSyncRCPresence);
     await this._checkSubscription();
     this._clearAndSyncRCPresence();
@@ -485,6 +489,15 @@ class CallSwitchController {
     return call;
   }
 
+  private _handleRCSubscriptionConnected = async () => {
+    if (this._lastBannerIsShown) {
+      mainLogger
+        .tags(MODULE_NAME)
+        .log('sync user rc presence when rc subscription connected');
+      await this._syncLatestUserPresenceDebounce();
+    }
+  };
+
   private _handleCallStateChanged = (
     payload: NotificationEntityPayload<Call>,
   ) => {
@@ -492,7 +505,7 @@ class CallSwitchController {
       const call: Call[] = Array.from(payload.body.entities.values());
       let hasEndedCall = false;
       call.forEach((item: Call) => {
-        const isEndedCall =  item.call_state === CALL_STATE.DISCONNECTING;
+        const isEndedCall = item.call_state === CALL_STATE.DISCONNECTING;
         if (isEndedCall) {
           this._onCallEnded(item);
           hasEndedCall = true;
@@ -522,11 +535,9 @@ class CallSwitchController {
     this._syncLatestUserPresenceDebounce();
   };
 
-  private _syncLatestUserPresenceDebounce = _.debounce(
-    async () => {
-      await this._syncLatestUserPresence();
-    },
-    SYNC_RC_PRESENCE_DEBOUNCE_TIME);
+  private _syncLatestUserPresenceDebounce = _.debounce(async () => {
+    await this._syncLatestUserPresence();
+  }, SYNC_RC_PRESENCE_DEBOUNCE_TIME);
 
   private _syncLatestUserPresence = async () => {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(

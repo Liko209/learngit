@@ -166,6 +166,11 @@ describe('CallSwitchController', () => {
         SERVICE.WAKE_UP_FROM_SLEEP,
         callSwitchController['_clearAndSyncRCPresence'],
       );
+
+      expect(notificationCenter.on).toHaveBeenCalledWith(
+        SERVICE.RC_EVENT_SUBSCRIPTION.SUBSCRIPTION_CONNECTED,
+        callSwitchController['_handleRCSubscriptionConnected'],
+      );
     });
 
     it.each`
@@ -616,7 +621,10 @@ describe('CallSwitchController', () => {
 
   describe('_handleCallStateChanged', () => {
     it('should only handle update type and save ended calls', () => {
-      (callSwitchController['_syncLatestPresenceAfterCallEnd'] as any) = jest.fn();
+      callSwitchController['_syncLatestPresenceAfterCallEnd'] = jest.fn();
+      (callSwitchController[
+        '_syncLatestPresenceAfterCallEnd'
+      ] as any) = jest.fn();
       callSwitchController['_onCallEnded'] = jest.fn();
       callSwitchController['_updateBannerStatus'] = jest.fn();
       const payLoad: any = {
@@ -683,6 +691,30 @@ describe('CallSwitchController', () => {
       callSwitchController['_lastBannerIsShown'] = true;
       callSwitchController['_clearAndSyncRCPresence']();
       expect(callSwitchController['_currentActiveCalls']).toEqual([]);
+    });
+  });
+
+  describe('_handleRCSubscriptionConnected', () => {
+    it('should only request rc presence with debounce when has banner and PubNub connected', async () => {
+      callSwitchController['_lastBannerIsShown'] = true;
+      (callSwitchController[
+        '_syncLatestUserPresenceDebounce'
+      ] as any) = jest.fn();
+      await callSwitchController['_handleRCSubscriptionConnected']();
+      expect(
+        callSwitchController['_syncLatestUserPresenceDebounce'],
+      ).toHaveBeenCalled();
+    });
+
+    it('should not request rc presence when no banner and PubNub connected', async () => {
+      callSwitchController['_lastBannerIsShown'] = false;
+      (callSwitchController[
+        '_syncLatestUserPresenceDebounce'
+      ] as any) = jest.fn();
+      await callSwitchController['_handleRCSubscriptionConnected']();
+      expect(
+        callSwitchController['_syncLatestUserPresenceDebounce'],
+      ).not.toHaveBeenCalled();
     });
   });
 });
