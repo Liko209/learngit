@@ -91,11 +91,13 @@ describe('Conference View Model', () => {
 
   it('Should NOT show [Join] button and link if login user has no WebRTC permission', () => {
     (getEntity as jest.Mock).mockReturnValue(mockData);
-    viewModel._featuresFlagsService.canUseConference = jest.fn().mockReturnValue(true);
+    (getGlobalValue as jest.Mock).mockReturnValue(true);
+
+    viewModel._featuresFlagsService.canIUseConference = true;
     expect(viewModel.canUseConference).toBeTruthy();
 
-    viewModel._featuresFlagsService.canUseConference = jest.fn().mockReturnValue(false);
-    expect(viewModel.canUseConference.value).toBeUndefined();
+    viewModel._featuresFlagsService.canIUseConference = false;
+    expect(viewModel.canUseConference).toBeFalsy();
   });
 
   it('[Join] button and dial-in number are disabled when user is already making a call(inbound/outbound) [JPT-2897]', () => {

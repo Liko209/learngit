@@ -16,9 +16,7 @@ import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat'
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { TelephonyService } from '@/modules/telephony/service';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
-import { promisedComputed } from 'computed-async-mobx';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { mainLogger } from 'foundation/log';
 import { TelephonyStore } from '@/modules/telephony/store';
 // TO-DO: This definition need to be moved to brand config once Brand is supported.
 const GLOBAL_NUMBER_RC = 'https://ringcentr.al/2L14jqL';
@@ -68,12 +66,10 @@ class ConferenceViewModel extends StoreViewModel<Props> implements ViewProps {
     return getGlobalValue(GLOBAL_KEYS.IS_RC_USER);
   }
 
-  canUseConference = promisedComputed(false, async () => {
-    const canUseConference = await this._featuresFlagsService.canUseConference();
-    mainLogger.info(`Conference permission: ${canUseConference}`);
-
-    return canUseConference && this.isRCUser;
-  });
+  @computed
+  get canUseConference() {
+    return this._featuresFlagsService.canIUseConference && this.isRCUser;
+  }
 
   @action
   joinAudioConference = (type?: string) => {
