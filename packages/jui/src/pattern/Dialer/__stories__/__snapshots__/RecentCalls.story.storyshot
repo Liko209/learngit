@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
-.c10 {
+.c9 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c11 {
+.c10 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -20,7 +20,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   fill: #757575;
 }
 
-.c13 {
+.c12 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -33,38 +33,15 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
 }
 
 .c5.c5 {
-  padding: 8px;
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  padding-left: 8px;
-  color: #000;
-}
-
-.c5.c5.Mui-focusVisible {
-  background-color: rgba(0,0,0,0.1);
-}
-
-.c5.c5:hover {
-  background-color: rgba(0,0,0,0.05);
-}
-
-.c5.c5 .rippleVisible {
-  background-color: rgba(0,0,0,0.05);
-}
-
-.c6.c6 {
   margin-right: 8px;
   min-width: 0;
 }
 
-.c8.c8 {
+.c7.c7 {
   padding: 0;
 }
 
-.c8.c8 .list-item-primary {
+.c7.c7 .list-item-primary {
   display: block;
   color: #212121;
   font-size: 0.875rem;
@@ -77,7 +54,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   word-break: break-word;
 }
 
-.c8.c8 .list-item-secondary {
+.c7.c7 .list-item-secondary {
   display: block;
   color: #757575;
   font-size: 0.75rem;
@@ -90,11 +67,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   word-break: break-word;
 }
 
-.c8.c8.multiline {
+.c7.c7.multiline {
   margin: 0;
 }
 
-.c7.c7 {
+.c6.c6 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -104,20 +81,20 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   background-color: #f5f6fb;
 }
 
-.c7.c7:hover {
+.c6.c6:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c7.c7:active {
+.c6.c6:active {
   opacity: 0.76;
 }
 
-.c7:focus {
+.c6:focus {
   outline: none;
 }
 
-.c7 > .avatar-short-name {
+.c6 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -190,11 +167,11 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   flex: 1;
 }
 
-.c9 {
+.c8 {
   text-align: center;
 }
 
-.c12.c12 {
+.c11.c11 {
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -207,12 +184,15 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   width: 68px;
 }
 
-.c4.c4 {
-  -webkit-box-pack: start;
-  -webkit-justify-content: flex-start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-  padding: 0;
+.c4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 <div
@@ -248,20 +228,14 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       <div
         className="c3"
       >
-        <li
-          className="MuiListItem-root c4 c5 MuiListItem-gutters"
-          disabled={false}
-          style={
-            Object {
-              "cursor": "default",
-            }
-          }
+        <div
+          className="c4"
         >
           <div
-            className="MuiListItemAvatar-root c6"
+            className="MuiListItemAvatar-root c5"
           >
             <div
-              className="MuiAvatar-root c7"
+              className="MuiAvatar-root c6"
               size="medium"
             >
               <img
@@ -271,7 +245,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
             </div>
           </div>
           <div
-            className="MuiListItemText-root c8 MuiListItemText-multiline multiline"
+            className="MuiListItemText-root c7 MuiListItemText-multiline multiline"
             flex="1 1 auto"
           >
             <span
@@ -285,16 +259,16 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
               (888) 888 - 8888
             </p>
           </div>
-        </li>
+        </div>
       </div>
       <div
-        className="c9"
+        className="c8"
       >
         <span
-          className=" incall icon c10"
+          className=" incall icon c9"
         >
           <svg
-            className="c11"
+            className="c10"
             role="img"
             size="medium"
           >
@@ -306,7 +280,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
         </span>
       </div>
       <div
-        className="c12"
+        className="c11"
       >
         3/7/2019
       </div>
@@ -337,20 +311,14 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       <div
         className="c3"
       >
-        <li
-          className="MuiListItem-root c4 c5 MuiListItem-gutters"
-          disabled={false}
-          style={
-            Object {
-              "cursor": "default",
-            }
-          }
+        <div
+          className="c4"
         >
           <div
-            className="MuiListItemAvatar-root c6"
+            className="MuiListItemAvatar-root c5"
           >
             <div
-              className="MuiAvatar-root c7"
+              className="MuiAvatar-root c6"
               size="medium"
             >
               <img
@@ -360,7 +328,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
             </div>
           </div>
           <div
-            className="MuiListItemText-root c8 MuiListItemText-multiline multiline"
+            className="MuiListItemText-root c7 MuiListItemText-multiline multiline"
             flex="1 1 auto"
           >
             <span
@@ -374,16 +342,16 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
               (888) 888 - 8888
             </p>
           </div>
-        </li>
+        </div>
       </div>
       <div
-        className="c9"
+        className="c8"
       >
         <span
-          className=" outcall icon c10"
+          className=" outcall icon c9"
         >
           <svg
-            className="c11"
+            className="c10"
             role="img"
             size="medium"
           >
@@ -395,7 +363,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
         </span>
       </div>
       <div
-        className="c12"
+        className="c11"
       >
         8:56AM
       </div>
@@ -426,20 +394,14 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
       <div
         className="c3"
       >
-        <li
-          className="MuiListItem-root c4 c5 MuiListItem-gutters"
-          disabled={false}
-          style={
-            Object {
-              "cursor": "default",
-            }
-          }
+        <div
+          className="c4"
         >
           <div
-            className="MuiListItemAvatar-root c6"
+            className="MuiListItemAvatar-root c5"
           >
             <div
-              className="MuiAvatar-root c7"
+              className="MuiAvatar-root c6"
               size="medium"
             >
               <img
@@ -449,7 +411,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
             </div>
           </div>
           <div
-            className="MuiListItemText-root c8 MuiListItemText-multiline multiline"
+            className="MuiListItemText-root c7 MuiListItemText-multiline multiline"
             flex="1 1 auto"
           >
             <span
@@ -463,16 +425,16 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
               (888) 888 - 8888
             </p>
           </div>
-        </li>
+        </div>
       </div>
       <div
-        className="c9"
+        className="c8"
       >
         <span
-          className=" missedcall icon c10"
+          className=" missedcall icon c9"
         >
           <svg
-            className="c13"
+            className="c12"
             role="img"
             size="medium"
           >
@@ -484,7 +446,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
         </span>
       </div>
       <div
-        className="c12"
+        className="c11"
       >
         12/12/2019
       </div>
