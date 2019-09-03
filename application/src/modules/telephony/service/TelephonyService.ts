@@ -483,7 +483,7 @@ class TelephonyService {
     this._subscribeMissedCallNotification();
   };
 
-  async makeRCPhoneCall(phoneNumber: string) {
+  async makeRCPhoneCall(phoneNumber: string, accessCode?: string) {
     const buildURL = (phoneNumber: string) => {
       enum RCPhoneCallURL {
         'RC' = 'rcmobile',
@@ -493,7 +493,7 @@ class TelephonyService {
       const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
       const { rcBrand } = getEntity(ENTITY_NAME.COMPANY, currentCompanyId);
       return `${RCPhoneCallURL[rcBrand] ||
-        RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
+        RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(accessCode ? `${phoneNumber},,${accessCode}#` : phoneNumber)}`;
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
@@ -534,11 +534,12 @@ class TelephonyService {
       return;
     }
 
+    const { accessCode, callback } = options;
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
-      return this.makeRCPhoneCall(toNumber);
+      return this.makeRCPhoneCall(toNumber, accessCode);
     }
-    options.callback && options.callback();
+    callback && callback();
 
     const fromNumber = this._getFromNumber();
 
@@ -547,7 +548,6 @@ class TelephonyService {
       TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
-    const { accessCode } = options;
     if (accessCode) {
       this._telephonyStore.isConference = true;
     }
