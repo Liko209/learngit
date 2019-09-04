@@ -9,9 +9,9 @@ import { mockEntity } from 'shield/application';
 import { shallow } from 'enzyme';
 import { Avatar } from '@/containers/Avatar';
 import { MiniCard } from '@/modules/message/container/MiniCard';
-import { JuiContactName } from 'jui/pattern/Contacts';
 import { RuiTag } from 'rcui/components/Tag';
 import { Dialog } from '@/containers/Dialog';
+import { JuiContactNameWrapper, JuiContactName } from 'jui/pattern/Contacts';
 
 import { ContactCell } from '../ContactCell';
 import { Actions } from '../../Actions';
@@ -25,9 +25,9 @@ describe('ContactCell', () => {
     })
     t1() {
       const Wrapper = shallow(<ContactCell />).shallow();
-      expect(Wrapper.find(JuiContactName).props().primary).toEqual(
+      expect(Wrapper.find(JuiContactNameWrapper).props().primary).toEqual(
         <React.Fragment>
-          userDisplayName
+          <JuiContactName>userDisplayName</JuiContactName>
           <RuiTag color="secondary" content="common.guest" />
         </React.Fragment>,
       );

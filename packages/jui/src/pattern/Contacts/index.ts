@@ -5,3 +5,4 @@
  */
 export * from './ContactCell';
 export * from './ContactName';
+export * from './ContactActions';
