@@ -1,10 +1,10 @@
 {
   "name": "shield",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "private": true,
   "main": "src",
   "dependencies": {
-    "framework": "1.7.3",
+    "framework": "1.8.0",
     "react": "16.9.0",
     "react-dom": "16.9.0"
   },
