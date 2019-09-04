@@ -235,10 +235,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
       });
   }
 
-  private async _onMediaPermissionChange(
-    newState: PermissionState,
-    preState: PermissionState,
-  ) {
+  private async _onMediaPermissionChange(newState: any, preState: any) {
     rtcLogger.debug(
       LOG_TAG,
       'Permission changed -> Updating media device label ...',

@@ -248,6 +248,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     }
   }
 
+  // @ts-ignore
   onMediaPermissionChanged(newState: PermissionState): void {
     notificationCenter.emit(
       RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED,
