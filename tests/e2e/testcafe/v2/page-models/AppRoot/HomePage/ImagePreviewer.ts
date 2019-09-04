@@ -90,6 +90,10 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     return this.getSelectorByAutomationId('fileActionMore', this.self);
   }
 
+  async clickMoreButton() {
+    await this.t.click(this.moreButton);
+  }
+
   get downloadButton() {
     return this.downloadIcon.parent('a');
   }
