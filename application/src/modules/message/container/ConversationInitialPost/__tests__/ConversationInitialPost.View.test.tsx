@@ -61,7 +61,10 @@ describe('ConversationInitialPostView', () => {
       groupType: CONVERSATION_TYPES.ME,
       groupDescription: 'text',
       userDisPlayName: 'a',
-      t: (p: any) => p,
+      t: (text: string, object: any) => {
+        const args = object ? object.date : '';
+        return args ? `${args} ${text}` : text;
+      },
       tReady: {},
       isTeam: true,
       isCompanyTeam: true,

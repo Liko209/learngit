@@ -1,6 +1,6 @@
 {
   "name": "rcui",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "private": true,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -51,7 +51,6 @@
     "react-dom": "16.9.0"
   },
   "devDependencies": {
-    "cross-env": "5.2.0",
     "@babel/core": "7.3.4",
     "@babel/node": "7.2.2",
     "@storybook/addon-a11y": "5.0.10",
@@ -88,6 +87,7 @@
     "clipboard-copy": "2.0.1",
     "clsx": "1.0.3",
     "commitizen": "3.0.7",
+    "cross-env": "5.2.0",
     "doctrine": "3.0.0",
     "enzyme": "3.9.0",
     "enzyme-adapter-react-16": "1.9.1",
