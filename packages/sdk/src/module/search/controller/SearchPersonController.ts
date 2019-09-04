@@ -15,6 +15,7 @@ import { AccountService } from '../../account/service';
 import {
   RecentSearchTypes,
   FuzzySearchContactOptions,
+  FuzzySearchPhoneContactOptions,
   PersonSortingOrder,
   RecentSearchModel,
   PhoneContactEntity,
@@ -42,7 +43,7 @@ class SearchPersonController {
 
   async doFuzzySearchPhoneContacts(
     searchKey: UndefinedAble<string>,
-    options: FuzzySearchContactOptions,
+    options: FuzzySearchPhoneContactOptions,
   ): Promise<{
     terms: string[];
     phoneContacts: PhoneContactEntity[];
@@ -76,6 +77,7 @@ class SearchPersonController {
           persons.terms.searchKeyFormattedTerms.validFormattedKeys.length === 0;
 
         const showExtensionOnly =
+          options.showExtensionOnly &&
           nameMatchedOnly &&
           sortablePerson.entity.company_id === myCompanyId &&
           orderedPhoneNumbers[0].phoneNumberType === PhoneNumberType.Extension;
