@@ -171,6 +171,12 @@ class TelephonyStore {
   isTransferPage: boolean = false;
 
   @observable
+  isWarmTransferPage: boolean = false;
+
+  @observable
+  canCompleteTransfer: boolean = true;
+
+  @observable
   selectedCallItem: SelectedCallItem = {
     phoneNumber: '',
     index: NaN,
@@ -274,7 +280,10 @@ class TelephonyStore {
     reaction(
       () => this.isMultipleCall,
       isMultipleCall => {
-        if (isMultipleCall) this.changeBackToDefaultPos(true);
+        if (isMultipleCall) {
+          this.changeBackToDefaultPos(true)
+          return;
+        };
       },
     );
 
@@ -450,21 +459,31 @@ class TelephonyStore {
 
     // if end call isn't active call and incoming state reply don't reset state;
     // if multiple call and end current call don't reset state;
+    if (this.isWarmTransferPage) {
+      this.leaveWarmTransferPage();
+    }
+
     if (this.isEndOtherCall) {
       this.quitKeypad();
       this._clearEnteredKeys();
       this._clearTransferString();
+      this.isConference = false;
       if (this.isTransferPage) {
         this.backToDialerFromTransferPage();
       }
       return;
     }
+
     // end incoming call
     if (this.isMultipleCall && this.isEndCurrentCall) {
       this.resetReply();
       this._clearForwardString();
       this.backIncoming();
       return;
+    }
+
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
     }
 
     this.resetReply();
@@ -474,9 +493,7 @@ class TelephonyStore {
     this._clearForwardString();
     this._clearTransferString();
 
-    if (this.isTransferPage) {
-      this.backToDialerFromTransferPage();
-    }
+    this.inputString = '';
 
     if (
       (this.phoneNumber !== '' || !this.isMultipleCall) &&
@@ -654,16 +671,16 @@ class TelephonyStore {
   // TODO: it should current call
   @computed
   get call(): CallModel | undefined {
-    if (!this._rawCalls.length) return undefined;
+    if (!this.rawCalls.length) return undefined;
 
     // for transfer call switch current call
     if (this.currentCallId) {
-      return this._rawCalls.find(
+      return this.rawCalls.find(
         call => call.id === this.currentCallId,
       ) as CallModel;
     }
     // The latest call
-    return reverse(sortBy(this._rawCalls, ['startTime']))[0];
+    return this.rawCalls[0];
   }
 
   @computed
@@ -817,13 +834,14 @@ class TelephonyStore {
   }
 
   @computed
-  private get _rawCalls() {
-    return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+  get rawCalls() {
+    const calls = this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+    return reverse(sortBy(calls, ['startTime']));
   }
 
   @computed
   get endCall() {
-    return this._rawCalls.find(
+    return this.rawCalls.find(
       call => call.callState === CALL_STATE.DISCONNECTING,
     );
   }
@@ -879,8 +897,32 @@ class TelephonyStore {
       this._dialerString = '';
       return;
     }
-    return (this.inputString = '');
+    this.inputString = '';
+    return;
   };
+
+  @action
+  directToWarmTransferPage = () => {
+    this.isWarmTransferPage = true;
+    this.backToDialerFromTransferPage();
+    this.switchCurrentCall(this.rawCalls[0] && this.rawCalls[0].id);
+  }
+
+  @action
+  leaveWarmTransferPage = () => {
+    this.isWarmTransferPage = false;
+    this.switchCurrentCall();
+  }
+
+  @action
+  completeTransfer = () => {
+    this.canCompleteTransfer = true;
+  }
+
+  @action
+  processTransfer = () => {
+    this.canCompleteTransfer = false;
+  }
 
   @action
   setCallItem = (phoneNumber: string, index: number) => {

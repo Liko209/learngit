@@ -196,6 +196,7 @@ class ConvertToTeam extends Component<Props, State> {
     } = this.props;
     return (
       <JuiModal
+        disableEscapeKeyDown={saving}
         open
         size="medium"
         title={t('people.team.convertToTeam')}

@@ -6,34 +6,32 @@
 import {
   Omit,
   ValueOf,
-  ICall,
+  ICallReport,
   Establishment,
   FsmStatus,
   FsmStatusCategory,
   MediaReportOutCome,
+  CallEvent,
+  CallEventCategory,
 } from './types';
 import { MediaReport } from './Media';
 import Report from './Report';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
-type Update = Omit<ICall, 'establishment' | 'fsmStatus'>;
+type Update = Omit<ICallReport, 'establishment' | 'fsmStatus'>;
 
 const LOG_TAG = 'Call and Media Report';
 
-class CallReport implements ICall {
-  private static _singleton: CallReport | null = null;
+class CallReport implements ICallReport {
   public id: string = '';
   public createTime: Date | null = null;
   public sessionId: string = '';
   public ua: any = null;
   public direction: 'incoming' | 'outgoing' | '' = '';
   public establishment: Establishment = Object.create(null);
+  public events: CallEvent[] = [];
   public fsmStatus: FsmStatus[] = [];
   public media: MediaReportOutCome | null = null;
-
-  public static instance() {
-    return CallReport._singleton || (CallReport._singleton = new CallReport());
-  }
 
   public update(key: keyof Update, value: ValueOf<Update>): void {
     this[key] = value;
@@ -51,7 +49,15 @@ class CallReport implements ICall {
   public updateFsmStatus(name: FsmStatusCategory): void {
     this.fsmStatus.push({
       name,
-      timestamp: +new Date(),
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  public updateCallEvent(name: CallEventCategory, info: string): void {
+    this.events.push({
+      name,
+      info,
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -61,7 +67,7 @@ class CallReport implements ICall {
   }
 
   private _calculationEstablishDurationBulk() {
-    const { establishment, direction } = this as ICall;
+    const { establishment, direction } = this as ICallReport;
     const {
       startTime,
       received200OkTime,
@@ -83,7 +89,7 @@ class CallReport implements ICall {
     }
 
     if (start && end) {
-      const establishDurationBulk = (end - start) % 60;
+      const establishDurationBulk = end - start;
       this.establishment.establishDurationBulk = `${establishDurationBulk}ms`;
     }
   }
@@ -96,9 +102,10 @@ class CallReport implements ICall {
       ua,
       direction,
       establishment,
+      events,
       fsmStatus,
       media,
-    } = this as ICall;
+    } = this as ICallReport;
     const options = JSON.stringify({
       id,
       createTime,
@@ -106,10 +113,10 @@ class CallReport implements ICall {
       ua,
       direction,
       establishment,
+      events,
       fsmStatus,
       media,
     });
-
     rtcLogger.info(LOG_TAG, options);
     Report(options);
   }
@@ -118,16 +125,10 @@ class CallReport implements ICall {
     this._calculationEstablishDurationBulk();
   }
 
-  public destroySingleton() {
-    CallReport._singleton = null;
-  }
-
   public destroy() {
     this._beforeDestroy();
     this.media = MediaReport.instance().stopAnalysis();
     this._report();
-
-    this.destroySingleton();
   }
 }
 

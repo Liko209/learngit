@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MediaReport } from '../Media';
-import { sleep } from '../util';
 
 const mockMediaStats = [
   {
@@ -14,7 +13,7 @@ const mockMediaStats = [
       bytesReceived: 8998,
       packetsLost: 0,
       jitter: 0.01,
-      fractionLost: 0,
+      fractionLost: 0.5,
     },
     outboundRtpReport: { mediaType: 'audio', packetsSent: 98, bytesSent: 8078 },
     rttMS: { currentRoundTripTime: 13 },
@@ -26,7 +25,7 @@ const mockMediaStats = [
       bytesReceived: 18203,
       packetsLost: 0,
       jitter: 0.01,
-      fractionLost: 0,
+      fractionLost: 0.3,
     },
     outboundRtpReport: {
       mediaType: 'audio',
@@ -81,6 +80,8 @@ const mockOutCome = {
   packetsLost: { variance: 0, average: 0, max: 0, min: 0 },
   packetsReceived: { variance: 3.0957, average: 100.75, max: 105, min: 98 },
   packetsSent: { variance: 0.95743, average: 99.25, max: 100, min: 98 },
+  fractionLost: { variance: 0.24495, average: 0.2, max: 0.5, min: 0 },
+  currentRoundTripTime: { variance: 13.77195, average: 17.5, max: 38, min: 9 }
 };
 
 describe('Check min,max,average,variance of Media report parameters during call state is connected [JPT-1939]', () => {
@@ -92,10 +93,8 @@ describe('Check min,max,average,variance of Media report parameters during call 
   });
 
   it("should return correct value for min,max,average,variance of 'packetsReceived' ,'bytesReceived','packetsLost','jitter','packetsSent','bytesSent' when end record [JPT-1939]", async () => {
-    jest.setTimeout(10000);
     const mediaReport = new MediaReport();
     for (const stat of mockMediaStats) {
-      await sleep(2000);
       mediaReport.startAnalysis(stat);
     }
 

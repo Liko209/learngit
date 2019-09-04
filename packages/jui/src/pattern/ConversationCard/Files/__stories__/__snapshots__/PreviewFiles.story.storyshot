@@ -328,9 +328,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-haspopup={true}
                 aria-label="download"
-                aria-owns={null}
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
@@ -341,7 +339,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
-                onMouseMove={[Function]}
+                onMouseOut={[Function]}
+                onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -434,9 +433,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-haspopup={true}
                 aria-label="download"
-                aria-owns={null}
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
@@ -447,7 +444,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
-                onMouseMove={[Function]}
+                onMouseOut={[Function]}
+                onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -540,9 +538,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-haspopup={true}
                 aria-label="download"
-                aria-owns={null}
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
@@ -553,7 +549,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
-                onMouseMove={[Function]}
+                onMouseOut={[Function]}
+                onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -646,9 +643,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-haspopup={true}
                 aria-label="download"
-                aria-owns={null}
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
                 onBlur={[Function]}
@@ -659,7 +654,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onMouseDown={[Function]}
                 onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
-                onMouseMove={[Function]}
+                onMouseOut={[Function]}
+                onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
@@ -727,9 +723,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -740,7 +734,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -805,9 +800,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -818,7 +811,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -883,9 +877,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -896,7 +888,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -961,9 +954,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -974,7 +965,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1041,9 +1033,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1054,7 +1044,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1082,9 +1073,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-haspopup={true}
               aria-label="more"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
@@ -1097,7 +1086,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1191,9 +1181,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1204,7 +1192,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1232,9 +1221,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-haspopup={true}
               aria-label="more"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
@@ -1247,7 +1234,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1341,9 +1329,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1354,7 +1340,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1382,9 +1369,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-haspopup={true}
               aria-label="more"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
@@ -1397,7 +1382,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1491,9 +1477,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             className="c18"
           >
             <button
-              aria-haspopup={true}
               aria-label="download"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1504,7 +1488,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1532,9 +1517,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-haspopup={true}
               aria-label="more"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
               disabled={false}
@@ -1547,7 +1530,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}

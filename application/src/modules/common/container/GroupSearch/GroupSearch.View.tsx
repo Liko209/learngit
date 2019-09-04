@@ -38,8 +38,8 @@ class GroupSearchViewComponent extends React.Component<
     this.props.searchGroups(e.target.value);
   };
 
-  private _handleSelectChange = (e: { id: number }) => {
-    this.props.onSelectChange(e);
+  onSelect = (e: { id: number }) => {
+    this.props.onSelect(e);
   };
 
   private _handleClose = () => {
@@ -99,16 +99,16 @@ class GroupSearchViewComponent extends React.Component<
   };
 
   render() {
-    const { list, t, size } = this.props;
+    const { list, t, size, dialogTitle, listTitle } = this.props;
     return (
       <JuiGroupSearch
-        dialogTitle={t('groupSearch.dialogTitle')}
+        dialogTitle={t(dialogTitle)}
         searchPlaceHolder={t('groupSearch.inputGhostText')}
-        listTitle={t('groupSearch.listTitle')}
+        listTitle={t(listTitle)}
         onClear={this._handleClear}
         searchKey={this.state.searchKey}
         onInputChange={this._handleChange}
-        onSelectChange={this._handleSelectChange}
+        onSelectChange={this.onSelect}
         clearText={t('globalSearch.clear')}
         closeIconAriaLabel="close-icon"
         closeIconTooltip={t('common.dialog.close')}

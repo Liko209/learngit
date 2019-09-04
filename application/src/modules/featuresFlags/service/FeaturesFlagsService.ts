@@ -12,6 +12,7 @@ import _ from 'lodash';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
+import { observable } from 'mobx';
 
 class FeaturesFlagsService {
   private _permissionService = ServiceLoader.getInstance<PermissionService>(
@@ -21,6 +22,9 @@ class FeaturesFlagsService {
     ServiceConfig.RC_INFO_SERVICE,
   );
   private _featureModuleMap = new Map();
+
+  @observable
+  canIUseConference: boolean = false;
 
   constructor() {
     featureModuleConfig.forEach(feature => {
@@ -54,6 +58,10 @@ class FeaturesFlagsService {
         : this._rcInfoService.isWebPhoneAvailable();
     }
     return false;
+  };
+
+  init = async () => {
+    this.canIUseConference = await this.canUseConference();
   };
 
   getSupportFeatureModules = async () => {

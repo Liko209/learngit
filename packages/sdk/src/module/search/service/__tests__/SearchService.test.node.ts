@@ -10,7 +10,7 @@ import { RecentSearchTypes } from '../../entity';
 import { SearchUserConfig } from '../../config/SearchUserConfig';
 import { SearchPersonController } from '../../controller/SearchPersonController';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { SortableModel } from 'sdk/framework/model';
+import { SortableModel, IdModel } from 'sdk/framework/model';
 import { Group } from 'sdk/module/group';
 import { SortUtils } from 'sdk/framework/utils';
 
@@ -127,7 +127,7 @@ describe('SearchService', () => {
     });
   });
 
-  describe('doFuzzySearchPersons', () => {
+  describe('doFuzzySearchPersonsAndGroups', () => {
     let searchPersonController: SearchPersonController;
     beforeEach(() => {
       clearMocks();
@@ -143,6 +143,36 @@ describe('SearchService', () => {
       const options = {
         excludeSelf: true,
       };
+
+      const sortFunc = (
+        lsh: SortableModel<IdModel>,
+        rsh: SortableModel<IdModel>,
+      ) => {
+        return 1;
+      };
+
+      searchService.doFuzzySearchPersonsAndGroups(
+        'test keys',
+        options,
+        {},
+        sortFunc,
+      );
+      expect(
+        searchPersonController.doFuzzySearchPersonsAndGroups,
+      ).toHaveBeenCalledWith(
+        'test keys',
+        {
+          excludeSelf: true,
+        },
+        {},
+        sortFunc,
+      );
+    });
+
+    it('should call correct parameter when sortFunc is undefined', () => {
+      const options = {
+        excludeSelf: true,
+      };
       searchService.doFuzzySearchPersonsAndGroups('test keys', options, {});
       expect(
         searchPersonController.doFuzzySearchPersonsAndGroups,
@@ -152,6 +182,7 @@ describe('SearchService', () => {
           excludeSelf: true,
         },
         {},
+        undefined,
       );
     });
   });
@@ -261,6 +292,18 @@ describe('SearchService', () => {
         ['1600000001'],
         terms,
       );
+    });
+  });
+
+  describe('generateFormattedTerms', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
     });
   });
 });

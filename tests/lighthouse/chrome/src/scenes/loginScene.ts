@@ -2,12 +2,12 @@
  * @Author: doyle.wu
  * @Date: 2018-12-09 21:01:04
  */
-import { Scene } from './scene';
+import { LighthouseScene } from './lighthouseScene';
 import { SceneConfigFactory } from './config/sceneConfigFactory';
 import { JupiterUtils } from '../utils';
 import { HomePageGatherer } from '../gatherers';
 
-class LoginScene extends Scene {
+class LoginScene extends LighthouseScene {
   private _finallyUrl: string;
 
   tags(): Array<string> {

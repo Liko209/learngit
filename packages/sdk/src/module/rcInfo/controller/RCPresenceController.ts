@@ -5,15 +5,13 @@
  */
 import { RCInfoApi } from 'sdk/api/ringcentral';
 import { RCPresenceEventPayload } from 'sdk/module/rcEventSubscription/types';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { TelephonyService } from 'sdk/module/telephony';
 import { mainLogger } from 'foundation/log';
 import {
   SingletonSequenceProcessor,
   SequenceProcessorHandler,
   IProcessor,
 } from 'sdk/framework/processor';
-import { notificationCenter, SERVICE, WINDOW } from 'sdk/service';
+import { notificationCenter, RC_INFO } from 'sdk/service';
 import { RCPermissionController } from './RCPermissionController';
 import { ERCServiceFeaturePermission } from '../types';
 
@@ -34,10 +32,7 @@ class RCPresenceController {
           const presence = <RCPresenceEventPayload>(
             await RCInfoApi.getRCPresence()
           );
-          const telephonyService = ServiceLoader.getInstance<TelephonyService>(
-            ServiceConfig.TELEPHONY_SERVICE,
-          );
-          telephonyService.handleRCPresence(presence, false);
+          notificationCenter.emitKVChange(RC_INFO.RC_PRESENCE, presence);
           return true;
         } catch (error) {
           mainLogger.tags(MODULE_NAME).log('failed to sync rc presence', error);
@@ -51,12 +46,6 @@ class RCPresenceController {
     }();
     this._getQueueHandler().addProcessor(processor);
   };
-
-  start() {
-    notificationCenter.on(SERVICE.WAKE_UP_FROM_SLEEP, this.syncRCPresence);
-    notificationCenter.on(WINDOW.ONLINE, this.syncRCPresence);
-    this.syncRCPresence();
-  }
 
   private async _canSyncRCPresence() {
     const hasVoipPermission = await this._rcPermissionController.isRCFeaturePermissionEnabled(
@@ -98,8 +87,6 @@ class RCPresenceController {
 
   dispose() {
     this._getQueueHandler().clear();
-    notificationCenter.off(SERVICE.WAKE_UP_FROM_SLEEP, this.syncRCPresence);
-    notificationCenter.off(WINDOW.ONLINE, this.syncRCPresence);
   }
 }
 

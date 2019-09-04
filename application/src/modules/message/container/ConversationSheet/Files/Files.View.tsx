@@ -22,7 +22,6 @@ import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import {
-  isSupportFileViewer,
   isFileReadyForViewer,
   isDoc,
 } from '@/common/getFileType';
@@ -129,25 +128,20 @@ class FilesView extends React.Component<FilesViewProps> {
   handleFileMoreIconClicked = () => {};
 
   private _getActions = moize(
-    (downloadUrl: string, fileId: number, postId: number) => [
+    (downloadUrl: string, fileId: number, postId: number, groupId: number) => [
       <Download key="download-action" url={downloadUrl} />,
       <FileActionMenu
-        scene="conversationHistory"
         key="more-action"
         fileId={fileId}
         postId={postId}
+        scene="conversationHistory"
+        groupId={groupId}
       />,
     ],
   );
 
   render() {
-    const {
-      files,
-      progresses,
-      urlMap,
-      postId,
-      getFilePreviewBackgroundContainPermission,
-    } = this.props;
+    const { files, progresses, urlMap, postId, groupId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -179,7 +173,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 keyword: this.context.keyword,
               }),
               url: accelerateURL(urlMap.get(id)) || '',
-              Actions: this._getActions(downloadUrl, id, postId),
+              Actions: this._getActions(downloadUrl, id, postId, groupId),
             };
             const future = (
               <JuiPreviewImage
@@ -221,7 +215,6 @@ class FilesView extends React.Component<FilesViewProps> {
               latestVersion.pages &&
               latestVersion.pages.length;
             const iconType = getFileIcon(type);
-            const supportFileViewer = isSupportFileViewer(type);
             const fileReadyForViewer = isFileReadyForViewer(status);
             if (id < 0) {
               return this._renderItem(id, progresses, name);
@@ -234,19 +227,19 @@ class FilesView extends React.Component<FilesViewProps> {
                   keyword: this.context.keyword,
                 })}
                 needBackgroundContain={
-                  getFilePreviewBackgroundContainPermission.get() && isDoc(type)
+                  isDoc(type)
                 }
                 size={`${getFileSize(size)}`}
                 url={accelerateURL(previewUrl)!}
                 iconType={iconType}
                 handleFileClick={
-                  supportFileViewer && fileReadyForViewer
+                  fileReadyForViewer
                     ? this._handleFileClick(item)
                     : undefined
                 }
                 total={total}
-                disabled={supportFileViewer && !fileReadyForViewer}
-                Actions={this._getActions(downloadUrl, id, postId)}
+                disabled={!fileReadyForViewer}
+                Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
           })}
@@ -268,7 +261,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 })}
                 size={`${getFileSize(size)}`}
                 iconType={iconType}
-                Actions={this._getActions(downloadUrl, id, postId)}
+                Actions={this._getActions(downloadUrl, id, postId, groupId)}
               />
             );
           })}

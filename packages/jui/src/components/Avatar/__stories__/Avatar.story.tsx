@@ -42,7 +42,6 @@ const knobs = {
       },
       'lake',
     ),
-  cover: () => boolean('cover', false),
   mask: () => boolean('mask', false),
   presence: () =>
     select(
@@ -62,7 +61,6 @@ storiesOf('Components/Avatar', module)
       <JuiAvatar
         size={knobs.size()}
         color={knobs.color()}
-        cover={knobs.cover()}
         mask={knobs.mask()}
         src={avatar}
         onClick={action('click')}
@@ -74,7 +72,6 @@ storiesOf('Components/Avatar', module)
       <JuiAvatar
         size={knobs.size()}
         color={knobs.color()}
-        cover={knobs.cover()}
         mask={knobs.mask()}
         onClick={action('click')}
       >
@@ -90,7 +87,6 @@ storiesOf('Components/Avatar', module)
       <JuiAvatar
         size={knobs.size()}
         color={knobs.color()}
-        cover={knobs.cover()}
         mask={knobs.mask()}
         presence={
           <JuiPresence
@@ -100,6 +96,18 @@ storiesOf('Components/Avatar', module)
           />
         }
         onClick={action('click')}
+      >
+        SH
+      </JuiAvatar>
+    );
+  })
+  .add('Cover Name', () => {
+    return (
+      <JuiAvatar
+        size={knobs.size()}
+        color={knobs.color()}
+        mask={knobs.mask()}
+        cover
       >
         SH
       </JuiAvatar>

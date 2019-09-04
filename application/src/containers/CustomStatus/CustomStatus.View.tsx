@@ -39,11 +39,19 @@ class CustomStatusComponent extends React.Component<
       };
     });
   }
+  private _focusEl: HTMLElement | null;
+
+  componentDidMount() {
+    setTimeout(() => {
+      this._focusEl = document.activeElement as HTMLElement;
+    }, 0);
+  }
 
   insertEmoji = (emoji: any, cb: Function) => {
     const { native } = emoji;
     const { handleEmojiChange } = this.props;
     handleEmojiChange(native);
+    this._focusEl && this._focusEl.focus();
     cb && cb();
   };
 
@@ -87,9 +95,15 @@ class CustomStatusComponent extends React.Component<
     const value = target.innerText;
     handleInputValueChange(value);
     handleEmojiChange(emoji);
-    this.setState({
-      isShowMenuList: false,
-    });
+    this._focusEl && this._focusEl.focus();
+    this.setState(
+      {
+        isShowMenuList: false,
+      },
+      () => {
+        this._focusEl && this._focusEl.focus();
+      },
+    );
   };
 
   private _onSave = () => {
@@ -109,6 +123,7 @@ class CustomStatusComponent extends React.Component<
     const { isShowMenuList } = this.state;
     return (
       <JuiModal
+        disableEscapeKeyDown={isLoading}
         open
         size="small"
         title={t('customstatus.title')}

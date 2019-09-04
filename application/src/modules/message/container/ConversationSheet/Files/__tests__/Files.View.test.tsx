@@ -156,7 +156,7 @@ describe('FilesView', () => {
         ...someFilesProps,
         progresses: { get: () => 1 },
       };
-      props.files[1][0].item.type = 'pdf';
+      props.files[1][0].item.latestVersion.status = 'first_page_ready';
       const wrapper = shallow(<FilesView {...props} />);
       wrapper
         .find(JuiFileWithPreview)

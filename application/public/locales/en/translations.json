@@ -82,7 +82,10 @@
     "reload": "Reload",
     "goToConversation": "Go to conversation",
     "country": "Country",
-    "eg": "e.g."
+    "eg": "e.g.",
+    "clear": "Clear",
+    "clearText": "Clear Text",
+    "guest": "Guest"
   },
   "presence": {
     "available": "Available",
@@ -112,9 +115,9 @@
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "shareStatus": "Share status",
-    "clearStatus": "Clear Status",
+    "clearStatus": "Clear status",
     "aboutRingCentral": "About RingCentral",
-    "sendFeedback": "Send Feedback",
+    "sendFeedback": "Send feedback",
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
@@ -169,6 +172,9 @@
     "inputGhostText": "Type person or team name",
     "dialogTitle": "Switch conversation",
     "listTitle": "Recent conversations"
+  },
+  "shareFile": {
+    "dialogTitle": "Share file"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -272,6 +278,7 @@
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
+      "shareFile": "Share file",
       "deletePostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete this post. Try again later.",
       "deletePostFailedForNetworkIssue": "We weren't able to delete this post. Check your network connection, then try again.",
       "editPostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to apply edits to this post. Try again later.",
@@ -463,6 +470,14 @@
     "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
     "pinnedMore": "and {{num}} more",
     "prompt": {
+      "shareSuccess": "File shared successfully.",
+      "shareFileNoAuth": "This team doesn't allow members to post. You cannot share files to it.",
+      "shareFileNotMember": "You are no longer a member of this team. You can no longer share files to it.",
+      "shareFileTeamDeleted": "This team was deleted. You can no longer share files to it.",
+      "shareFileTeamArchived": "This team was archived. You can no longer share files to it.",
+      "shareFileDeleted": "This file was deleted and can no longer be shared.",
+      "shareFileBackendError": "Sorry, something went wrong on our end and we aren't able to share the file. Try again later.",
+      "shareFileNetworkError": "We aren't able to share the file. Check your network connection, then try again.",
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
       "fileNoLongerExists": "Sorry, we weren’t able to upload the file because it no longer exists.",
       "notAbleToCancelUpload": "Sorry, we weren't able to cancel the upload.",
@@ -635,6 +650,9 @@
   },
   "contact": {
     "Contacts": "Contacts",
+    "noContacts": "No contacts",
+    "filterContacts": "Filter contacts",
+    "noMatchesFound": "No matches found",
     "tab": {
       "allContacts": "All contacts",
       "company": "Company directory"
@@ -677,7 +695,9 @@
       "endAndAnswer": "End & Answer",
       "transfer": "Transfer",
       "toVoiceMail": "To Voicemail",
-      "askFirst": "Ask first"
+      "askFirst": "Ask first",
+      "transferring": "Transferring...",
+      "completeTransfer": "Complete transfer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -747,7 +767,9 @@
         "backendError": "Transfer failed",
         "transferSuccess": "Call transferred"
       },
-      "voicemailDeleted": "The voicemail was deleted."
+      "voicemailDeleted": "The voicemail was deleted.",
+      "audioConferenceBackendError": "Sorry, something went wrong on our end and we weren't able to start the conference. Try again later. ",
+      "audioConferenceNetworkError": "Sorry, we aren't able to start the conference. Check your network connection, then try again. "
     },
     "notification": {
       "newVoicemail": "Left a voicemail",
@@ -1237,7 +1259,7 @@
     "sendingInBackground": "Sending feedback..."
   },
   "customstatus": {
-    "title": "Share Status",
+    "title": "Share status",
     "items": {
       "item1": "Out of office",
       "item2": "In a meeting",

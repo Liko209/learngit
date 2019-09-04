@@ -7,9 +7,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { ConferenceView } from '../Conference.View';
-import {
-  JuiAudioConferenceJoin,
-} from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
+import { JuiAudioConferenceJoin } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { PhoneLink } from '../../PhoneLink';
 
 describe('AudioConference.View', () => {
@@ -25,16 +23,12 @@ describe('AudioConference.View', () => {
       get: jest.fn().mockReturnValue(true),
     },
     joinAudioConference: jest.fn(),
-    disabled: false
+    disabled: false,
   } as any;
 
-
   it('Should NOT show [Join] button and link if login user has no WebRTC permission. [JPT-2749]', () => {
-    const canUseConference = {
-      get: jest.fn().mockReturnValue(false),
-    };
     const wrapper = shallow(
-      <ConferenceView {...props} canUseConference={canUseConference as any} />,
+      <ConferenceView {...props} canUseConference={false} />,
     );
 
     const phoneLink = wrapper.find(PhoneLink);
@@ -47,12 +41,7 @@ describe('AudioConference.View', () => {
   });
 
   it('Should show [Join] button and link if login user has WebRTC permission. [JPT-2750]', () => {
-    const canUseConference = {
-      get: jest.fn().mockReturnValue(true),
-    };
-    const wrapper = shallow(
-      <ConferenceView {...props} canUseConference={canUseConference as any} />,
-    );
+    const wrapper = shallow(<ConferenceView {...props} canUseConference />);
     const phoneLink = wrapper.find(PhoneLink);
 
     expect(wrapper.find(JuiAudioConferenceJoin).exists()).toBe(true);
@@ -65,9 +54,7 @@ describe('AudioConference.View', () => {
 
   it('[Join] button and dial-in number are disabled when user is already making a call(inbound/outbound) [JPT-2897]', () => {
     props.disabled = true;
-    const wrapper = shallow(
-      <ConferenceView {...props} />,
-    );
+    const wrapper = shallow(<ConferenceView {...props} />);
     const phoneLink = wrapper.find(PhoneLink);
     const juiAudioConferenceJoin = wrapper.find(JuiAudioConferenceJoin);
 

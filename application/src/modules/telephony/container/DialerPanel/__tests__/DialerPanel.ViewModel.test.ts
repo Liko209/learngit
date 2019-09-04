@@ -16,6 +16,7 @@ import * as media from '@/modules/media/module.config';
 
 jest.mock('@/modules/media/service');
 jest.mock('sdk/module/item')
+jest.mock('sdk/module/person');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(media.config);

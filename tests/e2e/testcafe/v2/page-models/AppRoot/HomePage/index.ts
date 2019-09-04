@@ -38,6 +38,7 @@ import { AvatarEditDialog } from './AvatarEditDialog';
 import { ProfileEditDialog } from './ProfileEditDialog';
 import { AddressConfirmDialog, EmergencyConfirmDialog } from './E911';
 import { NotificationPreferencesDialog } from './NotificationPreferences';
+import {ContactsTab} from './ContactsTab';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
@@ -96,6 +97,10 @@ export class HomePage extends BaseWebComponent {
 
   get phoneTab() {
     return this.getComponent(PhoneTab);
+  }
+
+  get contactsTab() {
+    return this.getComponent(ContactsTab);
   }
 
 

@@ -48,30 +48,15 @@ class AttachedSequenceProcessorHandler extends SequenceProcessorHandler {
     this._sequenceProcessor = sequenceProcessor;
   }
 
-  async execute(): Promise<boolean> {
-    if (this._isExecuting) {
-      return true;
-    }
-
-    const processor = this._processors.shift();
-    if (processor) {
-      this._isExecuting = true;
-      const waiter = new Promise<boolean>(resolve => {
-        const attachedSequenceProcessor = new AttachedSequenceProcessor(
-          processor,
-          resolve,
-        );
-        this._sequenceProcessor.addProcessor(attachedSequenceProcessor);
-      });
-      await waiter
-        .then(() => {
-          this._nextTask();
-        })
-        .catch(() => {
-          this._nextTask();
-        });
-    }
-    return true;
+  async process(processor: IProcessor) {
+    const waiter = new Promise<boolean>(resolve => {
+      const attachedSequenceProcessor = new AttachedSequenceProcessor(
+        processor,
+        resolve,
+      );
+      this._sequenceProcessor.addProcessor(attachedSequenceProcessor);
+    });
+    return waiter;
   }
 
   cancelAll() {
@@ -81,11 +66,6 @@ class AttachedSequenceProcessorHandler extends SequenceProcessorHandler {
       }
     });
     this.clear();
-  }
-
-  private _nextTask() {
-    this._isExecuting = false;
-    this.execute();
   }
 }
 

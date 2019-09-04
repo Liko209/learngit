@@ -44,7 +44,7 @@ type ContainerProps = {
   state: TransitionStatus;
   option: AnimationOptions;
   animation: Keyframes;
-}
+};
 
 const StyledContainer = styled('div')<ContainerProps>`
   ${({ state, option, animation }) => getStyle(state, option, animation)}
@@ -56,6 +56,8 @@ type Props = TransitionAnimationProps & {
 class TransitionAnimation extends React.PureComponent<Props> {
   render() {
     const {
+      mountOnEnter,
+      unmountOnExit,
       onExited,
       children,
       show,
@@ -74,6 +76,8 @@ class TransitionAnimation extends React.PureComponent<Props> {
         onEntered={onEntered}
         onExited={onExited}
         appear={appear}
+        mountOnEnter={mountOnEnter}
+        unmountOnExit={unmountOnExit}
       >
         {state => (
           <StyledContainer

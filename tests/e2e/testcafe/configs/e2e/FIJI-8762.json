@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "demo/voipLog.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

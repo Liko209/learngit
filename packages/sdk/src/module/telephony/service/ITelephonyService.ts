@@ -16,4 +16,5 @@ export interface ITelephonyService {
   ) => void;
   getAllCallCount: () => number;
   getById(id: number): Promise<Call | null>;
+  hasActiveDL(): boolean;
 }

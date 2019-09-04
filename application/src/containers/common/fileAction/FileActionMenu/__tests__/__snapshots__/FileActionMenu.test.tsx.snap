@@ -11,6 +11,9 @@ exports[`FileActionMenu should not render viewInBrowser when item is not image 1
   <JuiMenuList
     data-test-automation-id="fileActionMenuList"
   >
+    <FileShareAction
+      fileId={1}
+    />
     <Container(FileNameEditActionViewComponent)
       fileId={1}
       fileName="filename"
@@ -38,6 +41,9 @@ exports[`FileActionMenu should render correctly 1`] = `
   <JuiMenuList
     data-test-automation-id="fileActionMenuList"
   >
+    <FileShareAction
+      fileId={1}
+    />
     <ViewInBrowserTabAction
       item={Object {}}
       scene="conversationHistory"

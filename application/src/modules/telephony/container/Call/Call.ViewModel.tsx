@@ -92,7 +92,7 @@ class CallViewModel extends AbstractViewModel<CallProps>
 
   @action
   call = async () => {
-    if (!this.phoneNumber) return;
+    if (!this.phoneNumber) return false;
 
     const isCallSuccess = await this._telephonyService.directCall(
       this.phoneNumber,
@@ -100,6 +100,8 @@ class CallViewModel extends AbstractViewModel<CallProps>
     if (!isCallSuccess) {
       this._telephonyService.hangUp();
     }
+
+    return isCallSuccess;
   };
 
   @action

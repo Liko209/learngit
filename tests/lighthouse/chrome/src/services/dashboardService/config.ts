@@ -2,6 +2,8 @@
  * @Author: doyle.wu
  * @Date: 2019-07-05 09:27:33
  */
+import { Config } from '../../config';
+
 class DashboardMetricItemConfig {
   name: string;
   url: string;
@@ -419,7 +421,75 @@ class DashboardConfig {
 
       }
     },
+    "DocViewerScene": {
+      "name": "DocViewerScene",
+      "gatherer": "DocViewerGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "k": 3,
+      "b": 700,
+      "metric": {
+        "ui_viewer_page_render": {
+          "name": "ui_viewer_page_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/385",
+          "apiGoal": 2000
+        }
+      }
+    },
+    "ImageViewerScene": {
+      "name": "ImageViewerScene",
+      "gatherer": "ImageViewerGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "k": 3,
+      "b": 700,
+      "metric": {
+        "ui_image_viewer_page_render": {
+          "name": "ui_image_viewer_page_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/386",
+          "apiGoal": 2000
+        },
+        "ui_image_viewer_image_render": {
+          "name": "ui_image_viewer_image_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/387",
+          "apiGoal": 2000
+        }
+      }
+    },
+    "SearchForShareScene": {
+      "name": "SearchForShareScene",
+      "gatherer": "SearchForShareGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "k": 3,
+      "b": 700,
+      "metric": {
+        "search_all_group": {
+          "name": "search_all_group",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/417",
+          "apiGoal": 2000
+        },
+        "SEARCH_PERSONS_GROUPS": {
+          "name": "SEARCH_PERSONS_GROUPS",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/418",
+          "apiGoal": 2000
+        }
+      }
+    },
   };
+
+  constructor() {
+    const metric = this.scenes['SwitchConversationScene'].metric;
+    const keys = Object.keys(metric);
+    const cfgKyes = Object.keys(Config.switchConversationIds);
+    let item: DashboardMetricItemConfig, _item: DashboardMetricItemConfig;
+    for (let key of keys) {
+      item = metric[key];
+
+      for (let k of cfgKyes) {
+        _item = Object.assign({}, item);
+        _item.name = [key, k].join('_');
+        metric[_item.name] = _item;
+      }
+    }
+  }
 }
 
 export {

@@ -3,7 +3,7 @@
  * @Date: 2019-05-28 13:43:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable } from 'mobx';
+import { observable, autorun, computed, action } from 'mobx';
 import Base from './Base';
 import {
   Call,
@@ -13,6 +13,9 @@ import {
   MUTE_STATE,
   RECORD_STATE,
 } from 'sdk/module/telephony/entity';
+import { getDisplayNameByCaller } from '@/modules/telephony/helpers';
+import i18next from 'i18next';
+import { formatSeconds } from '@/utils/date';
 
 export default class CallModel extends Base<Call> {
   @observable
@@ -60,6 +63,12 @@ export default class CallModel extends Base<Call> {
   @observable
   toName: string;
 
+  @observable
+  displayName: string;
+
+  @observable
+  private _seconds = 0;
+
   constructor(data: Call) {
     super(data);
     const {
@@ -95,6 +104,45 @@ export default class CallModel extends Base<Call> {
     this.muteState = mute_state;
     this.fromName = from_name;
     this.toName = to_name;
+
+    autorun(async () => {
+      this.displayName = await getDisplayNameByCaller(this, true);
+    });
+  }
+
+  @computed
+  private get _timing() {
+    const { secondTime, hourTime, minuteTime } = formatSeconds(this._seconds);
+    let result = `${minuteTime}:${secondTime}`;
+    if (hourTime !== '00') {
+      result = `${hourTime}:${result}`;
+    }
+    return result;
+  }
+
+  private _intervalId?: NodeJS.Timeout;
+
+  @action
+  private _createInterval() {
+    const { connectTime } = this;
+    if (connectTime) {
+      this._intervalId = setInterval(() => {
+        this._seconds = Number(`${Date.now() - connectTime}`.slice(0, -3));
+      }, 1000);
+    }
+  }
+
+  @computed
+  get time() {
+    const { connectTime } = this;
+    if (!connectTime) {
+      return i18next.t('common.Connecting');
+    }
+    if (!this._intervalId) {
+      this._createInterval();
+      this._seconds = Number(`${Date.now() - connectTime}`.slice(0, -3));
+    }
+    return this._timing || '';
   }
 
   static fromJS(data: Call) {

@@ -1,10 +1,10 @@
-import { createDecorator } from 'framework/ioc';
+import { IMedia } from '@/interface/media';
 
 interface IRingtonePrefetcher {
   prefetch: (url: string) => void;
   subscribe: () => void;
   init: () => void;
   dispose: () => void;
+  media: IMedia;
 }
-const IRingtonePrefetcher = createDecorator('IRingtonePrefetcher');
 export { IRingtonePrefetcher };

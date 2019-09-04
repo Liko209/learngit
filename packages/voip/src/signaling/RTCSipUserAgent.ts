@@ -19,8 +19,6 @@ import {
   randomBetween,
   isSafari,
 } from '../utils/utils';
-import { CallReport } from '../report/Call';
-import { CALL_REPORT_PROPS } from '../report/types';
 import {
   kSwitchBackProxyMaxInterval,
   kSwitchBackProxyMinInterval,
@@ -44,14 +42,12 @@ enum WEBPHONE_REGISTER_EVENT {
 
 class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
+  private _statusCode: number = -1;
   private _switchBackTimer: NodeJS.Timeout | null = null;
   private _provisionInfo: RTCSipProvisionInfo | null = null;
   private _provisionOptions: ProvisionDataOptions | null = null;
 
-  public restartUA(
-    provisionData: RTCSipProvisionInfo,
-    options: ProvisionDataOptions,
-  ) {
+  restartUA(provisionData: RTCSipProvisionInfo, options: ProvisionDataOptions) {
     if (this._webphone) {
       this._destroy();
     }
@@ -118,7 +114,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._initListener();
   }
 
-  public makeCall(phoneNumber: string, options: RTCCallOptions): any {
+  makeCall(phoneNumber: string, options: RTCCallOptions): any {
     if (!this._webphone) {
       return null;
     }
@@ -130,7 +126,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     if (options.fromNumber) {
       inviteOptions.fromNumber = options.fromNumber;
     }
-
     if (
       options.replacesCallId &&
       options.replacesFromTag &&
@@ -173,14 +168,10 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       };
       inviteOptions.sessionDescriptionHandlerOptions = sessionDescriptionHandlerOptions;
     }
-
-    CallReport.instance().updateEstablishment(
-      CALL_REPORT_PROPS.INVITE_SENT_TIME,
-    );
     return this._webphone.userAgent.invite(phoneNumber, inviteOptions);
   }
 
-  public reRegister() {
+  reRegister() {
     rtcLogger.debug(LOG_TAG, 'Try to restart register with new transport');
     if (!this._webphone || !this._provisionInfo || !this._provisionOptions) {
       return;
@@ -189,7 +180,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._createWebPhone(this._provisionInfo, this._provisionOptions);
   }
 
-  public unregister() {
+  unregister() {
     if (!this._webphone) {
       return;
     }
@@ -197,11 +188,16 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._destroy();
   }
 
+  public getStatusCode(): number {
+    return this._statusCode;
+  }
+
   private _initListener(): void {
     if (!this._webphone || !this._webphone.userAgent) {
       return;
     }
     this._webphone.userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
+      this._statusCode = 200;
       this.emit(UA_EVENT.REG_SUCCESS);
     });
     this._webphone.userAgent.on(
@@ -210,6 +206,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
         if (!response) {
           return;
         }
+        this._statusCode = response.statusCode ? response.statusCode : -1;
         const message = response.data || response;
         if (
           message &&

@@ -79,4 +79,11 @@ describe('DialpadViewModel', () => {
   it('should initialize without fade animation', () => {
     expect(dialpadViewModel.startMinimizeAnimation).toBe(false);
   });
+
+  it('should return value of `isConference` on TelephonyStore', () => {
+    Object.defineProperty(dialpadViewModel._telephonyStore, 'isConference', {
+      get: jest.fn(() => true),
+    });
+    expect(dialpadViewModel.isConference).toEqual(true);
+  });
 });
