@@ -118,11 +118,7 @@ describe('TeamSettingsView', () => {
         value: 'SOME INITIAL DESC....',
       });
     });
-<<<<<<< Updated upstream
     it('should render withEscTracking when Component rendered', async () => {
-=======
-    it('should render withEscTracking when Component rendered  ', async () => {
->>>>>>> Stashed changes
       const props: any = {
         t: mockTransition,
         initialData: {
@@ -137,11 +133,7 @@ describe('TeamSettingsView', () => {
         groupName: 'my team',
       };
       const Wrapper = shallow(<TeamSettingsComponent {...props} />);
-<<<<<<< Updated upstream
       const modal = Wrapper.shallow().find(JuiModal);
-=======
-      const modal = Wrapper.shwllow().find(JuiModal);
->>>>>>> Stashed changes
       expect(modal.props().onEscTracking).toBeTruthy();
     });
   });
