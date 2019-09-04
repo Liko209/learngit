@@ -107,7 +107,7 @@ class Context {
     Boolean getIsSkipUnitTestAndStaticAnalysis() {
         // for a merge event, if target branch is not an stable branch, skip unit test
         // for a push event, skip if not an integration branch
-        isMerge? !isStableBranch(gitlabTargetBranch) : !isIntegrationBranch(gitlabSourceBranch)
+        isMerge? !isStableBranch(gitlabTargetBranch) : !isStableBranch(gitlabSourceBranch)
     }
 
     Boolean getIsSkipEndToEnd() {
@@ -249,8 +249,10 @@ class Context {
             lines.push("**Static Analysis**: ${saSummary}")
         if (coverageSummary)
             lines.push("**Coverage Report**: ${coverageSummary}")
-        if (coverageDiff)
-            lines.push("**Coverage Changes**: ${coverageDiff}")
+        if (coverageDiff) {
+            lines.push("**Coverage Changes**:")
+            lines.push(coverageDiff)
+        }
         if (coverageDiffDetail)
             lines.push("**Coverage Changes Detail**: ${coverageDiffDetail}")
         if (appUrl && buildAppSuccess)
@@ -461,6 +463,7 @@ class JupiterJob extends BaseJob {
         jenkins.node(context.isSkipUnitTestAndStaticAnalysis? context.e2eNode : context.buildNode) {
             context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
 
+            // install nodejs
             String nodejsHome = jenkins.tool context.nodejsTool
             jenkins.withEnv([
                 "PATH+NODEJS=${nodejsHome}/bin",
@@ -475,7 +478,7 @@ class JupiterJob extends BaseJob {
                 stage(name: 'Install Dependencies') { installDependencies() }
                 jenkins.parallel (
                     'Unit Test' : {
-                        stage(name: 'Unit Test') { unitTest() }
+                        stage(name: 'Unit Test') { try { unitTest() } catch(e) {} }
                     },
                     'tsc': {
                         stage(name: 'Static Analysis: tsc') { tscCheck() }
@@ -538,10 +541,14 @@ class JupiterJob extends BaseJob {
         jenkins.sh 'grep --version'
         jenkins.sh 'which tr'
         jenkins.sh 'which xargs'
-        jenkins.sh 'yum install gtk3-devel libXScrnSaver xorg-x11-server-Xvfb -y || true'
+
+        // install xvfb on centos if it is not exists
+        jenkins.sh 'which xvfb-run || yum install gtk3-devel libXScrnSaver xorg-x11-server-Xvfb alsa-lib -y || true'
+        // install diff2html-cli if it is not exists
+        jenkins.sh('npm install -g http://xmn145.rcoffice.ringcentral.com:9003/packages/diff2html-cli-4.0.0.tgz')
 
         // clean npm cache when its size exceed 6G, the unit of default du command is K, so we need to >> 20 to get G
-        long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
+        long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1 || true').trim()?: 0) >> 20
         if (npmCacheSize > 6) {
             jenkins.sh 'npm cache clean --force'
         }
@@ -614,11 +621,10 @@ class JupiterJob extends BaseJob {
 
     void installDependencies() {
         if(isSkipInstallDependency) return
-
         String dependencyLock = jenkins.sh(returnStdout: true, script: '''git ls-files | grep -e package.json -e package-lock.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
         if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
             jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
-            // return
+            return
         }
         jenkins.sh "npm config set registry ${context.npmRegistry}"
         jenkins.sh 'npm run fixed:version pre || true'  // suppress error
@@ -640,16 +646,19 @@ class JupiterJob extends BaseJob {
         jenkins.sh 'npm run lint-all'
     }
 
-
     void unitTest() {
         if (isSkipUnitTest) return
-
+        String testCmd = "npm run test -- --coverage --coverageReporters json lcov text-summary -w 8"
+        if (context.isMerge) {
+            testCmd = "${testCmd} --changedSince=${context.gitlabTargetNamespace}/${context.gitlabTargetBranch}"
+        }
         if (jenkins.sh(returnStatus: true, script: 'which xvfb-run') > 0) {
-            jenkins.sh 'npm run test -- --coverage'
+            jenkins.sh testCmd
         } else {
-            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage'
+            jenkins.sh "xvfb-run -d -s '-screen 0 1920x1080x24' ${testCmd}"
         }
 
+        // publish lcov-report
         String reportName = 'Coverage'
         jenkins.publishHTML([
             reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: reportName, reportTitles: reportName,
@@ -657,40 +666,35 @@ class JupiterJob extends BaseJob {
         ])
         context.coverageSummary = "${context.buildUrl}${reportName}".toString()
 
-        if (!context.isMerge) {
-            jenkins.sshagent (credentials: [context.scmCredentialId]) {
-                // attach coverage report as git note when new commits are pushed to integration branch
-                jenkins.sh "git notes add -f -F coverage/coverage-summary.json ${context.head}"
-                // push git notes to remote
-                jenkins.sh "git push -f ${context.gitlabSourceNamespace} refs/notes/* --no-verify"
-            }
-        } else {
-            // compare coverage report with baseline branch's
-            // step 1: fetch git notes
-            jenkins.sshagent (credentials: [context.scmCredentialId]) {
-                jenkins.sh "git fetch -f ${context.gitlabTargetNamespace} ${context.gitlabTargetBranch}"
-                jenkins.sh "git fetch -f ${context.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
-            }
-            // step 2: get latest commit on baseline branch with notes
-            jenkins.sh "git rev-list HEAD > commit-sha.txt"
-            jenkins.sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
-            String latestCommitWithNote = jenkins.sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
-            // step 3: compare with baseline
-            if (latestCommitWithNote) {
-                // read baseline
-                jenkins.sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
-                // create diff report
-                jenkins.sh "npx ts-node scripts/report-diff.ts baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff.csv"
-                jenkins.archiveArtifacts artifacts: 'coverage-diff.csv', fingerprint: true
-                context.coverageDiffDetail = "${context.buildUrl}artifact/coverage-diff.csv".toString()
-                // ensure increasing
-                int exitCode = jenkins.sh(
-                    returnStatus: true,
-                    script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
-                )
-                context.coverageDiff = "${exitCode > 0 ? context.FAILURE_EMOJI : context.SUCCESS_EMOJI} ${jenkins.sh(returnStdout: true, script: 'cat coverage-diff').trim()}".toString()
-                // throw error on coverage drop
-                if (exitCode > 0) jenkins.error 'coverage drop!'
+        // for merge request, we should check if
+        if (context.isMerge) {
+            String coverageData      = './coverage/coverage-final.json'
+            String diffFileName      = './git-minimal.diff'
+            String diffScript        = './scripts/git-diff-coverage.js'
+            String diffCovResult     = './diff-cov-result.txt'
+            String diffCovReport     = './diff-coverage/index.html'
+            String diffCovReportDir  = './diff-coverage'
+            String diffCovReportName = 'DiffCoverage'
+
+            // get diff file
+            jenkins.sh "git diff --unified=0 --no-renames -G. --minimal ${context.gitlabTargetNamespace}/${context.gitlabTargetBranch} > ${diffFileName}"
+
+            // publish diff coverage report using diff2html-cli
+            jenkins.sh "mkdir -p ${diffCovReportDir}"
+            jenkins.sh "cat ${diffFileName} | diff2html -c ${coverageData} -i stdin -F ${diffCovReport}"
+            jenkins.publishHTML([
+                reportDir: diffCovReportDir, reportFiles: 'index.html', reportName: diffCovReportName, reportTitles: diffCovReportName,
+                allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
+            ])
+            context.coverageDiffDetail = "${context.buildUrl}${diffCovReportName}".toString()
+
+            // test coverage rate
+            if (jenkins.fileExists(diffScript)) {
+                try {
+                    jenkins.sh "node ${diffScript} < ${diffFileName} > ${diffCovResult}"
+                } finally {
+                    context.coverageDiff =  jenkins.sh(returnStdout: true, script: "cat ${diffCovResult} || echo 'result is not found'").trim()
+                }
             }
         }
         lockKey(context.lockCredentialId, context.lockUri, context.unitTestLockKey)
@@ -717,6 +721,7 @@ class JupiterJob extends BaseJob {
                 jenkins.error "Build application is incomplete!"
 
             jenkins.sshagent(credentials: [context.deployCredentialId]) {
+                removeRemoteDir(context.deployUri, context.appHeadHashDir)
                 deployToRemote(sourceDir, context.deployUri, context.appHeadHashDir)
             }
             lockKey(context.lockCredentialId, context.lockUri, context.appLockKey)
@@ -728,9 +733,11 @@ class JupiterJob extends BaseJob {
             // and create copy to branch name based folder
             removeRemoteDir(context.deployUri, context.appLinkDir)
             copyRemoteDir(context.deployUri, context.appHeadHashDir, context.appLinkDir)
-            createGzFiles(context.deployUri, context.appLinkDir)
             // and update version info
             updateRemoteVersionInfo()
+            // create gzip file
+            createGzFiles(context.deployUri, context.appLinkDir)
+
             // for stage build, also create link to stage folder
             if (context.isStageBuild) {
                 removeRemoteDir(context.deployUri, context.appStageLinkDir)
@@ -932,8 +939,7 @@ class JupiterJob extends BaseJob {
     }
 
     Boolean getIsSkipUnitTest() {
-        !context.isMerge || context.gitlabSourceBranch != 'feature/FIJI-7797'
-        // true || context.isSkipUnitTestAndStaticAnalysis || (context.isMerge && hasBeenLocked(context.deployCredentialId, context.lockUri, context.unitTestLockKey))
+        context.isSkipUnitTestAndStaticAnalysis || (context.isMerge && hasBeenLocked(context.deployCredentialId, context.lockUri, context.unitTestLockKey))
     }
 
     Boolean getIsSkipStaticAnalysis() {
