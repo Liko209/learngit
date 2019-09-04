@@ -166,10 +166,20 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       manager.ensureDevice();
     }
     if (delta.added.length) {
-      manager.setDevice({
-        source: SOURCE_TYPE.NEW_DEVICE,
-        deviceId: _.last(delta.added)!.deviceId,
+      const useableDevices = delta.added.filter(device => {
+        const { bluetoothMode } = this._extractBluetoothInfo(device.label) || {
+          bluetoothMode: null,
+        };
+        if (bluetoothMode && bluetoothMode === BLUE_TOOTH_MODE.HANDS_FREE) {
+          return true;
+        }
+        return false;
       });
+      useableDevices.length &&
+        manager.setDevice({
+          source: SOURCE_TYPE.NEW_DEVICE,
+          deviceId: _.last(useableDevices)!.deviceId,
+        });
     }
   }
 
