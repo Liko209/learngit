@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/Shortcut/SwitchConversation.ts",""],
+    "fixtures": ["./fixtures/Shortcut/SwitchConversation.ts","./fixtures/ContentPanel/ShareFile.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
