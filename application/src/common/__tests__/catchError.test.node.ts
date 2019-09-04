@@ -172,14 +172,14 @@ describe('catchError.flash', () => {
     it('flash notification once when it is not debounce error handle', async (done: jest.DoneCallback) => {
       await MockFunc.asyncFunc('server');
       await MockFunc.asyncFunc('server');
-      expect(Notification.flashToast).toBeCalledTimes(2);
+      expect(Notification.flashToast).toHaveBeenCalledTimes(2);
       done();
     });
 
     it('flash notification once when it is debounce error handle', async (done: jest.DoneCallback) => {
       await MockFunc.asyncDebounceFunc('server');
       await MockFunc.asyncDebounceFunc('server');
-      expect(Notification.flashToast).toBeCalledTimes(1);
+      expect(Notification.flashToast).toHaveBeenCalledTimes(1);
       done();
     });
 
@@ -273,6 +273,13 @@ describe('getErrorType', () => {
     expect(
       getErrorType(
         new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'),
+      ),
+    ).toEqual(ERROR_TYPES.NETWORK);
+  });
+  it('getErrorType: NETWORK LOCAL TIMEOUT', () => {
+    expect(
+      getErrorType(
+        new JNetworkError(ERROR_CODES_NETWORK.LOCAL_TIMEOUT, 'LOCAL_TIMEOUT'),
       ),
     ).toEqual(ERROR_TYPES.NETWORK);
   });

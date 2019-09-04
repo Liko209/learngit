@@ -1,0 +1,11 @@
+{
+    "on_merge": {
+        "fixtures": [
+          "fixtures/ImageViewer/*.ts",
+          "fixtures/FileViewer/*.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}

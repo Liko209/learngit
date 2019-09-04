@@ -8,8 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EndAndAnswerViewProps } from './types';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { StyledActionText } from 'jui/pattern/Dialer';
+import { StyledActionText, JuiEndAndAnswer } from 'jui/pattern/Dialer';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 type Props = EndAndAnswerViewProps & WithTranslation;
@@ -27,15 +26,10 @@ class EndAndAnswerViewComponent extends Component<Props> {
     const { t } = this.props;
     return (
       <>
-        <JuiIconButton
-          size="xxxlarge"
-          variant="plain"
-          aria-label={t('telephony.endAndAnswerTheCall')}
-          onClick={this._handleEndAndAnswer}
-          data-test-automation-id="telephony-end-answer-btn"
-        >
-          end_and_answer
-        </JuiIconButton>
+        <JuiEndAndAnswer
+          ariaLabel={t('telephony.endAndAnswerTheCall')}
+          handleClick={this._handleEndAndAnswer}
+        />
         <StyledActionText>
           {t('telephony.action.endAndAnswer')}
         </StyledActionText>

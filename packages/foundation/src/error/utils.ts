@@ -14,6 +14,9 @@ export function stringMatch(src: string, target: string): boolean {
 }
 
 function isErrorMatchCondition(error: TError, condition: ErrorCondition) {
+  if (!condition) {
+    return false;
+  }
   const excludes = condition.excludeCodes || [];
   return (
     stringMatch(condition.type, error.type) &&
@@ -27,7 +30,9 @@ export function errorConditionSelector(
   conditions: ErrorCondition | ErrorCondition[],
 ) {
   if (Array.isArray(conditions)) {
-    return conditions.some(condition => isErrorMatchCondition(error, condition));
+    return conditions.some(condition =>
+      isErrorMatchCondition(error, condition),
+    );
   }
   return isErrorMatchCondition(error, conditions);
 }

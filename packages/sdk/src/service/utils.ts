@@ -45,7 +45,7 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  { data, dao, eventKey, noSavingToDB, source, changeMap }: any,
+  { data, dao, eventKey, noSavingToDB, source, changeMap, entitySourceController }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **
@@ -68,15 +68,16 @@ const baseHandleData = async (
     });
 
     if (deactivatedData.length > 0) {
+      const ids = deactivatedData.map((item: any) => item.id)
       await Promise.all([
         daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData),
-        dao.bulkDelete(deactivatedData.map((item: any) => item.id)),
+        entitySourceController ? entitySourceController.bulkDelete(ids) : dao.bulkDelete(ids)
       ]);
     }
 
     if (normalData.length > 0) {
       if (!noSavingToDB) {
-        await dao.bulkPut(normalData);
+        entitySourceController ? await entitySourceController.bulkUpdate(normalData) : await dao.bulkPut(normalData);
       }
     }
     if (shouldEmitNotification(source)) {

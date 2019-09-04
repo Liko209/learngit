@@ -9,6 +9,7 @@ import * as utils from '@/store/utils';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
 import { jupiter } from 'framework/Jupiter';
 import { AppStore } from '@/modules/app/store';
+import { ENTITY_NAME } from '@/store';
 
 describe('UmiViewModel', () => {
   jupiter.registerClass(AppStore);
@@ -18,11 +19,11 @@ describe('UmiViewModel', () => {
     value: NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
   };
   beforeEach(() => {
+    jest.clearAllMocks();
     const props: UmiProps = {
       type: UMI_SECTION_TYPE.FAVORITE,
     };
     viewModel = new UmiViewModel(props);
-    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(currentSetting);
   });
 
   describe('_unreadInfo', () => {
@@ -54,6 +55,14 @@ describe('UmiViewModel', () => {
         important: false,
       });
     });
+    it('should do nothing when badge setting is invalid', () => {
+      viewModel['props'].id = undefined;
+      jest.spyOn(utils, 'getEntity').mockReturnValueOnce({ isMocked: true });
+      expect(viewModel['_getSingleUnreadInfo']()).toEqual({
+        unreadCount: 0,
+        important: false,
+      });
+    });
 
     it('should get correct unread when id is valid and unreadCount === 0', () => {
       viewModel['props'].id = 123;
@@ -63,11 +72,19 @@ describe('UmiViewModel', () => {
       const mockGroup = {
         isTeam: false,
       };
-      // @ts-ignore
-      utils.getEntity = jest
-        .fn()
-        .mockReturnValueOnce(mockState)
-        .mockReturnValueOnce(mockGroup);
+      jest.spyOn(utils, 'getEntity').mockImplementation((name: ENTITY_NAME) => {
+        switch (name) {
+          case ENTITY_NAME.USER_SETTING:
+            return {
+              isMocked: false,
+              value: currentSetting,
+            };
+          case ENTITY_NAME.GROUP:
+            return mockGroup;
+          case ENTITY_NAME.GROUP_STATE:
+            return mockState;
+        }
+      });
 
       expect(viewModel['_getSingleUnreadInfo']()).toEqual({
         unreadCount: 0,
@@ -84,20 +101,29 @@ describe('UmiViewModel', () => {
       const mockGroup = {
         isTeam: true,
       };
-      // @ts-ignore
-      utils.getEntity = jest
-        .fn()
-        .mockReturnValueOnce(mockState)
-        .mockReturnValueOnce(mockGroup);
+      jest.spyOn(utils, 'getEntity').mockImplementation((name: ENTITY_NAME) => {
+        switch (name) {
+          case ENTITY_NAME.USER_SETTING:
+            return {
+              isMocked: false,
+              value: NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
+            };
+          case ENTITY_NAME.GROUP:
+            return mockGroup;
+          case ENTITY_NAME.GROUP_STATE:
+            return mockState;
+        }
+      });
 
       expect(viewModel['_getSingleUnreadInfo']()).toEqual({
         unreadCount: 54,
         important: true,
       });
     });
+
     it('should get correct unread when id is valid and unreadCount > 0 and umi setting is to display all', () => {
       currentSetting = NEW_MESSAGE_BADGES_OPTIONS.ALL;
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(currentSetting);
+
       viewModel['props'].id = 123;
       const mockState = {
         unreadCount: 12,
@@ -106,11 +132,19 @@ describe('UmiViewModel', () => {
       const mockGroup = {
         isTeam: true,
       };
-      // @ts-ignore
-      utils.getEntity = jest
-        .fn()
-        .mockReturnValueOnce(mockState)
-        .mockReturnValueOnce(mockGroup);
+      jest.spyOn(utils, 'getEntity').mockImplementation((name: ENTITY_NAME) => {
+        switch (name) {
+          case ENTITY_NAME.USER_SETTING:
+            return {
+              isMocked: false,
+              value: currentSetting,
+            };
+          case ENTITY_NAME.GROUP:
+            return mockGroup;
+          case ENTITY_NAME.GROUP_STATE:
+            return mockState;
+        }
+      });
 
       expect(viewModel['_getSingleUnreadInfo']()).toEqual({
         unreadCount: 12,
@@ -118,9 +152,6 @@ describe('UmiViewModel', () => {
       });
     });
     it('should get correct unread when id is valid and unreadCount > 0 and umi setting is unset', () => {
-      jest
-        .spyOn(utils, 'getSingleEntity')
-        .mockReturnValue({ value: undefined });
       viewModel['props'].id = 123;
       const mockState = {
         unreadCount: 12,
@@ -129,11 +160,19 @@ describe('UmiViewModel', () => {
       const mockGroup = {
         isTeam: true,
       };
-      // @ts-ignore
-      utils.getEntity = jest
-        .fn()
-        .mockReturnValueOnce(mockState)
-        .mockReturnValueOnce(mockGroup);
+
+      jest.spyOn(utils, 'getEntity').mockImplementation((name: ENTITY_NAME) => {
+        switch (name) {
+          case ENTITY_NAME.USER_SETTING:
+            return {
+              isMocked: false,
+            };
+          case ENTITY_NAME.GROUP:
+            return mockGroup;
+          case ENTITY_NAME.GROUP_STATE:
+            return mockState;
+        }
+      });
 
       expect(viewModel['_getSingleUnreadInfo']()).toEqual({
         unreadCount: 12,

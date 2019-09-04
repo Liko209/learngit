@@ -70,6 +70,10 @@ import { ItemService } from 'sdk/module/item';
 import { JError, ERROR_TYPES, ERROR_CODES_NETWORK } from 'sdk/error';
 import { RingtonePrefetcher } from '../../notification/RingtonePrefetcher';
 import { isCurrentUserDND } from '@/modules/notification/utils';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { Item } from 'sdk/module/item/entity';
+import ItemModel from '@/store/models/Item';
+import ConferenceItemModel from '@/store/models/ConferenceItem';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 class TelephonyService {
@@ -276,17 +280,21 @@ class TelephonyService {
       () => ({
         hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
         defaultCallerPhoneNumber: this._telephonyStore.defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall: this._telephonyStore.isEndMultipleIncomingCall
       }),
       async ({
         hasActiveOutBoundCall,
         defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall
       }: {
         hasActiveOutBoundCall: boolean;
         defaultCallerPhoneNumber: string;
+        isEndMultipleIncomingCall: boolean;
       }) => {
         // restore things to default values
-        if (!hasActiveOutBoundCall) {
+        if (!hasActiveOutBoundCall && !isEndMultipleIncomingCall) {
           runInAction(() => {
+            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -628,6 +636,9 @@ class TelephonyService {
   };
 
   switchCall = async (otherDeviceCall: ActiveCall) => {
+    const itemStore = storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<Item, ItemModel>;
+    const conference = itemStore.find((item: ItemModel) => item instanceof ConferenceItemModel && item.rcData.phoneNumber === otherDeviceCall.to);
+    this._telephonyStore.isConference = conference !== null;
     const myNumber = (await this._rcInfoService.getAccountMainNumber()) || '';
     const rv = await this._serverTelephonyService.switchCall(myNumber, otherDeviceCall);
 
@@ -964,6 +975,8 @@ class TelephonyService {
       return;
     });
   };
+
+  deleteInputString = this.deleteInputStringFactory('inputString');
 
   dispose = () => {
     this._ringtonePrefetcher.dispose()

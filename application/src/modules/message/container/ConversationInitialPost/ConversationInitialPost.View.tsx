@@ -13,7 +13,7 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, Trans } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from './types';
 import image from './img/illustrator.svg';
@@ -34,16 +34,6 @@ class ConversationInitialPost extends React.Component<
     });
   };
 
-  private get _name() {
-    const { creator } = this.props;
-
-    return (
-      <JuiLink handleOnClick={this.showProfile}>
-        {creator.userDisplayName}
-      </JuiLink>
-    );
-  }
-
   private get _conversationInitialPostHeader() {
     return (
       <JuiConversationInitialPostHeader>
@@ -54,7 +44,7 @@ class ConversationInitialPost extends React.Component<
   }
 
   private _groupCreateInfo() {
-    const { isTeam, displayName, t, createTime, isCompanyTeam } = this.props;
+    const { isTeam, displayName, t, createTime, isCompanyTeam, creator } = this.props;
     if (!isTeam) {
       return (
         <StyledSpan>
@@ -66,14 +56,15 @@ class ConversationInitialPost extends React.Component<
     if (!isCompanyTeam) {
       return (
         <StyledTitle>
-          {this._name}
-          <StyledSpan>
-            &nbsp;{t('message.initialPost.createATeam')}&nbsp;
-          </StyledSpan>
-          <StyledTeamName>{displayName}</StyledTeamName>
-          <StyledSpan>
-            &nbsp;{t('message.initialPost.on')} {createTime.get()}
-          </StyledSpan>
+          <Trans
+            i18nKey="message.initialPost.createTeamInfo"
+            components={[
+              <JuiLink handleOnClick={this.showProfile} key="link" />,
+              <StyledSpan key="span" />,
+              <StyledTeamName key="name" />,
+            ]}
+            values={{displayName, userName: creator.userDisplayName, createTime: createTime.get()}}
+          />
         </StyledTitle>
       );
     }

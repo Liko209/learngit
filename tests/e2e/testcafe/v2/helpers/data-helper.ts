@@ -17,56 +17,51 @@ class DataHelper {
         rcId: String(user.rc_extension_id),
         email: user.email,
         password: user.password || 'Test!123',
-        extension: user.sanitized_rc_extension.extensionNumber,
+        extension: user.sanitized_rc_extension ? user.sanitized_rc_extension.extensionNumber || '' : '',
       }
     }
     let companies = {}
     let phoneNumbers = []
     // unify main company number from account pool data.
     const formatNumberWithPlusSymbol = (phoneNumber: string) => {
-      if (phoneNumber.indexOf('+') < 0) {
-        return `+${phoneNumber}`;
-      }
-      return phoneNumber;
+      return (phoneNumber.indexOf('+') < 0) ? `+${phoneNumber}` : phoneNumber;
     }
     const getMainCompanyNumberFromUserData = (user) => {
-      const items = user.rc_phone_numbers
-        .filter(item => item.usageType == "MainCompanyNumber")
-        .map((rc_phone_number) => { return rc_phone_number.phoneNumber })
-      return formatNumberWithPlusSymbol(items[0]);
+      if (user.rc_phone_numbers) {
+        const items = user.rc_phone_numbers
+          .filter(item => item.usageType == "MainCompanyNumber")
+          .map(rc_phone_number => rc_phone_number.phoneNumber);
+        return formatNumberWithPlusSymbol(items[0]);
+      }
+      return user.email.split('@')[1];
     }
+    const mainCompanyNumber = data.mainNumber ? formatNumberWithPlusSymbol(data.mainNumber) : data.companyEmailDomain;
+    
     const glipUsers = _.partition(data.glipUsers, (user) => { return user.first_user == true });
     for (const admin of glipUsers[0]) {
-      if (admin.rc_phone_numbers) {
-        const companyNumber = getMainCompanyNumberFromUserData(admin);
-        const companyEmailDomain = admin.email.split('@')[1];
-        companies[companyNumber] = <ICompany>{
-          type: data.accountType,
-          brandId: String(data.brand),
-          number: companyNumber,
-          domain: companyEmailDomain,
-        }
-        companies[companyNumber]["admin"] = buildUsers(admin, companies[companyNumber])
-        if (phoneNumbers.indexOf(companyNumber) < 0) {
-          phoneNumbers.push(companyNumber);
-        }
+      const companyEmailDomain = admin.email.split('@')[1];
+      const companyNumber = getMainCompanyNumberFromUserData(admin);
+      companies[companyNumber] = <ICompany>{
+        type: data.accountType,
+        brandId: String(data.brand),
+        number: companyNumber,
+        domain: companyEmailDomain,
+      }
+      companies[companyNumber]["admin"] = buildUsers(admin, companies[companyNumber])
+      if (phoneNumbers.indexOf(companyNumber) < 0) {
+        phoneNumbers.push(companyNumber);
       }
     };
-
     for (const phoneNumber in companies) {
       const users = glipUsers[1]
         .filter((user) => {
-          if (user.rc_phone_numbers) {
-            const companyNumber = getMainCompanyNumberFromUserData(user)
-            return user['rc_extension_id'] && companyNumber == phoneNumber;
-          }
-          return false;
+          const companyNumber = getMainCompanyNumberFromUserData(user)
+          return companyNumber == phoneNumber;
         })
         .map(user => buildUsers(user, companies[phoneNumber]));
       companies[phoneNumber].users = users;
     }
 
-    const mainCompanyNumber = formatNumberWithPlusSymbol(data.mainNumber);
     const mainCompany = companies[mainCompanyNumber];
     const glipTeams: any[] = data.teams || data.glipTeams;
     const groups = glipTeams.map((team) => {

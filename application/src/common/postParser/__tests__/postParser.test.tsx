@@ -95,6 +95,27 @@ describe('non-glipdown text', () => {
           </a>,
         ]);
       });
+
+      it('should not parse to url for string with dot if it is not valid url according to glipdown', () => {
+        expect(
+          postParser(
+            '1.addfasddd http://www.baidu.com a.133',
+            { url: true },
+          ),
+        ).toEqual([
+          '1.addfasddd ',
+          <a
+            key={0}
+            rel='noopener noreferrer'
+            target='_blank'
+            href='http://www.baidu.com'
+          >
+            http://www.baidu.com
+          </a>,
+          ' ',
+          'a.133',
+        ]);
+      });
     });
 
     describe('keywords', () => {
@@ -540,7 +561,7 @@ describe('glipdown text', () => {
           }),
         ).toEqual('😂hahahah');
       });
-      
+
       it('should return woman NOT family when enter :woman:', ()=> {
         expect(postParser(':woman:', {
           emoji: {},

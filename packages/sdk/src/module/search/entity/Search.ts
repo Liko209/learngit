@@ -1,12 +1,12 @@
-import { Person } from 'sdk/module/person/entity';
-import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { SortableModel } from 'sdk/framework/model';
-
 /*
  * @Author: Thomas thomas.yang@ringcentral.com
  * @Date: 2019-02-22 09:01:10
  * Copyright © RingCentral. All rights reserved.
  */
+
+import { Person } from 'sdk/module/person/entity';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { SortableModel } from 'sdk/framework/model';
 
 enum RecentSearchTypes {
   TEAM = 'team',
@@ -37,6 +37,10 @@ type FuzzySearchContactOptions = {
   ) => number;
 };
 
+type FuzzySearchPhoneContactOptions = FuzzySearchContactOptions & {
+  showExtensionOnly?: boolean;
+}
+
 type PhoneContactEntity = {
   id: string;
   person: Person;
@@ -54,6 +58,7 @@ export {
   RecentSearchModel,
   RecentSearchTypes,
   FuzzySearchContactOptions,
+  FuzzySearchPhoneContactOptions,
   PersonSortingOrder,
   PhoneContactEntity,
 };
