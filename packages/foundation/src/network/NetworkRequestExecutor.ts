@@ -245,6 +245,10 @@ export class NetworkRequestExecutor
   private _removeAuthorization() {
     this.request.headers.Authorization &&
       delete this.request.headers.Authorization;
+
+    networkLogger
+      .tags(LOG_TAG)
+      .info('_removeAuthorization of request: ', this.request.id);
   }
 
   private _handle502XApiCompletionCallback() {

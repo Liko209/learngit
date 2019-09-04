@@ -187,7 +187,6 @@ describe('TelephonyService', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
       expect(accountController.hangUp).toHaveBeenCalledWith('123');
-      expect(callSwitchController.onCallEnded).toHaveBeenCalledWith('123');
     });
   });
   describe('mute', () => {

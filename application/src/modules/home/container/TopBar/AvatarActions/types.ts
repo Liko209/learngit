@@ -21,7 +21,7 @@ type ViewProps = {
   handleCustomStatus: () => void;
   handleClearStatus: () => void;
   handleOpen: () => void;
-  awayStatus?: string;
+  awayStatus: string;
   colons: string;
 };
 

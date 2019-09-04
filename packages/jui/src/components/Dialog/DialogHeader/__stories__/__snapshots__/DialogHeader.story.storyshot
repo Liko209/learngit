@@ -92,9 +92,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -143,8 +141,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 }
 
 .c2 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -197,9 +194,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
         onClick={[Function]}
       >
         <button
-          aria-haspopup={true}
           aria-label="Close"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -210,7 +205,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -381,9 +377,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -432,8 +426,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 }
 
 .c2 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -494,9 +487,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         onClick={[Function]}
       >
         <button
-          aria-haspopup={true}
           aria-label="Favorite"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -507,7 +498,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -535,9 +527,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           </span>
         </button>
         <button
-          aria-haspopup={true}
           aria-label="Settings"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -548,7 +538,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -582,9 +573,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
             onMouseDown={[Function]}
           >
             <button
-              aria-haspopup={true}
               aria-label="More"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c7"
               disabled={false}
               onBlur={[Function]}
@@ -595,7 +584,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -625,9 +615,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           </div>
         </div>
         <button
-          aria-haspopup={true}
           aria-label="Close"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -638,7 +626,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -849,9 +838,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 
 .c0 {
   background-color: white;
-  padding: 0px 24px;
-  height: 52px;
-  min-height: 52px;
+  padding: 20px 24px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -900,8 +887,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 }
 
 .c7 {
-  margin-left: 16px;
-  margin-right: -10px;
+  margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -1052,9 +1038,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         onClick={[Function]}
       >
         <button
-          aria-haspopup={true}
           aria-label="Favorite"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1065,7 +1049,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1093,9 +1078,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           </span>
         </button>
         <button
-          aria-haspopup={true}
           aria-label="Settings"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
@@ -1106,7 +1089,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1140,9 +1124,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             onMouseDown={[Function]}
           >
             <button
-              aria-haspopup={true}
               aria-label="More"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
@@ -1153,7 +1135,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1183,9 +1166,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           </div>
         </div>
         <button
-          aria-haspopup={true}
           aria-label="Close"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
@@ -1196,7 +1177,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1288,9 +1270,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         onClick={[Function]}
       >
         <button
-          aria-haspopup={true}
           aria-label="Favorite"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1301,7 +1281,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1329,9 +1310,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           </span>
         </button>
         <button
-          aria-haspopup={true}
           aria-label="Settings"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
@@ -1342,7 +1321,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -1376,9 +1356,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             onMouseDown={[Function]}
           >
             <button
-              aria-haspopup={true}
               aria-label="More"
-              aria-owns={null}
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
@@ -1389,7 +1367,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
               onMouseDown={[Function]}
               onMouseEnter={[Function]}
               onMouseLeave={[Function]}
-              onMouseMove={[Function]}
+              onMouseOut={[Function]}
+              onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
@@ -1419,9 +1398,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           </div>
         </div>
         <button
-          aria-haspopup={true}
           aria-label="Close"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c12"
           disabled={false}
           onBlur={[Function]}
@@ -1432,7 +1409,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}

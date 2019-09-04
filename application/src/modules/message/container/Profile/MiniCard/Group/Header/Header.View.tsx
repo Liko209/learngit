@@ -15,7 +15,8 @@ import {
   JuiProfileMiniCardGroupName,
 } from 'jui/pattern/Profile/MiniCard';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
-import { Favorite, Privacy } from '@/containers/common';
+import { Favorite } from '@/containers/common/Favorite';
+import { Privacy } from '@/containers/common/Privacy';
 
 @observer
 class ProfileMiniCardGroupHeaderView extends Component<

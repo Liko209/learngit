@@ -31,7 +31,6 @@ import {
   ThresholdStrategy,
   JuiVirtualizedListHandles,
   ItemWrapper,
-  ScrollInfo,
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
@@ -110,17 +109,11 @@ class StreamViewComponent extends Component<Props> {
     } = prevProps;
     const {
       postIds,
-      mostRecentPostId,
       hasMore,
       lastPost,
       jumpToPostId,
     } = this.props;
 
-    if (postIds.length && mostRecentPostId) {
-      if (!postIds.includes(mostRecentPostId)) {
-        this._updateIgnoredStatus(false);
-      }
-    }
     const newPostAddedAtEnd =
       prevPostIds.length !== 0 &&
       // TODO this is a Hotfix for FIJI-4825
@@ -272,8 +265,10 @@ class StreamViewComponent extends Component<Props> {
   @action
   private _handleVisibilityChanged = (
     { startIndex, stopIndex }: IndexRange,
-    { scrollHeight, scrollTop, clientHeight }: ScrollInfo,
+    target?: HTMLElement,
   ) => {
+    if(!target) return;
+    const { scrollHeight, scrollTop, clientHeight } = target;
     const {
       items,
       firstHistoryUnreadPostId = 0,

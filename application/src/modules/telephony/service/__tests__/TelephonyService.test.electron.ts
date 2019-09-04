@@ -653,13 +653,14 @@ describe('TelephonyService', () => {
 
     it('should call directCall', async () => {
       const toNumber = '000';
+      const options = {};
       telephonyService._makeCall = jest.fn();
       mockedServerTelephonyService.getAllCallCount.mockReturnValue(1);
-      await telephonyService.directCall(toNumber);
+      await telephonyService.directCall(toNumber, options);
       expect(telephonyService._makeCall).not.toHaveBeenCalled();
       mockedServerTelephonyService.getAllCallCount.mockReturnValue(0);
-      await telephonyService.directCall(toNumber);
-      expect(telephonyService._makeCall).toHaveBeenCalledWith(toNumber);
+      await telephonyService.directCall(toNumber, options);
+      expect(telephonyService._makeCall).toHaveBeenCalledWith(toNumber, options);
     });
 
     it('should call muteOrUnmute', () => {
@@ -805,26 +806,6 @@ describe('TelephonyService', () => {
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('12345');
-  });
-
-  it('should decrease the string length on the input field', () => {
-    telephonyService.maximize();
-    const inputString = '1234';
-    telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.deleteInputString(false, 3, 3);
-    expect(
-      (telephonyService as TelephonyService)._telephonyStore.inputString,
-    ).toBe('123');
-  });
-
-  it('should clear all the string length on the input field', () => {
-    telephonyService.maximize();
-    const inputString = '1234';
-    telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.deleteInputString(true);
-    expect(
-      (telephonyService as TelephonyService)._telephonyStore.inputString,
-    ).toBe('');
   });
 
   it('Should show the toast when initiate a call to an invalid number from matched result [JPT-254]', async () => {
@@ -1146,6 +1127,21 @@ describe('TelephonyService', () => {
           `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
         );
       }),);
+    ['RC', 'ATT', 'TELUS'].forEach(i =>
+      it(`should build correct url for ${i} when given access code`, () => {
+        const RCPhoneCallURL = {
+          RC: 'rcmobile',
+          ATT: 'attvr20',
+          TELUS: 'rctelus',
+        };
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockImplementation(() => ({ rcBrand: i }));
+        telephonyService.makeRCPhoneCall('666', '123');
+        expect(urlTester).toHaveBeenCalledWith(
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666,,123#')}`,
+        );
+      }),);
     it('should show dialog when rc phone is uninstalled [JPT-2403]', async () => {
       jest
         .spyOn(utils, 'getEntity')
@@ -1227,6 +1223,30 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
     })
   })
+
+  describe('joinAudioConference()', () => {
+    it('Join conf failed when user has no any active DL. JPT-[2755]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(false);
+      mockedPhoneNumberService.isShortNumber = jest.fn().mockResolvedValue(false);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('12231232312', '2');
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
+
+    it('Join conf failed when user webRTC permission removed JPT-[2756]', async () => {
+      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(true);
+      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(false);
+      // @ts-ignore
+      telephonyService._makeCall = jest.fn();
+      await telephonyService.joinAudioConference('1', '2');
+      expect(ToastCallError.toastPermissionError).toHaveBeenCalled();
+      // @ts-ignore
+      expect(telephonyService._makeCall).not.toHaveBeenCalled();
+    });
+  });
 
   describe('multiple calls', () => {
     it('Can NOT make call when user on a call. [JPT-2772]', async () => {

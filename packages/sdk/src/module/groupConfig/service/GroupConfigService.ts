@@ -102,6 +102,10 @@ class GroupConfigService extends EntityBaseService<GroupConfig> {
     }
     return this._groupConfigController;
   }
+
+  async clearDraftFlagIfNotReallyExisted(groupId: number) {
+    await this.getGroupConfigController().clearDraftFlagIfNotReallyExisted(groupId);
+  }
 }
 
 export { GroupConfigService };

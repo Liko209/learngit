@@ -24,7 +24,7 @@ describe('ThumbnailViewModel', () => {
         .spyOn(getThumbnailURL, 'getThumbnailURLWithType')
         .mockResolvedValue({ url: previewUrl, type: 1 });
     });
-    it('should get image url', done => {
+    it('should get thumbsUrlWithSize for image', done => {
       const file = {
         type: 'application/json',
         latestVersion: { stored_file_id: 1 },
@@ -32,7 +32,7 @@ describe('ThumbnailViewModel', () => {
 
       (getEntity as jest.Mock).mockReturnValue(file);
 
-      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123, type: 'image' });
       setTimeout(() => {
         expect(thumbnailViewModel.thumbsUrlWithSize).toEqual(previewUrl);
         file.latestVersion = { stored_file_id: 1 };
@@ -42,6 +42,22 @@ describe('ThumbnailViewModel', () => {
         });
       });
     });
+
+    it('should not have thumbsUrlWithSize for file', done => {
+      const file = {
+        type: 'application/json',
+        latestVersion: { stored_file_id: 1 },
+      };
+
+      (getEntity as jest.Mock).mockReturnValue(file);
+
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123, type: 'file' });
+      setTimeout(() => {
+        expect(thumbnailViewModel.thumbsUrlWithSize).toBeUndefined();
+        done();
+      });
+    });
+
     it('should get file type', async () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: 'doc',
@@ -97,7 +113,7 @@ describe('ThumbnailViewModel', () => {
 
       (getEntity as jest.Mock).mockReturnValue(file);
 
-      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123, type: 'image' });
       setTimeout(() => {
         expect(thumbnailViewModel._lastStoreFileId).toEqual(1);
 

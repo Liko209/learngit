@@ -16,10 +16,11 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_CALL_ACTION_DIRECTION,
 } from '../types';
-import { WEBPHONE_SESSION_STATE, RC_REFER_EVENT} from '../../signaling/types';
+import { WEBPHONE_SESSION_STATE, RC_REFER_EVENT, WEBPHONE_MEDIA_CONNECTION_STATE_EVENT} from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 import { RTCMediaStatsManager } from '../../signaling/RTCMediaStatsManager';
+import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 
 describe('RTC call', () => {
   afterEach(() => {
@@ -27,6 +28,9 @@ describe('RTC call', () => {
   });
 
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
+    getRegistrationStatusCode(): number {
+      return 603;
+    }
     createOutgoingCallSession(toNum: string): void {
       this.toNum = toNum;
     }
@@ -35,7 +39,7 @@ describe('RTC call', () => {
     public callAction: RTC_CALL_ACTION;
     public isReadyReturnValue: boolean = false;
     public toNum: string = '';
-    private _call: RTCCall | null = null;
+    private _call: RTCCall | undefined;
 
     onCallStateChange(state: RTC_CALL_STATE): void {
       this.callState = state;
@@ -182,6 +186,74 @@ describe('RTC call', () => {
     }
   }
 
+  describe('media report', () => {
+    it('should the media stats correct when have multiple calls [JPT-2917]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const sessionA = new MockSession();
+      const sessionB = new MockSession();
+      const callA = new RTCCall(false, '123', null, account, account);
+      const callB = new RTCCall(false, '345', null, account, account);
+      callA.setCallSession(sessionA);
+      callB.setCallSession(sessionB);
+      callA.onAccountReady();
+      callB.onAccountReady();
+      sessionA.mockSignal('failed', {statusCode: 486, reasonPhrase: 'Test A'});
+      sessionB.mockSignal('failed', {statusCode: 487, reasonPhrase: 'Test B'});
+      setImmediate(() => {
+        expect(callA._report.events[0].info).toBe( "486 Test A");
+        expect(callA._report.events[0].name).toBe( "InviteError");
+        expect(callB._report.events[0].info).toBe( "487 Test B");
+        expect(callB._report.events[0].name).toBe( "InviteError");
+        done();
+      });
+    });
+
+    it('should report registerError event when enter pending. [JPT-2918]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(false, '123', null, account, account);
+      call.setCallSession(session);
+      call.onAccountNotReady();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('pending');
+        expect(call._report.events[0].info).toBe( "603");
+        expect(call._report.events[0].name).toBe( "RegistrationError");
+        done();
+      });
+    });
+
+    it('should report InviteError event when session error. [JPT-2919]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(false, '123', null, account, account);
+      call.setCallSession(session);
+      call.onAccountReady();
+      session.mockSignal('failed', {statusCode: 486, reasonPhrase: 'Test A'});
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        expect(call._report.events[0].info).toBe( "486 Test A");
+        expect(call._report.events[0].name).toBe( "InviteError");
+        done();
+      });
+    });
+
+    it('should report webrtc event when media connection state changed. [JPT-2922]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(false, '123', null, account, account);
+      call.setCallSession(session);
+      call.onAccountReady();
+      session.mockSignal(
+        WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_STATE_CHANGED,
+        WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_CHECKING);
+      setImmediate(() => {
+        expect(call._report.events[0].info).toBe(WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_CHECKING);
+        expect(call._report.events[0].name).toBe('MediaEvent');
+        done();
+      });
+    });
+  });
+
   describe('constructor()', () => {
     it('should set UUID when use constructor() ', async () => {
       const account = new VirturlAccountAndCallObserver();
@@ -201,7 +273,7 @@ describe('RTC call', () => {
   });
 
   describe('flip()', () => {
-    it('should report flip success when FSM in connected state and flip success [JPT-682]', done => {
+    it('should report flip success when FSM in connected state and flip success [JPT-682][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
       const session = new MockSession();
@@ -222,11 +294,15 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.FLIP,
           {},
         );
+        expect(call._report.events[0].info).toBe( "flip");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "flip");
+        expect(call._report.events[1].name).toBe( "CallActionSuccess");
         done();
       });
     });
 
-    it('should report flip failed when FSM in connected state but flip failed [JPT-683]', done => {
+    it('should report flip failed when FSM in connected state but flip failed [JPT-683][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
       const session = new MockSession();
@@ -247,6 +323,10 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.FLIP,
           -1,
         );
+        expect(call._report.events[0].info).toBe( "flip");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "flip");
+        expect(call._report.events[1].name).toBe( "CallActionFailed");
         done();
       });
     });
@@ -349,7 +429,7 @@ describe('RTC call', () => {
   });
 
   describe('startRecord()', () => {
-    it('should report startRecord success when FSM in connected state and startRecord success [JPT-686]', done => {
+    it('should report startRecord success when FSM in connected state and startRecord success [JPT-686][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
       const session = new MockSession();
@@ -370,6 +450,10 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.START_RECORD,
           {},
         );
+        expect(call._report.events[0].info).toBe( "startRecord");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "startRecord");
+        expect(call._report.events[1].name).toBe( "CallActionSuccess");
         done();
       });
     });
@@ -400,6 +484,7 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.START_RECORD,
           {},
         );
+        call.hangup();
         done();
       });
     });
@@ -548,7 +633,7 @@ describe('RTC call', () => {
       });
     });
 
-    describe('should report startRecord failed when FSM not in connected state [JPT-684]', () => {
+    describe('should report startRecord failed when FSM not in connected state [JPT-684][JPT-2920][JPT-2921]', () => {
       it('should report startRecord failed when FSM in idle state', done => {
         const account = new VirturlAccountAndCallObserver();
         const session = new MockSession();
@@ -562,6 +647,10 @@ describe('RTC call', () => {
             RTC_CALL_ACTION.START_RECORD,
             -1,
           );
+          expect(call._report.events[0].info).toBe( "startRecord");
+          expect(call._report.events[0].name).toBe( "CallAction");
+          expect(call._report.events[1].info).toBe( "startRecord");
+          expect(call._report.events[1].name).toBe( "CallActionFailed");
           done();
         });
       });
@@ -644,7 +733,7 @@ describe('RTC call', () => {
   });
 
   describe('stopRecord()', () => {
-    it('should report stopRecord success when FSM in connected state and stopRecord success [JPT-690]', done => {
+    it('should report stopRecord success when FSM in connected state and stopRecord success [JPT-690][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
       const session = new MockSession();
@@ -667,6 +756,10 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.STOP_RECORD,
           {},
         );
+        expect(call._report.events[0].info).toBe( "stopRecord");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "stopRecord");
+        expect(call._report.events[1].name).toBe( "CallActionSuccess");
         done();
       });
     });
@@ -741,7 +834,7 @@ describe('RTC call', () => {
         });
       });
 
-      it('should report stopRecord failed when FSM in pending state', done => {
+      it('should report stopRecord failed when FSM in pending state. [JPT-2920][JPT-2921]', done => {
         const account = new VirturlAccountAndCallObserver();
         const call = new RTCCall(false, '123', null, account, account);
         call.onAccountNotReady();
@@ -757,6 +850,10 @@ describe('RTC call', () => {
             RTC_CALL_ACTION.STOP_RECORD,
             -1,
           );
+          expect(call._report.events[1].info).toBe( "stopRecord");
+          expect(call._report.events[1].name).toBe( "CallAction");
+          expect(call._report.events[2].info).toBe( "stopRecord");
+          expect(call._report.events[2].name).toBe( "CallActionFailed");
           done();
         });
       });
@@ -823,7 +920,7 @@ describe('RTC call', () => {
   });
 
   describe('Transfer call', () => {
-    it('should notify transfer failed when transfer to empty number. [JPT-673]', done => {
+    it('should notify transfer failed when transfer to empty number. [JPT-673][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -835,11 +932,15 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.TRANSFER,
           -1,
         );
+        expect(call._report.events[1].info).toBe( "transfer");
+        expect(call._report.events[1].name).toBe( "CallAction");
+        expect(call._report.events[2].info).toBe( "transfer");
+        expect(call._report.events[2].name).toBe( "CallActionFailed");
         done();
       });
     });
 
-    it('should notify transfer success when transfer in connected state and session notify transfer success. [JPT-674]', done => {
+    it('should notify transfer success when transfer in connected state and session notify transfer success. [JPT-674][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -858,6 +959,10 @@ describe('RTC call', () => {
               RTC_CALL_ACTION.TRANSFER,
               {},
             );
+            expect(call._report.events[1].info).toBe( "transfer");
+            expect(call._report.events[1].name).toBe( "CallAction");
+            expect(call._report.events[2].info).toBe( "transfer");
+            expect(call._report.events[2].name).toBe( "CallActionSuccess");
             done();
           });
         });
@@ -911,7 +1016,7 @@ describe('RTC call', () => {
   });
 
   describe('Warm Transfer call', () => {
-    it('should notify warm transfer failed when warm transfer but has not target call. [JPT-2542]', done => {
+    it('should notify warm transfer failed when warm transfer but has not target call. [JPT-2542][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const sessionA = new MockSession();
       const sessionB = new MockSession();
@@ -924,11 +1029,15 @@ describe('RTC call', () => {
       callA.warmTransfer(callB.getCallInfo().uuid);
       setImmediate(() => {
         expect(callA.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
-        expect(account.getCallByUuid(callB.getCallInfo().uuid)).toBeNull();
+        expect(account.getCallByUuid(callB.getCallInfo().uuid)).toBeUndefined();
         expect(account.onCallActionFailed).toBeCalledWith(
           RTC_CALL_ACTION.WARM_TRANSFER,
           -1,
         );
+        expect(callA._report.events[0].info).toBe( "warmTransfer");
+        expect(callA._report.events[0].name).toBe( "CallAction");
+        expect(callA._report.events[1].info).toBe( "warmTransfer");
+        expect(callA._report.events[1].name).toBe( "CallActionFailed");
         done();
       });
     });
@@ -954,7 +1063,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should notify warm transfer success when call webPhone warm transfer return success. [JPT-2548]', done => {
+    it('should notify warm transfer success when call webPhone warm transfer return success. [JPT-2548][JPT-2920][JPT-2921]', done => {
       const account = new VirturlAccountAndCallObserver();
       const sessionA = new MockSession();
       const sessionB = new MockSession();
@@ -978,6 +1087,10 @@ describe('RTC call', () => {
               RTC_CALL_ACTION.WARM_TRANSFER,
               {},
             );
+            expect(callA._report.events[0].info).toBe( "warmTransfer");
+            expect(callA._report.events[0].name).toBe( "CallAction");
+            expect(callA._report.events[1].info).toBe( "warmTransfer");
+            expect(callA._report.events[1].name).toBe( "CallActionSuccess");
             done();
           });
         });
@@ -1055,7 +1168,7 @@ describe('RTC call', () => {
       expect(call.isIncomingCall()).toBe(false);
     });
 
-    it('should call state become disconnected when reject call in idle state [JPT-623]', done => {
+    it('should call state become disconnected when reject call in idle state [JPT-623][JPT-2920]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -1064,11 +1177,13 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.reject).toBeCalled();
+        expect(call._report.events[0].info).toBe( "reject");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
 
-    it('should call state become disconnected when send to voicemail in idle state [JPT-624]', done => {
+    it('should call state become disconnected when send to voicemail in idle state [JPT-624][JPT-2920]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -1077,6 +1192,8 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.toVoicemail).toBeCalled();
+        expect(call._report.events[0].info).toBe( "sendToVm");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
@@ -1115,7 +1232,7 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('should call state become connecting when answer in idle state [JPT-625]', done => {
+    it('should call state become connecting when answer in idle state [JPT-625][JPT-2920]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -1124,6 +1241,8 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(session.accept).toBeCalled();
+        expect(call._report.events[0].info).toBe( "answer");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
@@ -1142,7 +1261,7 @@ describe('RTC call', () => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
-      session.mockSignal('failed');
+      session.mockSignal('failed', {statusCode: 487, reasonPhrase: "Test failed"});
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
@@ -1153,7 +1272,7 @@ describe('RTC call', () => {
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
       call.answer();
-      session.mockSignal('failed');
+      session.mockSignal('failed', {statusCode: 487, reasonPhrase: "Test failed"});
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
@@ -1263,7 +1382,7 @@ describe('RTC call', () => {
       });
     });
 
-    it("should state transition from Connecting to Disconnected when receive 'Hang up' event [JPT-606]", done => {
+    it("should state transition from Connecting to Disconnected when receive 'Hang up' event [JPT-606][JPT-2920]", done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(false, '123', null, account, account);
@@ -1275,6 +1394,8 @@ describe('RTC call', () => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.terminate).toBeCalled();
+        expect(call._report.events[0].info).toBe( "hangup");
+        expect(call._report.events[0].name).toBe( "CallAction");
         done();
       });
     });
@@ -1299,7 +1420,7 @@ describe('RTC call', () => {
       const call = new RTCCall(false, '123', null, account, account);
       call.setCallSession(session);
       call.onAccountReady();
-      session.mockSignal('failed');
+      session.mockSignal('failed', {statusCode: 487, reasonPhrase: "Test failed"});
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
@@ -1347,7 +1468,7 @@ describe('RTC call', () => {
       call.setCallSession(session);
       call.onAccountReady();
       session.mockSignal('accept');
-      session.mockSignal('failed');
+      session.mockSignal('failed', {statusCode: 487, reasonPhrase: "Test failed"});
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
@@ -1369,7 +1490,7 @@ describe('RTC call', () => {
       call.onAccountNotReady();
     }
 
-    it('should report park success with msg when FSM in connected state and park success [JPT-835]', done => {
+    it('should report park success with msg when FSM in connected state and park success [JPT-835][JPT-2920][JPT-2921]', done => {
       setUpAccount();
       session.park.mockResolvedValue('park ok');
       call.onAccountReady();
@@ -1387,11 +1508,15 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.PARK,
           'park ok',
         );
+        expect(call._report.events[1].info).toBe( "park");
+        expect(call._report.events[1].name).toBe( "CallAction");
+        expect(call._report.events[2].info).toBe( "park");
+        expect(call._report.events[2].name).toBe( "CallActionSuccess");
         done();
       });
     });
 
-    it('should report park failed when FSM in connected state and park failed [JPT-831]', done => {
+    it('should report park failed when FSM in connected state and park failed [JPT-831][JPT-2920][JPT-2921]', done => {
       setUpAccount();
       session.park.mockRejectedValue(null);
       call.onAccountReady();
@@ -1408,6 +1533,10 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.PARK,
           -1,
         );
+        expect(call._report.events[1].info).toBe( "park");
+        expect(call._report.events[1].name).toBe( "CallAction");
+        expect(call._report.events[2].info).toBe( "park");
+        expect(call._report.events[2].name).toBe( "CallActionFailed");
         done();
       });
     });
@@ -1445,7 +1574,7 @@ describe('RTC call', () => {
       setUpAccount();
       call.onAccountReady();
       session.mockSignal('accepted');
-      session.mockSignal('failed');
+      session.mockSignal('failed', {statusCode: 487, reasonPhrase: "Test failed"});
       call.park();
       setImmediate(() => {
         const fsmState = call._fsm.state();
@@ -1522,7 +1651,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should mute remote, set "isRemoteMute" true and report remote mute succeed if call state is connected when mute direction is remote[JPT-2731]', done => {
+    it('should mute remote, set "isRemoteMute" true and report remote mute succeed if call state is connected when mute direction is remote[JPT-2731][JPT-2920][JPT-2921]', done => {
       setupCall();
       jest.spyOn(call._callSession,"toggleRemoteMute");
       call._fsm._callFsmTable.accountReady();
@@ -1536,6 +1665,10 @@ describe('RTC call', () => {
           actionDirection: RTC_CALL_ACTION_DIRECTION.REMOTE,
         },
       );
+      expect(call._report.events[0].info).toBe( "remoteMute");
+      expect(call._report.events[0].name).toBe( "CallAction");
+      expect(call._report.events[1].info).toBe( "remoteMute");
+      expect(call._report.events[1].name).toBe( "CallActionSuccess");
       setImmediate(() => {
         expect(call._callSession.toggleRemoteMute).toBeCalledWith(true);
         done();
@@ -1589,7 +1722,7 @@ describe('RTC call', () => {
       });
     });
 
-    describe('should set "isLocalMute" true, report local mute succeed and do not mute local stream if call state is not connected when mute direction is local[JPT-2728]', () => {
+    describe('should set "isLocalMute" true, report local mute succeed and do not mute local stream if call state is not connected when mute direction is local[JPT-2728][JPT-2920][JPT-2921]', () => {
       it("idle", done => {
         setupCall();
         expect(call._fsm.state()).toBe('idle');
@@ -1601,6 +1734,10 @@ describe('RTC call', () => {
             actionDirection: RTC_CALL_ACTION_DIRECTION.LOCAL,
           },
         );
+        expect(call._report.events[0].info).toBe( "localMute");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "localMute");
+        expect(call._report.events[1].name).toBe( "CallActionSuccess");
         setImmediate(() => {
           expect(session.mute).toBeCalledTimes(0);
           done();
@@ -1974,7 +2111,7 @@ describe('RTC call', () => {
       });
     });
 
-    describe('should set "isLocalMute","isRemoteMute" false, report unmute succeed and not unmute session if call state is not connected when unmute call [JPT-2732]', () => {
+    describe('should set "isLocalMute","isRemoteMute" false, report unmute succeed and not unmute session if call state is not connected when unmute call [JPT-2732][JPT-2920][JPT-2921]', () => {
       it("idle", done => {
         setupCall();
         expect(call._fsm.state()).toBe('idle');
@@ -1985,6 +2122,10 @@ describe('RTC call', () => {
         expect(observer.onCallActionSuccess).toBeCalledWith(
           RTC_CALL_ACTION.UNMUTE, {},
         );
+        expect(call._report.events[0].info).toBe( "unmute");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "unmute");
+        expect(call._report.events[1].name).toBe( "CallActionSuccess");
         setImmediate(() => {
           expect(session.unmute).toBeCalledTimes(0);
           expect(call._callSession.toggleRemoteMute).toBeCalledTimes(0);
@@ -2186,7 +2327,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should enter holded state when hold call success. [JPT-822]', done => {
+    it('should enter holded state when hold call success. [JPT-822][JPT-2920][JPT-2921]', done => {
       setup();
       session.hold.mockResolvedValue(null);
       call.onAccountReady();
@@ -2195,11 +2336,15 @@ describe('RTC call', () => {
       session.emitSessionReinviteAccepted();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('holded');
+        expect(call._report.events[0].info).toBe( "hold");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "hold");
+        expect(call._report.events[1].name).toBe( "CallActionSuccess");
         done();
       });
     });
 
-    it('should enter connected state when hold call failed in holding state. [JPT-823]', done => {
+    it('should enter connected state when hold call failed in holding state. [JPT-823][JPT-2920][JPT-2921]', done => {
       setup();
       session.hold.mockResolvedValue(null);
       call.onAccountReady();
@@ -2208,6 +2353,10 @@ describe('RTC call', () => {
       session.emitSessionReinviteFailed();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
+        expect(call._report.events[0].info).toBe( "hold");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "hold");
+        expect(call._report.events[1].name).toBe( "CallActionFailed");
         done();
       });
     });
@@ -2245,7 +2394,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should enter holded state when unhold call failed in unholding state. [JPT-825]', done => {
+    it('should enter holded state when unhold call failed in unholding state. [JPT-825][JPT-2920][JPT-2921]', done => {
       setup();
       session.hold.mockResolvedValue(null);
       session.unhold.mockResolvedValue(null);
@@ -2253,18 +2402,25 @@ describe('RTC call', () => {
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
       session.emitSessionReinviteAccepted();
-      call.unhold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-        RTC_CALL_ACTION.UNHOLD,
-      );
       setImmediate(() => {
         expect(call._fsm.state()).toBe('holded');
-        done();
+        call.unhold();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.UNHOLD,
+        );
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('holded');
+          expect(call._report.events[2].info).toBe( "unhold");
+          expect(call._report.events[2].name).toBe( "CallAction");
+          expect(call._report.events[3].info).toBe( "unhold");
+          expect(call._report.events[3].name).toBe( "CallActionFailed");
+          done();
+        });
       });
     });
 
-    it('should enter connected state when unhold success in unholding state. [JPT-842]', done => {
+    it('should enter connected state when unhold success in unholding state. [JPT-842][JPT-2920][JPT-2921]', done => {
       setup();
       session.hold.mockResolvedValue(null);
       session.unhold.mockResolvedValue(null);
@@ -2272,12 +2428,19 @@ describe('RTC call', () => {
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
       session.emitSessionReinviteAccepted();
-      call.unhold();
-      session.sessionDescriptionHandler.setDirectionFlag(false);
-      session.emitSessionReinviteAccepted();
       setImmediate(() => {
-        expect(call._fsm.state()).toBe('connected');
-        done();
+        expect(call._fsm.state()).toBe('holded');
+        call.unhold();
+        session.sessionDescriptionHandler.setDirectionFlag(false);
+        session.emitSessionReinviteAccepted();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          expect(call._report.events[2].info).toBe( "unhold");
+          expect(call._report.events[2].name).toBe( "CallAction");
+          expect(call._report.events[3].info).toBe( "unhold");
+          expect(call._report.events[3].name).toBe( "CallActionSuccess");
+          done();
+        });
       });
     });
 
@@ -2300,7 +2463,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
+      session.mockSignal('failed', {statusCode: 487, reasonPhrase: "Test failed"});
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
         done();
@@ -2341,7 +2504,7 @@ describe('RTC call', () => {
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
       session.emitSessionReinviteAccepted();
-      session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
+      session.mockSignal('failed', {statusCode: 487, reasonPhrase: "Test failed"});
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
         done();
@@ -2387,7 +2550,7 @@ describe('RTC call', () => {
       call.hold();
       session.emitSessionReinviteAccepted();
       call.unhold();
-      session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
+      session.mockSignal(WEBPHONE_SESSION_STATE.FAILED, {statusCode: 487, reasonPhrase: 'Test'});
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
         done();
@@ -2697,7 +2860,7 @@ describe('RTC call', () => {
       account = new VirturlAccountAndCallObserver();
       call = new RTCCall(true, '', session, account, account);
     }
-    it('should call state changed to Disconnected when call ignore API in idle state. [JPT-1468]', done => {
+    it('should call state changed to Disconnected when call ignore API in idle state. [JPT-1468][JPT-2920]', done => {
       setup();
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
@@ -2706,6 +2869,8 @@ describe('RTC call', () => {
         setImmediate(() => {
           expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
           expect(call._fsm.state()).toBe('disconnected');
+          expect(call._report.events[0].info).toBe( "ignore");
+          expect(call._report.events[0].name).toBe( "CallAction");
           done();
         });
       });
@@ -2726,7 +2891,7 @@ describe('RTC call', () => {
       session.unhold.mockResolvedValue(null);
     }
 
-    it('should trigger dtmf function when call dtmf and call is in connected state. [JPT-859]', done => {
+    it('should trigger dtmf function when call dtmf and call is in connected state. [JPT-859][JPT-2920]', done => {
       setup();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
@@ -2734,6 +2899,8 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
         expect(session.dtmf).toBeCalled();
+        expect(call._report.events[1].info).toBe( "dtmf");
+        expect(call._report.events[1].name).toBe( "CallAction");
         done();
       });
     });
@@ -2888,7 +3055,7 @@ describe('RTC call', () => {
       call = new RTCCall(true, '123', session, account, account);
     }
 
-    it('should report forward failed when forward incoming call without phone number [JPT-1301]', done => {
+    it('should report forward failed when forward incoming call without phone number [JPT-1301][JPT-2920][JPT-2921]', done => {
       setup();
       jest.spyOn(account, 'onCallActionFailed');
       call.forward('');
@@ -2898,6 +3065,10 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.FORWARD,
           -1,
         );
+        expect(call._report.events[0].info).toBe( "forward");
+        expect(call._report.events[0].name).toBe( "CallAction");
+        expect(call._report.events[1].info).toBe( "forward");
+        expect(call._report.events[1].name).toBe( "CallActionFailed");
         done();
       });
     });
@@ -3085,14 +3256,157 @@ describe('RTC call', () => {
       call = new RTCCall(true, '123', session, account, account);
     }
 
-    it('should call state changed to replying when call startReply api in idle state. [JPT-1422]', done => {
+    it('should call state changed to replying when call startReply api in idle state. [JPT-1422][JPT-2920][JPT-2921]', done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
       call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         expect(session.sendSessionMessage).toBeCalled();
-        done();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_REPLY,
+        );
+        setImmediate(() => {
+          expect(call._report.events[0].info).toBe( "startReply");
+          expect(call._report.events[0].name).toBe( "CallAction");
+          expect(call._report.events[1].info).toBe( "startReply");
+          expect(call._report.events[1].name).toBe( "CallActionSuccess");
+          done();
+        });
+      });
+    });
+
+    it('should report startReplying failed when start reply failed. [JPT-2920][JPT-2921]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        expect(session.sendSessionMessage).toBeCalled();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.START_REPLY,
+        );
+        setImmediate(() => {
+          expect(call._report.events[0].info).toBe( "startReply");
+          expect(call._report.events[0].name).toBe( "CallAction");
+          expect(call._report.events[1].info).toBe( "startReply");
+          expect(call._report.events[1].name).toBe( "CallActionFailed");
+          done();
+        });
+      });
+    });
+
+    it('should report replyWithMessage success when replt with message success. [JPT-2920][JPT-2921]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        expect(session.sendSessionMessage).toBeCalled();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_REPLY,
+        );
+        setImmediate(() => {
+          call.replyWithMessage('123');
+          call._callSession.emit(
+            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+            RTC_CALL_ACTION.REPLY_WITH_MSG,
+          );
+          setImmediate(() => {
+            expect(call._report.events[2].info).toBe( "replyWithMessage");
+            expect(call._report.events[2].name).toBe( "CallAction");
+            expect(call._report.events[3].info).toBe( "replyWithMessage");
+            expect(call._report.events[3].name).toBe( "CallActionSuccess");
+            done();
+          });
+        });
+      });
+    });
+
+    it('should report replyWithMessage failed when replt with message failed. [JPT-2920][JPT-2921]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        expect(session.sendSessionMessage).toBeCalled();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_REPLY,
+        );
+        setImmediate(() => {
+          call.replyWithMessage('123');
+          call._callSession.emit(
+            CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+            RTC_CALL_ACTION.REPLY_WITH_MSG,
+          );
+          setImmediate(() => {
+            expect(call._report.events[2].info).toBe( "replyWithMessage");
+            expect(call._report.events[2].name).toBe( "CallAction");
+            expect(call._report.events[3].info).toBe( "replyWithMessage");
+            expect(call._report.events[3].name).toBe( "CallActionFailed");
+            done();
+          });
+        });
+      });
+    });
+
+    it('should report replyWithPattern success when replt with pattern success. [JPT-2920][JPT-2921]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        expect(session.sendSessionMessage).toBeCalled();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_REPLY,
+        );
+        setImmediate(() => {
+          call.replyWithPattern(RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER);
+          call._callSession.emit(
+            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+            RTC_CALL_ACTION.REPLY_WITH_PATTERN,
+          );
+          setImmediate(() => {
+            expect(call._report.events[2].info).toBe( "replyWithPattern");
+            expect(call._report.events[2].name).toBe( "CallAction");
+            expect(call._report.events[3].info).toBe( "replyWithPattern");
+            expect(call._report.events[3].name).toBe( "CallActionSuccess");
+            done();
+          });
+        });
+      });
+    });
+
+    it('should report replyWithPattern failed when replt with pattern failed. [JPT-2920][JPT-2921]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        expect(session.sendSessionMessage).toBeCalled();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_REPLY,
+        );
+        setImmediate(() => {
+          call.replyWithPattern(RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER);
+          call._callSession.emit(
+            CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+            RTC_CALL_ACTION.REPLY_WITH_PATTERN,
+          );
+          setImmediate(() => {
+            expect(call._report.events[2].info).toBe( "replyWithPattern");
+            expect(call._report.events[2].name).toBe( "CallAction");
+            expect(call._report.events[3].info).toBe( "replyWithPattern");
+            expect(call._report.events[3].name).toBe( "CallActionFailed");
+            done();
+          });
+        });
       });
     });
 

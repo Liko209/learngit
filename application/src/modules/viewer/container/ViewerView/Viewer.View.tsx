@@ -283,6 +283,11 @@ class ViewerViewComponent extends Component<
     return `${scaleStr}%`;
   };
 
+  private _showZoomBtnGroup = () => {
+    const { dataModule } = this.props;
+    return dataModule.currentScale !== 0
+  }
+
   render() {
     const {
       t,
@@ -306,7 +311,7 @@ class ViewerViewComponent extends Component<
             onExited={this.onTransitionExited}
             animation={imageViewerHeaderAnimation}
           >
-            <JuiDialogHeader data-test-automation-id="ViewerHeader">
+            <JuiDialogHeader fullscreen data-test-automation-id="ViewerHeader">
               <TitleRenderer
                 {...dataModule.title}
                 closeViewer={this.closeViewer}
@@ -328,7 +333,7 @@ class ViewerViewComponent extends Component<
                       handleScaleChanged={this._handleScaleChanged}
                       handlePageIdxChanged={this._handlePageIdxChanged}
                     />
-                    {!unNeedZoomButtonGroup && (
+                    {!unNeedZoomButtonGroup && this._showZoomBtnGroup() && (
                       <JuiZoomButtonGroup
                         className="zoomGroup"
                         resetMode={true}

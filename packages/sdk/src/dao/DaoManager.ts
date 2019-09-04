@@ -22,7 +22,7 @@ const LOG_TAG = 'DaoManager';
 
 class DaoManager extends Manager<
   BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
-> {
+  > {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
   private _isDBInitialized: boolean;
@@ -93,7 +93,13 @@ class DaoManager extends Manager<
   }
 
   async deleteDatabase(): Promise<void> {
-    await this.dbManager.deleteDatabase();
+    try {
+      await this.dbManager.deleteDatabase();
+    } catch (error) {
+      this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
+      await this.dbManager.deleteDatabase();
+    }
+
   }
 
   isDatabaseOpen(): boolean {

@@ -77,7 +77,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And the audio conference should has "Dial-in Number" `, async () => {
     await t.expect(audioConference.self.withText(dialInNumberTitle).exists).ok();
-    await t.expect(audioConference.phoneNumber.exists).ok();
+    await t.expect(audioConference.audioConferenceLink.exists).ok();
     await t.expect(audioConference.globalNumber.exists).ok();
 
   });

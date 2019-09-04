@@ -25,6 +25,9 @@ import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
 import { UserConfigService } from 'sdk/module/config/service/UserConfigService';
 import { AccountGlobalConfig } from 'sdk/module/account/config/AccountGlobalConfig';
 import { CrashManager } from 'sdk/module/crash/CrashManager';
+import { EnvConfig } from '../module/env/config';
+import { dataAnalysis } from 'foundation/analysis';
+
 jest.mock('../module/config/UserConfig');
 jest.mock('../module/config/GlobalConfig');
 jest.mock('../module/sync/service/SyncService');
@@ -36,6 +39,8 @@ jest.mock('../service/notificationCenter');
 jest.mock('foundation/src/analysis');
 jest.mock('foundation/network/NetworkManager');
 jest.mock('sdk/module/crash/CrashManager');
+jest.mock('../module/env/config')
+jest.mock('foundation/analysis')
 window.addEventListener = jest.fn();
 window.removeEventListener = jest.fn();
 describe('Sdk', () => {
@@ -76,7 +81,11 @@ describe('Sdk', () => {
     syncService = new SyncService();
     syncService.userConfig = { clearSyncConfigsForDBUpgrade: jest.fn() } as any;
     permissionService = new PermissionService();
-
+    Object.assign(Api, {
+      httpConfig: {
+        segment: ""
+      }
+    })
     sdk = new Sdk(
       daoManager,
       accountManager,
@@ -95,6 +104,8 @@ describe('Sdk', () => {
       });
       accountManager.on = jest.fn();
       jest.spyOn(Foundation, 'init');
+      EnvConfig.getIsRunningE2E.mockReturnValueOnce(false);
+      dataAnalysis.init.mockReturnValueOnce('');
       await sdk.init({ api: {}, db: {} });
       expect(Foundation.init).toHaveBeenCalled();
       expect(Api.init).toHaveBeenCalled();
@@ -102,6 +113,7 @@ describe('Sdk', () => {
       expect(accountManager.on).toHaveBeenCalledTimes(4);
       expect(accountManager.syncLogin).toHaveBeenCalledTimes(1);
       expect(crashManager.monitor).toHaveBeenCalledTimes(1);
+      expect(dataAnalysis.init).toHaveBeenCalled();
     });
   });
 
@@ -121,12 +133,12 @@ describe('Sdk', () => {
   describe('onAuthSuccess()', () => {
     beforeEach(() => {
       AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
-      jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
+      jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => { });
       PhoneParserUtility.loadModule = jest.fn();
     });
     afterEach(() => jest.restoreAllMocks());
     it('should init networkManager, PhoneParserUtility ,and sync data when first login', async () => {
-      syncService.syncData.mockImplementation(() => {});
+      syncService.syncData.mockImplementation(() => { });
       await sdk.onAuthSuccess({
         isRCOnlyMode: false,
         isFirstLogin: true,
@@ -137,7 +149,7 @@ describe('Sdk', () => {
       expect(syncService.syncData).toHaveBeenCalled();
     });
     it('should not sync data when in rc only mode', async () => {
-      syncService.syncData.mockImplementation(() => {});
+      syncService.syncData.mockImplementation(() => { });
       await sdk.onAuthSuccess({
         isRCOnlyMode: true,
         isFirstLogin: true,
@@ -147,11 +159,11 @@ describe('Sdk', () => {
       expect(PhoneParserUtility.loadModule).toHaveBeenCalled();
       expect(syncService.syncData).not.toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
-        SERVICE.RC_LOGIN,
+        SERVICE.RC_LOGIN, {isFirstLogin: true, success: true}
       );
     });
     it('should notify glip login when timestamp is valid and isFirstLogin is false', async () => {
-      syncService.syncData.mockImplementation(() => {});
+      syncService.syncData.mockImplementation(() => { });
       syncService.getIndexTimestamp.mockReturnValue(123);
       await sdk.onAuthSuccess({
         isRCOnlyMode: false,
@@ -163,11 +175,11 @@ describe('Sdk', () => {
       expect(syncService.syncData).toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
-        true,
+        { success: true, isFirstLogin: false },
       );
     });
     it('should notify rc login when account type is rc and isFirstLogin is false', async () => {
-      syncService.syncData.mockImplementation(() => {});
+      syncService.syncData.mockImplementation(() => { });
       mockAccountService.userConfig.getAccountType.mockReturnValue(
         ACCOUNT_TYPE_ENUM.RC,
       );
@@ -181,10 +193,11 @@ describe('Sdk', () => {
       expect(syncService.syncData).toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.RC_LOGIN,
+        { success: true, isFirstLogin: false },
       );
     });
     it('should notify start loading when timestamp is inValid and isFirstLogin is false', async () => {
-      syncService.syncData.mockImplementation(() => {});
+      syncService.syncData.mockImplementation(() => { });
       syncService.getIndexTimestamp.mockReturnValue(undefined);
       await sdk.onAuthSuccess({
         isRCOnlyMode: false,

@@ -15,6 +15,7 @@ import { getCurrentTime } from 'sdk/utils/jsUtils';
 import { SyncService } from 'sdk/module/sync/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { MODULE_IDENTIFY, MODULE_NAME } from './constants';
+import { LoginInfo } from 'sdk/types';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -108,8 +109,8 @@ export class SocketManager {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
-    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
-      success && this._onLogin();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (loginInfo: LoginInfo) => {
+      loginInfo.success && this._onLogin();
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {

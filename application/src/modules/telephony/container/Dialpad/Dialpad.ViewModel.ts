@@ -128,6 +128,11 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
     return this._telephonyStore.startMinimizeAnimation;
   }
 
+  @computed
+  get isConference() {
+    return this._telephonyStore.isConference;
+  }
+
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
     this._intervalId = undefined;

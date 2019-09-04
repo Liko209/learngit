@@ -227,6 +227,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
     } = this.props;
     return (
       <Modal
+        disableEscapeKeyDown={loading}
         modalProps={{ scroll: 'body' }}
         open
         size={'medium'}

@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SectionTabs, LeftNav } from './types';
+import { SectionTabs, PageConfig } from './types';
 
-function isSectionTabs(config: LeftNav): config is SectionTabs {
+function isSectionTabs(config: PageConfig): config is SectionTabs {
   return !!(config as SectionTabs).sections;
 }
 

@@ -61,7 +61,7 @@ class ConfigWrapper {
   public includeScene: Array<string>;
   public includeTags: Array<string>;
   public excludeTags: Array<string>;
-  public switchConversationIds: Array<string>;
+  public switchConversationIds: { [key: string]: string };
   public searchKeywords: Array<string>;
   public searchPhones: Array<string>;
   /* scene config */
@@ -122,19 +122,38 @@ class ConfigWrapper {
     this.includeScene = this.getArray("INCLUDE_SCENE", "");
     this.includeTags = this.getArray("INCLUDE_TAGS", "");
     this.excludeTags = this.getArray("EXCLUDE_TAGS", "");
-    this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "4591173638,4591181830");
+    this.switchConversationIds = this.getMap("SWITCH_CONVERSATION_ID", JSON.stringify({
+      'text': '4591173638',
+      'link': '4591181830',
+      'image': '4591190022',
+      'gif': '4591198214',
+      'doc': '4591206406',
+      'task': '4591214598',
+      'note': '4591222790',
+      'event': '4591230982',
+      'mixed': '4591239174'
+    }));
     this.searchKeywords = this.getArray("SEARCH_KEYWORD", "a,b,c,d");
     this.searchPhones = this.getArray("SEARCH_PHONE", "1,2,3,4,5,6,7,8,9,0");
     /* scene config */
   }
 
   getValue(key, defValue): string {
-    return process.env[key] || defValue;
+    if (!process.env[key] || process.env[key].length === 0) {
+      return defValue;
+    } else {
+      return process.env[key];
+    }
   }
 
   getArray(key, defValue): Array<string> {
     const value = this.getValue(key, defValue);
     return value ? value.split(',') : [];
+  }
+
+  getMap(key, defValue): { [key: string]: string } {
+    const value = this.getValue(key, defValue);
+    return Object.assign(JSON.parse(defValue), JSON.parse(value));
   }
 }
 

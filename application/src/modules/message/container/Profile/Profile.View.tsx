@@ -4,14 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
-import { observer } from 'mobx-react';
+import React from 'react';
 import { PROFILE_TYPE, ProfileViewProps } from './types';
 import { ProfileMiniCardPerson } from './MiniCard/Person';
 import { ProfileMiniCardGroup } from './MiniCard/Group';
 import { ProfileDialogPerson } from './Dialog/Person';
 import { ProfileDialogGroup } from './Dialog/Group';
-import { TypeDictionary } from 'sdk/utils';
+import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 
 const MappingComponent = {
   [PROFILE_TYPE.MINI_CARD]: {
@@ -34,12 +33,10 @@ const factory = (id: number, type: PROFILE_TYPE, typeId: number) => {
   return <Component id={id} />;
 };
 
-@observer
-class ProfileView extends Component<ProfileViewProps> {
-  render() {
-    const { id, type, typeId } = this.props;
-    return factory(id, type, typeId);
-  }
-}
+const ProfileView = (props: ProfileViewProps) => {
+  const { id, type } = props;
+  const typeId = GlipTypeUtil.extractTypeId(id);
+  return factory(id, type, typeId);
+};
 
 export { ProfileView };

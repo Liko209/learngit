@@ -12,6 +12,9 @@ type Props = {
 type ViewProps = Props & {
   person: PersonModel;
   isHighlighted: boolean;
+  avatar?: React.ReactElement;
+  showEmail?: boolean;
+  size?: 'medium' | 'large';
 };
 
 export { Props, ViewProps };

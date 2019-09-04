@@ -48,7 +48,9 @@ class DBKVDao implements IKVDao {
     try {
       await this._db.ensureDBOpened();
       const result = await this._collection.get(key);
-      return result ? result.value : undefined;
+      const value = result ? result.value : undefined;
+      this._KVMap.set(key, value);
+      return value;
     } catch (err) {
       errorHandler(err);
       return undefined;

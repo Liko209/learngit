@@ -4,24 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type RTCRegisterAsyncTask = {
+export type RTCRegisterAsyncTask = {
   name: string;
   data?: any;
 };
 
-enum RTC_PROV_EVENT {
+export enum RTC_PROV_EVENT {
   NEW_PROV = 'newProv',
   PROV_ARRIVE = 'provArrive',
 }
 
-enum REGISTRATION_ERROR_CODE {
+export enum REGISTRATION_ERROR_CODE {
   SERVER_TIME_OUT = 504,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   PROXY_AUTHENTICATION_REQUIRED = 407,
 }
 
-enum REGISTRATION_EVENT {
+export enum REGISTRATION_EVENT {
   PROVISION_READY = 'provisionReady',
   RE_REGISTER = 'reRegister',
   ACCOUNT_STATE_CHANGED = 'accountStateChanged',
@@ -41,7 +41,7 @@ enum REGISTRATION_EVENT {
   SWITCH_BACK_PROXY_ACTION = 'switchBackProxyAction',
 }
 
-enum REGISTRATION_FSM_STATE {
+export enum REGISTRATION_FSM_STATE {
   IDLE = 'idle',
   IN_PROGRESS = 'inProgress',
   READY = 'ready',
@@ -49,25 +49,15 @@ enum REGISTRATION_FSM_STATE {
   UNREGISTERED = 'unregistered',
 }
 
-enum REGISTRATION_FSM_NOTIFY {
+export enum REGISTRATION_FSM_NOTIFY {
   REG_IN_PROGRESS = 'onInProgress',
   READY = 'onReady',
   REG_FAILURE = 'onFailure',
   UN_REGISTERED = 'onUnregistered',
 }
 
-enum ALLOW_CALL_FLAG {
+export enum ALLOW_CALL_FLAG {
   OUTBOUND_CALL = 'outboundCall',
   EXTRA_OUTBOUND_CALL = 'extraOutboundCall',
   INBOUND_CALL = 'inboundCall',
 }
-
-export {
-  REGISTRATION_ERROR_CODE,
-  REGISTRATION_FSM_STATE,
-  REGISTRATION_FSM_NOTIFY,
-  REGISTRATION_EVENT,
-  RTC_PROV_EVENT,
-  RTCRegisterAsyncTask,
-  ALLOW_CALL_FLAG,
-};

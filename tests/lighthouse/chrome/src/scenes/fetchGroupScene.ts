@@ -2,13 +2,13 @@
  * @Author: doyle.wu
  * @Date: 2019-01-11 08:37:56
  */
-import { Scene } from "./scene";
+import { IndependenceScene } from ".";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
 import { FetchGroupGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
-class FetchGroupScene extends Scene {
+class FetchGroupScene extends IndependenceScene {
 
   tags(): Array<string> {
     return ["FetchGroupScene", "Message", "LeftRail", "Memory", "Trace", "API"];

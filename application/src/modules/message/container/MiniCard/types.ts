@@ -6,7 +6,7 @@
 
 type MiniCardShowProfileParams = {
   anchor: HTMLElement;
-  id: number;
+  cardContent: React.ReactNode;
 };
 
 export { MiniCardShowProfileParams };

@@ -11,14 +11,14 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
   private static _singleton: RTCNetworkNotificationCenter | null = null;
   private _isOnline: boolean = true;
 
-  public static instance(): RTCNetworkNotificationCenter {
+  static instance(): RTCNetworkNotificationCenter {
     if (!RTCNetworkNotificationCenter._singleton) {
       RTCNetworkNotificationCenter._singleton = new RTCNetworkNotificationCenter();
     }
     return RTCNetworkNotificationCenter._singleton;
   }
 
-  public destroy() {
+  destroy() {
     RTCNetworkNotificationCenter._singleton = null;
   }
 
@@ -50,7 +50,7 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
     });
   }
 
-  public isOnline() {
+  isOnline() {
     return this._isOnline;
   }
 }

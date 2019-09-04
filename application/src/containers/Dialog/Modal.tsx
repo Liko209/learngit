@@ -17,6 +17,7 @@ type Props = {
 function modal(
   component: React.ComponentType<any> | JSX.Element,
   props: Props,
+  key?: string,
 ) {
   const { onClose, ...rest } = props;
   const defaultClose = (
@@ -41,7 +42,11 @@ function modal(
 
   const { dismiss, show } = portalManager.wrapper(Dialog);
 
-  show();
+  if (key) {
+    show({ key });
+  } else {
+    show();
+  }
   return {
     dismiss,
   };

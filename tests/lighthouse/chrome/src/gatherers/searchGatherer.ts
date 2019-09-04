@@ -19,13 +19,15 @@ class SearchGatherer extends DebugGatherer {
     'scroll_search_post'
   ];
 
-  constructor(keywords: Array<string>) {
+  constructor() {
     super();
 
-    this.keywords = keywords;
+    this.keywords = Config.searchKeywords;
   }
 
   async _beforePass(passContext) {
+    await this.disableCache(passContext);
+
     await this.gathererConsole(this.metricKeys, passContext);
   }
 
@@ -39,6 +41,7 @@ class SearchGatherer extends DebugGatherer {
   async _afterPass(passContext) {
     let searchPage = new SearchPage(passContext);
 
+    globals.startCollectProcessInfo();
     this.beginGathererConsole();
 
     let filePath = await FileService.trackingHeapObjects(passContext.driver);
@@ -84,7 +87,7 @@ class SearchGatherer extends DebugGatherer {
 
       await page.switchAllSeachTab();
 
-      await page.scrollMessageTab();
+      // await page.scrollMessageTab();
 
       await page.closeSearch();
 

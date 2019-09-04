@@ -28,8 +28,8 @@ container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
 container.bind(CLIENT_SERVICE).to(ClientService);
 
-const defaultX = (document.body.clientWidth - 344) / 2;
-const defaultY = (document.body.clientHeight - 552) / 2;
+const defaultX = Math.floor((document.body.clientWidth - 344) / 2);
+const defaultY = Math.floor((document.body.clientHeight - 552) / 2);
 
 describe('withDialogOrNewWindow', () => {
   it('should return a react component that wrap an original component', () => {
@@ -46,7 +46,7 @@ describe('withDialogOrNewWindow', () => {
     expect(y).toBe(defaultY);
   });
 
-  it.only('should return a current state', () => {
+  it('should return a current state', () => {
     const Dummy = () => null;
     const Wrapped = withDialogOrNewWindow(Dummy);
 

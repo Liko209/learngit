@@ -4,16 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum RTC_NETWORK_EVENT {
+export enum RTC_NETWORK_EVENT {
   NETWORK_CHANGE = 'networkchange',
 }
 
-enum RTC_NETWORK_STATE {
+export enum RTC_NETWORK_STATE {
   ONLINE = 'online',
   OFFLINE = 'offline',
 }
 
-enum RTC_REST_API {
+export enum RTC_REST_API {
   API_OAUTH_TOKEN = '/oauth/token',
   API_REFRESH_TOKEN = '/oauth/token',
   API_GENERATE_CODE = '/v1.0/interop/generate-code',
@@ -22,9 +22,7 @@ enum RTC_REST_API {
   API_SIP_PROVISION = '/v1.0/client-info/sip-provision',
 }
 
-type RTCMediaElement = {
+export type RTCMediaElement = {
   local: any;
   remote: any;
 };
-
-export { RTC_NETWORK_EVENT, RTC_NETWORK_STATE, RTC_REST_API, RTCMediaElement };

@@ -152,6 +152,10 @@ class SearchPersonController {
     searchKey: UndefinedAble<string>,
     contactOptions: FuzzySearchContactOptions,
     groupOptions: FuzzySearchGroupOptions,
+    sortFunc?: (
+      lsh: SortableModel<IdModel>,
+      rsh: SortableModel<IdModel>,
+    ) => number,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<IdModel>[];
@@ -210,8 +214,10 @@ class SearchPersonController {
       }
     });
 
-    result.sortableModels.sort((groupA, groupB) => {
-      return SortUtils.compareSortableModel<IdModel>(groupA, groupB);
+    result.sortableModels.sort((lsh, rsh) => {
+      return sortFunc
+        ? sortFunc(lsh, rsh)
+        : SortUtils.compareSortableModel<IdModel>(lsh, rsh);
     });
 
     performanceTracer.end({
@@ -244,40 +250,40 @@ class SearchPersonController {
       meFirst,
     );
 
-    const genFormattedTermsFunc = (originalTerms: string[]) => {
-      const formattedTerms: FormattedTerms = {
-        formattedKeys: [],
-        validFormattedKeys: [],
-      };
-
-      originalTerms.forEach(term => {
-        const numberFormattedKey = SearchUtils.getValidPhoneNumber(term);
-        const formattedKey = {
-          original: term,
-          formatted: numberFormattedKey,
-        };
-
-        formattedTerms.formattedKeys.push(formattedKey);
-        if (numberFormattedKey.length) {
-          formattedTerms.validFormattedKeys.push(formattedKey);
-        }
-      });
-      return formattedTerms;
-    };
-
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
     const cacheSearchController = personService.getEntityCacheSearchController();
     const result = await cacheSearchController.searchEntities(
       toSortableModelFunc,
-      genFormattedTermsFunc,
+      this.generateFormattedTerms,
       searchKey,
       arrangeIds,
       options.sortFunc,
     );
     return result;
   }
+
+  generateFormattedTerms = (originalTerms: string[]) => {
+    const formattedTerms: FormattedTerms = {
+      formattedKeys: [],
+      validFormattedKeys: [],
+    };
+
+    originalTerms.forEach(term => {
+      const numberFormattedKey = SearchUtils.getValidPhoneNumber(term);
+      const formattedKey = {
+        original: term,
+        formatted: numberFormattedKey,
+      };
+
+      formattedTerms.formattedKeys.push(formattedKey);
+      if (numberFormattedKey.length) {
+        formattedTerms.validFormattedKeys.push(formattedKey);
+      }
+    });
+    return formattedTerms;
+  };
 
   private _sortByKeyFunc = (
     personA: SortableModel<Person>,
@@ -449,6 +455,7 @@ class SearchPersonController {
               sortValue = SearchUtils.getMatchedWeight(
                 splitNames,
                 terms.searchKeyTerms,
+                true,
               );
             }
           } else if (

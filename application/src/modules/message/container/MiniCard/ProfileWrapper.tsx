@@ -6,15 +6,14 @@
 
 import React, { useEffect, useRef, SFC, memo } from 'react';
 import portalManager from '@/common/PortalManager';
-import { ProfileMiniCardPerson } from '../Profile/MiniCard/Person';
 
 type ProfileWrapperProps = {
-  id: number;
   dismiss: () => void;
+  cardContent: React.ReactNode;
 };
 
 const ProfileWrapper: SFC<ProfileWrapperProps> = memo(
-  ({ id, dismiss }: ProfileWrapperProps) => {
+  ({ dismiss, cardContent }: ProfileWrapperProps) => {
     const _ref = useRef<HTMLDivElement>(null);
 
     const _clickEventHandler = (event: MouseEvent) => {
@@ -38,11 +37,7 @@ const ProfileWrapper: SFC<ProfileWrapperProps> = memo(
       };
     }, []);
 
-    return (
-      <div ref={_ref}>
-        <ProfileMiniCardPerson id={id} />
-      </div>
-    );
+    return <div ref={_ref}>{cardContent}</div>;
   },
 );
 

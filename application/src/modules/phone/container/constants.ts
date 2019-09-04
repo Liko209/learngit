@@ -21,3 +21,5 @@ export const SOURCE = {
 };
 
 export const MAX_BUTTON_COUNT = 4;
+
+export const DELAY_DEBOUNCE = 50;

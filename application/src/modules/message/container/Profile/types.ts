@@ -14,8 +14,6 @@ type ProfileProps = {
   type: PROFILE_TYPE;
 };
 
-type ProfileViewProps = ProfileProps & {
-  typeId: number;
-};
+type ProfileViewProps = ProfileProps;
 
 export { PROFILE_TYPE, ProfileProps, ProfileViewProps };

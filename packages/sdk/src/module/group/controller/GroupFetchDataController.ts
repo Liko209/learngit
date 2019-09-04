@@ -440,6 +440,7 @@ export class GroupFetchDataController {
         const keyWeight = SearchUtils.getMatchedWeight(
           memberNames.map(x => x.toLowerCase()),
           searchKeyTerms,
+          false,
         );
         const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
@@ -517,11 +518,11 @@ export class GroupFetchDataController {
           RecentSearchTypes.TEAM,
         ])
       : undefined;
-
-    let groupName: string = '';
-    let lowerCaseName: string = '';
     const currentUserId = this._currentUserId;
     return (group: Group, terms: Terms) => {
+      let groupName: string = '';
+      let lowerCaseName: string = '';
+
       let isMatched: boolean = false;
       let keyWeight: number = 0;
       do {
@@ -542,16 +543,35 @@ export class GroupFetchDataController {
         }
 
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
-        const shouldFetchAll =
-        option.fetchAllIfSearchKeyEmpty! && searchKeyTerms.length === 0;
-        isMatched = shouldFetchAll && isValidGroup;
-        if (isMatched || searchKeyTerms.length === 0) {
+        if (!option.fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
+          isMatched = false;
           break;
         }
-        let isFuzzy: boolean = false;
+
+        let visiblePersons: Person[] = [];
         if (group.is_team) {
           groupName = group.set_abbreviation;
           lowerCaseName = groupName.toLowerCase();
+        } else {
+          const persons = this.getAllPersonOfGroup(
+            group.members,
+            currentUserId,
+          );
+          if (persons.invisiblePersons.length) {
+            break;
+          }
+          visiblePersons = persons.visiblePersons;
+          groupName = this.getGroupNameByMultiMembers(visiblePersons).groupName;
+          lowerCaseName = groupName.toLowerCase();
+        }
+
+        if (option.fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
+          isMatched = true;
+          break;
+        }
+        
+        let isFuzzy: boolean = false;
+        if (group.is_team) {
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -563,16 +583,6 @@ export class GroupFetchDataController {
                 searchKeyTermsToSoundex,
               ));
         } else {
-          const persons = this.getAllPersonOfGroup(
-            group.members,
-            currentUserId,
-          );
-          if (persons.invisiblePersons.length) {
-            break;
-          }
-          groupName = this.getGroupNameByMultiMembers(persons.visiblePersons)
-            .groupName;
-          lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -580,7 +590,7 @@ export class GroupFetchDataController {
             ) ||
             (searchKeyTermsToSoundex.length > 0 &&
               this.entityCacheSearchController.isSoundexMatched(
-                this.getSoundexValueOfGroup(persons.visiblePersons),
+                this.getSoundexValueOfGroup(visiblePersons),
                 searchKeyTermsToSoundex,
               ));
         }
@@ -588,7 +598,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms);
+        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms, true);
 
         isMatched = true;
 
@@ -607,7 +617,6 @@ export class GroupFetchDataController {
               recentSearchedGroups!,
             )
           : 0;
-
         const sortWeights = option.meFirst && meGroupId? [group.id === meGroupId? 1 : 0,  keyWeight, mostRecentViewTime] : [keyWeight, mostRecentViewTime];
         return {
           lowerCaseName,
@@ -621,11 +630,11 @@ export class GroupFetchDataController {
     };
   }
 
-  private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[]) {
+  private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[], isPositionMatchedHigher: boolean) {
     const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
       lowerCaseName,
     );
-    return SearchUtils.getMatchedWeight(splitNames, searchKeyTerms);
+    return SearchUtils.getMatchedWeight(splitNames, searchKeyTerms, isPositionMatchedHigher);
   }
 
   // The search results should be ranked as follows: perfect match>start with> fuzzy search> Soundex search
@@ -680,6 +689,7 @@ export class GroupFetchDataController {
         keyWeight = this._getNameMatchWeight(
           lowerCaseAbbreviation,
           searchKeyTerms,
+          true,
         );
 
         isMatched = true;
@@ -764,7 +774,7 @@ export class GroupFetchDataController {
   }
 
   isMeGroup(group: Group): boolean {
-    return  (group.members && group.members.length === 1 && group.members[0] === this._currentUserId);
+    return  !group.is_team && (group.members && group.members.length === 1 && group.members[0] === this._currentUserId);
   }
 
   getGroupName(group: Group) {

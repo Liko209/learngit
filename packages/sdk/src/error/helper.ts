@@ -17,6 +17,13 @@ class Helper {
     );
   }
 
+  isLocalTimeoutError(error: Error) {
+    return errorUtils.errorConditionSelector(
+      ErrorParserHolder.getErrorParser().parse(error),
+      ERROR_CONDITIONS.LOCAL_TIMEOUT,
+    );
+  }
+
   isBackEndError(error: Error) {
     return errorUtils.errorConditionSelector(
       ErrorParserHolder.getErrorParser().parse(error),

@@ -385,9 +385,7 @@ Array [
           title={null}
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
@@ -400,7 +398,8 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -817,9 +816,7 @@ Array [
           title={null}
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c14"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
@@ -832,7 +829,8 @@ Array [
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}

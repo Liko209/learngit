@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RouteComponentProps } from 'react-router-dom';
-import { LeftNav } from '../types';
+import { PageConfig } from '../types';
 
 type LayoutViewProps = RouteComponentProps<{ subPath?: string }> & {
-  config: LeftNav;
+  config: PageConfig;
   updateCurrentUrl: (path: string) => void;
 };
 

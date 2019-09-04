@@ -42,11 +42,12 @@ import { isProductionVersion } from '@/common/envUtils';
 import { showUpgradeDialog } from '@/modules/electron';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
-import { dataCollectionHelper } from 'sdk/framework'
+import { dataCollectionHelper } from 'sdk/framework';
 import { LaunchDarklyController } from '@/permissions/ld/LaunchDarklyController';
 import { SplitIOController } from '@/permissions/split/SplitIOController';
 import { PermissionService } from 'sdk/module/permission';
 import { EnvConfig } from 'sdk/module/env/config';
+import { LoginInfo } from 'sdk/types';
 
 /**
  * The root module, we call it AppModule,
@@ -142,12 +143,8 @@ class AppModule extends AbstractModule {
       const permissionService = ServiceLoader.getInstance<PermissionService>(
         ServiceConfig.PERMISSION_SERVICE,
       );
-      const ld = new LaunchDarklyController();
-      ld.initClient();
-      const split = new SplitIOController();
-      permissionService.injectControllers(ld);
-      split.initClient();
-      permissionService.injectControllers(split);
+      permissionService.injectControllers(new LaunchDarklyController());
+      permissionService.injectControllers(new SplitIOController());
     }
 
     const setStaticHttpServer = (url?: string) => {
@@ -160,10 +157,8 @@ class AppModule extends AbstractModule {
 
     setStaticHttpServer(); // When the browser refreshes, it needs to be fetched locally
 
-    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
-      success && updateAccountInfoForGlobalStore();
-      success && injectPermissionControllers();
-      success && analyticsCollector.init();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (loginInfo: LoginInfo) => {
+      loginInfo.success && updateAccountInfoForGlobalStore();
     });
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
@@ -203,6 +198,7 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
+    injectPermissionControllers();
     await sdk.init({
       api,
       db,

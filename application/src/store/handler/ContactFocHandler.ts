@@ -14,8 +14,9 @@ import { DisplayNameModel } from 'sdk/framework/model';
 import { UndefinedAble } from 'sdk/types';
 import { SearchService } from 'sdk/module/search/service';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
-import { Terms, FormattedTerms } from 'sdk/framework/search';
+import { Terms } from 'sdk/framework/search';
 import { SortUtils } from 'sdk/framework/utils';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 
 enum CONTACT_TAB_TYPE {
   ALL,
@@ -46,22 +47,6 @@ class ContactFocHandler extends IdModelFocHandler {
 
     this._searchTerms = SearchUtils.toDefaultSearchKeyTerms(searchKey);
   }
-
-  genFormattedTermsFunc = (originalTerms: string[]) => {
-    const formattedTerms: FormattedTerms = {
-      formattedKeys: [],
-      validFormattedKeys: [],
-    };
-
-    originalTerms.forEach(term => {
-      const formattedKey = {
-        original: term,
-        formatted: term,
-      };
-      formattedTerms.formattedKeys.push(formattedKey);
-    });
-    return formattedTerms;
-  };
 
   transformFunc = (
     model: Person,
@@ -106,10 +91,18 @@ class ContactFocHandler extends IdModelFocHandler {
       }
 
       if (this._searchTerms.searchKey) {
+        const phoneNumbers: PhoneNumber[] = [];
+        this._personService.getPhoneNumbers(
+          person,
+          (phoneNumber: PhoneNumber) => {
+            phoneNumbers.push(phoneNumber);
+          },
+        );
+
         const matchInfo = this._searchService.generateMatchedInfo(
           person.id,
           this._personService.getFullName(person).toLowerCase(),
-          [],
+          phoneNumbers,
           this._searchTerms,
         );
 
@@ -130,7 +123,7 @@ class ContactFocHandler extends IdModelFocHandler {
   protected async createFoc() {
     await SearchUtils.formatTerms(
       this._searchTerms,
-      this.genFormattedTermsFunc,
+      this._searchService.generateFormattedTerms,
     );
     return IdModelFocBuilder.buildFoc(
       this._personService.getEntitySource(),

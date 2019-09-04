@@ -151,16 +151,30 @@ describe('SearchUtils', () => {
   });
 
   describe('getMatchedWeight', () => {
-    it('should return max matched-weight', () => {
+    it('should return max matched-weight with position matched ', () => {
       const result = SearchUtils.getMatchedWeight(
         ['dora', 'bruce'],
         ['dora', 'bruce'],
+        true,
       );
       expect(result).toBe(2.2);
     });
 
+    it('should return max matched-weight without position matched ', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora', 'bruce'],
+        false,
+      );
+      expect(result).toBe(2);
+    });
+
     it('should return one max-matched-weight when only key with start-with matched', () => {
-      const result = SearchUtils.getMatchedWeight(['dora', 'bruce'], ['dora']);
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora'],
+        true,
+      );
       expect(result).toBe(1.1);
     });
 
@@ -168,6 +182,7 @@ describe('SearchUtils', () => {
       const result = SearchUtils.getMatchedWeight(
         ['dora', 'bruce'],
         ['dora', 'uce'],
+        true,
       );
       expect(result).toBe(1.1);
     });
@@ -176,6 +191,7 @@ describe('SearchUtils', () => {
       const result = SearchUtils.getMatchedWeight(
         ['dora', 'bruce'],
         ['ora', 'uce'],
+        true,
       );
       expect(result).toBe(0);
     });

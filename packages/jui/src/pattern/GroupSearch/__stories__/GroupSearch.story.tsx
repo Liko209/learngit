@@ -74,6 +74,10 @@ function GroupSearch() {
         clearText="clear"
         closeIconAriaLabel="close-icon"
         closeIconTooltip="close"
+        onDialogClose={() => {}}
+        itemCount={3}
+        onKeyDownEscape={() => {}}
+        itemToString={() => ''}
       >
         {({ highlightedIndex, getItemProps }) => {
           return (

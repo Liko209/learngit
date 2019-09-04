@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "telephony/conference/Start.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

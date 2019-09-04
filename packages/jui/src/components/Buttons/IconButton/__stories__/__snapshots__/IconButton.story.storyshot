@@ -80,9 +80,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
     className="c0"
   >
     <button
-      aria-haspopup={true}
       aria-label="add"
-      aria-owns={null}
       className="MuiButtonBase-root MuiIconButton-root c1"
       disabled={false}
       onBlur={[Function]}
@@ -93,7 +91,8 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
-      onMouseMove={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -204,9 +203,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
     className="c0"
   >
     <button
-      aria-haspopup={true}
       aria-label="I'm a star"
-      aria-owns={null}
       className="MuiButtonBase-root MuiIconButton-root c1"
       disabled={false}
       onBlur={[Function]}
@@ -217,7 +214,8 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
-      onMouseMove={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}

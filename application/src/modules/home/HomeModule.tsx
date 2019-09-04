@@ -15,6 +15,7 @@ import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { MEETING_SERVICE } from '@/modules/meeting/interface/constant';
 import _ from 'lodash';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { LoginInfo } from 'sdk/types';
 
 class HomeModule extends AbstractModule {
   @IHomeService private _homeService: IHomeService;
@@ -26,12 +27,14 @@ class HomeModule extends AbstractModule {
 
   async bootstrap() {
     // load subModule
-    notificationCenter.on(SERVICE.RC_LOGIN, async () => {
-      analyticsCollector.login();
+    notificationCenter.on(SERVICE.RC_LOGIN, async (loginInfo: LoginInfo) => {
+      if (loginInfo.isFirstLogin) {
+        analyticsCollector.login();
+      }
       await this._initialSubModules();
     });
-    notificationCenter.on(SERVICE.GLIP_LOGIN, async (success: boolean) => {
-      success && (await this._initialSubModules());
+    notificationCenter.on(SERVICE.GLIP_LOGIN, async (loginInfo: LoginInfo) => {
+      loginInfo.success && (await this._initialSubModules());
     });
   }
 

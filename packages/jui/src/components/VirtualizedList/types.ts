@@ -51,6 +51,7 @@ type JuiVirtualizedListProps = {
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   onBottomStatusChange?: (atBottom: boolean) => void;
+  highlightedIndex?: number;
 };
 
 export {

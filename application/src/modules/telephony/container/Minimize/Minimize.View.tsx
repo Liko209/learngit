@@ -17,22 +17,24 @@ class MinimizeViewComponent extends Component<Props> {
   private _handleMinimize = async () => {
     const { minimize } = this.props;
     minimize();
-  }
+  };
 
   render() {
-    const { t } = this.props;
+    const { t, isForward } = this.props;
     return (
-      <JuiIconButton
-        size="small"
-        tooltipTitle={t('telephony.action.minimize')}
-        onClick={this._handleMinimize}
-        variant="plain"
-        color="common.white"
-        ariaLabel={t('telephony.accessibility.minimize')}
-        data-test-automation-id="telephony-minimize-btn"
-      >
-        minimize
-      </JuiIconButton>
+      !isForward && (
+        <JuiIconButton
+          size="small"
+          tooltipTitle={t('telephony.action.minimize')}
+          onClick={this._handleMinimize}
+          variant="plain"
+          color="common.white"
+          ariaLabel={t('telephony.accessibility.minimize')}
+          data-test-automation-id="telephony-minimize-btn"
+        >
+          minimize
+        </JuiIconButton>
+      )
     );
   }
 }

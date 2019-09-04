@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ProfileMiniCardPersonHeaderViewProps } from './types';
-import { Avatar } from '@/containers/Avatar';
+import { Avatar } from '@/containers/Avatar/Avatar';
 import { Presence } from '@/containers/Presence';
 import { Emoji } from 'emoji-mart';
 import { backgroundImageFn } from 'jui/pattern/Emoji';

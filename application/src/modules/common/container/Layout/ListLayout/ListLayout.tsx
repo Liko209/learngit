@@ -17,6 +17,7 @@ import { isSectionTabs } from '../utils';
 import { Section, Tab } from '../types';
 import { LayoutViewProps } from './types';
 import { LeftRailView } from '../LeftRail';
+import { ListMain } from '../ListMain';
 
 const LeftRailResponsive = withResponsive(LeftRailView, {
   maxWidth: 360,
@@ -36,22 +37,49 @@ const SwitchResponsive = withResponsive(Switch, {
 
 @observer
 class ListLayoutViewComponent extends Component<LayoutViewProps> {
-  private _renderSectionNav(sections: Section[]) {
+  private _renderRoute(tab: Tab) {
     const { config } = this.props;
+    const {
+      path,
+      Cell,
+      automationID,
+      empty,
+      filter,
+      title,
+      createHandler,
+      minRowHeight,
+      onShowDataTrackingKey,
+    } = tab;
+    const subPath = `${config.rootPath}${path}`;
+
+    return (
+      <Route
+        path={subPath}
+        key={subPath}
+        render={() => (
+          <ListMain
+            filter={filter}
+            title={title}
+            empty={empty}
+            automationID={automationID}
+            Cell={Cell}
+            minRowHeight={minRowHeight}
+            createHandler={createHandler}
+            onShowDataTrackingKey={onShowDataTrackingKey}
+          />
+        )}
+      />
+    );
+  }
+
+  private _renderSectionNav(sections: Section[]) {
     return sections.map(({ tabs }) =>
-      tabs.map(({ path, component }) => {
-        const subPath = `${config.rootPath}${path}`;
-        return <Route path={subPath} key={subPath} component={component} />;
-      }),
+      tabs.map((tab: Tab) => this._renderRoute(tab)),
     );
   }
 
   private _renderSingleNav(tabs: Tab[]) {
-    const { config } = this.props;
-    return tabs.map(({ path, component }) => {
-      const subPath = `${config.rootPath}${path}`;
-      return <Route path={subPath} key={subPath} component={component} />;
-    });
+    return tabs.map((tab: Tab) => this._renderRoute(tab));
   }
 
   render() {

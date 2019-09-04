@@ -12,12 +12,16 @@ import {
   ImageViewerOptions,
   VIEWER_ITEM_TYPE,
   ImageViewerViewModel,
+  SingleImageViewerViewModel,
 } from '../ImageViewerManager';
 import { ViewerView, LAYOUT } from '../container/ViewerView';
 import { ViewerTitleView } from '../common/Title.View';
 import { ViewerDocument } from '../FileViewerManager/ViewerContainer.View';
 
-import { ImageViewerView } from '../ImageViewerManager/ViewerContainer';
+import {
+  ImageViewerView,
+  SingleImageViewerTitleView,
+} from '../ImageViewerManager/ViewerContainer';
 
 class ViewerService implements IViewerService {
   open = ({ itemId, groupId }: FileViewerBuild) => {
@@ -59,6 +63,29 @@ class ViewerService implements IViewerService {
         }
         unNeedZoomButtonGroup
         TitleRenderer={ViewerTitleView}
+        PageRenderer={ImageViewerView}
+      />,
+      {
+        fullScreen: true,
+        hideBackdrop: true,
+        TransitionComponent: JuiDialogOpenTransition as any,
+        onClose: () => dismiss(),
+      },
+    );
+  };
+
+  showSingleImageViewer = (url: string, titleName: string) => {
+    const { dismiss } = Dialog.simple(
+      <ViewerView
+        dataModule={
+          new SingleImageViewerViewModel({
+            url,
+            titleName,
+            dismiss: () => dismiss(),
+          })
+        }
+        unNeedZoomButtonGroup
+        TitleRenderer={SingleImageViewerTitleView}
         PageRenderer={ImageViewerView}
       />,
       {

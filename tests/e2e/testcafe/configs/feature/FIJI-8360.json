@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/Shortcut/SwitchConversation.ts","./fixtures/Profile/MiniProfile.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

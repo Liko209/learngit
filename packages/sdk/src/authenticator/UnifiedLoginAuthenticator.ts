@@ -74,6 +74,12 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     });
     await setRCToken(rcToken);
     await setRCAccountType();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+
+    const email = await rcInfoService.getUserEmail();
+
     // TODO FIJI-4395
 
     const response = {
@@ -84,6 +90,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
         {
           type: RCAccount.name,
           data: rcToken,
+          emailAddress: email,
         },
       ],
     };

@@ -98,7 +98,7 @@ enum SOUNDS_TYPE {
   Off = '0',
 }
 
-const AudioSourceUrl = 'https://d2rbro28ib85bu.cloudfront.net/audio/alerts/v1/';
+const AudioSourceUrl = '/audio/alerts/v1/';
 type AUDIO_SOUNDS_INFO = {
   id: RINGS_TYPE | SOUNDS_TYPE;
   url: string;

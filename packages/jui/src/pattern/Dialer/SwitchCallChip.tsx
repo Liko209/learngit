@@ -61,9 +61,10 @@ const StyledSwitchCallChip = styled<{ active: boolean }, 'div'>('div')`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${spacing(1.5)};
+  padding: ${spacing(1.5, 3)};
   width: ${width(54)};
   height: ${height(7)};
+  box-sizing: border-box;
   ${typography('body1')};
   border-radius: ${radius('xxl')};
   margin-bottom: ${spacing(1)};
@@ -84,7 +85,7 @@ const JuiSwitchCallChip = (props: JuiSwitchCallChipProps) => {
       <StyledSwitchCallChip active={active} onClick={onClick}>
         <StyledName>{name}</StyledName>
         <StyledTime>{time}</StyledTime>
-        <JuiIconography iconSize="small">{icon}</JuiIconography>
+        <JuiIconography iconSize="extraSmall">{icon}</JuiIconography>
       </StyledSwitchCallChip>
       {EndCall && <EndCall />}
     </StyledSwitchCallChipContainer>

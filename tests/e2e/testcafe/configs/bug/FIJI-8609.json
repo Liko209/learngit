@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/MessageInput/Emoji.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

@@ -40,10 +40,6 @@ const GlobalStyle = createGlobalStyle<{}>`
         max-height: ${height(64)};
       }
   }
-  .quill {
-    width: 100%;
-    align-self: flex-end;
-  }
   .ql-container {
     max-height: ${height(28.5)};
   }
@@ -55,31 +51,29 @@ const GlobalStyle = createGlobalStyle<{}>`
       color: ${primary('700')};
     }
     &&& {
-      box-sizing: border-box;
-      border: 1px solid transparent;
+      transition: all 0.1s ease-in;
+      border: 1px solid ${grey('300')};
       border-radius: ${spacing(1)};
+      outline: none;
+      &:hover {
+        background-color: ${grey('50')};
+      }
+      &:focus-within {
+        background: ${palette('common', 'white')};
+        border: 1px solid ${grey('400')};
+      }
       .ql-editor {
         ${typography('body1')};
         padding: ${spacing(2)};
         min-height: ${height(9)};
         max-height: ${height(28.5)};
-        height: auto;
-        border-radius: ${spacing(1)};
         color: ${grey('900')};
-        border: 1px solid ${grey('300')};
         caret-color: ${primary('700')};
         &::before {
           font-style: normal;
           color: ${grey('400')};
           ${ellipsis()};
           width: 80%;
-        }
-        &:hover {
-          background-color: ${grey('50')};
-        }
-        &:focus {
-          background: ${palette('common', 'white')};
-          border: 1px solid ${grey('400')};
         }
       }
     }
@@ -284,11 +278,10 @@ class JuiMessageInput extends React.PureComponent<Props> {
         />
         {error ? <StyledError>{error}</StyledError> : footerNode}
         {children}
-        <GlobalStyle />
         {attachmentsNode}
       </Wrapper>
     );
   }
 }
 
-export { JuiMessageInput, Props, MessageInputDropZoneClasses };
+export { JuiMessageInput, Props, MessageInputDropZoneClasses, GlobalStyle };

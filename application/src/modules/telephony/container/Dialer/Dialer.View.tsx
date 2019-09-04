@@ -34,7 +34,7 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
       case shouldDisplayCallCtrl:
         return <CallCtrlPanel />;
       default:
-        return <DialerPanel />;
+        return null;
     }
   };
 

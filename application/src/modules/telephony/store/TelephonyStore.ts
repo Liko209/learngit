@@ -171,6 +171,12 @@ class TelephonyStore {
   isTransferPage: boolean = false;
 
   @observable
+  isWarmTransferPage: boolean = false;
+
+  @observable
+  canCompleteTransfer: boolean = true;
+
+  @observable
   selectedCallItem: SelectedCallItem = {
     phoneNumber: '',
     index: NaN,
@@ -204,6 +210,9 @@ class TelephonyStore {
 
   @observable
   missedCallNotification: MissedCallNotification;
+
+  @observable
+  isEndMultipleIncomingCall: boolean = false;
 
   constructor() {
     type FSM = '_callWindowFSM';
@@ -274,16 +283,21 @@ class TelephonyStore {
     reaction(
       () => this.isMultipleCall,
       isMultipleCall => {
-        if (isMultipleCall) this.changeBackToDefaultPos(true);
+        if (isMultipleCall) {
+          this.changeBackToDefaultPos(true);
+          return;
+        }
       },
     );
 
     reaction(
       () => this.hasActiveCall,
       hasActiveCall => {
-        hasActiveCall ? this._mediaService.setDuckVolume(0.7) : this._mediaService.setDuckVolume(1);
-      }
-    )
+        hasActiveCall
+          ? this._mediaService.setDuckVolume(0.7)
+          : this._mediaService.setDuckVolume(1);
+      },
+    );
   }
 
   @computed
@@ -450,21 +464,50 @@ class TelephonyStore {
 
     // if end call isn't active call and incoming state reply don't reset state;
     // if multiple call and end current call don't reset state;
+    if (this.isWarmTransferPage) {
+      this.leaveWarmTransferPage();
+    }
+
     if (this.isEndOtherCall) {
-      this.quitKeypad();
-      this._clearEnteredKeys();
-      this._clearTransferString();
-      if (this.isTransferPage) {
-        this.backToDialerFromTransferPage();
-      }
+      this.endOtherCall();
       return;
     }
+
     // end incoming call
     if (this.isMultipleCall && this.isEndCurrentCall) {
-      this.resetReply();
-      this._clearForwardString();
-      this.backIncoming();
+      this.endCurrentCall();
       return;
+    }
+
+    this.endSingleCall();
+  };
+
+  @action
+  endOtherCall = () => {
+    this.quitKeypad();
+    this._clearEnteredKeys();
+    this._clearTransferString();
+    this.isConference = false;
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
+    }
+
+    this.isEndMultipleIncomingCall = false;
+  };
+
+  @action
+  endCurrentCall = () => {
+    this.resetReply();
+    this._clearForwardString();
+    this.backIncoming();
+
+    this.isEndMultipleIncomingCall = true;
+  };
+
+  @action
+  endSingleCall = () => {
+    if (this.isTransferPage) {
+      this.backToDialerFromTransferPage();
     }
 
     this.resetReply();
@@ -473,10 +516,7 @@ class TelephonyStore {
     this._clearEnteredKeys();
     this._clearForwardString();
     this._clearTransferString();
-
-    if (this.isTransferPage) {
-      this.backToDialerFromTransferPage();
-    }
+    this.isEndMultipleIncomingCall = false;
 
     if (
       (this.phoneNumber !== '' || !this.isMultipleCall) &&
@@ -611,7 +651,7 @@ class TelephonyStore {
   @action
   forward = () => {
     this.incomingState = INCOMING_STATE.IDLE;
-  }
+  };
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
@@ -654,16 +694,16 @@ class TelephonyStore {
   // TODO: it should current call
   @computed
   get call(): CallModel | undefined {
-    if (!this._rawCalls.length) return undefined;
+    if (!this.rawCalls.length) return undefined;
 
     // for transfer call switch current call
     if (this.currentCallId) {
-      return this._rawCalls.find(
+      return this.rawCalls.find(
         call => call.id === this.currentCallId,
       ) as CallModel;
     }
     // The latest call
-    return reverse(sortBy(this._rawCalls, ['startTime']))[0];
+    return this.rawCalls[0];
   }
 
   @computed
@@ -817,13 +857,16 @@ class TelephonyStore {
   }
 
   @computed
-  private get _rawCalls() {
-    return this.ids.map(id => getEntity<Call, CallModel>(ENTITY_NAME.CALL, id));
+  get rawCalls() {
+    const calls = this.ids.map(id =>
+      getEntity<Call, CallModel>(ENTITY_NAME.CALL, id),
+    );
+    return reverse(sortBy(calls, ['startTime']));
   }
 
   @computed
   get endCall() {
-    return this._rawCalls.find(
+    return this.rawCalls.find(
       call => call.callState === CALL_STATE.DISCONNECTING,
     );
   }
@@ -879,7 +922,31 @@ class TelephonyStore {
       this._dialerString = '';
       return;
     }
-    return (this.inputString = '');
+    this.inputString = '';
+    return;
+  };
+
+  @action
+  directToWarmTransferPage = () => {
+    this.isWarmTransferPage = true;
+    this.backToDialerFromTransferPage();
+    this.switchCurrentCall(this.rawCalls[0] && this.rawCalls[0].id);
+  };
+
+  @action
+  leaveWarmTransferPage = () => {
+    this.isWarmTransferPage = false;
+    this.switchCurrentCall();
+  };
+
+  @action
+  completeTransfer = () => {
+    this.canCompleteTransfer = true;
+  };
+
+  @action
+  processTransfer = () => {
+    this.canCompleteTransfer = false;
   };
 
   @action
@@ -900,7 +967,10 @@ class TelephonyStore {
 
   updateVoicemailNotification = async (voicemail: Voicemail) => {
     const { id, from, attachments } = voicemail;
-    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
+    const {
+      displayName,
+      displayNumber,
+    } = await this._getNotificationCallerInfo(from);
 
     this.voicemailNotification = {
       id,
@@ -912,31 +982,41 @@ class TelephonyStore {
   @action
   updateMissedCallNotification = async (callLog: CallLog) => {
     const { id, from } = callLog;
-    const { displayName, displayNumber } = await this._getNotificationCallerInfo(from);
+    const {
+      displayName,
+      displayNumber,
+    } = await this._getNotificationCallerInfo(from);
 
     this.missedCallNotification = {
       id,
       displayNumber,
       title: i18nP('telephony.result.missedcall'),
-      body: `${displayName} ${displayNumber}`
+      body: `${displayName} ${displayNumber}`,
     };
   };
 
-  private _getNotificationCallerInfo = async (caller: Voicemail['from']) => {
-    const { extensionNumber = '', phoneNumber = '' } = caller || {};
-    const contactNumber = extensionNumber || phoneNumber;
+  private _getNotificationCallerInfo = async ({
+    name = '',
+    phoneNumber = '',
+    extensionNumber = '',
+  } = {}) => {
+    let displayNumber = extensionNumber || phoneNumber;
+    let displayName = name || i18nP('phone.unknownCaller');
 
-    if (!contactNumber) {
-      return { displayName: i18nP('telephony.unknownCaller'), displayNumber: '' };
+    if (!displayNumber) {
+      return { displayName, displayNumber };
     }
 
-    const displayNumber = this._formatPhoneNumber(contactNumber);
+    const { userDisplayName = '' } =
+      (await this._matchPersonByPhoneNumber(displayNumber)) || {};
 
-    const matchPerson = await this._matchPersonByPhoneNumber(contactNumber);
+    displayNumber = await this._formatPhoneNumber(displayNumber);
 
-    const displayName = matchPerson ? matchPerson.userDisplayName : caller.name;
+    if (userDisplayName) {
+      displayName = userDisplayName;
+    }
 
-    return { displayName, displayNumber: await displayNumber };
+    return { displayName, displayNumber };
   };
 
   private _getVoicemailNotificationBody = (
@@ -950,10 +1030,13 @@ class TelephonyStore {
 
   @computed
   get mediaTrackIds() {
-    const telephonyMediaTrackId = this._mediaService.createTrack('telephony', 200);
+    const telephonyMediaTrackId = this._mediaService.createTrack(
+      'telephony',
+      200,
+    );
     return {
       telephony: telephonyMediaTrackId,
-    }
+    };
   }
 }
 

@@ -4,22 +4,39 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import * as React from 'react';
+import React from 'react';
 import { keyframes } from '../../foundation/styled-components';
 import { TransitionAnimationProps } from './types';
 import { JuiTransition } from './TransitionAnimation';
 
-const slideAnimation = keyframes`
+const animationSlideDown = keyframes`
     from {
-      transform: translateY(-100%)
+      transform: translateY(-100%);
     }
     to {
-      transform: translateY(0)
+      transform: translateY(0);
     }
 `;
 
-const JuiSlide = React.memo((props: TransitionAnimationProps) => (
-  <JuiTransition {...props} animation={slideAnimation} />
-));
+const animationSideUp = keyframes`
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+`;
 
-export { JuiSlide };
+type SlideDirection = 'up' | 'down';
+type JuiSlideProps = { direction?: SlideDirection } & TransitionAnimationProps;
+
+const JuiSlide = React.memo(
+  ({ direction = 'down', ...rest }: JuiSlideProps) => (
+    <JuiTransition
+      {...rest}
+      animation={direction === 'down' ? animationSlideDown : animationSideUp}
+    />
+  ),
+);
+
+export { JuiSlide, JuiSlideProps };

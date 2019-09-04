@@ -33,6 +33,7 @@ const CustomLeftNav: React.SFC<LeftNavProps> = memo(({ expand, ...props }) => {
 const Left = styled<LeftNavProps>(CustomLeftNav)`
   && {
     height: 100%; // safari compatibility
+    -ms-overflow-style: -ms-autohiding-scrollbar;
   }
   .left-paper {
     background: ${palette('grey', '100')};

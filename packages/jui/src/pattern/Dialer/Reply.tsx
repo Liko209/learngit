@@ -56,7 +56,7 @@ const JuiReply = React.memo((props: Props) => {
   const { countText, count, PreDefines, CustomReply } = props;
   return (
     <StyledReply>
-      <StyledCountdown disableButton>
+      <StyledCountdown button={false}>
         {countText}
         <span>{count.time}</span>
         {count.unit}

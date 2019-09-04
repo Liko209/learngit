@@ -35,6 +35,7 @@ import {
 } from 'sdk/module/profile/constants';
 import { i18nP } from '@/utils/i18nT';
 import { notificationPreferencesShown } from './dataTrackings';
+import { withEscTracking } from '@/common/trackData';
 import { EmailNotificationTimeSourceItem } from '@/modules/message/MessageSettingManager/EmailNotificationTimeSelectSourceItem.View';
 
 type NotificationPreferencesProps = Props & ViewProps & WithTranslation;
@@ -158,6 +159,7 @@ class NotificationPreferencesComponent extends React.Component<
         onOK={handleSubmit}
         okText={t('common.dialog.save')}
         cancelText={t('common.dialog.cancel')}
+        onClose={withEscTracking(handleClose)}
       >
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiSettingContainer>

@@ -9,13 +9,13 @@ import { ISearchService } from '../../service/ISearchService';
 
 import { Person } from '../../../person/entity';
 import { PersonService } from '../../../person';
-import { buildEntityCacheSearchController } from '../../../../framework/controller';
-import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
-import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
-import { SortableModel } from '../../../../framework/model';
+import { buildEntityCacheSearchController } from 'sdk/framework/controller';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
+import { SortableModel, IdModel } from 'sdk/framework/model';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { GroupService } from '../../../group';
-import { SearchUtils } from '../../../../framework/utils/SearchUtils';
+import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
 import { PersonEntityCacheController } from '../../../person/controller/PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupConfigService } from '../../../groupConfig';
@@ -24,8 +24,8 @@ import { PhoneContactEntity } from '../../entity';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config');
-jest.mock('../../../../api');
-jest.mock('../../../../dao/DaoManager');
+jest.mock('sdk/api');
+jest.mock('sdk/dao/DaoManager');
 jest.mock('../../../group');
 jest.mock('../../../groupConfig');
 
@@ -1022,6 +1022,96 @@ describe('SearchPersonController', () => {
         {},
         {},
       );
+      expect(result).toEqual({
+        terms: 'x',
+        sortableModels: expectedResult,
+      });
+
+      expect(groupService.doFuzzySearchAllGroups).toHaveBeenCalled();
+    });
+
+    it('should persons and groups with correct order when customize sortFunc', async () => {
+      const persons = [
+        { id: 1, lowerCaseName: 'dora', sortWeights: [2] },
+        { id: 2, lowerCaseName: 'bruce', sortWeights: [1] },
+        { id: 3, lowerCaseName: 'me', sortWeights: [2] },
+        { id: 4, lowerCaseName: 'benny', sortWeights: [1] },
+      ];
+      const groups = [
+        {
+          id: 13,
+          entity: { id: 13, members: [3, 1, 2] },
+          lowerCaseName: 'dora bruce',
+          sortWeights: [2],
+        },
+        {
+          id: 14,
+          entity: { id: 14, members: [3, 2, 4] },
+          lowerCaseName: 'bruce benny',
+          sortWeights: [1],
+        },
+        {
+          id: 15,
+          entity: { id: 15, members: [3, 4] },
+          lowerCaseName: 'benny',
+          sortWeights: [2],
+        },
+      ];
+
+      const sortFunc = (
+        lsh: SortableModel<IdModel>,
+        rsh: SortableModel<IdModel>,
+      ) => {
+        return rsh.id - lsh.id;
+      };
+
+      const expectedResult = [
+        {
+          id: 15,
+          entity: { id: 15, members: [3, 4] },
+          lowerCaseName: 'benny',
+          sortWeights: [2],
+        },
+        {
+          id: 14,
+          entity: { id: 14, members: [3, 2, 4] },
+          lowerCaseName: 'bruce benny',
+          sortWeights: [1],
+        },
+        {
+          id: 13,
+          entity: { id: 13, members: [3, 1, 2] },
+          lowerCaseName: 'dora bruce',
+          sortWeights: [2],
+        },
+        { id: 3, lowerCaseName: 'me', sortWeights: [2] },
+        { id: 2, lowerCaseName: 'bruce', sortWeights: [1] },
+        { id: 1, lowerCaseName: 'dora', sortWeights: [2] },
+      ];
+
+      const value = {
+        terms: 'x',
+        sortableModels: persons,
+      };
+      searchPersonController.doFuzzySearchPersons = jest
+        .fn()
+        .mockReturnValue(value);
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(3);
+
+      groupService.doFuzzySearchAllGroups = jest.fn().mockReturnValue({
+        sortableModels: groups,
+      });
+      const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
+        'x',
+        {},
+        {},
+        sortFunc,
+      );
+
       expect(result).toEqual({
         terms: 'x',
         sortableModels: expectedResult,

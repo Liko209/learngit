@@ -95,12 +95,9 @@ class RTCCallManager {
   }
 
   getCallByUuid(callUuid: string): RTCCall | null {
-    this._calls.forEach((call: any) => {
-      if (call.getCallInfo().uuid === callUuid) {
-        return call;
-      }
-    });
-    return null;
+    return this._calls.find(
+      (call: any) => call.getCallInfo().uuid === callUuid,
+    ) || null;
   }
 
   notifyAccountReady() {

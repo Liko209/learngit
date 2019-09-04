@@ -31,6 +31,12 @@ class DialerPage extends Page {
 
     await PptrUtils.click(page, this.telePhonyOpenBtn);
 
+    if (await PptrUtils.waitForSelector(page, this.telePhonyEndBtn)) {
+      return true;
+    }
+
+    await PptrUtils.click(page, this.telePhonyOpenBtn);
+
     return await PptrUtils.waitForSelector(page, this.telePhonyEndBtn);
   }
 

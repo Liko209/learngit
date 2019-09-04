@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/Profile/Avatar.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

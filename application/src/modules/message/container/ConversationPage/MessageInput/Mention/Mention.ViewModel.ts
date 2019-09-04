@@ -151,6 +151,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       excludeSelf: true,
       arrangeIds: memberIds,
       fetchAllIfSearchKeyEmpty: true,
+      recentFirst: true,
     });
 
     if (res) {

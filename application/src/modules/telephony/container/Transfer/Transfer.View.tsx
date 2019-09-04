@@ -7,34 +7,51 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { JuiTransferAction } from 'jui/pattern/Dialer';
+import { JuiFabButton } from 'jui/components/Buttons';
+import { JuiTransferAction, JuiTransferActionText } from 'jui/pattern/Dialer';
 
 type Props = ViewProps & WithTranslation;
 
 @observer
 class TransferViewComponent extends Component<Props> {
-  private _handleTransferCall = () => {
-    const { transferCall } = this.props;
-    transferCall();
-  };
-
   render() {
-    const { t, transferNumber } = this.props;
-    return (
+    const {
+      t,
+      transferNumber,
+      isWarmTransferPage,
+      transferCall,
+      completeTransfer,
+      isTransferCallConnected,
+    } = this.props;
+    return isWarmTransferPage ? (
+      <JuiFabButton
+        color="semantic.positive"
+        onClick={completeTransfer}
+        size="moreLarge"
+        showShadow={false}
+        tooltipPlacement="top"
+        tooltipTitle={t('telephony.action.completeTransfer')}
+        aria-label={t('telephony.action.completeTransfer')}
+        iconName="transfer-call"
+        data-test-automation-id="complete-transfer-call-btn"
+        disabled={!isTransferCallConnected}
+      />
+    ) : (
       <JuiTransferAction>
-        <JuiIconButton
-          shouldPersistBg
-          size="large"
-          color="grey.900"
+        <JuiFabButton
+          size="mediumLarge"
           aria-label={t('telephony.action.transfer')}
-          onClick={this._handleTransferCall}
+          onClick={transferCall}
           data-test-automation-id="telephony-transfer-btn"
           disabled={!transferNumber}
-        >
-          transfer-call
-        </JuiIconButton>
-        <span>{t('telephony.action.transfer')}</span>
+          showShadow={false}
+          iconName="transfer-call"
+          color="grey.200"
+          iconColor={['grey', '900']}
+        />
+        <JuiTransferActionText disabled={!transferNumber}>
+          {t('telephony.action.transfer')}
+        </JuiTransferActionText>
       </JuiTransferAction>
     );
   }

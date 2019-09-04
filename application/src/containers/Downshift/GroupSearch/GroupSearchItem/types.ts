@@ -12,6 +12,8 @@ type Props = {
 type ViewProps = Props & {
   group: GroupModel;
   isHighlighted: boolean;
+  avatar?: React.ReactElement;
+  size?: 'medium' | 'large';
 };
 
 export { Props, ViewProps };

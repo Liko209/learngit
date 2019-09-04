@@ -3,7 +3,7 @@
  * @Date: 2018-09-29 15:10:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { container } from 'framework/ioc';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -19,27 +19,26 @@ const removePlacement = ({ placement, ...navItem }: NavConfig) => navItem;
 class LeftNavViewModel extends StoreViewModel {
   // TODO use @lazyInject(HomeStore)
   private _homeStore: HomeStore = container.get(HomeStore);
+  @observable iconGroups: Array<Omit<NavConfig, 'placement'>[]> = [];
 
   constructor(props: LeftNavProps) {
     super(props);
     const isLocalExpand = LeftNavConfig.expanded();
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLocalExpand);
-  }
 
-  @computed
-  get iconGroups() {
-    let navConfigs = this._homeStore.navConfigs;
-    navConfigs = navConfigs.filter(({ disable }: NavConfig) => !disable);
-    const topIcons = navConfigs
-      .filter((navItem: NavConfig) => navItem.placement === 'top')
-      .map(removePlacement);
+    this.autorun(async () => {
+      const navConfigs = this._homeStore.navConfigs;
+      const topIcons = navConfigs
+        .filter((navItem: NavConfig) => navItem.placement === 'top')
+        .map(removePlacement);
 
-    const bottomIcons = navConfigs
-      .filter((navItem: NavConfig) => navItem.placement === 'bottom')
-      .map(removePlacement);
+      const bottomIcons = navConfigs
+        .filter((navItem: NavConfig) => navItem.placement === 'bottom')
+        .map(removePlacement);
 
-    return [topIcons, bottomIcons];
+      this.iconGroups = [topIcons, bottomIcons];
+    });
   }
 
   @computed

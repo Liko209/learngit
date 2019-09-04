@@ -26,25 +26,25 @@ class RTCMediaDeviceManager extends EventEmitter2 {
   private _inputDeviceId: string = '';
   private _outputDeviceId: string = '';
 
-  public static instance(): RTCMediaDeviceManager {
+  static instance(): RTCMediaDeviceManager {
     if (!RTCMediaDeviceManager._singleton) {
       RTCMediaDeviceManager._singleton = new RTCMediaDeviceManager();
     }
     return RTCMediaDeviceManager._singleton;
   }
 
-  public destroy() {
+  destroy() {
     if (RTCMediaDeviceManager._singleton) {
       rtcLogger.debug(LOG_TAG, 'Destroy media device manager');
       RTCMediaDeviceManager._singleton = null;
     }
   }
 
-  public setMediaDeviceDelegate(delegate: IRTCMediaDeviceDelegate) {
+  setMediaDeviceDelegate(delegate: IRTCMediaDeviceDelegate) {
     this._delegate = delegate;
   }
 
-  public setAudioOutputDevice(deviceId: string) {
+  setAudioOutputDevice(deviceId: string) {
     rtcLogger.debug(LOG_TAG, `set audio output device id: ${deviceId}`);
     this._outputDeviceId = deviceId;
     if (this._audioOutputTimer) {
@@ -56,7 +56,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }, 500);
   }
 
-  public setAudioInputDevice(deviceId: string) {
+  setAudioInputDevice(deviceId: string) {
     rtcLogger.debug(LOG_TAG, `set audio input device id: ${deviceId}`);
     this._inputDeviceId = deviceId;
     if (this._audioInputTimer) {
@@ -68,7 +68,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }, 500);
   }
 
-  public subscribeDeviceChange() {
+  subscribeDeviceChange() {
     if (navigator.mediaDevices) {
       navigator.mediaDevices.ondevicechange = () => {
         this._onMediaDevicesChange();
@@ -76,7 +76,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
   }
 
-  public async initMediaDevices() {
+  async initMediaDevices() {
     rtcLogger.debug(LOG_TAG, 'init updating media device infos ...');
     if (!navigator.mediaDevices) {
       return;
@@ -95,19 +95,19 @@ class RTCMediaDeviceManager extends EventEmitter2 {
       });
   }
 
-  public getAudioOutputs(): MediaDeviceInfo[] {
+  getAudioOutputs(): MediaDeviceInfo[] {
     return this._audioOutputs;
   }
 
-  public getAudioInputs(): MediaDeviceInfo[] {
+  getAudioInputs(): MediaDeviceInfo[] {
     return this._audioInputs;
   }
 
-  public getCurrentAudioInput(): string {
+  getCurrentAudioInput(): string {
     return this._inputDeviceId;
   }
 
-  public getCurrentAudioOutput(): string {
+  getCurrentAudioOutput(): string {
     return this._outputDeviceId;
   }
 
@@ -140,7 +140,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         }
       }
     });
-    
+
     if (hasDefaultAudioInput) {
       rtcLogger.debug(
         LOG_TAG,

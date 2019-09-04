@@ -13,7 +13,6 @@ import { ContactTabProps } from './types';
 
 @observer
 class ContactTabComponent extends Component<ContactTabProps> {
-  async componentDidMount() {}
   render() {
     return (
       <Route

@@ -39,6 +39,11 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   get isIncomingPage() {
     return this._telephonyStore.isIncomingCall;
   }
+
+  @computed
+  get isWarmTransferPage() {
+    return this._telephonyStore.isWarmTransferPage;
+  }
 }
 
 export { CallActionsViewModel };

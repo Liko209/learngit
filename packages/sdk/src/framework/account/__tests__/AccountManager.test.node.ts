@@ -138,7 +138,7 @@ describe('AccountManager', () => {
     it('should work', async () => {
       mockAuthenticate.mockReturnValue({
         success: true,
-        accountInfos: [{ type: MyAccount.name, data: 'token' }],
+        accountInfos: [{ type: MyAccount.name, data: 'token', emailAddress: "aa@ringcentral.com" }],
       });
       accountManager.makeSureUserInWhitelist = jest.fn();
       accountManager['_handleAuthResponse'] = jest.fn();
@@ -286,6 +286,14 @@ describe('AccountManager', () => {
     const mockedConfigDao = {
       getEnv: jest.fn().mockReturnValue('release'),
     };
+    const mockRCInfoService = {
+      getRCExtensionInfo: jest.fn(),
+      getUserEmail: jest.fn(),
+    };
+
+    mockRCInfoService.getUserEmail.mockReturnValueOnce(
+      "freda.song@ringcentral.com");
+
     const mockedAccountInfo = [
       {
         type: 'RC',
@@ -306,27 +314,49 @@ describe('AccountManager', () => {
         Chris_sandbox: [],
       });
       const permitted = await accountManager.sanitizeUser(
-        mockedAccountInfo[0].data.owner_id,
+        mockedAccountInfo[0].data.owner_id, false
       );
       expect(permitted).toBeTruthy();
     });
+
     it('should be valid user when the user is in the white list [JPT-631]', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['110'],
       });
       const permitted = await accountManager.sanitizeUser(
-        mockedAccountInfo[0].data.owner_id,
+        mockedAccountInfo[0].data.owner_id, false
       );
       expect(permitted).toBeTruthy();
     });
-    it('should be invalid user when the user is not in the white list [JPT-639]', async () => {
+
+    it('should be valid user when domain is in the white list [JPT-631]', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        release: ['ringcentral.com'],
+      });
+      const permitted = await accountManager.sanitizeUser(
+        'ringcentral.com', true
+      );
+      expect(permitted).toBeTruthy();
+    });
+
+    it('should be invalid user when the user is not in the white list', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['123'],
       });
 
       AppEnvSetting.getEnv = jest.fn().mockReturnValue('release');
-      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo, false);
 
+      expect(permitted).toBeFalsy();
+    });
+
+    it('should be valid user when domain is not in the white list', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        release: ['ringcentral.com'],
+      });
+      const permitted = await accountManager.sanitizeUser(
+        'ringcentral', true
+      );
       expect(permitted).toBeFalsy();
     });
   });

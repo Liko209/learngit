@@ -80,6 +80,9 @@ describe('Prompt user to confirm emergency address first when user tries to make
         .spyOn(telephonyService, 'isShortNumber')
         .mockResolvedValueOnce(false);
       jest
+        .spyOn(telephonyService, 'isSpecialNumber')
+        .mockResolvedValueOnce(false);
+      jest
         .spyOn(telephonyService, 'openE911')
         .mockImplementationOnce(jest.fn());
       const phoneNumber = '4809461693';
@@ -121,6 +124,40 @@ describe('Prompt user to confirm emergency address first when user tries to make
       expect(telephonyService.openE911).not.toHaveBeenCalled();
       wrapper.unmount();
     }
+
+    @test(
+      'should not prompt when Clicks N11 in the conversation stream',
+    )
+    async t4() {
+      runInAction(() => {
+        telephonyService = jupiter.get(TELEPHONY_SERVICE);
+      });
+
+      jest
+        .spyOn(telephonyService, 'isShortNumber')
+        .mockResolvedValueOnce(false);
+      jest
+        .spyOn(telephonyService, 'isSpecialNumber')
+        .mockResolvedValueOnce(true);
+      jest
+        .spyOn(telephonyService, 'openE911')
+        .mockImplementationOnce(jest.fn());
+      jest
+        .spyOn(telephonyService, '_makeCall')
+        .mockImplementationOnce(jest.fn());
+      const phoneNumber = '911';
+
+      const wrapper = await asyncMountWithTheme(
+        <PhoneLink text={phoneNumber}>{phoneNumber}</PhoneLink>,
+      );
+      await wrapper.update();
+      const link = wrapper.find('a');
+      link.simulate('click', { preventDefault: jest.fn() });
+      await delay();
+      expect(telephonyService.openE911).not.toHaveBeenCalled();
+      expect(telephonyService._makeCall).toHaveBeenCalled();
+      wrapper.unmount();
+    }
   }
 
   @testable
@@ -143,7 +180,7 @@ describe('Prompt user to confirm emergency address first when user tries to make
       jupiter.registerModule(config);
     }
 
-    @test('should show flash toast when not digital line')
+    @test('should show flash toast when not digital line [JPT-2703]')
     async t1() {
       runInAction(() => {
         telephonyService = jupiter.get(TELEPHONY_SERVICE);
@@ -151,6 +188,9 @@ describe('Prompt user to confirm emergency address first when user tries to make
       Notification.flashToast = jest.fn();
       jest
         .spyOn(telephonyService, 'isShortNumber')
+        .mockResolvedValueOnce(false);
+      jest
+        .spyOn(telephonyService, 'isSpecialNumber')
         .mockResolvedValueOnce(false);
       jest
         .spyOn(telephonyService, '_makeCall')

@@ -59,7 +59,7 @@ interface IPersonService {
   ): PhoneNumberInfo[];
 
   matchContactByPhoneNumber(
-    e164PhoneNumber: string,
+    phoneNumber: string,
     contactType: ContactType,
   ): Promise<Person | null>;
   refreshPersonData(personId: number): Promise<void>;

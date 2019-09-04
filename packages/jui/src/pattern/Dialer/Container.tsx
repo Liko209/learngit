@@ -102,15 +102,15 @@ const JuiTransferAction = styled('div')`
     align-items: center;
     margin-top: ${spacing(6)};
     width: ${width(18.5)};
-    & > span {
-      color: ${grey('700')};
-      ${typography('caption1')};
-      margin-top: ${spacing(2)};
-      &.disabled {
-        color: ${({ theme }) =>
-          palette('action', 'disabledBackground')({ theme })};
-      }
-    }
+  }
+`;
+
+const JuiTransferActionText = styled.span<{ disabled?: boolean }>`
+  && {
+    color: ${grey('700')};
+    ${typography('caption1')};
+    margin-top: ${spacing(2)};
+    opacity: ${({ theme, disabled }) => disabled && theme.opacity[1] * 3};
   }
 `;
 
@@ -239,9 +239,6 @@ const ContactSearchItemContent = styled.div<{}>`
     & > *:nth-child(1) {
       flex: 1;
     }
-    & > *:nth-child(2) {
-      flex-basis: ${spacing(8)};
-    }
   }
 `;
 
@@ -283,6 +280,7 @@ export {
   JuiContainer,
   JuiKeypadAction,
   JuiTransferAction,
+  JuiTransferActionText,
   KeypadHeaderContainer,
   ContactSearchContainer,
   ContactSearchItemContent,

@@ -74,7 +74,15 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps> {
 
   @computed
   get isTransfer() {
-    return this._telephonyStore.isTransferPage;
+    return (
+      this._telephonyStore.isTransferPage ||
+      this._telephonyStore.isWarmTransferPage
+    );
+  }
+
+  @computed
+  get canCompleteTransfer() {
+    return this._telephonyStore.canCompleteTransfer;
   }
 
   dispose = () => {

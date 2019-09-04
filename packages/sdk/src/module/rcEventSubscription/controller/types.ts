@@ -13,4 +13,28 @@ type PubNubEventPayloadMessage = {
   uuid: string;
 };
 
-export { PubNubEventPayloadMessage };
+enum PNCategories {
+  PNNetworkUpCategory = 'PNNetworkUpCategory',
+  PNNetworkDownCategory = 'PNNetworkDownCategory',
+  PNNetworkIssuesCategory = 'PNNetworkIssuesCategory',
+  PNTimeoutCategory = 'PNTimeoutCategory',
+  PNBadRequestCategory = 'PNBadRequestCategory',
+  PNAccessDeniedCategory = 'PNAccessDeniedCategory',
+  PNUnknownCategory = 'PNUnknownCategory',
+  PNReconnectedCategory = 'PNReconnectedCategory',
+  PNConnectedCategory = 'PNConnectedCategory',
+  PNRequestMessageCountExceededCategory = 'PNRequestMessageCountExceededCategory',
+}
+
+type PubNubStatusEvent = {
+  category: PNCategories; // see Categories
+  operation: string; // see Operations
+  affectedChannels: string[];
+  subscribedChannels: string[];
+  affectedChannelGroups: string[];
+  lastTimetoken: number | string;
+  currentTimetoken: number | string;
+  error?: boolean;
+  errorData?: Error;
+};
+export { PubNubEventPayloadMessage, PubNubStatusEvent, PNCategories };

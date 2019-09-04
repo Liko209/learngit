@@ -11,18 +11,18 @@ class RTCRestApiManager {
   private static _singleton: RTCRestApiManager | null = null;
   private _httpClientDelegate: ITelephonyNetworkDelegate = null as any;
 
-  public static instance() {
+  static instance() {
     if (!RTCRestApiManager._singleton) {
       RTCRestApiManager._singleton = new RTCRestApiManager();
     }
     return RTCRestApiManager._singleton;
   }
 
-  public static destroy() {
+  static destroy() {
     RTCRestApiManager._singleton = null;
   }
 
-  public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
+  setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
     this._httpClientDelegate = delegate;
   }
 
@@ -33,11 +33,11 @@ class RTCRestApiManager {
     return this._httpClientDelegate.doHttpRequest(request);
   }
 
-  public reset() {
+  reset() {
     this._httpClientDelegate = null as any;
   }
 
-  public getClient(): ITelephonyNetworkDelegate {
+  getClient(): ITelephonyNetworkDelegate {
     return this._httpClientDelegate;
   }
 }

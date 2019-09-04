@@ -222,6 +222,8 @@ describe('RCInfoFetchController', () => {
       ${[]}           | ${[{ featureName: 'CallSwitch', enabled: false }]}                                         | ${ERCServiceFeaturePermission.CALL_SWITCH}  | ${false} | ${'no call switch permission'}
       ${[]}           | ${[{ featureName: 'WebPhone', enabled: true }]}                                            | ${ERCServiceFeaturePermission.WEB_PHONE}    | ${true}  | ${'has web phone permission'}
       ${[]}           | ${[{ featureName: 'WebPhone', enabled: false }]}                                           | ${ERCServiceFeaturePermission.WEB_PHONE}    | ${false} | ${'no web phone permission'}
+      ${[]}           | ${[{ featureName: 'Presence', enabled: true }]}                                            | ${ERCServiceFeaturePermission.RC_PRESENCE}  | ${true}  | ${'has rc presence permission'}
+      ${[]}           | ${[{ featureName: 'Presence', enabled: false }]}                                           | ${ERCServiceFeaturePermission.RC_PRESENCE}  | ${false} | ${'has no rc presence permission'}
     `(
       'should return $result when $comment',
       async ({ rolePermissions, serviceFeatures, permission, result }) => {

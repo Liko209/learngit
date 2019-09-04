@@ -36,9 +36,9 @@ type Props = IncomingViewProps & WithTranslation;
 @observer
 class IncomingViewComponent extends Component<Props> {
   private _imgProps = { draggable: false };
-  private _DefaultAvatar = () => {
+  private _DefaultAvatar = observer(() => {
     return <Avatar cover showDefaultAvatar imgProps={{ draggable: false }} />;
-  };
+  });
 
   private _Avatar = observer(() => {
     const { uid, name } = this.props;

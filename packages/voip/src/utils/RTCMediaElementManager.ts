@@ -14,18 +14,18 @@ class RTCMediaElementManager extends EventEmitter2 {
   private _mediaRootElement: any = null;
   private _volume: number = 1;
 
-  public static instance() {
+  static instance() {
     if (!RTCMediaElementManager._singleton) {
       RTCMediaElementManager._singleton = new RTCMediaElementManager();
     }
     return RTCMediaElementManager._singleton;
   }
 
-  public destroy() {
+  destroy() {
     RTCMediaElementManager._singleton = null;
   }
 
-  public setVolume(volume: number) {
+  setVolume(volume: number) {
     if (volume < 0 || volume > 1) {
       rtcLogger.warn(
         LOG_TAG,
@@ -44,11 +44,11 @@ class RTCMediaElementManager extends EventEmitter2 {
     this.emit(RTC_MEDIA_ACTION.VOLUME_CHANGED, volume);
   }
 
-  public getVolume(): number {
+  getVolume(): number {
     return this._volume;
   }
 
-  public createMediaElement(uuid: string): RTCMediaElement | null {
+  createMediaElement(uuid: string): RTCMediaElement | null {
     this._initMediaRoot();
     if (!this._mediaRootElement) {
       return null;
@@ -73,7 +73,7 @@ class RTCMediaElementManager extends EventEmitter2 {
     return { local: local_audio, remote: remote_audio };
   }
 
-  public getMediaElementByCallId(uuid: string): RTCMediaElement | null {
+  getMediaElementByCallId(uuid: string): RTCMediaElement | null {
     const local_audio_element = document.getElementById(`local-audio-${uuid}`);
     const remote_audio_element = document.getElementById(
       `remote-audio-${uuid}`,
@@ -84,7 +84,7 @@ class RTCMediaElementManager extends EventEmitter2 {
     return null;
   }
 
-  public removeMediaElement(uuid: string) {
+  removeMediaElement(uuid: string) {
     if (!this._mediaRootElement) {
       return;
     }

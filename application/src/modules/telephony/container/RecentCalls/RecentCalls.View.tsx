@@ -68,27 +68,11 @@ class RecentCallsComponent extends React.Component<Props, State> {
       />
     );
   }
-  // componentDidUpdate() {
-  //   const { recentCallsScrollPosition } = this.props;
-
-  //   if (recentCallsScrollPosition) {
-  //     this._infiniteListProps.ref.current &&
-  //       this._infiniteListProps.ref.current.scrollToPosition(
-  //         recentCallsScrollPosition,
-  //       );
-  //   }
-  // }
-
-  // componentWillUnmount() {
-  //   if (
-  //     this._infiniteListProps.ref.current &&
-  //     this._infiniteListProps.ref.current.getScrollPosition()
-  //   ) {
-  //     this.props.setRecentCallsScrollPosition(
-  //       this._infiniteListProps.ref.current.getScrollPosition(),
-  //     );
-  //   }
-  // }
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.isTransferPage !== this.props.isTransferPage) {
+      this._handleClickMap = {};
+    }
+  }
 
   private _scrollToView = (fn: () => void) => {
     const { dialerInputFocused } = this.props;

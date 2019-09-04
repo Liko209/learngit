@@ -35,7 +35,8 @@ type IconButtonSize =
   | 'large'
   | 'midLarge'
   | 'moreLarge'
-  | 'mediumLarge';
+  | 'mediumLarge'
+  | 'smallMedium';
 
 // TODO: remove iconname prop
 type ButtonProps = {
@@ -65,8 +66,14 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   children: React.ReactNode;
 };
 
-type Size = 'small' | 'medium' | 'large' | 'moreLarge' | 'mediumLarge';
-type ButtonSize = Size | 'midLarge' | 'mediumLarge';
+type Size =
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'moreLarge'
+  | 'mediumLarge'
+  | 'smallMedium';
+type ButtonSize = Size | 'midLarge' | 'mediumLarge' | 'smallMedium';
 
 const buttonSizes: { [k in ButtonSize]: number } = {
   moreLarge: 16,
@@ -74,6 +81,7 @@ const buttonSizes: { [k in ButtonSize]: number } = {
   large: 15,
   mediumLarge: 12,
   medium: 8,
+  smallMedium: 7,
   small: 5,
 };
 
@@ -82,6 +90,7 @@ const buttonShadows: { [k in Size]: number } = {
   moreLarge: 16,
   large: 16,
   medium: 1,
+  smallMedium: 1,
   small: 1,
 };
 
@@ -91,6 +100,7 @@ const iconSizesMap: { [k in Size]: IconSize } = {
   medium: 'small',
   small: 'extraSmall',
   mediumLarge: 'large',
+  smallMedium: 'small',
 };
 
 const touchRippleClasses = {
@@ -151,7 +161,7 @@ const StyledFabButton = styled<StyledFabButtonProps>(
         )};
       box-shadow: ${({ showShadow, theme }) =>
         showShadow ? theme.shadows[16] : 'none'};
-      opacity: ${({ theme }) => theme.palette.action.hoverOpacity};
+      opacity: ${({ theme }) => theme.opacity[1] * 3};
     }
   }
 `;

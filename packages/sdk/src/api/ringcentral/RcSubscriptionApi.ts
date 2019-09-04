@@ -9,7 +9,6 @@ import {
   NETWORK_VIA,
   CONTENT_TYPES,
   REQUEST_HEADER_KEYS,
-  DEFAULT_RETRY_COUNT,
 } from 'foundation/network';
 
 import Api from '../api';
@@ -32,7 +31,6 @@ class RcSubscriptionApi extends Api {
       method: NETWORK_METHOD.POST,
       authFree: false,
       via: NETWORK_VIA.HTTP,
-      retryCount: DEFAULT_RETRY_COUNT,
     };
     return RcSubscriptionApi.rcNetworkClient.http<RcSubscriptionInfo>(query);
   }
@@ -43,7 +41,6 @@ class RcSubscriptionApi extends Api {
       method: NETWORK_METHOD.POST,
       authFree: false,
       via: NETWORK_VIA.HTTP,
-      retryCount: DEFAULT_RETRY_COUNT,
     });
   }
 
@@ -57,7 +54,6 @@ class RcSubscriptionApi extends Api {
       method: NETWORK_METHOD.PUT,
       authFree: false,
       via: NETWORK_VIA.HTTP,
-      retryCount: DEFAULT_RETRY_COUNT,
       data: params,
     });
   }
@@ -68,7 +64,6 @@ class RcSubscriptionApi extends Api {
       method: NETWORK_METHOD.DELETE,
       authFree: false,
       via: NETWORK_VIA.HTTP,
-      retryCount: DEFAULT_RETRY_COUNT,
     });
   }
 
@@ -78,7 +73,6 @@ class RcSubscriptionApi extends Api {
       method: NETWORK_METHOD.GET,
       authFree: false,
       via: NETWORK_VIA.HTTP,
-      retryCount: DEFAULT_RETRY_COUNT,
     });
   }
 }

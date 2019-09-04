@@ -34,7 +34,7 @@ class HomePage extends Page {
 
     this.searchInput = Selector('div[data-test-automation-id="topBar-search-bar"]', this.selectorOpt);
     this.searchText = Selector('input[data-test-automation-id="global-search-input"]', this.selectorOpt);
-    this.searchClear = Selector('span[data-test-automation-id="global-search-clear"]', this.selectorOpt);
+    this.searchClear = Selector('span[data-test-automation-id="search-input-clear"]', this.selectorOpt);
     this.searchClose = Selector('span[data-test-automation-id="global-search-close"]', this.selectorOpt);
 
     this.conversationCard = Selector('div[data-test-automation-id="virtualized-list"] div div[data-name="conversation-card"]', this.selectorOpt);

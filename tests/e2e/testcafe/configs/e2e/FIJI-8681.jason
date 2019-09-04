@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Contacts/AllContacts/"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

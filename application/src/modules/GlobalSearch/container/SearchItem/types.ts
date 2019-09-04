@@ -14,6 +14,7 @@ interface ISearchItemModel {
 type Props = {
   id: number;
   didChange: () => void;
+  recentId: number;
 };
 
 type BaseViewProps = {

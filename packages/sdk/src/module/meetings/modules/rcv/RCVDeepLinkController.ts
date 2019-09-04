@@ -13,7 +13,7 @@ import { AccountService } from 'sdk/module/account';
 import _ from 'lodash';
 
 class RCVDeepLinkController implements IMeetingController {
-  constructor() {}
+  constructor() { }
 
   async startMeeting(groupIds: number[]): Promise<StartMeetingResultType> {
     // check here
@@ -39,7 +39,7 @@ class RCVDeepLinkController implements IMeetingController {
 
   async getJoinUrl(itemId: number): Promise<string> {
     const { baseUrl, glipToken } = this._getBaseUrlAndToken();
-    return `${baseUrl}/api/rcv/join-call/waiting-page?meeting_item_id=${itemId}?tk=${glipToken}`;
+    return `${baseUrl}/api/rcv/join-call/waiting-page?meeting_item_id=${itemId}&tk=${glipToken}`;
   }
 
   private _getBaseUrlAndToken() {

@@ -3,7 +3,7 @@
  * @Date: 2018-12-28 15:51:45
  * Copyright © RingCentral. All rights reserved.
  */
-enum CALL_SESSION_STATE {
+export enum CALL_SESSION_STATE {
   ACCEPTED = 'callsessionAccepted',
   CONFIRMED = 'callSessionConfirmed',
   DISCONNECTED = 'callSessionDisconnected',
@@ -13,7 +13,7 @@ enum CALL_SESSION_STATE {
   REINVITE_FAILED = 'callSessionReinviteFailed',
 }
 
-enum CALL_FSM_NOTIFY {
+export enum CALL_FSM_NOTIFY {
   ON_ANSWERING = 'onAnswering',
   ON_PENDING = 'onPending',
   ON_CONNECTING = 'onConnecting',
@@ -53,5 +53,3 @@ enum CALL_FSM_NOTIFY {
   REPLY_WITH_PATTERN_ACTION = 'replyWithPatternAction',
   REPLY_WITH_MESSAGE_ACTION = 'replyWithMessageAction',
 }
-
-export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };

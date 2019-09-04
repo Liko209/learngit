@@ -113,6 +113,10 @@ class SearchService extends AbstractService
     searchKey: UndefinedAble<string>,
     contactOptions: FuzzySearchContactOptions,
     groupOptions: FuzzySearchGroupOptions,
+    sortFunc?: (
+      lsh: SortableModel<IdModel>,
+      rsh: SortableModel<IdModel>,
+    ) => number,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<IdModel>[];
@@ -121,6 +125,7 @@ class SearchService extends AbstractService
       searchKey,
       contactOptions,
       groupOptions,
+      sortFunc,
     );
   }
 
@@ -177,6 +182,10 @@ class SearchService extends AbstractService
       terms,
     );
   }
+
+  generateFormattedTerms = (originalTerms: string[]) => {
+    return this.searchPersonController.generateFormattedTerms(originalTerms);
+  };
 }
 
 export { SearchService };

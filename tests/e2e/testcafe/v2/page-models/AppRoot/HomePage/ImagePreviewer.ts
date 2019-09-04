@@ -47,6 +47,11 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     return this.getSelectorByAutomationId('viewerTitle');
   }
 
+  //for avatar only
+  get avatarUserName() {
+    return this.title.find('h2')
+  }
+
   get fileName() {
     return this.title.find('span').nth(0);
   }
@@ -206,3 +211,4 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     await this.t.hover(this.imageCanvas);
   }
 }
+

@@ -6,14 +6,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
-import { DialogContext , withEscTracking } from '@/containers/Dialog';
+import { DialogContext, withEscTracking } from '@/containers/Dialog';
 import { Emoji } from '@/modules/emoji';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Loading } from 'jui/hoc/withLoading';
 import { ViewProps } from './types';
 import { menuItemsConfig } from './config';
 import { JuiCustomStatus } from 'jui/pattern/CustomStatus';
-
 
 const Modal = withEscTracking(JuiModal);
 const sheetSize = 64;
@@ -40,11 +39,19 @@ class CustomStatusComponent extends React.Component<
       };
     });
   }
+  private _focusEl: HTMLElement | null;
+
+  componentDidMount() {
+    setTimeout(() => {
+      this._focusEl = document.activeElement as HTMLElement;
+    }, 0);
+  }
 
   insertEmoji = (emoji: any, cb: Function) => {
     const { native } = emoji;
     const { handleEmojiChange } = this.props;
     handleEmojiChange(native);
+    this._focusEl && this._focusEl.focus();
     cb && cb();
   };
 
@@ -88,9 +95,15 @@ class CustomStatusComponent extends React.Component<
     const value = target.innerText;
     handleInputValueChange(value);
     handleEmojiChange(emoji);
-    this.setState({
-      isShowMenuList: false,
-    });
+    this._focusEl && this._focusEl.focus();
+    this.setState(
+      {
+        isShowMenuList: false,
+      },
+      () => {
+        this._focusEl && this._focusEl.focus();
+      },
+    );
   };
 
   private _onSave = () => {
@@ -110,6 +123,7 @@ class CustomStatusComponent extends React.Component<
     const { isShowMenuList } = this.state;
     return (
       <Modal
+        disableEscapeKeyDown={isLoading}
         open
         size="small"
         title={t('customstatus.title')}

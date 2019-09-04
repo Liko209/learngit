@@ -21,6 +21,7 @@ import { RuiTag } from 'rcui/components/Tag';
 import { Menu } from '../Menu';
 import { MembersViewProps } from './types';
 import { ProfileMiniCard } from '@/modules/message/container/MiniCard/Profile';
+import { ProfileMiniCardPerson } from '@/modules/message/container/Profile/MiniCard/Person';
 
 type State = {
   isHover: boolean;
@@ -60,7 +61,7 @@ class MemberListItem extends React.Component<
 
     profileMiniCard.show({
       anchor,
-      id: pid,
+      cardContent: <ProfileMiniCardPerson id={pid} />,
     });
 
     analyticsCollector.openMiniProfile(ANALYTICS_KEY);

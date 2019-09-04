@@ -20,6 +20,7 @@ type ProfileDialogPersonContentViewProps = ProfileDialogPersonViewProps & {
   isMe: boolean;
   colonsEmoji: string;
   statusPlainText: string;
+  url: string;
 };
 
 type FormGroupType = {

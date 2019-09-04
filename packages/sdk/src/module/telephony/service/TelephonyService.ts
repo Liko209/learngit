@@ -34,6 +34,9 @@ import {
   ActiveCall,
 } from 'sdk/module/rcEventSubscription/types';
 import { RTCSipEmergencyServiceAddr } from 'voip';
+import { IPersonService } from 'sdk/module/person/service/IPersonService';
+import { IPhoneNumberService } from 'sdk/module/phoneNumber/service/IPhoneNumberService';
+import { IRCInfoService } from 'sdk/module/rcInfo/service/IRCInfoService';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
@@ -41,7 +44,12 @@ class TelephonyService extends EntityBaseService<Call>
   private _userConfig: TelephonyUserConfig;
   private _phoneSetting: PhoneSetting;
   private _callSwitchController: CallSwitchController;
-  constructor() {
+
+  constructor(
+    private _personService: IPersonService,
+    private _phoneNumberService: IPhoneNumberService,
+    private _rcInfoService: IRCInfoService,
+  ) {
     super({ isSupportedCache: true, entityName: 'CALL' });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
@@ -89,6 +97,9 @@ class TelephonyService extends EntityBaseService<Call>
       this._telephonyEngineController = new TelephonyEngineController(
         this.userConfig,
         this.getEntityCacheController(),
+        this._personService,
+        this._phoneNumberService,
+        this._rcInfoService,
       );
     }
     return this._telephonyEngineController;
@@ -137,7 +148,6 @@ class TelephonyService extends EntityBaseService<Call>
 
   hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
-    this._callSwitchController.onCallEnded(callId);
   };
 
   mute = (callId: number) => {

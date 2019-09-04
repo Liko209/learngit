@@ -117,6 +117,10 @@ class RegionInfoController {
     return list;
   }
 
+  async getDefaultCountryInfo() {
+    return this._getCountryFromUserNumber();
+  }
+
   async getStateList(countryId: string): Promise<StateRecord[]> {
     const list = this._stateListMap.get(countryId);
     if (list) {

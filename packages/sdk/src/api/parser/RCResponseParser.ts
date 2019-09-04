@@ -42,7 +42,7 @@ export class RCResponseParser implements IResponseParser {
         return new JRCError(errorInfo.errorCode, errorInfo.errorMessage);
       }
     }
-    mainLogger.tags(this.name).info(`can not parse RC response: ${response}`);
+    mainLogger.tags(this.name).info(`can not parse RC response: ${JSON.stringify(response)}`);
     return null;
   }
 

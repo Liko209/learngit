@@ -16,6 +16,7 @@ describe('ContactFocHandler', () => {
     getFullName: jest.fn(),
     isVisiblePerson: jest.fn(),
     getEntitySource: jest.fn(),
+    getPhoneNumbers: jest.fn(),
   };
 
   const searchService = {
@@ -81,6 +82,7 @@ describe('ContactFocHandler', () => {
       });
 
       personService.getFullName = jest.fn().mockReturnValue('Test displayName');
+      personService.getPhoneNumbers = jest.fn().mockReturnValue([]);
 
       const matchedInfo = {
         nameMatched: true,
@@ -108,6 +110,7 @@ describe('ContactFocHandler', () => {
       personService.isVisiblePerson = jest.fn().mockImplementation(() => {
         return true;
       });
+      personService.getPhoneNumbers = jest.fn().mockReturnValue([]);
 
       personService.getFullName = jest.fn().mockReturnValue('displayName');
 
@@ -135,6 +138,7 @@ describe('ContactFocHandler', () => {
       personService.isVisiblePerson = jest.fn().mockImplementation(() => {
         return true;
       });
+      personService.getPhoneNumbers = jest.fn().mockReturnValue([]);
 
       SearchUtils.isFuzzyMatched = jest.fn().mockReturnValue(true);
 
@@ -164,6 +168,7 @@ describe('ContactFocHandler', () => {
       personService.isVisiblePerson = jest.fn().mockImplementation(() => {
         return true;
       });
+      personService.getPhoneNumbers = jest.fn().mockReturnValue([]);
       expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
     });
 
@@ -172,6 +177,7 @@ describe('ContactFocHandler', () => {
       personService.isVisiblePerson = jest.fn().mockImplementation(() => {
         return true;
       });
+      personService.getPhoneNumbers = jest.fn().mockReturnValue([]);
       expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
     });
 
@@ -180,7 +186,39 @@ describe('ContactFocHandler', () => {
       personService.isVisiblePerson = jest.fn().mockImplementation(() => {
         return true;
       });
+      personService.getPhoneNumbers = jest.fn().mockReturnValue([]);
       expect(handler.filterFunc({ id: 1 } as Person)).toBe(true);
+    });
+
+    it('should filter when phone number is matched', () => {
+      const handler = new ContactFocHandler(CONTACT_TAB_TYPE.ALL, '555');
+      personService.isVisiblePerson = jest.fn().mockImplementation(() => {
+        return true;
+      });
+      const phoneNumbers = [{ id: '1555555' }, { id: '166666555' }];
+      personService.getPhoneNumbers = jest.fn().mockReturnValue(phoneNumbers);
+
+      SearchUtils.isFuzzyMatched = jest.fn().mockReturnValue(true);
+
+      personService.getFullName = jest.fn().mockReturnValue('Test displayName');
+
+      const matchedInfo = {
+        nameMatched: false,
+        phoneNumberMatched: false,
+        isMatched: false,
+        matchedNumbers: phoneNumbers,
+      };
+      searchService.generateMatchedInfo = jest
+        .fn()
+        .mockReturnValue(matchedInfo);
+
+      expect(
+        handler.filterFunc({
+          id: 1,
+          display_name: 'Test displayName',
+          email: 'email@ringcentral.com',
+        } as Person),
+      ).toBe(true);
     });
   });
 });

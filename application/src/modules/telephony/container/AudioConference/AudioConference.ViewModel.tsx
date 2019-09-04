@@ -36,16 +36,24 @@ class AudioConferenceViewModel extends AbstractViewModel<AudioConferenceProps>
   }
 
   @action
-  startAudioConference = () => {
-    if (this.props.groupId) {
-      this._telephonyService.startAudioConference(this.props.groupId);
-    }
-    if (this._group && this.props.analysisSource) {
+  startAudioConference = async () => {
+    const { analysisSource, groupId } = this.props;
+
+    if (this._group && analysisSource) {
       analyticsCollector.startConferenceCall(
         this._group.analysisType,
-        this.props.analysisSource,
+        analysisSource,
       );
     }
+
+    if (!groupId) {
+      return false;
+    }
+
+    const isConferenceSuccess =
+      await this._telephonyService.startAudioConference(groupId);
+
+    return Boolean(isConferenceSuccess);
   };
   showIcon = promisedComputed(false, async () => {
     if (!this._group || !this._featuresFlagsService) return false;

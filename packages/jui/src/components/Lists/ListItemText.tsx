@@ -27,8 +27,11 @@ const WrappedListItemText = ({
   ...rest
 }: JuiListItemTextProps) => <MuiListItemText {...rest} />;
 
-const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
-  flex: ${props => (props.alignCenter ? 'none !important' : '1 1 auto')};
+const StyledListItemText = styled<JuiListItemTextProps>(
+  WrappedListItemText,
+).attrs(({ alignCenter }: JuiListItemTextProps) => ({
+  flex: alignCenter ? 'none !important' : '1 1 auto',
+}))`
   && {
     padding: 0;
     .list-item-primary {
@@ -52,6 +55,12 @@ const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
   }
 `;
 
+const CLASSES = {
+  primary: 'list-item-primary',
+  secondary: 'list-item-secondary',
+  multiline: 'multiline',
+};
+
 const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
   const { primary, primaryColor, secondary, ...rest } = props;
   return (
@@ -59,11 +68,7 @@ const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
       primaryColor={primaryColor}
       primary={primary}
       secondary={secondary}
-      classes={{
-        primary: 'list-item-primary',
-        secondary: 'list-item-secondary',
-        multiline: 'multiline',
-      }}
+      classes={CLASSES}
       {...rest}
     />
   );

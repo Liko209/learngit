@@ -73,7 +73,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
         excludeSelf: false,
         arrangeIds: this._sortableGroupMemberHandler.allSortedMemberIds,
         fetchAllIfSearchKeyEmpty: true,
-        asIdsOrder: true,
+        recentFirst: true,
       });
       const ids = result.sortableModels.map(
         (person: SortableModel<Person>) => person.id,

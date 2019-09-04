@@ -28,6 +28,9 @@ import { Call } from '../entity';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 import { notificationCallback } from '../types';
 import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
+import { IPersonService } from 'sdk/module/person/service/IPersonService';
+import { IPhoneNumberService } from 'sdk/module/phoneNumber/service/IPhoneNumberService';
+import { IRCInfoService } from 'sdk/module/rcInfo/service/IRCInfoService';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -73,6 +76,9 @@ class TelephonyEngineController {
   constructor(
     telephonyConfig: TelephonyUserConfig,
     entityCacheController: IEntityCacheController<Call>,
+    private _personService: IPersonService,
+    private _phoneNumberService: IPhoneNumberService,
+    private _rcInfoService: IRCInfoService,
   ) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
     this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
@@ -157,7 +163,12 @@ class TelephonyEngineController {
     this._preCallingPermission = await this.getVoipCallPermission();
     this.rtcEngine.setUserInfo(await this.getUserInfo());
     if (this._preCallingPermission) {
-      this._accountController = new TelephonyAccountController(this.rtcEngine);
+      this._accountController = new TelephonyAccountController(
+        this.rtcEngine,
+        this._personService,
+        this._phoneNumberService,
+        this._rcInfoService,
+      );
       this._accountDelegate &&
         this._accountController.setAccountDelegate(this._accountDelegate);
       this._entityCacheController &&

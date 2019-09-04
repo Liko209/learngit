@@ -9,9 +9,7 @@ import {
   StyledIconRight,
   JuiOutlineTextField,
 } from '../../../components/Forms/OutlineTextField';
-import {
-  spacing, grey, typography, width,
-} from '../../../foundation/utils';
+import { spacing, grey, typography, width } from '../../../foundation/utils';
 import {
   IUseInput,
   IJuiPhoneFilter,
@@ -57,6 +55,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
   clearButtonLabel,
   placeholder,
   onChange,
+  tooltip,
 }) => {
   const ref: any = useRef(null);
 
@@ -72,13 +71,13 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
   const iconState: FilterIconState = value
     ? {
-      iconName: ['filter', 'close'],
-      iconPosition: 'both',
-    }
+        iconName: ['filter', 'close'],
+        iconPosition: 'both',
+      }
     : {
-      iconName: 'filter',
-      iconPosition: 'left',
-    };
+        iconName: 'filter',
+        iconPosition: 'left',
+      };
 
   const iconRightProps = {
     tabIndex: 0,
@@ -101,6 +100,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
       value={value}
       InputProps={inputProps}
       IconRightProps={iconRightProps}
+      IconRightToolTip={tooltip}
       onChange={onFilterChange}
       onClickIconRight={onFilterClear}
       data-test-automation-id="phoneFilter"

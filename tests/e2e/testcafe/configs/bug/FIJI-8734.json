@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/PhoneTab/CallHistory/*"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -2,6 +2,7 @@
  * @Author: doyle.wu
  * @Date: 2018-12-08 18:07:46
  */
+import "chromedriver";
 import * as puppeteer from "puppeteer";
 import { Page } from "puppeteer/lib/Page";
 import { Browser } from "puppeteer/lib/Browser";
@@ -9,7 +10,7 @@ import { LogUtils } from "./logUtils";
 import { FunctionUtils } from "./functionUtils";
 import { MockClient, BrowserInitDto } from 'mock-client';
 import { Config } from '../config';
-import { Builder, By, Actions, WebDriver } from "selenium-webdriver";
+import { Builder, By, WebDriver } from "selenium-webdriver";
 import * as chrome from "selenium-webdriver/chrome";
 import * as bluebird from "bluebird";
 
@@ -200,9 +201,33 @@ class PptrUnionUtils {
       return false;
     }
 
+    const check = !!options['check'];
     const driver = await PptrUnionUtils.getDriver(page);
-    const element = await driver.findElement(By.css(selector));
-    await element.click();
+    let element;
+    let retryCount = check ? 10 : 1;
+
+    let exist = await PptrUnionUtils.waitForSelector(page, selector, { timeout: 1000 });
+    while (exist && retryCount-- > 0) {
+      try {
+        try {
+          element = await driver.findElement(By.css(selector));
+        } catch (e) {
+          break;
+        }
+        await element.click();
+        await bluebird.delay(200);
+        exist = await PptrUnionUtils.waitForSelector(page, selector, { timeout: 1000 });
+      } catch (err) {
+        if (err && err.name === 'ElementClickInterceptedError') {
+          await bluebird.delay(2000);
+          await element.click();
+        } else {
+          if (retryCount <= 0) {
+            throw err;
+          }
+        }
+      }
+    }
 
     return true;
   }
@@ -238,6 +263,22 @@ class PptrUnionUtils {
     }, selector);
 
     return text;
+  }
+
+  static async attr(page: Page, selector: string, name: string) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector))) {
+      return false;
+    }
+
+    const driver = await PptrUnionUtils.getDriver(page);
+    const value = await driver.executeScript((selector, name) => {
+      const elements = document.querySelectorAll(selector);
+      const element = elements[elements.length - 1];
+      return element.getAttribute(name);
+    }, selector, name);
+
+    return value;
+
   }
 
   static async launch(options = {}): Promise<Browser> {
@@ -365,8 +406,9 @@ class PptrUnionUtils {
   private static async getDriver(page: Page): Promise<WebDriver> {
     const browser = page.browser();
     const target = page.target();
-    const endPoint = PptrUnionUtils.toEndpoint(browser.wsEndpoint());
-    const driver = drivers.get(endPoint);
+    const wsEndpoint = PptrUnionUtils.toEndpoint(browser.wsEndpoint());
+    let driver = drivers.get(wsEndpoint);
+
     const targetWindow = `CDwindow-${target._targetId}`;
     let currentWindow, shouldSwitch;
     try {

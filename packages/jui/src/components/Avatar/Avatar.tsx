@@ -21,7 +21,7 @@ import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 import { JuiIconography, SvgSymbol } from '../../foundation/Iconography';
-import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
+import { useHoverHelper } from '../../foundation/hooks/useHoverHelper';
 import { StyledMaskWrapper, StyledMask } from './Mask';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
@@ -64,8 +64,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
     background-color: ${({ color, customColor }) =>
-      customColor ? color :
-      color ? palette('avatar', color) : grey('100')};
+      customColor ? color : color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -104,21 +103,19 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
       color ? palette('avatar', color) : primary('main')};
   }
 
-  & span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: ${height(33)};
-    width: ${width(33)};
-    border-radius: 50%;
-    background-color: ${palette('common', 'white')};
-  }
-
   &:focus {
     outline: none;
   }
 `;
-
+const StyledCoverAvatarContent = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: ${height(33)};
+  width: ${width(33)};
+  border-radius: 50%;
+  background-color: ${palette('common', 'white')};
+`;
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
   <JuiIconography
     iconSize="inherit"
@@ -161,13 +158,17 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     iconSymbol,
     ...rest
   } = props;
-  const popupHelper = usePopupHelper({ variant: 'popover' });
+  const hoverHelper = useHoverHelper();
 
   let avatar: JSX.Element;
-  const popupTriggerProps = tooltip ? popupHelper.HoverProps : {};
+  const hoverTriggerProps = tooltip ? hoverHelper.TriggerProps : {};
 
   if (cover) {
-    avatar = <StyledCoverAvatar {...rest} {...popupTriggerProps} />;
+    avatar = (
+      <StyledCoverAvatar {...rest} {...hoverTriggerProps}>
+        <StyledCoverAvatarContent>{children}</StyledCoverAvatarContent>
+      </StyledCoverAvatar>
+    );
   } else {
     let iconChildren;
     if (iconSymbol) {
@@ -177,7 +178,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     }
 
     avatar = (
-      <StyledAvatar {...rest} {...popupTriggerProps}>
+      <StyledAvatar {...rest} {...hoverTriggerProps}>
         {iconChildren || children}
       </StyledAvatar>
     );
@@ -195,7 +196,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     avatar = <JuiAvatarMask onClick={rest.onClick}>{avatar}</JuiAvatarMask>;
   }
 
-  if (tooltip && popupHelper.PopoverProps.open) {
+  if (tooltip && hoverHelper.hovered) {
     avatar = <RuiTooltip title={tooltip}>{avatar}</RuiTooltip>;
   }
 

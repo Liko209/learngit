@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ViewInBrowserTabActionAnotherTest should show correct text in electron [JPT-2926] 1`] = `"message.fileAction.viewInBrowser"`;

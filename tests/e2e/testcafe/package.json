@@ -60,7 +60,8 @@
     "ua-parser-js": "^0.7.19",
     "uuid": "^3.3.2",
     "webphone-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/webphone-client-10.2.12.tgz",
-    "zip-dir": "^1.0.2"
+    "zip-dir": "^1.0.2",
+    "ua-parser-js": "^0.7.20"
   },
   "devDependencies": {
     "nodemon": "^1.18.3"

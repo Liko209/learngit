@@ -4,8 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
 const GLOBAL_HOT_KEYS = {
-  OPEN_SEARCH: ['command+f', 'ctrl+f'],
+  OPEN_SEARCH: isMac ? ['command+f'] : ['ctrl+f'],
+  SWITCH_CONVERSATION: isMac ? ['command+k'] : ['ctrl+k'],
 };
 
 export { GLOBAL_HOT_KEYS };

@@ -35,6 +35,7 @@ type JuiModalProps = {
   loading?: boolean;
   onClose?(event: React.MouseEvent, reason?: string): void;
   onEscTracking?: (reason?: string) => void;
+  disableEscapeKeyDown?: boolean;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
@@ -114,6 +115,8 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       fillContent,
       onCancel,
       onEscTracking,
+      loading,
+      disableEscapeKeyDown,
     } = this.props;
     const onClose = (event: React.MouseEvent, reason?: string): void => {
       if (onCancel) {
@@ -123,7 +126,13 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
     };
 
     return (
-      <JuiDialog onClose={onClose} open={open!} size={size} {...modalProps}>
+      <JuiDialog
+        disableEscapeKeyDown={loading || disableEscapeKeyDown}
+        onClose={onClose}
+        open={open!}
+        size={size}
+        {...modalProps}
+      >
         {typeof title === 'string' ? (
           <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
             {title}

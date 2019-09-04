@@ -286,7 +286,12 @@ test.meta(<ITestMeta>{
     await messageTab.postItemById(postId).ensureLoaded();
   });
 
-  await h(t).withLog(`And the posts highlight the keyword {keyword1} in file name`, async (step) => {
+
+  await h(t).withLog(`When I hover the image`, async () => {
+    await t.hover(messageTab.postItemById(postId).imageItem);
+  });
+
+  await h(t).withLog(`Then the posts highlight the keyword {keyword1} in file name`, async (step) => {
     step.setMetadata('keyword1', keyword1);
     await t.expect(messageTab.postItemById(postId).fileNames.find('span.highlight-term').textContent).eql(keyword1);
   });
@@ -311,7 +316,11 @@ test.meta(<ITestMeta>{
     await messageTab.postItemById(postId).ensureLoaded();
   });
 
-  await h(t).withLog(`And the post highlight the keyword {multipleKeyWord} in file name`, async (step) => {
+  await h(t).withLog(`When I hover the image`, async () => {
+    await t.hover(messageTab.postItemById(postId).imageItem);
+  });
+
+  await h(t).withLog(`Then the post highlight the keyword {multipleKeyWord} in file name`, async (step) => {
     step.setMetadata('multipleKeyWord', multipleKeyWord);
     await t.expect(messageTab.postItemById(postId).fileNames.find('span.highlight-term').nth(0).textContent).eql(keyword1);
     await t.expect(messageTab.postItemById(postId).fileNames.find('span.highlight-term').nth(1).textContent).eql(keyword2);

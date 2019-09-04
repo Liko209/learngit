@@ -13,6 +13,7 @@ type CallCtrlPanelViewProps = {
   phone?: string;
   uid?: number;
   direction?: CALL_DIRECTION;
+  isWarmTransferPage: boolean;
   isConference: boolean;
 };
 

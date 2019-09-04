@@ -79,7 +79,7 @@ class SectionViewComponent extends Component<Props, State> {
         onExpand={this._switchExpanded}
         expanded={expanded}
         title={toTitleCase(t(title)).toUpperCase()}
-        data-test-automation-id={`${title}-tab`}
+        data-test-automation-id={`${title}-section`}
       >
         {tabs.map(({ title, path, automationID }) => {
           return (
@@ -88,7 +88,7 @@ class SectionViewComponent extends Component<Props, State> {
               onClick={this._cacheClick(path)}
               selected={path === selectedPath}
               classes={this._navItemClasses}
-              data-test-automation-id={automationID}
+              data-test-automation-id={`${automationID}-tab`}
             >
               <JuiListNavItemText>{t(title)}</JuiListNavItemText>
               {/* {UMIType && <ContactUMI type={UMIType} />} */}

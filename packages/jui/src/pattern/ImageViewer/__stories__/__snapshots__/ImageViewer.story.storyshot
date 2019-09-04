@@ -114,9 +114,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
       className=""
     >
       <button
-        aria-haspopup={true}
         aria-label="zoom_out"
-        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -127,7 +125,8 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseMove={[Function]}
+        onMouseOut={[Function]}
+        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -165,9 +164,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
       className=""
     >
       <button
-        aria-haspopup={true}
         aria-label="zoom_in"
-        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -178,7 +175,8 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseMove={[Function]}
+        onMouseOut={[Function]}
+        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -210,9 +208,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
       className="c5"
     >
       <button
-        aria-haspopup={true}
         aria-label="reset zoom"
-        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -223,7 +219,8 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseMove={[Function]}
+        onMouseOut={[Function]}
+        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}

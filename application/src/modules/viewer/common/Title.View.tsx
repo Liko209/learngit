@@ -112,10 +112,10 @@ class ViewerTitleViewComponent extends Component<Type> {
               <JuiButtonBar overlapSize={2}>
                 <Download url={downloadUrl} variant="round" />
                 <FileActionMenu
+                  scene="fullScreenViewer"
                   showViewInPostAction
                   groupId={this.props.groupId}
                   fileId={fileId}
-                  disablePortal
                   variant="round"
                   asyncOperationDecorator={
                     this.createAsyncOperationDecorator(

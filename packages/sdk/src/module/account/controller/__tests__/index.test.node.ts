@@ -17,6 +17,7 @@ import { glipStatus } from 'sdk/api';
 import { mainLogger } from 'foundation/log';
 import { TaskController } from 'sdk/framework/controller/impl/TaskController';
 import { ReLoginGlipStrategy } from '../../strategy/ReLoginGlipStrategy';
+import { RCInfoService } from 'sdk/module/rcInfo';
 
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../config/AuthUserConfig');
@@ -36,6 +37,11 @@ describe('AuthService', () => {
     setGlipLoginStatus: jest.fn(),
   } as any;
 
+  const mockRCInfoService = {
+    getRCExtensionInfo: jest.fn(),
+    getUserEmail: jest.fn(),
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -50,6 +56,10 @@ describe('AuthService', () => {
       .mockImplementation((config: string) => {
         if (config === ServiceConfig.ACCOUNT_SERVICE) {
           return { authUserConfig: AuthUserConfig.prototype };
+        }
+
+        if (config === ServiceConfig.RC_INFO_SERVICE) {
+          return mockRCInfoService;
         }
       });
   });
@@ -83,22 +93,42 @@ describe('AuthService', () => {
   });
 
   describe('makeSureUserInWhitelist()', () => {
-    it('should not check white list when rc token is invalid', async () => {
+    it('should not check white list when email prefix is valid', async () => {
       AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
         owner_id: undefined,
       });
+
+      mockRCInfoService.getRCExtensionInfo.mockReturnValueOnce({contact: {
+        email: "",
+      }});
+
       await authController.makeSureUserInWhitelist();
       expect(AuthUserConfig.prototype.getRCToken).toHaveBeenCalled();
       expect(mockAccountManager.makeSureUserInWhitelist).not.toHaveBeenCalled();
     });
 
-    it('should check white list when rc token is valid', async () => {
+    it('should check white list when user id and email prefix are valid', async () => {
       AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
         owner_id: 123,
       });
+
+      mockRCInfoService.getUserEmail.mockReturnValueOnce(
+        "freda.song@ringcentral.com");
+
       await authController.makeSureUserInWhitelist();
-      expect(AuthUserConfig.prototype.getRCToken).toHaveBeenCalled();
-      expect(mockAccountManager.makeSureUserInWhitelist).toHaveBeenCalledWith(123);
+      expect(mockAccountManager.makeSureUserInWhitelist).toHaveBeenCalledWith("ringcentral.com", 123);
+    });
+
+    it('should check white list when user id is valid', async () => {
+      AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
+        owner_id: 123,
+      });
+
+      mockRCInfoService.getUserEmail.mockReturnValueOnce(
+        "");
+
+      await authController.makeSureUserInWhitelist();
+      expect(mockAccountManager.makeSureUserInWhitelist).toHaveBeenCalledWith("", 123);
     });
   });
 
@@ -166,7 +196,7 @@ describe('AuthService', () => {
       expect(mockAccountManager.glipLogin).toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
-        false,
+        { success: false, isFirstLogin: true },
       );
     });
 
@@ -182,7 +212,7 @@ describe('AuthService', () => {
       expect(mockAccountManager.glipLogin).toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
-        false,
+        { success: false, isFirstLogin: true },
       );
     });
   });

@@ -1,6 +1,6 @@
 {
   "name": "foundation",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "private": true,
   "main": "src",
   "dependencies": {
@@ -15,8 +15,8 @@
     "lodash": "4.17.15",
     "lokijs": "1.5.5",
     "reflect-metadata": "0.1.12",
-    "url-parse": "1.4.7",
-    "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101"
+    "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101",
+    "url-parse": "1.4.7"
   },
   "devDependencies": {
     "@types/js-base64": "2.3.1",

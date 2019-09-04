@@ -17,7 +17,8 @@ import {
 import tinycolor from 'tinycolor2';
 import styled, { keyframes } from '../../../foundation/styled-components';
 import { palette, width } from '../../../foundation/utils/styles';
-import { usePopupHelper } from '../../../foundation/hooks/usePopupHelper';
+import { useHoverHelper } from '../../../foundation/hooks/useHoverHelper';
+import { useShallowDependency } from '../../../foundation/hooks/useShallowDependency';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 import { parseColor } from '../../../foundation/utils/parseColor';
 
@@ -52,6 +53,7 @@ type JuiIconButtonProps = {
   tooltipPlacement?: TooltipProps['placement'];
   component?: React.ElementType;
   download?: boolean;
+  buttonRef?: React.RefObject<HTMLButtonElement>;
   href?: string;
 } & Omit<MuiIconButtonProps, 'color' | 'children' | 'size'> &
   Omit<JuiIconographyProps, 'color' | 'children'>;
@@ -84,6 +86,9 @@ type StyledIconButtonProps = JuiIconButtonProps & {
 };
 
 const MUI_ICON_BUTTON_CLASSES = { disabled: 'disabled' };
+
+const TOUCH_RIPPLE_PROPS = { classes: touchRippleClasses };
+
 const WrappedMuiIconButton = React.forwardRef(
   (
     {
@@ -173,11 +178,11 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
         color: ${palette('action', 'disabledBackground')};
       }
       background-color: ${({ shouldPersistBg, theme, colorScope, colorName }) =>
-      shouldPersistBg
-        ? tinycolor(palette(colorScope, colorName)({ theme }))
-            .setAlpha(theme.palette.action.hoverOpacity)
-            .toRgbString()
-        : 'inherit'};
+        shouldPersistBg
+          ? tinycolor(palette(colorScope, colorName)({ theme }))
+              .setAlpha(theme.palette.action.hoverOpacity)
+              .toRgbString()
+          : 'inherit'};
     }
 
     .rippleVisible {
@@ -194,6 +199,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   props: JuiIconButtonProps,
 ) => {
   const {
+    buttonRef,
     className,
     children,
     tooltipTitle,
@@ -208,34 +214,45 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     ...rest
   } = props;
   const colorObj = parseColor(color);
-  const popupHelper = usePopupHelper({ variant: 'popover' });
+  const hoverHelper = useHoverHelper();
 
   const icon = useMemo(
     () => <JuiIconography symbol={symbol}>{children as string}</JuiIconography>,
     [symbol, children],
   );
 
-  let iconButton = (
-    <StyledIconButton
-      disableRipple={disableTouchRipple || rest.variant === 'plain'}
-      colorScope={colorObj.scope}
-      colorName={colorObj.name}
-      aria-label={ariaLabel || tooltipTitle}
-      className={className}
-      classes={MUI_ICON_BUTTON_CLASSES}
-      TouchRippleProps={{ classes: touchRippleClasses }}
-      {...popupHelper.HoverProps}
-      {...rest}
-    >
-      {icon}
-    </StyledIconButton>
+  let iconButton = useMemo(
+    () => (
+      <StyledIconButton
+        ref={buttonRef}
+        disableRipple={disableTouchRipple || rest.variant === 'plain'}
+        colorScope={colorObj.scope}
+        colorName={colorObj.name}
+        aria-label={ariaLabel || tooltipTitle}
+        className={className}
+        classes={MUI_ICON_BUTTON_CLASSES}
+        TouchRippleProps={TOUCH_RIPPLE_PROPS}
+        {...hoverHelper.TriggerProps}
+        {...rest}
+      >
+        {icon}
+      </StyledIconButton>
+    ),
+    [
+      disableTouchRipple,
+      ariaLabel,
+      tooltipTitle,
+      icon,
+      useShallowDependency(colorObj),
+      useShallowDependency(rest),
+    ],
   );
 
   if (alwaysEnableTooltip) {
-    iconButton = <span {...popupHelper.HoverProps}>{iconButton}</span>;
+    iconButton = <span {...hoverHelper.TriggerProps}>{iconButton}</span>;
   }
 
-  if (!disableToolTip && tooltipTitle && popupHelper.PopoverProps.open) {
+  if (!disableToolTip && tooltipTitle && hoverHelper.hovered) {
     return (
       <RuiTooltip
         title={tooltipTitle}

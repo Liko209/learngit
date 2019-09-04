@@ -108,9 +108,7 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
         onMouseDown={[Function]}
       >
         <button
-          aria-haspopup={true}
           aria-label=""
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c1"
           data-test-automation-id="conversation-chatbar-emoji-button"
           disabled={false}
@@ -123,7 +121,8 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}

@@ -8,6 +8,7 @@ import { PhoneLinkViewProps } from './types';
 import { JuiConversationNumberLink } from 'jui/pattern/ConversationCard';
 import { handleHrefAttribute, isSupportWebRTC } from './helper';
 import { observer } from 'mobx-react';
+import { JuiItemTextValue } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 
 @observer
 class PhoneLinkView extends React.Component<PhoneLinkViewProps> {
@@ -27,12 +28,46 @@ class PhoneLinkView extends React.Component<PhoneLinkViewProps> {
     }
   };
 
+  private _handleConferenceClick = (
+    evt: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    const { handleClick } = this.props;
+    if (isSupportWebRTC() && handleClick) {
+      evt.preventDefault();
+      handleClick('link');
+    }
+  };
+
   render() {
-    const { canUseTelephony, text, key, isRCUser, ...rest } = this.props;
+    const {
+      canUseTelephony,
+      text,
+      key,
+      isRCUser,
+      canUseConference,
+      type,
+      ...rest
+    } = this.props;
     const href = handleHrefAttribute({
       canUseTelephony,
       content: text,
     });
+
+    if (type === 'conference') {
+      return canUseConference ? (
+        <JuiConversationNumberLink
+          href={href}
+          key={key}
+          data-test-automation-id="audioConferenceLink"
+          onClick={this._handleConferenceClick}
+          data-id={text}
+          {...rest}
+        />
+      ) : (
+        <JuiItemTextValue description={text} />
+      );
+    }
+
     return isRCUser ? (
       <JuiConversationNumberLink
         href={href}

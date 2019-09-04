@@ -4,6 +4,7 @@
  */
 import { PptrUtils, FunctionUtils } from "../utils";
 import { BaseGatherer } from ".";
+import { HomePage } from "../pages";
 import * as bluebird from "bluebird";
 
 const EXTENSION_ID = "ijjcejlmgpmagghhloglnenalapepejo";
@@ -20,9 +21,11 @@ class PerformanceMetric {
 
 class ProcessGatherer extends BaseGatherer {
   private intervalId;
-  private metrics: Array<PerformanceMetric> = new Array();
+  private metrics: Array<PerformanceMetric>;
 
   async _beforePass(passContext) {
+    this.metrics = new Array();
+    
     const driver = passContext.driver;
     let ws = await driver.wsEndpoint();
     this.browser = await PptrUtils.connect(ws);
@@ -50,9 +53,10 @@ class ProcessGatherer extends BaseGatherer {
       }
     });
 
+    const page = await (new HomePage(passContext)).page();
     this.intervalId = setInterval(async () => {
       try {
-        await driver.evaluateAsync(`(function() {
+        await page.evaluate(`(function() {
                 if (chrome.runtime && chrome.runtime.sendMessage) {
                     chrome.runtime.sendMessage("${EXTENSION_ID}", {});
                 }

@@ -23,14 +23,24 @@ import {
 } from 'sdk/framework/utils/jobSchedule';
 import { RCSubscriptionKeys, EVENT_PREFIX } from '../constants';
 import { RCEventSubscriptionConfig } from '../config';
-import { PubNubEventPayloadMessage } from './types';
-import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import {
+  PubNubEventPayloadMessage,
+  PubNubStatusEvent,
+  PNCategories,
+} from './types';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import { SubscriptionProcessor } from './SubscriptionProcessor';
 
 const DECRYPT_INFO = { keyEncoding: 'base64', keyLength: 128, mode: 'ecb' };
 const RC_SUBSCRIPTION_RENEWAL_INTERVAL = 14 * 60; // 14 minutes
 const RC_SUBSCRIPTION_SAFE_INTERVAL = 1 * 60 * 1000; // 1 minutes
-
+const NORMAL_PN_STATUS = [
+  PNCategories.PNConnectedCategory,
+  PNCategories.PNReconnectedCategory,
+];
 const CLASS_NAME = 'RCSubscriptionController';
 const SLASH_CHAR = '/';
 enum INIT_STATUS {
@@ -39,9 +49,15 @@ enum INIT_STATUS {
   DONE,
 }
 
+type PubNubChanel = {
+  address: string;
+  subscriberKey: string;
+};
+
 class RCSubscriptionController {
   constructor(private _userConfig: RCEventSubscriptionConfig) {}
   private _lastSubscription: RcSubscriptionInfo;
+  private _pubNubChanel: PubNubChanel;
   private _pubNub: Pubnub;
   private _initStatus = INIT_STATUS.UN_INIT;
   private _eventNotificationKeyMap = {
@@ -75,16 +91,18 @@ class RCSubscriptionController {
 
   async startSubscription() {
     const processor = new SubscriptionProcessor(
-      Date.now().toString(),
+      `${CLASS_NAME}_${Date.now()}`,
       async () => {
         await this._startSubscription();
       },
     );
 
     if (!this._sequenceSubscriptionHandler) {
-      this._sequenceSubscriptionHandler = new SequenceProcessorHandler({
-        name: CLASS_NAME,
-      });
+      this._sequenceSubscriptionHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+        {
+          name: CLASS_NAME,
+        },
+      );
     }
     this._sequenceSubscriptionHandler.addProcessor(processor);
   }
@@ -92,19 +110,23 @@ class RCSubscriptionController {
   private async _startSubscription() {
     try {
       if (this._initStatus === INIT_STATUS.INPROGRESS) {
-        mainLogger.tags(CLASS_NAME).log('return because is initialing');
+        mainLogger
+          .tags(CLASS_NAME)
+          .log('_startSubscription => return because is initialing');
         return;
       }
 
       if (this._initStatus === INIT_STATUS.UN_INIT) {
         mainLogger
           .tags(CLASS_NAME)
-          .log('need to init subscription before start');
+          .log('_startSubscription => need to init subscription before start');
         await this._init();
       }
 
       if (!navigator.onLine) {
-        mainLogger.tags(CLASS_NAME).log('return because no network');
+        mainLogger
+          .tags(CLASS_NAME)
+          .log('_startSubscription => return because no network');
         return;
       }
 
@@ -113,7 +135,7 @@ class RCSubscriptionController {
         mainLogger
           .tags(CLASS_NAME)
           .log(
-            'can not do subscription, should stop if need',
+            '_startSubscription => can not do subscription, should stop if need',
             this._lastSubscription,
           );
         const isSubscribed = this._hasValidSubscriptionInfo();
@@ -123,15 +145,20 @@ class RCSubscriptionController {
       const { subscription, isUpdated } = await this._loadSubscription();
       mainLogger
         .tags(CLASS_NAME)
-        .log('get subscription success', { subscription, isUpdated });
+        .log('_startSubscription => load subscription success', {
+          subscription,
+          isUpdated,
+        });
 
       if (subscription) {
-        await this._saveSubscription(subscription);
         this._startPubNub(subscription);
+
         this._scheduleSubscriptionJob(isUpdated);
       }
     } catch (error) {
-      mainLogger.tags(CLASS_NAME).log('startSubscription failed', error);
+      mainLogger
+        .tags(CLASS_NAME)
+        .log('_startSubscription => startSubscription failed', error);
       await this._pauseSubscription();
     }
   }
@@ -145,7 +172,7 @@ class RCSubscriptionController {
       mainLogger
         .tags(CLASS_NAME)
         .log(
-          'subscription is alive, should update:',
+          '_loadSubscription => subscription is alive, should update:',
           checkNeedUpdateRes.shouldUpdate,
         );
       if (checkNeedUpdateRes.shouldUpdate) {
@@ -163,12 +190,24 @@ class RCSubscriptionController {
     } else {
       mainLogger
         .tags(CLASS_NAME)
-        .log('subscription is not alive, create new subscription');
+        .log(
+          '_loadSubscription => subscription is not alive, create new subscription',
+          {
+            'this._lastSubscription': this._lastSubscription,
+          },
+        );
       await this._clearSubscription();
       const newEvents = await this._getNeedSubscriptionEvents();
       const params = await this._buildSubscription(newEvents);
       subscription = await RcSubscriptionApi.createSubscription(params);
+      mainLogger
+        .tags(CLASS_NAME)
+        .log('subscription created,  new subscription', {
+          new: subscription,
+        });
     }
+
+    await this._saveSubscription(subscription);
     return { subscription, isUpdated };
   }
 
@@ -176,6 +215,7 @@ class RCSubscriptionController {
     this._sequenceSubscriptionHandler &&
       this._sequenceSubscriptionHandler.cancelAll();
     delete this._lastSubscription;
+    delete this._pubNubChanel;
     await this._userConfig.deleteRcEventSubscription();
     await jobScheduler.cancelJob(JOB_KEY.RC_RENEW_SUBSCRIPTION);
   }
@@ -229,16 +269,21 @@ class RCSubscriptionController {
         return;
       }
 
-      const subscription = await RcSubscriptionApi.renewSubscription(
-        this._lastSubscription.id,
-      );
+      const subscription = await this._requestRenewSubscription();
       mainLogger.tags(CLASS_NAME).log('_renewSubscription', { subscription });
-      await this._saveSubscription(subscription);
       this._startPubNub(subscription);
     } catch (error) {
       mainLogger.tags(CLASS_NAME).log('renewSubscription failed', error);
       await this._pauseSubscription();
     }
+  }
+
+  private async _requestRenewSubscription() {
+    const subscription = await RcSubscriptionApi.renewSubscription(
+      this._lastSubscription.id,
+    );
+    await this._saveSubscription(subscription);
+    return subscription;
   }
 
   private async _pauseSubscription() {
@@ -295,7 +340,6 @@ class RCSubscriptionController {
   private async _shouldUpdateSubscription() {
     const newEvents = await this._getNeedSubscriptionEvents();
     const events = this._getSubscribedEvents();
-
     const shouldUpdate = !_.isEqual(events.sort(), newEvents.sort());
     return {
       newEvents,
@@ -311,12 +355,16 @@ class RCSubscriptionController {
   }
 
   private async _saveSubscription(newSubscription: RcSubscriptionInfo) {
-    await this._userConfig.setRcEventSubscription(newSubscription);
-    this._lastSubscription = newSubscription;
+    if (!_.isEqual(newSubscription, this._lastSubscription)) {
+      await this._userConfig.setRcEventSubscription(newSubscription);
+      this._lastSubscription = newSubscription;
+    }
   }
 
   private _handleWakeUp = () => {
-    mainLogger.tags(CLASS_NAME).log('receive wake up, try start subscription');
+    mainLogger
+      .tags(CLASS_NAME)
+      .log('_handleWakeUp => receive wake up, try start subscription');
     this.startSubscription();
   };
 
@@ -326,7 +374,9 @@ class RCSubscriptionController {
     } else {
       mainLogger
         .tags(CLASS_NAME)
-        .log('receive voip permission off, try pause, subscription');
+        .log(
+          '_handlePermissionChange => receive voip permission off, try pause, subscription',
+        );
       this.cleanUpSubscription();
     }
   };
@@ -335,58 +385,64 @@ class RCSubscriptionController {
     if (value) {
       mainLogger
         .tags(CLASS_NAME)
-        .log('receive online, try start subscription', value);
+        .log('_handleOnLine => receive online, try start subscription', value);
 
       if (value.onLine) {
         this.startSubscription();
       } else {
         mainLogger
           .tags(CLASS_NAME)
-          .log('receive offline, try pause, subscription');
+          .log('_handleOnLine => receive offline, try pause, subscription');
         this._pauseSubscription();
       }
     }
   };
 
   private _handleFocus = () => {
-    mainLogger.tags(CLASS_NAME).log('receive focus, try start subscription');
+    mainLogger
+      .tags(CLASS_NAME)
+      .log('_handleFocus => receive focus, try start subscription');
     this.startSubscription();
   };
 
   private _startPubNub(newSubscription: RcSubscriptionInfo) {
-    const subscribeKey = _.get(newSubscription, 'deliveryMode.subscriberKey');
+    const subscriberKey = _.get(newSubscription, 'deliveryMode.subscriberKey');
     const address = _.get(newSubscription, 'deliveryMode.address');
-    const needUpdatePubNub = this._pubNub
-      ? subscribeKey !==
-          _.get(this._lastSubscription, 'deliveryMode.subscriberKey') ||
-        address !== _.get(this._lastSubscription, 'deliveryMode.address')
-      : true;
+    const needUpdatePubNub =
+      this._pubNub && this._pubNubChanel
+        ? subscriberKey !== this._pubNubChanel.subscriberKey ||
+          address !== this._pubNubChanel.address
+        : true;
 
     if (!needUpdatePubNub) {
       mainLogger.tags(CLASS_NAME).log('no needUpdatePubNub -  _startPubNub');
       return;
     }
 
-    if (address && subscribeKey) {
+    if (address && subscriberKey) {
       try {
         this._clearPubNub();
         mainLogger.tags(CLASS_NAME).log('startPubNub', {
-          subscribeKey,
+          subscribeKey: subscriberKey,
           address,
         });
         this._pubNub = new Pubnub({
-          subscribeKey,
+          subscribeKey: subscriberKey,
           ssl: true,
           restore: true,
         });
 
         this._pubNub.addListener({
-          message: this._notifyMessages.bind(this),
-          status: this._notifyStatus.bind(this),
+          message: this._notifyMessages,
+          status: this._notifyStatus,
         });
         this._pubNub.subscribe({
           channels: [address],
         });
+        this._pubNubChanel = {
+          address,
+          subscriberKey,
+        };
       } catch (error) {
         mainLogger.tags(CLASS_NAME).log('_startPubNub with error', error);
       }
@@ -440,8 +496,14 @@ class RCSubscriptionController {
     }
   }
 
-  private _notifyStatus = (status: any) => {
+  private _notifyStatus = (status: PubNubStatusEvent) => {
     mainLogger.tags(CLASS_NAME).log('_notifyStatus', status);
+    if (status && !status.error  && NORMAL_PN_STATUS.includes(status.category)) {
+      notificationCenter.emitKVChange(
+        SERVICE.RC_EVENT_SUBSCRIPTION.SUBSCRIPTION_CONNECTED,
+        true,
+      );
+    }
   };
 
   private async _buildSubscription(

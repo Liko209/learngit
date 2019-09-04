@@ -6,6 +6,7 @@ import { PptrUtils, FunctionUtils } from "../utils";
 import { PerformanceMetric } from "../gatherers";
 import { globals } from "../globals";
 import { BaseGatherer } from ".";
+import { HomePage } from "../pages";
 
 const EXTENSION_ID = "ijjcejlmgpmagghhloglnenalapepejo";
 const EXTENSION_TAG = "[PerformanceMonitor]";
@@ -14,10 +15,10 @@ class ProcessGatherer2 extends BaseGatherer {
   private processIntervalId;
   private resolve;
   private timeoutId;
-  private indexReceived;
-  private metrics: Array<PerformanceMetric> = new Array();
+  private metrics: Array<PerformanceMetric>;
 
   async _beforePass(passContext) {
+    this.metrics = new Array();
     const driver = passContext.driver;
     let ws = await driver.wsEndpoint();
     this.browser = await PptrUtils.connect(ws);
@@ -25,23 +26,11 @@ class ProcessGatherer2 extends BaseGatherer {
     let isSteady = false;
     let memoryArr = [], min, max;
 
-    this.indexReceived = false;
-    let listener = (data) => {
-      if (data.response
-        && data.response.url && data.response.url.indexOf('/api/index?newer_than=') > -1
-        && data.response.status && data.response.status === 200) {
-        this.indexReceived = true;
-        driver.off('Network.responseReceived', listener);
-      }
-    };
-
-    driver.on('Network.responseReceived', listener);
-
     FunctionUtils.bindEvent(this.browser, "targetchanged", async target => {
       let page = await target.page();
       if (page) {
         FunctionUtils.bindEvent(page, "console", async msg => {
-          if (!this.indexReceived || !this.resolve) {
+          if (!this.resolve) {
             return;
           }
 
@@ -96,20 +85,20 @@ class ProcessGatherer2 extends BaseGatherer {
 
   async _pass(passContext) {
     return new Promise(async (resolve, reject) => {
-      const driver = passContext.driver;
-
       this.timeoutId = setTimeout(reject, 60000);
       this.resolve = resolve;
 
+      const page = await (new HomePage(passContext)).page();
       this.processIntervalId = setInterval(async () => {
         try {
-          await driver.evaluateAsync(`(function() {
+          await page.evaluate(`(function() {
                   if (chrome.runtime && chrome.runtime.sendMessage) {
                       chrome.runtime.sendMessage("${EXTENSION_ID}", {});
                   }
                   return true;
               })()`);
         } catch (err) {
+          clearInterval(this.processIntervalId);
         }
       }, 1000);
     });

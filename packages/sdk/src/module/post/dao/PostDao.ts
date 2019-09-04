@@ -75,22 +75,6 @@ class PostDao extends AbstractComposedDao<Post> {
     return query.lessThan('id', 0).toArray();
   }
 
-  async doInTransaction(func: () => {}): Promise<void> {
-    await this.getDb().ensureDBOpened();
-    await this.getDb().getTransaction(
-      'rw',
-      [
-        this.getDb().getCollection<PostDao, number>(PostDao.COLLECTION_NAME),
-        this.getDb().getCollection<PostViewDao, number>(
-          PostViewDao.COLLECTION_NAME,
-        ),
-      ],
-      async () => {
-        await func();
-      },
-    );
-  }
-
   async groupPostCount(groupId: number): Promise<number> {
     const query = this.createQuery();
     return query.equal('group_id', groupId).count();

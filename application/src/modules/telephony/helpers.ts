@@ -17,6 +17,7 @@ import {
 import { ENTITY_NAME } from '@/store';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+import CallModel from '@/store/models/Call';
 import { VOICEMAILS_ROOT_PATH, CALL_LOG_ROOT_PATH } from './interface/constant';
 import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
 
@@ -73,13 +74,15 @@ export function toFirstLetterUpperCase(input: string) {
   return `${input[0].toUpperCase()}${input.slice(1, input.length)}`;
 }
 
-export async function getDisplayNameByCaller(caller: ActiveCall) {
-  const { from, fromName, to, toName, direction } = caller;
+export async function getDisplayNameByCaller(caller: ActiveCall | CallModel, isCallModel?: boolean) {
+  const { fromName, toName, direction } = caller;
+  const from = (caller as ActiveCall).from || (caller as CallModel).fromNum;
+  const to = (caller as ActiveCall).to || (caller as CallModel).toNum;
   const phoneNumber = direction === CALL_DIRECTION.OUTBOUND ? to : from;
   const callerName = direction === CALL_DIRECTION.OUTBOUND ? toName : fromName;
 
   if (!phoneNumber || !caller) {
-    return i18nP('telephony.switchCall.unknownCaller');
+    return isCallModel ? i18nP('phone.unknownCaller') : i18nP('telephony.switchCall.unknownCaller');
   }
 
   const person = await ServiceLoader.getInstance<PersonService>(
@@ -97,7 +100,7 @@ export async function getDisplayNameByCaller(caller: ActiveCall) {
 
   if (callerName) {
     return callerName === 'Anonymous'
-      ? i18nP('telephony.switchCall.unknownCaller')
+      ? (isCallModel ? i18nP('phone.unknownCaller') : i18nP('telephony.switchCall.unknownCaller'))
       : callerName;
   }
 

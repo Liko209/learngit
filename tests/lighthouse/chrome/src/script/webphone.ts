@@ -62,7 +62,7 @@ const getSession = async (index) => {
       if (!session) {
         continue;
       }
-      console.log(index++);
+      //console.log(index++);
       try {
         await session.makeCall([Config.jupiterUser, '#', Config.jupiterPin].join(''))
       } catch {
@@ -83,7 +83,7 @@ const getSession = async (index) => {
       if (!session) {
         continue;
       }
-      console.log(index++);
+      //console.log(index++);
       try {
         await session.makeCall([Config.jupiterUser, '#', Config.jupiterPin].join(''))
       } catch {

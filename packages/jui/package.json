@@ -1,6 +1,6 @@
 {
   "name": "jui",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "main": "src",
   "scripts": {
     "storybook": "STORYBOOK_DISPLAY_WARNING=true DISPLAY_WARNING=true start-storybook -p 6006",
@@ -15,7 +15,7 @@
     "eventemitter2": "5.0.1",
     "mousetrap": "1.6.2",
     "object-path": "0.11.4",
-    "rcui": "1.7.2",
+    "rcui": "1.7.3",
     "re-resizable": "4.11.0",
     "react": "16.9.0",
     "react-content-loader": "3.2.0",
@@ -75,7 +75,7 @@
     "react-sortable-hoc": "0.8.3",
     "react-test-renderer": "16.8.3",
     "require-context.macro": "1.0.4",
-    "shield": "1.7.2",
+    "shield": "1.7.3",
     "svg-sprite-loader": "4.1.6",
     "svgo-loader": "2.2.0",
     "ts-jest": "24.0.2",

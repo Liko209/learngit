@@ -51,7 +51,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   }
 
   async componentDidMount() {
-    await this.props.dataModule.init();
+    const { init } = this.props.dataModule;
+    init && (await init());
   }
 
   switchPreImage = () => {

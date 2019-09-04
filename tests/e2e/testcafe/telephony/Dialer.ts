@@ -586,3 +586,60 @@ test.meta(<ITestMeta>{
     await t.expect(app.homePage.telephonyDialog.contactSearchList.exists).ok();
   });
 });
+
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-1908', 'JPT-1918'],
+  priority: ['P2'],
+  maintainers: ['Foden.Lin'],
+  keywords: ['Dialer']
+})('Can save the change of dialer before initiating a call and can be reset after fresh', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
+  const app = new AppRoot(t);
+  const telephonyDialog = app.homePage.telephonyDialog;
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I open dialer', async () => {
+    await app.homePage.openDialer();
+  });
+
+  await h(t).withLog(`And enter some contents into the input field`, async () => {
+    await telephonyDialog.typeTextInDialer('1');
+  });
+
+  await h(t).withLog('And I set the caller ID as "Blocked"', async () => {
+    await telephonyDialog.clickCallerIdSelector();
+    await telephonyDialog.callerIdList.selectBlocked();
+  });
+
+  await h(t).withLog(`Then should display "Blocked" in caller ID selection`, async () => {
+    await t.expect(telephonyDialog.callerIdSelector.textContent).eql('Blocked');
+  });
+
+  await h(t).withLog(`Then should display "1" in dialer input box`, async () => {
+    await t.expect(telephonyDialog.dialerInput.value).eql('1');
+  });
+
+  await h(t).withLog(`When I refresh App`, async () => {
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I open dialer', async () => {
+    await app.homePage.openDialer();
+  });
+
+  await h(t).withLog(`Then shouldn't display "Blocked" in caller ID selection`, async () => {
+    await t.expect(telephonyDialog.callerIdSelector.textContent).notEql('Blocked');
+  });
+
+  await h(t).withLog(`Then shouldn't display "1" in in dialer input box`, async () => {
+    await t.expect(telephonyDialog.dialerInput.value).notEql('1');
+  });
+});

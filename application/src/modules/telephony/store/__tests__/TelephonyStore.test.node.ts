@@ -310,15 +310,15 @@ describe('Telephony store', () => {
     expect(store.ids).toEqual([1]);
   });
 
-  it('_rawCalls', () => {
+  it('rawCalls', () => {
     const store = createStore();
-    expect((store as any)._rawCalls).toBeDefined();
-    expect((store as any)._rawCalls.length).toEqual(1);
+    expect((store as any).rawCalls).toBeDefined();
+    expect((store as any).rawCalls.length).toEqual(1);
   });
 
   it('call', done => {
     const store = createStore();
-    expect((store as any)._rawCalls).toBeDefined();
+    expect((store as any).rawCalls).toBeDefined();
     expect((store as any).call).toBeDefined();
 
     store.switchCurrentCall(1);
@@ -331,7 +331,7 @@ describe('Telephony store', () => {
 
     // @ts-ignore
     store._sortableListHandler.sortableListStore = { getIds: [] };
-    expect((store as any)._rawCalls.length).toEqual(0);
+    expect((store as any).rawCalls.length).toEqual(0);
     expect((store as any).call).toBeUndefined();
     done();
   });
@@ -438,22 +438,61 @@ describe('Telephony store', () => {
     expect(store._dialerString).toBe('');
   });
 
+  it('directToWarmTransferPage()', () => {
+    const store = createStore();
+    store.directToWarmTransferPage();
+    expect(store.isWarmTransferPage).toBeTruthy();
+  });
+
+  it('backToDialerFromWarmTransferPage()', () => {
+    const store = createStore();
+    store.backToDialerFromTransferPage();
+    expect(store.isWarmTransferPage).toBeFalsy();
+  });
+
+  it('completeTransfer()', () => {
+    const store = createStore();
+    store.completeTransfer();
+    expect(store.canCompleteTransfer).toBeTruthy();
+  });
+
+  it('processTransfer()', () => {
+    const store = createStore();
+    store.processTransfer();
+    expect(store.canCompleteTransfer).toBeFalsy();
+  });
+
   it('resetCallItem() [JPT-2764]', () => {
     const store = createStore();
     store.resetCallItem();
     expect(store.selectedCallItem).toEqual({
       phoneNumber: '',
       index: NaN,
-    })
-  })
+    });
+  });
 
   describe('_getNotificationCallerInfo', () => {
-    it('Should show unknown caller when SDK notification without from caller [JPT-2822]', async () => {
-      i18n.i18nP = jest.fn().mockReturnValue('unknown caller');
+    beforeEach(() => {
+      jest.spyOn(i18n, 'i18nP').mockReturnValueOnce('unknown caller');
+    });
 
+    it('Should show unknown caller when SDK notification without caller [JPT-2822]', async () => {
       const store = createStore();
 
-      const info = await store._getNotificationCallerInfo(null);
+      const info = await store._getNotificationCallerInfo();
+
+      expect(info.displayName).toBe('unknown caller');
+    });
+
+    it('Should show unknown caller when SDK notification has not caller name and cannot match contact [JPT-2822]', async () => {
+      const store = createStore();
+
+      const extensionNumber = '123456';
+
+      jest.spyOn(store, '_formatPhoneNumber').mockReturnValueOnce(extensionNumber);
+      jest.spyOn(store, '_matchPersonByPhoneNumber').mockReturnValueOnce(null);
+
+      const info = await store._getNotificationCallerInfo({ extensionNumber });
 
       expect(info.displayName).toBe('unknown caller');
     });

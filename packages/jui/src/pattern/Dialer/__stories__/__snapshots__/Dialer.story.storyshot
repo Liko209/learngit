@@ -62,7 +62,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   background-color: #f44336;
   color: #fff;
   box-shadow: none;
-  opacity: 0.12;
+  opacity: 0.30000000000000004;
 }
 
 .c7.c7 {
@@ -499,9 +499,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
         className="c6"
       >
         <button
-          aria-haspopup={true}
           aria-label="Detach"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -512,7 +510,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -540,9 +539,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </span>
         </button>
         <button
-          aria-haspopup={true}
           aria-label="Minimize"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -553,7 +550,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -595,9 +593,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c10"
         >
           <button
-            aria-haspopup={true}
             aria-label="Back"
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c11"
             disabled={false}
             onBlur={[Function]}
@@ -608,7 +604,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -679,9 +676,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
@@ -692,7 +687,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -727,9 +723,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
@@ -740,7 +734,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -775,9 +770,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
@@ -788,7 +781,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -823,9 +817,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
@@ -836,7 +828,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -871,9 +864,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
@@ -884,7 +875,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -919,9 +911,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
-            aria-haspopup={true}
             aria-label=""
-            aria-owns={null}
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
@@ -932,7 +922,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onMouseDown={[Function]}
             onMouseEnter={[Function]}
             onMouseLeave={[Function]}
-            onMouseMove={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}

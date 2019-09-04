@@ -109,7 +109,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   get name() {
     // get name from items if this post is integration post
     // post -> itemIds -> isIntegration -> integrationItem.activity
-    const userName = this.creator.displayName || '';
+    const userName = this.creator.userDisplayName || '';
     return getIntegration(this.post, userName) || userName;
   }
 

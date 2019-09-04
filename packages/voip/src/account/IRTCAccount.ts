@@ -24,6 +24,7 @@ interface IRTCAccount {
     noAudioDataEvent: RTCNoAudioDataEvent,
   ): void;
   getCallByUuid(uuid: string): RTCCall | null;
+  getRegistrationStatusCode(): number;
 }
 
 export { IRTCAccount };

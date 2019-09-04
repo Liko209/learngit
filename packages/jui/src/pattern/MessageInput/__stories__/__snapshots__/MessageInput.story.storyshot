@@ -91,9 +91,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
     className="c0"
   >
     <button
-      aria-haspopup={true}
       aria-label="Attach file"
-      aria-owns={null}
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-test-automation-id="conversation-chatbar-attachment-button"
       disabled={false}
@@ -106,7 +104,8 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
-      onMouseMove={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -442,9 +441,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-haspopup={true}
                   aria-label=""
-                  aria-owns={null}
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -455,7 +452,8 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseMove={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -535,9 +533,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-haspopup={true}
                   aria-label=""
-                  aria-owns={null}
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -548,7 +544,8 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseMove={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -664,9 +661,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-haspopup={true}
                   aria-label=""
-                  aria-owns={null}
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -677,7 +672,8 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseMove={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -760,9 +756,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-haspopup={true}
                   aria-label=""
-                  aria-owns={null}
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -773,7 +767,8 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseMove={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -856,9 +851,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-haspopup={true}
                   aria-label=""
-                  aria-owns={null}
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -869,7 +862,8 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onMouseDown={[Function]}
                   onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseMove={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}

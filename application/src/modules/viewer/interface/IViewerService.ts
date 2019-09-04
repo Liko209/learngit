@@ -17,6 +17,7 @@ interface IViewerService {
     mode?: string,
     postId?: number,
   ) => void;
+  showSingleImageViewer: (url: string, titleName: string) => void;
   open: (props: ViewerProps) => void;
 }
 

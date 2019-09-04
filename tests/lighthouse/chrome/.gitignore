@@ -12,3 +12,6 @@ targets
 .vscode
 
 benchmark.json
+
+profiles
+downloads

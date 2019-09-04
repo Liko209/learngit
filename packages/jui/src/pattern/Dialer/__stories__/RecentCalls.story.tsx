@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import { JuiAvatar } from '../../../components/Avatar';
-import { ContactItem } from '../../ContactInfo';
+import { JuiContactInfo } from '../../Phone/ContactInfo';
 import { JuiListItemAvatar, JuiListItemText } from '../../../components/Lists';
 import { JuiIconography } from '../../../foundation/Iconography';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
@@ -23,16 +23,16 @@ import {
 } from '..';
 
 const ContactInfo = () => (
-  <ContactItem disableButton isUnread={false}>
+  <JuiContactInfo isUnread={false}>
     <JuiListItemAvatar>
       <JuiAvatar src={avatarImg} />
     </JuiListItemAvatar>
     <JuiListItemText primary="Shining Miao" secondary="(888) 888 - 8888" />
-  </ContactItem>
+  </JuiContactInfo>
 );
 
 const ContactInfo1 = () => (
-  <ContactItem disableButton isUnread={false}>
+  <JuiContactInfo isUnread={false}>
     <JuiListItemAvatar>
       <JuiAvatar src={avatarImg} />
     </JuiListItemAvatar>
@@ -40,7 +40,7 @@ const ContactInfo1 = () => (
       primary="Shining Miao6666666"
       secondary="(888) 888 - 8888"
     />
-  </ContactItem>
+  </JuiContactInfo>
 );
 const RecentCall = (props: { isTransfer: boolean }) => {
   const [selected, setSelected] = useState(0);

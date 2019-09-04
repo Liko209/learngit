@@ -85,4 +85,12 @@ describe('CallViewModel', () => {
     callViewModel.call();
     expect(callViewModel._telephonyService.directCall).toBeCalledWith(phone);
   });
+
+  it('Should return false when service directCall return false', async () => {
+    callViewModel = new CallViewModel({ phone: '123' });
+    callViewModel._telephonyService.directCall = jest.fn().mockReturnValue(false);
+    const result = await callViewModel.call();
+    expect(callViewModel.phoneNumber).toBeTruthy();
+    expect(result).toBeFalsy();
+  });
 });

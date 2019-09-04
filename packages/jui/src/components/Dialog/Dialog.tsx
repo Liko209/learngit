@@ -4,6 +4,7 @@ import MuiDialog, {
 } from '@material-ui/core/Dialog';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled, { css } from 'styled-components';
+import { width } from '../../foundation/utils';
 
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
@@ -31,12 +32,19 @@ const fixedAtTopStyle = css`
 `;
 
 const StyledDialog = styled(FilteredMuiDialog)`
-  & .paper {
-    width: 100%;
-    ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
-  }
-  & .paper.overflow-y {
-    overflow-y: visible;
+  & {
+    .MuiDialog-paperWidthXs {
+      max-width: ${width(100)};
+    }
+
+    .paper {
+      width: 100%;
+      ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
+    }
+
+    .paper.overflow-y {
+      overflow-y: visible;
+    }
   }
   & .MuiDialog-paper {
     overflow-y: ${(modalProps: { allowOverflowY: boolean }) =>
@@ -45,13 +53,7 @@ const StyledDialog = styled(FilteredMuiDialog)`
 `;
 
 const WrapDialog = (props: JuiDialogProps) => {
-  const {
-    disableEscapeKeyDown,
-    onClose,
-    size = 'medium',
-    classes,
-    ...rest
-  } = props;
+  const { onClose, size = 'medium', classes, ...rest } = props;
 
   const initClasses = {
     ...classes,

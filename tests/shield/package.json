@@ -1,26 +1,26 @@
 {
   "name": "shield",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "private": true,
   "main": "src",
   "dependencies": {
-    "framework": "1.7.2",
+    "framework": "1.7.3",
     "react": "16.9.0",
     "react-dom": "16.9.0"
   },
   "devDependencies": {
+    "@types/debug": "4.1.4",
     "@types/react": "16.8.22",
     "@types/react-dom": "16.8.3",
-    "typescript": "3.4.2",
-    "assert": "2.0.0",
-    "debug": "4.1.1",
-    "@types/debug": "4.1.4",
-    "can-fixture-socket": "2.0.2",
     "@types/socket.io-client": "1.4.32",
-    "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101",
-    "path-to-regexp": "3.0.0",
+    "assert": "2.0.0",
+    "can-fixture-socket": "2.0.2",
+    "debug": "4.1.1",
     "jest-websocket-mock": "1.5.0",
     "mock-socket": "8.0.5",
-    "reflect-metadata": "0.1.13"
+    "path-to-regexp": "3.0.0",
+    "reflect-metadata": "0.1.13",
+    "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101",
+    "typescript": "3.4.2"
   }
 }

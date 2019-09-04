@@ -279,9 +279,6 @@ describe('VoicemailItemViewModel', () => {
     })
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockService(voicemailService, [
-      {
-        method: 'updateReadStatus',
-      },
       { method: 'buildDownloadUrl', data: 'www.google.com?token=token' },
     ])
     async t1() {
@@ -293,7 +290,6 @@ describe('VoicemailItemViewModel', () => {
       jest.spyOn(vm._mediaService, 'createMedia').mockReturnValue('media');
       const ret = await vm.onBeforePlay();
       expect(ret).toBeTruthy();
-      expect(voicemailService.updateReadStatus).toHaveBeenCalled();
       expect(props.onVoicemailPlay).toBeCalledWith(1);
       when(
         () => !!vm.audio,
@@ -312,6 +308,35 @@ describe('VoicemailItemViewModel', () => {
           });
         },
       );
+    }
+  }
+
+  @testable
+  class onPlay {
+    @test(
+      'should update read state when audio playing',
+    )
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
+    @mockEntity({
+      attachments: [
+        {
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          uri: 'www.google.com',
+        },
+      ],
+      readStatus: READ_STATUS.UNREAD,
+    })
+    @mockService(voicemailService, [
+      { method: 'updateReadStatus' },
+    ])
+    async t1() {
+      const props = {
+        id: 1,
+      };
+      const vm = new VoicemailItemViewModel(props);
+      await vm.onPlay();
+      expect(voicemailService.updateReadStatus).toHaveBeenCalled();
     }
   }
 

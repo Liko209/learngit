@@ -9,6 +9,7 @@ import { notificationCenter, SERVICE } from 'sdk/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { GLIP_LOGIN_STATUS } from 'sdk/framework/account';
+import { LoginInfo } from 'sdk/types';
 
 const withRCMode = (hide: boolean = true) =>
   function<P>(Comp: ComponentType<P>): any {
@@ -20,9 +21,9 @@ const withRCMode = (hide: boolean = true) =>
     };
 
     return class extends Component<P, State> {
-      private _handleGlipLogin = (success: boolean) => {
+      private _handleGlipLogin = (loginInfo: LoginInfo) => {
         this.setState({
-          glipLoginSuccess: success,
+          glipLoginSuccess: loginInfo.success,
         });
       };
       constructor(props: P) {

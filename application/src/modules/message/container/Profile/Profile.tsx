@@ -4,14 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { buildContainer } from '@/base';
 import { ProfileView } from './Profile.View';
-import { ProfileViewModel } from './Profile.ViewModel';
-import { ProfileProps } from './types';
 
-const Profile = buildContainer<ProfileProps>({
-  View: ProfileView,
-  ViewModel: ProfileViewModel,
-});
+const Profile = ProfileView;
 
 export { Profile };

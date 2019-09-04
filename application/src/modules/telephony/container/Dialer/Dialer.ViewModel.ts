@@ -141,7 +141,10 @@ class DialerViewModel extends StoreViewModel<DialerProps>
 
   @computed
   get shouldDisplayCallCtrl() {
-    return this._hasCall && !this.keypadEntered;
+    return (
+      (this._hasCall && !this.keypadEntered) ||
+      this._telephonyStore.isWarmTransferPage
+    );
   }
 }
 

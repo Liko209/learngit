@@ -150,7 +150,7 @@ export class BaseConversationPage extends BaseWebComponent {
   async clickConferenceButton() {
     return this.t.click(this.conferenceButton);
   }
-  
+
   async timeOfPostsShouldOrderByAsc() {
     const count = await this.postTimes.count;
     let lastTime: number;
@@ -469,7 +469,7 @@ export class ConversationPage extends BaseConversationPage {
   get mutedIcon() {
     return this.getSelectorByIcon('mute', this.muteButton);
   }
-  
+
   get messageInputArea() {
     this.warnFlakySelector();
     return this.self.child().find('.ql-editor');
@@ -1281,6 +1281,22 @@ class AudioConference extends BaseWebComponent {
 
   get dialInNumber() {
     return this.self.find('div').withText('Dial-in Number'); // todo i18n
+  }
+
+  get audioConferenceLink() {
+    return this.getSelectorByAutomationId('audioConferenceLink', this.self);
+  }
+
+  get joinAudioConferenceBtn() {
+    return this.getSelectorByAutomationId('joinConferenceBtn', this.self);
+  }
+
+  clickAudioConferenceLink() {
+    return this.t.click(this.audioConferenceLink);
+  }
+
+  clickJoinAudioConferenceBtn() {
+    return this.t.click(this.joinAudioConferenceBtn);
   }
 
   get phoneNumber() {

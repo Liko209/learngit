@@ -18,11 +18,14 @@ import { Hold } from '../Hold';
 import { Add } from '../Add';
 import { Record } from '../Record';
 import { CallActions } from '../CallActions';
+import { Transfer } from '../Transfer';
 import { CallCtrlPanelViewProps } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Avatar } from '@/containers/Avatar';
 import { getDisplayName } from '../../helpers';
 import { DialerTitleBar } from '../DialerTitleBar';
+import { WarmTransferHeader } from '../WarmTransferHeader';
+import { analyticsCollector } from '@/AnalyticsCollector';
 import { JuiAvatar } from 'jui/components/Avatar';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import conference from 'jui/assets/jupiter-icon/icon-conference.svg';
@@ -53,21 +56,33 @@ class CallCtrlViewComponent extends React.Component<Props> {
 
   private callActions = [Mute, Keypad, Hold, Add, Record, CallActions];
 
+  componentDidMount() {
+    const { isWarmTransferPage } = this.props;
+    isWarmTransferPage && analyticsCollector.directToWarmTransferPage();
+  }
+
   render() {
-    const { isExt, phone, t, name, direction, isConference } = this.props;
+    const { isExt, phone, t, name, direction, isWarmTransferPage, isConference } = this.props;
     if (direction) {
       return (
         <>
           <JuiHeaderContainer>
             <DialerTitleBar />
-            <JuiHeader
-              Avatar={this._Avatar}
-              name={isConference ? t('telephony.conferenceCall') : getDisplayName(t, direction, name)}
-              phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
-              showDialerInputField={false}
-            />
+            {isWarmTransferPage ? (
+              <WarmTransferHeader />
+            ) : (
+              <JuiHeader
+                Avatar={this._Avatar}
+                name={isConference ? t('telephony.conferenceCall') : getDisplayName(t, direction, name)}
+                phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
+                showDialerInputField={false}
+              />
+            )}
           </JuiHeaderContainer>
-          <JuiContainer CallAction={End} KeypadActions={this.callActions} />
+          <JuiContainer
+            CallAction={isWarmTransferPage ? Transfer : End}
+            KeypadActions={this.callActions}
+          />
         </>
       );
     }
