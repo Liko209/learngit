@@ -7,7 +7,7 @@
 import React from 'react';
 import { GroupSearch } from './GroupSearch';
 import { Dialog } from '@/containers/Dialog';
-import { goToConversation, getConversationId } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -18,15 +18,9 @@ const DIALOG_KEY = 'GroupSearch';
 async function switchToConversation({ id }: { id: number }) {
   portalManager.dismissAll();
 
-  const conversationId = await getConversationId(id);
-  if (!conversationId) {
-    // can't create conversation, jest return
-    return;
-  }
-
   setTimeout(() => {
     analyticsCollector.goToConversation('switchConversationDialog');
-    goToConversation({ conversationId });
+    goToConversationWithLoading({ id });
   });
 }
 
@@ -35,7 +29,7 @@ function switchConversationHandler() {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const result = await searchService.doFuzzySearchAllGroups('', {
+    const result = await searchService.doFuzzySearchAllGroups(undefined, {
       myGroupsOnly: true,
       fetchAllIfSearchKeyEmpty: true,
       recentFirst: false,
