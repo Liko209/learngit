@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/PhoneTab/Voicemail/Filter.ts",
+      "./fixtures/PhoneTab/CallHistory/Filter.ts",
+      "./fixtures/Search/searchMember.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

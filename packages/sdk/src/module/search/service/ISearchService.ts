@@ -9,6 +9,7 @@ import {
   RecentSearchModel,
   FuzzySearchContactOptions,
   PhoneContactEntity,
+  FuzzySearchPhoneContactOptions,
 } from '../entity';
 import { SearchUserConfig } from '../config/SearchUserConfig';
 import { Person } from 'sdk/module/person/entity';
@@ -44,7 +45,7 @@ interface ISearchService {
 
   doFuzzySearchPhoneContacts(
     searchKey: UndefinedAble<string>,
-    options: FuzzySearchContactOptions,
+    options: FuzzySearchPhoneContactOptions,
   ): Promise<{
     terms: string[];
     phoneContacts: PhoneContactEntity[];

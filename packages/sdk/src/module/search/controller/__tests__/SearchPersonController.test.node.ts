@@ -736,7 +736,7 @@ describe('SearchPersonController', () => {
       }
     }
 
-    it('should return all extension phone numbers when is name matched and is co-worker when name matched [JPT-2568]', async () => {
+    it('should return all extension phone numbers when showExtensionOnly is true and is name matched and is co-worker when name matched [JPT-2568]', async () => {
       await initTestData();
 
       const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -749,6 +749,7 @@ describe('SearchPersonController', () => {
         'cat bruce',
         {
           excludeSelf: false,
+          showExtensionOnly: true,
         },
       );
 
