@@ -145,7 +145,6 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       RTC_MEDIA_ACTION.VOLUME_CHANGED,
       this._handleVolumeChanged,
     );
-    this._subscribeMicrophonePermissionChange();
   }
 
   private _handleVolumeChanged = (volume: number) => {
@@ -249,6 +248,49 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     }
   }
 
+  onMediaPermissionChanged(newState: PermissionState): void {
+    notificationCenter.emit(
+      RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED,
+      this._rtcEngine.getAudioInputs(),
+    );
+    notificationCenter.emit(
+      RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED,
+      this._rtcEngine.getAudioOutputs(),
+    );
+    telephonyLogger.tags(LOG_TAG).info('detect microphone permission changed.');
+    if (newState !== 'granted') return;
+    telephonyLogger.tags(LOG_TAG).info('process microphone.');
+    this._switchStereoToHandsFreeIfNeed(
+      this._rtcEngine.getAudioInputs(),
+      this._rtcEngine.getCurrentAudioInput(),
+      id =>
+        this._microphoneSyncManager.setDevice({
+          deviceId: id,
+          source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
+        }),
+    );
+    telephonyLogger.tags(LOG_TAG).info('process speaker.');
+    this._switchStereoToHandsFreeIfNeed(
+      this._rtcEngine.getAudioOutputs(),
+      this._rtcEngine.getCurrentAudioOutput(),
+      id =>
+        this._speakerSyncManager.setDevice({
+          deviceId: id,
+          source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
+        }),
+    );
+    telephonyLogger.tags(LOG_TAG).info('process ringer.');
+    this._switchStereoToHandsFreeIfNeed(
+      this.getRingerDevicesList(),
+      this._currentRingerId,
+      id =>
+        this._ringerSyncManager.setDevice({
+          deviceId: id,
+          source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
+        }),
+    );
+  }
+
   private _handlerDeviceChangeForRinger(
     manager: DeviceSyncManger,
     devices: MediaDeviceInfo[],
@@ -284,55 +326,6 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       ];
     }
     return outputs;
-  }
-
-  private async _subscribeMicrophonePermissionChange() {
-    // @ts-ignore
-    // tslint:disable-next-line
-    const permissionStatus = await navigator.permissions.query({
-      name: 'microphone',
-    });
-    let lastState = permissionStatus.state;
-    permissionStatus.addEventListener('change', () => {
-      if (lastState !== permissionStatus.state) {
-        lastState = permissionStatus.state;
-        if (permissionStatus.state === 'granted') {
-          telephonyLogger
-            .tags(LOG_TAG)
-            .info('detect microphone permission changed.');
-          telephonyLogger.tags(LOG_TAG).info('process microphone.');
-          this._switchStereoToHandsFreeIfNeed(
-            this._rtcEngine.getAudioInputs(),
-            this._rtcEngine.getCurrentAudioInput(),
-            id =>
-              this._microphoneSyncManager.setDevice({
-                deviceId: id,
-                source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
-              }),
-          );
-          telephonyLogger.tags(LOG_TAG).info('process speaker.');
-          this._switchStereoToHandsFreeIfNeed(
-            this._rtcEngine.getAudioOutputs(),
-            this._rtcEngine.getCurrentAudioOutput(),
-            id =>
-              this._speakerSyncManager.setDevice({
-                deviceId: id,
-                source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
-              }),
-          );
-          telephonyLogger.tags(LOG_TAG).info('process ringer.');
-          this._switchStereoToHandsFreeIfNeed(
-            this.getRingerDevicesList(),
-            this._currentRingerId,
-            id =>
-              this._speakerSyncManager.setDevice({
-                deviceId: id,
-                source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
-              }),
-          );
-        }
-      }
-    });
   }
 
   private _switchStereoToHandsFreeIfNeed(

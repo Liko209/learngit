@@ -9,6 +9,7 @@ interface IRTCMediaDeviceDelegate {
     audioOutputs: MediaDeviceInfo[],
     audioInputs: MediaDeviceInfo[],
   ): void;
+  onMediaPermissionChanged(newState: PermissionState, preState: PermissionState): void;
   onMediaDevicesChanged(
     audioOutputs: {
       devices: MediaDeviceInfo[];

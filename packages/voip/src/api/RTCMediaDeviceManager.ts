@@ -9,6 +9,7 @@ import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
 import { RTC_MEDIA_ACTION } from './types';
 import { defaultAudioID } from '../account/constants';
+import { subscribePermissionChange } from '../utils/PermissionUtil';
 
 const LOG_TAG = 'RTCMediaDeviceManager';
 enum RTC_MEDIA_DEVICE_KIND {
@@ -74,6 +75,9 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         this._onMediaDevicesChange();
       };
     }
+    subscribePermissionChange('microphone', (newState, preState) => {
+      this._onMediaPermissionChange(newState, preState);
+    });
   }
 
   async initMediaDevices() {
@@ -225,6 +229,32 @@ class RTCMediaDeviceManager extends EventEmitter2 {
               delta: this._getDevicesDelta(audioInputs, oldAudioInputs),
             },
           );
+      })
+      .catch((reason: any) => {
+        rtcLogger.error(LOG_TAG, `Failed to get media device infos: ${reason}`);
+      });
+  }
+
+  private async _onMediaPermissionChange(
+    newState: PermissionState,
+    preState: PermissionState,
+  ) {
+    rtcLogger.debug(
+      LOG_TAG,
+      'Permission changed -> Updating media device label ...',
+    );
+    if (!navigator.mediaDevices) {
+      return;
+    }
+    return navigator.mediaDevices
+      .enumerateDevices()
+      .then((deviceInfos: MediaDeviceInfo[]) => {
+        const { audioInputs, audioOutputs } = this._gotMediaDevices(
+          deviceInfos,
+        );
+        this._delegate &&
+          (audioInputs.length !== 0 || audioOutputs.length !== 0) &&
+          this._delegate.onMediaPermissionChanged(newState, preState);
       })
       .catch((reason: any) => {
         rtcLogger.error(LOG_TAG, `Failed to get media device infos: ${reason}`);

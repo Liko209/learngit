@@ -340,35 +340,6 @@ describe('VoIPMediaDevicesDelegate', () => {
     });
   });
 
-  describe('_subscribeMicrophonePermissionChange()', () => {
-    beforeEach(() => {
-      setUp();
-      
-    });
-    
-    afterEach(() => {
-      cleanUp();
-    });
-    it('should listen to microphone change event', (cb) => {
-      let listener: any;
-      mockPermissionStatus.addEventListener = jest.fn().mockImplementation((name, cb) => {
-        listener = cb;
-      })
-      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
-      jest.clearAllMocks();
-      jest.spyOn(deviceDelegate, '_switchStereoToHandsFreeIfNeed');
-      deviceDelegate['_init']();
-      setTimeout(() => {
-        expect(mockPermissionStatus.addEventListener).toBeCalledWith('change', expect.anything())
-        mockPermissionStatus.state = 'granted';
-        listener();
-        expect(deviceDelegate['_switchStereoToHandsFreeIfNeed']).toHaveBeenCalledTimes(3);
-       cb(); 
-      })
-    });
-    
-  });
-
   describe('_extractBluetoothInfo()', () => {
     beforeEach(() => {
       setUp();
