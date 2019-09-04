@@ -14,17 +14,11 @@ import { GroupConfig } from 'sdk/models';
 import GroupConfigModel from '@/store/models/GroupConfig';
 import { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { GroupConfigService } from 'sdk/module/groupConfig';
 
 class IndicatorViewModel extends AbstractViewModel {
 
-  private _groupConfigService: GroupConfigService;
   constructor() {
     super();
-    this._groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    );
   }
 
   @observable id: number; // group id
