@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/Setting/NotificationAndSounds/MessageSettings.ts"],
+    "fixtures": ["./fixtures/Setting/NotificationAndSounds/MessageSettings.ts","./fixtures/ConversationList/UMI.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
