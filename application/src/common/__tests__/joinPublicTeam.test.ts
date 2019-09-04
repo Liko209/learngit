@@ -23,6 +23,7 @@ jest.mock('../goToConversation');
 jest.mock('sdk/api');
 
 jest.mock('sdk/module/group');
+jest.mock('sdk/module/config');
 
 const conversationId = 1;
 const groupService: GroupService = new GroupService();
@@ -33,12 +34,12 @@ describe('joinHander()', () => {
     (getGlobalValue as jest.Mock).mockImplementation(() => {});
     Notification.flashToast = jest.fn();
   });
-  it('Failed to join team when it\'s changed to private team after user clicks the join button.[JPT-1813]', async (done: jest.DoneCallback) => {
+  it("Failed to join team when it's changed to private team after user clicks the join button.[JPT-1813]", async (done: jest.DoneCallback) => {
     try {
-      groupService.joinTeam = jest.fn().mockImplementationOnce(() => {
+      (groupService.joinTeam = jest.fn().mockImplementationOnce(() => {
         throw new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, '');
-      }),
-      await joinHander(conversationId);
+      })),
+        await joinHander(conversationId);
     } catch (error) {
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({

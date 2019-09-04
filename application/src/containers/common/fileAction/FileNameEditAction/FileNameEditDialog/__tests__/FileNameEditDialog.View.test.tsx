@@ -16,7 +16,7 @@ describe('CreateTeamView', () => {
   @testable
   class render {
     @test('should render withEscTracking when Component rendered ')
-    t4() {
+    t1() {
       const props = {
         canEditFileName: true,
         newFileName: 'string',
