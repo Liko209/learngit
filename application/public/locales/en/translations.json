@@ -36,6 +36,7 @@
     },
     "time": {
       "at": "at",
+      "dateAtTime": "{{date}} at {{time}}",
       "today": "Today",
       "yesterday": "Yesterday",
       "tomorrow": "Tomorrow",
@@ -234,6 +235,7 @@
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",
       "on": "on",
+      "createTeamInfo": "<0>{{userName}}</0> <1>created a team</1> <2>{{displayName}}</2> <1>on {{createTime}}</1>",
       "postInitialTitle": "Get Started",
       "shareFile": "Share a file",
       "createTask": "Create a task",

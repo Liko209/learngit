@@ -28,7 +28,11 @@ jest.mock('i18next', () => ({
     },
   },
   isInitialized: true,
-  t: (text: string) => text,
+  t: (text: string, object: any) => {
+    const args = object ? object.date : '';
+    const time = object ? object.time : '';
+    return args ? `${args} ${text} ${time}` : text;
+  },
 }));
 
 const eventViewModel = new EventViewModel({ ids: [1] });
@@ -50,7 +54,7 @@ describe('eventViewModel', () => {
         allDay: false,
       });
       expect((await eventViewModel.timeContent.fetch()).trim()).toBe(
-        'com, 1/4/2019 common.time.at 9:21 AM - 9:21 AM',
+        'com, 1/4/2019 common.time.dateAtTime 9:21 AM - 9:21 AM',
       );
       done();
     });
@@ -59,7 +63,9 @@ describe('eventViewModel', () => {
         ...mockData,
         allDay: true,
       });
-      expect((await eventViewModel.timeContent.fetch()).trim()).toBe('com, 1/4/2019');
+      expect((await eventViewModel.timeContent.fetch()).trim()).toBe(
+        'com, 1/4/2019',
+      );
       done();
     });
   });

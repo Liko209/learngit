@@ -21,8 +21,17 @@ jest.mock('i18next', () => ({
     },
   },
   isInitialized: true,
-  t: (text: string) =>
-    text ? text.substring(text.lastIndexOf('.') + 1) : text,
+  t: (text: string, object: any) => {
+    const args = object ? object.date : '';
+    const time = object ? object.time : '';
+    return text
+      ? args
+        ? `${args} ${text.substring(text.lastIndexOf('.') + 1)} ${time}`
+        : `${text.substring(text.lastIndexOf('.') + 1)}`
+      : args
+      ? `${args} ${text}`
+      : text;
+  },
 }));
 
 const DAY = 24 * 3600 * 1000;
@@ -36,25 +45,25 @@ describe('Conversation sheet helpers', () => {
     it('should be today and time when event Date is DATE_2019_1_4 [JPT-712][JPT-713]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDateAndTime(DATE_2019_1_4);
-      expect(result).toBe('today at 9:21 AM');
+      expect(result).toBe('today dateAtTime 9:21 AM');
       done();
     });
     it('should be yesterday when event Date is DATE_2019_1_4 [JPT-712]][JPT-713]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDateAndTime(DATE_2019_1_3);
-      expect(result).toBe('yesterday at 9:21 AM');
+      expect(result).toBe('yesterday dateAtTime 9:21 AM');
       done();
     });
     it('should be exactDate when event Date is DATE_2019_1_4 [JPT-712]][JPT-713]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDateAndTime(DATE_2019_1_5);
-      expect(result).toBe('Sat, 1/5/2019 at 9:21 AM');
+      expect(result).toBe('Sat, 1/5/2019 dateAtTime 9:21 AM');
       done();
     });
     it('should be exactDate when event Date is DATE_2019_1_4 [JPT-712]][JPT-713]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDateAndTime(DATE_2019_1_5_12);
-      expect(result).toBe('Sat, 1/5/2019 at 12:00 AM');
+      expect(result).toBe('Sat, 1/5/2019 dateAtTime 12:00 AM');
       done();
     });
   });
@@ -62,13 +71,13 @@ describe('Conversation sheet helpers', () => {
     it('should be today at 9:21 AM - 9:21 AM when event is not all day event and startDay the same at endDay [JPT-727]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDurationTime(DATE_2019_1_4, DATE_2019_1_4);
-      expect(result).toBe('today at 9:21 AM - 9:21 AM');
+      expect(result).toBe('today dateAtTime 9:21 AM - 9:21 AM');
       done();
     });
     it('should be Fri, today at 9:21 AM - Sat, 1/5/2019 at 9:21 AM when event is not all day event and startDay the diff at endDay [JPT-727]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDurationTime(DATE_2019_1_4, DATE_2019_1_5);
-      expect(result).toBe('today at 9:21 AM - Sat, 1/5/2019 at 9:21 AM');
+      expect(result).toBe('today dateAtTime 9:21 AM - Sat, 1/5/2019 dateAtTime 9:21 AM');
       done();
     });
     it('should be today when event is all day event and startDay the same at endDay [JPT-728]', async (done: jest.DoneCallback) => {
@@ -86,19 +95,19 @@ describe('Conversation sheet helpers', () => {
     it('should be today when event startDate DATE_2019_1_3  [JPT-715]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDurationTime(DATE_2019_1_4, DATE_2019_1_5);
-      expect(result).toBe('today at 9:21 AM - Sat, 1/5/2019 at 9:21 AM');
+      expect(result).toBe('today dateAtTime 9:21 AM - Sat, 1/5/2019 dateAtTime 9:21 AM');
       done();
     });
     it('should be yesterday when event startDate DATE_2019_1_3 [JPT-715]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDurationTime(DATE_2019_1_3, DATE_2019_1_4);
-      expect(result).toBe('yesterday at 9:21 AM - today at 9:21 AM');
+      expect(result).toBe('yesterday dateAtTime 9:21 AM - today dateAtTime 9:21 AM');
       done();
     });
     it('should be Sat, 1/5/2019 when event startDate DATE_2019_1_5 [JPT-715]', async (done: jest.DoneCallback) => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const result = await getDurationTime(DATE_2019_1_5, DATE_2019_1_4);
-      expect(result).toBe('Sat, 1/5/2019 at 9:21 AM - today at 9:21 AM');
+      expect(result).toBe('Sat, 1/5/2019 dateAtTime 9:21 AM - today dateAtTime 9:21 AM');
       done();
     });
 
@@ -110,7 +119,7 @@ describe('Conversation sheet helpers', () => {
         Thu_1_24_2019_2_00PM,
         Thu_1_24_2019_2_30PM,
       );
-      expect(result).toBe('Thu, 1/24/2019 at 2:00 PM - 2:30 PM');
+      expect(result).toBe('Thu, 1/24/2019 dateAtTime 2:00 PM - 2:30 PM');
       done();
     });
   });
