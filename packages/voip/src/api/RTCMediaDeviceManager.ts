@@ -71,9 +71,9 @@ class RTCMediaDeviceManager extends EventEmitter2 {
 
   subscribeDeviceChange() {
     if (navigator.mediaDevices) {
-      navigator.mediaDevices.ondevicechange = () => {
+      navigator.mediaDevices.addEventListener('devicechange', () => {
         this._onMediaDevicesChange();
-      };
+      });
     }
     subscribePermissionChange('microphone', (newState, preState) => {
       this._onMediaPermissionChange(newState, preState);
