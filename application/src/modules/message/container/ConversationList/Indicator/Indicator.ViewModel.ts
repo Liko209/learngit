@@ -53,11 +53,9 @@ class IndicatorViewModel extends AbstractViewModel {
   @computed
   get hasDraft() {
     const { draft, attachmentItemIds: draftItemIds } = this.groupConfig;
-    const hasItems = !!(draftItemIds && draftItemIds.length > 0);
-    if (hasItems) {
-      this._groupConfigService.checkIfReallyExistedDraftItems(this.id);
-    }
-    return hasItems || (!!(draft && draft.length > 0));
+    return !!(
+      (draftItemIds && draftItemIds.length > 0) ||
+      (draft && draft.length > 0));
   }
 
   @computed

@@ -368,19 +368,19 @@ describe('GroupConfigService', () => {
     });
   });
 
-  describe('checkIfReallyExistedDraftItems', () => {
+  describe('clearDraftFlagIfNotReallyExisted', () => {
     it('should do nothing when group config is not exits', async () => {
       entitySourceController.getEntityLocally.mockResolvedValueOnce(null);
       const getEntitiesLocally = jest.fn();
       itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
-      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      await groupConfigController.clearDraftFlagIfNotReallyExisted(4932943878);
       expect(getEntitiesLocally).not.toHaveBeenCalled();
     });
     it('should do nothing when there is not attachment item ids', async () => {
       entitySourceController.getEntityLocally.mockResolvedValueOnce({});
       const getEntitiesLocally = jest.fn().mockReturnValueOnce({});
       itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
-      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      await groupConfigController.clearDraftFlagIfNotReallyExisted(4932943878);
       expect(getEntitiesLocally).not.toHaveBeenCalled();
     });
     it('should do nothing when attachment item ids are all existed in items', async () => {
@@ -388,7 +388,7 @@ describe('GroupConfigService', () => {
       entitySourceController.getEntityLocally.mockResolvedValueOnce({ attachment_item_ids: [1] });
       const getEntitiesLocally = jest.fn().mockReturnValueOnce([{ id: 1 }]);
       itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
-      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      await groupConfigController.clearDraftFlagIfNotReallyExisted(4932943878);
       expect(getEntitiesLocally).toHaveBeenCalledWith([1], true);
       expect(groupConfigController.updateDraft).not.toHaveBeenCalled();
     });
@@ -397,7 +397,7 @@ describe('GroupConfigService', () => {
       entitySourceController.getEntityLocally.mockResolvedValueOnce({ attachment_item_ids: [1, 2] });
       const getEntitiesLocally = jest.fn().mockReturnValueOnce([{ id: 1 }]);
       itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
-      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      await groupConfigController.clearDraftFlagIfNotReallyExisted(4932943878);
       expect(getEntitiesLocally).toHaveBeenCalledWith([1, 2], true);
       expect(groupConfigController.updateDraft).toHaveBeenCalledWith({ id: 4932943878, attachment_item_ids: [1] });
     });
@@ -406,7 +406,7 @@ describe('GroupConfigService', () => {
       entitySourceController.getEntityLocally.mockResolvedValueOnce({ attachment_item_ids: [1, 2] });
       const getEntitiesLocally = jest.fn().mockRejectedValue(null);
       itemService.getEntitySource = jest.fn().mockReturnValueOnce({ getEntitiesLocally })
-      await groupConfigController.checkIfReallyExistedDraftItems(4932943878);
+      await groupConfigController.clearDraftFlagIfNotReallyExisted(4932943878);
       expect(getEntitiesLocally).toHaveBeenCalledWith([1, 2], true);
       expect(groupConfigController.updateDraft).not.toHaveBeenCalled();
     });

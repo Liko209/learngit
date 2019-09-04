@@ -192,7 +192,7 @@ class GroupConfigController {
     this.entitySourceController.bulkDelete(ids);
   }
 
-  async checkIfReallyExistedDraftItems(groupId: number) {
+  async clearDraftFlagIfNotReallyExisted(groupId: number) {
     const result = await this.entitySourceController.getEntityLocally(groupId);
     if (result) {
       const { attachment_item_ids = [] } = result;

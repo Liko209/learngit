@@ -149,6 +149,8 @@ interface IGroupService {
   getSynchronously(id: number): Group | null;
 
   getGroupName(group: Group): string;
+
+  onGroupClick(groupId: number): void;
 }
 
 export { IGroupService };
