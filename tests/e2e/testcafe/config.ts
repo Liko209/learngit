@@ -144,6 +144,7 @@ enum BrandTire {
   "RC_WITH_PHONE_DL" = "kamino(RC_WITH_PHONE_DL,Jupiter,1210,4488)",
   "DID_WITH_MULTI_REGIONS" = "kamino(DID_Phone_With_Multi_Regions,Jupiter,1210,4488)",
   "MAIN_50_WITH_GUEST_20" = "kamino(Main_50_With_Guest_20,Jupiter,1210,4488)",
+  "GLIP_FREE" = "kamino(Glip-Free,Jupiter)",
 };
 
 const WebphoneConfig = {
