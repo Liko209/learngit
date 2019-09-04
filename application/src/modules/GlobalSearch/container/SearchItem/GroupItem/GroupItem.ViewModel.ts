@@ -22,13 +22,9 @@ class GroupItemViewModel extends SearchViewModel<Props>
 
     this.reaction(
       () => this.group,
-      async (group: GroupModel) => {
-        this.props.didChange();
-        if (group.isArchived || group.deactivated) {
-          await this._getSearchService().removeRecentSearchRecords(
-            new Set([group.id]),
-          );
-        }
+      () => {
+        const { didChange } = this.props;
+        didChange();
       },
     );
   }
@@ -59,14 +55,15 @@ class GroupItemViewModel extends SearchViewModel<Props>
   @computed
   get shouldHidden() {
     const { isMember, deactivated, isArchived } = this.group;
-    const shouldHidden = deactivated || isArchived || (!isMember && this.isPrivate);
+    const shouldHidden =
+      deactivated || isArchived || (!isMember && this.isPrivate);
     return shouldHidden === undefined || shouldHidden;
   }
 
   @action
   closeGlobalSearch = () => {
     container.get(GlobalSearchService).closeGlobalSearch();
-  }
+  };
 
   addRecentRecord = () => {
     const { isTeam } = this.group;
@@ -75,7 +72,7 @@ class GroupItemViewModel extends SearchViewModel<Props>
       isTeam ? RecentSearchTypes.TEAM : RecentSearchTypes.GROUP,
       this.props.id,
     );
-  }
+  };
 
   private _getSearchService() {
     return ServiceLoader.getInstance<SearchService>(

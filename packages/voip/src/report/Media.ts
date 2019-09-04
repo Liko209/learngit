@@ -38,13 +38,13 @@ class MediaReport implements IMediaReport {
     });
   }
 
-  public static instance() {
+  static instance() {
     return (
       MediaReport._singleton || (MediaReport._singleton = new MediaReport())
     );
   }
 
-  public destroySingleton() {
+  destroySingleton() {
     MediaReport._singleton = null;
   }
 
@@ -142,13 +142,13 @@ class MediaReport implements IMediaReport {
     }
   }
 
-  public startAnalysis(data: any) {
+  startAnalysis(data: any) {
     if (!data || typeof data !== 'object' || !data.inboundRtpReport) return;
 
     this._start(this._parse(data));
   }
 
-  public stopAnalysis(): MediaReportOutCome {
+  stopAnalysis(): MediaReportOutCome {
     const outcome = deepClone(this.outcome);
     this.destroySingleton();
 

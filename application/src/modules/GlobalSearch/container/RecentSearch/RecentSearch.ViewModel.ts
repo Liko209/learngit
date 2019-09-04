@@ -31,6 +31,8 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     GlobalSearchStore,
   );
 
+  removeIds: number[] = [];
+
   constructor() {
     super();
     this.reaction(
@@ -102,12 +104,19 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     this.addRecentRecord(currentItemValue, params);
   };
 
-  addRecentRecord = (value: number | string, params?: { groupId: number }) => {
+  addRecentRecord = async (
+    value: number | string,
+    params?: { groupId: number },
+  ) => {
     const type = changeToRecordTypes(this.currentItemType);
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    searchService.addRecentSearchRecord(type, value, params ? params : {});
+    await searchService.addRecentSearchRecord(
+      type,
+      value,
+      params ? params : {},
+    );
   };
 
   @action
@@ -120,7 +129,7 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     this.recentRecord = [];
   };
 
-  isValidGroup(value?: number) {
+  isValidGroup(recentId: number, value?: number) {
     if (!value) {
       return false;
     }
@@ -130,6 +139,11 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
       const isPrivate = isTeam && privacy === 'private';
       const shouldHidden =
         deactivated || isArchived || (!isMember && isPrivate);
+
+      if (shouldHidden) {
+        this.removeIds.push(recentId);
+      }
+
       return shouldHidden !== undefined && !shouldHidden;
     } catch {
       return false;
@@ -137,19 +151,19 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
   }
 
   isValidRecord = (record: RecentRecord) => {
-    const { value, type } = record;
+    const { value, type, id } = record;
     if (type === SearchItemTypes.GROUP || type === SearchItemTypes.TEAM) {
-      return this.isValidGroup(typeof value === 'string' ? undefined : value);
+      return this.isValidGroup(
+        id,
+        typeof value === 'string' ? undefined : value,
+      );
     }
     return true;
   };
 
   @action
   fetchRecent = async () => {
-    const searchService = ServiceLoader.getInstance<SearchService>(
-      ServiceConfig.SEARCH_SERVICE,
-    );
-    const records = await searchService.getRecentSearchRecords();
+    const records = await this._searchService.getRecentSearchRecords();
     this.recentRecord = records
       .map((record: RecentSearchModel) => {
         const { id, value, query_params } = record;
@@ -161,7 +175,18 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
         };
       })
       .filter(this.isValidRecord);
+
+    if (this.removeIds.length > 0) {
+      this._searchService.removeRecentSearchRecords(new Set(this.removeIds));
+      this.removeIds = [];
+    }
   };
+
+  private get _searchService() {
+    return ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+  }
 }
 
 export { RecentSearchViewModel };

@@ -27,7 +27,8 @@ import {
   SceneSummary,
   DashboardItem,
   MemoryDiffItem,
-  DashboardPair
+  DashboardPair,
+  LongTask
 } from './models';
 import { getDashboardConfig } from './init';
 
@@ -57,7 +58,7 @@ let _versionInfo: { [key: string]: DashboardVersionInfo } = {};
 
 class DashboardService {
 
-  static async addItem(task: TaskDto, scene: SceneDto) {
+  static async addItem(task: TaskDto, scene: SceneDto, longTasks: Array<LongTask>) {
     const sceneConfig = _config.scenes[scene.name];
     if (!sceneConfig || Object.keys(sceneConfig.metric).length === 0) {
       return;
@@ -70,6 +71,7 @@ class DashboardService {
     const item: DashboardItem = new DashboardItem();
     item.metric = {};
     item.sceneId = scene.id;
+    item.longTasks = longTasks;
 
     Object.keys(metric).forEach(key => {
       let currentItem = currentSummary.metric[key];
@@ -438,6 +440,7 @@ class DashboardService {
     glipMessage.push(`**Env:**  ${envInfo}`);
     glipMessage.push('\n**Results:**');
     const mayMemoryLeak = [];
+    const longTaskMessages = [];
 
     Object.keys(items).forEach(key => {
       const item = items[key];
@@ -449,6 +452,16 @@ class DashboardService {
 
       htmlArray.push('<div class="dashboard-item-info">Env : <span>', envInfo, '</span></div>');
       htmlArray.push('<div class="dashboard-item-info">', 'Number of executions : <span>', Config.sceneRepeatCount.toFixed(0), '</span></div>');
+      let longTaskCount = 0;
+      for (let longTask of item.longTasks) {
+        if (longTask.duration >= Config.functionTimeout) {
+          longTaskCount++;
+        }
+      }
+      if (longTaskCount > 0) {
+        htmlArray.push('<div class="dashboard-item-info">', 'There have <span style="color:red">', longTaskCount.toFixed(), '</span> long task(s) during this scenario', '</div>');
+        longTaskMessages.push(['There have **', longTaskCount.toFixed(), '** long task(s) during **', key, '**'].join(''));
+      }
 
       if (item.startMemory && item.memoryGrowth) {
         const memoryUrl = DashboardService.getIframeUrl(252, { name: key });
@@ -555,6 +568,9 @@ class DashboardService {
     if (mayMemoryLeak.length > 0) {
       glipMessage.push('\n**Please pay attention about memory, following: **', ...mayMemoryLeak);
     }
+    if (longTaskMessages.length > 0) {
+      glipMessage.push('\n**Please pay attention about long tasks, following: **', ...longTaskMessages);
+    }
 
     //FIXME
     /*
@@ -587,10 +603,10 @@ class DashboardService {
       glipMessage.push(...memoryDiff);
     }
 
-    glipMessage.push(`\n**Dashboard(See all metrics from below link):**\n ${Config.buildURL}Dashboard`);
-    glipMessage.push(`**Lighthouse:**\n ${Config.buildURL}Lighthouse`);
-    glipMessage.push(`**Metabase:**\n ${Config.dashboardUrl}`);
-    glipMessage.push(`**Performance related Jira Tickets:**\n ${Config.jiraUrl}`);
+    glipMessage.push(`\n**Metabase:** [Link](${Config.dashboardUrl})`);
+    glipMessage.push(`**Lighthouse:** [Link](${Config.buildURL}Lighthouse)`);
+    glipMessage.push(`**Performance related Jira Tickets:** [Link](${Config.jiraUrl})`);
+    glipMessage.push(`**Dashboard(See all metrics from the link):** [Link](${Config.buildURL}Dashboard)`);
 
     FileService.saveDashboardIntoDisk(htmlArray.join(''));
     FileService.saveGlipMessageIntoDisk(glipMessage.join('\n'));

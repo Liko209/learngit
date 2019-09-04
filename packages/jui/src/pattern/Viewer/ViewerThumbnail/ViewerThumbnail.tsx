@@ -58,8 +58,6 @@ const ViewerThumbnailContentWrap = styled.div`
     min-height: ${viewerThumbnailMaxWidth /
       defaultThumbnailProportion['16/9']}px;
     box-sizing: border-box;
-    /*position for image*/
-    position: relative;
   }
 `;
 
@@ -68,7 +66,7 @@ const ThumbnailNumberWarp = styled.div`
     text-align: center;
     margin-top: ${spacing(1)};
     ${typography('caption1')};
-    ${palette('text', 'primary')};
+    color: ${palette('text', 'primary')};
   }
 `;
 
@@ -112,6 +110,13 @@ const ThumbnailWarp = styled.div`
     overflow: hidden;
     border-radius: ${({ theme }) => theme.radius.lg};
     font-size: 0;
+    min-height: ${viewerThumbnailMaxWidth /
+      defaultThumbnailProportion['16/9']}px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f6fb;
   }
 `;
 

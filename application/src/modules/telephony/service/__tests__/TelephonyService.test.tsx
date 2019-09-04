@@ -15,28 +15,29 @@ import { config } from '@/modules/telephony/module.config';
 import { TelephonyService } from '../TelephonyService';
 import { Notification } from '@/containers/Notification';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
-
+import { errorHelper, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 jupiter.registerModule(config);
+
 const globalConfigService = {
   name: ServiceConfig.GLOBAL_CONFIG_SERVICE,
-  get() {},
-  put() {},
+  get() { },
+  put() { },
 };
 
 const phoneNumberService = {
   name: ServiceConfig.PHONE_NUMBER_SERVICE,
-  isShortNumber() {},
-  isValidNumber() {},
+  isShortNumber() { },
+  isValidNumber() { },
 };
 
 const itemService = {
   name: ServiceConfig.ITEM_SERVICE,
-  startConference() {}
+  startConference() { }
 }
 
 const rcInfoService = {
   name: ServiceConfig.RC_INFO_SERVICE,
-  isVoipCallingAvailable() {}
+  isVoipCallingAvailable() { }
 }
 
 describe('TelephonyService', () => {
@@ -54,7 +55,7 @@ describe('TelephonyService', () => {
     }
 
     @mockEntity(mockVolumeEntity)
-    beforeEach() {}
+    beforeEach() { }
     @test(
       'should needE911Prompt if account has DL and emergency has been confirmed',
     )
@@ -107,7 +108,7 @@ describe('TelephonyService', () => {
       }
     }
     @mockEntity(mockVolumeEntity)
-    beforeEach() {}
+    beforeEach() { }
     @test('should show E911 if not have been show E911')
     @mockService(ServerTelephonyService, [
       { method: 'isEmergencyAddrConfirmed', data: true },
@@ -148,10 +149,25 @@ describe('TelephonyService', () => {
     }
   }
 
-
   @testable
   class startAudioConference {
-    beforeEach() {}
+    @test(
+      'should not call if there is already another call going on',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 1 },
+    ])
+    @mockService(itemService, 'startConference')
+    t0() {
+      let ts;
+      runInAction(async () => {
+        ts = new TelephonyService();
+        const result = await ts.startAudioConference(123);
+        expect(result).toBe(true);
+        expect(itemService.startConference).not.toHaveBeenCalled()
+      });
+    }
+
     @test(
       'should not call api if has no active DL',
     )
@@ -204,11 +220,48 @@ describe('TelephonyService', () => {
         done()
       });
     }
+
+    @test(
+      'should show toast when error occurs when starting conference',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 0 },
+      { method: 'isEmergencyAddrConfirmed', data: true },
+      { method: 'hasActiveDL', data: true },
+      { method: 'makeCall', data: MAKE_CALL_ERROR_CODE.NO_ERROR },
+    ])
+    @mockService.reject(itemService, 'startConference', () => {
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.NETWORK_ERROR,
+        'Api Error: Please check whether server crash',
+      )
+    })
+    @mockService(rcInfoService, 'isVoipCallingAvailable', true)
+    @mockService(globalConfigService)
+    @mockService(phoneNumberService)
+    t3(done: any) {
+      Notification.flashToast = jest.fn()
+      let ts;
+      runInAction(async () => {
+        jest.spyOn(errorHelper, 'isNetworkConnectionError').mockReturnValue(true);
+        ts = new TelephonyService();
+        ts.isValidNumber = jest.fn().mockResolvedValue({ isValid: true })
+        ts._isJupiterDefaultApp = jest.fn().mockResolvedValue(true)
+        ts._getFromNumber = jest.fn().mockResolvedValue('123123233')
+        const result = await ts.startAudioConference(123);
+        expect(result).toBe(false);
+        expect(itemService.startConference).toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith(expect.objectContaining({
+          message: 'telephony.prompt.audioConferenceNetworkError'
+        }));
+        done();
+      });
+    }
   }
 
   @testable
   class directCall {
-    beforeEach() {}
+    beforeEach() { }
     @test(
       'should not display the toast of no digital line when making an extension call [FIJI-8710]',
     )
@@ -230,7 +283,7 @@ describe('TelephonyService', () => {
         expect(ts._makeCall).toHaveBeenCalled();
         expect(Notification.flashToast).not.toHaveBeenCalled();
         done();
-    });
+      });
     }
   }
 });

@@ -1,6 +1,6 @@
 {
   "name": "fiji",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "private": true,
   "engines": {
     "node": "10.9.0",
@@ -35,7 +35,7 @@
     "test:watch": "npm run test -- --watch",
     "test:dev": "npm run test -- --coverage --watch --bail",
     "update-snapshot": "JUI_TEST=true npm run test snapshot -- --updateSnapshot",
-    "snapshot": "JUI_TEST=true npm run test snapshot",
+    "snapshot": "JUI_TEST=true npx jest jui/src/__tests__/snapshot/storyshots.test.jsx",
     "lint": "eslint",
     "lint-fix": "eslint --fix",
     "lint-all": "concurrently --kill-others-on-fail -r \"eslint --cache application/src/ --ext=.ts,.tsx\" \"eslint --cache packages/{foundation,framework,sdk,voip}/src/ --ext=.ts\" \"eslint --cache packages/jui/src/ --ext=.ts,.tsx\"",

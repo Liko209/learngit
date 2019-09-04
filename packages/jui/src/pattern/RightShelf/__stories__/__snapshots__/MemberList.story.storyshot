@@ -275,9 +275,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
       </a>
     </div>
     <button
-      aria-haspopup={true}
       aria-label="add member"
-      aria-owns={null}
       className="MuiButtonBase-root MuiIconButton-root c4"
       disabled={false}
       onBlur={[Function]}
@@ -288,7 +286,8 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
-      onMouseMove={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -327,15 +326,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -353,15 +349,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -379,15 +372,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -405,15 +395,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -431,15 +418,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -457,15 +441,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -483,15 +464,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -509,15 +487,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -535,15 +510,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -561,15 +533,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -604,15 +573,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -630,15 +596,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -656,15 +619,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>
@@ -682,15 +642,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          aria-haspopup={true}
-          aria-owns={null}
           className="MuiAvatar-root c10 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           size="medium"
-          tabIndex={0}
         >
           SH
         </div>

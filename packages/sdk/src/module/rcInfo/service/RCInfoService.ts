@@ -95,7 +95,6 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   onRCLogin = () => {
     this.requestRCInfo();
-    this.getRCInfoController().rcPresenceController.start();
   };
 
   requestRCInfo = () => {
@@ -146,6 +145,12 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getRCExtensionInfo();
   }
 
+  async getUserEmail() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getUserEmail();
+  }
+
   async getRCRolePermissions() {
     return await this.getRCInfoController()
       .getRCInfoFetchController()
@@ -178,7 +183,7 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async isVoipCallingAvailable(): Promise<boolean> {
     const result =
-      this.isRCAccount &&
+      this.isRCAccount() &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.VOIP_CALLING,
       )) &&
@@ -189,19 +194,19 @@ class RCInfoService extends EntityBaseService<IdModel>
     return result;
   }
 
-  async isOrganizeConferenceAvailable(): Promise<boolean>{
+  async isOrganizeConferenceAvailable(): Promise<boolean> {
     const result =
-    this.isRCAccount &&
-    (await this.isRCFeaturePermissionEnabled(
-      ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
-    ));
+      this.isRCAccount() &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
+      ));
     mainLogger.debug(`isWebPhoneAvailable: ${result}`);
     return result;
   }
 
   async isWebPhoneAvailable(): Promise<boolean> {
     const result =
-      this.isRCAccount &&
+      this.isRCAccount() &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.WEB_PHONE,
       ));
@@ -274,6 +279,10 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async setDefaultCountry(isoCode: string) {
     return await this.regionInfoController.setDefaultCountry(isoCode);
+  }
+
+  async getDefaultCountryInfo() {
+    return await this.regionInfoController.getDefaultCountryInfo();
   }
 
   async setAreaCode(areaCode: string) {
@@ -361,8 +370,8 @@ class RCInfoService extends EntityBaseService<IdModel>
     );
   }
 
-  syncUserRCPresence() {
-    this.getRCInfoController().rcPresenceController.syncRCPresence();
+  async syncUserRCPresence() {
+    return await this.getRCInfoController().rcPresenceController.syncRCPresence();
   }
 
   async getDigitalLines() {

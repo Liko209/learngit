@@ -14,7 +14,7 @@ fixture('Contacts/Call')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-  test.skip.meta(<ITestMeta>{
+  test.meta(<ITestMeta>{
     priority: ['P1'],
     caseIds: ['JPT-2878'],
     maintainers: ['Allen.Lian'],
@@ -22,7 +22,7 @@ fixture('Contacts/Call')
 })('Call from the contacts', async (t) => {
     const users = h(t).rcData.mainCompany.users;
     const callee = users[4];
-  
+
     const app = new AppRoot(t);
 
     await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
@@ -39,22 +39,22 @@ fixture('Contacts/Call')
         await app.homePage.leftPanel.contactsEntry.enter();
         await app.homePage.contactsTab.allContactsEntry.enter();
       });
-    
+
       await h(t).withLog('Then all contacts page should be open', async () => {
         await allcontactsPage.ensureLoaded();
       });
 
       const allcontactsItem = allcontactsPage.allcontactsItemByNth(0);
       const allcontactsId = await allcontactsItem.id;
-    
+
       await h(t).withLog('When I click Call button', async (step) => {
         step.setMetadata('id', allcontactsId)
         await allcontactsItem.ClickCallButton();
       });
-    
+
       const telephonyDialog = app.homePage.telephonyDialog;
       const contactsName = await allcontactsItem.callerName.textContent;
-    
+
       await h(t).withLog(`Then the telephony dialog should be popup`, async () => {
         await telephonyDialog.ensureLoaded();
 
@@ -66,5 +66,5 @@ fixture('Contacts/Call')
         await telephonyDialog.clickHangupButton();
         await t.wait(5e3);
       });
-    
+
     });

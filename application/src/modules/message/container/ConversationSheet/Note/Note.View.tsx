@@ -42,7 +42,6 @@ class NoteViewComponent extends Component<NoteViewType> {
         <JuiNoteContent data-test-automation-id="note-body">
           {postParser(summary, {
             keyword: this.context.keyword,
-            phoneNumber: true,
           })}
         </JuiNoteContent>
       </JuiConversationItemCard>

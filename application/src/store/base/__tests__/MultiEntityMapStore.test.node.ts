@@ -223,4 +223,27 @@ describe('MultiEntityMapStore', () => {
       }, 120);
     });
   });
+
+  describe('find', () => {
+    beforeEach(() => {
+      instance.batchSet([
+        { id: 1, text: 'a' },
+        { id: 2, text: 'b' },
+        { id: 3, text: 'c' },
+      ], false);
+    });
+
+    afterEach(() => {
+      instance.clearAll();
+    });
+    it('should find the entity by condition', () => {
+      const result = instance.find(({text}) => text === 'a');
+      expect(result.id).toBe(1);
+    })
+
+    it('should not find the entity by condition', () => {
+      const result = instance.find(({text}) => text === 'd');
+      expect(result).toBe(null);
+    })
+  });
 });

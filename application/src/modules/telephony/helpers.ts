@@ -74,7 +74,7 @@ export function toFirstLetterUpperCase(input: string) {
   return `${input[0].toUpperCase()}${input.slice(1, input.length)}`;
 }
 
-export async function getDisplayNameByCaller(caller: ActiveCall | CallModel) {
+export async function getDisplayNameByCaller(caller: ActiveCall | CallModel, isCallModel?: boolean) {
   const { fromName, toName, direction } = caller;
   const from = (caller as ActiveCall).from || (caller as CallModel).fromNum;
   const to = (caller as ActiveCall).to || (caller as CallModel).toNum;
@@ -82,7 +82,7 @@ export async function getDisplayNameByCaller(caller: ActiveCall | CallModel) {
   const callerName = direction === CALL_DIRECTION.OUTBOUND ? toName : fromName;
 
   if (!phoneNumber || !caller) {
-    return i18nP('telephony.switchCall.unknownCaller');
+    return isCallModel ? i18nP('phone.unknownCaller') : i18nP('telephony.switchCall.unknownCaller');
   }
 
   const person = await ServiceLoader.getInstance<PersonService>(
@@ -100,7 +100,7 @@ export async function getDisplayNameByCaller(caller: ActiveCall | CallModel) {
 
   if (callerName) {
     return callerName === 'Anonymous'
-      ? i18nP('telephony.switchCall.unknownCaller')
+      ? (isCallModel ? i18nP('phone.unknownCaller') : i18nP('telephony.switchCall.unknownCaller'))
       : callerName;
   }
 

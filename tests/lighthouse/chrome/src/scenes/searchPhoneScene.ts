@@ -2,16 +2,13 @@
  * @Author: doyle.wu
  * @Date: 2019-01-11 08:37:56
  */
-import { Scene } from "./scene";
-import { Config } from "../config";
+import { IndependenceScene } from ".";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
-import { LoginGatherer, SearchPhoneGatherer } from "../gatherers";
+import { LoginGatherer, SearchPhoneGatherer, HomePageGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
-class SearchPhoneScene extends Scene {
-  private keywords: Array<string> = Config.searchPhones;
-
+class SearchPhoneScene extends IndependenceScene {
   tags(): Array<string> {
     return ["SearchPhoneScene", "Search", "Memory", "Trace", "API"];
   }
@@ -23,7 +20,10 @@ class SearchPhoneScene extends Scene {
       instance: new LoginGatherer()
     });
     this.config.passes[0].gatherers.unshift({
-      instance: new SearchPhoneGatherer(this.keywords)
+      instance: new SearchPhoneGatherer()
+    });
+    this.config.passes[0].gatherers.unshift({
+      instance: new HomePageGatherer()
     });
   }
 

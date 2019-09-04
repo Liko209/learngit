@@ -447,9 +447,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
       className="MuiListItemIcon-root c1"
     >
       <button
-        aria-haspopup={true}
         aria-label="favorite"
-        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c2"
         disabled={false}
         onBlur={[Function]}
@@ -460,7 +458,8 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseMove={[Function]}
+        onMouseOut={[Function]}
+        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -738,9 +737,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
       className="c5"
     >
       <button
-        aria-haspopup={true}
         aria-label=""
-        aria-owns={null}
         className="MuiButtonBase-root MuiIconButton-root c6"
         disabled={false}
         onBlur={[Function]}
@@ -751,7 +748,8 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         onMouseDown={[Function]}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
-        onMouseMove={[Function]}
+        onMouseOut={[Function]}
+        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}

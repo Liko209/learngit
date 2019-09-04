@@ -82,7 +82,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
           variant="plain"
           size="small"
           analysisSource={`globalSearch_${analysisSource}`}
-          onClick={this.onAudioConferenceClick}
+          onConferenceSuccess={this.onAudioConferenceClick}
         />
       </>
     );

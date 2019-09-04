@@ -88,9 +88,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
     className="c0"
   >
     <button
-      aria-haspopup={true}
       aria-label="Back"
-      aria-owns={null}
       className="MuiButtonBase-root MuiIconButton-root c1 c2"
       data-test-automation-id="back"
       disabled={false}
@@ -103,7 +101,8 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
-      onMouseMove={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
@@ -135,9 +134,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
     className="c0"
   >
     <button
-      aria-haspopup={true}
       aria-label="Forward"
-      aria-owns={null}
       className="MuiButtonBase-root MuiIconButton-root c1 c2"
       data-test-automation-id="forward"
       disabled={false}
@@ -150,7 +147,8 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
       onMouseDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
-      onMouseMove={[Function]}
+      onMouseOut={[Function]}
+      onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}

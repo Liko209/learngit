@@ -27,7 +27,7 @@ import { IEntityNotificationController } from '../controller/interface/IEntityNo
 import { BaseSettingEntity } from '../model/setting';
 import { IConfigHistory } from '../config/IConfigHistory';
 import { configMigrator } from '../config';
-import { Nullable, UndefinedAble } from 'sdk/types';
+import { Nullable, UndefinedAble, LoginInfo } from 'sdk/types';
 import { ConfigChangeHistory } from '../config/types';
 import { notificationCenter, SERVICE } from 'sdk/service';
 import { UserConfig } from 'sdk/module/config';
@@ -122,7 +122,7 @@ class EntityBaseService<
 
   protected onRCLogin() {}
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  protected onGlipLogin(success: boolean) {}
+  protected onGlipLogin(loginInfo: LoginInfo) {}
 
   protected onLogout() {}
 

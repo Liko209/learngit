@@ -115,9 +115,9 @@
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "shareStatus": "Share status",
-    "clearStatus": "Clear Status",
+    "clearStatus": "Clear status",
     "aboutRingCentral": "About RingCentral",
-    "sendFeedback": "Send Feedback",
+    "sendFeedback": "Send feedback",
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
@@ -767,7 +767,9 @@
         "backendError": "Transfer failed",
         "transferSuccess": "Call transferred"
       },
-      "voicemailDeleted": "The voicemail was deleted."
+      "voicemailDeleted": "The voicemail was deleted.",
+      "audioConferenceBackendError": "Sorry, something went wrong on our end and we weren't able to start the conference. Try again later. ",
+      "audioConferenceNetworkError": "Sorry, we aren't able to start the conference. Check your network connection, then try again. "
     },
     "notification": {
       "newVoicemail": "Left a voicemail",
@@ -1257,7 +1259,7 @@
     "sendingInBackground": "Sending feedback..."
   },
   "customstatus": {
-    "title": "Share Status",
+    "title": "Share status",
     "items": {
       "item1": "Out of office",
       "item2": "In a meeting",
