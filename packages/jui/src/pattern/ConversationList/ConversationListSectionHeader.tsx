@@ -57,6 +57,7 @@ const JuiConversationListSectionHeader = memo(
     return (
       <JuiListNavItem
         className={className}
+        addPadding={1}
         data-test-automation-id="conversation-list-section-header"
         button
         selected={selected}

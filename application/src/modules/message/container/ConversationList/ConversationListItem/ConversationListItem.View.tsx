@@ -107,6 +107,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
       <>
         <JuiConversationListItem
           className="conversation-list-item"
+          addPadding={1}
           data-test-automation-id="conversation-list-item"
           tabIndex={0}
           isItemHover={isHover}
