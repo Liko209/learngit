@@ -265,6 +265,22 @@ class PptrUnionUtils {
     return text;
   }
 
+  static async attr(page: Page, selector: string, name: string) {
+    if (!(await PptrUnionUtils.waitForSelector(page, selector))) {
+      return false;
+    }
+
+    const driver = await PptrUnionUtils.getDriver(page);
+    const value = await driver.executeScript((selector, name) => {
+      const elements = document.querySelectorAll(selector);
+      const element = elements[elements.length - 1];
+      return element.getAttribute(name);
+    }, selector, name);
+
+    return value;
+
+  }
+
   static async launch(options = {}): Promise<Browser> {
     let defaultArgs = ["--ignore-certificate-errors", "--disable-web-security"];
     if (options["args"]) {

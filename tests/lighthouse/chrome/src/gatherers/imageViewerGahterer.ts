@@ -40,7 +40,6 @@ class ImageViewerGatherer extends DebugGatherer {
     globals.startCollectProcessInfo();
     this.beginGathererConsole();
 
-    // switch conversation
     await this.viewImage(conversationPage, Config.sceneRepeatCount);
 
     this.endGathererConsole();
@@ -61,7 +60,7 @@ class ImageViewerGatherer extends DebugGatherer {
     if (switchCount <= 0) {
       switchCount = Config.sceneRepeatCount;
     }
-    
+
     let imageConversationId = this.conversationIds['image'];
     if (!imageConversationId) {
       return;

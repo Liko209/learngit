@@ -55,6 +55,12 @@ const SettingSectionWrap = styled.div`
   }
 `;
 
+const SettingCardWrap = styled(JuiCard)`
+  && {
+    overflow: visible;
+  }
+`;
+
 class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
   render() {
     const { children, title, automationId } = this.props;
@@ -72,11 +78,11 @@ class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
             {title}
           </TitleWrap>
         </TitleHeaderWrap>
-        <JuiCard>
+        <SettingCardWrap>
           <ContentWrap className="setting-section-content">
             {children}
           </ContentWrap>
-        </JuiCard>
+        </SettingCardWrap>
       </SettingSectionWrap>
     );
   }

@@ -8,10 +8,6 @@ import { JuiDialog } from '../../components/Dialog/Dialog';
 import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
-const StyledGlobalSearchWrapper = styled.div<{ show: boolean }>`
-  display: ${({ show }) => (show ? 'block' : 'none')};
-`;
-
 const StyledGlobalSearch = styled(JuiDialog)`
   /* <height> - <margin> */
   height: calc(100% - 16px);
@@ -51,18 +47,17 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
   const { open, onClose, children } = props;
 
   return (
-    <StyledGlobalSearchWrapper show={open}>
-      <StyledGlobalSearch
-        classes={{ container: 'container' }}
-        scroll="body"
-        open
-        onClose={onClose}
-        disablePortal
-        fixedAtTop
-      >
-        {children}
-      </StyledGlobalSearch>
-    </StyledGlobalSearchWrapper>
+    <StyledGlobalSearch
+      classes={{ container: 'container' }}
+      scroll="body"
+      open
+      onClose={onClose}
+      disablePortal
+      fixedAtTop
+      hidden={!open}
+    >
+      {children}
+    </StyledGlobalSearch>
   );
 };
 

@@ -106,7 +106,7 @@ export default class CallModel extends Base<Call> {
     this.toName = to_name;
 
     autorun(async () => {
-      this.displayName = await getDisplayNameByCaller(this);
+      this.displayName = await getDisplayNameByCaller(this, true);
     });
   }
 

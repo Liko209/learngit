@@ -440,6 +440,7 @@ export class GroupFetchDataController {
         const keyWeight = SearchUtils.getMatchedWeight(
           memberNames.map(x => x.toLowerCase()),
           searchKeyTerms,
+          false,
         );
         const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
@@ -597,7 +598,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms);
+        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms, true);
 
         isMatched = true;
 
@@ -616,7 +617,6 @@ export class GroupFetchDataController {
               recentSearchedGroups!,
             )
           : 0;
-
         const sortWeights = option.meFirst && meGroupId? [group.id === meGroupId? 1 : 0,  keyWeight, mostRecentViewTime] : [keyWeight, mostRecentViewTime];
         return {
           lowerCaseName,
@@ -630,11 +630,11 @@ export class GroupFetchDataController {
     };
   }
 
-  private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[]) {
+  private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[], isPositionMatchedHigher: boolean) {
     const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
       lowerCaseName,
     );
-    return SearchUtils.getMatchedWeight(splitNames, searchKeyTerms);
+    return SearchUtils.getMatchedWeight(splitNames, searchKeyTerms, isPositionMatchedHigher);
   }
 
   // The search results should be ranked as follows: perfect match>start with> fuzzy search> Soundex search
@@ -689,6 +689,7 @@ export class GroupFetchDataController {
         keyWeight = this._getNameMatchWeight(
           lowerCaseAbbreviation,
           searchKeyTerms,
+          true,
         );
 
         isMatched = true;

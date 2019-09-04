@@ -3,6 +3,7 @@
  * @Date: 2018-10-08 18:38:42
  * Copyright © RingCentral. All rights reserved.
  */
+import { GlobalStyle } from 'jui/pattern/MessageInput';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import {
@@ -195,6 +196,7 @@ class MessageRouterComponent extends Component<Props, State> {
             render={this._renderRouteForMessageConversation}
           />
         </SwitchResponsive>
+        <GlobalStyle />
         {MessageRouterChangeHelper.isConversation(match.params.subPath) ? (
           <RightRailResponsive id={Number(match.params.subPath)} />
         ) : null}

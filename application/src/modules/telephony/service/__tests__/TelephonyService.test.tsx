@@ -152,6 +152,23 @@ describe('TelephonyService', () => {
   @testable
   class startAudioConference {
     @test(
+      'should not call if there is already another call going on',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 1 },
+    ])
+    @mockService(itemService, 'startConference')
+    t0() {
+      let ts;
+      runInAction(async () => {
+        ts = new TelephonyService();
+        const result = await ts.startAudioConference(123);
+        expect(result).toBe(true);
+        expect(itemService.startConference).not.toHaveBeenCalled()
+      });
+    }
+
+    @test(
       'should not call api if has no active DL',
     )
     @mockService(ServerTelephonyService, [
@@ -208,6 +225,7 @@ describe('TelephonyService', () => {
       'should show toast when error occurs when starting conference',
     )
     @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: true },
       { method: 'hasActiveDL', data: true },
       { method: 'makeCall', data: MAKE_CALL_ERROR_CODE.NO_ERROR },

@@ -8,7 +8,7 @@ import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 // import { mountWithTheme } from 'shield/utils';
 import { TransferView } from '../Transfer.View';
-import { JuiIconButton } from 'jui/components/Buttons';
+import { JuiFabButton } from 'jui/components/Buttons';
 
 describe('TransferView', () => {
   @testable
@@ -17,14 +17,14 @@ describe('TransferView', () => {
     t1() {
       const props = { transferNumber: '', transferCall: () => {} };
       const wrapper = shallow(<TransferView {...props} />);
-      expect(wrapper.find(JuiIconButton).get(0).props.disabled).toBe(true);
+      expect(wrapper.find(JuiFabButton).get(0).props.disabled).toBe(true);
     }
 
     @test('should transfer if valid number [JPT-2760]')
     t2() {
       const props = { transferNumber: '123', transferCall: () => {} };
       const wrapper = shallow(<TransferView {...props} />);
-      expect(wrapper.find(JuiIconButton).get(0).props.disabled).toBe(false);
+      expect(wrapper.find(JuiFabButton).get(0).props.disabled).toBe(false);
     }
   }
 });

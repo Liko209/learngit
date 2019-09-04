@@ -116,7 +116,6 @@ class ViewerTitleViewComponent extends Component<Type> {
                   showViewInPostAction
                   groupId={this.props.groupId}
                   fileId={fileId}
-                  disablePortal
                   variant="round"
                   asyncOperationDecorator={
                     this.createAsyncOperationDecorator(

@@ -1,5 +1,6 @@
 declare module 'glipdown' {
   interface IMarkdown {
+    tld_url_regex: RegExp;
     global_url_regex: RegExp;
     (raw: string, options?: string): string;
     Markdown: IMarkdown;

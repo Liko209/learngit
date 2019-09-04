@@ -70,6 +70,10 @@ import { ItemService } from 'sdk/module/item';
 import { JError, ERROR_TYPES, ERROR_CODES_NETWORK } from 'sdk/error';
 import { RingtonePrefetcher } from '../../notification/RingtonePrefetcher';
 import { isCurrentUserDND } from '@/modules/notification/utils';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { Item } from 'sdk/module/item/entity';
+import ItemModel from '@/store/models/Item';
+import ConferenceItemModel from '@/store/models/ConferenceItem';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 class TelephonyService {
@@ -114,6 +118,7 @@ class TelephonyService {
   private _keypadBeepPool: IMedia[];
   private _currentSoundTrackForBeep: number | null;
   private _canPlayOgg: boolean = this._mediaService.canPlayType('audio/ogg');
+  private _isStartingConference = false;
   protected _voicemailNotificationObserver: IEntityChangeObserver;
   protected _callLogNotificationObserver: IEntityChangeObserver<CallLog>;
 
@@ -275,17 +280,21 @@ class TelephonyService {
       () => ({
         hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
         defaultCallerPhoneNumber: this._telephonyStore.defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall: this._telephonyStore.isEndMultipleIncomingCall
       }),
       async ({
         hasActiveOutBoundCall,
         defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall
       }: {
         hasActiveOutBoundCall: boolean;
         defaultCallerPhoneNumber: string;
+        isEndMultipleIncomingCall: boolean;
       }) => {
         // restore things to default values
-        if (!hasActiveOutBoundCall) {
+        if (!hasActiveOutBoundCall && !isEndMultipleIncomingCall) {
           runInAction(() => {
+            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -483,7 +492,7 @@ class TelephonyService {
     this._subscribeMissedCallNotification();
   };
 
-  async makeRCPhoneCall(phoneNumber: string) {
+  async makeRCPhoneCall(phoneNumber: string, accessCode?: string) {
     const buildURL = (phoneNumber: string) => {
       enum RCPhoneCallURL {
         'RC' = 'rcmobile',
@@ -493,7 +502,7 @@ class TelephonyService {
       const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
       const { rcBrand } = getEntity(ENTITY_NAME.COMPANY, currentCompanyId);
       return `${RCPhoneCallURL[rcBrand] ||
-        RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
+        RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(accessCode ? `${phoneNumber},,${accessCode}#` : phoneNumber)}`;
     };
     const url = buildURL(phoneNumber);
     this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
@@ -534,11 +543,12 @@ class TelephonyService {
       return;
     }
 
+    const { accessCode, callback } = options;
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
-      return this.makeRCPhoneCall(toNumber);
+      return this.makeRCPhoneCall(toNumber, accessCode);
     }
-    options.callback && options.callback();
+    callback && callback();
 
     const fromNumber = this._getFromNumber();
 
@@ -547,7 +557,6 @@ class TelephonyService {
       TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
-    const { accessCode } = options;
     if (accessCode) {
       this._telephonyStore.isConference = true;
     }
@@ -627,6 +636,9 @@ class TelephonyService {
   };
 
   switchCall = async (otherDeviceCall: ActiveCall) => {
+    const itemStore = storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<Item, ItemModel>;
+    const conference = itemStore.find((item: ItemModel) => item instanceof ConferenceItemModel && item.rcData.phoneNumber === otherDeviceCall.to);
+    this._telephonyStore.isConference = conference !== null;
     const myNumber = (await this._rcInfoService.getAccountMainNumber()) || '';
     const rv = await this._serverTelephonyService.switchCall(myNumber, otherDeviceCall);
 
@@ -964,6 +976,8 @@ class TelephonyService {
     });
   };
 
+  deleteInputString = this.deleteInputStringFactory('inputString');
+
   dispose = () => {
     this._ringtonePrefetcher.dispose()
     this._hasActiveOutBoundCallDisposer &&
@@ -1224,7 +1238,21 @@ class TelephonyService {
   };
 
   startAudioConference = async (groupId: number) => {
-    return await this.ensureCallPermission(async () => {
+
+    if (this._isStartingConference) {
+      return true;
+    }
+    if (this._serverTelephonyService.getAllCallCount() > 0) {
+      mainLogger.warn(
+        `${TelephonyService.TAG}Only allow to make one call at the same time`,
+      );
+      // when multiple call don't hangup
+      return true;
+    }
+
+    this._isStartingConference = true;
+
+    const result = await this.ensureCallPermission(async () => {
       try {
         const { rc_data: { hostCode, phoneNumber } } = await this._itemService.startConference(groupId);
         return this._makeCall(phoneNumber, { accessCode: hostCode });
@@ -1236,6 +1264,9 @@ class TelephonyService {
         return this.handleStartAudioConferenceError(error)
       }
     });
+
+    this._isStartingConference = false;
+    return result;
   }
 
   handleStartAudioConferenceError(error: JError) {
