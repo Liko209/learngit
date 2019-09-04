@@ -167,6 +167,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     }
     if (delta.added.length) {
       const useableDevices = delta.added.filter(device => {
+        if (!device.label) return true;
         const { bluetoothMode } = this._extractBluetoothInfo(device.label) || {
           bluetoothMode: null,
         };
