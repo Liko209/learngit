@@ -449,8 +449,8 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .removeCursorsFromGroup(group);
   }
 
-  onGroupClick(groupId: number) {
-    this._groupConfigService.clearDraftFlagIfNotReallyExisted(groupId);
+  clearDraftFlagIfNotReallyExisted(groupId: number) {
+    return this._groupConfigService.clearDraftFlagIfNotReallyExisted(groupId);
   }
 }
 

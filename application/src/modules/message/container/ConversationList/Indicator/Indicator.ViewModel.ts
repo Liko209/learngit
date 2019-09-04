@@ -16,11 +16,6 @@ import { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 
 class IndicatorViewModel extends AbstractViewModel {
-
-  constructor() {
-    super();
-  }
-
   @observable id: number; // group id
 
   @action
@@ -49,7 +44,8 @@ class IndicatorViewModel extends AbstractViewModel {
     const { draft, attachmentItemIds: draftItemIds } = this.groupConfig;
     return !!(
       (draftItemIds && draftItemIds.length > 0) ||
-      (draft && draft.length > 0));
+      (draft && draft.length > 0)
+    );
   }
 
   @computed

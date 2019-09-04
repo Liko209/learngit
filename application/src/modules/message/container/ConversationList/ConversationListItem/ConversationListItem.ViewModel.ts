@@ -20,7 +20,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
-  > {
+> {
   firstUnreadCount: number;
   important?: boolean | undefined;
   groupService: GroupService = ServiceLoader.getInstance<GroupService>(
@@ -73,7 +73,7 @@ class ConversationListItemViewModel extends StoreViewModel<
       .getGlobalStore()
       .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
     setTimeout(() => history.push(`/messages/${this.groupId}`), 0);
-    this.groupService.onGroupClick(this.groupId);
+    this.groupService.clearDraftFlagIfNotReallyExisted(this.groupId);
   };
 
   @computed

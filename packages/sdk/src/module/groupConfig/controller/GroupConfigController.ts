@@ -23,7 +23,7 @@ class GroupConfigController {
 
   constructor(
     public entitySourceController: IEntitySourceController<GroupConfig>,
-  ) { }
+  ) {}
 
   async updateGroupConfigPartialData(params: GroupConfig): Promise<boolean> {
     try {
@@ -200,15 +200,19 @@ class GroupConfigController {
         try {
           const items = await ServiceLoader.getInstance<ItemService>(
             ServiceConfig.ITEM_SERVICE,
-          ).getEntitySource().getEntitiesLocally(attachment_item_ids, true);
+          )
+            .getEntitySource()
+            .getEntitiesLocally(attachment_item_ids, true);
           const ids = items.map(item => item.id);
           const errorIds = _.difference(attachment_item_ids, ids);
           if (errorIds.length) {
             await this.updateDraft({
               id: groupId,
-              attachment_item_ids: _.intersection(ids, attachment_item_ids)
+              attachment_item_ids: _.intersection(ids, attachment_item_ids),
             });
-            mainLogger.warn(`checkIfReallyExistedDraft hit a bug, gid:${groupId}, attachment_item_ids${attachment_item_ids}, errorIds:${errorIds}`)
+            mainLogger.warn(
+              `checkIfReallyExistedDraft hit a bug, gid:${groupId}, attachment_item_ids${attachment_item_ids}, errorIds:${errorIds}`,
+            );
           }
         } catch (e) {
           mainLogger.error('checkIfReallyExistedDraft error', e);

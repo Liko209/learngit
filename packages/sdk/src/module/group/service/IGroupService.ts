@@ -150,7 +150,7 @@ interface IGroupService {
 
   getGroupName(group: Group): string;
 
-  onGroupClick(groupId: number): void;
+  clearDraftFlagIfNotReallyExisted(groupId: number): Promise<void>;
 }
 
 export { IGroupService };
