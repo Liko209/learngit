@@ -288,7 +288,7 @@ test.meta(<ITestMeta>{
 
 
   await h(t).withLog(`When I hover the image`, async () => {
-    await t.hover(messageTab.postItemById(postId).imageItem);
+    await t.hover(messageTab.postItemById(postId).imageCard);
   });
 
   await h(t).withLog(`Then the posts highlight the keyword {keyword1} in file name`, async (step) => {
@@ -317,7 +317,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I hover the image`, async () => {
-    await t.hover(messageTab.postItemById(postId).imageItem);
+    await t.hover(messageTab.postItemById(postId).imageCard);
   });
 
   await h(t).withLog(`Then the post highlight the keyword {multipleKeyWord} in file name`, async (step) => {

@@ -68,12 +68,12 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('Then I  should be able to see an indicator on the file thumbnail.', async () => {
     await conversationPage.waitUntilPostsBeLoaded();
-    await t.expect(conversationPage.postItemById(postId).fileItem.exists).ok();
+    await t.expect(conversationPage.postItemById(postId).fileCard.exists).ok();
   });
 
   /** conversation entry point */
   await h(t).withLog('When I click the file thumbnail', async () => {
-    await t.click(conversationPage.postItemById(postId).fileItem);
+    await t.click(conversationPage.postItemById(postId).fileCard);
   });
 
   const viewerDialog = app.homePage.viewerDialog;

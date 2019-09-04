@@ -13,6 +13,7 @@ export type GroupSearchProps = {
   dialogTitle: string;
   listTitle: string;
   searchFunc: (searchKey: string) => Promise<SortableModel<any>[]>;
+  defaultList: () => Promise<SortableModel<any>[]>;
 };
 
 export interface IGroupSearchViewModel {
