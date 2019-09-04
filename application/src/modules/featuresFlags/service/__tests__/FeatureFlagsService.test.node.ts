@@ -15,7 +15,7 @@ const permission = {
   hasPermission: jest.fn().mockResolvedValue(true),
   isVoipCallingAvailable: jest.fn().mockResolvedValue(true),
   isWebPhoneAvailable: jest.fn().mockResolvedValue(true),
-  isOrganizeConferenceAvailable: jest.fn().mockResolvedValue(true)
+  isOrganizeConferenceAvailable: jest.fn().mockResolvedValue(true),
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
 jest.mock('@/store/utils');
@@ -29,9 +29,12 @@ describe('FeaturesFlagsService', () => {
     it('should return support module', async () => {
       const featuresFlagsService = new FeaturesFlagsService();
       const modules = await featuresFlagsService.getSupportFeatureModules();
-      const featureModules = featureModuleConfig.reduce((modules, feature) => {
-        return modules.concat(feature.depModules);
-      }, []);
+      const featureModules = featureModuleConfig.reduce<string[]>(
+        (modules, feature) => {
+          return modules.concat(feature.depModules);
+        },
+        [],
+      );
       expect(modules).toEqual(featureModules);
     });
   });
@@ -71,7 +74,6 @@ describe('FeaturesFlagsService', () => {
     });
 
     it('should return telephony permission true when choose glip when has Organize Conference permission', async () => {
-
       const featuresFlagsService = new FeaturesFlagsService();
       getSingleEntity.mockReturnValueOnce(CALLING_OPTIONS.GLIP);
       expect(await featuresFlagsService.canUseConference()).toBeTruthy();
@@ -85,11 +87,11 @@ describe('FeaturesFlagsService', () => {
       expect(await featuresFlagsService.canUseConference()).toBeFalsy();
     });
 
-    it('should return false when has not Organize Conference permission', async()=>{
+    it('should return false when has not Organize Conference permission', async () => {
       permission.isOrganizeConferenceAvailable.mockResolvedValueOnce(false);
       ServiceLoader.getInstance = jest.fn().mockReturnValue(permission);
       const featuresFlagsService = new FeaturesFlagsService();
       expect(await featuresFlagsService.canUseConference()).toBeFalsy();
-    })
+    });
   });
 });
