@@ -8,6 +8,7 @@ type MinimizeProps = {};
 
 type MinimizeViewProps = {
   minimize: () => void;
+  isForward: boolean;
 };
 
 export { MinimizeProps, MinimizeViewProps };

@@ -21,16 +21,20 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
   word-break: break-word;
 }
 
-.c3.c3 {
+.c4.c4 {
   padding: 16px;
 }
 
-.c3.c3:last-child {
+.c4.c4:last-child {
   padding-bottom: 16px;
 }
 
 .c0.c0 {
   margin-bottom: 16px;
+}
+
+.c3.c3 {
+  overflow: visible;
 }
 
 <div>
@@ -50,10 +54,10 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
       </span>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root MuiPaper-rounded"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c3 MuiPaper-rounded"
     >
       <div
-        className="MuiCardContent-root setting-section-content c3"
+        className="MuiCardContent-root setting-section-content c4"
       >
         Setting Items Here
       </div>
@@ -75,10 +79,10 @@ exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSecti
       </span>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root MuiPaper-rounded"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c3 MuiPaper-rounded"
     >
       <div
-        className="MuiCardContent-root setting-section-content c3"
+        className="MuiCardContent-root setting-section-content c4"
       >
         Setting Items Here
       </div>
