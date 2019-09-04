@@ -6,17 +6,16 @@
 
 import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCacheController';
 import { Item } from '../entity';
-import { IItemService } from '../service/IItemService';
 
 class ItemEntityCacheController extends EntityCacheController<Item> {
 
   private _typeIdMap: Map<number, number[]> = new Map();
 
-  static buildItemEntityCacheController(itemService: IItemService, sizeForType: number) {
-    return new ItemEntityCacheController(itemService, sizeForType);
+  static buildItemEntityCacheController(sizeForType: number) {
+    return new ItemEntityCacheController(sizeForType);
   }
 
-  constructor(private itemService: IItemService, private sizeForType: number) {
+  constructor(private sizeForType: number) {
     super();
   }
 

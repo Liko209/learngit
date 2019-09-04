@@ -9,13 +9,13 @@ import { Item } from '../../entity';
 describe('ItemEntityCacheController', () => {
   describe('buildItemEntityCacheController', () => {
     it('should build a new cache controller', () => {
-      const a = ItemEntityCacheController.buildItemEntityCacheController(undefined, 2);
+      const a = ItemEntityCacheController.buildItemEntityCacheController(2);
       expect(a instanceof ItemEntityCacheController).toBeTruthy();
     });
   });
   describe('clear', () => {
     it('should cache map', () => {
-      const a = ItemEntityCacheController.buildItemEntityCacheController(undefined, 2);
+      const a = ItemEntityCacheController.buildItemEntityCacheController(2);
       a.putInternal(
         {
           id: 11,
@@ -29,7 +29,7 @@ describe('ItemEntityCacheController', () => {
   });
   describe('putInternal', () => {
     it('should create new id and array if incomes new type items', async () => {
-      const a = ItemEntityCacheController.buildItemEntityCacheController(undefined, 2);
+      const a = ItemEntityCacheController.buildItemEntityCacheController(2);
       expect(await a.get(1)).toBeNull();
       expect(a['_typeIdMap'].get(10)).toEqual(undefined);
       const item1 = {
@@ -41,7 +41,7 @@ describe('ItemEntityCacheController', () => {
       expect(a['_typeIdMap'].get(10)).toEqual([1]);
     })
     it('should remove the oldest value if items size has over threshold', async () => {
-      const a = ItemEntityCacheController.buildItemEntityCacheController(undefined, 2);
+      const a = ItemEntityCacheController.buildItemEntityCacheController(2);
       expect(a['_typeIdMap'].get(10)).toEqual(undefined);
       a.putInternal(
         {

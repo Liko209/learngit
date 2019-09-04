@@ -48,7 +48,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   protected buildEntityCacheController() {
-    return ItemEntityCacheController.buildItemEntityCacheController(this, TYPE_ITEM_CACHE_SIZE);
+    return ItemEntityCacheController.buildItemEntityCacheController(TYPE_ITEM_CACHE_SIZE);
   }
 
   getItemDataHandler(): (items: Raw<Item>[]) => void {
