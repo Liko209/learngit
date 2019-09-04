@@ -80,7 +80,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the add team member dialog should be popup`, async () => {
     await t.expect(addTeamMemberDialog.exists).ok();
-    await addTeamMemberDialog.cancel();
+    await addTeamMemberDialog.clickCancelButton();
   });
 
 
@@ -105,7 +105,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the add team member dialog should be popup`, async () => {
     await t.expect(addTeamMemberDialog.exists).ok();
-    await addTeamMemberDialog.cancel();
+    await addTeamMemberDialog.clickCancelButton();
   });
 
   await h(t).withLog(`When member (guest role) of the team open team profile dialog {number}#{extension}`, async (step) => {
@@ -187,7 +187,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the add team member dialog should be popup`, async () => {
     await t.expect(addTeamMemberDialog.exists).ok();
-    await addTeamMemberDialog.cancel();
+    await addTeamMemberDialog.clickCancelButton();
   });
 
   await h(t).withLog(`When I logout and login  with member ${memberUser.company.number}#${memberUser.extension}`, async () => {
