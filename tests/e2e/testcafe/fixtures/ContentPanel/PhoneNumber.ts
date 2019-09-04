@@ -104,10 +104,9 @@ test.meta(<ITestMeta>{
     await t.expect(postItem.phoneLinkByDataId(phoneNumberType2).textContent).eql(phoneNumberType2);
   });
 
-  await h(t).withLog(`And I can find hyperlinked ${phoneNumberType3} in the note post`, async () => {
+  await h(t).withLog(`And I can not find hyperlinked ${phoneNumberType3} in the note post [FIJI-7757]`, async () => {
     const postItem = conversationPage.postItemById(notePostId)
-    await t.expect(postItem.phoneLinkByDataId(phoneNumberType3).exists).ok();
-    await t.expect(postItem.phoneLinkByDataId(phoneNumberType3).textContent).eql(phoneNumberType3);
+    await t.expect(postItem.phoneLinkByDataId(phoneNumberType3).exists).notOk();
   });
 
   await h(t).withLog(`And I can find hyperlinked ${phoneNumberType4} in the text post`, async () => {
@@ -187,10 +186,9 @@ test.meta(<ITestMeta>{
     await t.expect(postItem.phoneLinkByDataId(phoneNumberType2).textContent).eql(phoneNumberType2);
   });
 
-  await h(t).withLog(`And I can find hyperlinked ${phoneNumberType3} in the note post`, async () => {
+  await h(t).withLog(`And I can not find hyperlinked ${phoneNumberType3} in the note post [FIJI-7757]`, async () => {
     const postItem = bookmarkPage.postItemById(notePostId)
-    await t.expect(postItem.phoneLinkByDataId(phoneNumberType3).exists).ok();
-    await t.expect(postItem.phoneLinkByDataId(phoneNumberType3).textContent).eql(phoneNumberType3);
+    await t.expect(postItem.phoneLinkByDataId(phoneNumberType3).exists).notOk();
   });
 
   await h(t).withLog(`And I can find hyperlinked ${phoneNumberType4} in the text post`, async () => {
