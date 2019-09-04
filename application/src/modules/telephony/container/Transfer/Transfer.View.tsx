@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
 import { JuiFabButton } from 'jui/components/Buttons';
-import { JuiTransferAction } from 'jui/pattern/Dialer';
+import { JuiTransferAction, JuiTransferActionText } from 'jui/pattern/Dialer';
 
 type Props = ViewProps & WithTranslation;
 
@@ -49,9 +49,9 @@ class TransferViewComponent extends Component<Props> {
           color="grey.200"
           iconColor={['grey', '900']}
         />
-        <span className={!transferNumber ? 'disabled' : undefined}>
+        <JuiTransferActionText disabled={!transferNumber}>
           {t('telephony.action.transfer')}
-        </span>
+        </JuiTransferActionText>
       </JuiTransferAction>
     );
   }

@@ -62,7 +62,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   background-color: #eeeeee;
   color: rgba(0,0,0,0.87);
   box-shadow: none;
-  opacity: 0.12;
+  opacity: 0.30000000000000004;
 }
 
 .c17.c17 {
@@ -97,7 +97,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   background-color: #f44336;
   color: #fff;
   box-shadow: none;
-  opacity: 0.12;
+  opacity: 0.30000000000000004;
 }
 
 .c15.c15 {
