@@ -59,6 +59,14 @@ test.meta(<ITestMeta>{
     });
   });
 
+  await h(t).withLog('And I send one post in team2', async () => {
+    await h(t).scenarioHelper.sendTextPost(
+      'text',
+       team2,
+       loginUser,
+    );
+ });
+
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
   const moreActionOnFile = app.homePage.moreActionOnFile;
@@ -160,25 +168,25 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I go to the team2`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team2.glipId).enter();
     await conversationPage.waitUntilPostsBeLoaded();
-    await t.expect(conversationPage.posts.count).eql(4);
+    await t.expect(conversationPage.posts.count).eql(5);
   }, true);
 
-  await h(t).withLog(`Then the No.1 post should be the image`, async () => {
-    await t.hover(conversationPage.nthPostItem(0).imageCard);
-    await t.expect(conversationPage.nthPostItem(0).fileNames.withText(imageName)).ok();
+  await h(t).withLog(`Then the No.2 post should be the image`, async () => {
+    await t.hover(conversationPage.nthPostItem(1).imageCard);
+    await t.expect(conversationPage.nthPostItem(1).fileNames.withText(imageName)).ok();
   });
 
-  await h(t).withLog(`And the No.2 post should be the file`, async () => {
-    await t.expect(conversationPage.nthPostItem(1).fileNames.withText(fileName)).ok();
+  await h(t).withLog(`And the No.3 post should be the file`, async () => {
+    await t.expect(conversationPage.nthPostItem(2).fileNames.withText(fileName)).ok();
   });
 
-  await h(t).withLog(`And the No.3 post should be the image`, async () => {
-    await t.hover(conversationPage.nthPostItem(2).imageCard);
-    await t.expect(conversationPage.nthPostItem(2).fileNames.withText(imageName)).ok();
+  await h(t).withLog(`And the No.4 post should be the image`, async () => {
+    await t.hover(conversationPage.nthPostItem(3).imageCard);
+    await t.expect(conversationPage.nthPostItem(3).fileNames.withText(imageName)).ok();
   });
 
-  await h(t).withLog(`And the No.4 post should be the file`, async () => {
-    await t.expect(conversationPage.nthPostItem(3).fileNames.withText(fileName)).ok();
+  await h(t).withLog(`And the No.5 post should be the file`, async () => {
+    await t.expect(conversationPage.nthPostItem(4).fileNames.withText(fileName)).ok();
   });
 });
 
