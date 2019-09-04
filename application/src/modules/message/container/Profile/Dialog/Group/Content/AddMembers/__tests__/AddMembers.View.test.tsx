@@ -68,11 +68,11 @@ describe('AddMembersView', () => {
         }),
       );
     });
-    it('should contain onClose props when rendering JuiModal ', async () => {
+    it('should render withEscTracking when Component rendered', async () => {
       const props = { group: {} };
       const Wrapper = shallow(<AddMembersComponent {...props} />);
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
     });
   });
 });

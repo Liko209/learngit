@@ -6,22 +6,25 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
+import { test, testable } from 'shield';
 import { NewConversationView } from '../NewConversation.View';
 import { JuiModal } from 'jui/components/Dialog';
 
 jest.mock('@/containers/Notification');
 
 describe('NewConversationView', () => {
-  describe('render()', () => {
-    it('should contain onClose props when rendering JuiModal ', async () => {
+  @testable
+  class render {
+    @test('should render withEscTracking when Component rendered ')
+    t1() {
       const props = {
         group: {
           members: {},
         },
       };
       const Wrapper = shallow(<NewConversationView {...props} />);
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
-    });
-  });
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
+    }
+  }
 });

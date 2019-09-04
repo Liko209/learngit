@@ -8,12 +8,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { RegionSettingItemView } from '../RegionSettingItem.View';
 import { JuiModal } from 'jui/components/Dialog';
+import { test, testable } from 'shield';
 
 jest.mock('@/containers/Notification');
 
 describe('RegionSettingItemView', () => {
-  describe('render()', () => {
-    it('should contain onClose props when rendering JuiModal [JPT-2896]', async () => {
+  @testable
+  class render {
+    @test('should render withEscTracking when Component rendered [JPT-2896]')
+    t1() {
       const props = {
         settingItemEntity: {
           value: {
@@ -27,8 +30,8 @@ describe('RegionSettingItemView', () => {
       Wrapper.setState({
         dialogOpen: true,
       });
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
-    });
-  });
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
+    }
+  }
 });
