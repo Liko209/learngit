@@ -33,6 +33,12 @@ export class CommonResponseParser implements IResponseParser {
         'Api Error: Please check network connection',
       );
     }
+    if (status === RESPONSE_STATUS_CODE.LOCAL_TIME_OUT) {
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.LOCAL_TIMEOUT,
+        'Api Error: Please check local network crash',
+      );
+    }
     if (
       (isNumber(status) && status > 399 && status < 600) ||
       (isString(status) && REGEXP_4XX_5XX.test(status))
