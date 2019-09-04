@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ContentPanel/Task.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}
