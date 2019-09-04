@@ -26,7 +26,7 @@ import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AboutView } from '@/containers/About';
-import { Notification } from '@/containers/Notification';
+import { Notification, notificationKey } from '@/containers/Notification';
 import {
   ToastType,
   ToastMessageAlign,
@@ -83,6 +83,7 @@ class HomeViewComponent extends Component<Props> {
     }
 
     const flagToast = Notification.flagToast({
+      key: notificationKey.E911_TOAST,
       message: (
         <>
           {`${t('home.confirmEmergencyAddress')} `}
