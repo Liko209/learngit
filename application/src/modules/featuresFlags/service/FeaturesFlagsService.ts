@@ -63,14 +63,18 @@ class FeaturesFlagsService implements IFeaturesFlagsService {
   }
 
   async init() {
-    this.canIUseConference = await this.canUseConference();
-    this.canIUseTelephony = await this.canUseTelephony();
-    notificationCenter.on(
-      SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
-      (enabled: boolean) => {
-        this.canIUseTelephony = enabled;
-      },
-    );
+    this.canUseConference().then(value => {
+      this.canIUseConference = value;
+    })
+    this.canUseTelephony().then(value => {
+      this.canIUseTelephony = value;
+      notificationCenter.on(
+        SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
+        (enabled: boolean) => {
+          this.canIUseTelephony = enabled;
+        },
+      );
+    })
   }
 
   async getSupportFeatureModules() {
