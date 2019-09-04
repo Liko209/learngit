@@ -177,6 +177,9 @@ class TelephonyService {
       return;
     }
     if (!this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
+      mainLogger
+      .tags(TelephonyService.TAG)
+      .info('abandon playing ringtone', new Date());
       return;
     }
 
