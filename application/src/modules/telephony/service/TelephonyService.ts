@@ -103,6 +103,7 @@ class TelephonyService {
     ServiceConfig.CALL_LOG_SERVICE,
   );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
+  private _ringtoneStopped: boolean = true;
   private _muteRingtone: boolean = false;
   private _outputDevices: string[] | 'all' | null = null;
   private _callEntityId?: number;
@@ -176,10 +177,10 @@ class TelephonyService {
       mainLogger.tags(TelephonyService.TAG).warn('unable to find ringtone');
       return;
     }
-    if (!this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
+    if (this._ringtoneStopped || !this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
       return;
     }
-
+    
     const muted = isCurrentUserDND() || this._muteRingtone;
     this._ringtone.setLoop(true);
     this._ringtone.setMute(muted);
@@ -192,6 +193,7 @@ class TelephonyService {
 
   private _stopRingtone = async () => {
     mainLogger.tags(TelephonyService.TAG).info(`pause audio, ${new Date()}`);
+    this._ringtoneStopped = true;
     if (!this._ringtone) {
       return;
     }
@@ -437,6 +439,7 @@ class TelephonyService {
       () => this._telephonyStore.isIncomingCall,
       isIncomingCall => {
         if (isIncomingCall) {
+          this._ringtoneStopped = false;
           this._playRingtone();
           return;
         }
