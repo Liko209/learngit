@@ -321,9 +321,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-haspopup={true}
           aria-label="Comments"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
           onBlur={[Function]}
@@ -334,7 +332,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -399,9 +398,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-haspopup={true}
           aria-label="Comments"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
           onBlur={[Function]}
@@ -412,7 +409,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -477,9 +475,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-haspopup={true}
           aria-label="Comments"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
           onBlur={[Function]}
@@ -490,7 +486,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -555,9 +552,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-haspopup={true}
           aria-label="Comments"
-          aria-owns={null}
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
           onBlur={[Function]}
@@ -568,7 +563,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onMouseDown={[Function]}
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
-          onMouseMove={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}

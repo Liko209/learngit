@@ -199,9 +199,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   data-test-automation-id="linkItemsWrapper"
 >
   <button
-    aria-haspopup={true}
     aria-label=""
-    aria-owns={null}
     className="MuiButtonBase-root MuiIconButton-root c1"
     data-id="closeBtn"
     data-test-automation-id="linkPreviewCloseBtn"
@@ -215,7 +213,8 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
     onMouseDown={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
-    onMouseMove={[Function]}
+    onMouseOut={[Function]}
+    onMouseOver={[Function]}
     onMouseUp={[Function]}
     onTouchEnd={[Function]}
     onTouchMove={[Function]}

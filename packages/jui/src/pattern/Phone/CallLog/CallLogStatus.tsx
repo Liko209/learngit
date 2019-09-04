@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { JuiListItemAvatar, JuiListItemText } from '../../../components/Lists';
-import { ContactItem } from '../../ContactInfo';
 import { JuiIconography, IconColor } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
 import { Palette } from '../../../foundation/theme/theme';
@@ -18,6 +17,11 @@ type Props = {
   isShowCallInfo: boolean;
 };
 
+const StyledContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const CallLogStatus = (props: Props) => {
   const { icon, callType, duration, isMissedCall, isShowCallInfo } = props;
   const color: IconColor = isMissedCall
@@ -29,7 +33,7 @@ const CallLogStatus = (props: Props) => {
     : ['grey', '900'];
 
   return (
-    <ContactItem button={false} isUnread={false}>
+    <StyledContainer>
       <JuiListItemAvatar>
         <JuiIconography iconSize="medium" iconColor={color}>
           {icon}
@@ -43,7 +47,7 @@ const CallLogStatus = (props: Props) => {
           secondary={isMissedCall ? null : duration}
         />
       )}
-    </ContactItem>
+    </StyledContainer>
   );
 };
 

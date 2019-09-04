@@ -1127,6 +1127,21 @@ describe('TelephonyService', () => {
           `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
         );
       }),);
+    ['RC', 'ATT', 'TELUS'].forEach(i =>
+      it(`should build correct url for ${i} when given access code`, () => {
+        const RCPhoneCallURL = {
+          RC: 'rcmobile',
+          ATT: 'attvr20',
+          TELUS: 'rctelus',
+        };
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockImplementation(() => ({ rcBrand: i }));
+        telephonyService.makeRCPhoneCall('666', '123');
+        expect(urlTester).toHaveBeenCalledWith(
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666,,123#')}`,
+        );
+      }),);
     it('should show dialog when rc phone is uninstalled [JPT-2403]', async () => {
       jest
         .spyOn(utils, 'getEntity')

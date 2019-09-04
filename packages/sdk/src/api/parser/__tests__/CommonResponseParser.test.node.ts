@@ -4,7 +4,6 @@ import {
   HttpResponseBuilder,
   RESPONSE_STATUS_CODE,
 } from 'foundation/network';
-
 import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation/error';
 
 function createResponse(obj: any): HttpResponse {
@@ -45,6 +44,23 @@ describe('CommonResponseParser', () => {
         new JNetworkError(
           ERROR_CODES_NETWORK.NOT_NETWORK,
           'Api Error: Please check network connection',
+        ),
+      );
+    });
+
+    it('should identify LOCAL TIME OUT', () => {
+      const parser = new CommonResponseParser();
+      expect(
+        parser.parse(
+          createResponse({
+            status: RESPONSE_STATUS_CODE.LOCAL_TIME_OUT,
+            statusText: 'LOCAL_TIMEOUT',
+          }),
+        ),
+      ).toEqual(
+        new JNetworkError(
+          ERROR_CODES_NETWORK.LOCAL_TIMEOUT,
+          'Api Error: Please check local network crash',
         ),
       );
     });

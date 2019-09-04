@@ -47,8 +47,6 @@ class Conference extends React.Component<conferenceViewProps> {
     } = this.props;
     const { hostCode, participantCode } = conference;
 
-    const canUse = canUseConference.get();
-
     return (
       <JuiConversationItemCard
         title={postParser(t('item.audioConferenceTitle'), {
@@ -61,7 +59,7 @@ class Conference extends React.Component<conferenceViewProps> {
           <JuiAudioConferenceDescription data-test-automation-id="conferencePhoneNumber">
             <PhoneLink
               type="conference"
-              canUseConference={canUse && !disabled}
+              canUseConference={canUseConference && !disabled}
               handleClick={joinAudioConference}
               text={phoneNumber}
             >
@@ -95,7 +93,7 @@ class Conference extends React.Component<conferenceViewProps> {
             data-test-automation-id="conferenceParticipantCode"
           />
         </JuiItemContent>
-        {canUse && (
+        {canUseConference && (
           <JuiAudioConferenceJoin
             onClick={joinAudioConference}
             data-test-automation-id="joinConferenceBtn"

@@ -55,7 +55,6 @@ function switchConversationHandler() {
     },
     DIALOG_KEY,
   );
-  return false; // prevent browser default behavior
 }
 
 export { switchConversationHandler, switchToConversation };

@@ -277,6 +277,17 @@ export default class MultiEntityMapStore<
     return null;
   }
 
+  find(identifier: (entity: K) => boolean) {
+    const values = this._data.values()
+    for (const val of values) {
+      if (identifier(val)) {
+        return val;
+      }
+    }
+
+    return null;
+  }
+
   createModel(model: T | K): K {
     const Model = modelProvider.getModelCreator(this.name);
     return Model.fromJS(model);
