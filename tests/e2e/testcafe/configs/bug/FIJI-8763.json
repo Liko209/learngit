@@ -4,7 +4,7 @@
       "./fixtures/Contacts/AllContacts/Call.ts",
       "./fixtures/Contacts/AllContacts/Messages.ts",
       "./fixtures/Contacts/AllContacts/Openprofile.ts",
-      "tests/e2e/testcafe/fixtures/ContentPanel/PhoneNumber.ts"
+      "./fixtures/ContentPanel/PhoneNumber.ts"
     ],
     "browsers": ["selenium:chrome"]
   }
