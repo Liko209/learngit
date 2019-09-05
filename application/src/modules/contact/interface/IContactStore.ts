@@ -9,7 +9,9 @@ const IContactStore = createDecorator('IContactStore');
 
 interface IContactStore {
   currentUrl: string;
+  filterKey: string;
   setCurrentUrl: (url: string) => void;
+  setFilterKey: (key: string) => void;
 }
 
 export { IContactStore };

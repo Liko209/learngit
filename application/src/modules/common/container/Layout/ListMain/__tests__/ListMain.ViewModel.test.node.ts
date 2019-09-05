@@ -6,19 +6,22 @@
 import { test, testable } from 'shield';
 
 import { ListMainViewModel } from '../ListMain.ViewModel';
-import { when } from 'mobx';
 
 describe('ListMain.ViewModel', () => {
   @testable
   class setSearchKey {
-    @test('should be change search key if typing some value')
+    @test('should be change search key if typing some value [JPT-2931]')
     t1() {
       const props = {
         createHandler: jest.fn(),
+        filter: {
+          onChange: jest.fn(),
+        },
       } as any;
       const vm = new ListMainViewModel(props);
       vm.setSearchKey('123');
       expect(vm.searchKey).toBe('123');
+      expect(props.filter.onChange).toHaveBeenCalledWith('123');
     }
   }
 
@@ -60,6 +63,23 @@ describe('ListMain.ViewModel', () => {
       } catch (e) {
         expect(vm.isError).toBeTruthy();
       }
+    }
+  }
+
+  @testable
+  class initFilterKey {
+    @test('should be set init search key if has initFilterKey [JPT-2931]')
+    t1() {
+      const props = {
+        createHandler: jest.fn().mockReturnValue({}),
+        filter: {
+          initFilterKey() {
+            return '1';
+          },
+        },
+      } as any;
+      const vm = new ListMainViewModel(props);
+      expect(vm.searchKey).toBe('1');
     }
   }
 });

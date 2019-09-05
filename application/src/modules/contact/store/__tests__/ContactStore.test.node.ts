@@ -18,4 +18,15 @@ describe('ContactStore', () => {
       expect(contactStore.currentUrl).toBe('123');
     }
   }
+
+  @testable
+  class setFilterKey {
+    @test('should set search key if filter change')
+    t1() {
+      const contactStore = new ContactStore();
+
+      contactStore.setFilterKey('123');
+      expect(contactStore.filterKey).toBe('123');
+    }
+  }
 });
