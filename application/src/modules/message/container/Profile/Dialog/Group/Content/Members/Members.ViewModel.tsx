@@ -23,14 +23,16 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   _filteredMemberIds: number[] = [];
   @observable
   keywords: string = '';
-  changeSearchInputDebounce: () => void;
+
+  @action
+  changeSearchInput = (keywords: string) => {
+    this.keywords = keywords;
+  };
+
+  changeSearchInputDebounce = debounce(this.changeSearchInput, DELAY_DEBOUNCE);
 
   constructor(props: MembersProps) {
     super(props);
-    this.changeSearchInputDebounce = debounce(
-      this.changeSearchInput.bind(this),
-      DELAY_DEBOUNCE,
-    );
     this.reaction(() => this.id, this.createSortableHandler, {
       fireImmediately: true,
     });
@@ -56,11 +58,6 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   createSortableHandler = () => {
     // This handler need observable
     this._sortableGroupMemberHandler = new SortableGroupMemberHandler(this.id);
-  };
-
-  @action
-  changeSearchInput = (keywords: string) => {
-    this.keywords = keywords;
   };
 
   @action

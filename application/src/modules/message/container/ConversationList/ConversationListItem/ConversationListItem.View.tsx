@@ -27,7 +27,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
 
   private _requiredShownPresenceConversationTypes = [
     CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-    // CONVERSATION_TYPES.ME
+    CONVERSATION_TYPES.ME,
   ];
 
   state = {

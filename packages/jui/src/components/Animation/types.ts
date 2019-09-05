@@ -20,6 +20,7 @@ export type TransitionAnimationProps = {
 } & Omit<TransitionProps, 'timeout'>;
 
 export type ShrinkToFadeAnimationProps = {
+  in: boolean;
   children: JSX.Element | (JSX.Element | null)[];
   startMinimizeAnimation: boolean;
   xScale: string;

@@ -54,7 +54,6 @@ jest.mock('@/modules/notification/utils');
 jest.mock('@/store/utils');
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
-
 const mockedDelay = 10;
 const testProcedureWaitingTime = 100;
 
@@ -80,14 +79,12 @@ let mockedVoicemailService: any;
 let mockedMissedCallService: any;
 
 function initializeCallerId() {
-  try{
+  try {
     telephonyService._telephonyStore.chosenCallerPhoneNumber = '123';
     telephonyService._telephonyStore.callerPhoneNumberList = [
       { id: '123', phoneNumber: '123', usageType: 'companyNumber' },
     ];
-  }catch(e){
-
-  }
+  } catch (e) {}
 }
 let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
@@ -152,24 +149,32 @@ describe('TelephonyService', () => {
     mockedServerTelephonyService = {
       hold: jest.fn().mockImplementation(() =>
         sleep(mockedDelay).then(() =>
-          (count === 3 // for test failure situation
+          count === 3 // for test failure situation
             ? Promise.reject(RTC_CALL_ACTION.HOLD)
-            : Promise.resolve(RTC_CALL_ACTION.HOLD)),),),
+            : Promise.resolve(RTC_CALL_ACTION.HOLD),
+        ),
+      ),
       unhold: jest.fn().mockImplementation(() =>
         sleep(mockedDelay).then(() =>
-          (count === 4 // for test failure situation
+          count === 4 // for test failure situation
             ? Promise.reject(RTC_CALL_ACTION.UNHOLD)
-            : Promise.resolve(RTC_CALL_ACTION.UNHOLD)),),),
+            : Promise.resolve(RTC_CALL_ACTION.UNHOLD),
+        ),
+      ),
       startRecord: jest.fn().mockImplementation(() =>
         sleep(mockedDelay).then(() =>
-          (count === 3 // for test failure situation
+          count === 3 // for test failure situation
             ? Promise.reject(RTC_CALL_ACTION.START_RECORD)
-            : Promise.resolve(RTC_CALL_ACTION.START_RECORD)),),),
+            : Promise.resolve(RTC_CALL_ACTION.START_RECORD),
+        ),
+      ),
       stopRecord: jest.fn().mockImplementation(() =>
         sleep(mockedDelay).then(() =>
-          (count === 3 // for test failure situation
+          count === 3 // for test failure situation
             ? Promise.reject(RTC_CALL_ACTION.STOP_RECORD)
-            : Promise.resolve(RTC_CALL_ACTION.STOP_RECORD)),),),
+            : Promise.resolve(RTC_CALL_ACTION.STOP_RECORD),
+        ),
+      ),
       makeCall: jest.fn().mockImplementation(() => {
         // callEntityId = v4();
         cachedOnMadeOutgoingCall(1);
@@ -261,7 +266,7 @@ describe('TelephonyService', () => {
     telephonyService = container.get(TELEPHONY_SERVICE);
     try {
       (telephonyService as TelephonyService).init();
-    } catch(e) {}
+    } catch (e) {}
     initializeCallerId();
   });
 
@@ -660,7 +665,10 @@ describe('TelephonyService', () => {
       expect(telephonyService._makeCall).not.toHaveBeenCalled();
       mockedServerTelephonyService.getAllCallCount.mockReturnValue(0);
       await telephonyService.directCall(toNumber, options);
-      expect(telephonyService._makeCall).toHaveBeenCalledWith(toNumber, options);
+      expect(telephonyService._makeCall).toHaveBeenCalledWith(
+        toNumber,
+        options,
+      );
     });
 
     it('should call muteOrUnmute', () => {
@@ -686,9 +694,13 @@ describe('TelephonyService', () => {
       telephonyService._telephonyStore = {
         closeDialer: jest.fn(),
         openDialer: jest.fn(),
+        onDialerInputFocus: jest.fn(),
       };
       telephonyService.maximize();
       expect(telephonyService._telephonyStore.openDialer).toHaveBeenCalled();
+      expect(
+        telephonyService._telephonyStore.onDialerInputFocus,
+      ).toHaveBeenCalled();
       telephonyService.minimize();
       expect(telephonyService._telephonyStore.closeDialer).toHaveBeenCalled();
       telephonyService._telephonyStore = telephonyStore;
@@ -770,7 +782,6 @@ describe('TelephonyService', () => {
     concatFn('2');
     expect(telephonyService._telephonyStore.inputString).toBe(original);
   });
-
 
   it('should restore the input field after interruption of an incoming call', async () => {
     telephonyService.maximize();
@@ -876,7 +887,6 @@ describe('TelephonyService', () => {
   });
 
   it("Should Can't make outbound call when call permission is disabled [JPT-2381]", async () => {
-
     mockedRCInfoService.isVoipCallingAvailable = jest
       .fn()
       .mockReturnValue(false);
@@ -896,7 +906,7 @@ describe('TelephonyService', () => {
     expect(
       telephonyService._voicemailService.removeEntityNotificationObserver,
     ).toHaveBeenCalled();
-  })
+  });
 
   describe('onReceiveIncomingCall()', () => {
     const params = {
@@ -1034,49 +1044,61 @@ describe('TelephonyService', () => {
   });
 
   describe('directCall', () => {
-    it('should call ToastCallError.toastNoNetwork when get return value with MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION', async ()=>{
+    it('should call ToastCallError.toastNoNetwork when get return value with MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION', async () => {
       const cached = mockedServerTelephonyService.makeCall;
-      mockedServerTelephonyService.makeCall.mockReturnValue(MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION);
+      mockedServerTelephonyService.makeCall.mockReturnValue(
+        MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION,
+      );
       await telephonyService.directCall(v4());
       expect(ToastCallError.toastNoNetwork).toHaveBeenCalled();
       mockedServerTelephonyService.makeCall = cached;
     });
 
-    it('should call ToastCallError.toastInvalidNumber when get return value with MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER', async ()=>{
+    it('should call ToastCallError.toastInvalidNumber when get return value with MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER', async () => {
       const cached = mockedServerTelephonyService.makeCall;
-      mockedServerTelephonyService.makeCall.mockReturnValue(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
+      mockedServerTelephonyService.makeCall.mockReturnValue(
+        MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER,
+      );
       await telephonyService.directCall(v4());
       expect(ToastCallError.toastInvalidNumber).toHaveBeenCalled();
       mockedServerTelephonyService.makeCall = cached;
     });
 
-    it('should call ToastCallError.toastCountryBlockError when get return value with MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP', async ()=>{
+    it('should call ToastCallError.toastCountryBlockError when get return value with MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP', async () => {
       const cached = mockedServerTelephonyService.makeCall;
-      mockedServerTelephonyService.makeCall.mockReturnValue(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
+      mockedServerTelephonyService.makeCall.mockReturnValue(
+        MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP,
+      );
       await telephonyService.directCall(v4());
       expect(ToastCallError.toastCountryBlockError).toHaveBeenCalled();
       mockedServerTelephonyService.makeCall = cached;
     });
 
-    it('should call ToastCallError.toastVoipUnavailableError when get return value with MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE', async ()=>{
+    it('should call ToastCallError.toastVoipUnavailableError when get return value with MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE', async () => {
       const cached = mockedServerTelephonyService.makeCall;
-      mockedServerTelephonyService.makeCall.mockReturnValue(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
+      mockedServerTelephonyService.makeCall.mockReturnValue(
+        MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE,
+      );
       await telephonyService.directCall(v4());
       expect(ToastCallError.toastVoipUnavailableError).toHaveBeenCalled();
       mockedServerTelephonyService.makeCall = cached;
     });
 
-    it('should call ToastCallError.toastCallFailed when get return value with MAKE_CALL_ERROR_CODE.N11_102', async ()=>{
+    it('should call ToastCallError.toastCallFailed when get return value with MAKE_CALL_ERROR_CODE.N11_102', async () => {
       const cached = mockedServerTelephonyService.makeCall;
-      mockedServerTelephonyService.makeCall.mockReturnValue(MAKE_CALL_ERROR_CODE.N11_102);
+      mockedServerTelephonyService.makeCall.mockReturnValue(
+        MAKE_CALL_ERROR_CODE.N11_102,
+      );
       await telephonyService.directCall(v4());
       expect(ToastCallError.toastCallFailed).toHaveBeenCalled();
       mockedServerTelephonyService.makeCall = cached;
     });
 
-    it('should not call ToastCallError.toastCallFailed when get return value with MAKE_CALL_ERROR_CODE.NO_ERROR', async ()=>{
+    it('should not call ToastCallError.toastCallFailed when get return value with MAKE_CALL_ERROR_CODE.NO_ERROR', async () => {
       const cached = mockedServerTelephonyService.makeCall;
-      mockedServerTelephonyService.makeCall.mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      mockedServerTelephonyService.makeCall.mockReturnValue(
+        MAKE_CALL_ERROR_CODE.NO_ERROR,
+      );
       await telephonyService.directCall(v4());
       expect(ToastCallError.toastCallFailed).not.toHaveBeenCalled();
       mockedServerTelephonyService.makeCall = cached;
@@ -1126,7 +1148,8 @@ describe('TelephonyService', () => {
         expect(urlTester).toHaveBeenCalledWith(
           `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
         );
-      }),);
+      }),
+    );
     ['RC', 'ATT', 'TELUS'].forEach(i =>
       it(`should build correct url for ${i} when given access code`, () => {
         const RCPhoneCallURL = {
@@ -1139,9 +1162,12 @@ describe('TelephonyService', () => {
           .mockImplementation(() => ({ rcBrand: i }));
         telephonyService.makeRCPhoneCall('666', '123');
         expect(urlTester).toHaveBeenCalledWith(
-          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666,,123#')}`,
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent(
+            '666,,123#',
+          )}`,
         );
-      }),);
+      }),
+    );
     it('should show dialog when rc phone is uninstalled [JPT-2403]', async () => {
       jest
         .spyOn(utils, 'getEntity')
@@ -1182,7 +1208,9 @@ describe('TelephonyService', () => {
   describe('needConfirmE911()', () => {
     it('should be true if has active digital line not confirm emergency', async () => {
       mockedRCInfoService.hasActiveDL = jest.fn().mockReturnValue(true);
-      mockedServerTelephonyService.isEmergencyAddrConfirmed = jest.fn().mockReturnValue(false)
+      mockedServerTelephonyService.isEmergencyAddrConfirmed = jest
+        .fn()
+        .mockReturnValue(false);
       const ret = telephonyService.needConfirmE911();
       expect(ret).toBeTruthy();
     });
@@ -1191,44 +1219,56 @@ describe('TelephonyService', () => {
   describe('switchCall()', () => {
     it('should call directCall with from number if direction is inbound call', async () => {
       const caller = {
-        direction: "Inbound",
-        from: "21010",
-        fromName: "Florence Connelly",
-        id: "8ec28384e8d54846beafae947febdaa9",
+        direction: 'Inbound',
+        from: '21010',
+        fromName: 'Florence Connelly',
+        id: '8ec28384e8d54846beafae947febdaa9',
         sipData: {
-          fromTag: "10.74.2.219-5070-285e39746afa4a2",
-          toTag: "k6rqhp560h"
+          fromTag: '10.74.2.219-5070-285e39746afa4a2',
+          toTag: 'k6rqhp560h',
         },
-        to: "21007",
-        toName: "Yilia Hong",
-      }
-      await telephonyService.switchCall( caller as any);
-      expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
-    })
-
-    it('should call directCall with from number if direction is outbound call',async  () => {
-      const caller = {
-        direction: "Outbound",
-        from: "21010",
-        fromName: "Florence Connelly",
-        id: "8ec28384e8d54846beafae947febdaa9",
-        sipData: {
-          fromTag: "10.74.2.219-5070-285e39746afa4a2",
-          toTag: "k6rqhp560h"
-        },
-        to: "21007",
-        toName: "Yilia Hong",
-      }
+        to: '21007',
+        toName: 'Yilia Hong',
+      };
       await telephonyService.switchCall(caller as any);
-      expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith('1', caller);
-    })
-  })
+      expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith(
+        '1',
+        caller,
+      );
+    });
+
+    it('should call directCall with from number if direction is outbound call', async () => {
+      const caller = {
+        direction: 'Outbound',
+        from: '21010',
+        fromName: 'Florence Connelly',
+        id: '8ec28384e8d54846beafae947febdaa9',
+        sipData: {
+          fromTag: '10.74.2.219-5070-285e39746afa4a2',
+          toTag: 'k6rqhp560h',
+        },
+        to: '21007',
+        toName: 'Yilia Hong',
+      };
+      await telephonyService.switchCall(caller as any);
+      expect(mockedServerTelephonyService.switchCall).toHaveBeenCalledWith(
+        '1',
+        caller,
+      );
+    });
+  });
 
   describe('joinAudioConference()', () => {
     it('Join conf failed when user has no any active DL. JPT-[2755]', async () => {
-      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(false);
-      mockedPhoneNumberService.isShortNumber = jest.fn().mockResolvedValue(false);
-      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(true);
+      mockedServerTelephonyService.hasActiveDL = jest
+        .fn()
+        .mockReturnValue(false);
+      mockedPhoneNumberService.isShortNumber = jest
+        .fn()
+        .mockResolvedValue(false);
+      mockedRCInfoService.isVoipCallingAvailable = jest
+        .fn()
+        .mockResolvedValue(true);
       // @ts-ignore
       telephonyService._makeCall = jest.fn();
       await telephonyService.joinAudioConference('12231232312', '2');
@@ -1237,8 +1277,12 @@ describe('TelephonyService', () => {
     });
 
     it('Join conf failed when user webRTC permission removed JPT-[2756]', async () => {
-      mockedServerTelephonyService.hasActiveDL = jest.fn().mockReturnValue(true);
-      mockedRCInfoService.isVoipCallingAvailable = jest.fn().mockResolvedValue(false);
+      mockedServerTelephonyService.hasActiveDL = jest
+        .fn()
+        .mockReturnValue(true);
+      mockedRCInfoService.isVoipCallingAvailable = jest
+        .fn()
+        .mockResolvedValue(false);
       // @ts-ignore
       telephonyService._makeCall = jest.fn();
       await telephonyService.joinAudioConference('1', '2');
@@ -1250,7 +1294,9 @@ describe('TelephonyService', () => {
 
   describe('multiple calls', () => {
     it('Can NOT make call when user on a call. [JPT-2772]', async () => {
-      mockedServerTelephonyService.getAllCallCount = jest.fn().mockReturnValue(2);
+      mockedServerTelephonyService.getAllCallCount = jest
+        .fn()
+        .mockReturnValue(2);
       telephonyService.makeCall = jest.fn();
       const ret = await telephonyService.directCall(v4());
       expect(ret).toBeTruthy();
@@ -1267,16 +1313,19 @@ describe('TelephonyService', () => {
       done();
 
       // @ts-ignore
-      telephonyService._telephonyStore._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+      telephonyService._telephonyStore._sortableListHandler.sortableListStore = {
+        getIds: [1, 2],
+      };
       await (telephonyService as any)._onReceiveIncomingCall();
       expect(
         (telephonyService as any)._telephonyStore.incomingCall,
       ).toHaveBeenCalled();
       done();
 
-
       // @ts-ignore
-      telephonyService._telephonyStore._sortableListHandler.sortableListStore = { getIds: [1, 2, 3] };
+      telephonyService._telephonyStore._sortableListHandler.sortableListStore = {
+        getIds: [1, 2, 3],
+      };
       await (telephonyService as any)._onReceiveIncomingCall();
       expect(
         (telephonyService as any)._telephonyStore.incomingCall,
@@ -1297,7 +1346,9 @@ describe('TelephonyService', () => {
 
       (telephonyService as any)._callEntityId = 1;
       // @ts-ignore
-      telephonyService._telephonyStore._sortableListHandler.sortableListStore = { getIds: [1, 2] };
+      telephonyService._telephonyStore._sortableListHandler.sortableListStore = {
+        getIds: [1, 2],
+      };
       telephonyService.endAndAnswer();
       expect(mockedServerTelephonyService.hangUp).toHaveBeenCalledTimes(1);
       expect(mockedServerTelephonyService.answer).toHaveBeenCalledTimes(1);
@@ -1311,7 +1362,11 @@ describe('TelephonyService', () => {
       const toTransfer = '444555666';
       telephonyService._callEntityId = callEntityId;
       await telephonyService.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
-      expect(mockedServerTelephonyService.transfer).toHaveBeenCalledWith(callEntityId, TRANSFER_TYPE.BLIND_TRANSFER, toTransfer);
-    })
-  })
+      expect(mockedServerTelephonyService.transfer).toHaveBeenCalledWith(
+        callEntityId,
+        TRANSFER_TYPE.BLIND_TRANSFER,
+        toTransfer,
+      );
+    });
+  });
 });

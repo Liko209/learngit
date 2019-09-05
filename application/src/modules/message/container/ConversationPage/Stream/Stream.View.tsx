@@ -95,7 +95,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _firstTracer: boolean = false;
 
-  async componentDidMount() {
+  componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     dataAnalysis.page('Jup_Web/DT_msg_conversationHistory');
