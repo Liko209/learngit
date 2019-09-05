@@ -51,7 +51,7 @@ function switchConversationHandler() {
     {
       size: 'small',
       onClose: () => dismiss(),
-      disableBackdropClick: true,
+      disableBackdropClick: false,
     },
     DIALOG_KEY,
   );
