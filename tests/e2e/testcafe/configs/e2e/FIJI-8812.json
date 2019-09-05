@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/PhoneTab/CallHistory/Filter.ts"
+    ],
+    "include_tags": [
+      "JPT-2449"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
