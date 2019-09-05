@@ -9,7 +9,9 @@ import {
   CONTACT_TAB_TYPE,
   ContactFocHandler,
 } from '@/store/handler/ContactFocHandler';
+import { jupiter } from 'framework/Jupiter';
 
+import { IContactStore } from '../../interface';
 import { ContactCell } from '../ContactCell';
 import EmptyPage from './img/illustrator.svg';
 import { NavType } from './types';
@@ -45,6 +47,14 @@ const ContactTabs: PageConfig = {
           },
           filter: {
             placeholder: 'contact.filterContacts',
+            initFilterKey() {
+              const store = jupiter.get<IContactStore>(IContactStore);
+              return store.filterKey;
+            },
+            onChange(key: string) {
+              const store = jupiter.get<IContactStore>(IContactStore);
+              store.setFilterKey(key);
+            },
           },
           onShowDataTrackingKey: 'Jup_Web/DT_contacts_allContacts',
         },
@@ -71,6 +81,14 @@ const ContactTabs: PageConfig = {
           },
           filter: {
             placeholder: 'contact.filterContacts',
+            initFilterKey() {
+              const store = jupiter.get<IContactStore>(IContactStore);
+              return store.filterKey;
+            },
+            onChange(key: string) {
+              const store = jupiter.get<IContactStore>(IContactStore);
+              store.setFilterKey(key);
+            },
           },
           onShowDataTrackingKey: 'Jup_Web/DT_contacts_companyDirectory',
         },

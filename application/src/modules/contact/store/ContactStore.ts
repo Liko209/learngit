@@ -8,10 +8,16 @@ import { IContactStore } from '../interface';
 
 class ContactStore implements IContactStore {
   @observable currentUrl: string = '/contacts/all-contacts';
+  @observable filterKey: string = '';
 
   @action
   setCurrentUrl(url: string) {
     this.currentUrl = url;
+  }
+
+  @action
+  setFilterKey(key: string) {
+    this.filterKey = key;
   }
 }
 

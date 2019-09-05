@@ -22,4 +22,16 @@ describe('ContactTabRouterViewModel', () => {
       expect(this._contactStore.setCurrentUrl).toHaveBeenCalled();
     }
   }
+
+  @testable
+  class dispose {
+    @IContactStore _contactStore: IContactStore;
+
+    @test('should clear search key if switch page [JPT-2932]')
+    t1() {
+      const contactTabRouterViewModel = new ContactTabRouterViewModel();
+      contactTabRouterViewModel.dispose();
+      expect(this._contactStore.setFilterKey).toHaveBeenCalledWith('');
+    }
+  }
 });

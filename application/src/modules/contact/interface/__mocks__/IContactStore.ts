@@ -10,7 +10,9 @@ jest.unmock('../IContactStore');
 
 class ContactStore implements IContactStore {
   currentUrl: string = '';
+  filterKey = '';
   setCurrentUrl = jest.fn();
+  setFilterKey = jest.fn();
 }
 
 jupiter.registerService(IContactStore, ContactStore);
