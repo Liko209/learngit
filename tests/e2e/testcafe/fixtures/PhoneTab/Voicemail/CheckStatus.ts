@@ -73,7 +73,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I delete the filter condition', async () => {
     await t.selectText(voicemailPage.filterInput).pressKey('delete');
-    await t.expect(voicemailItem.exists).notOk();
   });
 
   await h(t).withLog('Then the voicemail is in the "play" status', async () => {

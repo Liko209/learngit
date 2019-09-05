@@ -228,17 +228,12 @@ test(formalName("Shouldn't create new group when the conversation existed", ['P1
 })
 
 test(formalName('Create new group successfully', ['P0', 'NewConversation', 'alessia.li', 'JPT-2604']), async t => {
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[2];
-  await h(t).resetGlipAccount(loginUser);
-  const userB = users[3];
-  const userC = users[4];
-  const userD = users[5];
-  const userF = users[6];
+  const [loginUser, userB, userC, userD] = h(t).rcData.mainCompany.users;
+  // await h(t).resetGlipAccount(loginUser);
   let group = <IGroup>{
-    type: 'DirectMessage',
+    type: 'Group',
     owner: loginUser,
-    members: [loginUser, userB, userC, userD]
+    members: [loginUser, userB, userC]
   }
 
   await h(t).withLog('Given I have a group in list', async () => {
@@ -275,20 +270,21 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
     await newConversationDialog.ensureLoaded();
   });
 
-  const userFName = await h(t).glip(loginUser).getPersonPartialData('display_name', userF.rcId);
   await h(t).withLog('And I create a new group by adding member userF', async () => {
-    await newConversationDialog.memberInput.typeText(userFName);
+    const userDName = await h(t).glip(loginUser).getPersonPartialData('display_name', userD.rcId);
+    await newConversationDialog.memberInput.typeText(userDName);
     await newConversationDialog.memberInput.selectMemberByNth(0);
     await newConversationDialog.clickCreateButton();
   });
 
   await h(t).withLog('Then the "New conversation" dialog should be closed', async () => {
-    await t.expect(newConversationDialog.exists).notOk();
+    await newConversationDialog.ensureDismiss();
   });
 
   await h(t).withLog('And the new group conversation should be opened automatically', async () => {
+    await t.expect(conversationPage.currentGroupId).notEql(group.glipId);
     const currentGroupId = await conversationPage.currentGroupId;
-    const userGlipIDs = await h(t).glip(loginUser).toPersonId([loginUser.rcId, userB.rcId, userC.rcId, userD.rcId, userF.rcId])
+    const userGlipIDs = await h(t).glip(loginUser).toPersonId([loginUser.rcId, userB.rcId, userC.rcId, userD.rcId])
     await H.retryUntilPass(async () => {
       const groupData = await h(t).glip(loginUser).getGroup(currentGroupId).then(res => res.data)
       assert.equal(String(_.sortBy(groupData.members)), String(_.sortBy(userGlipIDs)));
