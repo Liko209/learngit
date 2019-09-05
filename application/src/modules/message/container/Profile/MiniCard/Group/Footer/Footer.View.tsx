@@ -31,6 +31,7 @@ class ProfileMiniCardGroupFooter extends Component<
     const result = goToConversationWithLoading({ id });
     if (result) {
       portalManager.dismissLast();
+      portalManager.addShouldCloseStatus();
     }
   };
 
@@ -54,6 +55,7 @@ class ProfileMiniCardGroupFooter extends Component<
 
   handleCloseMiniCard = () => {
     portalManager.dismissLast();
+    portalManager.addShouldCloseStatus();
   };
 
   render() {
