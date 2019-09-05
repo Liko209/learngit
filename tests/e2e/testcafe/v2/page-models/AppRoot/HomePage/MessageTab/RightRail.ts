@@ -532,7 +532,16 @@ class RightShelfMemberList extends BaseWebComponent {
     return this.getSelectorByAutomationId('rightShelfMemberListGuests')
   }
 
+  get avatars() {
+    return this.getSelectorByAutomationId('rightShelfMemberListAvatar');
+  }
+
   getAvatarById(id: number) {
-    return this.getSelectorByAutomationId('rightShelfMemberListAvatar').filter(`[uid='${id}']`)
+    return this.avatars.filter(`[uid='${id}']`)
+  }
+
+  /** actions */
+  async clickAddMemberButton() {
+    await this.t.click(this.addMemberButton);
   }
 }

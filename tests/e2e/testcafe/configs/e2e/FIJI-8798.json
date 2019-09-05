@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/Profile/addTeamMember.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
