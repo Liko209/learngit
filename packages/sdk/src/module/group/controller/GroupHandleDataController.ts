@@ -190,6 +190,12 @@ class GroupHandleDataController {
         deactivatedData && deactivatedData.length
           ? [...groups, ...deactivatedData]
           : groups;
+
+      // update total unread first
+      await ServiceLoader.getInstance<StateService>(
+        ServiceConfig.STATE_SERVICE,
+      ).handleGroupChangeForTotalUnread(allGroups);
+
       if (changeMap) {
         changeMap.set(ENTITY.GROUP, { entities: allGroups });
       } else {

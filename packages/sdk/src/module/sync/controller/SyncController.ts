@@ -352,13 +352,15 @@ class SyncController {
     });
     performanceTracer.end({ key: this._getPerformanceKey(source, 'account') });
 
-    await Promise.all([
-      this._handleIncomingCompany(companies, source, changeMap),
-      this._handleIncomingItem(items, source, changeMap),
-      this._handleIncomingPresence(presences, source, changeMap),
-      this._handleIncomingState(arrState, mergedGroups, source, changeMap),
-    ])
-      .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
+    await this._handleIncomingProfile(transProfile, source, changeMap)
+      .then(() =>
+        Promise.all([
+          this._handleIncomingCompany(companies, source, changeMap),
+          this._handleIncomingItem(items, source, changeMap),
+          this._handleIncomingPresence(presences, source, changeMap),
+          this._handleIncomingState(arrState, mergedGroups, source, changeMap),
+        ]),
+      )
       .then(() => this._handleIncomingPerson(people, source, changeMap))
       .then(() => this._handleIncomingGroup(pureGroups, source, changeMap))
       .then(() =>

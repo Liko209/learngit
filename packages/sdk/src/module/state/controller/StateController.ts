@@ -24,7 +24,7 @@ class StateController {
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {}
 
-  getStateActionController(): StateActionController {
+  get stateActionController(): StateActionController {
     if (!this._stateActionController) {
       const requestController = buildRequestController<State>({
         basePath: '/save_state_partial',
@@ -34,24 +34,24 @@ class StateController {
         this._groupService,
         this._entitySourceController,
         requestController,
-        this.getStateFetchDataController(),
+        this.stateFetchDataController,
       );
     }
     return this._stateActionController;
   }
 
-  getStateDataHandleController(): StateDataHandleController {
+  get stateDataHandleController(): StateDataHandleController {
     if (!this._stateDataHandleController) {
       this._stateDataHandleController = new StateDataHandleController(
         this._entitySourceController,
-        this.getStateActionController(),
+        this.stateActionController,
         this._groupService,
       );
     }
     return this._stateDataHandleController;
   }
 
-  getStateFetchDataController(): StateFetchDataController {
+  get stateFetchDataController(): StateFetchDataController {
     if (!this._stateFetchDataController) {
       this._stateFetchDataController = new StateFetchDataController(
         this._entitySourceController,
@@ -60,7 +60,7 @@ class StateController {
     return this._stateFetchDataController;
   }
 
-  getTotalUnreadController(): TotalUnreadController {
+  get totalUnreadController(): TotalUnreadController {
     if (!this._totalUnreadController) {
       this._totalUnreadController = new TotalUnreadController(
         this._groupService,
