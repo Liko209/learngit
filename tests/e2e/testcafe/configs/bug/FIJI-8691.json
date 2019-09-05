@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/MessageInput/UploadFiles.ts", "./fixtures/Profile/ViewYourProfile.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}

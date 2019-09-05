@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/PhoneTab/Voicemail/PlayNPause.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}

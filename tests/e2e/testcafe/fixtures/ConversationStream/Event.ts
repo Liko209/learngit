@@ -11,7 +11,8 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
 import * as uuid from 'uuid';
-import * as moment from 'moment'
+import * as moment from 'moment';
+import * as assert from 'assert';
 
 fixture('ConversationStream/Event')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -75,13 +76,16 @@ test(formalName(`Check the display of the Event in the conversation stream`, ['P
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And check the display of the Event in the conversation stream`, async () => {
-    const eventIconStyle = await conversationPage.postItemById(postId).itemCard.eventIcon.style;
-    const eventTitleStyle = await conversationPage.postItemById(postId).itemCard.title.style;
-    await t.expect(eventIconStyle['color']).eql("rgb(255, 55, 55)");
-    await t.expect(eventTitleStyle['color']).eql("rgb(255, 55, 55)");
-    await t.expect(conversationPage.postItemById(postId).itemCard.title.textContent).eql(`${title}`);
-    await t.expect(conversationPage.postItemById(postId).itemCard.eventLocation.textContent).eql(`${location}`);
-    await t.expect(conversationPage.postItemById(postId).itemCard.eventDue.textContent).contains(`${dueTime}`);
+    await H.retryUntilPass(async () => {
+      const eventIconStyle = await conversationPage.postItemById(postId).itemCard.eventIcon.find('svg').style;
+      const eventTitleStyle = await conversationPage.postItemById(postId).itemCard.title.style;
+      assert.ok(eventIconStyle['fill'] == "rgb(255, 55, 55)", "icon color is not correct");
+      assert.ok(eventTitleStyle['color'] == "rgb(255, 55, 55)", "title color is not correct");
+      await t.expect(conversationPage.postItemById(postId).itemCard.title.textContent).eql(title);
+      await t.expect(conversationPage.postItemById(postId).itemCard.eventLocation.textContent).eql(location);
+      await t.expect(conversationPage.postItemById(postId).itemCard.eventDue.textContent).contains(dueTime);
+      await t.expect(conversationPage.postItemById(postId).itemCard.eventDescription.textContent).eql(description);
+    });
   });
 });
 
