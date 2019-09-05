@@ -75,9 +75,9 @@ class TelephonyModule extends AbstractModule {
   private _disposeTelephony() {
     this._notificationManager.dispose();
     this._settingManager.dispose();
-    this._telephonyService.dispose();
     this._jupiter.emitModuleDispose(TELEPHONY_SERVICE);
     this._leaveBlockerService.offLeave(this._handleLeave);
+    this._homeService.unRegisterNavItem('telephony');
     // TODO unregister home extensions
     this._globalSearchService.unregisterExtension('searchItem', Call);
   }

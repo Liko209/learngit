@@ -35,6 +35,10 @@ class HomeService implements IHomeService {
     this._homeStore.addNavItem(moduleName, navItemConfig);
   }
 
+  unRegisterNavItem(moduleName: string): void {
+    this._homeStore.removeNavItem(moduleName);
+  }
+
   registerRoute(moduleName: string, route: RouteProps): void {
     this._homeStore.addRoute(moduleName, route);
   }

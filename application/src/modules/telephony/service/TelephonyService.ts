@@ -254,7 +254,6 @@ class TelephonyService {
           }),
         );
     }
-    this._telephonyStore.canUseTelephony = true;
 
     this._getDialerOpenedCount();
 

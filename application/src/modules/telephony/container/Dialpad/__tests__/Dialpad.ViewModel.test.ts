@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container } from 'framework/ioc';
+import { container, decorate, injectable } from 'framework/ioc';
 import { Jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
@@ -18,12 +18,16 @@ import { CALL_STATE } from 'sdk/module/telephony/entity';
 import * as common from '@/modules/common/module.config';
 import { observable } from 'mobx';
 import * as media from '@/modules/media/module.config';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
 
 const jupiter = container.get(Jupiter);
+decorate(injectable(), FeaturesFlagsService);
+container.bind(FeaturesFlagsService).to(FeaturesFlagsService);
+
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(common.config);
 jupiter.registerModule(media.config);
