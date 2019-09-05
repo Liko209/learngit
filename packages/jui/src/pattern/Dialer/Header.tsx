@@ -22,7 +22,6 @@ import {
 import { JuiTextField } from '../../components/Forms';
 import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton } from '../../components/Buttons';
-import ReactDOM from 'react-dom';
 import { isFunction, debounce } from 'lodash';
 
 type Props = {
@@ -183,6 +182,7 @@ class JuiHeader extends PureComponent<Props, State> {
   private _mouseDownTime: number;
   private _timerForClearAll: NodeJS.Timeout;
   private _inputRef: RefObject<any> = createRef();
+  private _timerId: NodeJS.Timeout;
 
   state = {
     showHoverActions: false,
@@ -258,11 +258,7 @@ class JuiHeader extends PureComponent<Props, State> {
     }
     e.preventDefault();
     e.stopPropagation();
-    const input =
-      this._inputRef.current &&
-      (ReactDOM.findDOMNode(
-        this._inputRef.current,
-      ) as HTMLDivElement).querySelector('input');
+    const input = this._inputRef.current;
 
     if (!input) {
       return;
@@ -314,9 +310,7 @@ class JuiHeader extends PureComponent<Props, State> {
     if (!this._inputRef.current) {
       return 0;
     }
-    const inputField = (ReactDOM.findDOMNode(
-      this._inputRef.current,
-    ) as HTMLDivElement).querySelector('input') as HTMLInputElement;
+    const inputField = this._inputRef.current;
     // Initialize
     let iCaretPos = 0;
 
@@ -349,6 +343,7 @@ class JuiHeader extends PureComponent<Props, State> {
 
   private _clearTimeout = () => {
     clearTimeout(this._timerForClearAll);
+    clearTimeout(this._timerId);
     delete this._timerForClearAll;
   };
 
@@ -408,7 +403,7 @@ class JuiHeader extends PureComponent<Props, State> {
           onKeyDown={onKeyDown || fakeFunc}
           autoFocus
           autoComplete="off"
-          ref={this._inputRef}
+          inputRef={this._inputRef}
         />
         <StyledDialerBtnContainer>
           {dialerValue && dialerValue.length && (
@@ -435,8 +430,18 @@ class JuiHeader extends PureComponent<Props, State> {
       this._clearTimeout();
     }
   }
+
+  private _setFocus() {
+    const { focus } = this.props;
+    if (focus && this._inputRef.current) {
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(() => this._inputRef.current.focus(), 0);
+    }
+  }
+
   render() {
     const { showDialerInputField, RecentCallBtn } = this.props;
+    this._setFocus();
 
     return (
       <StyledHeader

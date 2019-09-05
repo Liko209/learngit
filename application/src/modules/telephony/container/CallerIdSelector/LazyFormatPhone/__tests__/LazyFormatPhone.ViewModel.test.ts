@@ -52,7 +52,7 @@ describe('LazyFormatPhoneViewModel', () => {
         value,
       });
       lazyFormatPhoneViewModel.formattedPhoneNumber;
-      expect(formatPhoneNumber).toBeCalledWith(value, false);
+      expect(formatPhoneNumber).toBeCalledWith(value, true);
     });
   });
 });

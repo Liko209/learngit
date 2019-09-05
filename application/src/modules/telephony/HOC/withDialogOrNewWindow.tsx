@@ -14,7 +14,6 @@ import { TelephonyStore } from '../store';
 import { TelephonyService } from '../service';
 import { CALL_WINDOW_STATUS } from '../FSM';
 import {
-  JuiZoomInFadeOut,
   JuiZoomProps,
   ShrinkToFadeAnimation,
   ShrinkToFadeAnimationProps,
@@ -86,29 +85,22 @@ function withDialogOrNewWindow<T>(
         dialerMinimizeTranslateX,
         dialerMinimizeTranslateY,
         startMinimizeAnimation,
-        callWindowState,
         dialerHeight,
         dialerWidth,
       } = this._telephonyStore;
       const { onAnimationEnd } = this._telephonyService;
 
-      if (
-        startMinimizeAnimation &&
-        callWindowState === CALL_WINDOW_STATUS.FLOATING
-      ) {
-        return (
-          <ShrinkToFadeAnimation
-            xScale={`${RADIUS / dialerWidth}`}
-            yScale={`${RADIUS / dialerHeight}`}
-            translateX={dialerMinimizeTranslateX}
-            translateY={dialerMinimizeTranslateY}
-            onAnimationEnd={onAnimationEnd}
-            startMinimizeAnimation={startMinimizeAnimation}
-            {...this.props}
-          />
-        );
-      }
-      return <JuiZoomInFadeOut {...this.props} />;
+      return (
+        <ShrinkToFadeAnimation
+          xScale={`${RADIUS / dialerWidth}`}
+          yScale={`${RADIUS / dialerHeight}`}
+          translateX={dialerMinimizeTranslateX}
+          translateY={dialerMinimizeTranslateY}
+          onAnimationEnd={onAnimationEnd}
+          startMinimizeAnimation={startMinimizeAnimation}
+          {...this.props}
+        />
+      );
     }
   }
 
@@ -120,6 +112,7 @@ function withDialogOrNewWindow<T>(
     private _root = document.body;
     private _dragRef = React.createRef<any>();
     private _containerRef = React.createRef<any>();
+    private _timerId: NodeJS.Timeout;
     private _handleResize = () => {};
     private _timer: NodeJS.Timeout;
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
@@ -283,8 +276,9 @@ function withDialogOrNewWindow<T>(
       }
 
       window.removeEventListener(RESIZE, this._handleResize);
+      clearTimeout(this._timerId);
 
-      setTimeout(() => {
+      this._timerId = setTimeout(() => {
         if (this._dragRef.current) {
           const dragEl = ReactDOM.findDOMNode(this._dragRef.current) as Element;
           this._handleResize = () => {
@@ -350,6 +344,7 @@ function withDialogOrNewWindow<T>(
           role="dialer"
           goToTop={this._goToTop}
           forceToTop={isIncomingCall}
+          keepMounted
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

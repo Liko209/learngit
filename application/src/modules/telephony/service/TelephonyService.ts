@@ -753,6 +753,7 @@ class TelephonyService {
       this._telephonyStore.dialerHeight = _dialerRect.height;
 
       this._telephonyStore.startAnimation();
+
       return;
     }
     // when no destination, hide the dialer directly.
@@ -760,7 +761,7 @@ class TelephonyService {
   };
 
   @action
-  onAnimationEnd = async () => {
+  onAnimationEnd = () => {
     this._telephonyStore.closeDialer();
     this._telephonyStore.dialerMinimizeTranslateX = NaN;
     this._telephonyStore.dialerMinimizeTranslateY = NaN;
@@ -771,6 +772,7 @@ class TelephonyService {
 
   maximize = () => {
     this._telephonyStore.openDialer();
+    this._telephonyStore.onDialerInputFocus();
   };
 
   onAfterDialerOpen = () => {

@@ -136,13 +136,11 @@ class GenericDialerPanelViewComponent extends React.Component<
     const { playAudio, dialerInputFocused } = this.props;
 
     return (
-      <>
-        <DialPad
-          makeMouseEffect={this._clickToInput}
-          makeKeyboardEffect={playAudio}
-          shouldHandleKeyboardEvts={dialerInputFocused}
-        />
-      </>
+      <DialPad
+        makeMouseEffect={this._clickToInput}
+        makeKeyboardEffect={playAudio}
+        shouldHandleKeyboardEvts={dialerInputFocused}
+      />
     );
   };
 
@@ -153,14 +151,12 @@ class GenericDialerPanelViewComponent extends React.Component<
       displayCallerIdSelector,
     } = this.props;
     return (
-      <>
-        <ContactSearchContainer addMargin={displayCallerIdSelector}>
-          <ContactSearchList
-            onContactSelected={onContactSelected}
-            inputStringProps={inputStringProps}
-          />
-        </ContactSearchContainer>
-      </>
+      <ContactSearchContainer addMargin={displayCallerIdSelector}>
+        <ContactSearchList
+          onContactSelected={onContactSelected}
+          inputStringProps={inputStringProps}
+        />
+      </ContactSearchContainer>
     );
   };
 
