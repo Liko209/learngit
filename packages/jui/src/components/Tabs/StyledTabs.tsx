@@ -34,11 +34,8 @@ const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
     }}
   }
 
-  .indicator {
-    ${
-      ({ disableIndicatorTransition }) =>
-        disableIndicatorTransition && 'transition: none;'
-    }
+  .staticIndicator {
+    transition: none;
   }
 
   &.root {
@@ -53,13 +50,22 @@ const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
 
 const StyledTabs = React.forwardRef(
   (
-    { children, position, forceFlex, ...rest }: StyledTabsProps,
+    {
+      children,
+      position,
+      forceFlex,
+      disableIndicatorTransition,
+      ...rest
+    }: StyledTabsProps,
     ref: React.RefObject<any>,
   ) => {
+    const indicatorClassName = disableIndicatorTransition
+      ? 'staticIndicator' : 'indicator';
+
     const classes = {
       root: 'root',
-      indicator: 'indicator',
       flexContainer: 'flexContainer',
+      indicator: indicatorClassName,
     };
 
     const Tabs = (
