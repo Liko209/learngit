@@ -1,9 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": [
-      "./telephony/EntryPoint.ts",
-      "./telephony/conference/**/*.ts"
-    ],
-    "browsers": ["selenium:chrome"]
-  }
-}
