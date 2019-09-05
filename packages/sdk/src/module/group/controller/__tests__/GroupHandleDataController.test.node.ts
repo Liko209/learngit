@@ -72,6 +72,7 @@ const groupConfigService = {
 
 const stateService = {
   getAllGroupStatesFromLocal: jest.fn(),
+  handleGroupChangeForTotalUnread: jest.fn(),
 }
 
 function generateFakeGroups(

@@ -36,7 +36,7 @@ type DataHandleTask =
 const LOG_TAG = 'TotalUnreadController';
 
 class TotalUnreadController {
-  private _taskArray: DataHandleTask[];
+  private _taskArray: (() => Promise<void>)[];
   private _initStatus: INIT_STATUS;
   private _singleGroupBadges: Map<number, GroupBadge>;
   private _badgeMap: Map<string, GroupBadge>;
@@ -83,37 +83,43 @@ class TotalUnreadController {
     return this._singleGroupBadges.get(id);
   }
 
-  handleGroupState(payload: NotificationEntityPayload<GroupState>): void {
+  handleGroupState(
+    payload: NotificationEntityPayload<GroupState>,
+  ): Promise<void> {
     const task: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_STATE,
       data: payload,
     };
-    this._taskArray.push(task);
-    if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
-    }
+    return this._appendTask(task);
   }
 
-  handleGroup(payload: NotificationEntityPayload<Group>): void {
+  handleGroup(groups: Group[]): Promise<void> {
     const task: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_ENTITY,
-      data: payload,
+      data: groups,
     };
-    this._taskArray.push(task);
-    if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
-    }
+    return this._appendTask(task);
   }
 
-  handleProfile(payload: NotificationEntityPayload<Profile>): void {
+  handleProfile(payload: NotificationEntityPayload<Profile>): Promise<void> {
     const task: DataHandleTask = {
       type: TASK_DATA_TYPE.PROFILE_ENTITY,
       data: payload,
     };
-    this._taskArray.push(task);
-    if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
-    }
+    return this._appendTask(task);
+  }
+
+  private async _appendTask(task: DataHandleTask) {
+    // should append task and keep promise
+    return new Promise<void>(resolve => {
+      this._taskArray.push(async () => {
+        await this._startDataHandleTask(task);
+        resolve();
+      });
+      if (this._taskArray.length === 1) {
+        this._taskArray[0]();
+      }
+    });
   }
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
@@ -136,7 +142,7 @@ class TotalUnreadController {
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
-      this._startDataHandleTask(this._taskArray[0]);
+      this._taskArray[0]();
     }
   }
 
@@ -156,35 +162,29 @@ class TotalUnreadController {
   }
 
   private async _updateTotalUnreadByGroupChanges(
-    payload: NotificationEntityPayload<Group>,
+    groups: Group[],
   ): Promise<void> {
-    if (payload.type === EVENT_TYPES.UPDATE) {
-      const userConfig = ServiceLoader.getInstance<AccountService>(
-        ServiceConfig.ACCOUNT_SERVICE,
-      ).userConfig;
-      const glipId = userConfig.getGlipUserId();
-      const groupsMap = new Map<number, Group>();
-      payload.body.ids.map(async (id: number) => {
-        const group = payload.body.entities.get(id);
-        if (!group) {
-          return;
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const glipId = userConfig.getGlipUserId();
+    const groupsMap = new Map<number, Group>();
+    groups.forEach((group: Group) => {
+      const groupUnread = this._singleGroupBadges.get(group.id);
+      if (
+        !this._groupService.isValid(group) ||
+        !group.members.includes(glipId)
+      ) {
+        if (groupUnread) {
+          this._deleteFromTotalUnread(groupUnread);
+          this._singleGroupBadges.delete(group.id);
         }
-        const groupUnread = this._singleGroupBadges.get(id);
-        if (
-          !this._groupService.isValid(group) ||
-          !group.members.includes(glipId)
-        ) {
-          if (groupUnread) {
-            this._deleteFromTotalUnread(groupUnread);
-            this._singleGroupBadges.delete(id);
-          }
-        } else if (!groupUnread) {
-          groupsMap.set(id, group);
-        }
-      });
-      if (groupsMap.size) {
-        await this._addNewGroupsUnread(groupsMap);
+      } else if (!groupUnread) {
+        groupsMap.set(group.id, group);
       }
+    });
+    if (groupsMap.size) {
+      await this._addNewGroupsUnread(groupsMap);
     }
   }
 

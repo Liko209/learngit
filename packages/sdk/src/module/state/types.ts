@@ -39,7 +39,7 @@ type GroupStateHandleTask = {
 
 type GroupEntityHandleTask = {
   type: TASK_DATA_TYPE.GROUP_ENTITY;
-  data: NotificationEntityPayload<Group>;
+  data: Group[];
 };
 
 type ProfileEntityHandleTask = {

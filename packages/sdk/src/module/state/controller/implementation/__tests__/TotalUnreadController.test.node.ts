@@ -42,7 +42,7 @@ describe('TotalUnreadController', () => {
   let totalUnreadController: TotalUnreadController;
   let mockEntitySourceController: EntitySourceController<GroupState>;
   let mockEntityPersistentController: EntityPersistentController<GroupState>;
-  const mockGroupService = new GroupService();
+  const mockGroupService = new GroupService({} as any);
   const mockProfileService = {
     getFavoriteGroupIds: jest.fn(),
   };
@@ -82,7 +82,6 @@ describe('TotalUnreadController', () => {
   });
 
   describe('reset()', () => {
-
     it('should reset all unread', () => {
       totalUnreadController['_singleGroupBadges'].set(5683, {
         id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
@@ -162,67 +161,48 @@ describe('TotalUnreadController', () => {
 
   describe('handleGroupState()', () => {
     it('should start handle task when array only has one task', async () => {
-      const payload = {} as NotificationEntityPayload<GroupState>;
-      totalUnreadController['_startDataHandleTask'] = jest.fn();
+      const payload: GroupState[] = [];
+      totalUnreadController['_appendTask'] = jest.fn();
       await totalUnreadController.handleGroupState(payload);
-      expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
+      expect(totalUnreadController['_appendTask']).toHaveBeenCalledWith({
         type: TASK_DATA_TYPE.GROUP_STATE,
         data: payload,
       });
-    });
-
-    it('should only add task to array when array has more than one task', async () => {
-      const payload = {} as NotificationEntityPayload<GroupState>;
-      totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_STATE, data: payload },
-      ];
-      totalUnreadController['_startDataHandleTask'] = jest.fn();
-      await totalUnreadController.handleGroupState(payload);
-      expect(totalUnreadController['_startDataHandleTask']).toBeCalledTimes(0);
     });
   });
 
   describe('handleGroup()', () => {
     it('should start handle task when array only has one task', async () => {
-      const payload = {} as NotificationEntityPayload<Group>;
-      totalUnreadController['_startDataHandleTask'] = jest.fn();
+      const payload: Group[] = [];
+      totalUnreadController['_appendTask'] = jest.fn();
       await totalUnreadController.handleGroup(payload);
-      expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
+      expect(totalUnreadController['_appendTask']).toHaveBeenCalledWith({
         type: TASK_DATA_TYPE.GROUP_ENTITY,
         data: payload,
       });
-    });
-
-    it('should only add task to array when array has more than one task', async () => {
-      const payload = {} as NotificationEntityPayload<Group>;
-      totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_ENTITY, data: payload },
-      ];
-      totalUnreadController['_startDataHandleTask'] = jest.fn();
-      await totalUnreadController.handleGroup(payload);
-      expect(totalUnreadController['_startDataHandleTask']).toBeCalledTimes(0);
     });
   });
 
   describe('handleProfile()', () => {
     it('should start handle task when array only has one task', async () => {
       const payload = {} as NotificationEntityPayload<Profile>;
-      totalUnreadController['_startDataHandleTask'] = jest.fn();
+      totalUnreadController['_appendTask'] = jest.fn();
       await totalUnreadController.handleProfile(payload);
-      expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
+      expect(totalUnreadController['_appendTask']).toHaveBeenCalledWith({
         type: TASK_DATA_TYPE.PROFILE_ENTITY,
         data: payload,
       });
     });
+  });
 
-    it('should only add task to array when array has more than one task', async () => {
-      const payload = {} as NotificationEntityPayload<Profile>;
-      totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.PROFILE_ENTITY, data: payload },
-      ];
+  describe('_appendTask()', () => {
+    it('should handle task when queue is empty', async () => {
+      const task = { mock: 'task' } as any;
       totalUnreadController['_startDataHandleTask'] = jest.fn();
-      await totalUnreadController.handleProfile(payload);
-      expect(totalUnreadController['_startDataHandleTask']).toBeCalledTimes(0);
+      await totalUnreadController['_appendTask'](task);
+      expect(
+        totalUnreadController['_startDataHandleTask'],
+      ).toHaveBeenCalledWith(task);
     });
   });
 
@@ -242,17 +222,19 @@ describe('TotalUnreadController', () => {
 
       await totalUnreadController['_startDataHandleTask'](task);
       expect(totalUnreadController['_changedBadges'].size).toEqual(0);
-      expect(totalUnreadController.initializeTotalUnread).toBeCalledTimes(1);
+      expect(totalUnreadController.initializeTotalUnread).toHaveBeenCalledTimes(
+        1,
+      );
       expect(
         totalUnreadController['_updateTotalUnreadByStateChanges'],
-      ).toBeCalledTimes(0);
+      ).toHaveBeenCalledTimes(0);
       expect(
         totalUnreadController['_updateTotalUnreadByGroupChanges'],
-      ).toBeCalledTimes(0);
+      ).toHaveBeenCalledTimes(0);
       expect(
         totalUnreadController['_updateTotalUnreadByProfileChanges'],
-      ).toBeCalledTimes(0);
-      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(0);
+      ).toHaveBeenCalledTimes(0);
+      expect(totalUnreadController['_updateBadge']).toHaveBeenCalledTimes(0);
     });
 
     it('should handle task and stop the queue', async () => {
@@ -269,28 +251,24 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_updateBadge'] = jest.fn();
 
       await totalUnreadController['_startDataHandleTask'](task);
-      expect(totalUnreadController.initializeTotalUnread).toBeCalledTimes(1);
+      expect(totalUnreadController.initializeTotalUnread).toHaveBeenCalledTimes(
+        1,
+      );
       expect(
         totalUnreadController['_updateTotalUnreadByStateChanges'],
-      ).toBeCalledWith(task.data);
+      ).toHaveBeenCalledWith(task.data);
       expect(
         totalUnreadController['_updateTotalUnreadByGroupChanges'],
-      ).toBeCalledTimes(0);
+      ).toHaveBeenCalledTimes(0);
       expect(
         totalUnreadController['_updateTotalUnreadByProfileChanges'],
-      ).toBeCalledTimes(0);
-      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(1);
+      ).toHaveBeenCalledTimes(0);
+      expect(totalUnreadController['_updateBadge']).toHaveBeenCalledTimes(1);
     });
 
     it('should continue handle next task when crash', async () => {
-      const task: DataHandleTask = {
-        type: TASK_DATA_TYPE.GROUP_STATE,
-        data: 'data' as any,
-      };
-      const task2: DataHandleTask = {
-        type: TASK_DATA_TYPE.GROUP_ENTITY,
-        data: 'data2' as any,
-      };
+      const task = jest.fn();
+      const task2 = jest.fn();
       totalUnreadController['_taskArray'] = [task, task2];
       totalUnreadController[
         'initializeTotalUnread'
@@ -301,20 +279,15 @@ describe('TotalUnreadController', () => {
       });
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
-      totalUnreadController['_updateBadge'] = jest.fn();
 
-      await totalUnreadController['_startDataHandleTask'](task);
-      expect(totalUnreadController.initializeTotalUnread).toBeCalledTimes(2);
+      await totalUnreadController['_startDataHandleTask']({
+        type: TASK_DATA_TYPE.GROUP_STATE,
+        data: 'data' as any,
+      });
+      expect(task2).toHaveBeenCalled();
       expect(
         totalUnreadController['_updateTotalUnreadByStateChanges'],
-      ).toBeCalledWith(task.data);
-      expect(
-        totalUnreadController['_updateTotalUnreadByGroupChanges'],
-      ).toBeCalledWith(task2.data);
-      expect(
-        totalUnreadController['_updateTotalUnreadByProfileChanges'],
-      ).toBeCalledTimes(0);
-      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(1);
+      ).toHaveBeenCalledWith('data');
     });
   });
 
@@ -499,40 +472,38 @@ describe('TotalUnreadController', () => {
         });
       mockEntitySourceController.batchGet = jest
         .fn()
-        .mockReturnValueOnce([{ id: 3, unreadCount: 1}]);
-      const entityMap = new Map<number, Group>();
-      entityMap.set(1, {
-        id: 1,
-        deactivated: true,
-        members: [5683],
-      } as Group);
-      entityMap.set(2, {
-        id: 2,
-        deactivated: false,
-        is_archived: false,
-        members: [112233],
-      } as Group);
-      entityMap.set(3, {
-        id: 3,
-        deactivated: false,
-        members: [5683],
-      } as Group);
-      entityMap.set(4, {
-        id: 4,
-        deactivated: false,
-        is_archived: true,
-        members: [5683],
-      } as Group);
-      const payload: NotificationEntityPayload<Group> = {
-        type: EVENT_TYPES.UPDATE,
-        body: {
-          ids: [11223344, 1, 2, 3, 4],
-          entities: entityMap,
-        },
-      };
-      await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
-      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(3);
+        .mockReturnValueOnce([{ id: 3, unreadCount: 1 }]);
+      const groups = [
+        {
+          id: 1,
+          deactivated: true,
+          members: [5683],
+        } as Group,
+        {
+          id: 2,
+          deactivated: false,
+          is_archived: false,
+          members: [112233],
+        } as Group,
+        {
+          id: 3,
+          deactivated: false,
+          members: [5683],
+        } as Group,
+        {
+          id: 4,
+          deactivated: false,
+          is_archived: true,
+          members: [5683],
+        } as Group,
+      ];
+      await totalUnreadController['_updateTotalUnreadByGroupChanges'](groups);
+      expect(AccountUserConfig.prototype.getGlipUserId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledTimes(
+        3,
+      );
       expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         -8,
@@ -548,8 +519,10 @@ describe('TotalUnreadController', () => {
         -2,
         -0,
       );
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith(
+      expect(totalUnreadController['_addNewGroupUnread']).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(totalUnreadController['_addNewGroupUnread']).toHaveBeenCalledWith(
         {
           id: 3,
           deactivated: false,
@@ -582,7 +555,7 @@ describe('TotalUnreadController', () => {
       );
       expect(
         totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
-      ).toBeCalledTimes(2);
+      ).toHaveBeenCalledTimes(2);
       expect(
         totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
       ).toHaveBeenCalledWith([456], true);
@@ -608,7 +581,7 @@ describe('TotalUnreadController', () => {
       );
       expect(
         totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
-      ).toBeCalledTimes(2);
+      ).toHaveBeenCalledTimes(2);
       expect(
         totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
       ).toHaveBeenCalledWith([], true);
@@ -634,7 +607,9 @@ describe('TotalUnreadController', () => {
         [1, 2],
         true,
       );
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(0);
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledTimes(
+        0,
+      );
       expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
         id: GROUP_BADGE_TYPE.FAVORITE_TEAM,
         unreadCount: 2,
@@ -651,7 +626,9 @@ describe('TotalUnreadController', () => {
         isTeam: false,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], false);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(0);
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledTimes(
+        0,
+      );
       expect(totalUnreadController['_singleGroupBadges'].get(1)).toEqual({
         id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 2,
@@ -667,7 +644,9 @@ describe('TotalUnreadController', () => {
         mentionCount: 3,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], true);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(2);
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledTimes(
+        2,
+      );
       expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         -7,
@@ -693,13 +672,15 @@ describe('TotalUnreadController', () => {
         isTeam: true,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], false);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(2);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledTimes(
+        2,
+      );
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         GROUP_BADGE_TYPE.FAVORITE_DM,
         -9,
         -6,
       );
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         GROUP_BADGE_TYPE.TEAM,
         9,
         6,
@@ -719,7 +700,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
 
       expect(await totalUnreadController.initializeTotalUnread()).toBeTruthy();
-      expect(totalUnreadController.reset).not.toBeCalled();
+      expect(totalUnreadController.reset).not.toHaveBeenCalled();
       expect(totalUnreadController['_initQueue'].length).toEqual(0);
     });
 
@@ -728,7 +709,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
 
       totalUnreadController.initializeTotalUnread();
-      expect(totalUnreadController.reset).not.toBeCalled();
+      expect(totalUnreadController.reset).not.toHaveBeenCalled();
       expect(totalUnreadController['_initQueue'].length).toEqual(1);
     });
 
@@ -759,13 +740,17 @@ describe('TotalUnreadController', () => {
         .mockReturnValue([{ id: 2 }]);
 
       await totalUnreadController.initializeTotalUnread();
-      expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
-      expect(mockGroupService.getEntities).toBeCalledTimes(1);
-      expect(mockGroupService.isValid).toBeCalledTimes(3);
-      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith(
+      expect(totalUnreadController.reset).toHaveBeenCalledTimes(1);
+      expect(mockProfileService.getFavoriteGroupIds).toHaveBeenCalledTimes(1);
+      expect(mockGroupService.getEntities).toHaveBeenCalledTimes(1);
+      expect(mockGroupService.isValid).toHaveBeenCalledTimes(3);
+      expect(AccountUserConfig.prototype.getGlipUserId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(totalUnreadController['_addNewGroupUnread']).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(totalUnreadController['_addNewGroupUnread']).toHaveBeenCalledWith(
         {
           id: 2,
           members: [1, 5683],
@@ -776,7 +761,7 @@ describe('TotalUnreadController', () => {
         INIT_STATUS.INITIALIZED,
       );
       expect(totalUnreadController['_favoriteGroupIds']).toEqual([]);
-      expect(totalUnreadController['_registerBadge']).toBeCalledTimes(1);
+      expect(totalUnreadController['_registerBadge']).toHaveBeenCalledTimes(1);
     });
 
     it('should initialize correctly', async () => {
@@ -804,13 +789,17 @@ describe('TotalUnreadController', () => {
         .fn()
         .mockReturnValueOnce([{ id: 2 }]);
       await totalUnreadController.initializeTotalUnread();
-      expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
-      expect(mockGroupService.getEntities).toBeCalledTimes(1);
-      expect(mockGroupService.isValid).toBeCalledTimes(3);
-      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith(
+      expect(totalUnreadController.reset).toHaveBeenCalledTimes(1);
+      expect(mockProfileService.getFavoriteGroupIds).toHaveBeenCalledTimes(1);
+      expect(mockGroupService.getEntities).toHaveBeenCalledTimes(1);
+      expect(mockGroupService.isValid).toHaveBeenCalledTimes(3);
+      expect(AccountUserConfig.prototype.getGlipUserId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(totalUnreadController['_addNewGroupUnread']).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(totalUnreadController['_addNewGroupUnread']).toHaveBeenCalledWith(
         {
           id: 2,
           members: [1, 5683],
@@ -823,7 +812,7 @@ describe('TotalUnreadController', () => {
         INIT_STATUS.INITIALIZED,
       );
       expect(totalUnreadController['_favoriteGroupIds']).toEqual([123, 456]);
-      expect(totalUnreadController['_registerBadge']).toBeCalledTimes(1);
+      expect(totalUnreadController['_registerBadge']).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -839,7 +828,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_favoriteGroupIds'] = [55668833];
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       await totalUnreadController['_addNewGroupUnread'](group, groupState);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         GROUP_BADGE_TYPE.FAVORITE_TEAM,
         15,
         6,
@@ -862,7 +851,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_favoriteGroupIds'] = [11223344];
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       await totalUnreadController['_addNewGroupUnread'](group, groupState);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         GROUP_BADGE_TYPE.TEAM,
         15,
         0,
@@ -881,7 +870,9 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_favoriteGroupIds'] = [11223344];
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       await totalUnreadController['_addNewGroupUnread'](group, { id: 3 });
-      expect(totalUnreadController['_modifyTotalUnread']).not.toBeCalled();
+      expect(
+        totalUnreadController['_modifyTotalUnread'],
+      ).not.toHaveBeenCalled();
       expect(totalUnreadController['_singleGroupBadges'].get(groupId)).toEqual({
         id: GROUP_BADGE_TYPE.DIRECT_MESSAGE,
         unreadCount: 0,
@@ -920,13 +911,13 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_getBadge'] = jest.fn().mockReturnValue(mockData);
 
       totalUnreadController['_updateBadge']();
-      expect(mockBadgeService.updateBadge).toBeCalledWith(mockData);
+      expect(mockBadgeService.updateBadge).toHaveBeenCalledWith(mockData);
     });
 
     it('should do noting when _changedBadges does not have data', () => {
       totalUnreadController['_changedBadges'].clear();
       totalUnreadController['_updateBadge']();
-      expect(mockBadgeService.updateBadge).not.toBeCalled();
+      expect(mockBadgeService.updateBadge).not.toHaveBeenCalled();
     });
   });
 
@@ -961,7 +952,7 @@ describe('TotalUnreadController', () => {
       );
 
       totalUnreadController['_registerBadge']();
-      expect(mockBadgeService.registerBadge).toBeCalledTimes(4);
+      expect(mockBadgeService.registerBadge).toHaveBeenCalledTimes(4);
     });
   });
 
