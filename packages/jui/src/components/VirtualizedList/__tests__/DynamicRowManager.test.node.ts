@@ -3,7 +3,7 @@
  * @Date: 2019-03-08 13:11:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { RowManager } from '../RowManager';
+import { DynamicRowManager } from '../DynamicRowManager';
 
 type RowInfo = {
   index: number;
@@ -17,7 +17,7 @@ function setup({
   minRowHeight?: number;
   rowInfos: RowInfo[];
 }) {
-  const rowManager = new RowManager({ minRowHeight });
+  const rowManager = new DynamicRowManager({ minRowHeight });
   rowInfos.forEach(({ index, height }) =>
     rowManager.setRowHeight(index, height),
   );
@@ -27,21 +27,21 @@ function setup({
 describe('RowManager', () => {
   describe('constructor()', () => {
     it('should init with minRowHeight', () => {
-      const rowManager = new RowManager({ minRowHeight: 40 });
-      expect(rowManager).toBeInstanceOf(RowManager);
+      const rowManager = new DynamicRowManager({ minRowHeight: 40 });
+      expect(rowManager).toBeInstanceOf(DynamicRowManager);
     });
   });
 
   describe('getEstimateRowHeight()', () => {
     it('should return minRowHeight', () => {
-      const rowManager = new RowManager({ minRowHeight: 40 });
+      const rowManager = new DynamicRowManager({ minRowHeight: 40 });
       expect(rowManager.getEstimateRowHeight()).toBe(40);
     });
   });
 
   describe('setRowHeight()', () => {
     it('should set row height', () => {
-      const rowManager = new RowManager({ minRowHeight: 40 });
+      const rowManager = new DynamicRowManager({ minRowHeight: 40 });
       rowManager.setRowHeight(0, 50);
       expect(rowManager.getRowHeight(0)).toBe(50);
     });
@@ -62,13 +62,13 @@ describe('RowManager', () => {
     });
 
     it('should return minRowHeight if row height not been recorded', () => {
-      const rowManager = new RowManager({ minRowHeight: 40 });
+      const rowManager = new DynamicRowManager({ minRowHeight: 40 });
       expect(rowManager.getRowHeight(0)).toBe(40);
     });
   });
 
   describe('getRowsHeight()', () => {
-    let rowManager: RowManager;
+    let rowManager: DynamicRowManager;
 
     beforeAll(() => {
       ({ rowManager } = setup({

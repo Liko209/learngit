@@ -29,7 +29,6 @@ import {
   useScroll,
   PartialScrollPosition,
   useForceUpdate,
-  useIsFirstRenderRef,
   ScrollPosition,
 } from './hooks';
 import {
@@ -42,7 +41,7 @@ import {
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
-import { RowManager } from './RowManager';
+import { DynamicRowManager } from './DynamicRowManager';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
@@ -197,12 +196,17 @@ const JuiVirtualizedList: RefForwardingComponent<
       createRange({
         startIndex: position.options
           ? position.index
-          : position.index - visibleRangeSize,
+          : position.index - visibleRangeSize + 1,
         size: visibleRangeSize,
         min: minIndex,
         max: maxIndex,
       }),
     );
+
+    if (rowManager instanceof DynamicRowManager) {
+      isFakeVisibleRangeRef.current = true;
+    }
+
     prevAtBottomRef.current = false;
     scrollToPosition(position);
   };
@@ -247,6 +251,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       });
       // TODO Don't re-render if range not changed
       setVisibleRange(visibleRange);
+      isFakeVisibleRangeRef.current = false;
     }
   };
 
@@ -307,7 +312,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const scrollEffectTriggerRef = useRef(0);
   const prevAtBottomRef = useRef(false);
-  const isFirstRenderRef = useIsFirstRenderRef();
+  const isFakeVisibleRangeRef = useRef(true);
 
   //
   // State
@@ -354,7 +359,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   const { forceUpdate } = useForceUpdate();
   const useDebounceForceUpdate = useCallback(
     debounce(() => {
-      if (rowManager instanceof RowManager) {
+      if (rowManager instanceof DynamicRowManager) {
         rowManager.flushCache();
         scrollEffectTriggerRef.current++;
         forceUpdate();
@@ -375,7 +380,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Update height cache and observe dynamic rows
   //
   useLayoutEffect(() => {
-    if (rowManager instanceof RowManager) {
+    if (rowManager instanceof DynamicRowManager) {
       const handleRowSizeChange = (el: HTMLElement, i: number) => {
         const result = { diff: 0 };
         if (el.offsetParent) {
@@ -494,7 +499,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (!ref.current) {
       return;
     }
-    if (isFirstRenderRef.current && minRowHeight) {
+    if (isFakeVisibleRangeRef.current && minRowHeight) {
       // [THE RANGE PROBLEM]
       // The first time list rendered, initial visible range was computed
       // from height/minRowHeight, which is not really represent what
@@ -510,7 +515,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Emit rendered range change
   //
   useLayoutEffect(() => {
-    if (isFirstRenderRef.current && minRowHeight) {
+    if (isFakeVisibleRangeRef.current && minRowHeight) {
       // The first time list rendered, initial rendered range has same problem
       // as initial visible range. See [THE RANGE PROBLEM] for more.
       onRenderedRangeChange(computeRenderedRange(computeVisibleRange()));
@@ -540,6 +545,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (highlightedIndex !== undefined)
       scrollIntoViewIfNeeded(highlightedIndex);
   }, [highlightedIndex]);
+
   //
   // Scrolling
   //
