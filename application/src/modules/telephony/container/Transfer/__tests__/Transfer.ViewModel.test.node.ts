@@ -11,6 +11,9 @@ import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { getEntity } from '@/store/utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { ENTITY_NAME } from '@/store';
+import { IMediaService } from '@/interface/media';
+import { MediaService } from '@/modules/media/service';
+import { jupiter } from 'framework/Jupiter';
 
 jest.mock('../../../service/TelephonyService');
 jest.mock('@/store/utils');
@@ -21,6 +24,7 @@ decorate(injectable(), TelephonyService);
 
 container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
+jupiter.registerService(IMediaService, MediaService);
 
 let vm: TransferViewModel;
 

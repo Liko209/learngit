@@ -6,6 +6,8 @@
 
 import CallModel from '../Call';
 
+jest.mock('@/modules/telephony/helpers');
+
 describe('CallModel', () => {
   it('new callModel', () => {
     const callModel = CallModel.fromJS({
