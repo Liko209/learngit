@@ -229,7 +229,7 @@ test(formalName("Shouldn't create new group when the conversation existed", ['P1
 
 test(formalName('Create new group successfully', ['P0', 'NewConversation', 'alessia.li', 'JPT-2604']), async t => {
   const [loginUser, userB, userC, userD] = h(t).rcData.mainCompany.users;
-  // await h(t).resetGlipAccount(loginUser);
+
   let group = <IGroup>{
     type: 'Group',
     owner: loginUser,
