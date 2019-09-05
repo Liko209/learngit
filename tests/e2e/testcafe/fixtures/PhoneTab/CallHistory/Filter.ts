@@ -189,7 +189,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I type user2\'s last name ', async () => {
     const user2LastName = await h(t).glip(user).getPersonPartialData('last_name', user2.rcId);
-    await t.typeText(callHistoryPage.filterInput, user2LastName, { replace: true });
+    await callHistoryPage.typeFilter(user2LastName);
   });
 
   await h(t).withLog('Then the call logs from user2 is filtered', async () => {
@@ -217,37 +217,37 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I type part of user2 phone number {user2PhoneDirectNumberLastPart}', async (step) => {
     step.setMetadata('user2PhoneDirectNumberLastPart', user2PhoneDirectNumberLastPart);
-    await t.typeText(callHistoryPage.filterInput, user2PhoneDirectNumberLastPart, { replace: true });
+    await callHistoryPage.typeFilter(user2PhoneDirectNumberLastPart);
   });
 
+  let formatUser2PhoneNumber = '';
   await h(t).withLog('Then the call logs from user2 is filtered', async () => {
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user2Name).exists).ok();
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user3Name).exists).notOk();
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user4Name).exists).notOk();
+    await callHistoryPage.expectItemsWithNameExist(user2Name);
+    formatUser2PhoneNumber = await callHistoryPage.callHistoryItemByNth(0).callerNumber.textContent;
+    await callHistoryPage.expectItemsWithNameNotExist(user3Name);
+    await callHistoryPage.expectItemsWithNameNotExist(user4Name);
   });
 
   await h(t).withLog('Then I clear input', async () => {
     await t.click(callHistoryPage.filterInputClear);
   });
 
-  let formatUser2PhoneNumber = '';
   await h(t).withLog('And I should see all call logs', async () => {
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user2Name).exists).ok();
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user3Name).exists).ok();
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user4Name).exists).ok();
+    await callHistoryPage.expectItemsWithNameExist(user2Name);
+    await callHistoryPage.expectItemsWithNameExist(user3Name);
+    await callHistoryPage.expectItemsWithNameExist(user4Name);
 
-    formatUser2PhoneNumber = await callHistoryPage.items.find('.list-item-primary').withText(user2Name).nextSibling().textContent;
   });
 
   await h(t).withLog('When I type user2 phone number {formatUser2PhoneNumber}', async (step) => {
     step.setMetadata('formatUser2PhoneNumber', formatUser2PhoneNumber);
-    await t.typeText(callHistoryPage.filterInput, formatUser2PhoneNumber, { replace: true });
+    await callHistoryPage.typeFilter(formatUser2PhoneNumber);
   });
 
   await h(t).withLog('Then the call logs from user2 is filtered', async () => {
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user2Name).exists).ok();
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user3Name).exists).notOk();
-    await t.expect(callHistoryPage.items.find('.list-item-primary').withText(user4Name).exists).notOk();
+    await callHistoryPage.expectItemsWithNameExist(user2Name);
+    await callHistoryPage.expectItemsWithNameNotExist(user3Name);
+    await callHistoryPage.expectItemsWithNameNotExist(user4Name);
   });
 
   await h(t).withLog('When I switch to Missed Calls tab', async () => {
@@ -259,9 +259,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And only missed calls from user2 shown', async () => {
-    await t.expect(callHistoryPage.missedCallsItems.find('.list-item-primary').withText(user2Name).exists).ok();
-    await t.expect(callHistoryPage.missedCallsItems.find('.list-item-primary').withText(user3Name).exists).notOk();
-    await t.expect(callHistoryPage.missedCallsItems.find('.list-item-primary').withText(user4Name).exists).notOk();
+    await callHistoryPage.expectItemsWithNameExist(user2Name);
+    await callHistoryPage.expectItemsWithNameNotExist(user3Name);
+    await callHistoryPage.expectItemsWithNameNotExist(user4Name);
 
     await t.expect(callHistoryPage.missedCallsItems.find('.missedcall').exists).ok();
     await t.expect(callHistoryPage.missedCallsItems.find('.outcall').exists).notOk();
@@ -273,9 +273,10 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And all calls from user2 shown', async () => {
-    await t.expect(callHistoryPage.allCallsItems.find('.list-item-primary').withText(user2Name).exists).ok();
-    await t.expect(callHistoryPage.allCallsItems.find('.list-item-primary').withText(user3Name).exists).notOk();
-    await t.expect(callHistoryPage.allCallsItems.find('.list-item-primary').withText(user4Name).exists).notOk();
+    await callHistoryPage.expectItemsWithNameExist(user2Name);
+    formatUser2PhoneNumber = await callHistoryPage.callHistoryItemByNth(0).callerNumber.textContent;
+    await callHistoryPage.expectItemsWithNameNotExist(user3Name);
+    await callHistoryPage.expectItemsWithNameNotExist(user4Name);
 
     await t.expect(callHistoryPage.allCallsItems.find('.missedcall').exists).ok();
     await t.expect(callHistoryPage.allCallsItems.find('.outcall').exists).ok();
@@ -292,9 +293,9 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then the input is cleared and all logs are shown', async () => {
     await t.expect(callHistoryPage.filterInput.value).eql('');
-    await t.expect(callHistoryPage.allCallsItems.find('.list-item-primary').withText(user2Name).exists).ok();
-    await t.expect(callHistoryPage.allCallsItems.find('.list-item-primary').withText(user3Name).exists).ok();
-    await t.expect(callHistoryPage.allCallsItems.find('.list-item-primary').withText(user4Name).exists).ok();
+    await callHistoryPage.expectItemsWithNameExist(user2Name);
+    await callHistoryPage.expectItemsWithNameExist(user3Name);
+    await callHistoryPage.expectItemsWithNameExist(user4Name);
 
     await t.expect(callHistoryPage.allCallsItems.find('.missedcall').exists).ok();
     await t.expect(callHistoryPage.allCallsItems.find('.outcall').exists).ok();
