@@ -26,10 +26,10 @@ import MuiTypography from '@material-ui/core/Typography';
 type MuiListItemPropsFixed = MuiListItemProps & {
   button?: any;
   TouchRippleProps?: any;
-  addPadding?: number;
+  paddingRange?: number;
 };
 
-const FilteredComponent = ({ addPadding, ...rest }: MuiListItemPropsFixed) => (
+const FilteredComponent = ({ paddingRange, ...rest }: MuiListItemPropsFixed) => (
   <MuiListItem {...rest} />
 );
 
@@ -66,7 +66,7 @@ const JuiListNavItemText = styled(MuiTypography)`
 
 const StyledNavListItem = styled<MuiListItemPropsFixed>(FilteredComponent)`
   && {
-    padding: ${({ addPadding = 0 }) => spacing(2, 3 + addPadding, 2, 3)};
+    padding: ${({ paddingRange = 0 }) => spacing(2, 3 + paddingRange, 2, 3)};
     color: ${grey('900')};
     height: ${height(9)};
     line-height: ${height(9)};

@@ -11,6 +11,7 @@ import {
   JuiListNavItemIconography,
 } from '../../components/Lists';
 import { typography } from '../../foundation/utils';
+import { paddingRang } from '@/common/systemUtils';
 
 const StyledRightWrapper = styled.div`
   display: flex;
@@ -57,7 +58,7 @@ const JuiConversationListSectionHeader = memo(
     return (
       <JuiListNavItem
         className={className}
-        addPadding={1}
+        paddingRange={paddingRang}
         data-test-automation-id="conversation-list-section-header"
         button
         selected={selected}
