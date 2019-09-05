@@ -11,7 +11,6 @@ import {
   JuiListNavItemIconography,
 } from '../../components/Lists';
 import { typography } from '../../foundation/utils';
-import { paddingRang } from '@/common/systemUtils';
 
 const StyledRightWrapper = styled.div`
   display: flex;
@@ -35,6 +34,7 @@ type JuiSectionHeaderProps = {
   className?: string;
   hideArrow?: boolean;
   selected?: boolean;
+  paddingRang?: number;
   onClick?: (e: React.MouseEvent) => any;
   onArrowClick?: (e: React.MouseEvent) => any;
 };
@@ -50,6 +50,7 @@ const JuiConversationListSectionHeader = memo(
       onClick,
       onArrowClick,
       selected,
+      paddingRang,
       ...rest
     } = props;
 
