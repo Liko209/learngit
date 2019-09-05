@@ -34,7 +34,7 @@ type JuiSectionHeaderProps = {
   className?: string;
   hideArrow?: boolean;
   selected?: boolean;
-  paddingRang?: number;
+  extraScrollPadding?: number;
   onClick?: (e: React.MouseEvent) => any;
   onArrowClick?: (e: React.MouseEvent) => any;
 };
@@ -50,7 +50,7 @@ const JuiConversationListSectionHeader = memo(
       onClick,
       onArrowClick,
       selected,
-      paddingRang,
+      extraScrollPadding,
       ...rest
     } = props;
 
@@ -59,7 +59,7 @@ const JuiConversationListSectionHeader = memo(
     return (
       <JuiListNavItem
         className={className}
-        paddingRange={paddingRang}
+        extraScrollPadding={extraScrollPadding}
         data-test-automation-id="conversation-list-section-header"
         button
         selected={selected}

@@ -3,7 +3,7 @@
  * @Date: 2019-08-20 10:56:43
  * Copyright © RingCentral. All rights reserved.
  */
-import { isMac } from '@/common/systemUtils';
+import { isMac } from '@/utils/system';
 
 const GLOBAL_HOT_KEYS = {
   OPEN_SEARCH: isMac ? ['command+f'] : ['ctrl+f'],

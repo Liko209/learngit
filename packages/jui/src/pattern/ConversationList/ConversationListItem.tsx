@@ -24,7 +24,7 @@ type MuiMenuItemPropsExtend = MuiMenuItemProps & {
   isItemHover?: boolean;
   // type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
   button?: any;
-  paddingRange?: number;
+  extraScrollPadding?: number;
 };
 
 type StyledMuiMenuItemProps = MuiMenuItemPropsExtend & { umi?: boolean };
@@ -71,7 +71,7 @@ const JuiMenuContain = styled(JuiMenu)`
 const FilteredComponent = ({
   isItemHover,
   umi,
-  paddingRange,
+  extraScrollPadding,
   ...rest
 }: StyledMuiMenuItemProps) => <MuiMenuItem {...rest} />;
 
@@ -84,7 +84,8 @@ const StyledItemText = styled(ItemText)`
 const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
   && {
     white-space: nowrap;
-    padding: ${({ paddingRange = 0 }) => spacing(0, 3 + paddingRange, 0, 3)};
+    padding: ${({ extraScrollPadding = 0 }) =>
+      spacing(0, 3 + extraScrollPadding, 0, 3)};
     height: ${height(8)};
     min-height: unset;
     line-height: ${height(8)};

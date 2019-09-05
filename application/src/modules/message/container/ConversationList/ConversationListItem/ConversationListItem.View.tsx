@@ -13,7 +13,7 @@ import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { paddingRang } from '@/common/systemUtils';
+import { extraScrollPadding } from '@/utils/system';
 
 type Props = ConversationListItemViewProps & WithTranslation;
 type State = {
@@ -108,7 +108,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
       <>
         <JuiConversationListItem
           className="conversation-list-item"
-          paddingRange={paddingRang}
+          extraScrollPadding={extraScrollPadding}
           data-test-automation-id="conversation-list-item"
           tabIndex={0}
           isItemHover={isHover}
