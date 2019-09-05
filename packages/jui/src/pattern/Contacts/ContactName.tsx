@@ -6,16 +6,19 @@
 
 import styled from '../../foundation/styled-components';
 import { JuiListItemText } from '../../components/Lists';
-import { typography } from '../../foundation/utils';
+import { ellipsis } from '../../foundation/utils';
 
-const JuiContactName = styled(JuiListItemText)`
+const JuiContactNameWrapper = styled(JuiListItemText)`
   && {
     .list-item-primary {
       display: flex;
       align-items: center;
-      ${typography('subheading3')}
     }
   }
 `;
 
-export { JuiContactName };
+const JuiContactName = styled.span`
+  ${ellipsis()}
+`;
+
+export { JuiContactNameWrapper, JuiContactName };

@@ -5,8 +5,9 @@
  */
 import React, { ComponentType, Component } from 'react';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { JuiContactActions } from 'jui/pattern/Contacts';
+
 import { ActionsProps, ActionsViewProps } from './types';
-import { JuiButtonBar } from 'jui/components/Buttons';
 import { Message } from './Message';
 import { Call } from './Call';
 
@@ -33,9 +34,9 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
 
   render() {
     return (
-      <JuiButtonBar overlapSize={0}>
+      <JuiContactActions overlapSize={0}>
         {this.getButtons(this._actions)}
-      </JuiButtonBar>
+      </JuiContactActions>
     );
   }
 }
