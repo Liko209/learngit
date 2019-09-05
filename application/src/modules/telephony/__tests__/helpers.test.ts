@@ -142,22 +142,26 @@ describe('helpers', () => {
       expect(history.push).toHaveBeenCalledWith(VOICEMAILS_ROOT_PATH);
     });
 
-    it('Should flash toast when the voicemail not existed [JPT-2824]', () => {
+    it('Should flash toast when the voicemail not existed [JPT-2824]', async () => {
       jest.spyOn(Notification, 'flashToast');
-      jest.spyOn(utils, 'getEntity').mockImplementation(() => null);
+      jest.spyOn(ServiceLoader, 'getInstance').mockReturnValueOnce({
+        getById: jest.fn().mockResolvedValue(null),
+      });
 
-      onVoicemailNotificationClick();
+      await onVoicemailNotificationClick();
 
       expect(Notification.flashToast).toHaveBeenCalled();
     });
 
-    it('Should flash toast when the voicemail not alive [JPT-2824]', () => {
+    it('Should flash toast when the voicemail not alive [JPT-2824]', async () => {
       jest.spyOn(Notification, 'flashToast');
-      jest.spyOn(utils, 'getEntity').mockImplementation(() => ({
-        availability: MESSAGE_AVAILABILITY.DELETED,
-      }));
+      jest.spyOn(ServiceLoader, 'getInstance').mockReturnValueOnce({
+        getById: jest.fn().mockResolvedValue({
+          availability: MESSAGE_AVAILABILITY.DELETED,
+        }),
+      });
 
-      onVoicemailNotificationClick();
+      await onVoicemailNotificationClick();
 
       expect(Notification.flashToast).toHaveBeenCalled();
     });
