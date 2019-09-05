@@ -17,7 +17,10 @@ import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SubItemDao } from '../module/base/dao';
 import { SanitizedItem } from '../module/base/entity/SanitizedItem';
 import { IdModel } from '../../../framework/model/Model';
+import _ from 'lodash';
 
+const PUT_KEY = 'put';
+const UPDATE_KEY = 'update';
 class ItemDao extends BaseDao<Item> {
   static COLLECTION_NAME = 'item';
 
@@ -204,26 +207,68 @@ class ItemDao extends BaseDao<Item> {
     if (id) {
       const viewDao = this._getItemViewDao(id);
       if (viewDao) {
-        await viewDao.update(viewDao.toPartialSanitizedItem(partialItem));
+        await viewDao.update(
+          viewDao.toPartialSanitizedItem(partialItem),
+          !!viewDao.shouldSaveSubItem(partialItem as Item),
+        );
       }
     }
   }
 
   private async _bulkUpdateItemViews(partialItems: Partial<Item>[]) {
-    const filterResult = this._filterItems(partialItems as IdModel[], false);
+    const filterResult = this._filterItems(partialItems as Item[], false);
     const typeIds = Array.from(filterResult.keys());
-    await Promise.all(
-      typeIds.map((typeId: number) => {
-        const viewDao = this._getItemViewDaoByTypeId(typeId);
-        if (viewDao) {
-          const items = filterResult.get(typeId) as Item[];
-          const sanitizedItems = items.map((partialItem: Item) =>
-            viewDao.toPartialSanitizedItem(partialItem),
-          );
-          return viewDao.bulkUpdate(sanitizedItems);
-        }
-        return Promise.resolve();
-      }),
+    const promiseArr: Promise<void>[] = [];
+    typeIds.forEach((typeId: number) => {
+      const viewDao = this._getItemViewDaoByTypeId(typeId);
+      if (viewDao) {
+        const items = filterResult.get(typeId) as Item[];
+        const groupedItems = _.groupBy(items, (x: Item) => {
+          return viewDao.shouldSaveSubItem(x) ? PUT_KEY : UPDATE_KEY;
+        });
+
+        const putUpdatePromise = this._updateSubItemsWithPut(
+          groupedItems[PUT_KEY] || [],
+          viewDao,
+        );
+        putUpdatePromise && promiseArr.push(putUpdatePromise);
+
+        const noPutUpdatePromise = this._updateSubItemsWithoutPut(
+          groupedItems[UPDATE_KEY] || [],
+          viewDao,
+        );
+        noPutUpdatePromise && promiseArr.push(noPutUpdatePromise);
+
+        return promiseArr;
+      }
+      return [Promise.resolve()];
+    });
+    await Promise.all(promiseArr);
+  }
+
+  private async _updateSubItemsWithPut(
+    canPutItems: Partial<Item>[],
+    viewDao: SubItemDao<SanitizedItem>,
+  ) {
+    const canPutSubItems = canPutItems.map((partialItem: Item) =>
+      viewDao.toPartialSanitizedItem(partialItem),
+    );
+    return (
+      (canPutSubItems.length && viewDao.bulkUpdate(canPutSubItems, true)) ||
+      undefined
+    );
+  }
+
+  private async _updateSubItemsWithoutPut(
+    noPutItems: Partial<Item>[],
+    viewDao: SubItemDao<SanitizedItem>,
+  ) {
+    const noPutSubItems = noPutItems.map((partialItem: Item) =>
+      viewDao.toPartialSanitizedItem(partialItem),
+    );
+    return (
+      (noPutSubItems.length && viewDao.bulkUpdate(noPutSubItems, false)) ||
+      undefined
     );
   }
 
@@ -253,12 +298,12 @@ class ItemDao extends BaseDao<Item> {
     );
   }
 
-  private _filterItems<K extends { id: number }>(items: K[], isSave: boolean) {
+  private _filterItems<K extends { id: number }>(items: K[], isPut: boolean) {
     const resultMap: Map<number, K[]> = new Map();
     items.forEach((value: K) => {
       const typeId = GlipTypeUtil.extractTypeId(value.id);
       const viewDao = this._getItemViewDaoByTypeId(typeId);
-      if (viewDao && (!isSave || viewDao.shouldSaveSubItem(value))) {
+      if (viewDao && (!isPut || viewDao.shouldSaveSubItem(value))) {
         const itemArr = resultMap.get(typeId);
         itemArr ? itemArr.push(value) : resultMap.set(typeId, [value]);
       }

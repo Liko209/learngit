@@ -93,15 +93,18 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   }
 
   shouldSaveSubItem<K extends { id: number; post_ids?: number[] }>(item: K) {
-    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
+    return !!(item.id > 0 && item.post_ids && item.post_ids.length > 0);
   }
 
-  async update(item: Partial<T>): Promise<void> {
-    await super.update(item, false);
+  async update(item: Partial<T>, shouldDoPut = false): Promise<void> {
+    await super.update(item, shouldDoPut);
   }
 
-  async bulkUpdate(partialItems: Partial<T>[]): Promise<void> {
-    await super.bulkUpdate(partialItems, false);
+  async bulkUpdate(
+    partialItems: Partial<T>[],
+    shouldDoPut = false,
+  ): Promise<void> {
+    return super.bulkUpdate(partialItems, shouldDoPut);
   }
 }
 

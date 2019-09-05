@@ -256,7 +256,7 @@ describe('Item Dao', () => {
       await itemDao.update(testItem);
 
       expect(viewDao.toPartialSanitizedItem).toHaveBeenCalled();
-      expect(viewDao.update).toHaveBeenCalledWith(testItem);
+      expect(viewDao.update).toHaveBeenCalledWith(testItem, false);
     });
   });
 
@@ -275,18 +275,37 @@ describe('Item Dao', () => {
       type: 'type',
       mod: 'mod',
     });
+    const shouldNotPutItems = itemFactory.build({
+      id: 30410571786,
+      created_at: 111,
+      group_ids: [123],
+      post_ids: [],
+      name: 'name',
+      type: 'type',
+      mod: 'mod',
+    });
 
-    it('should call view dao when item is doing update', async () => {
+    it('should call view dao when item is doing bulk update', async () => {
       const viewDao = viewDaosMap.get(GlipTypeUtil.extractTypeId(testItem.id));
+      viewDao.bulkUpdate = jest.fn().mockImplementation(() => {
+        return Promise.resolve();
+      });
+      viewDao.shouldSaveSubItem = jest.fn().mockImplementation((item: any) => {
+        return !!(item.id > 0 && item.post_ids && item.post_ids.length > 0);
+      });
       viewDao.toPartialSanitizedItem = jest
         .fn()
         .mockImplementation((item: any) => {
           return item;
         });
-      await itemDao.bulkUpdate([testItem]);
-
+      await itemDao.bulkUpdate([testItem, shouldNotPutItems]);
       expect(viewDao.toPartialSanitizedItem).toHaveBeenCalled();
-      expect(viewDao.bulkUpdate).toHaveBeenCalledWith([testItem]);
+      expect(viewDao.bulkUpdate).toHaveBeenNthCalledWith(1, [testItem], true);
+      expect(viewDao.bulkUpdate).toHaveBeenNthCalledWith(
+        2,
+        [shouldNotPutItems],
+        false,
+      );
     });
   });
 
