@@ -13,8 +13,9 @@ import { analyticsCollector } from '@/AnalyticsCollector';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
 import { recentFirstSorter, searchFunc } from './lib';
+import { isDialogOpen } from '@/containers/Dialog/utils';
 
-const DIALOG_KEY = 'GroupSearch';
+const DIALOG_ID = 'switchConversationDialog';
 async function switchToConversation({ id }: { id: number }) {
   portalManager.dismissAll();
 
@@ -24,22 +25,26 @@ async function switchToConversation({ id }: { id: number }) {
   });
 }
 
-function switchConversationHandler() {
-  const getDefaultList = async () => {
-    const searchService = ServiceLoader.getInstance<SearchService>(
-      ServiceConfig.SEARCH_SERVICE,
-    );
-    const result = await searchService.doFuzzySearchAllGroups(undefined, {
-      myGroupsOnly: true,
-      fetchAllIfSearchKeyEmpty: true,
-      recentFirst: false,
-      sortFunc: recentFirstSorter,
-    });
-    return result.sortableModels;
-  };
+async function getDefaultList() {
+  const searchService = ServiceLoader.getInstance<SearchService>(
+    ServiceConfig.SEARCH_SERVICE,
+  );
+  const result = await searchService.doFuzzySearchAllGroups(undefined, {
+    myGroupsOnly: true,
+    fetchAllIfSearchKeyEmpty: true,
+    recentFirst: false,
+    sortFunc: recentFirstSorter,
+  });
+  return result.sortableModels;
+}
 
+function switchConversationHandler() {
   analyticsCollector.shortcuts('quickSwitcher');
-  if (portalManager.isOpened(DIALOG_KEY)) return;
+  const opened = portalManager.isOpened(DIALOG_ID);
+  if (isDialogOpen()) {
+    return opened ? false : true;
+  }
+
   const { dismiss } = Dialog.simple(
     <GroupSearch
       onSelect={switchToConversation}
@@ -53,8 +58,9 @@ function switchConversationHandler() {
       onClose: () => dismiss(),
       disableBackdropClick: true,
     },
-    DIALOG_KEY,
+    DIALOG_ID,
   );
+  return false;
 }
 
-export { switchConversationHandler, switchToConversation };
+export { switchConversationHandler, switchToConversation, DIALOG_ID };

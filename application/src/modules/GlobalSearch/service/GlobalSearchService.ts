@@ -8,19 +8,25 @@ import { ComponentType } from 'react';
 import { inject } from 'framework/ioc';
 import { GlobalSearchStore } from '../store';
 import { SEARCH_VIEW } from '../types';
+import { isDialogOpen } from '@/containers/Dialog/utils';
 
 class GlobalSearchService {
   @inject(GlobalSearchStore) private _globalSearchStore: GlobalSearchStore;
 
   openGlobalSearch() {
     const store = this._globalSearchStore;
+    const opened = this._globalSearchStore.open;
     const currentView =
       store.searchKey === ''
         ? SEARCH_VIEW.RECENT_SEARCH
         : SEARCH_VIEW.INSTANT_SEARCH;
     store.setCurrentView(currentView);
-    this._globalSearchStore.setOpen(true);
     this._globalSearchStore.setFocus(true);
+    if (isDialogOpen()) {
+      return opened ? false : true;
+    }
+    this._globalSearchStore.setOpen(true);
+    return false;
   }
 
   closeGlobalSearch() {

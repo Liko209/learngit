@@ -12,7 +12,9 @@ import {
 } from '../switchConversationHandler';
 import portalManager from '@/common/PortalManager';
 import { goToConversationWithLoading } from '@/common/goToConversation';
+import { isDialogOpen } from '@/containers/Dialog/utils';
 
+jest.mock('@/containers/Dialog/utils');
 jest.mock('@/common/goToConversation');
 
 describe('switch conversation handler', () => {
@@ -29,12 +31,13 @@ describe('switch conversation handler', () => {
     t2() {
       jest.spyOn(Dialog, 'simple').mockReturnValue({ dismiss: () => {} });
       jest.spyOn(portalManager, 'isOpened').mockReturnValue(true);
+      (isDialogOpen as jest.Mock) = jest.fn(() => true);
       switchConversationHandler();
       expect(Dialog.simple).not.toHaveBeenCalled();
     }
 
     @test(
-      'should close all dialog and call gotoConversation when call switchToConversation()',
+      'should close all dialog and call gotoConversationWithLoading when call switchToConversation()',
     )
     async t3() {
       const conversationId = 123;
@@ -44,6 +47,20 @@ describe('switch conversation handler', () => {
       setTimeout(() => {
         expect(goToConversationWithLoading).toHaveBeenCalled();
       });
+    }
+
+    @(test.each`
+      isThereDialogOpen | isMeOpen | expected
+      ${true}           | ${true}  | ${false}
+      ${true}           | ${false} | ${true}
+      ${false}          | ${true}  | ${false}
+      ${false}          | ${false} | ${false}
+    `('should have correct return value when called'))
+    t4({ isThereDialogOpen, isMeOpen, expected }) {
+      jest.spyOn(Dialog, 'simple').mockReturnValue({ dismiss: () => {} });
+      jest.spyOn(portalManager, 'isOpened').mockReturnValue(isMeOpen);
+      (isDialogOpen as jest.Mock) = jest.fn(() => isThereDialogOpen);
+      expect(switchConversationHandler()).toBe(expected);
     }
   }
 });

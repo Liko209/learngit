@@ -10,6 +10,9 @@ import { GlobalSearchService } from '../GlobalSearchService';
 import { config } from '../../module.config';
 import { SEARCH_VIEW } from '../../types';
 import { Dialer } from '../../../telephony/container';
+import { isDialogOpen } from '@/containers/Dialog/utils';
+
+jest.mock('@/containers/Dialog/utils');
 // jest.mock('../../store/GlobalSearchStore');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
@@ -38,6 +41,24 @@ describe('GlobalSearchService', () => {
       globalSearchService.openGlobalSearch();
       expect(globalSearchStore.open).toBeTruthy();
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.INSTANT_SEARCH);
+    });
+
+    it('should return true when there is dialog open and globalSearch is not opened', () => {
+      (isDialogOpen as jest.Mock) = jest.fn(() => true);
+      globalSearchStore.open = false;
+      expect(globalSearchService.openGlobalSearch()).toBe(true);
+    });
+
+    it('should return false when there is dialog open and globalSearch is opened', () => {
+      (isDialogOpen as jest.Mock) = jest.fn(() => true);
+      globalSearchStore.open = true;
+      expect(globalSearchService.openGlobalSearch()).toBe(false);
+    });
+
+    it('should return false when there is no dialog open', () => {
+      (isDialogOpen as jest.Mock) = jest.fn(() => false);
+      globalSearchStore.open = false;
+      expect(globalSearchService.openGlobalSearch()).toBe(false);
     });
   });
   describe('closeGlobalSearch()', () => {

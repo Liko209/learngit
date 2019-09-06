@@ -13,8 +13,8 @@ import { Jupiter } from 'framework/Jupiter';
 
 class CommonModule extends AbstractModule {
   @inject(Jupiter) private _jupiter: Jupiter;
-  bootstrap() {
-    if (this._jupiter.get(FeaturesFlagsService).canUseMessage) {
+  async bootstrap() {
+    if (await this._jupiter.get(FeaturesFlagsService).canUseMessage) {
       globalKeysManager.addGlobalKey(
         GLOBAL_HOT_KEYS.SWITCH_CONVERSATION,
         switchConversationHandler,

@@ -60,7 +60,8 @@ const StyledTabs = React.forwardRef(
     ref: React.RefObject<any>,
   ) => {
     const indicatorClassName = disableIndicatorTransition
-      ? 'staticIndicator' : 'indicator';
+      ? 'staticIndicator'
+      : 'indicator';
 
     const classes = {
       root: 'root',
@@ -79,9 +80,7 @@ const StyledTabs = React.forwardRef(
       </StyledMuiTabs>
     );
 
-    return ref
-      ? <RootRef rootRef={ref}>{Tabs}</RootRef>
-      : Tabs;
+    return ref ? <RootRef rootRef={ref}>{Tabs}</RootRef> : Tabs;
   },
 );
 
