@@ -69,9 +69,6 @@ class TelephonyStore {
   isConference: boolean = false;
 
   @observable
-  canUseTelephony: boolean = false;
-
-  @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
 
   isStopRecording: boolean = false; // whether the stop recording request is on the flight
