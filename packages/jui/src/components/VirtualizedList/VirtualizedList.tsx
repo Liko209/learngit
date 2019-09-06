@@ -22,6 +22,7 @@ import {
   IndexRange,
   JuiVirtualizedListProps,
   VirtualizedListChild,
+  SCROLL_ALIGN,
 } from './types';
 import {
   useRange,
@@ -71,6 +72,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     overscan = 5,
     children,
     initialScrollToIndex = 0,
+    initialScrollAlignTo,
     onScroll = noop,
     onWheel,
     onKeyDown,
@@ -321,7 +323,10 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const { scrollPosition, rememberScrollPosition } = useScroll({
     index: initialScrollToIndex,
-    offset: 0,
+    offset:
+      initialScrollAlignTo === SCROLL_ALIGN.BOTTOM
+        ? Number.MAX_SAFE_INTEGER
+        : 0,
   });
 
   const visibleRangeSize = Math.ceil(
