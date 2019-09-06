@@ -93,41 +93,22 @@ describe('Telephony store', () => {
     expect(store.isInbound).toBeTruthy;
     call.callState = CALL_STATE.CONNECTED;
     expect(store.callState).toBe(CALL_STATE.CONNECTED);
-    store.end();
-    call.callState = CALL_STATE.DISCONNECTED;
-    expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
+    expect(store.end()).toBe(true);
 
     store = createStore();
     store.incomingCall();
     store.end();
-    call.callState = CALL_STATE.DISCONNECTED;
-    expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
-
-    store = createStore();
-    store.incomingCall();
-    store.end();
-    call.callState = CALL_STATE.DISCONNECTED;
-    expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
+    expect(store.end()).toBe(true);
 
     store = createStore();
     store.directCall();
-    call.callState = CALL_STATE.CONNECTED;
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.FLOATING);
-    expect(store.callState).toBe(CALL_STATE.CONNECTED);
-    store.end();
-    call.callState = CALL_STATE.DISCONNECTED;
-    expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
+    expect(store.end()).toBe(true);
 
     store = createStore();
     store.directCall();
     store.end();
-    call.callState = CALL_STATE.DISCONNECTED;
-    expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
-    expect(store.callState).toBe(CALL_STATE.DISCONNECTED);
+    expect(store.end()).toBe(true);
   });
 
   it('holdState should to be HOLD_STATE.DISABLED when instantiated TelephonyStore [JPT-1545]', () => {
