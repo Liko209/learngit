@@ -538,6 +538,7 @@ class TelephonyService {
     return fromNumber;
   }
 
+  @action
   private _makeCall = async (toNumber: string, options: Partial<CallOptions> & { callback?: Function } = {}) => {
 
     const { isValid } = await this.isValidNumber(toNumber);
