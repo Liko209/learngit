@@ -1,5 +1,8 @@
 import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
-import { ROUTE_ROOT_PATH, kDefaultPhoneTabPath } from '../../phone/container/LeftRail/constant';
+import {
+  ROUTE_ROOT_PATH,
+  kDefaultPhoneTabPath,
+} from '../../phone/container/LeftRail/constant';
 
 export const TELEPHONY_SERVICE = 'TELEPHONY_SERVICE';
 export const ANONYMOUS_NUM = 'anonymous';
@@ -17,16 +20,16 @@ export const SETTING_ITEM__NOTIFICATION_INCOMING_CALLS =
 export const SETTING_ITEM__NOTIFICATION_MISS_CALL_AND_NEW_VOICEMAILS =
   SettingEntityIds.Notification_MissCallAndNewVoiceMails;
 
-export const NOTIFICATION_NEW_VOICEMAILS_UUID_PREFIX = 'NEW_VOICEMAILS_UUID_'
+export const NOTIFICATION_NEW_VOICEMAILS_UUID_PREFIX = 'NEW_VOICEMAILS_UUID_';
 
-export const NOTIFICATION_MISSED_CALL_UUID_PREFIX = 'MISSED_CALL_UUID_'
+export const NOTIFICATION_MISSED_CALL_UUID_PREFIX = 'MISSED_CALL_UUID_';
 
 export enum CALL_ACTION {
+  TRANSFER,
   FORWARD,
   PARK,
   REPLY,
   FLIP,
-  TRANSFER,
 }
 export const CONTACT_SEARCH_PHONE_NUMBER_ID =
   'TELEPHONY-CONTACT_SEARCH_PHONE_NUMBER_ID-0';

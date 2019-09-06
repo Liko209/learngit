@@ -17,6 +17,9 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   @computed
   get callActionsMap() {
     return {
+      [CALL_ACTION.TRANSFER]: {
+        shouldShowAction: !this.isIncomingPage,
+      },
       [CALL_ACTION.REPLY]: {
         shouldShowAction: this.isIncomingPage,
       },
@@ -27,9 +30,6 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
         shouldShowAction: !this.isIncomingPage,
       },
       [CALL_ACTION.FLIP]: {
-        shouldShowAction: !this.isIncomingPage,
-      },
-      [CALL_ACTION.TRANSFER]: {
         shouldShowAction: !this.isIncomingPage,
       },
     };
