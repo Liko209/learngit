@@ -20,7 +20,7 @@ const useContactSearchDialog = (
       {
         size: 'small',
         onClose: () => dismiss(),
-        disableBackdropClick: true,
+        disableBackdropClick: false,
       },
     );
   }, [onSelect]);
