@@ -30,13 +30,17 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
     }
     .input {
       flex-grow: 1;
-      width: auto;
+      width: 0;
     }
     .downshift-label {
       width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+    .multiple {
+      flex-grow: 1;
+      width: auto;
     }
   }
 ` as typeof MuiTextField;
