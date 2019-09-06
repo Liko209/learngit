@@ -283,17 +283,21 @@ class TelephonyService {
       () => ({
         hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
         defaultCallerPhoneNumber: this._telephonyStore.defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall: this._telephonyStore.isEndMultipleIncomingCall
       }),
       async ({
         hasActiveOutBoundCall,
         defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall
       }: {
         hasActiveOutBoundCall: boolean;
         defaultCallerPhoneNumber: string;
+        isEndMultipleIncomingCall: boolean;
       }) => {
         // restore things to default values
-        if (!hasActiveOutBoundCall) {
+        if (!hasActiveOutBoundCall && !isEndMultipleIncomingCall) {
           runInAction(() => {
+            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -752,6 +756,7 @@ class TelephonyService {
       this._telephonyStore.dialerHeight = _dialerRect.height;
 
       this._telephonyStore.startAnimation();
+
       return;
     }
     // when no destination, hide the dialer directly.
@@ -759,7 +764,7 @@ class TelephonyService {
   };
 
   @action
-  onAnimationEnd = async () => {
+  onAnimationEnd = () => {
     this._telephonyStore.closeDialer();
     this._telephonyStore.dialerMinimizeTranslateX = NaN;
     this._telephonyStore.dialerMinimizeTranslateY = NaN;
@@ -770,6 +775,7 @@ class TelephonyService {
 
   maximize = () => {
     this._telephonyStore.openDialer();
+    this._telephonyStore.onDialerInputFocus();
   };
 
   onAfterDialerOpen = () => {
@@ -974,6 +980,8 @@ class TelephonyService {
       return;
     });
   };
+
+  deleteInputString = this.deleteInputStringFactory('inputString');
 
   dispose = () => {
     this._ringtonePrefetcher.dispose()

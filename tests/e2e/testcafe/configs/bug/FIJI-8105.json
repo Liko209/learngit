@@ -1,0 +1,12 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/MessageInput/*.ts",
+      "./fixtures/NewConversation/*.ts",
+      "./fixtures/SendNewMessage/*.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

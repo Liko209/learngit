@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./telephony/Transfer.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

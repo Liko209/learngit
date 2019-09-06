@@ -13,7 +13,6 @@ function openSearch() {
   );
   globalSearchService.openGlobalSearch();
   analyticsCollector.shortcuts('globalSearch');
-  return false; // prevent browser default behavior
 }
 
 export { openSearch };

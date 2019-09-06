@@ -47,10 +47,6 @@ export class CallHistoryPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('callHistoryEmptyPage');
   }
 
-  callhistoryItemByNth(n: number) {
-    return this.getComponent(CallHistoryItem, this.items.nth(n));
-  }
-
   get allCallsItems() {
     return this.getSelector('[data-type="1"]').find('[data-test-automation-class="call-history-item"]');
   }
@@ -75,6 +71,11 @@ export class CallHistoryPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('delete-all-button');
   }
 
+  callHistoryItemById(id: string) {
+    return this.getComponent(CallHistoryItem, this.items.filter(`[data-id="${id}"]`));
+  }
+
+  /** actions */
   async clickMoreIcon() {
     await this.t.click(this.moreIcon);
   }
@@ -83,10 +84,17 @@ export class CallHistoryPage extends BaseWebComponent {
     await this.t.click(this.deleteAllCallButton);
   }
 
-  callHistoryItemById(id: string) {
-    return this.getComponent(CallHistoryItem, this.items.filter(`[data-id="${id}"]`));
+  async typeFilter(text: string, options: TypeActionOptions = { replace: true, paste: true }) {
+    await this.clickAndTypeText(this.filterInput, text, options);
   }
 
+  async expectItemsWithNameExist(name: string) {
+    await this.t.expect(this.items.find('.list-item-primary').withText(name).exists).ok();
+  }
+
+  async expectItemsWithNameNotExist(name: string) {
+    await this.t.expect(this.items.find('.list-item-primary').withText(name).exists).notOk();
+  }
 }
 
 class CallHistoryItem extends BaseWebComponent {
@@ -118,7 +126,7 @@ class CallHistoryItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('calllog-message-button', this.self);
   }
 
-  async hoverMessageButton(){
+  async hoverMessageButton() {
     await this.t.hover(this.self).hover(this.messageButton);
   }
 
@@ -126,11 +134,11 @@ class CallHistoryItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.messageButton);
   }
 
-  get callbackButton () {
+  get callbackButton() {
     return this.getSelectorByAutomationId('calllog-call-button', this.self);
   }
 
-  async hoverCallBackButton(){
+  async hoverCallBackButton() {
     await this.t.hover(this.self).hover(this.callbackButton);
   }
 
@@ -142,7 +150,7 @@ class CallHistoryItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('calllog-delete-button');
   }
 
-  async hoverDeleteButton(){
+  async hoverDeleteButton() {
     await this.t.hover(this.self).hover(this.deleteButton);
   }
 

@@ -1,0 +1,9 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/**/*.ts",
+      "./telephony/Dialer.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

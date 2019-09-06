@@ -7,6 +7,10 @@ export class MoreActionOnFile extends BaseWebComponent {
     return this.getSelectorByAutomationId('fileActionMore');
   }
 
+  get shareFileMenu(){
+    return this.getSelectorByAutomationId('fileShareItem');
+  }
+
   get renameFileMenu() {
     return this.getSelectorByAutomationId('fileNameEditItem', this.fileActionMenuList);
   }
@@ -37,6 +41,10 @@ export class MoreActionOnFile extends BaseWebComponent {
 
   async clickMore() {
     await this.t.click(this.self);
+  }
+
+  async clickShareFileMenu(){
+    await this.t.click(this.shareFileMenu);
   }
 
   async clickRenameFileMenu() {

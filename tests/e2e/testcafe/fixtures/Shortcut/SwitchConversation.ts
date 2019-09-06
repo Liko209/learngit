@@ -61,6 +61,13 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createTeam(team02);
   });
 
+  await h(t).withLog(`And I send post in these two teams`, async () => {
+    await h(t).scenarioHelper.sendTextPost('text', team01, loginUser);
+    await h(t).scenarioHelper.sendTextPost('text', team02, loginUser);
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).groupIdShouldBe(team02.glipId);
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(1).groupIdShouldBe(team01.glipId);
+  });
+
   await h(t).withLog(`When I press ${shortcuts}`, async () => {
     await t.pressKey(shortcuts);
   });
@@ -155,6 +162,13 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createTeam(team02);
   });
 
+  await h(t).withLog(`And I send post in these two teams`, async () => {
+    await h(t).scenarioHelper.sendTextPost('text', team01, loginUser);
+    await h(t).scenarioHelper.sendTextPost('text', team02, loginUser);
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).groupIdShouldBe(team02.glipId);
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(1).groupIdShouldBe(team01.glipId);
+  });
+
   //case JPT-2804
   await h(t).withLog(`When I press ${shortcuts}`, async () => {
     await t.pressKey(shortcuts);
@@ -179,7 +193,7 @@ test.meta(<ITestMeta>{
   });
 
   //case JPT-2792
-  await h(t).withLog(`When I enter down arrow via keyboard`, async () => {
+  await h(t).withLog(`When I enter down arrow via keyboard [JPT-2792]`, async () => {
     await t.pressKey('down');
   });
   await h(t).withLog(`And I click enter`, async () => {
@@ -187,15 +201,17 @@ test.meta(<ITestMeta>{
   });
   await h(t).withLog(`Then jump to the conversation`, async () => {
     await app.homePage.messageTab.conversationPage.titleShouldBe(team01.name);
+    await t.wait(2e3);
   });
 
   await h(t).withLog(`When I press ${shortcuts} to open the dialog again`, async () => {
     await t.pressKey(shortcuts);
     await recentConversationDialog.ensureLoaded();
   });
+
   await h(t).withLog(`And I click up arrow via keyboard`, async () => {
     await t.pressKey('down');
-    await t.pressKey('up')
+    await t.pressKey('up');
   });
   await h(t).withLog(`And I click enter`, async () => {
     await recentConversationDialog.clickEnter();

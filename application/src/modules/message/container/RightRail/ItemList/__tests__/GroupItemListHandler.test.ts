@@ -5,7 +5,8 @@
  */
 import { flushPromises } from 'shield/utils/flushPromises';
 import notificationCenter from 'sdk/service/notificationCenter';
-import { ItemNotification, ItemService } from 'sdk/module/item';
+import { ItemNotification } from 'sdk/module/item';
+import { ItemService } from 'sdk/module/item/service';
 import { EVENT_TYPES } from 'sdk/service';
 import { Item } from 'sdk/module/item/entity';
 import { GlipTypeUtil } from 'sdk/utils/glip-type-dictionary';
@@ -15,6 +16,7 @@ import { DEFAULT_PAGE_SIZE } from '@/store/base/fetch/constant';
 import { GroupItemListHandler } from '../GroupItemListHandler';
 import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 import { getTypeId } from '../utils';
+jest.mock('sdk/module/item/service')
 
 const itemService = ServiceLoader.getInstance<ItemService>(
   ServiceConfig.ITEM_SERVICE,

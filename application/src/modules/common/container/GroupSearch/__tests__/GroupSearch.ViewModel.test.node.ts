@@ -25,5 +25,31 @@ describe('GroupSearch.ViewModel', () => {
         expect(groupSearchViewModel.list).toEqual([1]);
       });
     }
+
+    @test('should use defaultList when searchKey is empty')
+    searchGroups() {
+      const defaultList = jest.fn();
+      const searchFunc = jest.fn();
+      const groupSearchViewModel = new GroupSearchViewModel({
+        defaultList,
+        searchFunc,
+      });
+      groupSearchViewModel.searchGroups('');
+      expect(defaultList).toHaveBeenCalled();
+      expect(searchFunc).not.toHaveBeenCalled();
+    }
+
+    @test('should use searchFun when searchKey is not empty')
+    searchGroups2() {
+      const defaultList = jest.fn();
+      const searchFunc = jest.fn();
+      const groupSearchViewModel = new GroupSearchViewModel({
+        defaultList,
+        searchFunc,
+      });
+      groupSearchViewModel.searchGroups('no');
+      expect(defaultList).not.toHaveBeenCalled();
+      expect(searchFunc).toHaveBeenCalled();
+    }
   }
 });

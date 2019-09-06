@@ -21,6 +21,7 @@ import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
 import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';
 import { RuiCheckbox } from 'rcui/components/Checkbox';
 import { Loading } from 'jui/hoc/withLoading';
+import { Notification, notificationKey } from '@/containers/Notification';
 
 import { E911ViewProps, Country, State, FieldItem, CheckBox } from './types';
 
@@ -157,10 +158,11 @@ class E911ViewComponent extends Component<Props> {
     if (!success) {
       return;
     }
-    
-    this.context();
+
     // we should ensure only have one E911 dialog
     closeE911(false);
+    Notification.removeNotification(notificationKey.E911_TOAST);
+    this.context();
   };
 
   onCancel = () => {

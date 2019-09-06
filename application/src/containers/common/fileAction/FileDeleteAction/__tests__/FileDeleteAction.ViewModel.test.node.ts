@@ -123,14 +123,14 @@ describe('FileDeleteActionViewModel', () => {
     }
 
     @test(
-      'should be false when file is in conversation and fileVersion in post is uploaded by user, but the user is a guest',
+      'should be true when file is in conversation and fileVersion in post is uploaded by user, but the user is a guest',
     )
     @mockEntity(entityMock({ postFileVersion: 3, isThePersonGuest: true }))
     t5() {
       // @ts-ignore
       getGlobalValue = jest.fn().mockReturnValue(userC);
       const vm = new FileDeleteActionViewModel();
-      expect(vm.canDelete).toBe(false);
+      expect(vm.canDelete).toBe(true);
     }
   }
 

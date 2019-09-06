@@ -14,6 +14,7 @@ import {
 import { JuiIconButton, JuiButton } from 'jui/components/Buttons';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
+import { MiniCard } from '@/modules/message/container/MiniCard';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { IMessageStore } from '@/modules/message/interface';
 import { ProfileDialogPerson } from '@/modules/message/container/Profile/Dialog/Person';
@@ -30,8 +31,7 @@ class ProfileMiniCardPersonFooter extends Component<
     const { id } = this.props;
     const result = goToConversationWithLoading({ id });
     if (result) {
-      portalManager.dismissLast();
-      portalManager.addShouldCloseStatus();
+      this.handleCloseMiniCard();
     }
   };
 
@@ -41,6 +41,7 @@ class ProfileMiniCardPersonFooter extends Component<
   };
 
   handleCloseMiniCard = () => {
+    delete MiniCard.dismiss;
     portalManager.dismissLast();
     portalManager.addShouldCloseStatus();
   };

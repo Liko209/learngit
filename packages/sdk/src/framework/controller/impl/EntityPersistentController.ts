@@ -146,14 +146,9 @@ class EntityPersistentController<
             sortFunc,
           );
         } else {
-          const filterItems: T[] = [];
-          if (filterFunc) {
-            items.forEach(item => {
-              if (filterFunc(item)) {
-                filterItems.push(item);
-              }
-            });
-          }
+          const filterItems: T[] = filterFunc
+            ? items.filter(filterFunc)
+            : items;
 
           if (sortFunc) {
             filterItems.sort(sortFunc);

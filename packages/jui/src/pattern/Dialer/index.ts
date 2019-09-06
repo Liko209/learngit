@@ -24,3 +24,4 @@ export * from './CallSwitch';
 export * from './StyledActionText';
 export * from './SwitchCallChip';
 export * from './CallListItem';
+export * from './EndAndAnswer';

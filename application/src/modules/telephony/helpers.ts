@@ -4,11 +4,10 @@ import history from '@/history';
 import { i18nP } from '@/utils/i18nT';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PersonService } from 'sdk/module/person';
+import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { getEntity } from '@/store/utils';
 import { Person } from 'sdk/module/person/entity';
-import { Voicemail } from 'sdk/module/RCItems/voicemail/entity';
 import PersonModel from '@/store/models/Person';
-import VoicemailModel from '@/store/models/Voicemail';
 import { Notification } from '@/containers/Notification';
 import {
   ToastMessageAlign,
@@ -115,13 +114,12 @@ const linkWhenRouteInactive = (pathname: string) => {
   }
 }
 
-export const onVoicemailNotificationClick = (id: number) => {
+export const onVoicemailNotificationClick = async (id: number) => {
   linkWhenRouteInactive(VOICEMAILS_ROOT_PATH);
 
-  const voicemail = getEntity<Voicemail, VoicemailModel>(
-    ENTITY_NAME.VOICE_MAIL,
-    id,
-  );
+  const voicemail = await ServiceLoader.getInstance<VoicemailService>(
+      ServiceConfig.VOICEMAIL_SERVICE,
+    ).getById(id);
 
   const isVoicemailExisted = voicemail
     && (voicemail.availability === MESSAGE_AVAILABILITY.ALIVE);

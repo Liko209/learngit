@@ -11,7 +11,7 @@ import {
   switchToConversation,
 } from '../switchConversationHandler';
 import portalManager from '@/common/PortalManager';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 
 jest.mock('@/common/goToConversation');
 
@@ -42,7 +42,7 @@ describe('switch conversation handler', () => {
       switchToConversation({ id: conversationId });
       expect(portalManager.dismissAll).toHaveBeenCalled();
       setTimeout(() => {
-        expect(goToConversation).toHaveBeenCalled();
+        expect(goToConversationWithLoading).toHaveBeenCalled();
       });
     }
   }

@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 
 import { Avatar } from '@/containers/Avatar';
-import { JuiContactCell, JuiContactName } from 'jui/pattern/Contacts';
+import { JuiContactCell, JuiContactNameWrapper, JuiContactName } from 'jui/pattern/Contacts';
 import { JuiListItemAvatar } from 'jui/components/Lists';
 import { Profile, PROFILE_TYPE } from '@/modules/message/container/Profile';
 import { MiniCard } from '@/modules/message/container/MiniCard';
@@ -69,7 +69,7 @@ class ContactCellViewComponent extends Component<Props> {
     } = this.props;
     const primary = (
       <>
-        {displayName}
+        <JuiContactName>{displayName}</JuiContactName>
         {isGuest ? (
           <RuiTag color="secondary" content={t('common.guest')} />
         ) : null}
@@ -85,7 +85,7 @@ class ContactCellViewComponent extends Component<Props> {
         data-test-automation-id={automationID}
       >
         <JuiListItemAvatar>{this._avatar}</JuiListItemAvatar>
-        <JuiContactName primary={primary} />
+        <JuiContactNameWrapper primary={primary} />
         {isHover && (
           <Actions
             id={id}

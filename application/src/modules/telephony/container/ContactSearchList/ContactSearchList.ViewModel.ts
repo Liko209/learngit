@@ -240,6 +240,7 @@ export class ContactSearchListViewModel
     return searchService.doFuzzySearchPhoneContacts(searchString, {
       fetchAllIfSearchKeyEmpty: false,
       recentFirst: true,
+      showExtensionOnly: true,
     });
   };
 

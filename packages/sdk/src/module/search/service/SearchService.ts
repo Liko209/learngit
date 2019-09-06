@@ -10,6 +10,7 @@ import {
   RecentSearchModel,
   FuzzySearchContactOptions,
   PhoneContactEntity,
+  FuzzySearchPhoneContactOptions,
 } from '../entity';
 import { SearchServiceController } from '../controller/SearchServiceController';
 import { Person } from '../../person/entity';
@@ -131,7 +132,7 @@ class SearchService extends AbstractService
 
   async doFuzzySearchPhoneContacts(
     searchKey: UndefinedAble<string>,
-    options: FuzzySearchContactOptions,
+    options: FuzzySearchPhoneContactOptions,
   ): Promise<{
     terms: string[];
     phoneContacts: PhoneContactEntity[];
