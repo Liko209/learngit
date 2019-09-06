@@ -435,7 +435,9 @@ class JuiHeader extends PureComponent<Props, State> {
     const { focus } = this.props;
     if (focus && this._inputRef.current) {
       clearTimeout(this._timerId);
-      this._timerId = setTimeout(() => this._inputRef.current.focus(), 0);
+      this._timerId = setTimeout(() => {
+        this._inputRef.current && this._inputRef.current.focus();
+      }, 0);
     }
   }
 

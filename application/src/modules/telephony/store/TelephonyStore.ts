@@ -281,9 +281,12 @@ class TelephonyStore {
     );
 
     reaction(
-      () => this.isMultipleCall,
-      isMultipleCall => {
-        if (isMultipleCall) {
+      () => ({
+        isMultipleCall: this.isMultipleCall,
+        isIncomingCall: this.isIncomingCall,
+      }),
+      ({ isMultipleCall, isIncomingCall }) => {
+        if (isMultipleCall && isIncomingCall) {
           this.changeBackToDefaultPos(true);
           return;
         }
@@ -888,7 +891,7 @@ class TelephonyStore {
 
   @action
   endMultipleIncomingCall() {
-    if (!this.isMultipleCall) return;
+    if (!this.isMultipleCall || !this.isInbound) return;
     this.isBackToDefaultPos = true;
   }
 
