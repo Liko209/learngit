@@ -135,16 +135,21 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 
   componentDidMount() {
-    // this.setHeaderItemMaxWidth();
+    this.setHeaderItemMaxWidth();
     window.addEventListener('resize', this.setHeaderItemMaxWidth);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.setHeaderItemMaxWidth);
   }
-
-  componentDidUpdate() {
-    this.setHeaderItemMaxWidth();
+  componentDidUpdate(prevProps: ConversationCardHeaderProps) {
+    const { name, statusPlainText } = this.props;
+    if (
+      prevProps.name !== name ||
+      prevProps.statusPlainText !== statusPlainText
+    ) {
+      this.setHeaderItemMaxWidth();
+    }
   }
 
   render() {

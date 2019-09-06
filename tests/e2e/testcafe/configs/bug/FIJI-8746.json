@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ConversationStream/ConversationCard.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}
