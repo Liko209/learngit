@@ -6,7 +6,9 @@
 import React from 'react';
 import { JuiDialog, JuiDialogProps } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
-import { dataAnalysis } from 'foundation/analysis';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { SHORT_CUT_KEYS } from '@/AnalyticsCollector/constants';
+import { CLOSE_REASON } from './constants';
 
 type Props = {
   componentProps?: any;
@@ -27,10 +29,8 @@ function modal(
     } else {
       portalManager.dismissLast();
     }
-    if (reason === 'escapeKeyDown') {
-      dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
-        shortcut: 'escape',
-      });
+    if (reason === CLOSE_REASON.ESC) {
+      analyticsCollector.shortcuts(SHORT_CUT_KEYS.ESCAPE);
     }
   };
   const Component = component;

@@ -6,18 +6,21 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
+import { test, testable } from 'shield';
 import { ConvertToTeamView } from '../ConvertToTeam.View';
 import { JuiModal } from 'jui/components/Dialog';
 
 jest.mock('@/containers/Notification');
 
 describe('ConvertToTeamView', () => {
-  describe('render()', () => {
-    it('should contain onClose props when rendering JuiModal ', async () => {
+  @testable
+  class render {
+    @test('should render withEscTracking when Component rendered ')
+    t1() {
       const props = {};
       const Wrapper = shallow(<ConvertToTeamView {...props} />);
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
-    });
-  });
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
+    }
+  }
 });

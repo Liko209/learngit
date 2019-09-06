@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 import { FileNameEditDialogView } from '../FileNameEditDialog.View';
 import { JuiModal } from 'jui/components/Dialog';
@@ -12,8 +13,10 @@ import { JuiModal } from 'jui/components/Dialog';
 jest.mock('@/containers/Notification');
 
 describe('CreateTeamView', () => {
-  describe('render()', () => {
-    it('should contain onClose props when rendering JuiModal ', async () => {
+  @testable
+  class render {
+    @test('should render withEscTracking when Component rendered ')
+    t1() {
       const props = {
         canEditFileName: true,
         newFileName: 'string',
@@ -25,8 +28,8 @@ describe('CreateTeamView', () => {
         handleEditFileName: () => null,
       };
       const Wrapper = shallow(<FileNameEditDialogView {...props} />);
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
-    });
-  });
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
+    }
+  }
 });
