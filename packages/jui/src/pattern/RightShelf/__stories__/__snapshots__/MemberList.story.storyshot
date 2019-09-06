@@ -71,7 +71,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   position: relative;
 }
 
-.c10.c10 {
+.c11.c11 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -81,20 +81,20 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   background-color: #6FAFEB;
 }
 
-.c10.c10:hover {
+.c11.c11:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c10.c10:active {
+.c11.c11:active {
   opacity: 0.76;
 }
 
-.c10:focus {
+.c11:focus {
   outline: none;
 }
 
-.c10 > .avatar-short-name {
+.c11 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -111,13 +111,13 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   align-items: center;
 }
 
-.c11 {
+.c12 {
   position: absolute;
   bottom: 0;
   right: 0;
 }
 
-.c12 {
+.c13 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -135,6 +135,12 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   border: 2px solid #fff;
   background: #26a304;
   border-radius: 50%;
+}
+
+.c16 .c10:hover,
+.c16 .c10:active {
+  cursor: default;
+  opacity: 1;
 }
 
 .c3 {
@@ -192,7 +198,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   position: relative;
 }
 
-.c14 {
+.c15 {
   font-size: 0.75rem;
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -230,7 +236,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
   margin-bottom: 8px;
 }
 
-.c13 {
+.c14 {
   width: 32px;
   height: 32px;
   font-size: 0.75rem;
@@ -326,7 +332,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -336,10 +342,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -349,7 +355,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -359,10 +365,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -372,7 +378,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -382,10 +388,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -395,7 +401,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -405,10 +411,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -418,7 +424,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -428,10 +434,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -441,7 +447,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -451,10 +457,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -464,7 +470,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -474,10 +480,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -487,7 +493,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -497,10 +503,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -510,7 +516,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -520,10 +526,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -533,7 +539,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -543,16 +549,16 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
       </div>
       <div
-        className="c13"
+        className="c14"
       >
         <div>
           +
@@ -561,7 +567,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
       </div>
     </div>
     <div
-      className="c14"
+      className="c15"
     >
       Guests
     </div>
@@ -573,7 +579,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -583,10 +589,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -596,7 +602,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -606,10 +612,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -619,7 +625,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -629,10 +635,10 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
@@ -642,7 +648,7 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
         size="medium"
       >
         <div
-          className="MuiAvatar-root c10 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c10 c11 MuiAvatar-colorDefault"
           color="lake"
           onMouseEnter={[Function]}
           onMouseOut={[Function]}
@@ -652,16 +658,16 @@ exports[`Storyshots Pattern/ConversationRightShelf MemberList: Pattern/Conversat
           SH
         </div>
         <div
-          className="c11"
+          className="c12"
         >
           <div
-            className="c12"
+            className="c13"
             size="medium"
           />
         </div>
       </div>
       <div
-        className="c13"
+        className="c14"
       >
         <div>
           +
