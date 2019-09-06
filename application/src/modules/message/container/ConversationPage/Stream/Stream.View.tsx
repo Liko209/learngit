@@ -31,8 +31,12 @@ import {
   ThresholdStrategy,
   JuiVirtualizedListHandles,
   ItemWrapper,
+  SCROLL_ALIGN,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc/withLoading';
+import {
+  DefaultLoadingWithDelay,
+  DefaultLoadingMore,
+} from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
@@ -107,12 +111,7 @@ class StreamViewComponent extends Component<Props> {
       lastPost: prevLastPost = { id: NaN },
       jumpToPostId: prevJumpToPostId,
     } = prevProps;
-    const {
-      postIds,
-      hasMore,
-      lastPost,
-      jumpToPostId,
-    } = this.props;
+    const { postIds, hasMore, lastPost, jumpToPostId } = this.props;
 
     const newPostAddedAtEnd =
       prevPostIds.length !== 0 &&
@@ -267,7 +266,7 @@ class StreamViewComponent extends Component<Props> {
     { startIndex, stopIndex }: IndexRange,
     target?: HTMLElement,
   ) => {
-    if(!target) return;
+    if (!target) return;
     const { scrollHeight, scrollTop, clientHeight } = target;
     const {
       items,
@@ -282,7 +281,6 @@ class StreamViewComponent extends Component<Props> {
       });
       this._firstTracer = true;
     }
-
 
     const listEl = this._listRef.current;
     const lastPostVisible = stopIndex === items.length - 1;
@@ -467,8 +465,16 @@ class StreamViewComponent extends Component<Props> {
       isAboveScrollToLatestCheckPoint: this._isAboveScrollToLatestCheckPoint,
     };
     const initialPosition = this.props.jumpToPostId
-      ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
-      : items.length - 1;
+      ? {
+          initialScrollToIndex: this._findStreamItemIndexByPostId(
+            this.props.jumpToPostId,
+          ),
+          initialScrollAlignTo: SCROLL_ALIGN.TOP,
+        }
+      : {
+          initialScrollToIndex: items.length - 1,
+          initialScrollAlignTo: SCROLL_ALIGN.BOTTOM,
+        };
     /* eslint-disable implicit-arrow-linebreak */
     return (
       <JuiStream>
@@ -483,28 +489,28 @@ class StreamViewComponent extends Component<Props> {
                 loadingStatus === STATUS.FAILED ? (
                   this._onInitialDataFailed
                 ) : (
-                    <>
-                      <AnchorButton {...anchorButtonProps} />
-                      <JuiInfiniteList
-                        contentStyle={this._contentStyleGen(height)}
-                        ref={this._listRef}
-                        height={height}
-                        stickToBottom
-                        loadMoreStrategy={this._loadMoreStrategy}
-                        initialScrollToIndex={initialPosition}
-                        minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
-                        loadInitialData={this._loadInitialPosts}
-                        loadMore={loadMore}
-                        loadingRenderer={this._defaultLoading}
-                        hasMore={hasMore}
-                        loadingMoreRenderer={this._defaultLoadingMore}
-                        onVisibleRangeChange={this._handleVisibilityChanged}
-                        onBottomStatusChange={this._bottomStatusChangeHandler}
-                      >
-                        {this._renderStreamItems()}
-                      </JuiInfiniteList>
-                    </>
-                  )
+                  <>
+                    <AnchorButton {...anchorButtonProps} />
+                    <JuiInfiniteList
+                      contentStyle={this._contentStyleGen(height)}
+                      ref={this._listRef}
+                      height={height}
+                      stickToBottom
+                      loadMoreStrategy={this._loadMoreStrategy}
+                      minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
+                      loadInitialData={this._loadInitialPosts}
+                      loadMore={loadMore}
+                      loadingRenderer={this._defaultLoading}
+                      hasMore={hasMore}
+                      loadingMoreRenderer={this._defaultLoadingMore}
+                      onVisibleRangeChange={this._handleVisibilityChanged}
+                      onBottomStatusChange={this._bottomStatusChangeHandler}
+                      {...initialPosition}
+                    >
+                      {this._renderStreamItems()}
+                    </JuiInfiniteList>
+                  </>
+                )
               }
             </Observer>
           )}

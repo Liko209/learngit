@@ -18,7 +18,7 @@ import {
   JuiVirtualizedListHandles,
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
-import { IndexRange } from './types';
+import { IndexRange, SCROLL_ALIGN } from './types';
 import { useMountState } from './hooks';
 import { DIRECTION } from '../Lists';
 
@@ -32,6 +32,7 @@ type JuiInfiniteListProps = {
   loadInitialData: () => Promise<void>;
   loadMore: (direction: DIRECTION, count: number) => Promise<void>;
   initialScrollToIndex?: number;
+  initialScrollAlignTo?: SCROLL_ALIGN;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
   onVisibleRangeChange?: (range: IndexRange, target: HTMLElement) => void;
@@ -62,6 +63,7 @@ const JuiInfiniteList = (
     loadInitialData,
     loadMore,
     initialScrollToIndex = 0,
+    initialScrollAlignTo,
     noRowsRenderer,
     loadingRenderer = null,
     loadingMoreRenderer = null,
@@ -163,6 +165,7 @@ const JuiInfiniteList = (
               minRowHeight={minRowHeight}
               fixedRowHeight={fixedRowHeight}
               initialScrollToIndex={initialScrollToIndex}
+              initialScrollAlignTo={initialScrollAlignTo}
               overscan={overscan}
               before={loadingUp ? loadingMoreRenderer : null}
               after={loadingDown ? loadingMoreRenderer : null}
