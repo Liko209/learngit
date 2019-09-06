@@ -263,9 +263,9 @@ test.meta(<ITestMeta>{
   const dialog = app.homePage.messageTab.closeConversationModal;
   await h(t).withLog('Then a confirm dialog should be popup', async () => {
     await t.expect(dialog.title.withText(title).exists).ok();
-    await t.expect(dialog.getSelector('p').withText(content).exists).ok();
-    await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
-    await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
+    await t.expect(dialog.confirmMessage.withText(content)).ok();
+    await t.expect(dialog.dontAskAgainCheckboxLabel.textContent).eql(checkboxLabel);
+    await t.expect(dialog.closeButton.withText(button).exists).ok();
   });
 
   await h(t).withLog(`When I don't select "Don't ask me again" then click "Close Conversation" button`, async () => {
@@ -284,9 +284,9 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then should be show the confirm dialog again', async () => {
     await t.expect(dialog.title.withText(title).exists).ok();
-    await t.expect(dialog.getSelector('p').withText(content)).ok();
-    await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
-    await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
+    await t.expect(dialog.confirmMessage.withText(content)).ok();
+    await t.expect(dialog.dontAskAgainCheckboxLabel.textContent).eql(checkboxLabel);
+    await t.expect(dialog.closeButton.withText(button).exists).ok();
   });
 });
 
@@ -353,8 +353,8 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
   await h(t).withLog('Then a confirm dialog should be popup', async () => {
     await t.expect(closeConversationDialog.title.withText(title).exists).ok();
-    await t.expect(closeConversationDialog.getSelector('p').withText(content)).ok();
-    await t.expect(closeConversationDialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
+    await t.expect(closeConversationDialog.confirmMessage.withText(content)).ok();
+    await t.expect(closeConversationDialog.dontAskAgainCheckboxLabel.textContent).eql(checkboxLabel);
     await t.expect(closeConversationDialog.closeButton.find('span').withText(button).exists).ok();
   });
 
@@ -648,3 +648,78 @@ test(formalName('Check can cancel confirm dialog when user first time use close 
       await t.expect(teamEntry.exists).ok();
     });
   });
+
+
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-318'], priority: ['P2'], keywords: ['ConversationList', 'FavoriteSection', 'closeConversation'], maintainers: ['potar.he']
+})('Expand & Collapse', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+
+  const chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, users[5]]
+  }
+  const favoriteChat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, users[6]]
+  }
+  const team = <IGroup>{
+    type: 'Team',
+    members: [loginUser],
+    owner: loginUser,
+    name: uuid()
+  }
+
+  await h(t).withLog('Given I have an extension with 2 private chats and 1 team', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([chat, favoriteChat, team]);
+  });
+
+  await h(t).withLog('And there is a conversation in each (Favorites/DirectMessages/Teams) section ', async () => {
+    await h(t).glip(loginUser).favoriteGroups(favoriteChat.glipId);
+  });
+
+  const app = new AppRoot(t);
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I open more menu on a conversation in favorites section', async () => {
+    await app.homePage.messageTab.favoritesSection.nthConversationEntry(0).openMoreMenu();
+  });
+
+  const moreMenu = app.homePage.messageTab.moreMenu;
+  await h(t).withLog('Then Close option should not display, only show remove favorites option', async () => {
+    await moreMenu.close.shouldBeDisabled();
+    await moreMenu.favoriteToggler.shouldBeName('Remove from Favorites');
+  });
+
+  await h(t).withLog('When I open more menu on a conversation in DirectMessages section', async () => {
+    await moreMenu.quitByPressEsc();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).openMoreMenu();
+  });
+
+  await h(t).withLog('Then Close option should display', async () => {
+    await moreMenu.close.shouldBeEnabled();
+  });
+
+  await h(t).withLog('When I open more menu on a conversation in Teams section', async () => {
+    await moreMenu.quitByPressEsc();
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).openMoreMenu();
+  });
+
+  await h(t).withLog('Then Close option should display', async () => {
+    await moreMenu.close.shouldBeEnabled();
+  });
+});
