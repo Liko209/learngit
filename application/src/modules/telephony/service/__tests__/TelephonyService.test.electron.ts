@@ -122,10 +122,9 @@ describe('TelephonyService', () => {
       isRCFeaturePermissionEnabled: jest.fn(),
       isVoipCallingAvailable: jest.fn().mockReturnValue(true),
       hasSetCallerId: jest.fn(),
-      getDigitalLines: jest.fn(),
+      getDigitalLines: jest.fn().mockResolvedValue([1]),
       getAccountMainNumber: jest.fn().mockResolvedValue('1'),
     };
-
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
     mockedPhoneNumberService = {
       isValidNumber: jest.fn().mockImplementation(toNumber => ({
@@ -135,6 +134,7 @@ describe('TelephonyService', () => {
       })),
       getLocalCanonical: jest.fn().mockImplementation(i => i),
       isShortNumber: jest.fn().mockResolvedValue(true),
+      isSpecialNumber: jest.fn().mockResolvedValue(false),
     };
     mockedSettingService = {
       getById: jest.fn().mockResolvedValue({ value: CALLING_OPTIONS.GLIP }),
@@ -820,9 +820,12 @@ describe('TelephonyService', () => {
   });
 
   it('Should show the toast when initiate a call to an invalid number from matched result [JPT-254]', async () => {
-    mockedPhoneNumberService.isValidNumber = jest.fn().mockReturnValue(false);
+    mockedPhoneNumberService.isValidNumber = jest.fn().mockResolvedValue(false);
+    mockedServerTelephonyService.getAllCallCount = jest.fn().mockReturnValue(0);
     await (telephonyService as TelephonyService).directCall(v4());
-    expect(ToastCallError.toastInvalidNumber).toHaveBeenCalled();
+    setTimeout(() => {
+      expect(ToastCallError.toastInvalidNumber).toHaveBeenCalled();
+    }, 0);
   });
 
   it('should prompt the toast when park during the call recording is being saved [JPT-2179]', async () => {

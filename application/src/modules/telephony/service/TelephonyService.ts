@@ -611,14 +611,16 @@ class TelephonyService {
     return true;
   };
 
-  ensureCallPermission = async (action: Function, options: { isShortNumber?: boolean } = {}) => {
-
+  ensureCallPermission = async (action: Function, options: { phoneNumber?: string } = {}) => {
     const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
     if (!callAvailable) {
       ToastCallError.toastPermissionError();
       return false;
     }
-    if (!options.isShortNumber && !this._serverTelephonyService.hasActiveDL()) {
+
+    const hasDigitalLines = (await this._rcInfoService.getDigitalLines()).length > 0;
+    const isShortNumber = await this.isShortNumber(options.phoneNumber);
+    if(!hasDigitalLines && !isShortNumber) {
       Notification.flashToast({
         message: 'telephony.prompt.noDLNotAllowedToMakeCall',
         type: ToastType.ERROR,
@@ -629,12 +631,11 @@ class TelephonyService {
       });
       return false;
     }
-
-    if (!options.isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+    const isSpecialNumber = await this.isSpecialNumber(options.phoneNumber);
+    if(!isSpecialNumber && !isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
       this.openE911(action);
       return true;
     }
-
     return await action();
   };
 
@@ -674,10 +675,9 @@ class TelephonyService {
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-    const isShortNumber = (await this.isShortNumber(toNumber)) || (await this.isSpecialNumber(toNumber));
     const result = await this.ensureCallPermission(() => {
       return this._makeCall(toNumber, options)
-    }, { isShortNumber });
+    }, { phoneNumber:toNumber  });
     return result;
   };
 
@@ -1297,10 +1297,9 @@ class TelephonyService {
       );
       return;
     }
-    const isShortNumber = await this.isShortNumber(phoneNumber);
     const ret = await this.ensureCallPermission(() => {
       return this._makeCall(phoneNumber, { accessCode })
-    }, { isShortNumber });
+    }, { phoneNumber });
 
     return ret;
   }

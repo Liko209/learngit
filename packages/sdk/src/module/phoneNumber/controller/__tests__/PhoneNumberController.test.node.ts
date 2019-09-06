@@ -147,6 +147,17 @@ describe('PhoneNumberController', () => {
     });
   });
 
+  describe('isSpecialNumber', () => {
+    it('should call phone parse to get number type', async () => {
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isSpecialNumber: jest.fn().mockReturnValue(true),
+      });
+      const phoneNumberController = new PhoneNumberController();
+      const res = await phoneNumberController.isSpecialNumber('123');
+      expect(res).toBeTruthy();
+    });
+  });
+
   describe('isValidNumber', () => {
     it('should return true when phone num is 6502274787', () => {
       const res = phoneNumberController.isValidNumber('6502274787');
