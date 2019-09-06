@@ -31,7 +31,7 @@ const StyledName = styled('div')`
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
-  padding-left: ${spacing(3)};
+  padding-left: ${spacing(2)};
   box-sizing: border-box;
   color: ${grey('600')};
   ${typography('caption2')};
