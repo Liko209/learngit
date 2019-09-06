@@ -180,7 +180,7 @@ class TelephonyService {
     if (this._ringtoneStopped || !this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
       return;
     }
-    
+
     const muted = isCurrentUserDND() || this._muteRingtone;
     this._ringtone.setLoop(true);
     this._ringtone.setMute(muted);
@@ -560,9 +560,9 @@ class TelephonyService {
       TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
-    if (accessCode) {
-      this._telephonyStore.isConference = true;
-    }
+    const itemStore = storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<Item, ItemModel>;
+    const conference = itemStore.find((item: ItemModel) => item instanceof ConferenceItemModel && item.rcData.phoneNumber === toNumber);
+    this._telephonyStore.isConference = conference !== null || !!accessCode;
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
       { fromNumber, ...options },
