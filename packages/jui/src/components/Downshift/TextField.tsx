@@ -187,7 +187,7 @@ class JuiDownshiftTextField extends React.PureComponent<
             onChange: this.handleInputChange,
             onKeyDown: this.handleKeyDown,
             classes: {
-              root: 'inputRoot',
+              root: multiple ? 'inputRoot' : '',
               input: multiple ? 'multiple' : 'input',
             },
             placeholder: placeholderText,

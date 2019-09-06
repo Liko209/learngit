@@ -149,7 +149,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
           aria-autocomplete="list"
           aria-controls={null}
           aria-labelledby="downshift-multiple-label"
-          className="MuiInputBase-root MuiInput-root inputRoot MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
+          className="MuiInputBase-root MuiInput-root MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
           onClick={[Function]}
         >
           <input
@@ -197,7 +197,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
           aria-autocomplete="list"
           aria-controls={null}
           aria-labelledby="downshift-multiple-label"
-          className="MuiInputBase-root MuiInput-root inputRoot MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
+          className="MuiInputBase-root MuiInput-root MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
           onClick={[Function]}
         >
           <input
