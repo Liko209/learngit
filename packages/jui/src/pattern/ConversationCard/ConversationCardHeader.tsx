@@ -31,7 +31,7 @@ const StyledName = styled('div')`
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
-  padding-left: ${spacing(1)};
+  padding-left: ${spacing(3)};
   box-sizing: border-box;
   color: ${grey('600')};
   ${typography('caption2')};
@@ -44,6 +44,7 @@ const StyledStatus = styled('div')`
       position: relative;
       top: 50%;
       transform: translateY(16%);
+      padding-right: ${spacing(1)};
     }
   }
 `;
