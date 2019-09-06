@@ -56,7 +56,6 @@ describe('Prompt user to confirm emergency address first when user tries to make
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: false },
-      { method: 'hasActiveDL', data: true },
     ])
     @mockService(RCInfoService, [
       { method: 'isVoipCallingAvailable', data: true },
@@ -106,6 +105,9 @@ describe('Prompt user to confirm emergency address first when user tries to make
         telephonyService = jupiter.get(TELEPHONY_SERVICE);
       });
       jest.spyOn(telephonyService, 'isShortNumber').mockResolvedValueOnce(true);
+      jest
+        .spyOn(telephonyService, 'isSpecialNumber')
+        .mockResolvedValueOnce(false);
       jest
         .spyOn(telephonyService, '_makeCall')
         .mockImplementationOnce(jest.fn());
@@ -166,7 +168,6 @@ describe('Prompt user to confirm emergency address first when user tries to make
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: false },
-      { method: 'hasActiveDL', data: false },
     ])
     @mockService(RCInfoService, [
       { method: 'isVoipCallingAvailable', data: true },
