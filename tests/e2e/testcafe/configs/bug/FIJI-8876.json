@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./telephony/**/*.ts"],
+    "fixtures": ["./fixtures/Logout.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
