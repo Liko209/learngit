@@ -17,6 +17,7 @@ type SectionProps = {
   onCollapse?: Function;
   umi?: JSX.Element;
   title: string;
+  extraScrollPadding?: number;
 } & JuiSectionHeaderProps;
 
 type SectionStates = {

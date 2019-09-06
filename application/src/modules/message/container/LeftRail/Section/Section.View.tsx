@@ -15,6 +15,7 @@ import { toTitleCase } from '@/utils/string';
 import { SectionViewProps, SECTION_TYPE } from './types';
 import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { observer } from 'mobx-react';
+import { extraScrollPadding } from '@/utils/system';
 
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
@@ -77,6 +78,7 @@ class SectionViewComponent extends React.Component<Props> {
       >
         <JuiConversationListSection
           title={toTitleCase(t(title)).toUpperCase()}
+          extraScrollPadding={extraScrollPadding}
           umi={<Umi type={umiType} />}
           expanded={expanded}
           onCollapse={handleCollapse}
