@@ -11,7 +11,7 @@ jest.mock('@/common/isUserAgent');
 jest.mock('@/store/utils/entities');
 jest.mock('mobx');
 document.hasFous = jest.fn().mockReturnValue(false);
-global.Notification = function() {
+global.Notification = function () {
   return {};
 };
 global.Notification.requestPermission = jest
