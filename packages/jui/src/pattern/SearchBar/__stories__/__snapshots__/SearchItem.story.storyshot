@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearchItem 1`] = `
-.c2.c2 {
+.c3.c3 {
   width: 24px;
   height: 24px;
   font-size: 0.75rem;
@@ -11,20 +11,20 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
   background-color: #f5f6fb;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2:focus {
+.c3:focus {
   outline: none;
 }
 
-.c2 > .avatar-short-name {
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -41,7 +41,13 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
   align-items: center;
 }
 
-.c4 {
+.c6 .c2:hover,
+.c6 .c2:active {
+  cursor: default;
+  opacity: 1;
+}
+
+.c5 {
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -51,7 +57,7 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
   text-overflow: ellipsis;
 }
 
-.c4 span {
+.c5 span {
   font-weight: bold;
   font-size: 0.875rem;
   font-weight: 500;
@@ -72,7 +78,7 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
   background: rgba(158,158,158,0.12);
 }
 
-.c0.c0.hover .c5 {
+.c0.c0.hover .c7 {
   display: block;
 }
 
@@ -88,7 +94,7 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
   margin-right: 8px;
 }
 
-.c3 {
+.c4 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -128,7 +134,7 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
       data-test-automation-id="search-item-avatar"
     >
       <div
-        className="MuiAvatar-root c2"
+        className="MuiAvatar-root c2 c3"
         size="small"
       >
         <img
@@ -138,10 +144,10 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
       </div>
     </div>
     <div
-      className="c3"
+      className="c4"
     >
       <div
-        className="c4"
+        className="c5"
         dangerouslySetInnerHTML={
           Object {
             "__html": "<span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span>",
@@ -174,7 +180,7 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
       data-test-automation-id="search-item-avatar"
     >
       <div
-        className="MuiAvatar-root c2"
+        className="MuiAvatar-root c2 c3"
         size="small"
       >
         <img
@@ -184,10 +190,10 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
       </div>
     </div>
     <div
-      className="c3"
+      className="c4"
     >
       <div
-        className="c4"
+        className="c5"
         dangerouslySetInnerHTML={
           Object {
             "__html": "<span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span>",

@@ -19,7 +19,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   font-size: 24px;
 }
 
-.c23 {
+.c24 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -30,7 +30,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   font-size: 32px;
 }
 
-.c22.c22 {
+.c23.c23 {
   min-height: 0;
   background-color: #f44336;
   width: 64px;
@@ -43,12 +43,12 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   color: #fff;
 }
 
-.c22.c22:hover,
-.c22.c22:active {
+.c23.c23:hover,
+.c23.c23:active {
   background-color: rgb(219,60,48);
 }
 
-.c22.c22 .rippleVisible {
+.c23.c23 .rippleVisible {
   color: rgb(246,104,94);
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -58,7 +58,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   animation-name: cBKRfH;
 }
 
-.c22.c22[disabled] {
+.c23.c23[disabled] {
   background-color: #f44336;
   color: #fff;
   box-shadow: none;
@@ -157,7 +157,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   animation-name: cBKRfH;
 }
 
-.c20.c20 {
+.c21.c21 {
   padding: 0;
   width: 64px;
   height: 64px;
@@ -168,32 +168,32 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   border-radius: 50%;
 }
 
-.c20.c20 .icon,
-.c20.c20 .icon svg {
+.c21.c21 .icon,
+.c21.c21 .icon svg {
   font-size: 32px;
 }
 
-.c20.c20:hover {
+.c21.c21:hover {
   background-color: rgba(33,33,33,0.12);
 }
 
-.c20.c20:hover .icon {
+.c21.c21:hover .icon {
   color: rgba(33,33,33,0.88);
 }
 
-.c20.c20:active .icon {
+.c21.c21:active .icon {
   color: #212121;
 }
 
-.c20.c20.c20.c20.disabled {
+.c21.c21.c21.c21.disabled {
   background-color: inherit;
 }
 
-.c20.c20.c20.c20.disabled .icon {
+.c21.c21.c21.c21.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c20.c20 .rippleVisible {
+.c21.c21 .rippleVisible {
   color: #212121;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -203,7 +203,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   animation-name: cBKRfH;
 }
 
-.c12.c12 {
+.c13.c13 {
   width: 40px;
   height: 40px;
   font-size: 1rem;
@@ -213,20 +213,20 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   background-color: #f5f6fb;
 }
 
-.c12.c12:hover {
+.c13.c13:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c12.c12:active {
+.c13.c13:active {
   opacity: 0.76;
 }
 
-.c12:focus {
+.c13:focus {
   outline: none;
 }
 
-.c12 > .avatar-short-name {
+.c13 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -241,6 +241,12 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+}
+
+.c25 .c12:hover,
+.c25 .c12:active {
+  cursor: default;
+  opacity: 1;
 }
 
 .c2.c2 {
@@ -295,7 +301,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   margin-right: 12px;
 }
 
-.c13 {
+.c14 {
   margin-left: 12px;
   white-space: nowrap;
   overflow: hidden;
@@ -303,7 +309,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   word-break: break-word;
 }
 
-.c14 {
+.c15 {
   font-size: 1rem;
   font-weight: 600;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -314,7 +320,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   word-break: break-word;
 }
 
-.c15 {
+.c16 {
   font-size: 0.875rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -363,7 +369,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   line-height: 16px;
 }
 
-.c16.c16 {
+.c17.c17 {
   background-color: #fff;
   padding: 0px 24px 24px;
   box-sizing: border-box;
@@ -381,13 +387,13 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   justify-content: space-between;
 }
 
-.c21.c21 {
+.c22.c22 {
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
 }
 
-.c17.c17 {
+.c18.c18 {
   -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
@@ -407,7 +413,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   min-height: 0;
 }
 
-.c18.c18 {
+.c19.c19 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -422,7 +428,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   margin-bottom: -20px;
 }
 
-.c19.c19 {
+.c20.c20 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -438,7 +444,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   margin-bottom: 20px;
 }
 
-.c19.c19 > span {
+.c20.c20 > span {
   color: #616161;
   font-size: 0.75rem;
   font-weight: 400;
@@ -446,7 +452,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   line-height: 16px;
 }
 
-.c19.c19 > span.disabled {
+.c20.c20 > span.disabled {
   color: rgba(0,0,0,0.12);
 }
 
@@ -634,7 +640,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </button>
         </div>
         <div
-          className="MuiAvatar-root c12"
+          className="MuiAvatar-root c12 c13"
           size="large"
         >
           <img
@@ -643,16 +649,16 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           />
         </div>
         <div
-          className="c13"
+          className="c14"
         >
           <div
-            className="c14"
+            className="c15"
             data-test-automation-id="telephony-dialer-header-name"
           >
             Terry Webster
           </div>
           <div
-            className="c15"
+            className="c16"
             data-test-automation-id="telephony-dialer-header-phone"
           >
             (650) 555-12345
@@ -662,22 +668,22 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
     </div>
   </div>
   <div
-    className="c16"
+    className="c17"
   >
     <div
-      className="c17"
+      className="c18"
       onMouseDown={[Function]}
     >
       <div
-        className="c18"
+        className="c19"
         onMouseDown={[Function]}
       >
         <div
-          className="c19"
+          className="c20"
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            className="MuiButtonBase-root MuiIconButton-root c21"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -720,11 +726,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </span>
         </div>
         <div
-          className="c19"
+          className="c20"
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            className="MuiButtonBase-root MuiIconButton-root c21"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -767,11 +773,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </span>
         </div>
         <div
-          className="c19"
+          className="c20"
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            className="MuiButtonBase-root MuiIconButton-root c21"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -814,11 +820,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </span>
         </div>
         <div
-          className="c19"
+          className="c20"
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            className="MuiButtonBase-root MuiIconButton-root c21"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -861,11 +867,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </span>
         </div>
         <div
-          className="c19"
+          className="c20"
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            className="MuiButtonBase-root MuiIconButton-root c21"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -908,11 +914,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           </span>
         </div>
         <div
-          className="c19"
+          className="c20"
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c20"
+            className="MuiButtonBase-root MuiIconButton-root c21"
             disabled={false}
             onBlur={[Function]}
             onDragLeave={[Function]}
@@ -957,11 +963,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
       </div>
     </div>
     <div
-      className="c21"
+      className="c22"
       onMouseDown={[Function]}
     >
       <button
-        className="MuiButtonBase-root MuiFab-root c22"
+        className="MuiButtonBase-root MuiFab-root c23"
         disabled={false}
         onBlur={[Function]}
         onDragLeave={[Function]}
@@ -984,7 +990,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             className=" hand_up icon c4"
           >
             <svg
-              className="c23"
+              className="c24"
               role="img"
               size="moreLarge"
             >

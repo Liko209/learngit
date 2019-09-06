@@ -2,14 +2,14 @@
 
 exports[`Storyshots Pattern ConversationCard: Pattern ConversationCard 1`] = `
 Array [
-  .c15 {
+  .c16 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c16 {
+.c17 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -20,7 +20,7 @@ Array [
   font-size: 24px;
 }
 
-.c14.c14 {
+.c15.c15 {
   padding: 0;
   width: 16px;
   height: 16px;
@@ -31,32 +31,32 @@ Array [
   border-radius: 0;
 }
 
-.c14.c14 .icon,
-.c14.c14 .icon svg {
+.c15.c15 .icon,
+.c15.c15 .icon svg {
   font-size: 16px;
 }
 
-.c14.c14:hover {
+.c15.c15:hover {
   background-color: transparent;
 }
 
-.c14.c14:hover .icon {
+.c15.c15:hover .icon {
   color: rgba(6,132,189,0.88);
 }
 
-.c14.c14:active .icon {
+.c15.c15:active .icon {
   color: #0684bd;
 }
 
-.c14.c14.c14.c14.disabled {
+.c15.c15.c15.c15.disabled {
   background-color: inherit;
 }
 
-.c14.c14.c14.c14.disabled .icon {
+.c15.c15.c15.c15.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c14.c14 .rippleVisible {
+.c15.c15 .rippleVisible {
   color: #0684bd;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -66,7 +66,7 @@ Array [
   animation-name: cBKRfH;
 }
 
-.c2.c2 {
+.c3.c3 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -76,20 +76,20 @@ Array [
   background-color: #6FAFEB;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2:focus {
+.c3:focus {
   outline: none;
 }
 
-.c2 > .avatar-short-name {
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -106,7 +106,13 @@ Array [
   align-items: center;
 }
 
-.c13 {
+.c18 .c2:hover,
+.c18 .c2:active {
+  cursor: default;
+  opacity: 1;
+}
+
+.c14 {
   border: 1px solid rgba(255,55,55,.1);
   border-color: #e0e0e0;
   border-radius: 4px;
@@ -126,21 +132,21 @@ Array [
   color: #0684bd;
 }
 
-.c13 > button {
+.c14 > button {
   margin-right: 4px;
   border-radius: 0;
 }
 
-.c13 > span {
+.c14 > span {
   color: #616161;
   font-size: 12px;
 }
 
-.c13:hover {
+.c14:hover {
   border-color: #0684bd;
 }
 
-.c13:active {
+.c14:active {
   background-color: #e1f4fb;
 }
 
@@ -148,7 +154,7 @@ Array [
   padding: 12px 12px 16px 16px;
 }
 
-.c3 {
+.c4 {
   position: relative;
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
@@ -173,7 +179,7 @@ Array [
   background: #fafafa;
 }
 
-.c5 {
+.c6 {
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
@@ -191,7 +197,7 @@ Array [
   white-space: nowrap;
 }
 
-.c6 {
+.c7 {
   color: #212121;
   font-size: 0.75rem;
   font-weight: 400;
@@ -204,7 +210,7 @@ Array [
   word-break: break-word;
 }
 
-.c7 {
+.c8 {
   padding-left: 4px;
   box-sizing: border-box;
   color: #757575;
@@ -219,7 +225,7 @@ Array [
   word-break: break-word;
 }
 
-.c7.c7 .emoji-mart-emoji {
+.c8.c8 .emoji-mart-emoji {
   position: relative;
   top: 50%;
   -webkit-transform: translateY(16%);
@@ -227,7 +233,7 @@ Array [
   transform: translateY(16%);
 }
 
-.c10 {
+.c11 {
   color: #9e9e9e;
   white-space: nowrap;
   font-size: 0.75rem;
@@ -238,7 +244,7 @@ Array [
   text-align: right;
 }
 
-.c9 {
+.c10 {
   margin-left: 4px;
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -246,7 +252,7 @@ Array [
   display: inline-flex;
 }
 
-.c4 {
+.c5 {
   padding: 12px 16px 8px 0px;
   display: -webkit-box;
   display: -webkit-flex;
@@ -258,7 +264,7 @@ Array [
   align-items: center;
 }
 
-.c8 {
+.c9 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -271,20 +277,20 @@ Array [
   line-height: 16px;
 }
 
-.c8 span:first-child {
+.c9 span:first-child {
   padding-left: 4px;
 }
 
-.c11 {
+.c12 {
   padding: 0px 16px 16px 0px;
   font-size: 0;
 }
 
-.c11 .conversation-item-cards:last-child {
+.c12 .conversation-item-cards:last-child {
   margin-bottom: 0;
 }
 
-.c12 {
+.c13 {
   padding: 0px 16px 16px 0px;
 }
 
@@ -295,7 +301,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
+        className="MuiAvatar-root c2 c3 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -303,22 +309,22 @@ Array [
       </div>
     </div>
     <div
-      className="c3"
+      className="c4"
     >
       <div
-        className="c4"
+        className="c5"
       >
         <div
-          className="c5"
+          className="c6"
         >
           <div
-            className="c6"
+            className="c7"
             data-name="name"
           >
             John Smith
           </div>
           <div
-            className="c7"
+            className="c8"
             data-name="cardHeaderUserStatus"
           >
             <span
@@ -345,7 +351,7 @@ Array [
             in the meeting
           </div>
           <div
-            className="c8"
+            className="c9"
             data-name="cardHeaderNotification"
           >
             <span>
@@ -354,11 +360,11 @@ Array [
           </div>
         </div>
         <div
-          className="c9"
+          className="c10"
           data-test-automation-id="cardHeaderRightSection"
         >
           <div
-            className="c10"
+            className="c11"
             data-name="time"
           >
             3:15 PM
@@ -366,16 +372,16 @@ Array [
         </div>
       </div>
       <div
-        className="c11"
+        className="c12"
       >
         any content
       </div>
       <div
-        className="c12"
+        className="c13"
       >
         <div
           aria-describedby={null}
-          className="c13"
+          className="c14"
           data-name="footerLikeButton"
           onClick={[Function]}
           onMouseLeave={[Function]}
@@ -386,7 +392,7 @@ Array [
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c14"
+            className="MuiButtonBase-root MuiIconButton-root c15"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
             disabled={false}
@@ -412,10 +418,10 @@ Array [
               className="MuiIconButton-label"
             >
               <span
-                className=" thumbup icon c15"
+                className=" thumbup icon c16"
               >
                 <svg
-                  className="c16"
+                  className="c17"
                   role="img"
                 >
                   <use
@@ -433,14 +439,14 @@ Array [
       </div>
     </div>
   </div>,
-  .c15 {
+  .c16 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c16 {
+.c17 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -451,7 +457,7 @@ Array [
   font-size: 24px;
 }
 
-.c14.c14 {
+.c15.c15 {
   padding: 0;
   width: 16px;
   height: 16px;
@@ -462,32 +468,32 @@ Array [
   border-radius: 0;
 }
 
-.c14.c14 .icon,
-.c14.c14 .icon svg {
+.c15.c15 .icon,
+.c15.c15 .icon svg {
   font-size: 16px;
 }
 
-.c14.c14:hover {
+.c15.c15:hover {
   background-color: transparent;
 }
 
-.c14.c14:hover .icon {
+.c15.c15:hover .icon {
   color: rgba(6,132,189,0.88);
 }
 
-.c14.c14:active .icon {
+.c15.c15:active .icon {
   color: #0684bd;
 }
 
-.c14.c14.c14.c14.disabled {
+.c15.c15.c15.c15.disabled {
   background-color: inherit;
 }
 
-.c14.c14.c14.c14.disabled .icon {
+.c15.c15.c15.c15.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c14.c14 .rippleVisible {
+.c15.c15 .rippleVisible {
   color: #0684bd;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -497,7 +503,7 @@ Array [
   animation-name: cBKRfH;
 }
 
-.c2.c2 {
+.c3.c3 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -507,20 +513,20 @@ Array [
   background-color: #6FAFEB;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2:focus {
+.c3:focus {
   outline: none;
 }
 
-.c2 > .avatar-short-name {
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -537,7 +543,13 @@ Array [
   align-items: center;
 }
 
-.c13 {
+.c18 .c2:hover,
+.c18 .c2:active {
+  cursor: default;
+  opacity: 1;
+}
+
+.c14 {
   border: 1px solid rgba(255,55,55,.1);
   border-color: #e0e0e0;
   border-radius: 4px;
@@ -557,21 +569,21 @@ Array [
   color: #0684bd;
 }
 
-.c13 > button {
+.c14 > button {
   margin-right: 4px;
   border-radius: 0;
 }
 
-.c13 > span {
+.c14 > span {
   color: #616161;
   font-size: 12px;
 }
 
-.c13:hover {
+.c14:hover {
   border-color: #0684bd;
 }
 
-.c13:active {
+.c14:active {
   background-color: #e1f4fb;
 }
 
@@ -579,7 +591,7 @@ Array [
   padding: 12px 12px 16px 16px;
 }
 
-.c3 {
+.c4 {
   position: relative;
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
@@ -604,7 +616,7 @@ Array [
   background: #fafafa;
 }
 
-.c5 {
+.c6 {
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
@@ -622,7 +634,7 @@ Array [
   white-space: nowrap;
 }
 
-.c6 {
+.c7 {
   color: #212121;
   font-size: 0.75rem;
   font-weight: 400;
@@ -635,7 +647,7 @@ Array [
   word-break: break-word;
 }
 
-.c7 {
+.c8 {
   padding-left: 4px;
   box-sizing: border-box;
   color: #757575;
@@ -650,7 +662,7 @@ Array [
   word-break: break-word;
 }
 
-.c7.c7 .emoji-mart-emoji {
+.c8.c8 .emoji-mart-emoji {
   position: relative;
   top: 50%;
   -webkit-transform: translateY(16%);
@@ -658,7 +670,7 @@ Array [
   transform: translateY(16%);
 }
 
-.c10 {
+.c11 {
   color: #9e9e9e;
   white-space: nowrap;
   font-size: 0.75rem;
@@ -669,7 +681,7 @@ Array [
   text-align: right;
 }
 
-.c9 {
+.c10 {
   margin-left: 4px;
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -677,7 +689,7 @@ Array [
   display: inline-flex;
 }
 
-.c4 {
+.c5 {
   padding: 12px 16px 8px 0px;
   display: -webkit-box;
   display: -webkit-flex;
@@ -689,7 +701,7 @@ Array [
   align-items: center;
 }
 
-.c8 {
+.c9 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -702,20 +714,20 @@ Array [
   line-height: 16px;
 }
 
-.c8 span:first-child {
+.c9 span:first-child {
   padding-left: 4px;
 }
 
-.c11 {
+.c12 {
   padding: 0px 16px 16px 0px;
   font-size: 0;
 }
 
-.c11 .conversation-item-cards:last-child {
+.c12 .conversation-item-cards:last-child {
   margin-bottom: 0;
 }
 
-.c12 {
+.c13 {
   padding: 0px 16px 16px 0px;
 }
 
@@ -726,7 +738,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
+        className="MuiAvatar-root c2 c3 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -734,22 +746,22 @@ Array [
       </div>
     </div>
     <div
-      className="c3"
+      className="c4"
     >
       <div
-        className="c4"
+        className="c5"
       >
         <div
-          className="c5"
+          className="c6"
         >
           <div
-            className="c6"
+            className="c7"
             data-name="name"
           >
             John Smith
           </div>
           <div
-            className="c7"
+            className="c8"
             data-name="cardHeaderUserStatus"
           >
             <span
@@ -776,7 +788,7 @@ Array [
             in the meeting
           </div>
           <div
-            className="c8"
+            className="c9"
             data-name="cardHeaderNotification"
           >
             <span>
@@ -785,11 +797,11 @@ Array [
           </div>
         </div>
         <div
-          className="c9"
+          className="c10"
           data-test-automation-id="cardHeaderRightSection"
         >
           <div
-            className="c10"
+            className="c11"
             data-name="time"
           >
             3:15 PM
@@ -797,16 +809,16 @@ Array [
         </div>
       </div>
       <div
-        className="c11"
+        className="c12"
       >
         any content
       </div>
       <div
-        className="c12"
+        className="c13"
       >
         <div
           aria-describedby={null}
-          className="c13"
+          className="c14"
           data-name="footerLikeButton"
           onClick={[Function]}
           onMouseLeave={[Function]}
@@ -817,7 +829,7 @@ Array [
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c14"
+            className="MuiButtonBase-root MuiIconButton-root c15"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
             disabled={false}
@@ -843,10 +855,10 @@ Array [
               className="MuiIconButton-label"
             >
               <span
-                className=" thumbup icon c15"
+                className=" thumbup icon c16"
               >
                 <svg
-                  className="c16"
+                  className="c17"
                   role="img"
                 >
                   <use
