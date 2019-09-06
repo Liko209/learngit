@@ -148,6 +148,7 @@ class JuiCustomStatus extends PureComponent<JuiCustomStatusProps> {
                   onClick={(evt: React.MouseEvent) =>
                     onStatusItemClick(evt, item.emoji)
                   }
+                  data-text={item.status}
                   key={item.status}
                   data-test-automation-id="shareStatusMenuItem"
                 >

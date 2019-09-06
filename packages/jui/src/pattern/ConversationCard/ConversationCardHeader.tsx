@@ -35,8 +35,10 @@ const StyledStatus = styled('div')`
   box-sizing: border-box;
   color: ${grey('600')};
   ${typography('caption2')};
-  line-height: ${height(5)};
+  line-height: ${height(4)};
   ${ellipsis()};
+  display: flex;
+  align-items: center;
   && {
     .emoji-mart-emoji {
       position: relative;

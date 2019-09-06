@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
+import _ from 'lodash';
 import { JuiModal } from 'jui/components/Dialog';
 import { DialogContext } from '@/containers/Dialog';
 import { Emoji } from '@/modules/emoji';
@@ -92,8 +93,12 @@ class CustomStatusComponent extends React.Component<
   private _onStatusItemClick = (evt: React.MouseEvent, emoji: string) => {
     const { handleInputValueChange, handleEmojiChange } = this.props;
     const target = evt.target as HTMLElement;
-    const value = target.innerText;
-    handleInputValueChange(value);
+    let text = target.getAttribute('data-text') || '';
+    if (!text) {
+      text =
+        _.get(target, 'parentNode.parentNode').getAttribute('data-text') || '';
+    }
+    handleInputValueChange(text);
     handleEmojiChange(emoji);
     this._focusEl && this._focusEl.focus();
     this.setState(
