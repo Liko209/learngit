@@ -11,7 +11,7 @@ import { DraggableData, DraggableEvent } from 'react-draggable';
 import { JuiDraggableDialog } from 'jui/components/Dialog';
 import { container } from 'framework/ioc';
 import { TelephonyStore } from '../store';
-import { TelephonyService } from '../service';
+import { TelephonyService, DIALER_WIDTH, DIALER_HEIGHT } from '../service';
 import { CALL_WINDOW_STATUS } from '../FSM';
 import {
   JuiZoomProps,
@@ -26,8 +26,8 @@ const SYNC_DIALER_ENTERED = 300;
 const RESIZE = 'resize';
 
 const getDefaultPos = () => ({
-  x: Math.floor((document.body.clientWidth - 344) / 2),
-  y: Math.floor((document.body.clientHeight - 552) / 2),
+  x: Math.floor((document.body.clientWidth - DIALER_WIDTH) / 2),
+  y: Math.floor((document.body.clientHeight - DIALER_HEIGHT) / 2),
 });
 
 /*eslint-disable*/

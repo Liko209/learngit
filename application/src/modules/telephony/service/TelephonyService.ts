@@ -76,6 +76,10 @@ import ItemModel from '@/store/models/Item';
 import ConferenceItemModel from '@/store/models/ConferenceItem';
 
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
+
+const DIALER_HEIGHT = 552;
+const DIALER_WIDTH = 344;
+
 class TelephonyService {
   static TAG: string = '[UI TelephonyService] ';
 
@@ -180,7 +184,7 @@ class TelephonyService {
     if (this._ringtoneStopped || !this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
       return;
     }
-    
+
     const muted = isCurrentUserDND() || this._muteRingtone;
     this._ringtone.setLoop(true);
     this._ringtone.setMute(muted);
@@ -472,8 +476,9 @@ class TelephonyService {
       () => !!this._telephonyStore.endCall,
       hasCallEnd => {
         if (hasCallEnd) {
-          this._telephonyStore.end();
-          this._resetCallState();
+          if (this._telephonyStore.end()) {
+            this.minimize();
+          }
         }
       },
     );
@@ -737,39 +742,30 @@ class TelephonyService {
 
   @action
   minimize = () => {
-    const dialBtnPos = this._dialpadBtnRect;
-    const _dialerRect = this._dialerRect;
-
-    if (dialBtnPos && _dialerRect) {
+    const dialBtnRect = this._dialpadBtnRect;
+    const dialerRect = this._dialerRect;
+    if (dialBtnRect && dialerRect) {
       // animation
       this._telephonyStore.dialerMinimizeTranslateX =
-        dialBtnPos.left +
-        dialBtnPos.width / 2 -
-        (_dialerRect.left + _dialerRect.width / 2);
+      (dialBtnRect.left +
+      dialBtnRect.width / 2) -
+        (dialerRect.left + DIALER_WIDTH / 2);
 
       this._telephonyStore.dialerMinimizeTranslateY =
-        dialBtnPos.top +
-        dialBtnPos.height / 2 -
-        (_dialerRect.top + _dialerRect.height / 2);
+      (dialBtnRect.top +
+      dialBtnRect.height / 2) -
+        (dialerRect.top + DIALER_HEIGHT / 2);
 
-      this._telephonyStore.dialerWidth = _dialerRect.width;
-      this._telephonyStore.dialerHeight = _dialerRect.height;
+      this._telephonyStore.dialerWidth = DIALER_WIDTH;
+      this._telephonyStore.dialerHeight = DIALER_HEIGHT;
 
       this._telephonyStore.startAnimation();
-
-      return;
     }
-    // when no destination, hide the dialer directly.
-    this._telephonyStore.closeDialer();
   };
 
   @action
   onAnimationEnd = () => {
     this._telephonyStore.closeDialer();
-    this._telephonyStore.dialerMinimizeTranslateX = NaN;
-    this._telephonyStore.dialerMinimizeTranslateY = NaN;
-    this._telephonyStore.dialerWidth = NaN;
-    this._telephonyStore.dialerHeight = NaN;
     this._telephonyStore.stopAnimation();
   };
 
@@ -1366,4 +1362,4 @@ class TelephonyService {
   }
 };
 
-export { TelephonyService };
+export { TelephonyService, DIALER_WIDTH, DIALER_HEIGHT };
