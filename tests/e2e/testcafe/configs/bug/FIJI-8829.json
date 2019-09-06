@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ActionBar/Edit.ts",
+      "./fixtures/MessageInput/Send.ts",
+      "./fixtures/SendNewMessage/SendNewMessage.ts",
+      "./fixtures/Team/JoinPublicTeam.ts",
+      "./fixtures/TeamSetting/LeaveTeam.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
