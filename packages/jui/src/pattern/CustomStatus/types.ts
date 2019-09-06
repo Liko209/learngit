@@ -13,7 +13,13 @@ type JuiCustomStatusProps = {
     status: string;
   }[];
   onClear: () => void;
-  onStatusItemClick: (evt: React.MouseEvent, emoji: string) => void;
+  onStatusItemClick: (
+    evt: React.MouseEvent,
+    item: {
+      emoji: string,
+      status: string,
+    }
+  ) => void;
   handleInputFocus: () => void;
   handleStatusChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   showCloseBtn: boolean;

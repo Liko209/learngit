@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/CustomStatus/SetCustomStatus.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

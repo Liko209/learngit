@@ -89,11 +89,16 @@ class CustomStatusComponent extends React.Component<
       isShowMenuList: true,
     });
   };
-  private _onStatusItemClick = (evt: React.MouseEvent, emoji: string) => {
+  private _onStatusItemClick = (
+    evt: React.MouseEvent,
+    item: {
+      emoji: string;
+      status: string;
+    },
+  ) => {
     const { handleInputValueChange, handleEmojiChange } = this.props;
-    const target = evt.target as HTMLElement;
-    const value = target.innerText;
-    handleInputValueChange(value);
+    const { emoji, status } = item;
+    handleInputValueChange(status);
     handleEmojiChange(emoji);
     this._focusEl && this._focusEl.focus();
     this.setState(
@@ -145,9 +150,10 @@ class CustomStatusComponent extends React.Component<
             placeHolder={t('customstatus.placeHolder')}
             emojiNode={this._getEmojiNode()}
             handleStatusChange={this._handleStatusChange}
-            onStatusItemClick={(evt: React.MouseEvent, emoji: string) =>
-              this._onStatusItemClick(evt, emoji)
-            }
+            onStatusItemClick={(
+              evt: React.MouseEvent,
+              item: { emoji: string; status: string },
+            ) => this._onStatusItemClick(evt, item)}
           />
         </Loading>
       </Modal>

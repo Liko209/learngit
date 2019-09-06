@@ -31,17 +31,20 @@ const StyledName = styled('div')`
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
-  padding-left: ${spacing(1)};
+  padding-left: ${spacing(2)};
   box-sizing: border-box;
   color: ${grey('600')};
   ${typography('caption2')};
-  line-height: ${height(5)};
+  line-height: ${height(4)};
   ${ellipsis()};
+  display: flex;
+  align-items: center;
   && {
     .emoji-mart-emoji {
       position: relative;
       top: 50%;
       transform: translateY(16%);
+      padding-right: ${spacing(1)};
     }
   }
 `;
