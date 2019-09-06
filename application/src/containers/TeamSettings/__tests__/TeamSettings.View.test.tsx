@@ -31,6 +31,7 @@ const mockTransition = (text: string, options?: object) => {
   )}`;
 };
 
+jest.mock('sdk/module/config');
 jest.mock('sdk/module/serviceLoader', () => ({
   ServiceLoader: {
     getInstance: () => ({
@@ -117,7 +118,7 @@ describe('TeamSettingsView', () => {
         value: 'SOME INITIAL DESC....',
       });
     });
-    it('should contain onClose props when rendering JuiModal ', async () => {
+    it('should render withEscTracking when Component rendered', async () => {
       const props: any = {
         t: mockTransition,
         initialData: {
@@ -132,8 +133,8 @@ describe('TeamSettingsView', () => {
         groupName: 'my team',
       };
       const Wrapper = shallow(<TeamSettingsComponent {...props} />);
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
     });
   });
 

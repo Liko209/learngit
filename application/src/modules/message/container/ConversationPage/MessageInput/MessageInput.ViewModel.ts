@@ -84,7 +84,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   error: string = '';
 
   private _upHandler = debounce(
-    ()=>this.props.onUpArrowPressed(this._rawDraft),
+    () => {
+      this.props.onUpArrowPressed(this._rawDraft);
+      return true;
+    },
     this._debounceFactor,
     {
       leading: true,
@@ -152,18 +155,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     );
 
     this.keyboardEventHandler.up.handler.cancel();
-
-    this.keyboardEventHandler = {
-      enter: {
-        key: 13,
-        handler: _.noop,
-      },
-      up: {
-        key: 38,
-        empty: true,
-        handler: (_.noop as any),
-      },
-    };
   }
 
   @action

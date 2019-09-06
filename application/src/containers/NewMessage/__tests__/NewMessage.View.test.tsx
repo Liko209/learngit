@@ -42,11 +42,11 @@ describe('NewMessageView', () => {
       shallow(<NewMessageView {...props} />);
       expect(Notification.flashToast).toHaveBeenCalled();
     });
-    it('should contain onClose props when rendering JuiModal ', async () => {
+    it('should render withEscTracking when Component rendered ', async () => {
       const props = { t: () => {} };
       const Wrapper = shallow(<NewMessageView {...props} />);
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
     });
   });
 });

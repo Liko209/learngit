@@ -20,7 +20,7 @@ jest.mock('../../controller/StateController');
 jest.mock('../../config');
 
 describe('StateService', () => {
-  const mockGroupService = new GroupService();
+  const mockGroupService = new GroupService({} as any);
   let stateService: StateService;
   const mockUpdateIgnoredStatus = jest.fn();
   const mockUpdateReadStatus = jest.fn();
@@ -32,39 +32,39 @@ describe('StateService', () => {
   const mockHandleState = jest.fn();
   const mockHandleGroupCursor = jest.fn();
   const mockHandleStateAndGroupCursor = jest.fn();
-  const mockHandleGroup = jest.fn();
   const mockHandleGroupState = jest.fn();
+  const mockHandleGroup = jest.fn();
   const mockHandleProfile = jest.fn();
   const mockGetSingleGroupBadge = jest.fn();
   const mockInitializeTotalUnread = jest.fn();
-  const mockStateActionController = jest.fn().mockReturnValue({
+  const mockStateActionController = {
     updateReadStatus: mockUpdateReadStatus,
     updateLastGroup: mockUpdateLastGroup,
-  });
-  const mockStateDataHandleController = jest.fn().mockReturnValue({
+  };
+  const mockStateDataHandleController = {
     updateIgnoredStatus: mockUpdateIgnoredStatus,
     handleState: mockHandleState,
     handleGroupCursor: mockHandleGroupCursor,
     handleStateAndGroupCursor: mockHandleStateAndGroupCursor,
-  });
-  const mockStateFetchDataController = jest.fn().mockReturnValue({
+  };
+  const mockStateFetchDataController = {
     getAllGroupStatesFromLocal: mockGetAllGroupStatesFromLocal,
     getGroupStatesFromLocalWithUnread: mockGetGroupStatesFromLocalWithUnread,
     getMyState: mockGetMyState,
     getMyStateId: mockGetMyStateId,
-  });
-  const mockTotalUnreadController = jest.fn().mockReturnValue({
-    handleGroup: mockHandleGroup,
+  };
+  const mockTotalUnreadController = {
     handleGroupState: mockHandleGroupState,
+    handleGroup: mockHandleGroup,
     handleProfile: mockHandleProfile,
     getSingleGroupBadge: mockGetSingleGroupBadge,
     initializeTotalUnread: mockInitializeTotalUnread,
-  });
+  };
   const mockStateController = {
-    getStateActionController: mockStateActionController,
-    getStateDataHandleController: mockStateDataHandleController,
-    getStateFetchDataController: mockStateFetchDataController,
-    getTotalUnreadController: mockTotalUnreadController,
+    stateActionController: mockStateActionController,
+    stateDataHandleController: mockStateDataHandleController,
+    stateFetchDataController: mockStateFetchDataController,
+    totalUnreadController: mockTotalUnreadController,
   };
 
   beforeEach(() => {
@@ -195,7 +195,7 @@ describe('StateService', () => {
 
   describe('handleGroupChangeForTotalUnread()', () => {
     it('should call with correct params', async () => {
-      const payload = {} as NotificationEntityPayload<Group>;
+      const payload: Group[] = [];
       await stateService.handleGroupChangeForTotalUnread(payload);
       expect(mockHandleGroup).toHaveBeenCalledWith(payload);
     });

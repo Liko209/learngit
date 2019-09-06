@@ -3,18 +3,20 @@
  * @Date: 2019-03-18 18:50:30
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { observable } from 'mobx';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { featureModuleConfig } from '../config/featureModuleConfig';
 import _ from 'lodash';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
-import { observable } from 'mobx';
+import { notificationCenter } from 'sdk/service';
+import { SERVICE } from 'sdk/service/eventKey';
+import { featureModuleConfig } from '../config/featureModuleConfig';
+import { IFeaturesFlagsService } from '../interface';
 
-class FeaturesFlagsService {
+class FeaturesFlagsService implements IFeaturesFlagsService {
   private _permissionService = ServiceLoader.getInstance<PermissionService>(
     ServiceConfig.PERMISSION_SERVICE,
   );
@@ -23,8 +25,8 @@ class FeaturesFlagsService {
   );
   private _featureModuleMap = new Map();
 
-  @observable
-  canIUseConference: boolean = false;
+  @observable canIUseConference: boolean = false;
+  @observable canIUseTelephony: boolean = false;
 
   constructor() {
     featureModuleConfig.forEach(feature => {
@@ -38,16 +40,16 @@ class FeaturesFlagsService {
     return features.includes('Message');
   }
 
-  canUseTelephony = async () => {
+  async canUseTelephony() {
     return (
       (await this._rcInfoService.isVoipCallingAvailable()) &&
       (await this._permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
       ))
     );
-  };
+  }
 
-  canUseConference = async () => {
+  async canUseConference() {
     const organizeConference = await this._rcInfoService.isOrganizeConferenceAvailable();
     if (organizeConference) {
       const useGlip =
@@ -58,13 +60,24 @@ class FeaturesFlagsService {
         : this._rcInfoService.isWebPhoneAvailable();
     }
     return false;
-  };
+  }
 
-  init = async () => {
-    this.canIUseConference = await this.canUseConference();
-  };
+  async init() {
+    this.canUseConference().then(value => {
+      this.canIUseConference = value;
+    })
+    this.canUseTelephony().then(value => {
+      this.canIUseTelephony = value;
+      notificationCenter.on(
+        SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
+        (enabled: boolean) => {
+          this.canIUseTelephony = enabled;
+        },
+      );
+    })
+  }
 
-  getSupportFeatureModules = async () => {
+  async getSupportFeatureModules() {
     const supportFeature = await this._getSupportFeature();
     let featureModules: string[] = [];
 
@@ -75,16 +88,16 @@ class FeaturesFlagsService {
     });
 
     return _.uniq(featureModules);
-  };
+  }
 
-  getModulesByFeatureName = (featureName: string) => {
+  getModulesByFeatureName(featureName: string) {
     let modules: string[] = [];
     const hasFeature = this._featureModuleMap.has(featureName);
     if (hasFeature) {
       modules = this._featureModuleMap.get(featureName);
     }
     return modules;
-  };
+  }
 
   private async _getSupportFeature() {
     const defaultSupportFeatures: string[] = [];

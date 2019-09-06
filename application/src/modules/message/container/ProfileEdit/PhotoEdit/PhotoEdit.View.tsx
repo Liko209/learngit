@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDragZoom, JuiDragZoomOptions } from 'jui/pattern/DragZoom';
 import { JuiImageView } from 'jui/components/ImageView';
-import { withEscTracking } from '@/common/trackData';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import { RuiSlider } from 'rcui/components/Forms/Slider';
 import { JuiButton } from 'jui/components/Buttons';
@@ -50,6 +50,7 @@ class UploadArea extends Component<any> {
   }
 }
 type PhotoEdit = PhotoEditViewModelProps & PhotoEditProps & WithTranslation;
+const Modal = withEscTracking(JuiModal);
 @observer
 class PhotoEditComponent extends Component<PhotoEdit> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
@@ -166,7 +167,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
       isGifImage,
     } = this.props;
     return (
-      <JuiModal
+      <Modal
         open
         size={'medium'}
         title={t('people.profile.edit.editProfilePhotoTitle')}
@@ -182,7 +183,6 @@ class PhotoEditComponent extends Component<PhotoEdit> {
           'data-test-automation-id': 'EditProfilePhoto',
           scroll: 'body',
         }}
-        onClose={withEscTracking(this.handleClose)}
       >
         <JuiEditPhotoUploadContent>
           <JuiButton
@@ -236,7 +236,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             />
           </JuiEditPhotoSliderContent>
         )}
-      </JuiModal>
+      </Modal>
     );
   }
 }

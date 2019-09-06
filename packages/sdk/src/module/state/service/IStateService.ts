@@ -41,13 +41,11 @@ interface IStateService {
     changeMap?: Map<string, ChangeModel>,
   ): Promise<void>;
 
-  handleGroupChangeForTotalUnread(
-    payload: NotificationEntityPayload<Group>,
-  ): void;
+  handleGroupChangeForTotalUnread(groups: Group[]): Promise<void>;
 
   handleProfileChangeForTotalUnread(
     payload: NotificationEntityPayload<Profile>,
-  ): void;
+  ): Promise<void>;
 
   getSingleGroupBadge(id: number): UndefinedAble<GroupBadge>;
 }

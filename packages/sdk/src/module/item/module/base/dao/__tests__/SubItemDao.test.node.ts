@@ -29,7 +29,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('Event Item Dao', () => {
+describe('Sub Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
 
   function setUp() {
@@ -306,7 +306,7 @@ describe('Event Item Dao', () => {
     it('should update existed items when doing update', async () => {
       const oldItem5 = await dao.get(item5.id);
       expect(oldItem5).toEqual(item5);
-      await dao.update(newItem5);
+      await dao.update(newItem5, false);
       const newItem5FromDB = await dao.get(item5.id);
       expect(newItem5FromDB).toEqual({
         ...newItem5,
@@ -317,7 +317,7 @@ describe('Event Item Dao', () => {
     it('should update items when input is array', async () => {
       const oldItem5 = await dao.get(item5.id);
       expect(oldItem5).toEqual(item5);
-      await dao.bulkUpdate([newItem5]);
+      await dao.bulkUpdate([newItem5], false);
       const newItem5FromDB = await dao.get(item5.id);
       expect(newItem5FromDB).toEqual({
         ...newItem5,
@@ -350,7 +350,7 @@ describe('Event Item Dao', () => {
     it('should not save not existed items when doing bulkUpdate', async () => {
       const curAll = (await dao.getAll()).map(x => x.id);
       expect(curAll).toEqual([1, 2, 3, 4, 5]);
-      await dao.bulkUpdate([newItem]);
+      await dao.bulkUpdate([newItem], false);
       const newAll = (await dao.getAll()).map(x => x.id);
       expect(newAll).toEqual([1, 2, 3, 4, 5]);
     });
@@ -358,7 +358,7 @@ describe('Event Item Dao', () => {
     it('should update existed items when doing bulkUpdate', async () => {
       const oldItem5 = await dao.get(item5.id);
       expect(oldItem5).toEqual(item5);
-      await dao.bulkUpdate([newItem5]);
+      await dao.bulkUpdate([newItem5], false);
       const newItem5FromDB = await dao.get(item5.id);
       expect(newItem5FromDB).toEqual({
         ...newItem5,

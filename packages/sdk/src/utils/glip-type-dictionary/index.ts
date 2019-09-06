@@ -98,7 +98,7 @@ function parseSocketMessage(message: string | ISystemMessage) {
       if (obj.search_results) {
         result[socketKeyMap.SEARCH] = obj.search_results;
       }
-      if (obj.force_logout) {
+      if (obj.force_logout && obj.instance_id === undefined) {
         result[socketKeyMap.LOGOUT] = obj.force_logout;
       }
 
