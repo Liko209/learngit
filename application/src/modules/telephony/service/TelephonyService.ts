@@ -67,7 +67,7 @@ import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
-import { JError, ERROR_TYPES, ERROR_CODES_NETWORK } from 'sdk/error';
+import { JError, errorHelper } from 'sdk/error';
 import { RingtonePrefetcher } from '../../notification/RingtonePrefetcher';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
@@ -1275,12 +1275,8 @@ class TelephonyService {
   }
 
   handleStartAudioConferenceError(error: JError) {
-    const isNetworkError = error.isMatch({
-      type: ERROR_TYPES.NETWORK,
-      codes: [ERROR_CODES_NETWORK.NETWORK_ERROR]
-    });
     Notification.flashToast({
-      message: isNetworkError ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
+      message: errorHelper.isNetworkConnectionError(error) ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
