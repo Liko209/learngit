@@ -61,18 +61,18 @@ class UnReadToggler extends BaseWebComponent {
   }
 }
 
-class MoreMenu extends Entry {
+class MoreMenu extends BaseWebComponent {
   get self() {
     return this.getSelector('*[role="document"]');
   }
 
-  private getEntry(name: string) {
+  getEntryByName(name: string) {
     this.warnFlakySelector();
-    return this.getComponent(Entry, this.self.find('li').withText(name));
+    return this.getComponent(MenuItem, this.self.find('li').withText(name));
   }
 
   private getToggler(id: string) {
-    return this.getComponent(Entry, this.getSelectorByAutomationId(id));
+    return this.getComponent(MenuItem, this.getSelectorByAutomationId(id));
   }
 
   get favoriteToggler() {
@@ -84,11 +84,11 @@ class MoreMenu extends Entry {
   }
 
   get close() {
-    return this.getComponent(MenuItem, this.self.find('*[data-test-automation-id="closeConversation"]'));
+    return this.getComponent(MenuItem, this.getSelectorByAutomationId("closeConversation"));
   }
 }
 
-class MenuItem extends Entry {
+class MenuItem extends BaseWebComponent {
 
   get disabled(): Promise<string> {
     return this.self.getAttribute("data-disabled");
@@ -100,6 +100,10 @@ class MenuItem extends Entry {
 
   async shouldBeEnabled() {
     await this.t.expect(this.disabled).eql('false');
+  }
+
+  async shouldBeName(name: string) {
+    await this.t.expect(this.self.textContent).eql(name);
   }
 }
 
@@ -163,7 +167,7 @@ class ConversationEntry extends BaseWebComponent {
 
   async hoverMoreButton() {
     await this.hoverSelf();
-    await this.t.hover(this.moreMenuEntry, {speed: 0.1});
+    await this.t.hover(this.moreMenuEntry, { speed: 0.1 });
   }
 
   get draftIcon() {
@@ -233,17 +237,15 @@ class ConversationSection extends BaseWebComponent {
 
 class ActionBarDeletePostModal extends BaseWebComponent {
   get self() {
-    this.warnFlakySelector();
-    return this.getSelector('*[role="dialog"]');
+    return this.getSelectorByAutomationId('deleteConfirmDialog');
   }
 
   get deleteButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').withText('Delete');
+    return this.getSelectorByAutomationIdUnderSelf('deleteOkButton');
   }
+
   get cancelButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').withText('Cancel');
+    return this.getSelectorByAutomationIdUnderSelf('deleteCancelButton');
   }
 
   async delete() {
@@ -257,27 +259,35 @@ class ActionBarDeletePostModal extends BaseWebComponent {
 
 class CloseConversationModal extends BaseWebComponent {
   get self() {
-    this.warnFlakySelector();
-    return this.getSelector('*[role="dialog"]');
+    return this.getSelectorByAutomationId('close-conversation-alert-dialog');
   }
 
   get title() {
     return this.getSelectorByAutomationId('DialogTitle');
   }
 
+  get content() {
+    return this.getSelectorByAutomationIdUnderSelf('DialogContent');
+  }
+
+  get confirmMessage() {
+    return this.content.find('p');
+  }
+
   get dontAskAgainCheckbox() {
-    this.warnFlakySelector();
-    return this.self.find('label');
+    return this.getSelectorByAutomationIdUnderSelf('close-conversation-alert-dont-ask-again')
+  }
+
+  get dontAskAgainCheckboxLabel() {
+    return this.dontAskAgainCheckbox.nextSibling('span')
   }
 
   get cancelButton() {
-    this.warnFlakySelector();
-    return this.buttonOfText('Cancel');
+    return this.getSelectorByAutomationIdUnderSelf('DialogCancelButton');
   }
 
   get closeButton() {
-    this.warnFlakySelector();
-    return this.buttonOfText('Close');
+    return this.getSelectorByAutomationIdUnderSelf('DialogOKButton');
   }
 
   async toggleDontAskAgain() {
