@@ -373,14 +373,14 @@ class TelephonyStore {
       OPEN_DETACHED_DIALER,
       OPEN_FLOATING_DIALER,
     } = CALL_WINDOW_TRANSITION_NAMES;
-    if (this.callWindowState === CALL_WINDOW_STATUS.MINIMIZED) {
+    // if (this.callWindowState === CALL_WINDOW_STATUS.MINIMIZED) {
       if (this._localCallWindowStatus === CALL_WINDOW_STATUS.DETACHED) {
         this._callWindowFSM[OPEN_DETACHED_DIALER]();
         return;
       }
       this._callWindowFSM[OPEN_FLOATING_DIALER]();
       this.stopAnimation();
-    }
+    // }
   };
 
   @action
