@@ -22,7 +22,10 @@ import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { SettingService, SettingEntityIds } from 'sdk/module/setting';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
 import _ from 'lodash';
+import { AccountService } from 'sdk/module/account';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
+jest.mock('sdk/module/account');
 jest.mock('../../service');
 jest.mock('sdk/module/setting');
 jest.mock('sdk/module/rcInfo');
@@ -40,22 +43,30 @@ describe('CallSwitchController', () => {
   let rcInfoService: RCInfoService;
   let callSwitchController: CallSwitchController;
   let telephonyService: TelephonyService;
+  let accountService: AccountService;
   function setUp() {
     _.debounce = jest.fn().mockReturnValue(jest.fn());
     AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue('1');
     settingService = new SettingService();
     rcInfoService = new RCInfoService();
+    accountService = new AccountService(null as any);
+    (accountService.userConfig as any) = {
+      getGlipUserId: jest.fn().mockReturnValue(1),
+    }
+
     ServiceLoader.getInstance = jest.fn().mockImplementation((x: string) => {
       switch (x) {
         case ServiceConfig.RC_INFO_SERVICE:
           return rcInfoService;
         case ServiceConfig.SETTING_SERVICE:
           return settingService;
+        case ServiceConfig.ACCOUNT_SERVICE:
+          return accountService;
         default:
           return null;
       }
     });
-    telephonyService = new TelephonyService();
+    telephonyService = new TelephonyService(null as any, null as any , null as any);
     callSwitchController = new CallSwitchController(telephonyService);
   }
 
@@ -140,6 +151,11 @@ describe('CallSwitchController', () => {
       expect(notificationCenter.on).toHaveBeenCalledWith(
         RC_INFO.RC_PRESENCE,
         expect.any(Function),
+      );
+
+      expect(notificationCenter.on).toHaveBeenCalledWith(
+        ENTITY.PRESENCE,
+        callSwitchController['_handleGlipPresenceChange'],
       );
 
       expect(notificationCenter.on).toHaveBeenCalledWith(
@@ -605,25 +621,41 @@ describe('CallSwitchController', () => {
       expect(callSwitchController['_endedCalls'].length).toEqual(1);
       expect(callSwitchController['_currentActiveCalls'].length).toEqual(0);
     });
-
-    it('should not record ended call when call data is incomplete', async () => {
-      const callEntity = {
-        id: 1,
-        call_state: 'connected',
-        call_id: '1',
-        to_tag: 't',
-      };
-
-      await callSwitchController['_onCallEnded'](callEntity as any);
-      expect(callSwitchController['_endedCalls'].length).toEqual(0);
-    });
   });
 
+  describe('_handleGlipPresenceChange', ()=>{
+    it('should only handle current user presence change', ()=>{
+      callSwitchController['_lastBannerIsShown'] = true
+      const payLoad: any = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: new Map([
+            [
+              1,
+              {
+                presence: PRESENCE.AVAILABLE,
+              },
+            ],
+            [
+              2,
+              {
+                presence: PRESENCE.ONCALL,
+              },
+            ],
+          ]),
+        },
+      };
+      callSwitchController['_syncLatestPresenceWhenHasBanner'] = jest.fn();
+      callSwitchController['_handleGlipPresenceChange'](payLoad);
+      expect(callSwitchController['_syncLatestPresenceWhenHasBanner']).toHaveBeenCalled();
+    });
+  })
+
   describe('_handleCallStateChanged', () => {
-    it('should only handle update type and save ended calls', () => {
-      callSwitchController['_syncLatestPresenceAfterCallEnd'] = jest.fn();
+    it('should only handle update type and save ended calls when call is valid and ended', () => {
+      callSwitchController['_syncLatestPresenceWhenHasBanner'] = jest.fn();
       (callSwitchController[
-        '_syncLatestPresenceAfterCallEnd'
+        '_syncLatestPresenceWhenHasBanner'
       ] as any) = jest.fn();
       callSwitchController['_onCallEnded'] = jest.fn();
       callSwitchController['_updateBannerStatus'] = jest.fn();
@@ -662,8 +694,49 @@ describe('CallSwitchController', () => {
         to_tag: 't',
       });
       expect(
-        callSwitchController['_syncLatestPresenceAfterCallEnd'],
+        callSwitchController['_syncLatestPresenceWhenHasBanner'],
       ).toHaveBeenCalled();
+    });
+
+    it('should not save ended calls when call has no tag info', () => {
+      callSwitchController['_syncLatestPresenceWhenHasBanner'] = jest.fn();
+      (callSwitchController[
+        '_syncLatestPresenceWhenHasBanner'
+      ] as any) = jest.fn();
+      callSwitchController['_onCallEnded'] = jest.fn();
+      callSwitchController['_updateBannerStatus'] = jest.fn();
+      const payLoad: any = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: new Map([
+            [
+              1,
+              {
+                call_state: 'Connected',
+                call_id: '1',
+                from_tag: 'f',
+                to_tag: undefined,
+              },
+            ],
+            [
+              2,
+              {
+                call_state: 'Disconnecting',
+                call_id: '1',
+                from_tag: undefined,
+                to_tag: 't',
+              },
+            ],
+          ]),
+        },
+      };
+
+      callSwitchController['_handleCallStateChanged'](payLoad);
+      expect(callSwitchController['_updateBannerStatus']).not.toHaveBeenCalled();
+      expect(callSwitchController['_onCallEnded']).not.toHaveBeenCalled();
+      expect(
+        callSwitchController['_syncLatestPresenceWhenHasBanner'],
+      ).not.toHaveBeenCalled();
     });
 
     it('should trigger sync rc presence with 5s delay and should not throw error', async () => {
@@ -682,7 +755,8 @@ describe('CallSwitchController', () => {
         .fn()
         .mockRejectedValue(new Error());
       callSwitchController = new CallSwitchController(telephonyService);
-      await callSwitchController['_syncLatestPresenceAfterCallEnd']();
+      callSwitchController['_lastBannerIsShown'] = true;
+      await callSwitchController['_syncLatestPresenceWhenHasBanner']();
       expect(rcInfoService.syncUserRCPresence).toHaveBeenCalled();
     });
 
