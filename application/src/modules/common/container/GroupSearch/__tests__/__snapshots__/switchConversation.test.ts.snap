@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`switch conversation handler openGroupSearch should call searchService.doFuzzySearchAllGroups correctly when called 1`] = `
+"Array [
+  undefined,
+  Object {
+    \\"fetchAllIfSearchKeyEmpty\\": true,
+    \\"myGroupsOnly\\": true,
+    \\"recentFirst\\": false,
+    \\"sortFunc\\": [Function recentFirstSorter],
+  },
+]"
+`;

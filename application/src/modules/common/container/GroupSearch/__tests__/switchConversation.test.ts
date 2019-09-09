@@ -9,15 +9,23 @@ import { Dialog } from '@/containers/Dialog';
 import {
   switchConversationHandler,
   switchToConversation,
+  getDefaultList,
 } from '../switchConversationHandler';
 import portalManager from '@/common/PortalManager';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { isDialogOpen } from '@/containers/Dialog/utils';
+import { mockService } from 'shield/sdk';
+import { ServiceConfig } from 'sdk/module/serviceLoader';
+import prettyFormat from 'pretty-format';
 
 jest.mock('@/containers/Dialog/utils');
 jest.mock('@/common/goToConversation');
 
 describe('switch conversation handler', () => {
+  const searchService = {
+    name: ServiceConfig.SEARCH_SERVICE,
+    doFuzzySearchAllGroups() {},
+  };
   @testable
   class openGroupSearch {
     @test('should open group search when called')
@@ -61,6 +69,18 @@ describe('switch conversation handler', () => {
       jest.spyOn(portalManager, 'isOpened').mockReturnValue(isMeOpen);
       (isDialogOpen as jest.Mock) = jest.fn(() => isThereDialogOpen);
       expect(switchConversationHandler()).toBe(expected);
+    }
+
+    @test(
+      'should call searchService.doFuzzySearchAllGroups correctly when called',
+    )
+    @mockService(searchService, 'doFuzzySearchAllGroups')
+    async getDefaultListTest() {
+      searchService.doFuzzySearchAllGroups = jest.fn(() => []);
+      await getDefaultList();
+      expect(
+        prettyFormat(searchService.doFuzzySearchAllGroups.mock.calls[0]),
+      ).toMatchSnapshot();
     }
   }
 });

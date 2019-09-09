@@ -63,4 +63,4 @@ function switchConversationHandler() {
   return false;
 }
 
-export { switchConversationHandler, switchToConversation, DIALOG_ID };
+export { switchConversationHandler, switchToConversation, getDefaultList, DIALOG_ID };
