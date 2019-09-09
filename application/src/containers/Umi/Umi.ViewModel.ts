@@ -131,8 +131,8 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
 
   private _getMergedUnreadCounts(ids: string[]): UnreadCounts {
     const counts: UnreadCounts = { unreadCount: 0, mentionCount: 0 };
-    if(this._currentBadgeSetting.isMocked){
-      return counts
+    if (this._currentBadgeSetting.isMocked) {
+      return counts;
     }
     ids.forEach((id: string) => {
       const badge: BadgeModel = getEntity(ENTITY_NAME.BADGE, id);

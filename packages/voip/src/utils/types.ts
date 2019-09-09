@@ -26,3 +26,21 @@ export type RTCMediaElement = {
   local: any;
   remote: any;
 };
+export type PermissionState = 'granted' | 'denied' | 'prompt';
+export type PermissionName =
+  | 'geolocation'
+  | 'notifications'
+  | 'push'
+  | 'midi'
+  | 'camera'
+  | 'microphone'
+  | 'speaker'
+  | 'device-info'
+  | 'background-sync'
+  | 'bluetooth'
+  | 'persistent-storage'
+  | 'ambient-light-sensor'
+  | 'accelerometer'
+  | 'gyroscope'
+  | 'magnetometer'
+  | 'clipboard';
