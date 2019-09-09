@@ -5,15 +5,9 @@
  */
 import Mousetrap from 'mousetrap';
 import { mainLogger } from 'foundation/log';
-
 import { GLOBAL_HOT_KEYS } from './globalKeys.config';
-import { isDialogOpen } from '@/containers/Dialog/utils';
 
-type globalKeyCb = (
-  e: KeyboardEvent,
-  combo: string,
-) => (void | boolean) | Promise<void | boolean>;
-
+type globalKeyCb = (e: KeyboardEvent, combo: string) => boolean;
 type Handler =
   | globalKeyCb
   | {
@@ -55,24 +49,18 @@ class GlobalKeysManager {
     });
   }
 
-  private _buildHandler(handler: globalKeyCb): globalKeyCb {
-    return (e, combo) => {
-      if (isDialogOpen()) return true;
-      handler(e, combo);
-      return false;
-    };
-  }
-
+  /**
+   *
+   * @param key short cut to trigger handler
+   * @param handler when return true, allow browser behavior;
+   * when return false, prevent browser behavior.
+   */
   addGlobalKey(key: string | string[], handler: Handler) {
     this.checkConflict();
     if (typeof handler === 'object') {
-      this._mousetrap.bind(
-        key,
-        this._buildHandler(handler.handler),
-        handler.action,
-      );
+      this._mousetrap.bind(key, handler.handler, handler.action);
     } else {
-      this._mousetrap.bind(key, this._buildHandler(handler));
+      this._mousetrap.bind(key, handler);
     }
   }
 

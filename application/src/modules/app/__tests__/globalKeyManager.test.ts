@@ -4,9 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { test, testable } from 'shield';
-
 import { globalKeysManager } from '../globalKeyManager';
+import { isDialogOpen } from '@/containers/Dialog/utils';
+import Mousetrap from 'mousetrap';
 
+jest.mock('@/containers/Dialog/utils');
 jest.mock('mousetrap');
 
 describe('globalKeysManager', () => {

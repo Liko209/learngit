@@ -11,8 +11,8 @@ function openSearch() {
   const globalSearchService = container.get<GlobalSearchService>(
     GlobalSearchService,
   );
-  globalSearchService.openGlobalSearch();
   analyticsCollector.shortcuts('globalSearch');
+  return globalSearchService.openGlobalSearch();
 }
 
 export { openSearch };

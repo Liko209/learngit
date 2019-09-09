@@ -14,27 +14,29 @@ jupiter.registerClass(FeaturesFlagsService);
 describe('common module', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
   describe('bootstrap()', () => {
-    it('should call globalKeysManager.addGlobalKey with correct argument', () => {
+    it('should call globalKeysManager.addGlobalKey with correct argument', async () => {
       jest
         .spyOn(globalKeysManager, 'addGlobalKey')
         .mockImplementation(jest.fn());
 
       const commonModule = new CommonModule();
-      commonModule.bootstrap();
+      await commonModule.bootstrap();
       expect(globalKeysManager.addGlobalKey).toHaveBeenCalledWith(
         GLOBAL_HOT_KEYS.SWITCH_CONVERSATION,
         switchConversationHandler,
       );
     });
 
-    it.skip('should not register global key when feature flag not available', () => {
+    // unskip this when can mock featureflag service
+    it.skip('should not register global key when feature flag not available', async () => {
       const spy = jest
         .spyOn(globalKeysManager, 'addGlobalKey')
         .mockImplementation(jest.fn());
       const commonModule = new CommonModule();
-      commonModule.bootstrap();
+      await commonModule.bootstrap();
       expect(spy).not.toHaveBeenCalled();
     });
   });
