@@ -3,7 +3,7 @@
     "fixtures": [
       "./fixtures/ConversationList/LeftRail.ts",
       "./fixtures/ConversationStream/ConversationStream.ts",
-      "./fixtures/ConversationStream/ConversationCard.ts",
+      "./fixtures/ConversationStream/ConversationCard.ts"
     ],
     "browsers": [
       "selenium:chrome"
