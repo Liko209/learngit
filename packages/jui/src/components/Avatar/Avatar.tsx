@@ -58,7 +58,7 @@ const StyledWrapper = styled.div<{ size?: Size }>`
   position: relative;
 `;
 
-const StyledAvatar = styled<JuiAvatarProps>(({customColor, ...rest}) => (
+const StyledAvatar = styled<JuiAvatarProps>(({ customColor, ...rest }) => (
   <MuiAvatar {...rest} />
 ))`
   && {
@@ -119,13 +119,10 @@ const StyledCoverAvatarContent = styled.span`
   background-color: ${palette('common', 'white')};
 `;
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
-  <JuiIconography
-    iconSize="inherit"
-    iconColor={['primary', 'light']}
-    {...rest}
-  />
+  <JuiIconography iconSize="inherit" iconColor={['grey', '100']} {...rest} />
 ))<{ size: Size; symbol: SvgSymbol }>`
   font-size: ${({ size }) => sizes[size] * 4}px;
+  background-color: ${palette('primary', 'light')};
 `;
 
 const StyledPresenceWrapper = styled.div`
