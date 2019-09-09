@@ -5,6 +5,7 @@
  */
 
 import React, { Component, CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import portalManager from '@/common/PortalManager';
 import { ClickAwayListener } from 'jui/components/ClickAwayListener';
 
@@ -55,7 +56,7 @@ function getStyles(anchor: HTMLElement): CSSProperties {
     bottom: b,
     left: l,
     right: r,
-    zIndex: 1500,
+    zIndex: 1300,
   };
 }
 
@@ -66,10 +67,10 @@ class Comp extends Component<{ anchor: HTMLElement; component: JSX.Element }> {
     delete MiniCard.dismiss;
   };
   render() {
-    return (
+    return createPortal(
       <ClickAwayListener onClickAway={this._handleClickAway}>
         <div style={getStyles(this.props.anchor)}>{this.props.component}</div>
-      </ClickAwayListener>
+      </ClickAwayListener>, document.body
     );
   }
 }
