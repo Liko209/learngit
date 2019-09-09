@@ -46,7 +46,8 @@ class FileItemView extends Component<FileItemViewProps> {
 
   @computed
   private get _readyForViewer() {
-    return isFileReadyForViewer(this.props.file.status);
+    const { status , ready } = this.props.file
+    return isFileReadyForViewer(status, ready);
   }
 
   @computed

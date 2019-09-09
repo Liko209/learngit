@@ -83,8 +83,8 @@ function isDoc(type: string): boolean {
   return FILE_ICON_MAP.doc.some(v => type === v);
 }
 
-function isFileReadyForViewer(status?: string): boolean {
-  return status === 'ready';
+function isFileReadyForViewer(status?: string, ready?: boolean): boolean {
+  return ready || status === 'ready';
 }
 
 export {

@@ -37,6 +37,7 @@ describe('FilesView', () => {
             id: 1,
             origWidth: 0,
             name: '0',
+            ready: false,
             downloadUrl: 'downloadUrl',
           },
         },
@@ -166,6 +167,27 @@ describe('FilesView', () => {
 
       setTimeout(() => {
         expect(viewerService.open).not.toHaveBeenCalled();
+        done();
+      }, 0);
+    }
+
+    @test('should the user should able to open file when file status no ready but item.ready is true')
+    t2(done: jest.DoneCallback) {
+      const props: any = {
+        ...someFilesProps,
+        progresses: { get: () => 1 },
+      };
+      props.files[1][0].item.latestVersion.status = 'first_page_ready';
+      props.files[1][0].item.latestVersion.ready = true;
+      const wrapper = shallow(<FilesView {...props} />);
+      wrapper
+        .find(JuiFileWithPreview)
+        .shallow()
+        .find(FileCard)
+        .simulate('click', mockEvent);
+
+      setTimeout(() => {
+        expect(viewerService.open).toHaveBeenCalled();
         done();
       }, 0);
     }

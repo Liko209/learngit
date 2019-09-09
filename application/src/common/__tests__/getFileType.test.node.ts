@@ -64,7 +64,14 @@ describe('getFileType', () => {
   });
 
   it('should isFileReadyForViewer return true when status os "ready"', () => {
-    expect(isFileReadyForViewer('ready')).toEqual(true);
+    expect(isFileReadyForViewer('ready', false)).toEqual(true);
+  });
+
+  it('should isFileReadyForViewer return false when ready is true', () => {
+    expect(isFileReadyForViewer('', true)).toEqual(true);
+  });
+  it('should isFileReadyForViewer return false when status null ands ready false', () => {
+    expect(isFileReadyForViewer('', false)).toEqual(false);
   });
 
   it('should isDoc return true when type i doc', () => {
