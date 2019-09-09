@@ -45,7 +45,8 @@ class DialerViewModel extends StoreViewModel<DialerProps>
       () => this.callWindowState,
       async (callWindowState: CALL_WINDOW_STATUS) => {
         if (
-          !this.shouldDisplayDialer ||
+          !this._telephonyStore.shouldDisplayDialer ||
+          this._telephonyStore.isTransferPage ||
           callWindowState === CALL_WINDOW_STATUS.MINIMIZED
         ) {
           return;
