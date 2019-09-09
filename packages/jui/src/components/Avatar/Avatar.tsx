@@ -13,7 +13,6 @@ import {
   height,
   typography,
   palette,
-  grey,
   spacing,
   primary,
 } from '../../foundation/utils/styles';
@@ -66,7 +65,11 @@ const StyledAvatar = styled<JuiAvatarProps>(({ customColor, ...rest }) => (
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
     background-color: ${({ color, customColor }) =>
-      customColor ? color : color ? palette('avatar', color) : grey('100')};
+      customColor
+        ? color
+        : color
+        ? palette('avatar', color)
+        : primary('light')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -116,7 +119,7 @@ const StyledCoverAvatarContent = styled.span`
   height: ${height(33)};
   width: ${width(33)};
   border-radius: 50%;
-  background-color: ${palette('primary', 'light')};
+  background-color: ${palette('common', 'white')};
 `;
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
   <JuiIconography iconSize="inherit" iconColor={['grey', '100']} {...rest} />
