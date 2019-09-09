@@ -210,12 +210,13 @@ class FilesView extends React.Component<FilesViewProps> {
             const { size, type, id, name, downloadUrl } = item;
             const latestVersion = item.latestVersion;
             const status = latestVersion && latestVersion.status;
+            const ready = latestVersion && latestVersion.ready;
             const total =
               latestVersion &&
               latestVersion.pages &&
               latestVersion.pages.length;
             const iconType = getFileIcon(type);
-            const fileReadyForViewer = isFileReadyForViewer(status);
+            const fileReadyForViewer = isFileReadyForViewer(status, ready);
             if (id < 0) {
               return this._renderItem(id, progresses, name);
             }

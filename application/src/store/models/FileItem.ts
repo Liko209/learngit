@@ -87,6 +87,11 @@ export default class FileItemModel extends ItemModel {
   }
 
   @computed
+  get ready() {
+    return this.getVersionsValue<boolean>('ready') || false;
+  }
+
+  @computed
   get origHeight() {
     return this.getVersionsValue<number>('orig_height') || 0;
   }
