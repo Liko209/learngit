@@ -116,7 +116,7 @@ const StyledCoverAvatarContent = styled.span`
   height: ${height(33)};
   width: ${width(33)};
   border-radius: 50%;
-  background-color: ${palette('common', 'white')};
+  background-color: ${palette('primary', 'light')};
 `;
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
   <JuiIconography iconSize="inherit" iconColor={['grey', '100']} {...rest} />
