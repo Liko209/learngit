@@ -144,6 +144,31 @@ describe('TelephonyEngineController', () => {
     });
   });
 
+  describe('createAccount', () => {
+    beforeEach(() => {
+      Object.assign(engineController, {
+        rtcEngine: {
+          setUserInfo: jest.fn(),
+          createAccount: jest.fn()
+        },
+      });
+      engineController.getUserInfo = jest.fn();
+      jest
+        .spyOn(engineController, 'getVoipCallPermission')
+        .mockReturnValueOnce(true);
+    })
+    it('should not create multiple account', async () => {
+      await engineController.createAccount();
+      expect(engineController.getAccountController()).toBe(accountController);
+    })
+
+    it('should create account when no account is there', async () => {
+      engineController._accountController = undefined;
+      await engineController.createAccount();
+      expect(engineController.getAccountController).not.toBeUndefined();
+    });
+  })
+
   describe('getRemoteEmergencyAddress', () => {
     it('should call account controller to get address', () => {
       accountController.getRemoteEmergencyAddress = jest

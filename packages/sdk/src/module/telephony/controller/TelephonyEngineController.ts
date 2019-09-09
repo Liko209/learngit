@@ -162,7 +162,9 @@ class TelephonyEngineController {
     // Engine can hold multiple accounts for multiple calls
     this._preCallingPermission = await this.getVoipCallPermission();
     this.rtcEngine.setUserInfo(await this.getUserInfo());
-    if (this._preCallingPermission) {
+    // only one account is supported
+    if (this._preCallingPermission && !this._accountController) {
+      telephonyLogger.debug('creating telephony account');
       this._accountController = new TelephonyAccountController(
         this.rtcEngine,
         this._personService,
