@@ -352,7 +352,7 @@ class JuiHeader extends PureComponent<Props, State> {
     e.stopPropagation();
   };
 
-  _onFocus = (e: MouseEvent) => {
+  private _onFocus = (e: MouseEvent) => {
     const { onFocus } = this.props;
     // prevent drag & drop
     e.stopPropagation();
@@ -361,10 +361,17 @@ class JuiHeader extends PureComponent<Props, State> {
     onFocus && onFocus();
   };
 
+  private _onBlur = (e: MouseEvent) => {
+    const { onBlur } = this.props;
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+
+    onBlur && onBlur();
+  };
+
   private _renderDialerInput() {
     const {
-      onBlur,
-      onFocus,
       onChange,
       dialerValue,
       placeholder,
@@ -372,7 +379,6 @@ class JuiHeader extends PureComponent<Props, State> {
       onKeyDown,
       Back,
     } = this.props;
-    const fakeFunc = () => {};
 
     // TODO: change delete button's icon
     /* eslint-disable react/jsx-no-duplicate-props */
@@ -386,9 +392,9 @@ class JuiHeader extends PureComponent<Props, State> {
           )}
         </StyledDialerBtnContainer>
         <SearchInput
-          onBlur={onBlur || fakeFunc}
-          onFocus={onFocus || fakeFunc}
-          onChange={onChange || fakeFunc}
+          onBlur={this._onBlur}
+          onFocus={this._onFocus}
+          onChange={onChange}
           placeholder={placeholder || ''}
           value={dialerValue || ''}
           onMouseDown={this._handleMouseDownOnInput}
@@ -400,7 +406,7 @@ class JuiHeader extends PureComponent<Props, State> {
           InputProps={{
             disableUnderline: true,
           }}
-          onKeyDown={onKeyDown || fakeFunc}
+          onKeyDown={onKeyDown}
           autoFocus
           autoComplete="off"
           inputRef={this._inputRef}

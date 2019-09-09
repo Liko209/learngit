@@ -3,7 +3,7 @@
  * @Date: 2019-04-01 12:21:08
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { JuiDialog } from '../../components/Dialog/Dialog';
 import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
@@ -46,13 +46,23 @@ type JuiGlobalSearchProps = {
 const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
   const { open, onClose, children } = props;
 
+  useLayoutEffect(() => {
+    if (open) {
+      // need to re-adjust UI hierarchy
+      const dialog = document.querySelector('[role="dialog"]');
+      if (dialog && dialog.parentNode) {
+        dialog.parentNode.removeChild(dialog);
+        document.body.append(dialog);
+      }
+    }
+  }, [open]);
+
   return (
     <StyledGlobalSearch
       classes={{ container: 'container' }}
       scroll="body"
       open
       onClose={onClose}
-      disablePortal
       fixedAtTop
       hidden={!open}
     >

@@ -85,10 +85,20 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       theme
     ) {
       const dialogs = document.querySelectorAll<HTMLElement>('[role="dialog"]');
+      const dialer = document.querySelector<HTMLElement>('[role="dialer"]');
       dialogs.forEach(dialog => {
-        dialog.style.zIndex = goToTop
-          ? `${theme.zIndex.modal - 1}`
-          : `${theme.zIndex.modal}`;
+        const doc = dialog.querySelector('[role="document"]');
+        if (doc) {
+          if (goToTop) {
+            doc.removeAttribute('tabindex');
+          } else {
+            doc.setAttribute('tabindex','-1');
+          }
+        }
+        dialog.parentNode!.insertBefore(dialog, dialer);
+        // dialog.style.zIndex = goToTop
+        //   ? `${theme.zIndex.modal - 1}`
+        //   : `${theme.zIndex.modal}`;
       });
     }
   }

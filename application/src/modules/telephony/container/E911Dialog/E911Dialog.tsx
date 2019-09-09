@@ -68,7 +68,7 @@ function alertE911Dialog({
     modalProps: {
       'data-test-automation-id': 'emergencyConfirmDialog',
       style: {
-        'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
+        zIndex: Z_INDEX_GREATER_THAN_TOOLTIP.toString()
       }
     },
     okBtnProps: {
