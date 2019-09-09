@@ -89,6 +89,7 @@ describe('AudioConference.ViewModel', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+      isMember: true
     }
     setUp({
       group,
@@ -104,6 +105,7 @@ describe('AudioConference.ViewModel', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.TEAM,
+      isMember: true,
     }
     featuresFlagsService.canUseConference.mockResolvedValue(false)
     setUp({
@@ -120,6 +122,7 @@ describe('AudioConference.ViewModel', () => {
     const group = {
       groupId: 123,
       type: CONVERSATION_TYPES.TEAM,
+      isMember: true,
     }
     featuresFlagsService.canUseConference.mockResolvedValue(true)
     setUp({
@@ -131,6 +134,23 @@ describe('AudioConference.ViewModel', () => {
 
     expect(vm.showIcon).resolves.toBe(true);
   });
+
+  it('showIcon should be false if current user is not a member of the team/group', () => {
+    const group = {
+      groupId: 123,
+      type: CONVERSATION_TYPES.TEAM,
+      isMember: false,
+    }
+    featuresFlagsService.canUseConference.mockResolvedValue(true)
+    setUp({
+      group,
+      telephonyService,
+      featuresFlagsService,
+    })
+    vm = new AudioConferenceViewModel({ groupId: 123 });
+
+    expect(vm.showIcon).resolves.toBe(false);
+  })
 
   it('Should return false when service startAudioConference return falsy', async () => {
     const group = { groupId: 123, type: CONVERSATION_TYPES.TEAM };

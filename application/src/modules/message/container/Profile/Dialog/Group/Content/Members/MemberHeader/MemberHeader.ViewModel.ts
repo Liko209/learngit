@@ -22,7 +22,7 @@ class MemberHeaderViewModel extends StoreViewModel<MemberHeaderProps>
 
   @computed
   get isCurrentUserHasPermissionAddMember() {
-    return this.group.isCurrentUserHasPermissionAddMember;
+    return this.group.isCurrentUserHasPermissionAddMember && this.group.isMember;
   }
 
   @computed

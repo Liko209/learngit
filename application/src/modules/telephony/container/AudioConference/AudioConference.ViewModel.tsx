@@ -61,7 +61,7 @@ class AudioConferenceViewModel extends AbstractViewModel<AudioConferenceProps>
     mainLogger.info(`Conference permission: ${canUseConference}`);
     if (canUseConference) {
       const group = this._group;
-      return (
+      return group.isMember && (
         group.type === CONVERSATION_TYPES.NORMAL_GROUP ||
         group.type === CONVERSATION_TYPES.TEAM
       );

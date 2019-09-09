@@ -15,6 +15,7 @@ const mockGroup = {
   id: 1,
   members: [],
   isCurrentUserHasPermissionAddMember: true,
+  isMember: true,
 };
 
 jest.mock('sdk/module/group', () => ({
@@ -62,6 +63,11 @@ describe('MemberHeaderViewModel', () => {
 
     it('should be get false when invoke group entity property isCurrentUserHasPermissionAddMember', () => {
       mockGroup.isCurrentUserHasPermissionAddMember = false;
+      expect(vm.isCurrentUserHasPermissionAddMember).toEqual(false);
+    });
+
+    it('should be false when current user is not a member of the team/group', () => {
+      mockGroup.isMember = false;
       expect(vm.isCurrentUserHasPermissionAddMember).toEqual(false);
     });
   });
