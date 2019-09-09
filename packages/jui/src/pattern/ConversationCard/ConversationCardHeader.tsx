@@ -31,17 +31,20 @@ const StyledName = styled('div')`
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
-  padding-left: ${spacing(1)};
+  padding-left: ${spacing(2)};
   box-sizing: border-box;
   color: ${grey('600')};
   ${typography('caption2')};
-  line-height: ${height(5)};
+  line-height: ${height(4)};
   ${ellipsis()};
+  display: flex;
+  align-items: center;
   && {
     .emoji-mart-emoji {
       position: relative;
       top: 50%;
       transform: translateY(16%);
+      padding-right: ${spacing(1)};
     }
   }
 `;
@@ -135,16 +138,21 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 
   componentDidMount() {
-    // this.setHeaderItemMaxWidth();
+    this.setHeaderItemMaxWidth();
     window.addEventListener('resize', this.setHeaderItemMaxWidth);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.setHeaderItemMaxWidth);
   }
-
-  componentDidUpdate() {
-    this.setHeaderItemMaxWidth();
+  componentDidUpdate(prevProps: ConversationCardHeaderProps) {
+    const { name, statusPlainText } = this.props;
+    if (
+      prevProps.name !== name ||
+      prevProps.statusPlainText !== statusPlainText
+    ) {
+      this.setHeaderItemMaxWidth();
+    }
   }
 
   render() {

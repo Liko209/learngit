@@ -13,6 +13,7 @@ import { TotalUnreadController } from '../implementation/TotalUnreadController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { buildRequestController } from '../../../../framework/controller';
 import { GroupService } from '../../../group/service';
+import { GroupState } from '../../entity';
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
@@ -24,8 +25,8 @@ jest.mock('../../../../module/group/service');
 
 describe('StateController', () => {
   let stateController: StateController;
-  const mockEntitySourceController = {} as IEntitySourceController;
-  const groupService = new GroupService();
+  const mockEntitySourceController = {} as IEntitySourceController<GroupState>;
+  const groupService = new GroupService({} as any);
   beforeEach(() => {
     jest.clearAllMocks();
     stateController = new StateController(
@@ -35,7 +36,7 @@ describe('StateController', () => {
   });
   describe('getStateActionController()', () => {
     it('should call functions with correct params', () => {
-      const result = stateController.getStateActionController();
+      const result = stateController.stateActionController;
       expect(buildRequestController).toHaveBeenCalledWith({
         basePath: '/save_state_partial',
         networkClient: Api.glipNetworkClient,
@@ -50,7 +51,7 @@ describe('StateController', () => {
 
   describe('getStateDataHandleController()', () => {
     it('should call functions with correct params', () => {
-      const result = stateController.getStateDataHandleController();
+      const result = stateController.stateDataHandleController;
       expect(StateActionController).toHaveBeenCalled();
       expect(StateDataHandleController).toHaveBeenCalled();
       expect(result instanceof StateDataHandleController).toBe(true);
@@ -59,7 +60,7 @@ describe('StateController', () => {
 
   describe('getStateFetchDataController()', () => {
     it('should call functions with correct params', () => {
-      const result = stateController.getStateFetchDataController();
+      const result = stateController.stateFetchDataController;
       expect(StateFetchDataController).toHaveBeenCalledWith(
         mockEntitySourceController,
       );
@@ -69,7 +70,7 @@ describe('StateController', () => {
 
   describe('getTotalUnreadController()', () => {
     it('should call functions with correct params', () => {
-      const result = stateController.getTotalUnreadController();
+      const result = stateController.totalUnreadController;
       expect(TotalUnreadController).toHaveBeenCalledWith(
         groupService,
         mockEntitySourceController,

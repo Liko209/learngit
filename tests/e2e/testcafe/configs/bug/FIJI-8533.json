@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/Search/ContactSearch.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

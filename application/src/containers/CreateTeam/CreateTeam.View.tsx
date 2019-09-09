@@ -20,7 +20,7 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
-import { DialogContext } from '@/containers/Dialog';
+import { DialogContext, withEscTracking } from '@/containers/Dialog';
 import { dataAnalysis } from 'foundation/analysis';
 import { ViewProps, INIT_ITEMS } from './types';
 import {
@@ -29,7 +29,6 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { TeamSetting } from './CreateTeam.ViewModel';
 import history from '@/history';
-import { withEscTracking } from '@/common/trackData';
 
 type State = {
   items: JuiListToggleItemProps[];
@@ -40,6 +39,7 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
     margin: 0 0 ${spacing(4)} 0;
   }
 `;
+const Modal = withEscTracking(JuiModal);
 
 type Props = ViewProps & WithTranslation;
 
@@ -226,14 +226,13 @@ class CreateTeamComponent extends React.Component<Props, State> {
       t,
     } = this.props;
     return (
-      <JuiModal
+      <Modal
         disableEscapeKeyDown={loading}
         modalProps={{ scroll: 'body' }}
         open
         size={'medium'}
         title={t('people.team.CreateTeam')}
         onCancel={this.onClose}
-        onClose={withEscTracking(this.onClose)}
         onOK={this.createTeam}
         okText={t('people.team.Create')}
         contentBefore={
@@ -318,7 +317,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
           href=""
         /> */}
         </Loading>
-      </JuiModal>
+      </Modal>
     );
   }
 }

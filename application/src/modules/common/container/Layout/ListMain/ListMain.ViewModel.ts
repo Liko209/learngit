@@ -17,6 +17,10 @@ class ListMainViewModel extends HoverControllerViewModel<ListMainProps> {
 
   constructor(props: ListMainProps) {
     super(props);
+    if (props.filter && props.filter.initFilterKey) {
+      this.searchKey = props.filter.initFilterKey();
+    }
+
     this.reaction(
       () => this.searchKey,
       (searchKey: string) => {
@@ -43,7 +47,11 @@ class ListMainViewModel extends HoverControllerViewModel<ListMainProps> {
 
   @action
   setSearchKey = (value: string) => {
+    const filter = this.props.filter;
     this.searchKey = value;
+    if (filter && filter.onChange) {
+      filter.onChange(value);
+    }
   };
 
   @action

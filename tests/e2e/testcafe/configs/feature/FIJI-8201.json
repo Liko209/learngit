@@ -1,9 +1,0 @@
-{
-  "on_merge": {
-  "fixtures": [
-    "./fixtures/Logout.ts",
-    "./fixtures/CallHistory/*.ts",
-    "./fixtures/CallHistory/*/*.ts"],
-  "browsers": ["selenium:chrome"]
-  }
-}

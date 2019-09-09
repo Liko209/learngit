@@ -46,6 +46,8 @@ interface IGroupConfigService {
   ): Promise<void>;
 
   deleteGroupsConfig(ids: number[]): Promise<void>;
+
+  clearDraftFlagIfNotReallyExisted(groupId: number): Promise<void>;
 }
 
 export { IGroupConfigService };

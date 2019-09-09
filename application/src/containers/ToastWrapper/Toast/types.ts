@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ShowNotificationOptions } from '@/containers/Notification';
+import { Omit } from 'jui/foundation/utils/typeHelper';
 
-type ToastProps = ShowNotificationOptions & {
-  id?: number;
+type ToastProps = Omit<ShowNotificationOptions, 'key'> & {
+  id: number | string;
   dismiss: () => void;
 };
 
@@ -23,6 +24,4 @@ enum ToastMessageAlign {
 }
 
 type ToastViewProps = ToastProps;
-export {
-  ToastProps, ToastViewProps, ToastType, ToastMessageAlign,
-};
+export { ToastProps, ToastViewProps, ToastType, ToastMessageAlign };

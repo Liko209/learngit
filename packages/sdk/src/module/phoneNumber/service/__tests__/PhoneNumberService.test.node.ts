@@ -42,14 +42,14 @@ describe('PhoneNumberService', () => {
     it('should call controller to get e164', async () => {
       const spy = jest.spyOn(phoneNumberController, 'getE164PhoneNumber');
       await phoneNumberService.getE164PhoneNumber('123');
-      expect(spy).toBeCalledWith('123');
+      expect(spy).toHaveBeenCalledWith('123');
     });
   });
   describe('getLocalCanonical', () => {
     it('should call controller to get local canonical', async () => {
       const spy = jest.spyOn(phoneNumberController, 'getLocalCanonical');
       await phoneNumberService.getLocalCanonical('123');
-      expect(spy).toBeCalledWith('123');
+      expect(spy).toHaveBeenCalledWith('123');
     });
   });
 
@@ -57,7 +57,15 @@ describe('PhoneNumberService', () => {
     it('should call controller to get number type', async () => {
       const spy = jest.spyOn(phoneNumberController, 'isShortNumber');
       await phoneNumberService.isShortNumber('123');
-      expect(spy).toBeCalledWith('123');
+      expect(spy).toHaveBeenCalledWith('123');
+    });
+  });
+
+  describe('isSpecialNumber', () => {
+    it('should call controller to get number type', async () => {
+      const spy = jest.spyOn(phoneNumberController, 'isSpecialNumber');
+      await phoneNumberService.isSpecialNumber('123');
+      expect(spy).toHaveBeenCalledWith('123');
     });
   });
 
@@ -74,7 +82,7 @@ describe('PhoneNumberService', () => {
         '123',
         phoneParser,
       );
-      expect(spy).toBeCalledWith('123', phoneParser);
+      expect(spy).toHaveBeenCalledWith('123', phoneParser);
     });
   });
   describe('_handlePersonPayload', () => {
@@ -83,7 +91,7 @@ describe('PhoneNumberService', () => {
       const mockData = 'mockData' as any;
 
       await phoneNumberService['_handlePersonPayload'](mockData);
-      expect(phoneNumberController.handlePersonPayload).toBeCalledWith(
+      expect(phoneNumberController.handlePersonPayload).toHaveBeenCalledWith(
         mockData,
       );
     });

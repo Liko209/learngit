@@ -100,7 +100,7 @@ const name2icon = {
   signal_2: 'signal-2',
   hand_up: 'hand-up',
   mic: 'mic',
-  keypad: 'dialer',
+  keypad: 'keypad',
   hold: 'hold',
   record: 'record',
   stopRecord: 'stop-record',

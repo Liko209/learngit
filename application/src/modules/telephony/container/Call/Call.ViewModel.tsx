@@ -23,11 +23,15 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
+  );
+  private _featuresFlagsService: FeaturesFlagsService = container.get(
+    FeaturesFlagsService,
   );
 
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -113,17 +117,12 @@ class CallViewModel extends AbstractViewModel<CallProps>
 
   @computed
   get showIcon() {
-    const phoneNumber = this.phoneNumber;
-    const { id, groupId } = this.props;
-    if (phoneNumber) {
-      if (id) {
-        return this._currentUserId !== id;
+    if (this._featuresFlagsService.canIUseTelephony && this.phoneNumber) {
+      if (this.props.id) {
+        return this._currentUserId !== this.props.id;
       }
-      if (groupId) {
-        const group = this._group;
-        if (group) {
-          return group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
-        }
+      if (this._group) {
+        return this._group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
       }
     }
     return false;

@@ -16,6 +16,7 @@ import {
   primary,
   ellipsis,
 } from '../../../foundation/utils/styles';
+import { StyledAvatar } from '../../../components/Avatar';
 
 type PropsName = {
   needEllipsis?: boolean;
@@ -44,6 +45,25 @@ const JuiProfileDialogContentSummaryLeft = styled('div')`
   width: ${width(20)};
   margin-right: ${spacing(4)};
   flex-shrink: 0;
+
+  ${StyledAvatar} {
+    :hover,
+    :active {
+      cursor: default;
+      opacity: 1;
+    }
+  }
+
+  ${StyledAvatar} > img {
+    &:hover {
+      opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
+      cursor: pointer;
+    }
+
+    &:active {
+      opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
+    }
+  }
 `;
 
 const JuiProfileDialogContentSummaryRight = styled('div')`

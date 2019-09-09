@@ -387,12 +387,12 @@ export class BaseConversationPage extends BaseWebComponent {
     return this.t.click(this.moreButtonOnHeader);
   }
 
-  get memberButton() {
+  get memberButtonOnHeader() {
     return this.getSelectorByAutomationId('memberButton');
   }
 
-  async clickMemberButton() {
-    return this.t.click(this.memberButton);
+  async clickMemberButtonOnHeader() {
+    return this.t.click(this.memberButtonOnHeader);
   }
 
   get headerMoreMenu() {
@@ -810,11 +810,11 @@ export class PostItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('fileCardMedia', this.self);
   }
 
-  get fileItem() {
+  get fileCard() {
     return this.getSelectorByAutomationId('fileCard', this.self);
   }
 
-  get imageItem() {
+  get imageCard() {
     return this.getSelectorByAutomationId('imageCard', this.self);
   }
 
@@ -1057,6 +1057,14 @@ export class PostItem extends BaseWebComponent {
 
   async nthFileSizeShouldBe(n: number, size: string) {
     await this.t.expect(this.fileSizes.nth(n).withText(size).exists).ok();
+  }
+
+  get fileActionMoreButton() {
+    return this.getSelectorByAutomationIdUnderSelf('fileActionMore');
+  }
+
+  async clickFileActionMoreButton(n: number = 0) {
+    return this.t.click(this.fileActionMoreButton.nth(n));
   }
 
   // --- mention and bookmark page only ---

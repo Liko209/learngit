@@ -37,6 +37,7 @@ import {
 import { AccountService } from '../../account/service';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { GroupHandleDataController } from './GroupHandleDataController';
+import { StateService } from 'sdk/module/state';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
@@ -371,6 +372,12 @@ export class GroupActionController {
         .tags('GroupActionController')
         .info(`delete private groups ${privateIds}`);
       await this.entitySourceController.bulkDelete(privateIds);
+
+      // update total unread first
+      await ServiceLoader.getInstance<StateService>(
+        ServiceConfig.STATE_SERVICE,
+      ).handleGroupChangeForTotalUnread(updatedPrivateGroups);
+
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, updatedPrivateGroups);
     }
   }

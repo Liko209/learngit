@@ -1,8 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": [
-      "./fixtures/PhoneTab/Voicemail/*.ts"
-    ],
-    "browsers": ["selenium:chrome"]
-  }
-}

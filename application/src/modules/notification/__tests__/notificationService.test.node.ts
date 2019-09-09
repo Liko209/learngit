@@ -9,8 +9,9 @@ import * as utils from '../utils';
 
 jest.mock('@/common/isUserAgent');
 jest.mock('@/store/utils/entities');
+jest.mock('mobx');
 document.hasFous = jest.fn().mockReturnValue(false);
-global.Notification = function() {
+global.Notification = function () {
   return {};
 };
 global.Notification.requestPermission = jest
@@ -28,7 +29,7 @@ jupiter.registerModule({
       value() {
         return {
           create: jest.fn().mockName('happy'),
-          createTrack: jest.fn().mockReturnValue('')
+          createTrack: jest.fn().mockReturnValue(''),
         };
       },
     },

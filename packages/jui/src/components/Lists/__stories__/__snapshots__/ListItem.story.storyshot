@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and controls: Components/Lists/ListItem Single-line item with Avatar and controls 1`] = `
-.c5.custom-root {
+.c6.custom-root {
   padding: 0px;
   width: 36px;
   height: 20px;
 }
 
-.c5.c5 .custom-switchBase {
+.c6.c6 .custom-switchBase {
   width: 36px;
   height: 20px;
   -webkit-transform: translateX(-8px);
@@ -16,19 +16,19 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   padding: 0;
 }
 
-.c5.c5 .custom-switchBase:hover {
+.c6.c6 .custom-switchBase:hover {
   background: none;
 }
 
-.c5:hover .custom-bar {
+.c6:hover .custom-bar {
   opacity: 0.88 !important;
 }
 
-.c5:active .custom-bar {
+.c6:active .custom-bar {
   opacity: 0.76 !important;
 }
 
-.c5 .custom-bar {
+.c6 .custom-bar {
   opacity: 1;
   background: #bfbfbf;
   border-radius: 10px;
@@ -36,36 +36,36 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   margin: 0;
 }
 
-.c5.c5 .custom-icon {
+.c6.c6 .custom-icon {
   width: 12px;
   height: 12px;
   box-shadow: none;
 }
 
-.c5 .custom-disabled .custom-icon {
+.c6 .custom-disabled .custom-icon {
   background: #fff;
 }
 
-.c5.c5 .custom-checked {
+.c6.c6 .custom-checked {
   -webkit-transform: translateX(8px);
   -ms-transform: translateX(8px);
   transform: translateX(8px);
 }
 
-.c5.c5 .custom-checked .custom-icon {
+.c6.c6 .custom-checked .custom-icon {
   background: #fff;
 }
 
-.c5.c5 .custom-checked + .custom-bar {
+.c6.c6 .custom-checked + .custom-bar {
   opacity: 1;
 }
 
-.c5 .custom-disabled.custom-checked + .custom-bar {
+.c6 .custom-disabled.custom-checked + .custom-bar {
   opacity: 1;
   background: #b2e3f4;
 }
 
-.c5 input {
+.c6 input {
   -webkit-transform: translateX(8px);
   -ms-transform: translateX(8px);
   transform: translateX(8px);
@@ -99,20 +99,20 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   min-width: 0;
 }
 
-.c4.c4 {
+.c5.c5 {
   margin: 0px 8px;
 }
 
-.c4.c4 a,
-.c4.c4 button {
+.c5.c5 a,
+.c5.c5 button {
   margin-right: 0;
 }
 
-.c3.c3 {
+.c4.c4 {
   padding: 0;
 }
 
-.c3.c3 .list-item-primary {
+.c4.c4 .list-item-primary {
   display: block;
   color: #212121;
   font-size: 0.875rem;
@@ -125,7 +125,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   word-break: break-word;
 }
 
-.c3.c3 .list-item-secondary {
+.c4.c4 .list-item-secondary {
   display: block;
   color: #757575;
   font-size: 0.75rem;
@@ -138,11 +138,11 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   word-break: break-word;
 }
 
-.c3.c3.multiline {
+.c4.c4.multiline {
   margin: 0;
 }
 
-.c2.c2 {
+.c3.c3 {
   width: 24px;
   height: 24px;
   font-size: 0.75rem;
@@ -152,20 +152,20 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   background-color: #f5f6fb;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2:focus {
+.c3:focus {
   outline: none;
 }
 
-.c2 > .avatar-short-name {
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -180,6 +180,12 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+}
+
+.c7 .c2:hover,
+.c7 .c2:active {
+  cursor: default;
+  opacity: 1;
 }
 
 <ul
@@ -211,7 +217,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
       className="MuiListItemAvatar-root c1"
     >
       <div
-        className="MuiAvatar-root c2"
+        className="MuiAvatar-root c2 c3"
         size="small"
       >
         <img
@@ -221,7 +227,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
       </div>
     </div>
     <div
-      className="MuiListItemText-root c3"
+      className="MuiListItemText-root c4"
       flex="1 1 auto"
     >
       <span
@@ -231,10 +237,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
       </span>
     </div>
     <div
-      className="c4"
+      className="c5"
     >
       <span
-        className="MuiSwitch-root custom-root c5"
+        className="MuiSwitch-root custom-root c6"
       >
         <span
           aria-disabled={false}

@@ -31,6 +31,7 @@ type JuiPhoneFilterProps = {
   clearButtonLabel: string;
   tooltip?: string;
   onChange: IJuiChangePhoneFilter;
+  value?: string;
 };
 
 interface IJuiPhoneFilter {

@@ -6,7 +6,7 @@
 import { computed } from 'mobx';
 import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity, getSingleEntity } from '@/store/utils';
+import { getEntity } from '@/store/utils';
 import {
   UmiProps,
   UmiViewProps,
@@ -21,6 +21,8 @@ import { GROUP_BADGE_TYPE } from 'sdk/module/state';
 import BadgeModel from '@/store/models/Badge';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
 import { MESSAGE_SETTING_ITEM } from '@/modules/message/interface';
+import SettingModel from '@/store/models/UserSetting';
+import { UserSettingEntity } from 'sdk/module/setting';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   private _appStore = container.get(AppStore);
@@ -51,15 +53,20 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
 
   private get _onlyIncludeTeamMention() {
     return (
-      getSingleEntity(
-        ENTITY_NAME.USER_SETTING,
-        MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
-      ).value === NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
+      this._currentBadgeSetting.value ===
+      NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
     );
   }
 
+  private get _currentBadgeSetting() {
+    return getEntity<
+      UserSettingEntity,
+      SettingModel<NEW_MESSAGE_BADGES_OPTIONS>
+    >(ENTITY_NAME.USER_SETTING, MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT);
+  }
+
   private _getSingleUnreadInfo() {
-    if (!this.props.id) {
+    if (!this.props.id || this._currentBadgeSetting.isMocked) {
       return { unreadCount: 0, important: false };
     }
 
@@ -124,6 +131,9 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
 
   private _getMergedUnreadCounts(ids: string[]): UnreadCounts {
     const counts: UnreadCounts = { unreadCount: 0, mentionCount: 0 };
+    if (this._currentBadgeSetting.isMocked) {
+      return counts;
+    }
     ids.forEach((id: string) => {
       const badge: BadgeModel = getEntity(ENTITY_NAME.BADGE, id);
       if (

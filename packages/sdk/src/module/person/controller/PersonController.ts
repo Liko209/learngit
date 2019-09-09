@@ -53,7 +53,7 @@ const PersonFlags = {
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
 const HEADSHOT_THUMB_WIDTH = 'width';
 const HEADSHOT_THUMB_HEIGHT = 'height';
-
+const RC_SIGNONS = 'rc_signons';
 const SIZE = 'size';
 
 const LOG_TAG = 'PersonController';
@@ -62,16 +62,17 @@ class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
   private _entityCacheController: IEntityCacheController<Person>;
 
-  constructor() { }
+  constructor() {}
 
   get personActionController() {
-    return new PersonActionController(this.partialModifyController, this._entitySourceController);
+    return new PersonActionController(
+      this.partialModifyController,
+      this._entitySourceController,
+    );
   }
 
   get partialModifyController() {
-    return buildPartialModifyController<Person>(
-      this._entitySourceController
-    );
+    return buildPartialModifyController<Person>(this._entitySourceController);
   }
 
   setDependentController(
@@ -187,7 +188,9 @@ class PersonController {
         url = this._getHighestResolutionHeadshotUrlFromThumbs(
           headshot.thumbs,
           size,
-          headshot.stored_file_id ? headshot.stored_file_id.toString() : undefined,
+          headshot.stored_file_id
+            ? headshot.stored_file_id.toString()
+            : undefined,
         );
       }
       if (!url) {
@@ -234,7 +237,7 @@ class PersonController {
   }
 
   getFirstName(person: Person) {
-    let firstName = person.first_name || "";
+    let firstName = person.first_name || '';
     if (person.rc_extension_id) {
       firstName = person.sanitized_rc_first_name || firstName;
     }
@@ -242,7 +245,7 @@ class PersonController {
   }
 
   getLastName(person: Person) {
-    let lastName = person.last_name || "";
+    let lastName = person.last_name || '';
     if (person.rc_extension_id) {
       lastName = person.sanitized_rc_last_name || lastName;
     }
@@ -304,18 +307,29 @@ class PersonController {
     );
   }
 
-  isValidPerson = (person: Person) => !person.is_pseudo_user &&
+  private _isRcRegistered(person: Person) {
+    return (
+      this._hasTrueValue(person, PersonFlags.rc_registered) ||
+      person.externally_registered === RC_SIGNONS
+    );
+  }
+
+  private _isEmailAllowed(person: Person) {
+    return this._isRcRegistered(person) || !this._hasBogusEmail(person);
+  }
+
+  isValidPerson = (person: Person) =>
+    !person.is_pseudo_user &&
     !this._isUnregistered(person) &&
     this._isServicePerson(person) &&
-    !this._hasBogusEmail(person) &&
+    this._isEmailAllowed(person) &&
     !this._isDeactivated(person);
 
   isVisible(person: Person): boolean {
     return (
       this.isValidPerson(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
-      !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
-      !this._isDeactivated(person)
+      !this._hasTrueValue(person, PersonFlags.am_removed_guest)
     );
   }
 
@@ -360,7 +374,9 @@ class PersonController {
     if (!phoneParserUtility) {
       return null;
     }
-    const isShortNumber = phoneParserUtility.isShortNumber() || phoneParserUtility.isSpecialNumber();
+    const isShortNumber =
+      phoneParserUtility.isShortNumber() ||
+      phoneParserUtility.isSpecialNumber();
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );
@@ -411,7 +427,6 @@ class PersonController {
         await this._entitySourceController.update(person);
         notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
       }
-
     }
   }
 

@@ -73,6 +73,7 @@ class ConversationListItemViewModel extends StoreViewModel<
       .getGlobalStore()
       .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
     setTimeout(() => history.push(`/messages/${this.groupId}`), 0);
+    this.groupService.clearDraftFlagIfNotReallyExisted(this.groupId);
   };
 
   @computed

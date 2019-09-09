@@ -352,13 +352,15 @@ class SyncController {
     });
     performanceTracer.end({ key: this._getPerformanceKey(source, 'account') });
 
-    await Promise.all([
-      this._handleIncomingCompany(companies, source, changeMap),
-      this._handleIncomingItem(items, source, changeMap),
-      this._handleIncomingPresence(presences, source, changeMap),
-      this._handleIncomingState(arrState, mergedGroups, source, changeMap),
-    ])
-      .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
+    await this._handleIncomingProfile(transProfile, source, changeMap)
+      .then(() =>
+        Promise.all([
+          this._handleIncomingCompany(companies, source, changeMap),
+          this._handleIncomingItem(items, source, changeMap),
+          this._handleIncomingPresence(presences, source, changeMap),
+          this._handleIncomingState(arrState, mergedGroups, source, changeMap),
+        ]),
+      )
       .then(() => this._handleIncomingPerson(people, source, changeMap))
       .then(() => this._handleIncomingGroup(pureGroups, source, changeMap))
       .then(() =>
@@ -371,6 +373,10 @@ class SyncController {
         );
       })
       .then(() => {
+        mainLogger.debug(
+          LOG_INDEX_DATA,
+          `emit index data key===${[...changeMap.keys()]}`,
+        );
         if (changeMap.size > 0) {
           const s = Date.now();
           changeMap.forEach((value: ChangeModel, key: string) => {
@@ -400,7 +406,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingCompany() company.length: ${companies &&
-        companies.length}, source: ${source}`,
+      companies.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<CompanyService>(
@@ -420,7 +426,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingItem() item.length: ${items &&
-        items.length}, source: ${source}`,
+      items.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<ItemService>(
@@ -440,7 +446,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPresence() item.length: ${presences &&
-        presences.length}, source: ${source}`,
+      presences.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PresenceService>(
@@ -461,7 +467,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingState() states.length: ${states &&
-        states.length}, source: ${source}`,
+      states.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
 
@@ -506,7 +512,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPerson() persons.length: ${persons &&
-        persons.length}, source: ${source}`,
+      persons.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PersonService>(
@@ -526,7 +532,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingGroup() groups.length: ${groups &&
-        groups.length}, source: ${source}`,
+      groups.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<GroupService>(
@@ -547,7 +553,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPost() posts.length: ${posts &&
-        posts.map(post => post._id)}, source: ${source}`,
+      posts.map(post => post._id)}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PostService>(

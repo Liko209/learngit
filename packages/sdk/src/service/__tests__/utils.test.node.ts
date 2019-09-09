@@ -75,6 +75,24 @@ describe('utils', () => {
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
     });
 
+    it('should call bulk put data in entity source controller', async () => {
+      const entitySourceController = {
+        bulkPut: jest.fn(),
+      };
+      const obj = {
+        entitySourceController,
+        data: [{ id: 1 }, { id: 2 }, { id: 3 }],
+        dao: fakeDao,
+        eventKey: ENTITY.POST,
+        noSavingToDB: false,
+      };
+
+      await baseHandleData(obj);
+
+      expect(entitySourceController.bulkPut).toHaveBeenCalledWith(obj.data);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
+    });
+
     it('should update deactivated data', async () => {
       const obj = {
         data: [

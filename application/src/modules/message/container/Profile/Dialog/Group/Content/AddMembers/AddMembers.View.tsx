@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
-import { withEscTracking } from '@/common/trackData';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import { ContactSearch } from '@/containers/Downshift/ContactSearch';
 import portalManager from '@/common/PortalManager';
@@ -14,6 +14,7 @@ import { catchError } from '@/common/catchError';
 
 import { ViewProps } from './types';
 
+const Modal = withEscTracking(JuiModal);
 @observer
 class AddMembers extends React.Component<ViewProps> {
   handleClose = () => portalManager.dismissLast();
@@ -33,7 +34,7 @@ class AddMembers extends React.Component<ViewProps> {
     const { t, disabledOkBtn, handleSearchContactChange, group } = this.props;
     const { members } = group;
     return (
-      <JuiModal
+      <Modal
         open
         size={'medium'}
         okBtnProps={{ disabled: disabledOkBtn }}
@@ -48,7 +49,6 @@ class AddMembers extends React.Component<ViewProps> {
           },
           scroll: 'body',
         }}
-        onClose={withEscTracking(this.handleClose)}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
@@ -62,7 +62,7 @@ class AddMembers extends React.Component<ViewProps> {
           autoSwitchEmail
           autoFocus
         />
-      </JuiModal>
+      </Modal>
     );
   }
 }

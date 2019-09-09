@@ -6,15 +6,15 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
-import { DialogContext } from '@/containers/Dialog';
+import { DialogContext, withEscTracking } from '@/containers/Dialog';
 import { Emoji } from '@/modules/emoji';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Loading } from 'jui/hoc/withLoading';
 import { ViewProps } from './types';
 import { menuItemsConfig } from './config';
 import { JuiCustomStatus } from 'jui/pattern/CustomStatus';
-import { withEscTracking } from '@/common/trackData';
 
+const Modal = withEscTracking(JuiModal);
 const sheetSize = 64;
 const set = 'emojione';
 type Props = ViewProps & WithTranslation;
@@ -89,11 +89,16 @@ class CustomStatusComponent extends React.Component<
       isShowMenuList: true,
     });
   };
-  private _onStatusItemClick = (evt: React.MouseEvent, emoji: string) => {
+  private _onStatusItemClick = (
+    evt: React.MouseEvent,
+    item: {
+      emoji: string;
+      status: string;
+    },
+  ) => {
     const { handleInputValueChange, handleEmojiChange } = this.props;
-    const target = evt.target as HTMLElement;
-    const value = target.innerText;
-    handleInputValueChange(value);
+    const { emoji, status } = item;
+    handleInputValueChange(status);
     handleEmojiChange(emoji);
     this._focusEl && this._focusEl.focus();
     this.setState(
@@ -122,13 +127,12 @@ class CustomStatusComponent extends React.Component<
     } = this.props;
     const { isShowMenuList } = this.state;
     return (
-      <JuiModal
+      <Modal
         disableEscapeKeyDown={isLoading}
         open
         size="small"
         title={t('customstatus.title')}
         onCancel={this._onClose}
-        onClose={withEscTracking(this._onClose)}
         onOK={this._onSave}
         modalProps={{ allowOverflowY: true, scroll: 'body' }}
         okText={t('common.dialog.save')}
@@ -146,12 +150,13 @@ class CustomStatusComponent extends React.Component<
             placeHolder={t('customstatus.placeHolder')}
             emojiNode={this._getEmojiNode()}
             handleStatusChange={this._handleStatusChange}
-            onStatusItemClick={(evt: React.MouseEvent, emoji: string) =>
-              this._onStatusItemClick(evt, emoji)
-            }
+            onStatusItemClick={(
+              evt: React.MouseEvent,
+              item: { emoji: string; status: string },
+            ) => this._onStatusItemClick(evt, item)}
           />
         </Loading>
-      </JuiModal>
+      </Modal>
     );
   }
 }

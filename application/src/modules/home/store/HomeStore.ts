@@ -39,13 +39,18 @@ class HomeStore {
   @computed
   get defaultRouterPath() {
     let path = '';
-    this._defaultRouterPaths.some((value: string) => (this.subModuleConfigs.some((subModule: SubModuleConfig) => !!(
-      subModule.route &&
-          subModule.route.path &&
-          subModule.route.path === value
-    ))
-      ? ((path = value), true)
-      : false));
+    this._defaultRouterPaths.some((value: string) =>
+      this.subModuleConfigs.some(
+        (subModule: SubModuleConfig) =>
+          !!(
+            subModule.route &&
+            subModule.route.path &&
+            subModule.route.path === value
+          ),
+      )
+        ? ((path = value), true)
+        : false,
+    );
 
     return path;
   }
@@ -72,6 +77,11 @@ class HomeStore {
   @action
   addNavItem(name: string, navItemConfig: NavConfig) {
     this._navConfigMap.set(name, navItemConfig);
+  }
+
+  @action
+  removeNavItem(name: string) {
+    this._navConfigMap.delete(name);
   }
 
   @observable extensions: { [key: string]: Set<ComponentType> } = {};

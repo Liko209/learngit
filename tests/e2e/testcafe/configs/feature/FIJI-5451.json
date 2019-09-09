@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ContentPanel"],
-    "browsers": ["selenium:chrome"]
-  }
-}

@@ -26,7 +26,13 @@ import MuiTypography from '@material-ui/core/Typography';
 type MuiListItemPropsFixed = MuiListItemProps & {
   button?: any;
   TouchRippleProps?: any;
+  extraScrollPadding?: number;
 };
+
+const FilteredComponent = ({
+  extraScrollPadding,
+  ...rest
+}: MuiListItemPropsFixed) => <MuiListItem {...rest} />;
 
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -59,9 +65,10 @@ const JuiListNavItemText = styled(MuiTypography)`
   }
 `;
 
-const StyledNavListItem = styled<MuiListItemPropsFixed>(MuiListItem)`
+const StyledNavListItem = styled<MuiListItemPropsFixed>(FilteredComponent)`
   && {
-    padding: ${spacing(2, 3, 2, 3)};
+    padding: ${({ extraScrollPadding = 0 }) =>
+      spacing(2, 3 + extraScrollPadding, 2, 3)};
     color: ${grey('900')};
     height: ${height(9)};
     line-height: ${height(9)};

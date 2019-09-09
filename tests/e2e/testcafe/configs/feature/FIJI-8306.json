@@ -1,7 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/CreateTeam/ConvertToTeam.ts", "./fixtures/Profile/ChangeTeamAdmin.ts", "./fixtures/Profile/RemoveTeamMembers.ts"],
-    "include_tags": ["JPT-1396", "JPT-1092"],
-    "browsers": ["selenium:chrome"]
-  }
-}

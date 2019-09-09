@@ -104,4 +104,18 @@ describe('HomeService', () => {
       homeService.hasModules(['message', 'telephony', '1122']),
     ).toBeFalsy();
   });
+
+  it('unRegisterNavItem should call home store removeNavItem function', () => {
+    const homeService = new HomeService();
+    // @ts-ignore
+    homeService._homeStore = {
+      removeNavItem: jest.fn(),
+    };
+    const moduleName = '';
+    homeService.unRegisterNavItem(moduleName);
+    // @ts-ignore
+    expect(homeService._homeStore.removeNavItem).toHaveBeenCalledWith(
+      moduleName,
+    );
+  });
 });

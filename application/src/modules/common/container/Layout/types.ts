@@ -56,6 +56,8 @@ type Tab = ListInjectProps & {
     | FetchSortableDataListHandler<any>;
   filter?: {
     placeholder: string;
+    initFilterKey?: () => string;
+    onChange?: (key: string) => void;
   };
   onShowDataTrackingKey?: string;
 };

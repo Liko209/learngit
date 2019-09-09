@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Menus 2 Lines MenuItem With Avatar 1`] = `
-.c4.c4 {
+.c5.c5 {
   padding: 0;
 }
 
-.c4.c4 .list-item-primary {
+.c5.c5 .list-item-primary {
   display: block;
   color: #212121;
   font-size: 0.875rem;
@@ -18,7 +18,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   word-break: break-word;
 }
 
-.c4.c4 .list-item-secondary {
+.c5.c5 .list-item-secondary {
   display: block;
   color: #757575;
   font-size: 0.75rem;
@@ -31,11 +31,11 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   word-break: break-word;
 }
 
-.c4.c4.multiline {
+.c5.c5.multiline {
   margin: 0;
 }
 
-.c3.c3 {
+.c4.c4 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -45,20 +45,20 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   background-color: #f5f6fb;
 }
 
-.c3.c3:hover {
+.c4.c4:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c3.c3:active {
+.c4.c4:active {
   opacity: 0.76;
 }
 
-.c3:focus {
+.c4:focus {
   outline: none;
 }
 
-.c3 > .avatar-short-name {
+.c4 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -115,6 +115,12 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   color: #fff;
 }
 
+.c6 .c3:hover,
+.c6 .c3:active {
+  cursor: default;
+  opacity: 1;
+}
+
 <li
   aria-disabled={false}
   className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c0 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
@@ -137,7 +143,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
     className="MuiListItemIcon-root c1 c2"
   >
     <div
-      className="MuiAvatar-root c3"
+      className="MuiAvatar-root c3 c4"
       size="medium"
     >
       <img
@@ -147,7 +153,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
     </div>
   </div>
   <div
-    className="MuiListItemText-root c4 MuiListItemText-multiline multiline"
+    className="MuiListItemText-root c5 MuiListItemText-multiline multiline"
     flex="1 1 auto"
   >
     <span

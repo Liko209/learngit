@@ -661,14 +661,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 `;
 
 exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and information: Components/Dialog/DialogHeader Title with avatar and information 1`] = `
-.c10 {
+.c12 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c11 {
+.c13 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -679,7 +679,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   font-size: 24px;
 }
 
-.c12.c12 {
+.c14.c14 {
   padding: 0;
   width: 40px;
   height: 40px;
@@ -690,32 +690,32 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   border-radius: 50%;
 }
 
-.c12.c12 .icon,
-.c12.c12 .icon svg {
+.c14.c14 .icon,
+.c14.c14 .icon svg {
   font-size: 20px;
 }
 
-.c12.c12:hover {
+.c14.c14:hover {
   background-color: rgba(158,158,158,0.12);
 }
 
-.c12.c12:hover .icon {
+.c14.c14:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c12.c12:active .icon {
+.c14.c14:active .icon {
   color: #9e9e9e;
 }
 
-.c12.c12.c12.c12.disabled {
+.c14.c14.c14.c14.disabled {
   background-color: inherit;
 }
 
-.c12.c12.c12.c12.disabled .icon {
+.c14.c14.c14.c14.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c12.c12 .rippleVisible {
+.c14.c14 .rippleVisible {
   color: #9e9e9e;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -725,7 +725,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   animation-name: cBKRfH;
 }
 
-.c9.c9 {
+.c11.c11 {
   padding: 0;
   width: 40px;
   height: 40px;
@@ -736,32 +736,32 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   border-radius: 50%;
 }
 
-.c9.c9 .icon,
-.c9.c9 .icon svg {
+.c11.c11 .icon,
+.c11.c11 .icon svg {
   font-size: 20px;
 }
 
-.c9.c9:hover {
+.c11.c11:hover {
   background-color: rgba(237,182,60,0.12);
 }
 
-.c9.c9:hover .icon {
+.c11.c11:hover .icon {
   color: rgba(237,182,60,0.88);
 }
 
-.c9.c9:active .icon {
+.c11.c11:active .icon {
   color: #edb63c;
 }
 
-.c9.c9.c9.c9.disabled {
+.c11.c11.c11.c11.disabled {
   background-color: inherit;
 }
 
-.c9.c9.c9.c9.disabled .icon {
+.c11.c11.c11.c11.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c9.c9 .rippleVisible {
+.c11.c11 .rippleVisible {
   color: #edb63c;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -771,7 +771,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   animation-name: cBKRfH;
 }
 
-.c8 {
+.c10 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -792,11 +792,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   align-items: center;
 }
 
-.c8.c8 > *:nth-child(n + 2) {
+.c10.c10 > *:nth-child(n + 2) {
   margin-left: -10px;
 }
 
-.c2.c2 {
+.c4.c4 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -806,20 +806,20 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   background-color: #6FAFEB;
 }
 
-.c2.c2:hover {
+.c4.c4:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c4.c4:active {
   opacity: 0.76;
 }
 
-.c2:focus {
+.c4:focus {
   outline: none;
 }
 
-.c2 > .avatar-short-name {
+.c4 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -849,7 +849,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   align-items: center;
 }
 
-.c6.c6 {
+.c8.c8 {
   padding: 0;
   -webkit-flex: 1;
   -ms-flex: 1;
@@ -857,7 +857,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   min-width: 0;
 }
 
-.c6.c6 h2 {
+.c8.c8 h2 {
   color: #212121;
   text-align: center;
   white-space: nowrap;
@@ -870,7 +870,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   line-height: 22px;
 }
 
-.c6.c6.vertical h6 {
+.c8.c8.vertical h6 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -886,7 +886,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   margin: 0 auto;
 }
 
-.c7 {
+.c9 {
   margin: -10px -10px -10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
@@ -902,15 +902,15 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   justify-content: flex-end;
 }
 
-.c7.c7 > * {
+.c9.c9 > * {
   margin-left: -10px;
 }
 
-.c7.c7 > *:first-child {
+.c9.c9 > *:first-child {
   margin-left: 0;
 }
 
-.c13 {
+.c15 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -931,7 +931,13 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   width: 200px;
 }
 
-.c4 {
+.c2 .c3:hover,
+.c2 .c3:active {
+  cursor: default;
+  opacity: 1;
+}
+
+.c6 {
   font-size: 0.875rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -944,7 +950,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   word-break: break-word;
 }
 
-.c5 {
+.c7 {
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -957,7 +963,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   word-break: break-word;
 }
 
-.c3 {
+.c5 {
   margin-left: 8px;
   max-width: 160px;
 }
@@ -969,7 +975,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 }
 
 @media screen and (max-width:640px) {
-  .c3 {
+  .c5 {
     display: none;
   }
 }
@@ -992,10 +998,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       className="c1"
     >
       <div
-        className=""
+        className="c2"
       >
         <div
-          className="MuiAvatar-root c2 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c3 c4 MuiAvatar-colorDefault"
           color="lake"
           size="medium"
         >
@@ -1003,22 +1009,22 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
       </div>
       <div
-        className="c3"
+        className="c5"
       >
         <h3
-          className="c4"
+          className="c6"
         >
           Jessica Lewis
         </h3>
         <h4
-          className="c5"
+          className="c7"
         >
           1/23/2019 10:02 AM
         </h4>
       </div>
     </div>
     <div
-      className="MuiDialogTitle-root c6"
+      className="MuiDialogTitle-root c8"
     >
       <h2
         className="MuiTypography-root MuiTypography-h6"
@@ -1030,16 +1036,16 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       </h2>
     </div>
     <div
-      className="c7"
+      className="c9"
     >
       <div
-        className="c8"
+        className="c10"
         direction="horizontal"
         onClick={[Function]}
       >
         <button
           aria-label="Favorite"
-          className="MuiButtonBase-root MuiIconButton-root c9"
+          className="MuiButtonBase-root MuiIconButton-root c11"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1063,10 +1069,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="  icon c10"
+              className="  icon c12"
             >
               <svg
-                className="c11"
+                className="c13"
                 role="img"
               >
                 <use
@@ -1079,7 +1085,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-label="Settings"
-          className="MuiButtonBase-root MuiIconButton-root c12"
+          className="MuiButtonBase-root MuiIconButton-root c14"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1103,10 +1109,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="  icon c10"
+              className="  icon c12"
             >
               <svg
-                className="c11"
+                className="c13"
                 role="img"
               >
                 <use
@@ -1119,13 +1125,13 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <div>
           <div
-            className="c13"
+            className="c15"
             onClick={[Function]}
             onMouseDown={[Function]}
           >
             <button
               aria-label="More"
-              className="MuiButtonBase-root MuiIconButton-root c12"
+              className="MuiButtonBase-root MuiIconButton-root c14"
               disabled={false}
               onBlur={[Function]}
               onDragLeave={[Function]}
@@ -1149,10 +1155,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="  icon c10"
+                  className="  icon c12"
                 >
                   <svg
-                    className="c11"
+                    className="c13"
                     role="img"
                   >
                     <use
@@ -1167,7 +1173,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-label="Close"
-          className="MuiButtonBase-root MuiIconButton-root c12"
+          className="MuiButtonBase-root MuiIconButton-root c14"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1191,10 +1197,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="  icon c10"
+              className="  icon c12"
             >
               <svg
-                className="c11"
+                className="c13"
                 role="img"
               >
                 <use
@@ -1220,10 +1226,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       className="c1"
     >
       <div
-        className=""
+        className="c2"
       >
         <div
-          className="MuiAvatar-root c2 MuiAvatar-colorDefault"
+          className="MuiAvatar-root c3 c4 MuiAvatar-colorDefault"
           color="lake"
           size="medium"
         >
@@ -1231,22 +1237,22 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
       </div>
       <div
-        className="c3"
+        className="c5"
       >
         <h3
-          className="c4"
+          className="c6"
         >
           Jessica Lewis
         </h3>
         <h4
-          className="c5"
+          className="c7"
         >
           1/23/2019 10:02 AM
         </h4>
       </div>
     </div>
     <div
-      className="MuiDialogTitle-root c6"
+      className="MuiDialogTitle-root c8"
     >
       <h2
         className="MuiTypography-root MuiTypography-h6"
@@ -1262,16 +1268,16 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       </h2>
     </div>
     <div
-      className="c7"
+      className="c9"
     >
       <div
-        className="c8"
+        className="c10"
         direction="horizontal"
         onClick={[Function]}
       >
         <button
           aria-label="Favorite"
-          className="MuiButtonBase-root MuiIconButton-root c9"
+          className="MuiButtonBase-root MuiIconButton-root c11"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1295,10 +1301,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="  icon c10"
+              className="  icon c12"
             >
               <svg
-                className="c11"
+                className="c13"
                 role="img"
               >
                 <use
@@ -1311,7 +1317,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-label="Settings"
-          className="MuiButtonBase-root MuiIconButton-root c12"
+          className="MuiButtonBase-root MuiIconButton-root c14"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1335,10 +1341,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="  icon c10"
+              className="  icon c12"
             >
               <svg
-                className="c11"
+                className="c13"
                 role="img"
               >
                 <use
@@ -1351,13 +1357,13 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <div>
           <div
-            className="c13"
+            className="c15"
             onClick={[Function]}
             onMouseDown={[Function]}
           >
             <button
               aria-label="More"
-              className="MuiButtonBase-root MuiIconButton-root c12"
+              className="MuiButtonBase-root MuiIconButton-root c14"
               disabled={false}
               onBlur={[Function]}
               onDragLeave={[Function]}
@@ -1381,10 +1387,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="MuiIconButton-label"
               >
                 <span
-                  className="  icon c10"
+                  className="  icon c12"
                 >
                   <svg
-                    className="c11"
+                    className="c13"
                     role="img"
                   >
                     <use
@@ -1399,7 +1405,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-label="Close"
-          className="MuiButtonBase-root MuiIconButton-root c12"
+          className="MuiButtonBase-root MuiIconButton-root c14"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -1423,10 +1429,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
             className="MuiIconButton-label"
           >
             <span
-              className="  icon c10"
+              className="  icon c12"
             >
               <svg
-                className="c11"
+                className="c13"
                 role="img"
               >
                 <use

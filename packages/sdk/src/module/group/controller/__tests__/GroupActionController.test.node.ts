@@ -35,6 +35,7 @@ import { ENTITY } from '../../../../service';
 import { PERMISSION_ENUM } from '../..';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AccountService } from '../../../account';
+import { StateService } from 'sdk/module/state';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
@@ -85,6 +86,7 @@ describe('GroupFetchDataController', () => {
   const groupDao = new GroupDao(null);
   const groupConfigDao = new GroupConfigDao(null);
   const postService = new PostService();
+  const stateService = new StateService();
   const mockUserId = 1;
   const handleDataController = {
     handleData: jest.fn(),
@@ -108,6 +110,10 @@ describe('GroupFetchDataController', () => {
 
         if (serviceName === ServiceConfig.POST_SERVICE) {
           return postService;
+        }
+
+        if (serviceName === ServiceConfig.STATE_SERVICE) {
+          return stateService;
         }
         return;
       });
@@ -413,6 +419,7 @@ describe('GroupFetchDataController', () => {
 
   describe('handleRemovedFromTeam', () => {
     it('should removeRelatedInfos and delete team', async () => {
+      stateService.handleGroupChangeForTotalUnread = jest.fn();
       groupActionController.deleteAllRelatedInfosOfTeam = jest.fn();
       groupActionController[
         'entitySourceController'
@@ -442,6 +449,7 @@ describe('GroupFetchDataController', () => {
         ENTITY.GROUP,
         [{ privacy: 'private', id: 5, members: [789] }],
       );
+      expect(stateService.handleGroupChangeForTotalUnread).toHaveBeenCalled();
     });
   });
 
@@ -731,7 +739,7 @@ describe('GroupFetchDataController', () => {
           TEAM_MENTION: true,
         },
       });
-      expect(testTeamRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toHaveBeenCalledWith(
         _.mergeWith(
           {},
           mockTeam,

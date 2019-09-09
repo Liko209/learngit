@@ -21,7 +21,7 @@ type RuiSpanProps = {
 };
 
 const StyledTag = styled.span<RuiSpanProps>`
-  display: block;
+  display: inline-block;
   color: ${palette('common', 'white')};
   border-radius: ${spacing(2)};
   text-align: center;

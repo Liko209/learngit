@@ -67,7 +67,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
   -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
-  width: auto;
+  width: 0;
 }
 
 .c4.c4 .downshift-label {
@@ -75,6 +75,14 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.c4.c4 .multiple {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  width: auto;
 }
 
 .c3 {
@@ -141,7 +149,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
           aria-autocomplete="list"
           aria-controls={null}
           aria-labelledby="downshift-multiple-label"
-          className="MuiInputBase-root MuiInput-root inputRoot MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
+          className="MuiInputBase-root MuiInput-root MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
           onClick={[Function]}
         >
           <input
@@ -189,7 +197,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
           aria-autocomplete="list"
           aria-controls={null}
           aria-labelledby="downshift-multiple-label"
-          className="MuiInputBase-root MuiInput-root inputRoot MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
+          className="MuiInputBase-root MuiInput-root MuiInput-underline underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-adornedStart"
           onClick={[Function]}
         >
           <input

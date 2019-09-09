@@ -73,4 +73,12 @@ export class LoginPage extends BaseWebComponent {
     await this.setPassword(password);
     await this.t.click(this.signInButton);
   }
+
+  async interactiveEmailSignIn(email: string, password: string) {
+    await this.enterSignInMethodRedirectPage();
+    await this.setCredential(email);
+    await this.enterRingcentralSignInPage();
+    await this.setPassword(password);
+    await this.t.click(this.signInButton);
+  }
 }

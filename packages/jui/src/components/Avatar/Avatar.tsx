@@ -58,7 +58,9 @@ const StyledWrapper = styled.div<{ size?: Size }>`
   position: relative;
 `;
 
-const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
+const StyledAvatar = styled<JuiAvatarProps>(({customColor, ...rest}) => (
+  <MuiAvatar {...rest} />
+))`
   && {
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};

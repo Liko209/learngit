@@ -15,6 +15,7 @@ jest.mock('voip/src/api/RTCEngine');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 jest.mock('sdk/service/notificationCenter');
 
+
 describe('VoIPMediaDevicesDelegate', () => {
   function clearMocks() {
     jest.clearAllMocks();
@@ -25,6 +26,7 @@ describe('VoIPMediaDevicesDelegate', () => {
   let deviceDelegate: VoIPMediaDevicesDelegate;
   let mockSource: MediaDeviceInfo;
   let mockRtcEngine: RTCEngine;
+  let mockPermissionStatus: any;
   function setUp() {
     TelephonyGlobalConfig.prototype = {
       getCurrentSpeaker: jest.fn().mockReturnValue(1),
@@ -41,7 +43,15 @@ describe('VoIPMediaDevicesDelegate', () => {
     mockRtcEngine.getAudioInputs.mockReturnValue(mockSource);
     mockRtcEngine.getAudioOutputs.mockReturnValue(mockSource);
 
-    deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+    mockPermissionStatus = {
+      state: 'prompt',
+      addEventListener: jest.fn(),
+    }
+    global.navigator = {
+      permissions: {
+        query: jest.fn().mockResolvedValue(mockPermissionStatus)
+      }
+    }
   }
 
   function cleanUp() {
@@ -67,6 +77,7 @@ describe('VoIPMediaDevicesDelegate', () => {
   describe('constructor()', () => {
     beforeEach(() => {
       setUp();
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
     });
 
     afterEach(() => {
@@ -117,6 +128,7 @@ describe('VoIPMediaDevicesDelegate', () => {
   describe('onVolumeChanged()', () => {
     beforeEach(() => {
       setUp();
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
     });
 
     afterEach(() => {
@@ -138,6 +150,7 @@ describe('VoIPMediaDevicesDelegate', () => {
   describe('onMediaDevicesChanged()', () => {
     beforeEach(() => {
       setUp();
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
     });
 
     afterEach(() => {
@@ -228,6 +241,7 @@ describe('VoIPMediaDevicesDelegate', () => {
   describe('onMediaDevicesInitialed', () => {
     beforeEach(() => {
       setUp();
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
     });
 
     afterEach(() => {
@@ -247,6 +261,7 @@ describe('VoIPMediaDevicesDelegate', () => {
   describe('DeviceSyncManager', () => {
     beforeEach(() => {
       setUp();
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
     });
 
     afterEach(() => {
@@ -286,6 +301,14 @@ describe('VoIPMediaDevicesDelegate', () => {
   });
 
   describe('getRingerDevicesList', () => {
+    beforeEach(() => {
+      setUp();
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
     const devices = [
       {
         deviceId: 'default',
@@ -316,4 +339,104 @@ describe('VoIPMediaDevicesDelegate', () => {
       );
     });
   });
+
+  describe('_extractBluetoothInfo()', () => {
+    beforeEach(() => {
+      setUp();
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      
+    });
+    
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should extract bluetooth info', () => {
+      expect(deviceDelegate['_extractBluetoothInfo']('Headset (AirSolo Hands-Free) (Bluetooth)')).toEqual({
+        deviceName: 'AirSolo',
+        bluetoothMode: 'Hands-Free'
+      });
+      expect(deviceDelegate['_extractBluetoothInfo']('Headset (AirSolo Stereo) (Bluetooth)')).toEqual({
+        deviceName: 'AirSolo',
+        bluetoothMode: 'Stereo'
+      });
+    });
+    it('should extract null when not bluetooth name', () => {
+      expect(deviceDelegate['_extractBluetoothInfo']('Headset (AirSolo)')).toEqual(null);
+    });
+    it('should extract null when not bluetooth name', () => {
+      expect(deviceDelegate['_extractBluetoothInfo']('')).toEqual(null);
+    });
+    
+  });
+  describe('_switchStereoToHandsFreeIfNeed()', () => {
+    let mockDevices: any;
+    let setDeviceId: any;
+    beforeEach(() => {
+      setUp();
+      
+      mockDevices = [
+        {
+          deviceId: '1',
+          label: 'Headset (AirSolo Hands-Free) (Bluetooth)',
+          groupId: 'x',
+          kind: 'audiooutput',
+        } as any,
+        {
+          deviceId: '2',
+          label: 'Headset (AirSolo Stereo) (Bluetooth)',
+          groupId: 'x',
+          kind: 'audiooutput',
+        }as any,
+        {
+          deviceId: '3',
+          label: 'Headset (AirSolo2 Hands-Free) (Bluetooth)',
+          groupId: 'x',
+          kind: 'audiooutput',
+        } as any,
+        {
+          deviceId: '4',
+          label: 'Headset (AirSolo2 Stereo) (Bluetooth)',
+          groupId: 'x',
+          kind: 'audiooutput',
+        }as any,
+        {
+          deviceId: '5',
+          label: 'Headset (AirSolo3)',
+          groupId: 'x',
+          kind: 'audiooutput',
+        }as any,
+      ]
+      setDeviceId = jest.fn();
+    });
+    
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should switch to hands-free device', () => {
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      jest.clearAllMocks();
+      deviceDelegate['_switchStereoToHandsFreeIfNeed'](mockDevices, '2', setDeviceId);
+      expect(setDeviceId).toHaveBeenCalledWith('1');
+    });
+    it('should switch to hands-free device', () => {
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      jest.clearAllMocks();
+      deviceDelegate['_switchStereoToHandsFreeIfNeed'](mockDevices, '4', setDeviceId);
+      expect(setDeviceId).toHaveBeenCalledWith('3');
+    });
+    it('should do nothing when currently is hands-free', () => {
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      jest.clearAllMocks();
+      deviceDelegate['_switchStereoToHandsFreeIfNeed'](mockDevices, '1', setDeviceId);
+      expect(setDeviceId).not.toHaveBeenCalled();
+    });
+    it('should do nothing when currently is not bluetooth device', () => {
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      jest.clearAllMocks();
+      deviceDelegate['_switchStereoToHandsFreeIfNeed'](mockDevices, '5', setDeviceId);
+      expect(setDeviceId).not.toHaveBeenCalled();
+    });
+    
+  });
+  
 });

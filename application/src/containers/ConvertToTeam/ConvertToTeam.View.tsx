@@ -7,7 +7,7 @@ import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ConvertToTeamViewProps } from './types';
-import { withEscTracking } from '@/common/trackData';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
 import { JuiTopText } from 'jui/pattern/ConvertToTeam';
@@ -30,6 +30,7 @@ const NAME_INPUT_PROPS = {
   'data-test-automation-id': 'ConvertToTeamTeamName',
   maxLength: 200,
 };
+const Modal = withEscTracking(JuiModal);
 
 // const DESCRIPTION_INPUT_PROPS = {
 //   'data-test-automation-id': 'ConvertToTeamTeamDescription',
@@ -195,7 +196,7 @@ class ConvertToTeam extends Component<Props, State> {
       disabledOkBtn,
     } = this.props;
     return (
-      <JuiModal
+      <Modal
         disableEscapeKeyDown={saving}
         open
         size="medium"
@@ -211,7 +212,6 @@ class ConvertToTeam extends Component<Props, State> {
         cancelBtnProps={{
           'data-test-automation-id': 'convertToTeamCancelButton',
         }}
-        onClose={withEscTracking(this._handleClose)}
       >
         <Loading loading={saving} alwaysComponentShow delay={0}>
           <JuiTopText>
@@ -241,7 +241,7 @@ class ConvertToTeam extends Component<Props, State> {
             onChange={this._handleSwitchChange}
           /> */}
         </Loading>
-      </JuiModal>
+      </Modal>
     );
   }
 }

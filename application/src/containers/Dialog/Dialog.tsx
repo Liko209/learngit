@@ -7,7 +7,9 @@ import React from 'react';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import portalManager from '@/common/PortalManager';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { dataAnalysis } from 'foundation/analysis';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { SHORT_CUT_KEYS } from '@/AnalyticsCollector/constants';
+import { CLOSE_REASON } from './constants';
 
 type BaseType = {
   isAlert?: boolean;
@@ -56,14 +58,10 @@ function dialog(config: BaseType) {
       onCancel && onCancel(event);
       dismiss();
     },
-    onClose(event: React.MouseEvent, reason: string) {
-      if (reason === 'escapeKeyDown') {
-        dataAnalysis.track('Jup_Web/DT_general_kbShortcuts', {
-          shortcut: 'escape',
-        });
+    onEscTracking(reason: string) {
+      if (reason === CLOSE_REASON.ESC) {
+        analyticsCollector.shortcuts(SHORT_CUT_KEYS.ESCAPE);
       }
-      onCancel && onCancel(event);
-      dismiss();
     },
   };
 

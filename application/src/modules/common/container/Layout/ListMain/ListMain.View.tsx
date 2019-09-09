@@ -110,7 +110,7 @@ class ListMainViewComponent extends Component<ListMainViewProps> {
   private _onFilterChange = debounce(this.props.setSearchKey, DELAY_DEBOUNCE);
 
   private get _filterRenderer() {
-    const { t, filter } = this.props;
+    const { t, filter, searchKey } = this.props;
 
     return (
       filter && (
@@ -119,6 +119,7 @@ class ListMainViewComponent extends Component<ListMainViewProps> {
           clearButtonLabel={t('common.clearText')}
           tooltip={t('common.clear')}
           onChange={this._onFilterChange}
+          value={searchKey}
         />
       )
     );

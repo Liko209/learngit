@@ -23,14 +23,16 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   _filteredMemberIds: number[] = [];
   @observable
   keywords: string = '';
-  changeSearchInputDebounce: () => void;
+
+  @action
+  changeSearchInput = (keywords: string) => {
+    this.keywords = keywords;
+  };
+
+  changeSearchInputDebounce = debounce(this.changeSearchInput, DELAY_DEBOUNCE);
 
   constructor(props: MembersProps) {
     super(props);
-    this.changeSearchInputDebounce = debounce(
-      this.changeSearchInput.bind(this),
-      DELAY_DEBOUNCE,
-    );
     this.reaction(() => this.id, this.createSortableHandler, {
       fireImmediately: true,
     });
@@ -59,11 +61,6 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   };
 
   @action
-  changeSearchInput = (keywords: string) => {
-    this.keywords = keywords;
-  };
-
-  @action
   handleSearch = async () => {
     if (this.keywords) {
       const searchService = ServiceLoader.getInstance<SearchService>(
@@ -73,7 +70,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
         excludeSelf: false,
         arrangeIds: this._sortableGroupMemberHandler.allSortedMemberIds,
         fetchAllIfSearchKeyEmpty: true,
-        asIdsOrder: true,
+        recentFirst: true,
       });
       const ids = result.sortableModels.map(
         (person: SortableModel<Person>) => person.id,

@@ -57,11 +57,11 @@ describe('CustomStatusView', () => {
         placeholder: 'Share custom status',
       });
     }
-    @test('should contain onClose props when rendering JuiModal ')
+    @test('should render withEscTracking when Component rendered ')
     t3() {
       const Wrapper = shallow(<CustomStatusView open {...props} />);
-      const modal = Wrapper.find(JuiModal).shallow();
-      expect(modal.props().onClose).toBeTruthy();
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
     }
   }
 });

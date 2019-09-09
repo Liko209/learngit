@@ -149,6 +149,8 @@ interface IGroupService {
   getSynchronously(id: number): Group | null;
 
   getGroupName(group: Group): string;
+
+  clearDraftFlagIfNotReallyExisted(groupId: number): Promise<void>;
 }
 
 export { IGroupService };

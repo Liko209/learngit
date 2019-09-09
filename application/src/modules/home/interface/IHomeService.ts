@@ -15,6 +15,7 @@ interface IHomeService {
   unRegisterModule(moduleName: string): void;
   registerExtension(key: string, extension: ComponentType): void;
   registerNavItem(moduleName: string, navItemConfig: NavConfig): void;
+  unRegisterNavItem(moduleName: string): void;
   registerRoute(moduleName: string, route: RouteProps): void;
   setDefaultRouterPaths(paths: string[]): void;
   hasModules(modules: string[]): boolean;

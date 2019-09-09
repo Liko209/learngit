@@ -90,6 +90,7 @@ describe('WhiteScreenHandler', () => {
       global.location.reload = jest.fn();
       accountManager = {
         logout: jest.fn(),
+        onForceLogout: jest.fn(),
       } as any;
       container.get = () => accountManager as any;
     };
@@ -107,17 +108,12 @@ describe('WhiteScreenHandler', () => {
     it('should logout', async () => {
       const whiteScreenHandler = new WhiteScreenHandler();
       await whiteScreenHandler.handleWhiteScreen();
-      expect(accountManager.logout).toHaveBeenCalledTimes(1);
+      expect(accountManager.onForceLogout).toHaveBeenCalledTimes(1);
     });
     it('should unregister serviceWorker', async () => {
       const whiteScreenHandler = new WhiteScreenHandler();
       await whiteScreenHandler.handleWhiteScreen();
       expect(registration.unregister).toHaveBeenCalledTimes(1);
-    });
-    it('should reloadPage', async () => {
-      const whiteScreenHandler = new WhiteScreenHandler();
-      await whiteScreenHandler.handleWhiteScreen();
-      expect(global.location.reload).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -67,7 +67,7 @@ import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 import config from '@/config';
 import { ItemService } from 'sdk/module/item';
-import { JError, ERROR_TYPES, ERROR_CODES_NETWORK } from 'sdk/error';
+import { JError, errorHelper } from 'sdk/error';
 import { RingtonePrefetcher } from '../../notification/RingtonePrefetcher';
 import { isCurrentUserDND } from '@/modules/notification/utils';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
@@ -103,6 +103,7 @@ class TelephonyService {
     ServiceConfig.CALL_LOG_SERVICE,
   );
   private _mediaService = jupiter.get<IMediaService>(IMediaService);
+  private _ringtoneStopped: boolean = true;
   private _muteRingtone: boolean = false;
   private _outputDevices: string[] | 'all' | null = null;
   private _callEntityId?: number;
@@ -176,7 +177,10 @@ class TelephonyService {
       mainLogger.tags(TelephonyService.TAG).warn('unable to find ringtone');
       return;
     }
-    if (!this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
+    if (this._ringtoneStopped || !this._ringtone || (this._ringtone.playing && !this._ringtone.muted)) {
+      mainLogger
+      .tags(TelephonyService.TAG)
+      .info('abandon playing ringtone', new Date());
       return;
     }
 
@@ -192,6 +196,7 @@ class TelephonyService {
 
   private _stopRingtone = async () => {
     mainLogger.tags(TelephonyService.TAG).info(`pause audio, ${new Date()}`);
+    this._ringtoneStopped = true;
     if (!this._ringtone) {
       return;
     }
@@ -252,7 +257,6 @@ class TelephonyService {
           }),
         );
     }
-    this._telephonyStore.canUseTelephony = true;
 
     this._getDialerOpenedCount();
 
@@ -280,17 +284,21 @@ class TelephonyService {
       () => ({
         hasActiveOutBoundCall: !this._telephonyStore.hasActiveOutBoundCall,
         defaultCallerPhoneNumber: this._telephonyStore.defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall: this._telephonyStore.isEndMultipleIncomingCall
       }),
       async ({
         hasActiveOutBoundCall,
         defaultCallerPhoneNumber,
+        isEndMultipleIncomingCall
       }: {
         hasActiveOutBoundCall: boolean;
         defaultCallerPhoneNumber: string;
+        isEndMultipleIncomingCall: boolean;
       }) => {
         // restore things to default values
-        if (!hasActiveOutBoundCall) {
+        if (!hasActiveOutBoundCall && !isEndMultipleIncomingCall) {
           runInAction(() => {
+            this.deleteInputString(true);
             this.setCallerPhoneNumber(defaultCallerPhoneNumber);
           });
         }
@@ -433,6 +441,7 @@ class TelephonyService {
       () => this._telephonyStore.isIncomingCall,
       isIncomingCall => {
         if (isIncomingCall) {
+          this._ringtoneStopped = false;
           this._playRingtone();
           return;
         }
@@ -531,6 +540,7 @@ class TelephonyService {
     return fromNumber;
   }
 
+  @action
   private _makeCall = async (toNumber: string, options: Partial<CallOptions> & { callback?: Function } = {}) => {
 
     const { isValid } = await this.isValidNumber(toNumber);
@@ -553,9 +563,9 @@ class TelephonyService {
       TelephonyService.TAG
       }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
-    if (accessCode) {
-      this._telephonyStore.isConference = true;
-    }
+    const itemStore = storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<Item, ItemModel>;
+    const conference = itemStore.find((item: ItemModel) => item instanceof ConferenceItemModel && item.rcData.phoneNumber === toNumber);
+    this._telephonyStore.isConference = conference !== null || !!accessCode;
     const rv = await this._serverTelephonyService.makeCall(
       toNumber,
       { fromNumber, ...options },
@@ -604,14 +614,16 @@ class TelephonyService {
     return true;
   };
 
-  ensureCallPermission = async (action: Function, options: { isShortNumber?: boolean } = {}) => {
-
+  ensureCallPermission = async (action: Function, options: { phoneNumber?: string } = {}) => {
     const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
     if (!callAvailable) {
       ToastCallError.toastPermissionError();
       return false;
     }
-    if (!options.isShortNumber && !this._serverTelephonyService.hasActiveDL()) {
+
+    const hasDigitalLines = (await this._rcInfoService.getDigitalLines()).length > 0;
+    const isShortNumber = await this.isShortNumber(options.phoneNumber);
+    if(!hasDigitalLines && !isShortNumber) {
       Notification.flashToast({
         message: 'telephony.prompt.noDLNotAllowedToMakeCall',
         type: ToastType.ERROR,
@@ -622,12 +634,11 @@ class TelephonyService {
       });
       return false;
     }
-
-    if (!options.isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+    const isSpecialNumber = await this.isSpecialNumber(options.phoneNumber);
+    if(!isSpecialNumber && !isShortNumber && !this._serverTelephonyService.isEmergencyAddrConfirmed()) {
       this.openE911(action);
       return true;
     }
-
     return await action();
   };
 
@@ -667,10 +678,9 @@ class TelephonyService {
       // when multiple call don't hangup
       return Promise.resolve(true);
     }
-    const isShortNumber = (await this.isShortNumber(toNumber)) || (await this.isSpecialNumber(toNumber));
     const result = await this.ensureCallPermission(() => {
       return this._makeCall(toNumber, options)
-    }, { isShortNumber });
+    }, { phoneNumber:toNumber  });
     return result;
   };
 
@@ -749,6 +759,7 @@ class TelephonyService {
       this._telephonyStore.dialerHeight = _dialerRect.height;
 
       this._telephonyStore.startAnimation();
+
       return;
     }
     // when no destination, hide the dialer directly.
@@ -756,7 +767,7 @@ class TelephonyService {
   };
 
   @action
-  onAnimationEnd = async () => {
+  onAnimationEnd = () => {
     this._telephonyStore.closeDialer();
     this._telephonyStore.dialerMinimizeTranslateX = NaN;
     this._telephonyStore.dialerMinimizeTranslateY = NaN;
@@ -767,6 +778,7 @@ class TelephonyService {
 
   maximize = () => {
     this._telephonyStore.openDialer();
+    this._telephonyStore.onDialerInputFocus();
   };
 
   onAfterDialerOpen = () => {
@@ -971,6 +983,8 @@ class TelephonyService {
       return;
     });
   };
+
+  deleteInputString = this.deleteInputStringFactory('inputString');
 
   dispose = () => {
     this._ringtonePrefetcher.dispose()
@@ -1264,12 +1278,8 @@ class TelephonyService {
   }
 
   handleStartAudioConferenceError(error: JError) {
-    const isNetworkError = error.isMatch({
-      type: ERROR_TYPES.NETWORK,
-      codes: [ERROR_CODES_NETWORK.NETWORK_ERROR]
-    });
     Notification.flashToast({
-      message: isNetworkError ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
+      message: errorHelper.isNetworkConnectionError(error) ? 'telephony.prompt.audioConferenceNetworkError' : 'telephony.prompt.audioConferenceBackendError',
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
@@ -1286,10 +1296,9 @@ class TelephonyService {
       );
       return;
     }
-    const isShortNumber = await this.isShortNumber(phoneNumber);
     const ret = await this.ensureCallPermission(() => {
       return this._makeCall(phoneNumber, { accessCode })
-    }, { isShortNumber });
+    }, { phoneNumber });
 
     return ret;
   }

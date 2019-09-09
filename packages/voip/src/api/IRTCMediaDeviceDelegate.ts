@@ -3,11 +3,16 @@
  * @Date: 2019-02-27 15:42:31
  * Copyright © RingCentral. All rights reserved.
  */
+import { PermissionState } from '../utils/types';
 
 interface IRTCMediaDeviceDelegate {
   onMediaDevicesInitialed(
     audioOutputs: MediaDeviceInfo[],
     audioInputs: MediaDeviceInfo[],
+  ): void;
+  onMediaPermissionChanged(
+    newState: PermissionState,
+    preState: PermissionState,
   ): void;
   onMediaDevicesChanged(
     audioOutputs: {

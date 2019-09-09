@@ -7,7 +7,9 @@ import { AUDIO_SOUNDS_INFO, RINGS_TYPE } from 'sdk/module/profile';
 import { ENTITY_NAME } from '@/store';
 import { reaction } from 'mobx';
 import { Disposer } from 'mobx-react';
+import { mainLogger } from 'foundation/log';
 
+const logger = mainLogger.tags('RingtonePrefetcher');
 class RingtonePrefetcher {
   disposer: Disposer;
   media?: IMedia;
@@ -17,17 +19,21 @@ class RingtonePrefetcher {
   prefetch(src: string) {
     if (this.media && this.media.playing) {
       this.media.on('pause', () => {
+        logger.log('Ringtone paused, recreating media of', src);
         this.createMedia(src);
       });
     } else {
+      logger.log('Recreating media of', src);
       this.createMedia(src);
     }
     if (this.media) {
       this.media.on('loadeddata', () => {
+        logger.log('Media loaded, stop playing', src);
         this.media && this.media.stop();
       });
     }
   }
+
   createMedia(src: string) {
     const mediaService: IMediaService = jupiter.get(IMediaService);
     this.media = mediaService.createMedia({
@@ -38,6 +44,7 @@ class RingtonePrefetcher {
       outputDevices: null,
     });
   }
+
   subscribeSettingChange() {
     this.disposer = reaction(
       () => {

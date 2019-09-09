@@ -45,5 +45,28 @@ describe('EntityPersistentController', () => {
       );
       expect(result[0]).toEqual({ id: 1, type: 1 });
     });
+
+    it('should return all data from dao when has no entity cache controller and no filter func ', async () => {
+      const entities = [{ id: 1, type: 1 }, { id: 3, type: 3 }];
+      dao.getAll = jest.fn().mockResolvedValueOnce(entities);
+      delete entityPersistentController['entityCacheController'];
+      const result = await entityPersistentController.getEntities();
+      expect(result).toEqual(entities);
+    });
+
+    it('should return filtered and sorted data from dao when has no entity cache controller   ', async () => {
+      const entities = [
+        { id: 1, type: 1 },
+        { id: 2, type: 2 },
+        { id: 3, type: 3 },
+      ];
+      dao.getAll = jest.fn().mockResolvedValueOnce(entities);
+      delete entityPersistentController['entityCacheController'];
+      const result = await entityPersistentController.getEntities(
+        (model: any) => model.type !== 3,
+        (a, b) => b.id - a.id,
+      );
+      expect(result).toEqual([entities[1], entities[0]]);
+    });
   });
 });

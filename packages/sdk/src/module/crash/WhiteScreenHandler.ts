@@ -27,13 +27,12 @@ export class WhiteScreenHandler {
   }
 
   async handleWhiteScreen() {
-    this._clearServiceWorkerCaches();
+    await this._clearServiceWorkerCaches();
     const registration = await navigator.serviceWorker.getRegistration('/');
     registration && (await registration.unregister());
     await ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
-    ).logout();
-    window.location.reload();
+    ).onForceLogout(true);
   }
 
   private async _clearServiceWorkerCaches() {

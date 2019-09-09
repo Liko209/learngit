@@ -552,7 +552,9 @@ describe('SyncController ', () => {
       syncController['_handleIncomingItem'] = jest.fn();
       syncController['_handleIncomingPresence'] = jest.fn();
       syncController['_handleIncomingState'] = jest.fn();
-      syncController['_handleIncomingProfile'] = jest.fn();
+      syncController['_handleIncomingProfile'] = jest
+        .fn()
+        .mockReturnValue(Promise.resolve());
       syncController['_handleIncomingPerson'] = jest.fn();
       syncController['_handleIncomingGroup'] = jest.fn();
       syncController['_handleIncomingPost'] = jest.fn();

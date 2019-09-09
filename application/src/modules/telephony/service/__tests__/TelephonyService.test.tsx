@@ -32,13 +32,14 @@ const phoneNumberService = {
 
 const itemService = {
   name: ServiceConfig.ITEM_SERVICE,
-  startConference() { }
-}
+  startConference() {},
+};
 
 const rcInfoService = {
   name: ServiceConfig.RC_INFO_SERVICE,
-  isVoipCallingAvailable() { }
+  isVoipCallingAvailable() {},
 }
+
 
 describe('TelephonyService', () => {
   const mockVolumeEntity = (name: string, id: any) => {
@@ -173,15 +174,17 @@ describe('TelephonyService', () => {
     )
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
-      { method: 'isEmergencyAddrConfirmed', data: true },
-      { method: 'hasActiveDL', data: false },
+      { method: 'isEmergencyAddrConfirmed', data: false },
     ])
     @mockService(itemService, 'startConference')
-    @mockService(rcInfoService, 'isVoipCallingAvailable', true)
+    @mockService(rcInfoService, [
+      { method: 'isVoipCallingAvailable', data: true },
+      { method: 'getDigitalLines', data: [] },
+    ])
     @mockService(globalConfigService)
     @mockService(phoneNumberService)
     t1(done: any) {
-      Notification.flashToast = jest.fn()
+      Notification.flashToast = jest.fn();
       let ts;
       runInAction(async () => {
         ts = new TelephonyService();
@@ -192,42 +195,44 @@ describe('TelephonyService', () => {
       });
     }
 
-    @test(
-      'should call start conference api when it is allowed',
-    )
+    @test('should call start conference api when it is allowed')
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: true },
-      { method: 'hasActiveDL', data: true },
       { method: 'makeCall', data: MAKE_CALL_ERROR_CODE.NO_ERROR },
     ])
-    @mockService(itemService, 'startConference', { rc_data: { hostCode: '292209719', phoneNumber: '(267) 930-4000' } })
-    @mockService(rcInfoService, 'isVoipCallingAvailable', true)
+    @mockService(itemService, 'startConference', {
+      rc_data: { hostCode: '292209719', phoneNumber: '(267) 930-4000' },
+    })
+    @mockService(rcInfoService, [
+      { method: 'isVoipCallingAvailable', data: true },
+      { method: 'getDigitalLines', data: [1] },
+    ])
     @mockService(globalConfigService)
-    @mockService(phoneNumberService)
+    @mockService(phoneNumberService, [
+      { method: 'isSpecialNumber', data: false },
+      { method: 'isShortNumber', data: true },
+    ])
     t2(done: any) {
       Notification.flashToast = jest.fn();
       let ts;
       runInAction(async () => {
         ts = new TelephonyService();
-        ts.isValidNumber = jest.fn().mockResolvedValue({ isValid: true })
-        ts._isJupiterDefaultApp = jest.fn().mockResolvedValue(true)
-        ts._getFromNumber = jest.fn().mockResolvedValue('123123233')
+        ts.isValidNumber = jest.fn().mockResolvedValue({ isValid: true });
+        ts._isJupiterDefaultApp = jest.fn().mockResolvedValue(true);
+        ts._getFromNumber = jest.fn().mockResolvedValue('123123233');
         const result = await ts.startAudioConference(123);
         expect(result).toBe(true);
         expect(itemService.startConference).toHaveBeenCalled();
         expect(ts._telephonyStore.isConference).toBe(true);
-        done()
+        done();
       });
     }
 
-    @test(
-      'should show toast when error occurs when starting conference',
-    )
+    @test('should show toast when error occurs when starting conference')
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
       { method: 'isEmergencyAddrConfirmed', data: true },
-      { method: 'hasActiveDL', data: true },
       { method: 'makeCall', data: MAKE_CALL_ERROR_CODE.NO_ERROR },
     ])
     @mockService.reject(itemService, 'startConference', () => {
@@ -236,24 +241,34 @@ describe('TelephonyService', () => {
         'Api Error: Please check whether server crash',
       )
     })
-    @mockService(rcInfoService, 'isVoipCallingAvailable', true)
+    @mockService(rcInfoService,[
+      { method:'isVoipCallingAvailable', data:true},
+      {method:'getDigitalLines',data:[1]}
+    ])
     @mockService(globalConfigService)
-    @mockService(phoneNumberService)
+    @mockService(phoneNumberService, [
+      { method: 'isSpecialNumber', data: false },
+      { method: 'isShortNumber', data: true },
+    ])
     t3(done: any) {
-      Notification.flashToast = jest.fn()
+      Notification.flashToast = jest.fn();
       let ts;
       runInAction(async () => {
-        jest.spyOn(errorHelper, 'isNetworkConnectionError').mockReturnValue(true);
+        jest
+          .spyOn(errorHelper, 'isNetworkConnectionError')
+          .mockReturnValue(true);
         ts = new TelephonyService();
-        ts.isValidNumber = jest.fn().mockResolvedValue({ isValid: true })
-        ts._isJupiterDefaultApp = jest.fn().mockResolvedValue(true)
-        ts._getFromNumber = jest.fn().mockResolvedValue('123123233')
+        ts.isValidNumber = jest.fn().mockResolvedValue({ isValid: true });
+        ts._isJupiterDefaultApp = jest.fn().mockResolvedValue(true);
+        ts._getFromNumber = jest.fn().mockResolvedValue('123123233');
         const result = await ts.startAudioConference(123);
         expect(result).toBe(false);
         expect(itemService.startConference).toHaveBeenCalled();
-        expect(Notification.flashToast).toHaveBeenCalledWith(expect.objectContaining({
-          message: 'telephony.prompt.audioConferenceNetworkError'
-        }));
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'telephony.prompt.audioConferenceNetworkError',
+          }),
+        );
         done();
       });
     }
@@ -267,20 +282,120 @@ describe('TelephonyService', () => {
     )
     @mockService(ServerTelephonyService, [
       { method: 'getAllCallCount', data: 0 },
-      { method: 'isEmergencyAddrConfirmed', data: true },
-      { method: 'hasActiveDL', data: false },
+      { method: 'isEmergencyAddrConfirmed', data: false },
     ])
-    @mockService(rcInfoService, 'isVoipCallingAvailable', true)
+    @mockService(rcInfoService, [
+      { method: 'isVoipCallingAvailable', data: true, type: 'resolve' },
+      { method: 'getDigitalLines', data: [], type: 'resolve' },
+    ])
     @mockService(globalConfigService)
-    @mockService(phoneNumberService, 'isShortNumber', true)
+    @mockService(phoneNumberService, [
+      { method: 'isSpecialNumber', data: false, type: 'resolve' },
+      { method: 'isShortNumber', data: true, type: 'resolve' },
+    ])
     t1(done: any) {
-      Notification.flashToast = jest.fn()
+      Notification.flashToast = jest.fn();
       let ts;
       runInAction(async () => {
         ts = new TelephonyService();
-        ts._makeCall = jest.fn()
+        ts._makeCall = jest.fn();
         await ts.directCall('123');
         expect(ts._makeCall).toHaveBeenCalled();
+        expect(Notification.flashToast).not.toHaveBeenCalled();
+        done();
+      });
+    }
+
+    @test(
+      'should display the toast of no digital line when making an N11 call',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 0 },
+      { method: 'isEmergencyAddrConfirmed', data: false },
+    ])
+    @mockService(rcInfoService, [
+      { method: 'isVoipCallingAvailable', data: true, type: 'resolve' },
+      { method: 'getDigitalLines', data: [], type: 'resolve' },
+    ])
+    @mockService(globalConfigService)
+    @mockService(phoneNumberService, [
+      { method: 'isSpecialNumber', data: true, type: 'resolve' },
+      { method: 'isShortNumber', data: false, type: 'resolve' },
+    ])
+    t2(done: any) {
+      Notification.flashToast = jest.fn();
+      let ts;
+      runInAction(async () => {
+        ts = new TelephonyService();
+        ts._makeCall = jest.fn();
+        await ts.directCall('123');
+        expect(ts._makeCall).not.toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'telephony.prompt.noDLNotAllowedToMakeCall',
+          }),
+        );
+        done();
+      });
+    }
+
+    @test(
+      'should make a call with digital lines and without EmergencyAddrConfirmed when making an n11 call',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 0 },
+      { method: 'isEmergencyAddrConfirmed', data: false },
+    ])
+    @mockService(rcInfoService, [
+      { method: 'isVoipCallingAvailable', data: true, type: 'resolve' },
+      { method: 'getDigitalLines', data: [1], type: 'resolve' },
+    ])
+    @mockService(globalConfigService)
+    @mockService(phoneNumberService, [
+      { method: 'isSpecialNumber', data: true, type: 'resolve' },
+      { method: 'isShortNumber', data: false, type: 'resolve' },
+    ])
+    t3(done: any) {
+      Notification.flashToast = jest.fn();
+      let ts;
+      runInAction(async () => {
+        ts = new TelephonyService();
+        ts._makeCall = jest.fn();
+        ts.openE911 = jest.fn();
+        await ts.directCall('123');
+        expect(ts._makeCall).toHaveBeenCalled();
+        expect(ts.openE911).not.toHaveBeenCalled();
+        expect(Notification.flashToast).not.toHaveBeenCalled();
+        done();
+      });
+    }
+
+    @test(
+      'should make a call with digital lines and without EmergencyAddrConfirmed when making an PSTN(long number) call',
+    )
+    @mockService(ServerTelephonyService, [
+      { method: 'getAllCallCount', data: 0 },
+      { method: 'isEmergencyAddrConfirmed', data: false },
+    ])
+    @mockService(rcInfoService, [
+      { method: 'isVoipCallingAvailable', data: true, type: 'resolve' },
+      { method: 'getDigitalLines', data: [1], type: 'resolve' },
+    ])
+    @mockService(globalConfigService)
+    @mockService(phoneNumberService, [
+      { method: 'isSpecialNumber', data: false, type: 'resolve' },
+      { method: 'isShortNumber', data: false, type: 'resolve' },
+    ])
+    t4(done: any) {
+      Notification.flashToast = jest.fn();
+      let ts;
+      runInAction(async () => {
+        ts = new TelephonyService();
+        ts._makeCall = jest.fn();
+        ts.openE911 = jest.fn();
+        await ts.directCall('123');
+        expect(ts._makeCall).not.toHaveBeenCalled();
+        expect(ts.openE911).toHaveBeenCalled();
         expect(Notification.flashToast).not.toHaveBeenCalled();
         done();
       });

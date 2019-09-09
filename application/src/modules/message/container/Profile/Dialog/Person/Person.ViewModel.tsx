@@ -28,7 +28,7 @@ class ProfileDialogPersonViewModel
       () => this.person.homepage,
       (homepage: string) => {
         if (!homepage) {
-          this.refreshPersonData();
+          this._refreshPersonData();
         }
       },
       {
@@ -46,7 +46,8 @@ class ProfileDialogPersonViewModel
   get person() {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
   }
-  refreshPersonData = () => {
+
+  private _refreshPersonData = () => {
     try {
       const personService = ServiceLoader.getInstance<PersonService>(
         ServiceConfig.PERSON_SERVICE,

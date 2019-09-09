@@ -27,14 +27,16 @@ import { ChangeModel } from '../../sync/types';
 import { NoteItemService } from '../module/note/service';
 import { ITEM_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { RequestHolder, ProgressCallback } from 'sdk/api/glip/item';
+import { ItemEntityCacheController } from '../controller/ItemEntityCacheController'
 
 const INVALID_ITEM_ID = [-1, -2, null];
 const LOG_NAME = 'ItemService';
+const TYPE_ITEM_CACHE_SIZE = 20;
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
   constructor() {
-    super({ isSupportedCache: false }, daoManager.getDao(ItemDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(ItemDao), {
       basePath: '/item',
       networkClient: Api.glipNetworkClient,
     });
@@ -43,6 +45,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
         [SOCKET.ITEM]: this.handleIncomingData,
       }),
     );
+  }
+
+  protected buildEntityCacheController() {
+    return ItemEntityCacheController.buildItemEntityCacheController(TYPE_ITEM_CACHE_SIZE);
   }
 
   getItemDataHandler(): (items: Raw<Item>[]) => void {
@@ -63,6 +69,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
         data: transformedData,
         dao: daoManager.getDao(ItemDao),
         eventKey: ENTITY.ITEM,
+        entitySourceController: this.getEntitySource(),
       },
       ItemNotification.getItemsNotifications,
     );

@@ -59,7 +59,7 @@ test.meta(<ITestMeta>{
   await addOneMissCallLogFromAnotherUser(t, caller, callee, app);
 
 
-  const callhistoryItem = callhistoryPage.callhistoryItemByNth(0);
+  const callhistoryItem = callhistoryPage.callHistoryItemByNth(0);
   const callhistoryId = await callhistoryItem.id;
 
   await h(t).withLog('When I click Call back button', async (step) => {

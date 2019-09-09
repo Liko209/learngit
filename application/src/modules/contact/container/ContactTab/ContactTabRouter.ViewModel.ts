@@ -16,6 +16,10 @@ class ContactTabRouterViewModel extends StoreViewModel<ContactTabProps> {
   updateCurrentUrl = (path: string) => {
     this.contactStore.setCurrentUrl(path);
   };
+
+  dispose() {
+    this.contactStore.setFilterKey('');
+  }
 }
 
 export { ContactTabRouterViewModel };

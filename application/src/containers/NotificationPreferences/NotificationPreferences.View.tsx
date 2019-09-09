@@ -35,7 +35,7 @@ import {
 } from 'sdk/module/profile/constants';
 import { i18nP } from '@/utils/i18nT';
 import { notificationPreferencesShown } from './dataTrackings';
-import { withEscTracking } from '@/common/trackData';
+import { withEscTracking } from '@/containers/Dialog';
 import { EmailNotificationTimeSourceItem } from '@/modules/message/MessageSettingManager/EmailNotificationTimeSelectSourceItem.View';
 
 type NotificationPreferencesProps = Props & ViewProps & WithTranslation;
@@ -44,6 +44,7 @@ type MobileNotificationItemProps = {
   value: MOBILE_TEAM_NOTIFICATION_OPTIONS;
 };
 
+const Modal = withEscTracking(JuiModal);
 const MobileNotificationSourceItem = (props: MobileNotificationItemProps) => {
   const { value } = props;
   return i18nP(
@@ -150,7 +151,7 @@ class NotificationPreferencesComponent extends React.Component<
     } = this.props;
     const isMuted = currentValue[MUTED];
     return (
-      <JuiModal
+      <Modal
         modalProps={ModalProps}
         open
         size={'medium'}
@@ -159,7 +160,6 @@ class NotificationPreferencesComponent extends React.Component<
         onOK={handleSubmit}
         okText={t('common.dialog.save')}
         cancelText={t('common.dialog.cancel')}
-        onClose={withEscTracking(handleClose)}
       >
         <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiSettingContainer>
@@ -205,7 +205,7 @@ class NotificationPreferencesComponent extends React.Component<
             {this._renderEmailNotification()}
           </JuiSettingContainer>
         </Loading>
-      </JuiModal>
+      </Modal>
     );
   }
 }

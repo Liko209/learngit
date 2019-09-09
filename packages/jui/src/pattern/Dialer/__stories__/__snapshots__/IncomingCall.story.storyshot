@@ -8,7 +8,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   display: inline-flex;
 }
 
-.c16 {
+.c24 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -17,6 +17,17 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
+}
+
+.c19 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 12px;
 }
 
 .c13 {
@@ -62,10 +73,80 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   background-color: #eeeeee;
   color: rgba(0,0,0,0.87);
   box-shadow: none;
-  opacity: 0.12;
+  opacity: 0.30000000000000004;
 }
 
-.c17.c17 {
+.c18.c18 {
+  min-height: 0;
+  background-color: #f44336;
+  width: 20px;
+  height: 20px;
+  box-shadow: none;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #fff;
+}
+
+.c18.c18:hover,
+.c18.c18:active {
+  background-color: rgb(219,60,48);
+}
+
+.c18.c18 .rippleVisible {
+  color: rgb(246,104,94);
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c18.c18[disabled] {
+  background-color: #f44336;
+  color: #fff;
+  box-shadow: none;
+  opacity: 0.30000000000000004;
+}
+
+.c22.c22 {
+  min-height: 0;
+  background-color: #26a304;
+  width: 32px;
+  height: 32px;
+  box-shadow: none;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #fff;
+}
+
+.c22.c22:hover,
+.c22.c22:active {
+  background-color: rgb(34,146,3);
+}
+
+.c22.c22 .rippleVisible {
+  color: rgb(81,181,54);
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c22.c22[disabled] {
+  background-color: #26a304;
+  color: #fff;
+  box-shadow: none;
+  opacity: 0.30000000000000004;
+}
+
+.c23.c23 {
   min-height: 0;
   background-color: #f44336;
   width: 48px;
@@ -78,12 +159,12 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   color: #fff;
 }
 
-.c17.c17:hover,
-.c17.c17:active {
+.c23.c23:hover,
+.c23.c23:active {
   background-color: rgb(219,60,48);
 }
 
-.c17.c17 .rippleVisible {
+.c23.c23 .rippleVisible {
   color: rgb(246,104,94);
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -93,57 +174,11 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   animation-name: cBKRfH;
 }
 
-.c17.c17[disabled] {
+.c23.c23[disabled] {
   background-color: #f44336;
   color: #fff;
   box-shadow: none;
-  opacity: 0.12;
-}
-
-.c15.c15 {
-  padding: 0;
-  width: 48px;
-  height: 48px;
-  color: #9e9e9e;
-  opacity: 1;
-  padding: 0;
-  background-color: inherit;
-  border-radius: 0;
-}
-
-.c15.c15 .icon,
-.c15.c15 .icon svg {
-  font-size: 48px;
-}
-
-.c15.c15:hover {
-  background-color: transparent;
-}
-
-.c15.c15:hover .icon {
-  color: rgba(158,158,158,0.88);
-}
-
-.c15.c15:active .icon {
-  color: #9e9e9e;
-}
-
-.c15.c15.c15.c15.disabled {
-  background-color: inherit;
-}
-
-.c15.c15.c15.c15.disabled .icon {
-  color: rgba(0,0,0,0.12);
-}
-
-.c15.c15 .rippleVisible {
-  color: #9e9e9e;
-  opacity: 0.24;
-  -webkit-transform: scale(1);
-  -ms-transform: scale(1);
-  transform: scale(1);
-  -webkit-animation-name: cBKRfH;
-  animation-name: cBKRfH;
+  opacity: 0.30000000000000004;
 }
 
 .c2.c2 {
@@ -300,6 +335,39 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
   margin: 4px 0px 0px;
 }
 
+.c17.c17 {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 0;
+  left: 0;
+}
+
+.c21.c21 {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+}
+
+.c15.c15 {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.c15.c15:hover .c16,
+.c15.c15:active .c16 {
+  background-color: rgb(219,60,48);
+}
+
+.c15.c15:hover .c20,
+.c15.c15:active .c20 {
+  background-color: rgb(34,146,3);
+}
+
 <div
   className="c0"
   data-test-automation-id="dialer-container"
@@ -436,46 +504,83 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
       <div
         className="c10"
       >
-        <button
-          aria-label=""
-          className="MuiButtonBase-root MuiIconButton-root c15"
-          disabled={false}
-          onBlur={[Function]}
-          onDragLeave={[Function]}
-          onFocus={[Function]}
-          onKeyDown={[Function]}
-          onKeyUp={[Function]}
-          onMouseDown={[Function]}
-          onMouseEnter={[Function]}
-          onMouseLeave={[Function]}
-          onMouseOut={[Function]}
-          onMouseOver={[Function]}
-          onMouseUp={[Function]}
-          onTouchEnd={[Function]}
-          onTouchMove={[Function]}
-          onTouchStart={[Function]}
-          tabIndex={0}
-          type="button"
-          variant="plain"
+        <div
+          className="c15"
+          data-test-automation-id="telephony-end-answer-btn"
         >
-          <span
-            className="MuiIconButton-label"
+          <button
+            className="MuiButtonBase-root MuiFab-root c16 c17 c18"
+            disabled={false}
+            onBlur={[Function]}
+            onDragLeave={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            tabIndex={0}
+            type="button"
           >
             <span
-              className="  icon c12"
+              className="MuiFab-label"
             >
-              <svg
-                className="c16"
-                role="img"
+              <span
+                className=" hand_up icon c12"
               >
-                <use
-                  href="#undefined"
-                  xlinkHref="#undefined"
-                />
-              </svg>
+                <svg
+                  className="c19"
+                  role="img"
+                  size="extraSmall"
+                >
+                  <use
+                    href="#icon-hand-up"
+                    xlinkHref="#icon-hand-up"
+                  />
+                </svg>
+              </span>
             </span>
-          </span>
-        </button>
+          </button>
+          <button
+            className="MuiButtonBase-root MuiFab-root c20 c21 c22"
+            disabled={false}
+            onBlur={[Function]}
+            onDragLeave={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            tabIndex={0}
+            type="button"
+          >
+            <span
+              className="MuiFab-label"
+            >
+              <span
+                className=" answer icon c12"
+              >
+                <svg
+                  className="c13"
+                  role="img"
+                  size="small"
+                >
+                  <use
+                    href="#icon-answer"
+                    xlinkHref="#icon-answer"
+                  />
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
         <p
           className="c14"
         >
@@ -486,7 +591,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
         className="c10"
       >
         <button
-          className="MuiButtonBase-root MuiFab-root c17"
+          className="MuiButtonBase-root MuiFab-root c23"
           disabled={false}
           onBlur={[Function]}
           onDragLeave={[Function]}
@@ -509,7 +614,7 @@ exports[`Storyshots Pattern Multiple Incoming Call: Pattern Multiple Incoming Ca
               className=" voicemail icon c12"
             >
               <svg
-                className="c16"
+                className="c24"
                 role="img"
                 size="large"
               >

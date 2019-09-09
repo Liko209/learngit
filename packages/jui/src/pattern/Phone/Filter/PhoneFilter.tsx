@@ -56,10 +56,11 @@ const PhoneFilter: IJuiPhoneFilter = ({
   placeholder,
   onChange,
   tooltip,
+  value = '',
 }) => {
   const ref: any = useRef(null);
 
-  const [value, setValue] = useInput('', onChange);
+  const [inputValue, setValue] = useInput(value, onChange);
 
   const onFilterChange: IChangePhoneFilter = e => setValue(e.target.value);
 
@@ -69,7 +70,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
     ref.current.focus();
   };
 
-  const iconState: FilterIconState = value
+  const iconState: FilterIconState = inputValue
     ? {
         iconName: ['filter', 'close'],
         iconPosition: 'both',
@@ -97,7 +98,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
       size="small"
       radiusType="rounded"
       ref={ref}
-      value={value}
+      value={inputValue}
       InputProps={inputProps}
       IconRightProps={iconRightProps}
       IconRightToolTip={tooltip}

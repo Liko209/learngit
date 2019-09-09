@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ConversationStream/PageHeader.ts", "./fixtures/RightRail/Members.ts", "./I10n/ContentPanel/TeamHostSettings.ts", "./I10n/ContentPanel/TeamMemberSettings.ts", "./I10n/ContentPanel/TeamOverview.ts", "./I10n/ContentPanel/TeamSettings.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}

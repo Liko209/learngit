@@ -5,19 +5,13 @@
  */
 import Mousetrap from 'mousetrap';
 import { mainLogger } from 'foundation/log';
-
 import { GLOBAL_HOT_KEYS } from './globalKeys.config';
 
+type globalKeyCb = (e: KeyboardEvent, combo: string) => boolean;
 type Handler =
-  | ((
-      e: KeyboardEvent,
-      combo: string,
-    ) => (void | boolean) | Promise<void | boolean>)
+  | globalKeyCb
   | {
-      handler: (
-        e: KeyboardEvent,
-        combo: string,
-      ) => (void | boolean) | Promise<void | boolean>;
+      handler: globalKeyCb;
       action: string;
     };
 
@@ -55,6 +49,12 @@ class GlobalKeysManager {
     });
   }
 
+  /**
+   *
+   * @param key short cut to trigger handler
+   * @param handler when return true, allow browser behavior;
+   * when return false, prevent browser behavior.
+   */
   addGlobalKey(key: string | string[], handler: Handler) {
     this.checkConflict();
     if (typeof handler === 'object') {
