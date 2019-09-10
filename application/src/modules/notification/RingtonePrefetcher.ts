@@ -12,7 +12,7 @@ import { mainLogger } from 'foundation/log';
 const logger = mainLogger.tags('RingtonePrefetcher');
 class RingtonePrefetcher {
   disposer: Disposer;
-  media: IMedia;
+  media?: IMedia;
   constructor(private trackId: string, private settingId: number) {
     this.subscribeSettingChange();
   }
@@ -26,10 +26,12 @@ class RingtonePrefetcher {
       logger.log('Recreating media of', src);
       this.createMedia(src);
     }
-    this.media.on('loadeddata', () => {
-      logger.log('Media loaded, stop playing', src);
-      this.media.stop();
-    });
+    if (this.media) {
+      this.media.on('loadeddata', () => {
+        logger.log('Media loaded, stop playing', src);
+        this.media && this.media.stop();
+      });
+    }
   }
 
   createMedia(src: string) {
@@ -59,6 +61,9 @@ class RingtonePrefetcher {
       ({ id, url }: AUDIO_SOUNDS_INFO) => {
         if (id && RINGS_TYPE.Off !== id) {
           this.prefetch(url);
+        } else {
+          this.media && this.media.dispose();
+          this.media = undefined;
         }
       },
       { fireImmediately: true },
