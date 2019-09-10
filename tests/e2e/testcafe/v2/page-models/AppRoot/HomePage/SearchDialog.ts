@@ -8,7 +8,8 @@ import { SearchComoBox } from "./SearchComboBox";
 
 export class SearchDialog extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="document"]');
+    this.warnFlakySelector();
+    return this.getSelector('[role="dialog"]');
   }
 
   async ensureDismiss() {
