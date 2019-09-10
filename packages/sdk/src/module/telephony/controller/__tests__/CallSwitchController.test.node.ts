@@ -52,7 +52,7 @@ describe('CallSwitchController', () => {
     accountService = new AccountService(null as any);
     (accountService.userConfig as any) = {
       getGlipUserId: jest.fn().mockReturnValue(1),
-    }
+    };
 
     ServiceLoader.getInstance = jest.fn().mockImplementation((x: string) => {
       switch (x) {
@@ -66,7 +66,11 @@ describe('CallSwitchController', () => {
           return null;
       }
     });
-    telephonyService = new TelephonyService(null as any, null as any , null as any);
+    telephonyService = new TelephonyService(
+      null as any,
+      null as any,
+      null as any,
+    );
     callSwitchController = new CallSwitchController(telephonyService);
   }
 
@@ -623,9 +627,10 @@ describe('CallSwitchController', () => {
     });
   });
 
-  describe('_handleGlipPresenceChange', ()=>{
-    it('should only handle current user presence change', ()=>{
-      callSwitchController['_lastBannerIsShown'] = true
+  describe('_handleGlipPresenceChange', () => {
+
+    it('should not handle presence when no banner', () => {
+      callSwitchController['_lastBannerIsShown'] = false;
       const payLoad: any = {
         type: EVENT_TYPES.UPDATE,
         body: {
@@ -636,6 +641,44 @@ describe('CallSwitchController', () => {
                 presence: PRESENCE.AVAILABLE,
               },
             ],
+          ]),
+        },
+      };
+      callSwitchController['_syncLatestPresenceWhenHasBanner'] = jest.fn();
+      callSwitchController['_handleGlipPresenceChange'](payLoad);
+      expect(
+        callSwitchController['_syncLatestPresenceWhenHasBanner'],
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should only handle current user presence change to not on call', () => {
+      callSwitchController['_lastBannerIsShown'] = true;
+      const payLoad: any = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: new Map([
+            [
+              1,
+              {
+                presence: PRESENCE.AVAILABLE,
+              },
+            ],
+          ]),
+        },
+      };
+      callSwitchController['_syncLatestPresenceWhenHasBanner'] = jest.fn();
+      callSwitchController['_handleGlipPresenceChange'](payLoad);
+      expect(
+        callSwitchController['_syncLatestPresenceWhenHasBanner'],
+      ).toHaveBeenCalled();
+    });
+
+    it('should not handle current user presence change to on call', () => {
+      callSwitchController['_lastBannerIsShown'] = true;
+      const payLoad: any = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: new Map([
             [
               2,
               {
@@ -647,9 +690,11 @@ describe('CallSwitchController', () => {
       };
       callSwitchController['_syncLatestPresenceWhenHasBanner'] = jest.fn();
       callSwitchController['_handleGlipPresenceChange'](payLoad);
-      expect(callSwitchController['_syncLatestPresenceWhenHasBanner']).toHaveBeenCalled();
+      expect(
+        callSwitchController['_syncLatestPresenceWhenHasBanner'],
+      ).not.toHaveBeenCalled();
     });
-  })
+  });
 
   describe('_handleCallStateChanged', () => {
     it('should only handle update type and save ended calls when call is valid and ended', () => {
@@ -732,7 +777,9 @@ describe('CallSwitchController', () => {
       };
 
       callSwitchController['_handleCallStateChanged'](payLoad);
-      expect(callSwitchController['_updateBannerStatus']).not.toHaveBeenCalled();
+      expect(
+        callSwitchController['_updateBannerStatus'],
+      ).not.toHaveBeenCalled();
       expect(callSwitchController['_onCallEnded']).not.toHaveBeenCalled();
       expect(
         callSwitchController['_syncLatestPresenceWhenHasBanner'],

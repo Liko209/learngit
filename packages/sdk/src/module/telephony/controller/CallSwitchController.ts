@@ -515,7 +515,7 @@ class CallSwitchController {
       const currentUserPresence = payload.body.entities.get(this._userGlipId);
       if (
         currentUserPresence &&
-        currentUserPresence.presence === PRESENCE.AVAILABLE
+        currentUserPresence.presence !== PRESENCE.ONCALL
       ) {
         this._syncLatestPresenceWhenHasBanner();
       }
