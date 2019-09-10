@@ -196,11 +196,13 @@ class MessageNotificationManager extends AbstractNotificationManager
     return opts;
   }
   async getCurrentMessageSoundSetting(type: MESSAGE_TYPE, groupModel: GroupModel) {
-    const { audioNotifications } = await this._profileService.getConversationPreference(
-      groupModel.id,
-    );
-    if (audioNotifications.id !== SOUNDS_TYPE.Default) {
-      return audioNotifications.id;
+    if (type !== MESSAGE_TYPE.MENTION) {
+      const { audioNotifications } = await this._profileService.getConversationPreference(
+        groupModel.id,
+      );
+      if (audioNotifications.id !== SOUNDS_TYPE.Default) {
+        return audioNotifications.id;
+      }
     }
     const { DIRECT_MESSAGE, TEAM, MENTION } = MESSAGE_TYPE;
     const soundSettingDict = {
