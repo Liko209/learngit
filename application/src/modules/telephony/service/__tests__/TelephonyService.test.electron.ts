@@ -692,7 +692,6 @@ describe('TelephonyService', () => {
     it('should maximize and minimize', () => {
       const telephonyStore = telephonyService._telephonyStore;
       telephonyService._telephonyStore = {
-        closeDialer: jest.fn(),
         openDialer: jest.fn(),
         onDialerInputFocus: jest.fn(),
       };
@@ -701,8 +700,6 @@ describe('TelephonyService', () => {
       expect(
         telephonyService._telephonyStore.onDialerInputFocus,
       ).toHaveBeenCalled();
-      telephonyService.minimize();
-      expect(telephonyService._telephonyStore.closeDialer).toHaveBeenCalled();
       telephonyService._telephonyStore = telephonyStore;
     });
 

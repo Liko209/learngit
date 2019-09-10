@@ -370,14 +370,14 @@ class TelephonyStore {
       OPEN_DETACHED_DIALER,
       OPEN_FLOATING_DIALER,
     } = CALL_WINDOW_TRANSITION_NAMES;
-    if (this.callWindowState === CALL_WINDOW_STATUS.MINIMIZED) {
+    // if (this.callWindowState === CALL_WINDOW_STATUS.MINIMIZED) {
       if (this._localCallWindowStatus === CALL_WINDOW_STATUS.DETACHED) {
         this._callWindowFSM[OPEN_DETACHED_DIALER]();
         return;
       }
       this._callWindowFSM[OPEN_FLOATING_DIALER]();
       this.stopAnimation();
-    }
+    // }
   };
 
   @action
@@ -443,6 +443,7 @@ class TelephonyStore {
   @action
   end = () => {
     const history = this._history;
+    let closeCallWindow = false;
 
     switch (true) {
       case this.isMultipleCall:
@@ -455,7 +456,7 @@ class TelephonyStore {
         break;
 
       case history.has(CALL_DIRECTION.INBOUND) || !history.has(DIALING):
-        this._closeCallWindow();
+        closeCallWindow = true;
         this._history.delete(DIALING);
         break;
       default:
@@ -470,16 +471,18 @@ class TelephonyStore {
 
     if (this.isEndOtherCall) {
       this.endOtherCall();
-      return;
+      return closeCallWindow;
     }
 
     // end incoming call
     if (this.isMultipleCall && this.isEndCurrentCall) {
       this.endCurrentCall();
-      return;
+      return closeCallWindow;
     }
 
     this.endSingleCall();
+
+    return closeCallWindow;
   };
 
   @action

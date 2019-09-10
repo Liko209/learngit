@@ -40,7 +40,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-   
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
@@ -94,7 +94,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-   
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
@@ -162,7 +162,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.existForwardTitle(title);
     await telephonyDialog.tapKeypad(extension);
   });
-  
+
   await h(t).withLog('And click [Ask first] button', async () => {
     await telephonyDialog.clickTransferAskFirstButton();
   });
@@ -170,7 +170,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then transfer user receive call and answer it', async () => {
     await calleeWebPhone.answer();
   });
-  
+
   await h(t).withLog('And enter complete transfer page', async () => {
     await t.expect(telephonyDialog.completeTransferButton.exists).ok();
   });
@@ -212,7 +212,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-   
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
@@ -230,8 +230,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then back to the previous page', async () => {
-    await t.expect(telephonyDialog.self.exists).notOk();
-  });   
+    await t.expect(telephonyDialog.self.visible).notOk();
+  });
 });
 
 test.meta(<ITestMeta>{
@@ -256,26 +256,26 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
-  
+
   await h(t).withLog('And I on a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-  
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
   });
-  
+
   await h(t).withLog('And input transfer number', async () => {
     const title = "Transfer"
     const extension = callee.extension;
     await telephonyDialog.existForwardTitle(title);
     await telephonyDialog.tapKeypad(extension);
   });
-    
+
   await h(t).withLog('And click [Ask first] button', async () => {
     await telephonyDialog.clickTransferAskFirstButton();
   });
@@ -285,7 +285,7 @@ test.meta(<ITestMeta>{
     await calleeWebPhone.hangup();
     await calleeWebPhone.waitForStatus('terminated');
   });
-  
+
   await h(t).withLog('And enter active call page', async () => {
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
@@ -318,26 +318,26 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
-  
+
   await h(t).withLog('And I on a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-  
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
   });
-  
+
   await h(t).withLog('And input transfer number', async () => {
     const title = "Transfer"
     const extension = callee.extension;
     await telephonyDialog.existForwardTitle(title);
     await telephonyDialog.tapKeypad(extension);
   });
-    
+
   await h(t).withLog('And click [Ask first] button', async () => {
     await telephonyDialog.clickTransferAskFirstButton();
   });
@@ -345,7 +345,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then transfer user receive call and answer it', async () => {
     await calleeWebPhone.answer();
   });
-  
+
   await h(t).withLog('And enter complete transfer page', async () => {
     await t.expect(telephonyDialog.completeTransferButton.exists).ok();
   });
@@ -386,26 +386,26 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
-  
+
   await h(t).withLog('And I on a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-  
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
   });
-  
+
   await h(t).withLog('And input transfer number', async () => {
     const title = "Transfer"
     const extension = callee.extension;
     await telephonyDialog.existForwardTitle(title);
     await telephonyDialog.tapKeypad(extension);
   });
-    
+
   await h(t).withLog('And click [Ask first] button', async () => {
     await telephonyDialog.clickTransferAskFirstButton();
   });
@@ -413,7 +413,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then transfer user receive call and answer it', async () => {
     await calleeWebPhone.answer();
   });
-  
+
   await h(t).withLog('And enter complete transfer page', async () => {
     await t.expect(telephonyDialog.completeTransferButton.exists).ok();
   });
@@ -426,7 +426,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then dialer dismiss', async () => {
-    await t.expect(telephonyDialog.self.exists).notOk();
+    await t.expect(telephonyDialog.self.visible).notOk();
   });
 });
 
@@ -452,26 +452,26 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
-  
+
   await h(t).withLog('And I on a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-  
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
   });
-  
+
   await h(t).withLog('And input transfer number', async () => {
     const title = "Transfer"
     const extension = callee.extension;
     await telephonyDialog.existForwardTitle(title);
     await telephonyDialog.tapKeypad(extension);
   });
-    
+
   await h(t).withLog('And click [Ask first] button', async () => {
     await telephonyDialog.clickTransferAskFirstButton();
   });
@@ -479,7 +479,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('When transfer user send to voicemail', async () => {
     await calleeWebPhone.toVoiceMail();
   });
-  
+
   await h(t).withLog('Then stay in complete transfer page', async () => {
     await t.expect(telephonyDialog.completeTransferButton.exists).ok();
   });
@@ -508,26 +508,26 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
-  
+
   await h(t).withLog('And I on a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-  
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
   });
-  
+
   await h(t).withLog('And input transfer number', async () => {
     const title = "Transfer"
     const extension = callee.extension;
     await telephonyDialog.existForwardTitle(title);
     await telephonyDialog.tapKeypad(extension);
   });
-    
+
   await h(t).withLog('And click [Ask first] button', async () => {
     await telephonyDialog.clickTransferAskFirstButton();
   });
@@ -535,7 +535,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then transfer user receive call and answer it', async () => {
     await calleeWebPhone.answer();
   });
-  
+
   await h(t).withLog('And enter complete transfer page', async () => {
     await t.expect(telephonyDialog.completeTransferButton.exists).ok();
   });
@@ -572,26 +572,26 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
-  
+
   await h(t).withLog('And I on a call', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     await telephonyDialog.ensureLoaded();
     await telephonyDialog.clickAnswerButton();
     await t.expect(telephonyDialog.hangupButton.exists).ok();
   });
-  
+
   await h(t).withLog('When I go to transfer page', async () => {
     await telephonyDialog.clickMoreOptionsButton();
     await telephonyDialog.clickTransferActionButton();
   });
-  
+
   await h(t).withLog('And input transfer number', async () => {
     const title = "Transfer"
     const extension = callee.extension;
     await telephonyDialog.existForwardTitle(title);
     await telephonyDialog.tapKeypad(extension);
   });
-    
+
   await h(t).withLog('And click [Ask first] button', async () => {
     await telephonyDialog.clickTransferAskFirstButton();
   });
@@ -599,7 +599,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then transfer user receive call and answer it', async () => {
     await calleeWebPhone.answer();
   });
-  
+
   await h(t).withLog('And enter complete transfer page', async () => {
     await t.expect(telephonyDialog.completeTransferButton.exists).ok();
   });
