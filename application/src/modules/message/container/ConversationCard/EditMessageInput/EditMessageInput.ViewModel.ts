@@ -19,9 +19,10 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
 import { Dialog } from '@/containers/Dialog';
-import { mainLogger } from 'sdk';
 import i18nT from '@/utils/i18nT';
-import { isMentionIdsContainTeam} from '../utils';
+import { TypeDictionary } from 'sdk/utils';
+import { ItemService } from 'sdk/module/item';
+import { isMentionIdsContainTeam } from '../utils';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -34,6 +35,10 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
   @IMessageService private _messageService: IMessageService;
   private _postService: PostService;
+  private _itemService = ServiceLoader.getInstance<ItemService>(
+    ServiceConfig.ITEM_SERVICE,
+  );
+
   @observable error: string = '';
 
   @computed get id() {
@@ -92,18 +97,31 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   get draft() {
     return this._messageService.getDraft(this.props.id);
   }
-
+  @action
   saveDraft(draft: string) {
     return this._messageService.enterEditMode(this.props.id, draft);
   }
-
+  @action
   removeDraft() {
     return this._messageService.leaveEditMode(this.props.id);
+  }
+
+  @computed
+  get _itemLinks() {
+    const { itemTypeIds } = this._post;
+    return itemTypeIds && itemTypeIds[TypeDictionary.TYPE_ID_LINK];
+  }
+
+  @computed
+  get _onlyExistLink() {
+    const { itemTypeIds } = this._post;
+    return this._itemLinks && Object.keys(itemTypeIds as object).length === 1;
   }
 
   @action
   private _buildEnterHandler = () => {
     const self = this;
+
     return function(this: any) {
       const quill: Quill = this.quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
@@ -117,8 +135,21 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         return;
       }
       self.error = '';
-      if (content.trim() || self._post.itemIds.length) {
-        self._editPost(content, mentionIds, mentionIdsContainTeam);
+      const value = content.trim();
+
+      if (!value && self._itemLinks) {
+        // The post is deleted if the post only contains a link
+        if (self._onlyExistLink) {
+          self._handleDelete();
+        } else {
+          // The link card should be deleted if one post with other files
+          self._itemLinks.forEach((id: number) => {
+            self._itemService.deleteItem(id);
+          });
+          self._editPost(value, mentionIds, mentionIdsContainTeam);
+        }
+      } else if (value || self._post.itemIds.length) {
+        self._editPost(value, mentionIds, mentionIdsContainTeam);
       } else {
         self._handleDelete();
       }
@@ -143,21 +174,34 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     server: 'message.prompt.editPostFailedForServerIssue',
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
-  private async _handleEditPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
+  @action
+  private async _handleEditPost(
+    content: string,
+    ids: number[],
+    mentionIdsContainTeam: boolean,
+  ) {
     await this._postService.editPost({
       text: content,
       groupId: this.gid,
       postId: this.id,
       mentionNonItemIds: ids,
-      isTeamMention: mentionIdsContainTeam
+      isTeamMention: mentionIdsContainTeam,
     });
   }
 
-  private _editPost(content: string, ids: number[], mentionIdsContainTeam:boolean) {
+  private _editPost(
+    content: string,
+    ids: number[],
+    mentionIdsContainTeam: boolean,
+  ) {
     this._exitEditMode();
     this._handleEditPost(content, ids, mentionIdsContainTeam);
   }
 
+  @catchError.flash({
+    server: 'message.prompt.deletePostFailedForServerIssue',
+    network: 'message.prompt.deletePostFailedForNetworkIssue',
+  })
   private _deletePost = async () => {
     await this._postService.deletePost(this.id);
   };
@@ -173,9 +217,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       okType: 'negative',
       cancelText: await i18nT('common.dialog.cancel'),
       onOK: () => {
-        this._deletePost().catch((e: Error) => {
-          mainLogger.error(`delete post error: ${e}`);
-        });
+        this._deletePost();
       },
     });
   };

@@ -12,7 +12,8 @@ import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../../FeedbackApi';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { DateFormatter, SessionManager } from 'sdk';
+import { DateFormatter } from 'foundation/utils';
+import { SessionManager } from 'foundation/log';
 import { ZipItemLevel } from 'sdk/module/log/types';
 
 jest.mock('@/utils/error');

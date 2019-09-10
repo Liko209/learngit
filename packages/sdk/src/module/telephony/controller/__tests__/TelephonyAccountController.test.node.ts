@@ -15,7 +15,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip/src';
-import { MAKE_CALL_ERROR_CODE } from '../../types';
+import { MAKE_CALL_ERROR_CODE, TRANSFER_TYPE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
 import { MakeCallController } from '../MakeCallController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
@@ -37,17 +37,22 @@ jest.mock('sdk/module/phoneNumber');
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyDelegate {
-    onMadeOutgoingCall(callId: number) {}
-    onReceiveIncomingCall(callId: number) {}
+    onMadeOutgoingCall(callId: number) { }
+    onReceiveIncomingCall(callId: number) { }
   }
 
   class MockCall implements ITelephonyCallDelegate {
-    onCallStateChange(callId: string, state: RTC_CALL_STATE) {}
+    onCallStateChange(callId: string, state: RTC_CALL_STATE) { }
     onCallActionSuccess(
       callAction: RTC_CALL_ACTION,
       options: RTCCallActionSuccessOptions,
-    ) {}
-    onCallActionFailed(callAction: RTC_CALL_ACTION) {}
+    ) { }
+    onCallActionFailed(callAction: RTC_CALL_ACTION) { }
+  }
+
+  class MockPhoneNumService implements IPhoneNumberService {
+    isValidNumber() { }
+    getE164PhoneNumber() { }
   }
 
   function clearMocks() {
@@ -62,6 +67,7 @@ describe('TelephonyAccountController', () => {
   let rtcAccount: RTCAccount;
   let callControllerList: Map<number, TelephonyCallController>;
   let e911Controller: E911Controller;
+  let phoneNumberService: MockPhoneNumService;
   const callId = 123;
   const toNum = '123';
   const fromNumber = '456';
@@ -71,11 +77,12 @@ describe('TelephonyAccountController', () => {
     mockCall = new MockCall();
     callControllerList = new Map();
     e911Controller = new E911Controller({});
+    phoneNumberService = new MockPhoneNumService();
 
     rtcAccount = new RTCAccount(null);
     accountController = new TelephonyAccountController({
       createAccount: jest.fn().mockReturnValue(rtcAccount),
-    });
+    }, {}, phoneNumberService, {});
 
     Object.assign(accountController, {
       _callControllerList: callControllerList,
@@ -191,6 +198,8 @@ describe('TelephonyAccountController', () => {
         _makeCallController: makeCallController,
       });
       accountController.setLastCalledNumber = jest.fn();
+      phoneNumberService.isValidNumber = jest.fn().mockReturnValue(true);
+      phoneNumberService.getE164PhoneNumber = jest.fn().mockReturnValue(toNum);
     });
 
     it('should return error when there is no sip prov', async () => {
@@ -228,7 +237,7 @@ describe('TelephonyAccountController', () => {
 
       makeCallController.tryMakeCall = jest
         .fn()
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.N11_101);
+        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.N11_101, finalNumber: '234' });
       accountController.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
       const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
@@ -241,7 +250,7 @@ describe('TelephonyAccountController', () => {
       });
       makeCallController.tryMakeCall = jest
         .fn()
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: '789' });
       Object.assign(accountController, {
         _makeCallController: makeCallController,
         _telephonyCallDelegate: undefined,
@@ -252,8 +261,49 @@ describe('TelephonyAccountController', () => {
       });
       const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
-      expect(rtcAccount.makeCall).toHaveBeenCalled();
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith('789', expect.any(Object), { fromNumber: toNum });
       expect(callControllerList.size).toBe(1);
+    });
+
+    it('should try to hold active call if it is warm transfer', async () => {
+      accountController['_holdActiveCall'] = jest.fn();
+      accountController['_makeCallInternal'] = jest.fn();
+      await accountController.makeCall(toNum, { extraCall: true });
+      expect(accountController._holdActiveCall).toHaveBeenCalled();
+      expect(accountController._makeCallInternal).toHaveBeenCalled();
+    });
+
+    it('should start a call with access code', async () => {
+      const code = '123456';
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: toNum });
+      await accountController.makeCall(toNum, { accessCode: code });
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith(
+        toNum,
+        expect.any(Object),
+        { accessCode: code },
+      );
+    });
+
+    it('should start an extra call', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: toNum });
+      await accountController.makeCall(toNum, { extraCall: true });
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith(
+        toNum,
+        expect.any(Object),
+        { extraCall: true },
+      );
     });
 
     it('should return error when rtc make call fail', async () => {
@@ -264,7 +314,7 @@ describe('TelephonyAccountController', () => {
 
       makeCallController.tryMakeCall = jest
         .fn()
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: toNum });
       Object.assign(accountController, {
         _makeCallController: makeCallController,
         _telephonyCallDelegate: undefined,
@@ -279,10 +329,67 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('onCallActionFailed', () => {
+    it('should mute call when call hold is failed for multiple call', () => {
+      const call1 = {
+        muteAll: jest.fn(),
+      };
+      const call2 = {
+        muteAll: jest.fn(),
+      };
+      callControllerList.clear();
+      callControllerList.set(1, call1);
+      callControllerList.set(2, call2);
+      accountController.onCallActionFailed(1, RTC_CALL_ACTION.HOLD, 1);
+      expect(call1.muteAll).toHaveBeenCalled();
+      expect(call2.muteAll).not.toHaveBeenCalled();
+    });
+
+    it('should not mute call when call hold is failed for single call', () => {
+      const call1 = {
+        muteAll: jest.fn(),
+      };
+      callControllerList.clear();
+      callControllerList.set(1, call1);
+      accountController.onCallActionFailed(1, RTC_CALL_ACTION.HOLD, 1);
+      expect(call1.muteAll).not.toHaveBeenCalled();
+    });
+  });
+
   describe('logout', () => {
     it('should call rtcAccount to logout', () => {
       accountController.logout();
       expect(rtcAccount.logout).toHaveBeenCalled();
+    });
+  });
+
+  describe('getCallIdList', () => {
+    it('should return call id list', () => {
+      callControllerList.clear();
+      callControllerList.set(1, {});
+      callControllerList.set(2, {});
+      const res = accountController.getCallIdList();
+      expect(res).toEqual([1, 2]);
+    });
+  });
+
+  describe('_holdActiveCall', () => {
+    it('should hold active call', () => {
+      const call1 = {
+        isOnHold: jest.fn().mockReturnValue(false),
+        hold: jest.fn(),
+        getEntityId: jest.fn().mockReturnValue(1),
+      };
+      const call2 = {
+        isOnHold: jest.fn().mockReturnValue(true),
+        hold: jest.fn(),
+        getEntityId: jest.fn().mockReturnValue(2),
+      };
+      callControllerList.clear();
+      callControllerList.set(1, call1);
+      callControllerList.set(2, call2);
+      accountController._holdActiveCall();
+      expect(call1.hold).toHaveBeenCalled();
     });
   });
 
@@ -552,6 +659,14 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('unhold', () => {
+    it('should hold active before unhold call', () => {
+      accountController['_holdActiveCall'] = jest.fn();
+      accountController.unhold(1);
+      expect(accountController['_holdActiveCall']).toHaveBeenCalled();
+    });
+  });
+
   describe('getVoipState', () => {
     it('should call rtc to get voip state', () => {
       const spy = jest.spyOn(rtcAccount, 'state');
@@ -573,6 +688,35 @@ describe('TelephonyAccountController', () => {
       const spy = jest.spyOn(callControllerList, 'delete');
       accountController._removeControllerFromList(callId);
       expect(spy).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('transfer', () => {
+    it('should call controller to transfer', () => {
+      const callController = {
+        transfer: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
+      accountController.transfer(callId, TRANSFER_TYPE.BLIND_TRANSFER, toNum);
+      expect(callController.transfer).toHaveBeenCalled();
+       });
+  });
+
+  describe('setLocalEmergencyAddress', () => {
+    it('should set to e911 controller', () => {
+      const data = {} as any;
+      accountController['_e911Controller'].setLocalEmergencyAddress = jest.fn();
+      accountController.setLocalEmergencyAddress(data);
+      expect(accountController['_e911Controller'].setLocalEmergencyAddress).toHaveBeenCalledWith(data);
+    });
+  });
+
+  describe('updateLocalEmergencyAddress', () => {
+    it('should update to e911 controller', () => {
+      const data = {} as any;
+      accountController['_e911Controller'].updateLocalEmergencyAddress = jest.fn();
+      accountController.updateLocalEmergencyAddress(data);
+      expect(accountController['_e911Controller'].updateLocalEmergencyAddress).toHaveBeenCalledWith(data);
     });
   });
 

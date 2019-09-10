@@ -8,6 +8,7 @@ import FileItemModel, {
   ExtendFileItem,
   FileType,
 } from '@/store/models/FileItem';
+import { FILE_ICON_MAP } from './getFileIcon';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 function image(item: FileItemModel) {
@@ -78,8 +79,12 @@ function isSupportFileViewer(type: string): boolean {
   return VIEWER_SUPPORT_TYPE.some(v => type === v);
 }
 
-function isFileReadyForViewer(status?: string): boolean {
-  return status === 'ready';
+function isDoc(type: string): boolean {
+  return FILE_ICON_MAP.doc.some(v => type === v);
+}
+
+function isFileReadyForViewer(status?: string, ready?: boolean): boolean {
+  return ready || status === 'ready';
 }
 
 export {
@@ -88,4 +93,5 @@ export {
   documentType,
   isSupportFileViewer,
   isFileReadyForViewer,
+  isDoc,
 };

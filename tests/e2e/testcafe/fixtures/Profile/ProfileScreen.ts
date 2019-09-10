@@ -185,25 +185,22 @@ test.meta(<ITestMeta>{
   maintainers: ['Spike Yang'],
   keywords: ['ProfileScreen'],
 })('If the user can access Mini Profile from Team Member View', async (t) => {
-
   const company = h(t).rcData.mainCompany;
   const [loginUser, ...rest] = company.users;
   const app = new AppRoot(t);
 
-  let teamT1Id;
-  let title;
-
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  title = 'Given team T1 initial member only login user.';
-  await h(t).withLog(title, async () => {
-    teamT1Id = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given team T1 initial member only login user.', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   const messageTab = app.homePage.messageTab;
@@ -211,29 +208,27 @@ test.meta(<ITestMeta>{
   const miniProfile = app.homePage.miniProfile;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  title = `Given I login with ${loginUser.company.number}#${loginUser.extension}`;
-  await h(t).withLog(title, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  title = 'When I open team T1 profile.';
-  await h(t).withLog(title, async () => {
-    await messageTab.teamsSection.conversationEntryById(teamT1Id).enter();
+  await h(t).withLog('When I open team T1 profile.', async () => {
+    await messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.ensureLoaded();
   });
 
-  title = 'And click member avatar.';
-
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('And click member avatar.', async () => {
     await profileDialog.clickMembersAvatar();
   });
 
-  title = 'Then Display the mini profile dialog.'
-
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('Then Display the mini profile dialog.', async () => {
     await t.expect(miniProfile.self.exists).ok();
-  })
+  });
 });

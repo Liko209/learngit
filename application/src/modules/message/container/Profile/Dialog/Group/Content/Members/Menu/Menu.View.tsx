@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observable } from 'mobx';
-import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { MenuViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';

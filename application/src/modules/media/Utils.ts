@@ -84,21 +84,32 @@ const dismantleMediaId = (id: string) => {
   return {};
 };
 
+const safariAudioPolicyHandler = () => {
+  audioPolicyHandler(() => {
+    const audio = document.createElement('audio');
+    audio.src = sound24Hz;
+    audio.volume = 0;
+    audio.muted = true;
+    try {
+      audio && audio.play();
+    } catch (e) {
+      return;
+    }
+  });
+};
+
+const isValidVolume = (vol: number) => vol <= 1 && vol >= 0;
+
+const difference = (a: string[], b: string[]) =>
+  a.concat(b).filter(v => !a.includes(v) || !b.includes(v));
+
 const Utils = {
   formatMediaId,
   dismantleMediaId,
   audioPolicyHandler,
-  safariAudioPolicyHandler: () => {
-    audioPolicyHandler(() => {
-      const audio = document.createElement('audio');
-      audio.src = sound24Hz;
-      audio.volume = 0;
-      audio.play();
-    });
-  },
-  isValidVolume: (vol: number) => vol <= 1 && vol >= 0,
-  difference: (a: string[], b: string[]) =>
-    a.concat(b).filter(v => !a.includes(v) || !b.includes(v)),
+  safariAudioPolicyHandler,
+  isValidVolume,
+  difference,
 };
 
 export { Utils };

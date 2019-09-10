@@ -21,7 +21,7 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ItemService } from '../../../item';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { Nullable } from 'sdk/types';
 import { daoManager } from 'sdk/dao';
 import { PostDao } from '../../dao';

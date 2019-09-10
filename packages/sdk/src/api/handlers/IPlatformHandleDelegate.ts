@@ -1,4 +1,4 @@
-import { IToken } from 'foundation';
+import { IToken } from 'foundation/network';
 
 export interface IPlatformHandleDelegate {
   refreshRCToken: () => Promise<IToken | null>;

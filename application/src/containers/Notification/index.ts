@@ -5,3 +5,4 @@
  */
 
 export * from './Notification';
+export * from './notificationKey';

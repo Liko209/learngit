@@ -6,7 +6,10 @@
 import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
-import { JuiListNavItem, JuiListNavItemIconography } from '../../components';
+import {
+  JuiListNavItem,
+  JuiListNavItemIconography,
+} from '../../components/Lists';
 import { typography } from '../../foundation/utils';
 
 const StyledRightWrapper = styled.div`
@@ -31,6 +34,7 @@ type JuiSectionHeaderProps = {
   className?: string;
   hideArrow?: boolean;
   selected?: boolean;
+  extraScrollPadding?: number;
   onClick?: (e: React.MouseEvent) => any;
   onArrowClick?: (e: React.MouseEvent) => any;
 };
@@ -46,6 +50,7 @@ const JuiConversationListSectionHeader = memo(
       onClick,
       onArrowClick,
       selected,
+      extraScrollPadding,
       ...rest
     } = props;
 
@@ -54,6 +59,7 @@ const JuiConversationListSectionHeader = memo(
     return (
       <JuiListNavItem
         className={className}
+        extraScrollPadding={extraScrollPadding}
         data-test-automation-id="conversation-list-section-header"
         button
         selected={selected}

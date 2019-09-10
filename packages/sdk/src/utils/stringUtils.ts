@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { bytes } from 'foundation';
+import { bytes } from 'foundation/utils';
 
 function repeatString(
   repeatToken: string,

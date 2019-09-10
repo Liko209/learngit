@@ -10,7 +10,7 @@ import {
   MediaEvents,
 } from '@/interface/media';
 import { Utils } from './Utils';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 class Sound {
   private _id: SoundOptions['id'];
@@ -29,7 +29,7 @@ class Sound {
   private _ended: boolean;
   private _loadError: boolean;
   private _seek: number;
-  private _hasSinkId: boolean;
+  private _hasSinkId: boolean = false;
   private _holdPlaying: boolean;
 
   private _node: (HTMLMediaElement & { setSinkId?: any; sinkId?: any }) | null;
@@ -105,6 +105,11 @@ class Sound {
       if (process.env.NODE_ENV !== 'test') {
         const audio = document.getElementById(this._id);
         audio && audio.parentNode && audio.parentNode.removeChild(audio);
+        mainLogger.log(
+          `[MediaModule] [Sound] disposed, mediaId: ${this._id}, mediaUrl: ${
+            this._url
+          }.`,
+        );
       }
     }
     setTimeout(() => {
@@ -120,12 +125,17 @@ class Sound {
     this._node.dispatchEvent(event);
   }
 
-  bindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
-    this._events.push({
-      handler,
-      name: eventName,
-      type: MediaEventType.ON,
-    });
+  bindEvent(
+    eventName: MediaEventName,
+    handler: (event: Event) => void,
+    record: boolean = true,
+  ) {
+    record &&
+      this._events.push({
+        handler,
+        name: eventName,
+        type: MediaEventType.ON,
+      });
     this._on(eventName, handler);
   }
 
@@ -231,6 +241,11 @@ class Sound {
                 this._holdPlaying = true;
                 return;
               }
+              mainLogger.log(
+                `[MediaModule] [Sound] html5 audio play, mediaId: ${
+                  this._id
+                }, mediaUrl: ${this._url}.`,
+              );
             })
             .catch(e => {
               mainLogger.warn(
@@ -407,7 +422,7 @@ class Sound {
     ) {
       testPlay.catch((e: any) => {
         mainLogger.warn(
-          "[MediaModule] audio can't be play",
+          "[MediaModule] test audio can't be play, please check new Audio can be used",
           this._id,
           e.code,
           e.message,
@@ -419,6 +434,11 @@ class Sound {
     if (process.env.NODE_ENV !== 'test') {
       audio.id = this._id;
       document.body.appendChild(audio);
+      mainLogger.log(
+        `[MediaModule] [Sound] html5 audio created, mediaId: ${
+          this._id
+        }, mediaUrl: ${this._url}.`,
+      );
     }
     return audio;
   }

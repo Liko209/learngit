@@ -7,7 +7,10 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { ContentSearchResultViewProps } from './types';
+import {
+  ContentSearchResultViewProps,
+  ContentSearchResultProps,
+} from './types';
 import { JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import {
   JuiFullSearchWrapper,
@@ -21,12 +24,17 @@ import { ConversationPageContext } from '@/modules/message/container/Conversatio
 import { SearchHighlightContext } from '@/common/postParser';
 import { USED_HEIGHT, MIN_DIALOG_HEIGHT, MIN_HEIGHT_FIX } from './constants';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type Props = ContentSearchResultViewProps &
+  ContentSearchResultProps &
   WithTranslation & { isShow: boolean };
 
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
+  dataTrackingJumpToConversation = () => {
+    analyticsCollector.jumpToPostInConversation('messageFullSearch');
+  };
   componentWillUnmount() {
     this.props.onSearchEnd();
   }
@@ -54,6 +62,10 @@ class ContentSearchResultViewComponent extends Component<Props> {
       ...rest
     } = this.props;
     const { height } = this.state;
+    if (isShow) {
+      const { pageDataTracking } = this.props;
+      pageDataTracking && pageDataTracking();
+    }
     return (
       <ConversationPageContext.Provider
         value={{ height, disableMoreAction: true }}
@@ -75,7 +87,11 @@ class ContentSearchResultViewComponent extends Component<Props> {
               <JuiFullSearchResultStreamWrapper height={height}>
                 {showResult && (
                   <SearchHighlightContext.Provider
-                    value={{ keyword: searchKey }}
+                    value={{
+                      keyword: searchKey,
+                      dataTrackingJumpToConversation: this
+                        .dataTrackingJumpToConversation,
+                    }}
                   >
                     <PostListStream
                       isShow={isShow}

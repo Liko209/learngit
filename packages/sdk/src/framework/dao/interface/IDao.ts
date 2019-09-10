@@ -7,7 +7,7 @@
 import { IdModel, ModelIdType } from '../../model';
 
 interface IDao<T extends IdModel<IdType>, IdType extends ModelIdType = number> {
-  put(item: T | T[]): Promise<void>;
+  put(item: T): Promise<void>;
 
   bulkPut(array: T[]): Promise<void>;
 
@@ -17,7 +17,7 @@ interface IDao<T extends IdModel<IdType>, IdType extends ModelIdType = number> {
 
   bulkDelete(keys: IdType[]): Promise<void>;
 
-  update(item: Partial<T> | Partial<T>[], shouldDoPut?: boolean): Promise<void>;
+  update(item: Partial<T>, shouldDoPut?: boolean): Promise<void>;
 
   bulkUpdate(array: Partial<T>[], shouldDoPut?: boolean): Promise<void>;
 

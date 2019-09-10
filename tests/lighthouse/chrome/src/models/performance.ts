@@ -5,8 +5,8 @@
 import {
   Table, Column, Model, DataType
 } from 'sequelize-typescript';
-
-@Table({
+import { IDefineOptions } from 'sequelize-typescript/lib/interfaces/IDefineOptions';
+@Table(<IDefineOptions>{
   modelName: 't_performance',
   indexes: [{
     unique: false,
@@ -74,7 +74,7 @@ class PerformanceDto extends Model<PerformanceDto> {
   estimatedInputLatency: number;
 }
 
-@Table({
+@Table(<IDefineOptions>{
   modelName: 't_performance_item',
   indexes: [{
     unique: false,

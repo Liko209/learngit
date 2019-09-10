@@ -18,7 +18,7 @@ import {
 } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { AccountService } from '../../../account/service';
 import { StateService } from '../../service';
 import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';
@@ -75,7 +75,7 @@ class StateDataHandleController {
     }
   }
 
-  async handleState(
+  handleState(
     states: Partial<State>[],
     source?: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
@@ -93,7 +93,7 @@ class StateDataHandleController {
     return this._appendTask(task, source, changeMap);
   }
 
-  async handleGroupCursor(
+  handleGroupCursor(
     groups: Partial<Group>[],
     source?: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
@@ -111,7 +111,7 @@ class StateDataHandleController {
     return this._appendTask(task, source, changeMap);
   }
 
-  async handleStateAndGroupCursor(
+  handleStateAndGroupCursor(
     states: Partial<State>[],
     groups: Partial<Group>[],
     source?: SYNC_SOURCE,

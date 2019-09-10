@@ -17,7 +17,7 @@ import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import { PostService } from 'sdk/module/post';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
-import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
+import { PreFetchConversationDataHandler } from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
@@ -78,7 +78,7 @@ class StreamController {
       );
     } else {
       listHandler = conversationPostCacheController.get(this._groupId);
-      preFetchConversationDataHandler.setCurrentConversation(this._groupId);
+      PreFetchConversationDataHandler.getInstance().setCurrentConversation(this._groupId);
     }
 
     this._orderListHandler = listHandler;
@@ -137,7 +137,7 @@ class StreamController {
       this._streamListHandler.dispose();
     }
     if (!this._jumpToPostId) {
-      preFetchConversationDataHandler.releaseCurrentConversation(this._groupId);
+      PreFetchConversationDataHandler.getInstance().releaseCurrentConversation(this._groupId);
     }
   }
 

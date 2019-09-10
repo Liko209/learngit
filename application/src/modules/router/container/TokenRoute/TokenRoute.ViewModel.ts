@@ -8,15 +8,15 @@ import { AccountService } from 'sdk/module/account';
 import { computed, observable, action } from 'mobx';
 import * as H from 'history';
 import { parse } from 'qs';
-import { service, mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/history';
 import { ProfileService } from 'sdk/module/profile';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-
-const { SERVICE } = service;
+import { SERVICE } from 'sdk/service';
+import { LoginInfo } from 'sdk/types';
 
 class TokenRouteViewModel extends StoreViewModel {
   private _LoggedInHandled: boolean = false;
@@ -28,8 +28,8 @@ class TokenRouteViewModel extends StoreViewModel {
       SERVICE.RC_LOGIN,
       this.handleHasLoggedIn.bind(this),
     );
-    this.subscribeNotification(SERVICE.GLIP_LOGIN, async (success: boolean) => {
-      success && (await this.handleHasLoggedIn());
+    this.subscribeNotification(SERVICE.GLIP_LOGIN, async (loginInfo: LoginInfo) => {
+      loginInfo.success && (await this.handleHasLoggedIn());
     });
   }
 

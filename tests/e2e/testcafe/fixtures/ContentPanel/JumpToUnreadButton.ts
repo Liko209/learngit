@@ -449,7 +449,10 @@ test.meta(<ITestMeta>{
     members: [loginUser, otherUser]
   })
 
-  await h(t).withLog(`Given I have an extension with ${unreadCounts.length} conversations`, async () => {
+  await h(t).withLog(`Given I have an extension with {count} conversations`, async (step) => {
+    step.setMetadata('count', teams.length.toString());
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
     await h(t).scenarioHelper.createTeamsOrChats(teams);
   });
 
@@ -467,7 +470,11 @@ test.meta(<ITestMeta>{
 
   const app = new AppRoot(t);
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -477,7 +484,8 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   for (const i in teams) {
-    await h(t).withLog('When I enter the new team conversation', async () => {
+    await h(t).withLog('When I enter the new team conversation with {umi} Umi', async (step) => {
+      step.setMetadata('umi', unreadCounts[i].toString());
       await teamsSection.conversationEntryById(teams[i].glipId).enter();
     });
 
@@ -485,7 +493,8 @@ test.meta(<ITestMeta>{
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
     });
 
-    await h(t).withLog(`Then I should see unread button with unread count ${unreadCounts[i]}`, async () => {
+    await h(t).withLog(`Then I should see unread button with unread count {umi}`, async (step) => {
+      step.setMetadata('umi', unreadCounts[i].toString());
       await conversationPage.countOnUnreadButtonShouldBe(unreadCounts[i]);
     });
 
@@ -502,6 +511,10 @@ test.meta(<ITestMeta>{
     });
   }
 
+  await h(t).withLog('Given I enter other conversation except these', async () => {
+    await app.homePage.messageTab.favoritesSection.nthConversationEntry(0).enter();
+  });
+
   firstUnreadPostIds = [];
   await h(t).withLog(`And both conversations have more one screen unread messages`, async () => {
     for (const team of teams) {
@@ -515,7 +528,8 @@ test.meta(<ITestMeta>{
   });
 
   for (const i in teams) {
-    await h(t).withLog('When I enter the new team conversation', async () => {
+    await h(t).withLog('When I enter the new team conversation with {umi} Umi', async (step) => {
+      step.setMetadata('umi', unreadCounts[i].toString());
       await teamsSection.conversationEntryById(teams[i].glipId).enter();
     });
 
@@ -523,7 +537,8 @@ test.meta(<ITestMeta>{
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
     });
 
-    await h(t).withLog(`Then I should see unread button with unread count ${unreadCounts[i]}`, async () => {
+    await h(t).withLog('Then I should see unread button with unread count: {umi}', async (step) => {
+      step.setMetadata('umi', unreadCounts[i].toString());
       await conversationPage.countOnUnreadButtonShouldBe(unreadCounts[i]);
     });
 

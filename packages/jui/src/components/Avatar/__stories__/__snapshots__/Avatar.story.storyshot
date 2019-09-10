@@ -1,6 +1,84 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
+exports[`Storyshots Components/Avatar Cover Name: Components/Avatar Cover Name 1`] = `
+.c0.c0 {
+  width: 280px;
+  height: 220px;
+  border-radius: unset;
+  position: static;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #6FAFEB;
+  background-color: #6FAFEB;
+}
+
+.c0:focus {
+  outline: none;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 132px;
+  width: 132px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+<div
+  className="MuiAvatar-root c0 MuiAvatar-colorDefault"
+  color="lake"
+  size="medium"
+>
+  <span
+    className="c1"
+  >
+    SH
+  </span>
+</div>
+`;
+
+exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: inherit;
+  fill: #f5f6fb;
+}
+
 .c0.c0 {
   width: 32px;
   height: 32px;
@@ -8,7 +86,7 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
-  background-color: #f5f6fb;
+  background-color: #18a4de;
 }
 
 .c0.c0:hover {
@@ -18,6 +96,77 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
 
 .c0.c0:active {
   opacity: 0.76;
+}
+
+.c0:focus {
+  outline: none;
+}
+
+.c0 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c1 {
+  font-size: 32px;
+  background-color: #18a4de;
+}
+
+<div
+  className="MuiAvatar-root c0 MuiAvatar-colorDefault"
+  size="medium"
+>
+  <span
+    className="c1  icon c2"
+  >
+    <svg
+      className="c3"
+      role="img"
+      size="inherit"
+    >
+      <use
+        href="#undefined"
+        xlinkHref="#undefined"
+      />
+    </svg>
+  </span>
+</div>
+`;
+
+exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
+.c0.c0 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c0.c0:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c0.c0:active {
+  opacity: 0.76;
+}
+
+.c0:focus {
+  outline: none;
 }
 
 .c0 > .avatar-short-name {
@@ -39,6 +188,8 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
 
 <div
   className="MuiAvatar-root c0"
+  color="lake"
+  onClick={[Function]}
   size="medium"
 >
   <img
@@ -68,6 +219,10 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
   opacity: 0.76;
 }
 
+.c0:focus {
+  outline: none;
+}
+
 .c0 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
@@ -88,6 +243,7 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
 <div
   className="MuiAvatar-root c0 MuiAvatar-colorDefault"
   color="lake"
+  onClick={[Function]}
   size="medium"
 >
   SH
@@ -118,6 +274,10 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
 
 .c1.c1:active {
   opacity: 0.76;
+}
+
+.c1:focus {
+  outline: none;
 }
 
 .c1 > .avatar-short-name {
@@ -170,6 +330,7 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
   <div
     className="MuiAvatar-root c1 MuiAvatar-colorDefault"
     color="lake"
+    onClick={[Function]}
     size="medium"
   >
     SH

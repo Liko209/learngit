@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
-import { JuiMenu } from '../../components';
+import { JuiMenu } from '../../components/Menus';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
@@ -24,6 +24,7 @@ type MuiMenuItemPropsExtend = MuiMenuItemProps & {
   isItemHover?: boolean;
   // type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
   button?: any;
+  extraScrollPadding?: number;
 };
 
 type StyledMuiMenuItemProps = MuiMenuItemPropsExtend & { umi?: boolean };
@@ -70,6 +71,7 @@ const JuiMenuContain = styled(JuiMenu)`
 const FilteredComponent = ({
   isItemHover,
   umi,
+  extraScrollPadding,
   ...rest
 }: StyledMuiMenuItemProps) => <MuiMenuItem {...rest} />;
 
@@ -82,7 +84,8 @@ const StyledItemText = styled(ItemText)`
 const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
   && {
     white-space: nowrap;
-    padding: ${spacing(0, 3, 0, 3)};
+    padding: ${({ extraScrollPadding = 0 }) =>
+      spacing(0, 3 + extraScrollPadding, 0, 3)};
     height: ${height(8)};
     min-height: unset;
     line-height: ${height(8)};
@@ -116,7 +119,7 @@ const StyledListItem = styled<StyledMuiMenuItemProps>(FilteredComponent)`
   }
 
   &&&&.selected {
-    background-color: ${palette('primary', '600')};
+    background-color: ${palette('primary', 'main')};
 
     && ${StyledItemText} {
       color: ${({ theme }) => theme.palette.common.white};

@@ -20,7 +20,7 @@ import {
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IRCInfoService } from './IRCInfoService';
 import { RcInfoSettings } from '../setting';
 import { IdModel } from '../../../framework/model';
@@ -145,6 +145,12 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getRCExtensionInfo();
   }
 
+  async getUserEmail() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getUserEmail();
+  }
+
   async getRCRolePermissions() {
     return await this.getRCInfoController()
       .getRCInfoFetchController()
@@ -176,16 +182,43 @@ class RCInfoService extends EntityBaseService<IdModel>
   }
 
   async isVoipCallingAvailable(): Promise<boolean> {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
     const result =
-      userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
+      this.isRCAccount() &&
       (await this.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.VOIP_CALLING,
+      )) &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.WEB_PHONE,
       ));
     mainLogger.debug(`isVoipCallingAvailable: ${result}`);
     return result;
+  }
+
+  async isOrganizeConferenceAvailable(): Promise<boolean> {
+    const result =
+      this.isRCAccount() &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.ORGANIZE_CONFERENCE,
+      ));
+    mainLogger.debug(`isWebPhoneAvailable: ${result}`);
+    return result;
+  }
+
+  async isWebPhoneAvailable(): Promise<boolean> {
+    const result =
+      this.isRCAccount() &&
+      (await this.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.WEB_PHONE,
+      ));
+    mainLogger.debug(`isWebPhoneAvailable: ${result}`);
+    return result;
+  }
+
+  isRCAccount() {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC;
   }
 
   async getAccountMainNumber() {
@@ -246,6 +279,10 @@ class RCInfoService extends EntityBaseService<IdModel>
 
   async setDefaultCountry(isoCode: string) {
     return await this.regionInfoController.setDefaultCountry(isoCode);
+  }
+
+  async getDefaultCountryInfo() {
+    return await this.regionInfoController.getDefaultCountryInfo();
   }
 
   async setAreaCode(areaCode: string) {

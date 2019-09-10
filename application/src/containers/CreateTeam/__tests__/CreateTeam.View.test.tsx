@@ -8,36 +8,42 @@ import { shallow } from 'enzyme';
 import { CreateTeamView } from '../CreateTeam.View';
 import { Notification } from '@/containers/Notification';
 import { INIT_ITEMS } from '../types';
+import { JuiModal } from 'jui/components/Dialog';
 
 jest.mock('@/containers/Notification');
 
 describe('CreateTeamView', () => {
+  const props: any = {
+    t: (str: string) => {},
+    create: () => {},
+    isOpen: false,
+    disabledOkBtn: false,
+    isOffline: false,
+    nameError: false,
+    emailError: false,
+    errorMsg: 'string',
+    emailErrorMsg: 'string',
+    teamName: 'string',
+    description: 'string',
+    serverError: false,
+    members: [],
+    errorEmail: 'string',
+    updateCreateTeamDialogState: () => {},
+    inputReset: () => {},
+    handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
+    handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
+    handleSearchContactChange: (items: any) => {},
+  };
   describe('render()', () => {
     it('should display flash toast notification when create team failed. [JPT-388]', () => {
-      const props: any = {
-        t: (str: string) => {},
-        create: () => {},
-        isOpen: false,
-        disabledOkBtn: false,
-        isOffline: false,
-        nameError: false,
-        emailError: false,
-        errorMsg: 'string',
-        emailErrorMsg: 'string',
-        teamName: 'string',
-        description: 'string',
-        serverError: false,
-        members: [],
-        errorEmail: 'string',
-        updateCreateTeamDialogState: () => {},
-        inputReset: () => {},
-        handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
-        handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
-        handleSearchContactChange: (items: any) => {},
-      };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       shallow(<CreateTeamView {...props} />);
       expect(Notification.flashToast).toHaveBeenCalledTimes(0);
+    });
+    it('should render withEscTracking when Component rendered ', async () => {
+      const Wrapper = shallow(<CreateTeamView {...props} />);
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
     });
   });
 

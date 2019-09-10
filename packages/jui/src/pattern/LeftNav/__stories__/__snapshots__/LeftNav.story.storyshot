@@ -33,6 +33,7 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
 
 .c0.c0 {
   height: 100%;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
 .c0 .left-paper {

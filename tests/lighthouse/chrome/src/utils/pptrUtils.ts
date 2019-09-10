@@ -43,7 +43,7 @@ class PptrUtils {
 
       logger.info('tracking heap object.');
     }
-    
+
     return memory.length > 0 ? memory.join('') : '';
   }
 
@@ -54,12 +54,12 @@ class PptrUtils {
     driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
     await driver.sendCommand('HeapProfiler.collectGarbage');
 
-    await bluebird.delay(5000);
+    await bluebird.delay(2000);
 
     driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
     await driver.sendCommand('HeapProfiler.collectGarbage');
 
-    await bluebird.delay(5000);
+    await bluebird.delay(2000);
 
     driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
     await driver.sendCommand('HeapProfiler.disable');
@@ -126,28 +126,6 @@ class PptrUtils {
 
   static async exist(page: Page, selector: string, options = {}) {
     return await PptrUtils.waitForSelector(page, selector, options);
-  }
-
-  /**
-   * @description: wait for element appear by xpath
-   */
-  static async waitForXpath(
-    page: Page,
-    xpath: string,
-    options = {}
-  ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
-
-    let cnt = MAX_TRY_COUNT;
-    opt["timeout"] = opt["timeout"] / cnt;
-
-    while (cnt-- > 0) {
-      try {
-        await page.waitForXPath(xpath, opt);
-        return true;
-      } catch (error) { }
-    }
-    return false;
   }
 
   /**

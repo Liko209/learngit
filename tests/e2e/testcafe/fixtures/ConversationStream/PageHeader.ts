@@ -18,37 +18,46 @@ fixture('ContentPanel/PageHeader')
 
 test.skip(formalName('When update custom status, can sync dynamically in page header', ['JPT-252', 'P2', 'ConversationStream',]),
   async (t: TestController) => {
-    const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).glip(loginUser).init();
 
-    const otherUser = users[5];
-    await h(t).glip(otherUser).init();
+    const anotherUser = users[5];
+    await h(t).glip(anotherUser).init();
 
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const chat = <IGroup>{
+      type: 'DirectMessage',
+      owner: loginUser,
+      members: [loginUser, anotherUser]
+    }
 
-    let chatId;
     await h(t).withLog('Given I have an extension with a private chat with user5', async () => {
-      chatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, users[5].rcId],
-      });
+      await h(t).scenarioHelper.createOrOpenChat(chat);
+    });
+
+    await h(t).withLog('And send a post to ensure this chat in list', async () => {
+      await h(t).scenarioHelper.sendTextPost(uuid(), chat, loginUser);
     });
 
     await h(t).withLog('Given user5 have custom status "In a meeting"', async () => {
-      await h(t).glip(otherUser).updatePerson({ away_status: 'In a meeting' });
+      await h(t).glip(anotherUser).updatePerson({ away_status: 'In a meeting' });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, loginUser);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    const app = new AppRoot(t);
 
-    await h(t).withLog('Then I open the private chat with user5', async () => {
-      await directMessagesSection.conversationEntryById(chatId).enter();
+    await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+      step.initMetadata({
+        number: loginUser.company.number,
+        extension: loginUser.extension,
+      })
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+
+    await h(t).withLog('When I open the private chat with user5', async () => {
+      await directMessagesSection.conversationEntryById(chat.glipId).enter();
       await conversationPage.waitUntilPostsBeLoaded();
     });
 
@@ -59,7 +68,7 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     });
 
     await h(t).withLog('Then I modify user5\'s custom status to "content of user modify"', async () => {
-      await h(t).glip(otherUser).updatePerson({
+      await h(t).glip(anotherUser).updatePerson({
         away_status: 'content of user modify',
       });
     });
@@ -69,7 +78,7 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     }, true);
 
     await h(t).withLog("Then I delete user5's custom status", async () => {
-      await h(t).glip(otherUser).updatePerson({
+      await h(t).glip(anotherUser).updatePerson({
         away_status: null,
       });
     });
@@ -114,15 +123,7 @@ test.meta(<ITestMeta>{
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog('When I enter the group conversation', async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
-  }, true);
-
-  await h(t).withLog('And close the right rail', async () => {
-    app.homePage.messageTab.rightRail.fold();
-  }, true);
-
-  await h(t).withLog('And click the member count icon(with count) on page header ', async () => {
+  await h(t).withLog('When I enter the group conversation and click Click the member count icon(with count) on page header ', async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
     await conversationPage.clickMemberCountIcon();
   }, true);
@@ -285,6 +286,11 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createTeamsOrChats([team, group, chat]);
   });
 
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', group, loginUser);
+  });
+
   await h(t).withLog(`And I login Jupiter this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -358,85 +364,4 @@ test.meta(<ITestMeta>{
     await t.expect(profileDialog.exists).ok;
     await t.expect(await profileDialog.profileType).eql('chat');
   });
-});
-
-test.meta(<ITestMeta>{
-  priority: ['P2'],
-  caseIds: ['JPT-2618'],
-  maintainers: ['Chris.Zhan'],
-  keywords: ['PageHeader', 'MemberCount'],
-})('The members icon and count of group/team should be hid when the right shelf is opened', async (t: TestController) => {
-  const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[0];
-  const otherUser = h(t).rcData.mainCompany.users[1];
-
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
-
-  const team = <IGroup>{
-    type: 'Team',
-    name: uuid(),
-    owner: loginUser,
-    members: [loginUser, otherUser],
-  };
-
-  await h(t).withLog('Given I have an extension with a team, a group and a 1:1 conversations', async () => {
-    await h(t).scenarioHelper.createTeamsOrChats([team]);
-  });
-
-  await h(t).withLog(`And I login Jupiter this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  const teamSection = app.homePage.messageTab.teamsSection;
-  const conversationPage = app.homePage.messageTab.conversationPage;
-  const memberIcon = conversationPage.memberCountIcon;
-  const rightShell = app.homePage.messageTab.rightRail;
-
-  await h(t).withLog('When I enter team', async () => {
-    await teamSection.conversationEntryById(team.glipId).enter();
-  });
-
-  await h(t).withLog('Then I can not see the member icon because right shell is open by default', async () => {
-    await rightShell.shouldBeExpanded();
-    await t.expect(memberIcon.exists).notOk();
-  }, true);
-
-  await h(t).withLog('When I close the right shell', async () => {
-    await rightShell.fold();
-    await rightShell.shouldBeFolded();
-  });
-
-  await h(t).withLog('Then I can see the member icon', async () => {
-    await t.expect(memberIcon.exists).ok();
-  }, true);
-
-  await h(t).withLog('When I open the right shell', async () => {
-    await rightShell.expand();
-    await rightShell.shouldBeExpanded();
-  });
-
-  await h(t).withLog('Then I can not see the member icon', async () => {
-    await t.expect(memberIcon.exists).notOk();
-  }, true);
-
-
-  await h(t).withLog('When I resize window to smaller', async () => {
-    await t.resizeWindow(750, 700);
-    await rightShell.shouldBeFolded();
-  }, true);
-
-  await h(t).withLog('Then I can see the member icon', async () => {
-    await t.expect(memberIcon.exists).ok();
-  }, true);
-
-  await h(t).withLog('When I resize window to larger', async () => {
-    await t.resizeWindow(1440, 700);
-    await rightShell.shouldBeExpanded();
-  }, true);
-
-  await h(t).withLog('Then I can not see the member icon', async () => {
-    await t.expect(memberIcon.exists).notOk();
-  }, true);
-
 });

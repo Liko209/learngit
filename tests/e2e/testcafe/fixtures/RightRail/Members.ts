@@ -40,9 +40,12 @@ test(formalName('No "Show all #" link for 1:1 conversation & Can show the underl
   }
 
   await h(t).withLog(`Given I have a 1:1 chat, a group chat and a team named ${team.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-    await h(t).scenarioHelper.createOrOpenChat(groupChat);
-    await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeamsOrChats([chat, groupChat, team]);
+  });
+
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', groupChat, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -135,15 +138,18 @@ test(formalName('Check whether guest section is showed on the right shelf of con
   }
 
   await h(t).withLog(`Given I have a 1:1 chat, a group chat and a team named ${team.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-    await h(t).scenarioHelper.createOrOpenChat(group);
-    await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeamsOrChats([chat,group, team]);
   });
 
   await h(t).withLog(`Given I have a 1:1 chat with guest, a group chat with guest and a team with guest named ${teamWithGuest.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chatWithGuest);
-    await h(t).scenarioHelper.createOrOpenChat(groupChatWithGuest);
-    await h(t).scenarioHelper.createTeam(teamWithGuest);
+    await h(t).scenarioHelper.createTeamsOrChats([chatWithGuest,groupChatWithGuest,teamWithGuest]);
+  });
+
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', group, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chatWithGuest, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', groupChatWithGuest, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -241,9 +247,12 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   }
 
   await h(t).withLog(`Given I have a 1:1 chat, a group chat and a team named ${team.name} before login`, async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-    await h(t).scenarioHelper.createOrOpenChat(group);
-    await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeamsOrChats([chat, group, team]);
+  });
+
+  await h(t).withLog('And send a message to ensure chat and group in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+    await h(t).scenarioHelper.sendTextPost('for appear in section', group, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -254,7 +263,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
 
   const checkTooltip = async () => {
     await h(t).withLog('When I hover on my avatar on the right shell member list', async () => {
-      await t.hover(rightRail.memberListSection.getAvatarById(me.data._id))
+      await t.hover(rightRail.memberListSection.header);
+      await t.hover(rightRail.memberListSection.getAvatarById(me.data._id), {speed: 0.1})
     })
 
     await h(t).withLog('Then I can see tooltip with my name', async () => {
@@ -262,7 +272,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
     })
 
     await h(t).withLog('When I hover on guest\'s avatar on the right shell member list', async () => {
-      await t.hover(rightRail.memberListSection.getAvatarById(guest.data._id))
+      await t.hover(rightRail.memberListSection.header);
+      await t.hover(rightRail.memberListSection.getAvatarById(guest.data._id), {speed: 0.1})
     })
 
     await h(t).withLog('Then I can see tooltip with guest\'s name', async () => {
@@ -325,7 +336,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   });
 
   await h(t).withLog('When I hover on the add button', async () => {
-    await t.hover(rightRail.memberListSection.addMemberButton);
+    await t.hover(rightRail.memberListSection.body);
+    await t.hover(rightRail.memberListSection.addMemberButton, {speed: 0.1});
   });
 
   await h(t).withLog('Then I can see tooltip with text "Add people" ', async () => {
@@ -341,7 +353,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   });
 
   await h(t).withLog('When I hover on the add button', async () => {
-    await t.hover(rightRail.memberListSection.addMemberButton);
+    await t.hover(rightRail.memberListSection.header);
+    await t.hover(rightRail.memberListSection.addMemberButton, {speed: 0.1});
   });
 
   await h(t).withLog('Then I can see tooltip with text "Add people" ', async () => {
@@ -357,7 +370,8 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
   });
 
   await h(t).withLog('When I hover on the add button', async () => {
-    await t.hover(rightRail.memberListSection.addMemberButton);
+    await t.hover(rightRail.memberListSection.header);
+    await t.hover(rightRail.memberListSection.addMemberButton, {speed: 0.1});
   });
 
   await h(t).withLog('Then I can see tooltip with text "Add team members" ', async () => {
@@ -366,7 +380,112 @@ test(formalName('"Add people" icon shows the tooltip & Can show the tooltip when
 
   await checkTooltip();
   await checkMiniProfile();
-})
+});
+
+
+
+
+
+
+
+test(formalName('Check whether "add team members" icon is showed on right shelf when no permission.', ['Windy.Yao', 'P2', 'JPT-2785']), async t => {
+  const app = new AppRoot(t)
+  const adminUser = h(t).rcData.mainCompany.users[4];
+  const memberUser = h(t).rcData.mainCompany.users[5];
+  const guestUser = h(t).rcData.guestCompany.users[0];
+  await h(t).glip(memberUser).init();
+  await h(t).platform(adminUser).init();
+  await h(t).glip(guestUser).init();
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: adminUser,
+    members: [adminUser, memberUser, guestUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+
+  const rightRail = app.homePage.messageTab.rightRail;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const teamItem = teamsSection.conversationEntryById(team.glipId);
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const profileDialog = app.homePage.profileDialog;
+  const teamSettingDialog = app.homePage.teamSettingDialog;
+
+  await h(t).withLog(`And memberUser login Jupiter with ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, memberUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then memberUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+  await h(t).withLog('The "Add team members" icon is showed.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).ok()
+  });
+
+
+  await h(t).withLog(`When memberUser logout and login  with guestUser ${guestUser.company.number}#${guestUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, guestUser);
+  });
+  await h(t).withLog('Then guestUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+
+  await h(t).withLog('The "Add team members" icon is hidden.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).notOk()
+  });
+
+
+  await h(t).withLog(`When guestUser logout and login  with adminUser ${adminUser.company.number}#${adminUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, adminUser);
+  });
+  await h(t).withLog('Then adminUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+  await h(t).withLog('The "Add team members" icon is showed.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).ok()
+  });
+
+
+  await h(t).withLog(`And adminUser set Add team member permission toggle is "off" on team settings page`, async () => {
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
+    await profileDialog.clickSetting();
+    await teamSettingDialog.notAllowAddTeamMember();
+    await teamSettingDialog.save();
+  });
+
+  await h(t).withLog(`When adminUser logout and login  with memberUser ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
+  });
+  await h(t).withLog('Then memberUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+
+  await h(t).withLog('The "Add team members" icon is hidden.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).notOk()
+  });
+
+  await h(t).withLog(`When adminUser logout and login  with guestUser ${guestUser.company.number}#${guestUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, guestUser);
+  });
+  await h(t).withLog('Then guestUser open the team chat', async () => {
+    await teamItem.enter();
+  });
+
+  await h(t).withLog('The "Add team members" icon is hidden.', async () => {
+    await t.expect(rightRail.memberListSection.addMemberButton.exists).notOk()
+  });
+
+
+
+});
+
 
 fixture('RightRail')
   .beforeEach(setupCase(BrandTire.MAIN_50_WITH_GUEST_20))
@@ -722,3 +841,4 @@ test(formalName('The order of members/guests list of the right shelf can be upda
     await t.expect(restGuestCount).eql(5)
   }, true);
 })
+

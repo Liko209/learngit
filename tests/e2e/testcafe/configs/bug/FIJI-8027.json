@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ContentPanel/AtMention.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}

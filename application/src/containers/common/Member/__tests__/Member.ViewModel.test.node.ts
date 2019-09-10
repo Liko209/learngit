@@ -2,7 +2,6 @@ import { getEntity } from '../../../../store/utils';
 import { MemberViewModel } from '../Member.ViewModel';
 import { CONVERSATION_TYPES as TYPES } from '@/constants';
 import { ENTITY_NAME } from '@/store';
-import { container } from 'framework';
 
 jest.mock('../../../../store/utils');
 
@@ -22,10 +21,6 @@ describe('MemberViewModel', () => {
         if (entityName !== ENTITY_NAME.GROUP) return {};
 
         return mockGroups.find(({ id: groupId }) => groupId === id) || {};
-      });
-
-      container.get = jest.fn().mockReturnValue({
-        isRightRailOpen: false,
       });
     });
 
@@ -55,32 +50,6 @@ describe('MemberViewModel', () => {
 
     it('should be show when type is one to one', () => {
       const vm = new MemberViewModel(vmPropsFactory(TYPES.NORMAL_ONE_TO_ONE));
-
-      expect(vm.showMembersCount).toBeFalsy();
-    });
-  });
-
-  describe('showMembersCount when right rail is open', () => {
-    beforeEach(() => {
-      (getEntity as jest.Mock).mockImplementation((entityName, id) => {
-        if (entityName !== ENTITY_NAME.GROUP) return {};
-
-        return mockGroups.find(({ id: groupId }) => groupId === id) || {};
-      });
-
-      container.get = jest.fn().mockReturnValue({
-        isRightRailOpen: true,
-      });
-    });
-
-    it('should not be show when type is team', () => {
-      const vm = new MemberViewModel(vmPropsFactory(TYPES.TEAM));
-
-      expect(vm.showMembersCount).toBeFalsy();
-    });
-
-    it('should not be show when type is group', () => {
-      const vm = new MemberViewModel(vmPropsFactory(TYPES.NORMAL_GROUP));
 
       expect(vm.showMembersCount).toBeFalsy();
     });

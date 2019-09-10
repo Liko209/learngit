@@ -48,7 +48,7 @@ describe('PersonService', () => {
       first_name: 'jupiter',
       last_name: 'rc',
       display_name: 'jupiter rc',
-    };
+    } as any;
 
     return person;
   }

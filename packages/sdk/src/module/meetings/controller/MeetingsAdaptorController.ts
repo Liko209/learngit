@@ -11,18 +11,21 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { AccountService, isInBeta, EBETA_FLAG } from 'sdk/module/account';
 import { ProfileService, VIDEO_SERVICE_OPTIONS } from 'sdk/module/profile';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { MEETING_TAG } from '../constants';
 import { IMeetingAdaptorController } from '../modules/controller/IMeetingAdaptorController';
 import { ZOOM_MEETING_DIAL_IN_NUMBER } from './MeetingsUtils';
 import { Api } from 'sdk/api';
 import _ from 'lodash';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class MeetingsAdaptorController {
-  private _meetingController: IMeetingAdaptorController;
+  private _zoomController: IMeetingAdaptorController;
+  private _rcvController: IMeetingAdaptorController;
   constructor() {}
   async startMeeting(groupIds: number[]): Promise<StartMeetingResultType> {
-    const controller = await this._getSuitableMeetingController();
+    const type = await this.getMeetingServiceType();
+    const controller = this._getSuitableMeetingController(type);
     return controller.startMeeting(groupIds);
   }
 
@@ -50,6 +53,27 @@ class MeetingsAdaptorController {
     return MEETING_SERVICE_TYPE.ZOOM;
   }
 
+  cancelMeeting(itemId: number): Promise<void> {
+    const type = this._getMeetingTypeById(itemId);
+    const controller = this._getSuitableMeetingController(type);
+    return controller.cancelMeeting(itemId);
+  }
+
+  getJoinUrl(itemId: number): Promise<string> {
+    const type = this._getMeetingTypeById(itemId);
+    const controller = this._getSuitableMeetingController(type);
+    return controller.getJoinUrl(itemId);
+  }
+
+  private _getMeetingTypeById(meetingId: number) {
+    return GlipTypeUtil.isExpectedType(
+      meetingId,
+      TypeDictionary.TYPE_ID_RC_VIDEO,
+    )
+      ? MEETING_SERVICE_TYPE.RCV
+      : MEETING_SERVICE_TYPE.ZOOM;
+  }
+
   private async _hasRCVService() {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
@@ -72,22 +96,18 @@ class MeetingsAdaptorController {
     return userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC;
   }
 
-  private async _getSuitableMeetingController() {
-    const type = await this.getMeetingServiceType();
+  private _getSuitableMeetingController(type: MEETING_SERVICE_TYPE) {
     if (type === MEETING_SERVICE_TYPE.RCV) {
-      // rc video
-      if (!this._meetingController || !this._meetingController.isRCVideo()) {
-        this._meetingController = new RCVAdaptorController();
+      if (!this._rcvController) {
+        this._rcvController = new RCVAdaptorController();
       }
-    } else if (
-      !this._meetingController ||
-      this._meetingController.isRCVideo()
-    ) {
-      // for zoom
-      this._meetingController = new ZoomAdaptorController();
+      return this._rcvController;
     }
 
-    return this._meetingController;
+    if (!this._zoomController) {
+      this._zoomController = new ZoomAdaptorController();
+    }
+    return this._zoomController;
   }
 }
 

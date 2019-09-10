@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Fragment } from 'react';
-import { container, decorate, injectable, Jupiter } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { GenericDialerPanelViewModel } from '../GenericDialerPanel.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';

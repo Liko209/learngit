@@ -7,6 +7,7 @@ import React from 'react';
 import { ContentSearchResult } from '../ContentSearchResult';
 import { ListSearchResult } from '../ListSearchResult';
 import { TAB_TYPE } from './types';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type TabProps = {
   isShow: boolean;
@@ -24,7 +25,12 @@ type TabConfig = {
 const TAB_CONFIG = [
   {
     title: 'globalSearch.Messages',
-    container: (props: TabProps) => <ContentSearchResult {...props} />,
+    container: (props: TabProps) => (
+      <ContentSearchResult
+        {...props}
+        pageDataTracking={analyticsCollector.showFullMessageSearch}
+      />
+    ),
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -33,7 +39,13 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.People',
-    container: () => <ListSearchResult type={TAB_TYPE.PEOPLE} />,
+    container: (props: TabProps) => (
+      <ListSearchResult
+        type={TAB_TYPE.PEOPLE}
+        pageDataTracking={analyticsCollector.showFullPeopleSearch}
+        {...props}
+      />
+    ),
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -41,7 +53,13 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.Groups',
-    container: () => <ListSearchResult type={TAB_TYPE.GROUPS} />,
+    container: (props: TabProps) => (
+      <ListSearchResult
+        type={TAB_TYPE.GROUPS}
+        pageDataTracking={analyticsCollector.showFullGroupSearch}
+        {...props}
+      />
+    ),
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -49,7 +67,13 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.Teams',
-    container: () => <ListSearchResult type={TAB_TYPE.TEAM} />,
+    container: (props: TabProps) => (
+      <ListSearchResult
+        type={TAB_TYPE.TEAM}
+        pageDataTracking={analyticsCollector.showFullTeamSearch}
+        {...props}
+      />
+    ),
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },

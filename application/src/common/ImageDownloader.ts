@@ -9,7 +9,7 @@ import {
   IImageDownloader,
   IImageDownloadedListener,
 } from 'sdk/pal';
-import { mainLogger, ILogger } from 'sdk';
+import { mainLogger, ILogger } from 'foundation/log';
 import { accelerateURL } from './accelerateURL';
 
 const logTag = 'ImageDownloader';

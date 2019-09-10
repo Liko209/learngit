@@ -7,7 +7,7 @@ import GroupAPI from '../group';
 import Api from '../../api';
 
 jest.mock('../../api');
-jest.mock('foundation');
+jest.mock('foundation/network');
 
 describe('GroupAPI', () => {
   describe('requestGroupById()', () => {

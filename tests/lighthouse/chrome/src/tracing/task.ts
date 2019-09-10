@@ -77,7 +77,7 @@ class Task {
 
     const stack: Array<Node> = [this.top];
     let node: Node, parent: Node;
-    
+
     while (stack.length) {
       node = stack.pop();
 
@@ -104,11 +104,11 @@ class Task {
       item = queue.shift();
 
       if (curLevel != item.level) {
-        console.log(`${item.level} level:`);
+        //console.log(`${item.level} level:`);
         curLevel = item.level;
       }
 
-      console.log(`(${item.id}, ${item.parent}, ${item.name}, ${item.time})`);
+      //console.log(`(${item.id}, ${item.parent}, ${item.name}, ${item.time})`);
       node = this.nodes[item.id];
       if (node.children) {
         for (let key of Object.keys(node.children)) {

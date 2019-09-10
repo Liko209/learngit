@@ -46,6 +46,10 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   let conversationPage;
   await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({

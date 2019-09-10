@@ -5,7 +5,7 @@
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed } from 'mobx';
 import { DialerKeypadHeaderProps, DialerKeypadHeaderViewProps } from './types';
 import { TelephonyStore } from '../../store';

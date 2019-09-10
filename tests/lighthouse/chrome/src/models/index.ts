@@ -2,7 +2,7 @@
  * @Author: doyle.wu
  * @Date: 2018-12-11 10:28:29
  */
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize, ISequelizeConfig } from 'sequelize-typescript';
 import { TaskDto } from "./task";
 import { SceneDto } from "./scene";
 import { PerformanceDto, PerformanceItemDto } from "./performance";
@@ -18,28 +18,29 @@ import { LogUtils } from "../utils/logUtils";
 
 const logger = LogUtils.getLogger(__filename);
 
-const sequelize = new Sequelize({
+const sequelizeConfig: ISequelizeConfig = {
   database: Config.dbName,
   username: Config.dbUser,
   password: Config.dbPassword,
   host: Config.dbHost,
   port: Config.dbPort,
   dialect: Config.dbDialect,
-  operatorsAliases: false,
+  // operatorsAliases: false,
   logging: false,
   timezone: '+08:00',
   dialectOptions: {
     dateStrings: true,
     typeCast: true
   },
-
   pool: {
     max: Config.dbPoolMax,
     min: Config.dbPoolMin,
     acquire: Config.dbPoolAcquire,
     idle: Config.dbPoolIdle
   }
-});
+}
+
+const sequelize = new Sequelize(sequelizeConfig);
 
 const initModel = async () => {
   const models = [
@@ -70,7 +71,7 @@ const initModel = async () => {
 };
 
 const closeDB = async () => {
-  await sequelize.close();
+  await sequelize['close']();
   logger.info('db connection closed.');
 }
 

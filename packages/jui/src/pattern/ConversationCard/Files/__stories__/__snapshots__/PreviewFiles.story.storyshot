@@ -8,7 +8,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   display: inline-flex;
 }
 
-.c15 {
+.c14 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -41,8 +41,8 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   border-radius: 0;
 }
 
-.c13.c13 .c14,
-.c13.c13 .c14 svg {
+.c13.c13 .icon,
+.c13.c13 .icon svg {
   font-size: 20px;
 }
 
@@ -50,15 +50,19 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   background-color: transparent;
 }
 
-.c13.c13:hover .c14 {
+.c13.c13:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c13.c13:active .c14 {
+.c13.c13:active .icon {
   color: #9e9e9e;
 }
 
-.c13.c13.c13.c13.disabled .c14 {
+.c13.c13.c13.c13.disabled {
+  background-color: inherit;
+}
+
+.c13.c13.c13.c13.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -70,159 +74,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c20.c20 .c14,
-.c20.c20 .c14 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c14 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c20.c20:active .c14 {
-  color: #9e9e9e;
-}
-
-.c20.c20.c20.c20.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c14,
-.c21.c21 .c14 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c14 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c21.c21:active .c14 {
-  color: #0684bd;
-}
-
-.c21.c21.c21.c21.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c14,
-.c22.c22 .c14 svg {
-  font-size: 20px;
-}
-
-.c22.c22:hover .c14 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c22.c22:active .c14 {
-  color: #0684bd;
-}
-
-.c22.c22.c22.c22.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c23.c23 .c14,
-.c23.c23 .c14 svg {
-  font-size: 20px;
-}
-
-.c23.c23:hover .c14 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c23.c23:active .c14 {
-  color: #edb63c;
-}
-
-.c23.c23.c23.c23.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c24.c24 .c14,
-.c24.c24 .c14 svg {
-  font-size: 16px;
-}
-
-.c24.c24:hover .c14 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c24.c24:active .c14 {
-  color: #9e9e9e;
-}
-
-.c24.c24.c24.c24.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c25.c25 .c14,
-.c25.c25 .c14 svg {
-  font-size: 16px;
-}
-
-.c25.c25:hover .c14 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c25.c25:active .c14 {
-  color: #0684bd;
-}
-
-.c25.c25.c25.c25.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c26.c26 .c14,
-.c26.c26 .c14 svg {
-  font-size: 16px;
-}
-
-.c26.c26:hover .c14 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c26.c26:active .c14 {
-  color: #fff;
-}
-
-.c26.c26.c26.c26.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c27.c27 .c14,
-.c27.c27 .c14 svg {
-  font-size: 32px;
-}
-
-.c27.c27:hover .c14 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c27.c27:active .c14 {
-  color: #212121;
-}
-
-.c27.c27.c27.c27.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c28.c28 .c14,
-.c28.c28 .c14 svg {
-  font-size: 20px;
-}
-
-.c28.c28:hover .c14 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c28.c28:active .c14 {
-  color: #fff;
-}
-
-.c28.c28.c28.c28.disabled .c14 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c12 {
@@ -262,10 +113,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   cursor: default;
 }
 
-.c2 {
+.c2.c2 {
+  position: relative;
   height: 200px;
-  background-color: #bfbfbf;
-  opacity: 0.36;
+  background-color: #fafafa;
+  background-size: cover;
 }
 
 .c3.c3 {
@@ -312,11 +164,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   padding: 0 !important;
 }
 
-.c16:not(:last-child) {
+.c15:not(:last-child) {
   margin: 0px 0px 8px 0px;
 }
 
-.c17.c17 {
+.c16.c16 {
   height: 52px;
   padding: 16px;
   width: 336px;
@@ -351,7 +203,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   cursor: pointer;
 }
 
-.c18 {
+.c17 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -367,7 +219,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   width: 90%;
 }
 
-.c19 {
+.c18 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -422,6 +274,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       <div
         className="MuiCardMedia-root c2 "
         data-test-automation-id="fileCardMedia"
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -473,7 +328,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-describedby={null}
                 aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
@@ -483,14 +337,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
                 onMouseDown={[Function]}
+                onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseOut={[Function]}
                 onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
                 tabIndex={0}
-                title={null}
                 type="button"
                 variant="plain"
               >
@@ -498,11 +353,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                   className="MuiIconButton-label"
                 >
                   <span
-                    className="c14  icon c9"
-                    size="medium"
+                    className="  icon c9"
                   >
                     <svg
-                      className="c15"
+                      className="c14"
                       role="img"
                     >
                       <use
@@ -525,6 +379,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       <div
         className="MuiCardMedia-root c2 "
         data-test-automation-id="fileCardMedia"
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -576,7 +433,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-describedby={null}
                 aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
@@ -586,14 +442,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
                 onMouseDown={[Function]}
+                onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseOut={[Function]}
                 onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
                 tabIndex={0}
-                title={null}
                 type="button"
                 variant="plain"
               >
@@ -601,11 +458,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                   className="MuiIconButton-label"
                 >
                   <span
-                    className="c14  icon c9"
-                    size="medium"
+                    className="  icon c9"
                   >
                     <svg
-                      className="c15"
+                      className="c14"
                       role="img"
                     >
                       <use
@@ -628,6 +484,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       <div
         className="MuiCardMedia-root c2 "
         data-test-automation-id="fileCardMedia"
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -679,7 +538,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-describedby={null}
                 aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
@@ -689,14 +547,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
                 onMouseDown={[Function]}
+                onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseOut={[Function]}
                 onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
                 tabIndex={0}
-                title={null}
                 type="button"
                 variant="plain"
               >
@@ -704,11 +563,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                   className="MuiIconButton-label"
                 >
                   <span
-                    className="c14  icon c9"
-                    size="medium"
+                    className="  icon c9"
                   >
                     <svg
-                      className="c15"
+                      className="c14"
                       role="img"
                     >
                       <use
@@ -731,6 +589,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       <div
         className="MuiCardMedia-root c2 "
         data-test-automation-id="fileCardMedia"
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -782,7 +643,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onClick={[Function]}
             >
               <button
-                aria-describedby={null}
                 aria-label="download"
                 className="MuiButtonBase-root MuiIconButton-root c13"
                 disabled={false}
@@ -792,14 +652,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 onKeyDown={[Function]}
                 onKeyUp={[Function]}
                 onMouseDown={[Function]}
+                onMouseEnter={[Function]}
                 onMouseLeave={[Function]}
+                onMouseOut={[Function]}
                 onMouseOver={[Function]}
                 onMouseUp={[Function]}
                 onTouchEnd={[Function]}
                 onTouchMove={[Function]}
                 onTouchStart={[Function]}
                 tabIndex={0}
-                title={null}
                 type="button"
                 variant="plain"
               >
@@ -807,11 +668,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                   className="MuiIconButton-label"
                 >
                   <span
-                    className="c14  icon c9"
-                    size="medium"
+                    className="  icon c9"
                   >
                     <svg
-                      className="c15"
+                      className="c14"
                       role="img"
                     >
                       <use
@@ -830,10 +690,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   </div>
   <div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -851,7 +711,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -860,10 +720,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -873,14 +732,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -888,11 +748,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -908,10 +767,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </li>
     </div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -929,7 +788,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -938,10 +797,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -951,14 +809,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -966,11 +825,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -986,10 +844,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </li>
     </div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1007,7 +865,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -1016,10 +874,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -1029,14 +886,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1044,11 +902,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1064,10 +921,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </li>
     </div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1085,7 +942,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -1094,10 +951,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -1107,14 +963,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1122,11 +979,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1144,10 +1000,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   </div>
   <div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1165,7 +1021,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -1174,10 +1030,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -1187,14 +1042,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1202,11 +1058,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1218,7 +1073,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-describedby={null}
               aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
@@ -1230,14 +1084,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1245,11 +1100,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14 unfold_more icon c9"
-                  size="medium"
+                  className=" unfold_more icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1294,10 +1148,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1315,7 +1169,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -1324,10 +1178,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -1337,14 +1190,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1352,11 +1206,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1368,7 +1221,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-describedby={null}
               aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
@@ -1380,14 +1232,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1395,11 +1248,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14 unfold_more icon c9"
-                  size="medium"
+                  className=" unfold_more icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1444,10 +1296,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1465,7 +1317,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -1474,10 +1326,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -1487,14 +1338,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1502,11 +1354,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1518,7 +1369,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-describedby={null}
               aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
@@ -1530,14 +1380,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1545,11 +1396,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14 unfold_more icon c9"
-                  size="medium"
+                  className=" unfold_more icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1594,10 +1444,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="c16"
+      className="c15"
     >
       <li
-        className="MuiListItem-root c17 MuiListItem-gutters"
+        className="MuiListItem-root c16 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1615,7 +1465,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           </svg>
         </span>
         <div
-          className="c18"
+          className="c17"
         >
           <div
             className="c5"
@@ -1624,10 +1474,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             Conversation Card ConversationConversation Card VxD.pdf
           </div>
           <div
-            className="c19"
+            className="c18"
           >
             <button
-              aria-describedby={null}
               aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
@@ -1637,14 +1486,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1652,11 +1502,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14  icon c9"
-                  size="medium"
+                  className="  icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use
@@ -1668,7 +1517,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               </span>
             </button>
             <button
-              aria-describedby={null}
               aria-label="more"
               className="MuiButtonBase-root MuiIconButton-root c13"
               data-test-automation-id="expand-button"
@@ -1680,14 +1528,15 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
+              onMouseEnter={[Function]}
               onMouseLeave={[Function]}
+              onMouseOut={[Function]}
               onMouseOver={[Function]}
               onMouseUp={[Function]}
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
               tabIndex={0}
-              title={null}
               type="button"
               variant="plain"
             >
@@ -1695,11 +1544,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                 className="MuiIconButton-label"
               >
                 <span
-                  className="c14 unfold_more icon c9"
-                  size="medium"
+                  className=" unfold_more icon c9"
                 >
                   <svg
-                    className="c15"
+                    className="c14"
                     role="img"
                   >
                     <use

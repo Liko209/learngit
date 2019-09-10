@@ -7,12 +7,12 @@ import React from 'react';
 import { test, testable } from 'shield';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { mountWithTheme } from 'shield/utils';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Call } from '../Call';
 
 const telephonyService = {
-  makeCall: jest.fn(),
+  directCall: jest.fn(),
 };
 
 describe('message', () => {
@@ -31,7 +31,7 @@ describe('message', () => {
         />,
       );
       wrapper.find(JuiIconButton).simulate('click');
-      expect(telephonyService.makeCall).toHaveBeenCalledWith('123');
+      expect(telephonyService.directCall).toHaveBeenCalledWith('123');
     }
   }
 

@@ -1,4 +1,4 @@
-import { IErrorParser, ErrorParser, RuntimeErrorParser } from 'foundation';
+import { IErrorParser, ErrorParser, RuntimeErrorParser } from 'foundation/error';
 import { DBErrorParser } from './db';
 
 export class ErrorParserHolder {

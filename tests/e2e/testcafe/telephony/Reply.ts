@@ -14,49 +14,6 @@ fixture('Telephony/Reply')
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
-  caseIds: ['JPT-1704'],
-  priority: ['P2'],
-  maintainers: ['shining.miao'],
-  keywords: ['Reply']
-})('Should the tooltip "Call actions" of "more" button is showed', async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
-  const caller = h(t).rcData.mainCompany.users[1];
-  const app = new AppRoot(t);
-  const tooltipText = 'Call actions';
-  const callerWebPhone = await h(t).newWebphoneSession(caller);
-
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('When I call this extension', async () => {
-    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-  });
-
-  const telephonyDialog = app.homePage.telephonyDialog;
-  await h(t).withLog('Then telephony dialog is displayed', async () => {
-    await telephonyDialog.ensureLoaded();
-  });
-
-  await h(t).withLog('When I hover on the to more options button', async () => {
-    await telephonyDialog.hoverMoreOptionsButton();
-  });
-
-  await h(t).withLog(`Then Display a tooltip: '${tooltipText}`, async () => {
-    await telephonyDialog.showTooltip(tooltipText);
-  });
-
-  await h(t).withLog('When callerUser hangup the call', async () => {
-    await callerWebPhone.hangup();
-  });
-
-  await h(t).withLog('And callerUser webphone session status is "terminated"', async () => {
-    await callerWebPhone.waitForStatus('terminated');
-  });
-});
-
-test.meta(<ITestMeta>{
   caseIds: ['JPT-1707'],
   priority: ['P2'],
   maintainers: ['shining.miao'],

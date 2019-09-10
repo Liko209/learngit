@@ -11,7 +11,7 @@ type SelectSettingItemProps = BaseSettingItemProps;
 
 type SelectSettingItemViewProps<T> = BaseSettingItemViewProps & {
   settingItem: SelectSettingItem<T>;
-  saveSetting(value: string): Promise<void> | void;
+  saveSetting(newValue: string, rawValue?: T): Promise<void> | void;
   extractValue: (raw: T) => string;
   value: string;
   source: T[];

@@ -27,6 +27,7 @@ describe('Sound', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('should create sound', () => {
@@ -38,6 +39,51 @@ describe('Sound', () => {
     it('should create audio element for sound', () => {
       const sound = new Sound(soundBaseOpts);
       expect(sound.node).toBeInstanceOf(HTMLMediaElement);
+    });
+    it('should reset state when audio error', () => {
+      const sound = new Sound(soundBaseOpts);
+      sound.node.dispatchEvent(new Event('error'));
+      expect(sound.paused).toBeTruthy();
+      expect(sound.ended).toBeTruthy();
+    });
+    it('should update duration when audio canplay', () => {
+      const sound = new Sound(soundBaseOpts);
+      jest.spyOn(sound.node, 'duration', 'get').mockReturnValue(10.123);
+      sound.node.dispatchEvent(new Event('canplay'));
+      expect(sound.duration).toBe(10.123);
+    });
+    it('should set _hasSinkId to true when setSinkId success', async () => {
+      const promise = Promise.resolve();
+      const setSinkId = jest
+        .spyOn<HTMLMediaElement, any>(HTMLAudioElement.prototype, 'setSinkId')
+        .mockReturnValue(promise);
+      jest.useFakeTimers();
+      new Sound({
+        ...soundBaseOpts,
+        outputDevice: 'device_1',
+        isDeviceSound: true,
+      });
+      jest.runAllTimers();
+      await promise;
+      expect(setSinkId).toHaveBeenCalledWith('device_1');
+    });
+    it('should set _hasSinkId to false when setSinkId failed', async () => {
+      const promise = Promise.reject();
+      const setSinkId = jest
+        .spyOn<HTMLMediaElement, any>(HTMLAudioElement.prototype, 'setSinkId')
+        .mockReturnValue(promise);
+      jest.useFakeTimers();
+      new Sound({
+        ...soundBaseOpts,
+        outputDevice: 'device_1',
+        isDeviceSound: true,
+      });
+      jest.runAllTimers();
+      try {
+        await promise;
+      } catch (e) {
+        expect(setSinkId).toHaveBeenCalledWith('device_1');
+      }
     });
     it('should create audio element by default setup', () => {
       const sound = new Sound(soundBaseOpts);
@@ -118,7 +164,7 @@ describe('Sound', () => {
     });
   });
 
-  describe('sound play', () => {
+  describe('play()', () => {
     beforeEach(() => {
       jest
         .spyOn<HTMLMediaElement, any>(
@@ -177,6 +223,35 @@ describe('Sound', () => {
         expect(sound.node.currentTime).toEqual(seek);
       }
     });
+    it('should stop media when not set sinkId success', async () => {
+      const deviceId = 'device1';
+      const mockPlayFn = jest
+        .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play')
+        .mockResolvedValue(null);
+      const mockPauseFn = jest.spyOn<HTMLMediaElement, any>(
+        HTMLMediaElement.prototype,
+        'pause',
+      );
+      const mockSinkFn = jest
+        .spyOn<HTMLMediaElement, any>(HTMLAudioElement.prototype, 'setSinkId')
+        .mockRejectedValue(false);
+      jest.useFakeTimers();
+      const sound = new Sound(
+        Object.assign({}, soundBaseOpts, {
+          outputDevice: deviceId,
+          isDeviceSound: true,
+        }),
+      );
+      jest.runAllTimers();
+
+      expect(sound).toHaveProperty('_isDeviceSound', true);
+      expect(mockPauseFn).not.toHaveBeenCalled();
+      expect(mockSinkFn).toHaveBeenCalled();
+
+      await sound.play();
+      expect(mockPlayFn).toHaveBeenCalled();
+      expect(mockPauseFn).toHaveBeenCalled();
+    });
     it('should continue play when play no set sinkId success yield', async () => {
       const deviceId = 'device1';
       const mockPlayFn = jest
@@ -206,7 +281,7 @@ describe('Sound', () => {
     });
   });
 
-  describe('sound pause', () => {
+  describe('pause()', () => {
     beforeEach(() => {
       jest
         .spyOn<HTMLMediaElement, any>(
@@ -273,7 +348,7 @@ describe('Sound', () => {
     });
   });
 
-  describe('sound stop', () => {
+  describe('stop()', () => {
     beforeEach(() => {
       jest
         .spyOn<HTMLMediaElement, any>(
@@ -305,7 +380,7 @@ describe('Sound', () => {
     });
   });
 
-  describe('sound set mute', () => {
+  describe('setMute()', () => {
     it('should mute or unMute when sound call setMute', () => {
       const sound = new Sound(soundBaseOpts);
       expect(sound.muted).toBeFalsy();
@@ -321,7 +396,7 @@ describe('Sound', () => {
     });
   });
 
-  describe('sound set volume', () => {
+  describe('setVolume()', () => {
     it('should set volume when sound call setVolume', () => {
       const sound = new Sound(soundBaseOpts);
       expect(sound.volume).toEqual(1);
@@ -347,7 +422,7 @@ describe('Sound', () => {
     });
   });
 
-  describe('sound set loop', () => {
+  describe('setLoop()', () => {
     it('should loop media or not when sound call setLoop', () => {
       const sound = new Sound(soundBaseOpts);
       expect(sound.loop).toBeFalsy();
@@ -363,7 +438,7 @@ describe('Sound', () => {
     });
   });
 
-  describe('sound set seek', () => {
+  describe('setSeek()', () => {
     it('should set seek when sound call setSeek', () => {
       const seek = 100;
       const sound = new Sound(soundBaseOpts);
@@ -452,9 +527,21 @@ describe('Sound', () => {
       expect(pauseMockFn).not.toHaveBeenCalled();
       expect(sound.paused).toBeFalsy();
     });
+    it('should continue play when sound is not playing and continuePlay is enabled', () => {
+      const sound = new Sound(soundBaseOpts);
+      jest
+        .spyOn<HTMLMediaElement, any>(
+          HTMLMediaElement.prototype,
+          'readyState',
+          'get',
+        )
+        .mockReturnValue('5');
+      sound.setSeek(100, { continuePlay: true });
+      expect(sound.paused).toBeFalsy();
+    });
   });
 
-  describe('sound dispose', () => {
+  describe('dispose()', () => {
     it('should remove audio node when sound call dispose', async () => {
       const sound = new Sound(soundBaseOpts);
       expect(sound.node).toBeInstanceOf(HTMLMediaElement);
@@ -466,6 +553,21 @@ describe('Sound', () => {
       expect(sound.seek).toEqual(0);
       expect(sound.events).toEqual([]);
     });
+    it('should unbind all event when media disposed', async () => {
+      const loadedEvent = {
+        name: 'loadeddata' as MediaEventName,
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+      const sound = new Sound(soundBaseOpts);
+      sound.bindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(sound.events.length).toEqual(1);
+
+      jest.useFakeTimers();
+      await sound.dispose();
+      jest.runAllTimers();
+      expect(sound.events.length).toEqual(0);
+    })
   });
 
   describe('sound event binding', () => {
@@ -562,4 +664,16 @@ describe('Sound', () => {
       expect(listener).toHaveBeenCalled();
     });
   });
+
+  describe('reloadSound()', () => {
+    it('should reload audio node when reloadSound called', () => {
+      const loadMockFn = jest.spyOn<HTMLMediaElement, any>(
+        HTMLAudioElement.prototype,
+        'load',
+      );
+      const sound = new Sound(soundBaseOpts);
+      sound.reloadSound();
+      expect(loadMockFn).toBeCalled();
+    })
+  })
 });

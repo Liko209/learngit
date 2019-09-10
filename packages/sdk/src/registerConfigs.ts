@@ -3,7 +3,8 @@
  * @Date: 2018-07-08 07:52:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { Container, NetworkManager, OAuthTokenManager } from 'foundation';
+import { Container } from 'foundation/ioc';
+import { NetworkManager, OAuthTokenManager } from 'foundation/network';
 import { GlipAccount, RCAccount } from './account';
 import {
   AutoAuthenticator,
@@ -98,7 +99,15 @@ const registerConfigs = {
       injects: [AccountManager.name],
     },
     { name: ServiceConfig.SYNC_SERVICE, value: SyncService },
-    { name: ServiceConfig.TELEPHONY_SERVICE, value: TelephonyService },
+    {
+      name: ServiceConfig.TELEPHONY_SERVICE,
+      value: TelephonyService,
+      injects: [
+        ServiceConfig.PERSON_SERVICE,
+        ServiceConfig.PHONE_NUMBER_SERVICE,
+        ServiceConfig.RC_INFO_SERVICE,
+      ],
+    },
     { name: ServiceConfig.GROUP_CONFIG_SERVICE, value: GroupConfigService },
     { name: ServiceConfig.SEARCH_SERVICE, value: SearchService },
     { name: ServiceConfig.SETTING_SERVICE, value: SettingService },
@@ -135,7 +144,6 @@ const registerConfigs = {
         ServiceManager.name,
         NetworkManager.name,
         ServiceConfig.SYNC_SERVICE,
-        ServiceConfig.PERMISSION_SERVICE,
       ],
     },
   ],

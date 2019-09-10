@@ -5,7 +5,11 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from '../api/types';
+import {
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+  RTC_CALL_ACTION_DIRECTION,
+} from '../api/types';
 
 interface IRTCCallSession extends EventEmitter2 {
   destroy(): void;
@@ -21,8 +25,8 @@ interface IRTCCallSession extends EventEmitter2 {
   stopRecord(): void;
   answer(): void;
   reject(): void;
-  mute(): void;
-  unmute(): void;
+  mute(direction: RTC_CALL_ACTION_DIRECTION): void;
+  unmute(direction: RTC_CALL_ACTION_DIRECTION): void;
   park(): void;
   sendToVoicemail(): void;
   hold(): void;

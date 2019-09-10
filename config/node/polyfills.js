@@ -12,8 +12,13 @@ require('reflect-metadata');
 const btoa = require('btoa');
 const FormData = require('form-data');
 const fetch = require('jest-fetch-mock');
-const { copyProps, FakeStorage } = require('../utils');
-const { performance } = require('perf_hooks');
+const {
+  copyProps,
+  FakeStorage
+} = require('../utils');
+const {
+  performance
+} = require('perf_hooks');
 
 registerRequireContextHook();
 
@@ -22,6 +27,7 @@ const location = {
 };
 
 const window = {
+  URL,
   Promise,
   btoa,
   FormData,
@@ -41,6 +47,8 @@ const window = {
 const document = {
   addEventListener: () => {},
   createElement: () => {},
+  querySelectorAll: () => [],
+  getElementById: () => null
 };
 
 window.navigator = {

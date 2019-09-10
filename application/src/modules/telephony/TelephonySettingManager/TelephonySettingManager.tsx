@@ -28,7 +28,7 @@ import {
   CALLING_OPTIONS,
   AUDIO_SOUNDS_INFO,
 } from 'sdk/module/profile/constants';
-import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
+import { SETTING_SECTION } from '@/modules/notification/notificationSettingManager/constant';
 import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
 import {
   SoundSourceItem,
@@ -136,7 +136,7 @@ class TelephonySettingManager {
     });
     this._settingService.registerItem(
       this._scope,
-      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      SETTING_SECTION.DESKTOP_NOTIFICATIONS,
       {
         id: PHONE_SETTING_ITEM.NOTIFICATION_INCOMING_CALLS,
         automationId: 'incomingCalls',
@@ -154,7 +154,7 @@ class TelephonySettingManager {
     );
     this._settingService.registerItem(
       this._scope,
-      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      SETTING_SECTION.DESKTOP_NOTIFICATIONS,
       {
         id: PHONE_SETTING_ITEM.NOTIFICATION_CALLS_VOICEMAILS,
         automationId: 'callsAndVoicemails',

@@ -7,7 +7,7 @@
 import { ERCWebUris } from '../types';
 import { RCAuthApi, RCClientInfo } from 'sdk/api';
 import { RCInfoFetchController } from './RCInfoFetchController';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { UndefinedAble } from 'sdk/types';
 import { JOB_KEY, jobScheduler } from 'sdk/framework/utils/jobSchedule';
 /* eslint-disable */

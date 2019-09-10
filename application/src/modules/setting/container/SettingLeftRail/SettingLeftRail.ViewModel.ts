@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, action } from 'mobx';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ISettingService } from '@/interface/setting';
 import { SettingStore } from '@/modules/setting/store';

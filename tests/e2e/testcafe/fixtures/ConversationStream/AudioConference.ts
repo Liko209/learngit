@@ -65,7 +65,7 @@ test.meta(<ITestMeta>{
   const postCard = app.homePage.messageTab.conversationPage.nthPostItem(-1);
   const audioConference = postCard.audioConference;
   await h(t).withLog(`Then I can find the last post is a audio conference`, async () => {
-    await t.expect(postCard.AudioConferenceHeaderNotification.exists).ok();
+    await t.expect(postCard.headerNotification.withText('started an audio conference').exists).ok();
     await t.expect(audioConference.icon.exists).ok();
     await t.expect(audioConference.title.exists).ok();
   }, true);
@@ -77,7 +77,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And the audio conference should has "Dial-in Number" `, async () => {
     await t.expect(audioConference.self.withText(dialInNumberTitle).exists).ok();
-    await t.expect(audioConference.phoneNumber.exists).ok();
+    await t.expect(audioConference.audioConferenceLink.exists).ok();
     await t.expect(audioConference.globalNumber.exists).ok();
 
   });

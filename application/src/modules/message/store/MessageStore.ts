@@ -3,18 +3,18 @@
  * @Date: 2019-01-17 14:03:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactNode } from 'react';
+import { ComponentType } from 'react';
 import { observable, action } from 'mobx';
 import { IMessageStore } from '../interface';
 
 class MessageStore implements IMessageStore {
-  @observable conversationHeaderExtensions: ReactNode[] = [];
+  @observable conversationHeaderExtensions: ComponentType[] = [];
   @observable draftMap: Map<number, string> = new Map();
   @observable currentFocusedInput?: number;
   @observable isRightRailOpen: boolean = true;
   lastGroupId?: number;
 
-  addConversationHeaderExtension(extensions: ReactNode[]) {
+  addConversationHeaderExtension(extensions: ComponentType[]) {
     this.conversationHeaderExtensions = this.conversationHeaderExtensions.concat(
       extensions,
     );

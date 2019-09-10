@@ -8,12 +8,13 @@ import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
 import { RuiSuffixFollowTextField } from 'rcui/components/Forms';
 import portalManager from '@/common/PortalManager';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import { FileNameEditDialogViewProps } from './types';
 
+const Modal = withEscTracking(JuiModal);
 const MAX_INPUT_LENGTH = 260;
 const ENTRY_KEY_CODE = 13;
-
 @observer
 class FileNameEditDialogViewComponent extends Component<
   FileNameEditDialogViewProps
@@ -51,7 +52,7 @@ class FileNameEditDialogViewComponent extends Component<
     } = this.props;
     const { type } = item;
     return (
-      <JuiModal
+      <Modal
         open
         size={'medium'}
         title={t('message.prompt.editFileNameTitle')}
@@ -86,7 +87,7 @@ class FileNameEditDialogViewComponent extends Component<
           suffix={`.${type}`}
           onChange={this.handleTextChange}
         />
-      </JuiModal>
+      </Modal>
     );
   }
 }

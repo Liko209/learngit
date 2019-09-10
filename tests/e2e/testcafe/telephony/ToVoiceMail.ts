@@ -16,42 +16,6 @@ fixture('Telephony/ToVoiceMail')
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
-  caseIds: ['JPT-1599'],
-  priority: ['P2'],
-  maintainers: ['alexander.zaverukha'],
-  keywords: ['VoiceMail']
-})('Can should the tooltip when hovering on the to voicemail button', async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
-  await h(t).scenarioHelper.resetProfile(loginUser);
-  const caller = h(t).rcData.mainCompany.users[1];
-  const app = new AppRoot(t);
-  const tooltipText = 'Send to voicemail';
-  const callerWebPhone = await h(t).newWebphoneSession(caller);
-
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('When I call this extension', async () => {
-    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-  });
-
-  const telephonyDialog = app.homePage.telephonyDialog;
-  await h(t).withLog('Then telephony dialog is displayed', async () => {
-    await telephonyDialog.ensureLoaded();
-  });
-
-  await h(t).withLog('When I hover on the to voicemail button', async () => {
-    await telephonyDialog.hoverSendToVoiceMailButton();
-  });
-
-  await h(t).withLog(`Then Display a tooltip: '${tooltipText}`, async () => {
-    await telephonyDialog.showTooltip(tooltipText);
-  });
-});
-
-test.meta(<ITestMeta>{
   caseIds: ['JPT-1510'],
   priority: ['P2'],
   maintainers: ['ali.naffaa'],

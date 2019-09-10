@@ -13,6 +13,7 @@ type ProfileDialogGroupContentViewProps = ProfileDialogGroupViewProps & {
   typeId: number;
   showJoinTeam: boolean;
   destinationId: number;
+  analysisType: string;
 };
 
 export { ProfileDialogGroupContentProps, ProfileDialogGroupContentViewProps };

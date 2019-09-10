@@ -1,6 +1,6 @@
 {
   "name": "rcui",
-  "version": "1.7.4",
+  "version": "1.8.0",
   "private": true,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -11,6 +11,7 @@
   },
   "scripts": {
     "prebuild:storybook": "npm run test:generate-output",
+    "prestorybook": "npm run test:generate-output",
     "start": "npm run storybook",
     "storybook": "start-storybook -p 6006",
     "test": "cross-env NODE_ENV=test jest",
@@ -46,8 +47,8 @@
     "tinycolor2": "1.4.1"
   },
   "peerDependencies": {
-    "react": "16.8.6",
-    "react-dom": "16.8.6"
+    "react": "16.9.0",
+    "react-dom": "16.9.0"
   },
   "devDependencies": {
     "@babel/core": "7.3.4",
@@ -86,6 +87,7 @@
     "clipboard-copy": "2.0.1",
     "clsx": "1.0.3",
     "commitizen": "3.0.7",
+    "cross-env": "5.2.0",
     "doctrine": "3.0.0",
     "enzyme": "3.9.0",
     "enzyme-adapter-react-16": "1.9.1",

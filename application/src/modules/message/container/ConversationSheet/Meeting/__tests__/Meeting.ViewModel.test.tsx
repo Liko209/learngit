@@ -3,18 +3,25 @@
  * @Date: 2019-05-23 09:29:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { MeetingViewModel } from '../Meeting.ViewModel';
 import { testable, test } from 'shield';
-import React from 'react';
+import { container } from 'framework/ioc';
 import { mockEntity } from 'shield/application';
+import { mountWithTheme } from 'shield/utils';
+import { mockService } from 'shield/sdk';
+import React from 'react';
 import Backend from 'i18next-xhr-backend';
 import i18next from 'i18next';
 import MeetingItemModel from '@/store/models/MeetingItem';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
 import RCVideoMeetingItem from '@/store/models/RCVideoMeetingItem';
-import { mountWithTheme } from 'shield/utils';
 import { MeetingView } from '../Meeting.View';
+import { MeetingViewModel } from '../Meeting.ViewModel';
+import { MeetingsService } from 'sdk/module/meetings';
+import { ServiceConfig } from 'sdk/module/serviceLoader';
+import { mainLogger } from 'foundation/log/index';
+import { MEETING_ACTION } from 'sdk/module/meetings/types';
+
 
 let meetingVM: MeetingViewModel;
 describe('MeetingViewModel', () => {
@@ -149,6 +156,86 @@ describe('MeetingViewModel', () => {
         meetingId: meetingVM.meetingId,
       });
       expect(wrapper.find('div')).toHaveLength(2);
+    }
+  }
+
+  @testable
+  class joinMeeting {
+    @test('should be openwindow if called')
+    @mockService(MeetingsService, 'getJoinUrl', "link")
+    @mockEntity({})
+    async t1() {
+      const electronService = {
+        openWindow: jest.fn(),
+      }
+      container.get = jest.fn().mockReturnValue(electronService);
+      Object.defineProperty(window, 'jupiterElectron', {
+        writable: true,
+        value: {openWindow: () => 123}
+      })
+      await meetingVM.joinMeeting();
+      expect(electronService.openWindow).toHaveBeenCalled();
+    }
+
+    @test('should call window.open when window.jupiterElectron does not exist')
+    @mockService(MeetingsService, 'getJoinUrl', "link")
+    @mockEntity({})
+    async t2() {
+      Object.defineProperty(window, 'jupiterElectron', {
+        writable: true,
+        value: false
+      })
+      Object.defineProperty(window, 'open', {
+        writable: true,
+        value: jest.fn()
+      })
+      await meetingVM.joinMeeting();
+      expect(window.open).toHaveBeenCalled();
+    }
+  }
+
+  @testable
+  class callbackMeeting {
+    @test('should call window.open if called')
+    @mockService(MeetingsService, 'startMeeting', {
+      action: MEETING_ACTION.DEEP_LINK,
+      link: '123123'
+    })
+    async t1() {
+      Object.defineProperty(window, 'open', {
+        writable: true,
+        value: jest.fn()
+      })
+      await meetingVM.callbackMeeting();
+      expect(window.open).toHaveBeenCalled();
+    }
+
+    @test('should show alert if called')
+    @mockService(MeetingsService, 'startMeeting', {
+      action: ''
+    })
+    async t2() {
+      Object.defineProperty(mainLogger, 'info', {
+        writable: true,
+        value: jest.fn()
+      })
+      await meetingVM.callbackMeeting();
+      expect(mainLogger.info).toHaveBeenCalled();
+    }
+  }
+
+  const meetingsService = {
+    name: ServiceConfig.MEETINGS_SERVICE,
+    cancelMeeting: () => 123
+  }
+  @testable
+  class cancelMeeting {
+    @test('should call cancelMeeting if called')
+    @mockEntity({})
+    @mockService(meetingsService, 'cancelMeeting')
+    async t1() {
+      await meetingVM.cancelMeeting();
+      expect(meetingsService.cancelMeeting).toHaveBeenCalled();
     }
   }
 });

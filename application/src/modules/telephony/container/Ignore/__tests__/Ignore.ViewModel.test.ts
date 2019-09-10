@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { IgnoreViewModel } from '../Ignore.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
 
 jest.mock('../../../service/TelephonyService');
-
+jest.mock('@/modules/telephony/HOC');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 
@@ -27,6 +28,6 @@ describe('IgnoreViewModel', () => {
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.ignore).toBeCalled();
+    expect(_telephonyService.ignore).toHaveBeenCalled();
   });
 });

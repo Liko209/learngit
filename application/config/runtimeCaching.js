@@ -26,7 +26,7 @@ module.exports = [
   //       maxEntries: 250,
   //       maxAgeSeconds: 30 * 24 * 60 * 60,
   //       purgeOnQuotaError: true,
-  //     },
+  //     },c
   //     // Configure which responses are considered cacheable.
   //     cacheableResponse: {
   //       statuses: [200],

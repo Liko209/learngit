@@ -16,6 +16,7 @@ import { ESearchContentTypes } from 'sdk/api/glip/search';
 
 import moment from 'moment';
 import { TYPE_MAP } from './config';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @observable
@@ -26,6 +27,7 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
     const currentType = this.props.searchOptions.type;
     const { value } = e.target;
     if (value !== currentType) {
+      analyticsCollector.filterContentSearchResultByType(value);
       this.props.setSearchOptions({ type: value as ESearchContentTypes });
     }
   };
@@ -36,6 +38,10 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
     const TimeStamp =
       time === DATE_DICTIONARY.ANY_TIME ? null : this.getTimeStamp(time);
     if (TimeStamp !== beginTime) {
+      const item = this.timePeriodFilter.find(({ id }) => id === time);
+      if (item) {
+        analyticsCollector.filterContentSearchResultByTime(item.value);
+      }
       this.props.setSearchOptions({ begin_time: TimeStamp });
     }
   };

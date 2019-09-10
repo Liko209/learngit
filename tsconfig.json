@@ -31,6 +31,7 @@
     "./typings/i18next-intervalPlural-postProcessor.d.ts",
     "./typings/load-segment.d.ts",
     "./typings/pubnub.d.ts",
-    "./typings/typeHelper.d.ts"
+    "./typings/typeHelper.d.ts",
+    "./typings/emoji-mart.d.ts"
   ]
 }

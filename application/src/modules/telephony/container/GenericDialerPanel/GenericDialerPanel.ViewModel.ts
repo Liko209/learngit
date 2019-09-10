@@ -6,7 +6,7 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { GenericDialerPanelProps } from './types';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed } from 'mobx';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
@@ -16,7 +16,7 @@ import { ChangeEvent, KeyboardEvent } from 'react';
 import { toFirstLetterUpperCase } from '../../helpers';
 
 class GenericDialerPanelViewModel extends StoreViewModel<
-GenericDialerPanelProps
+  GenericDialerPanelProps
 > {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   private _telephonyService: TelephonyService = container.get(
@@ -118,6 +118,11 @@ GenericDialerPanelProps
     return this._telephonyStore[this.props.inputStringProps];
   }
 
+  @computed
+  get isTransferPage() {
+    return this._telephonyStore.isTransferPage;
+  }
+
   playAudio = (digit: string) => {
     if (!this.canClickToInput) {
       return;
@@ -141,9 +146,11 @@ GenericDialerPanelProps
     this._concatInputString(str);
   };
 
-  setCallerPhoneNumber = (str: string) => this._telephonyService.setCallerPhoneNumber(str);
+  setCallerPhoneNumber = (str: string) =>
+    this._telephonyService.setCallerPhoneNumber(str);
 
-  onAfterDialerOpen = () => this.props.onAfterMount && this.props.onAfterMount();
+  onAfterDialerOpen = () =>
+    this.props.onAfterMount && this.props.onAfterMount();
 
   deleteInputString = (startPos: number, endPos: number) => {
     this._deleteInputString(false, startPos, endPos);

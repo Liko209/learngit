@@ -16,7 +16,7 @@ afterEach(() => {
   storeManager.resetStores();
 });
 
-const _isSingleStore = function (entityName: ENTITY_NAME) {
+const _isSingleStore = function(entityName: ENTITY_NAME) {
   return ENTITY_SETTING[entityName].type === HANDLER_TYPE.SINGLE_ENTITY;
 };
 
@@ -24,13 +24,13 @@ function mockStoreSet<T extends IdModel, K extends Entity>(
   entityName: ENTITY_NAME,
   data: any,
 ) {
-  return function (
+  return function(
     target: any,
     property: string,
     descriptor: PropertyDescriptor,
   ) {
     const oldFn = descriptor.value;
-    const hasParam = oldFn.length > 0;
+
     const _storeSet = () => {
       const store = storeManager.getEntityMapStore(entityName);
       if (_isSingleStore(entityName)) {
@@ -41,7 +41,7 @@ function mockStoreSet<T extends IdModel, K extends Entity>(
       }
     };
 
-    descriptor.value = descriptorAOP(hasParam, _storeSet, oldFn);
+    descriptor.value = descriptorAOP(target, _storeSet, oldFn);
     return descriptor;
   };
 }

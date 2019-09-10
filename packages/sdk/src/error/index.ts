@@ -1,5 +1,3 @@
-// import { ErrorParser } from 'foundation';
-
 /*
  * @Author: Paynter Chen
  * @Date: 2019-01-04 10:53:36
@@ -19,5 +17,5 @@ export {
   JRuntimeError,
   ERROR_CODES_NETWORK,
   ERROR_CODES_RUNTIME,
-} from 'foundation';
+} from 'foundation/error';
 export { default as errorHelper } from './helper';

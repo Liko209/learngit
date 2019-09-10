@@ -13,7 +13,12 @@ import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
 import i18nT from '@/utils/i18nT';
-import { TeamPermission, GroupService, PERMISSION_ENUM, Group } from 'sdk/module/group';
+import {
+  TeamPermission,
+  GroupService,
+  PERMISSION_ENUM,
+  Group,
+} from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
@@ -85,7 +90,9 @@ export default class GroupModel extends Base<Group> {
     this.isTeam = is_team;
     this.pinnedPostIds = pinned_post_ids || [];
     this.privacy = privacy;
-    this.latestTime = most_recent_post_created_at ? most_recent_post_created_at : created_at;
+    this.latestTime = most_recent_post_created_at
+      ? most_recent_post_created_at
+      : created_at;
     this.creatorId = creator_id;
     this.createdAt = created_at;
     this.guestUserCompanyIds = guest_user_company_ids;
@@ -100,7 +107,9 @@ export default class GroupModel extends Base<Group> {
       () => this.type,
       async () => {
         this.translation['message.meGroup'] = await i18nT('message.meGroup');
-        this.translation['common.deactivatedUsers'] = await i18nT('common.deactivatedUsers');
+        this.translation['common.deactivatedUsers'] = await i18nT(
+          'common.deactivatedUsers',
+        );
       },
       {
         fireImmediately: true,
@@ -110,14 +119,22 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get isFavorite() {
-    const favoriteGroupIds: number[] = getSingleEntity<Profile, ProfileModel>(ENTITY_NAME.PROFILE, 'favoriteGroupIds') || [];
+    const favoriteGroupIds: number[] =
+      getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoriteGroupIds',
+      ) || [];
 
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
   get isMember() {
-    const userConfig = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig;
-    return this.members && this.members.indexOf(userConfig.getGlipUserId()) >= 0;
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    return (
+      this.members && this.members.indexOf(userConfig.getGlipUserId()) >= 0
+    );
   }
 
   @computed
@@ -125,26 +142,39 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.TEAM) {
       return this.setAbbreviation || '';
     }
-    const userConfig = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig;
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
     if (this.type === CONVERSATION_TYPES.ME) {
-      const person = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, currentUserId);
+      const person = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        currentUserId,
+      );
       const meGroup = this.translation['message.meGroup'] || 'message.meGroup';
       return `${person.userDisplayNameForGroupName || ''} (${meGroup})`;
     }
 
-    if (this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE || this.type === CONVERSATION_TYPES.SMS) {
-      const person = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, diffMembers[0]);
+    if (
+      this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ||
+      this.type === CONVERSATION_TYPES.SMS
+    ) {
+      const person = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        diffMembers[0],
+      );
       return person.userDisplayNameForGroupName || '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
       const names: string[] = [];
       const emails: string[] = [];
-      const personModels = diffMembers.map(id => getEntity(ENTITY_NAME.PERSON, id));
+      const personModels = diffMembers.map(id =>
+        getEntity(ENTITY_NAME.PERSON, id),
+      );
       let invisibleCount = 0;
       personModels.forEach((personModel: PersonModel) => {
         if (personModel && !personModel.isMocked) {
@@ -162,7 +192,10 @@ export default class GroupModel extends Base<Group> {
         }
       });
       if (invisibleCount && personModels.length === invisibleCount) {
-        return this.translation['common.deactivatedUsers'] || 'common.deactivatedUsers';
+        return (
+          this.translation['common.deactivatedUsers'] ||
+          'common.deactivatedUsers'
+        );
       }
       return names
         .sort(compareName)
@@ -175,7 +208,9 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const userConfig = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig;
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
 
     const members = this.members || [];
@@ -190,7 +225,10 @@ export default class GroupModel extends Base<Group> {
 
     if (members.length === 2) {
       const otherId = _.difference(members, [currentUserId])[0];
-      const otherMember = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, otherId);
+      const otherMember = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        otherId,
+      );
       if (otherMember && otherMember.isPseudoUser) {
         return CONVERSATION_TYPES.SMS;
       }
@@ -211,6 +249,9 @@ export default class GroupModel extends Base<Group> {
       case CONVERSATION_TYPES.NORMAL_ONE_TO_ONE:
         result = '1:1 conversation';
         break;
+      case CONVERSATION_TYPES.ME:
+        result = '1:1 conversation';
+        break;
       case CONVERSATION_TYPES.NORMAL_GROUP:
         result = 'Group conversation';
         break;
@@ -224,7 +265,9 @@ export default class GroupModel extends Base<Group> {
   @computed
   get membersExcludeMe() {
     const members = this.members || [];
-    const userConfig = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig;
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
 
     const currentUserId = userConfig.getGlipUserId();
 
@@ -248,25 +291,44 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get isCurrentUserHasPermissionAddMember() {
-    const groupService = ServiceLoader.getInstance<GroupService>(ServiceConfig.GROUP_SERVICE);
-    return groupService.isCurrentUserHasPermission(PERMISSION_ENUM.TEAM_ADD_MEMBER, this.teamPermissionParams);
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_ADD_MEMBER,
+      this.teamPermissionParams,
+    );
   }
 
   get isAdmin() {
-    const groupService = ServiceLoader.getInstance<GroupService>(ServiceConfig.GROUP_SERVICE);
-    return groupService.isCurrentUserHasPermission(PERMISSION_ENUM.TEAM_ADMIN, this.teamPermissionParams);
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_ADMIN,
+      this.teamPermissionParams,
+    );
   }
 
   isThePersonAdmin(personId: number) {
-    const groupService = ServiceLoader.getInstance<GroupService>(ServiceConfig.GROUP_SERVICE);
-    return this.type === CONVERSATION_TYPES.TEAM ? groupService.isTeamAdmin(personId, this.permissions) : false;
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    return this.type === CONVERSATION_TYPES.TEAM
+      ? groupService.isTeamAdmin(personId, this.permissions)
+      : false;
   }
 
   isThePersonGuest(personId: number) {
     if (this.guestUserCompanyIds && this.guestUserCompanyIds.length > 0) {
-      const person = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, personId);
+      const person = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        personId,
+      );
       if (person) {
-        return this.guestUserCompanyIds.some((x: number) => x === person.companyId);
+        return this.guestUserCompanyIds.some(
+          (x: number) => x === person.companyId,
+        );
       }
     }
     return false;
@@ -274,14 +336,24 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get canPost() {
-    const groupService = ServiceLoader.getInstance<GroupService>(ServiceConfig.GROUP_SERVICE);
-    return groupService.isCurrentUserHasPermission(PERMISSION_ENUM.TEAM_POST, this.teamPermissionParams);
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_POST,
+      this.teamPermissionParams,
+    );
   }
 
   @computed
   get canPin() {
-    const groupService = ServiceLoader.getInstance<GroupService>(ServiceConfig.GROUP_SERVICE);
-    return groupService.isCurrentUserHasPermission(PERMISSION_ENUM.TEAM_PIN_POST, this.teamPermissionParams);
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_PIN_POST,
+      this.teamPermissionParams,
+    );
   }
 
   @computed

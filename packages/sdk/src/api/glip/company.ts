@@ -13,7 +13,7 @@ class CompanyAPI extends Api {
    */
   static basePath = '/company';
   static requestCompanyById(id: number) {
-    return this.getDataById<Company>(id);
+    return CompanyAPI.getDataById<Company>(id);
   }
 }
 

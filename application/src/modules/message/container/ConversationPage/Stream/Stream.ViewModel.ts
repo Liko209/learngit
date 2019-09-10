@@ -28,7 +28,7 @@ import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, getErrorType, ERROR_TYPES } from '@/common/catchError';
 import { DIRECTION } from 'jui/components/Lists';

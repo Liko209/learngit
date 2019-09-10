@@ -24,12 +24,19 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
       shouldDisplayCallCtrl,
       shouldDisplayDialer,
     } = this.props;
-    if (isIncomingCall) return <Incoming />;
-    if (keypadEntered) return <KeypadPanel />;
-    if (shouldDisplayCallCtrl) return <CallCtrlPanel />;
-    if (shouldDisplayDialer) return <DialerPanel />;
-    return null;
-  }
+    switch (true) {
+      case isIncomingCall:
+        return <Incoming />;
+      case shouldDisplayDialer:
+        return <DialerPanel />;
+      case keypadEntered:
+        return <KeypadPanel />;
+      case shouldDisplayCallCtrl:
+        return <CallCtrlPanel />;
+      default:
+        return null;
+    }
+  };
 
   render() {
     const { dialerId, ...rest } = this.props;

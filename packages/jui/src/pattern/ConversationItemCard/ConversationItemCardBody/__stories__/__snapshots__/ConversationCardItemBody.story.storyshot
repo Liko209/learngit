@@ -76,7 +76,7 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody JuiTas
 `;
 
 exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAvatarName: Pattern/ConversationItemCard/ConversationItemCardBody TaskAvatarName 1`] = `
-.c2.c2 {
+.c3.c3 {
   width: 24px;
   height: 24px;
   font-size: 0.75rem;
@@ -86,16 +86,20 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
   background-color: #f5f6fb;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2 > .avatar-short-name {
+.c3:focus {
+  outline: none;
+}
+
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -110,6 +114,12 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+}
+
+.c5 .c2:hover,
+.c5 .c2:active {
+  cursor: default;
+  opacity: 1;
 }
 
 .c0 {
@@ -151,7 +161,7 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
   word-break: break-word;
 }
 
-.c3 {
+.c4 {
   margin-left: 4px;
 }
 
@@ -162,7 +172,7 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
     className="c1"
   >
     <div
-      className="MuiAvatar-root c2"
+      className="MuiAvatar-root c2 c3"
       size="small"
     >
       <img
@@ -172,7 +182,7 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
     </div>
      
     <span
-      className="c3"
+      className="c4"
       data-test-automation-id="avatar-name-name"
     >
       zigoErbi1
@@ -182,7 +192,7 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
     className="c1"
   >
     <div
-      className="MuiAvatar-root c2"
+      className="MuiAvatar-root c2 c3"
       size="small"
     >
       <img
@@ -192,7 +202,7 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
     </div>
      
     <span
-      className="c3"
+      className="c4"
       data-test-automation-id="avatar-name-name"
     >
       zigoErbi2

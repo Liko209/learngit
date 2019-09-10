@@ -23,7 +23,9 @@ type ContentSearchOptions = {
   [Key in keyof ContentSearchParams]: ContentSearchParams[Key] | null
 };
 
-type ContentSearchResultProps = {};
+type ContentSearchResultProps = {
+  pageDataTracking?: Function;
+};
 
 type ContentSearchResultViewProps = {
   showResult: boolean;

@@ -6,7 +6,7 @@
 
 import { BaseDao } from '../../../framework/dao';
 import { GroupState } from '../entity';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 
 class GroupStateDao extends BaseDao<GroupState> {
   static COLLECTION_NAME = 'groupState';

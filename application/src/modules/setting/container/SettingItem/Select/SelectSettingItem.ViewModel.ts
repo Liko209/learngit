@@ -3,11 +3,12 @@
  * @Date: 2019-05-27 10:38:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { action, computed } from 'mobx';
+import { computed } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
 import { SelectSettingItem } from '@/interface/setting';
 import { dataTrackingForSetting } from '../utils/dataTrackingForSetting';
 import { SelectSettingItemProps } from './types';
+import { catchError } from '@/common/catchError';
 
 class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
   SelectSettingItemProps,
@@ -30,15 +31,15 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
 
   @computed
   get value() {
-    return this.extractValue(this.settingItemEntity.value);
+    return this.settingItemEntity.value;
   }
 
-  @action
-  saveSetting = async (newValue: string) => {
-    const { valueSetter, source = [] } = this.settingItemEntity;
-    const rawValue = source.find(
-      sourceItem => this.extractValue(sourceItem) === newValue,
-    );
+  @catchError.flash({
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
+  })
+  saveSetting = async (newValue: string, rawValue: T) => {
+    const { valueSetter } = this.settingItemEntity;
     const { beforeSaving, dataTracking } = this.settingItem;
     if (beforeSaving) {
       const beforeSavingReturn = await beforeSaving(newValue);
@@ -46,37 +47,9 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
         return;
       }
     }
-    valueSetter && await valueSetter(rawValue);
+    valueSetter && (await valueSetter(rawValue));
     dataTracking && dataTrackingForSetting(dataTracking, rawValue);
   };
-
-  extractValue = (sourceItem: T) => {
-    const { valueExtractor } = this.settingItem;
-    let result: string | number;
-    if (valueExtractor) {
-      result = valueExtractor(sourceItem);
-    } else if (
-      typeof sourceItem === 'string' ||
-      typeof sourceItem === 'number'
-    ) {
-      result = sourceItem;
-    } else if (this._isObjectSourceItem(sourceItem)) {
-      result = sourceItem.id;
-    } else if (sourceItem === undefined) {
-      result = '';
-    } else {
-      throw new Error('Error: Can not extract value of source');
-    }
-    return result.toString();
-  };
-
-  private _isObjectSourceItem(
-    value: any,
-  ): value is {
-    id: number | string;
-  } {
-    return value && value.id !== undefined;
-  }
 }
 
 export { SelectSettingItemViewModel };

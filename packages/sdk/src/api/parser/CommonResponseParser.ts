@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseResponse, RESPONSE_STATUS_CODE } from 'foundation';
+import { BaseResponse, RESPONSE_STATUS_CODE } from 'foundation/network';
 import isNumber from 'lodash/isNumber';
 import isString from 'lodash/isString';
 import { JError, JNetworkError, ERROR_CODES_NETWORK } from '../../error';
@@ -31,6 +31,12 @@ export class CommonResponseParser implements IResponseParser {
       return new JNetworkError(
         ERROR_CODES_NETWORK.NOT_NETWORK,
         'Api Error: Please check network connection',
+      );
+    }
+    if (status === RESPONSE_STATUS_CODE.LOCAL_TIME_OUT) {
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.LOCAL_TIMEOUT,
+        'Api Error: Please check local network crash',
       );
     }
     if (

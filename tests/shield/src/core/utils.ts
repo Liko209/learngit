@@ -24,16 +24,26 @@ function createMultiFn(data: any[]) {
   return mockFn;
 }
 
-function descriptorAOP(hasParam: boolean, before: Function, oldFn: Function) {
-  return hasParam
-    ? function (args: jest.DoneCallback | Object) {
-        before(args);
-        return oldFn.call(null, args);
-      }
-    : function () {
-        before(arguments);
-        return oldFn.apply(null, arguments);
+function descriptorAOP(target: any, before: Function, oldFn: Function) {
+  const fnLen = oldFn.length;
+
+  switch (fnLen) {
+    case 1:
+      return function(done: jest.DoneCallback) {
+        before(done);
+        return oldFn.call(target, done);
       };
+    case 2:
+      return function(data: any, done: jest.DoneCallback) {
+        before(data, done);
+        return oldFn.call(target, data, done);
+      };
+    default:
+      return function() {
+        before(arguments);
+        return oldFn.apply(target, arguments);
+      };
+  }
 }
 
 export { createMockEntity, createMultiFn, descriptorAOP };

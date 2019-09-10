@@ -20,6 +20,7 @@ type RightShelfMemberListViewProps = RightShelfMemberListProps & {
     shownGuestIds: number[];
     personNameMap: { [id: number]: string };
   };
+  canAddMembers: boolean;
   shouldShowLink: boolean;
   loadingH: number;
   allMemberLength?: number;

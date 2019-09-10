@@ -7,6 +7,8 @@ import * as bluebird from "bluebird";
 import { PptrUtils } from '../utils';
 
 class DialerPage extends Page {
+  private conversationItem: string = "div.conversation-list-section li.conversation-list-item";
+
   private telePhonyEndBtn: string = 'button[data-test-automation-id="telephony-end-btn"]';
 
   private telePhonyOpenBtn: string = 'button[data-test-automation-id="telephony-dialpad-btn"]';
@@ -21,11 +23,17 @@ class DialerPage extends Page {
 
   async waitForCompleted(): Promise<boolean> {
     let page = await this.page();
-    return await PptrUtils.waitForSelector(page, this.telePhonyOpenBtn);
+    return await PptrUtils.waitForSelector(page, this.conversationItem);
   }
 
   async openDialer(): Promise<boolean> {
     let page = await this.page();
+
+    await PptrUtils.click(page, this.telePhonyOpenBtn);
+
+    if (await PptrUtils.waitForSelector(page, this.telePhonyEndBtn)) {
+      return true;
+    }
 
     await PptrUtils.click(page, this.telePhonyOpenBtn);
 
@@ -50,7 +58,7 @@ class DialerPage extends Page {
     await PptrUtils.waitForSelector(page, this.telePhonyItem);
 
     await PptrUtils.click(page, this.telePhonyDeleteBtn);
-    
+
     await bluebird.delay(200);
   }
 }

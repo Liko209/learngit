@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { PrivacyViewProps, PrivacyProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { catchError } from '@/common/catchError';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type Props = PrivacyViewProps & WithTranslation & PrivacyProps;
 
@@ -19,7 +20,11 @@ class PrivacyViewComponent extends Component<Props> {
     server: 'people.prompt.changeTeamPrivateTypeErrorForServerIssue',
   })
   onClickPrivacy = async () => {
-    const { handlePrivacy } = this.props;
+    const { handlePrivacy, isPublic, analysisSource } = this.props;
+    analyticsCollector.toggleTeamVisibility(
+      isPublic ? 'publicToPrivate' : 'privateToPublic',
+      analysisSource,
+    );
     await handlePrivacy();
   };
 

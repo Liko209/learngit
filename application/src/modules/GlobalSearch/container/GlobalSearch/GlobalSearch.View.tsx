@@ -12,19 +12,21 @@ import {
   JuiGlobalSearchInput,
   JuiOutlineTextFieldRef,
 } from 'jui/pattern/GlobalSearch';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 import { GlobalSearchViewProps, SEARCH_VIEW } from './types';
 import { FullSearch } from '../FullSearch';
 import { InstantSearch } from '../InstantSearch';
 import { RecentSearch } from '../RecentSearch';
 import { InputContext } from '../context';
+import { SHORT_CUT_KEYS } from '@/AnalyticsCollector/constants';
+import { CLOSE_REASON } from '../../../../containers/Dialog/constants';
 
 type GlobalSearchProps = GlobalSearchViewProps & WithTranslation;
 
 type State = {
   ref: RefObject<JuiOutlineTextFieldRef>;
 };
-
 @observer
 class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
   constructor(props: GlobalSearchProps) {
@@ -39,13 +41,20 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
     onChange(e.target.value);
   };
 
+  trackGlobalSearchEsc = (e: React.MouseEvent, reason: string) => {
+    this.props.onClose && this.props.onClose();
+    if (reason === CLOSE_REASON.ESC) {
+      analyticsCollector.shortcuts(SHORT_CUT_KEYS.ESCAPE);
+    }
+  };
+
   get currentView() {
     const { currentView, open } = this.props;
 
     if (!open) {
       return null;
     }
-
+    analyticsCollector.showGlobalDialog();
     const componentMap = {
       [SEARCH_VIEW.FULL_SEARCH]: FullSearch,
       [SEARCH_VIEW.INSTANT_SEARCH]: InstantSearch,
@@ -63,22 +72,26 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
 
   componentDidUpdate({ open: preOpen }: GlobalSearchViewProps) {
     const inputEl = this.state.ref.current;
-    const open = this.props.open;
-
-    if (!preOpen && open && inputEl) {
+    const { open, needFocus } = this.props;
+    if (!inputEl) {
+      return;
+    }
+    if (!preOpen && open) {
+      inputEl.focus();
+    }
+    if (needFocus) {
       inputEl.focus();
     }
   }
 
   render() {
-    const { open, onClose, searchKey, onClear, showClear, t } = this.props;
+    const { open, onClose, onBlur, searchKey, onClear, t } = this.props;
 
     return (
-      <JuiGlobalSearch open={open} onClose={onClose}>
+      <JuiGlobalSearch open={open} onClose={this.trackGlobalSearchEsc}>
         <JuiGlobalSearchInput
           ref={this.state.ref}
           value={searchKey}
-          showClear={showClear}
           onClear={onClear}
           onClose={onClose}
           onChange={this.onChange}
@@ -86,6 +99,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
             'data-test-automation-id': 'global-search-close',
           }}
           InputProps={{
+            onBlur,
             autoFocus: true,
             inputProps: {
               'data-test-automation-id': 'global-search-input',

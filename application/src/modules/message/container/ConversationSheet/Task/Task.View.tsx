@@ -20,7 +20,8 @@ import {
   JuiExpandImage,
   JuiFileWrapper,
 } from 'jui/pattern/ConversationCard/Files';
-import { showImageViewer } from '@/modules/viewer/container/Viewer';
+import { container } from 'framework/ioc';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
 
 import { AvatarName } from './AvatarName';
 import { ViewProps, FileType, ExtendFileItem } from './types';
@@ -114,6 +115,7 @@ const FILE_COMPS = {
 
 @observer
 class Task extends React.Component<taskViewProps> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   private get _taskAvatarNames() {
@@ -134,8 +136,7 @@ class Task extends React.Component<taskViewProps> {
     origHeight: number,
   ) => async (ev: React.MouseEvent) => {
     const target = ev.currentTarget as HTMLElement;
-
-    return await showImageViewer(groupId, id, {
+    return await this._viewerService.showImageViewer(groupId, id, {
       originElement: target,
       thumbnailSrc: url,
       initialWidth: origWidth,

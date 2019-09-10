@@ -8,17 +8,26 @@ import { shallow } from 'enzyme';
 import { FavoriteView } from '../Favorite.View';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
-import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
 
 jest.mock('@/containers/Notification');
 
-function setUpMock(isFavorite: boolean, isFailed: boolean, errorType: 'network' | 'server') {
+function setUpMock(
+  isFavorite: boolean,
+  isFailed: boolean,
+  errorType: 'network' | 'server',
+) {
   return {
     isFavorite,
     id: 1,
     isMember: true,
     conversationId: 1,
-    getConversationId() { },
+    getConversationId() {},
     handlerFavorite: jest.fn().mockImplementationOnce(() => {
       if (errorType === 'network') {
         throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
@@ -27,13 +36,17 @@ function setUpMock(isFavorite: boolean, isFailed: boolean, errorType: 'network' 
         throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
       }
     }),
+    dataTrackingProps: {
+      source: '',
+      conversationType: '',
+    },
   };
 }
 
 describe('FavoriteView', () => {
   describe('render()', () => {
     beforeEach(() => {
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
     });
 
     it('display flash toast notification when unfavorite conversation failed for backend issue.[JPT-489]', async (done: jest.DoneCallback) => {

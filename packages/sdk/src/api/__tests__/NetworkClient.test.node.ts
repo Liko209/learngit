@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/// <reference path="../../__tests__/types.d.ts" />
+// / <reference path="../../__tests__/types.d.ts" />
 import {
   NetworkManager,
   NetworkRequestBuilder,
@@ -16,7 +16,7 @@ import {
   NETWORK_FAIL_TEXT,
   BaseResponse,
   RESPONSE_STATUS_CODE,
-} from 'foundation';
+} from 'foundation/network';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
 import { RequestHolder } from '../glip/item';
@@ -42,6 +42,7 @@ const setup = () => {
       setAuthfree: jest.fn().mockReturnThis(),
       setRequestConfig: jest.fn().mockReturnThis(),
       setRetryCount: jest.fn().mockReturnThis(),
+      setIgnoreNetwork: jest.fn().mockReturnThis(),
       setPriority: jest.fn().mockReturnThis(),
       setHAPriority: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),
@@ -203,7 +204,7 @@ describe('NetworkClient', () => {
       const requestHolder: RequestHolder = { request: undefined };
       rcNetworkClient.request(postRequest, requestHolder);
       setTimeout(() => {
-        expect(spy).toBeCalledTimes(2);
+        expect(spy).toHaveBeenCalledTimes(2);
         done();
       });
     });
@@ -220,8 +221,8 @@ describe('NetworkClient', () => {
       try {
         await rcNetworkClient.request(postRequest, requestHolder);
       } catch (error) {}
-      expect(spy).toBeCalledTimes(1);
-      expect(rawSpy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(rawSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should not switch to http if statusText is not SOCKET_DISCONNECTED but NETWORK_VIA is ALL', async () => {
@@ -236,8 +237,8 @@ describe('NetworkClient', () => {
       try {
         await rcNetworkClient.request(postRequest, requestHolder);
       } catch (error) {}
-      expect(spy).toBeCalledTimes(1);
-      expect(rawSpy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(rawSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should not switch to http if statusText is SOCKET_DISCONNECTED but request in response is undefined', async () => {
@@ -251,8 +252,8 @@ describe('NetworkClient', () => {
       try {
         await rcNetworkClient.request(postRequest, requestHolder);
       } catch (error) {}
-      expect(spy).toBeCalledTimes(1);
-      expect(rawSpy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(rawSpy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -417,7 +418,7 @@ describe('NetworkClient', () => {
       const { rcNetworkClient } = setup();
       const request: IRequest = undefined;
       rcNetworkClient.cancelRequest(request);
-      expect(networkManager.cancelRequest).toBeCalledWith(undefined);
+      expect(networkManager.cancelRequest).toHaveBeenCalledWith(undefined);
     });
   });
 });

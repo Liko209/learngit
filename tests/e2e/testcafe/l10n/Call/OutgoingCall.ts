@@ -27,6 +27,10 @@ test(formalName('Make a call from a conversation', ['P2', 'Call', 'OutgoingCall'
     await h(t).scenarioHelper.createOrOpenChat(chat);
   })
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   let session: WebphoneSession;
   await h(t).withLog(`And ${otherUser.company.number}#${otherUser.extension} login webphone`, async () => {
     session = await h(t).newWebphoneSession(otherUser);
@@ -87,13 +91,8 @@ test(formalName('Make a call from a conversation', ['P2', 'Call', 'OutgoingCall'
   const logoutDialog = app.homePage.logoutDialog;
   await h(t).log('Then I capture screenshot', {screenshotPath: 'Jupiter_Phone_logoutDuringACall'});
 
-  await h(t).withLog('When I close the popup and end the call', async () => {
-    // await logoutDialog.clickCancelButton();
+  await h(t).withLog('End the call', async () => {
     await session.hangup();
-  })
-
-  await h(t).withLog('Then the popup disappears', async () => {
-    // await logoutDialog.ensureDismiss();
   })
 
 })

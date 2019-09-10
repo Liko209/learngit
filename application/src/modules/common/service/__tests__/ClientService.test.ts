@@ -1,4 +1,4 @@
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { ClientService } from '../ClientService';
 import { ElectronService } from '@/modules/electron';
 

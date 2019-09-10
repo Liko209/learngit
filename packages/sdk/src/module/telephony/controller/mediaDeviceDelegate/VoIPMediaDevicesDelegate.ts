@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import _ from 'lodash';
 import { IRTCMediaDeviceDelegate, RTCEngine, RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
@@ -17,6 +17,10 @@ import { RINGER_ADDITIONAL_TYPE } from '../../types';
 
 const LOG_TAG = '[MediaDevicesDelegate]';
 const DEFAULT_VOLUME = 0.5;
+const BLUE_TOOTH_MODE = {
+  HANDS_FREE: 'Hands-Free',
+  STEREO: 'Stereo',
+};
 let ringerStorage: IStorage;
 export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   private _microphoneSyncManager: DeviceSyncManger;
@@ -24,6 +28,10 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   private _ringerSyncManager: DeviceSyncManger;
   private _currentRingerId: string;
   constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
+    this._init();
+  }
+
+  private _init() {
     this._microphoneSyncManager = new DeviceSyncManger(
       this._buildDeviceStorage(TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE),
       {
@@ -36,7 +44,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         on: handleChanged => {
           notificationCenter.on(
             RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-            handleChanged
+            handleChanged,
           );
           return () =>
             notificationCenter.off(
@@ -46,8 +54,8 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         },
       },
       this._buildLastUsedDeviceManager(
-        TELEPHONY_GLOBAL_KEYS.USED_MICROPHONE_HISTORY
-      )
+        TELEPHONY_GLOBAL_KEYS.USED_MICROPHONE_HISTORY,
+      ),
     );
     this._speakerSyncManager = new DeviceSyncManger(
       this._buildDeviceStorage(TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER),
@@ -60,12 +68,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           this._rtcEngine.getDefaultDeviceId(devices),
       },
       this._buildLastUsedDeviceManager(
-        TELEPHONY_GLOBAL_KEYS.USED_SPEAKER_HISTORY
-      )
+        TELEPHONY_GLOBAL_KEYS.USED_SPEAKER_HISTORY,
+      ),
     );
     this._ringerSyncManager = new DeviceSyncManger(
       (ringerStorage = this._buildDeviceStorage(
-        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER
+        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
       )),
       {
         getDevices: (): MediaDeviceInfo[] => this.getRingerDevicesList(),
@@ -77,12 +85,13 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           this._rtcEngine.getDefaultDeviceId(devices),
       },
       this._buildLastUsedDeviceManager(
-        TELEPHONY_GLOBAL_KEYS.USED_RINGER_HISTORY
-      )
+        TELEPHONY_GLOBAL_KEYS.USED_RINGER_HISTORY,
+      ),
     );
     this._initDevicesState();
     this._subscribe();
   }
+
   private _buildDeviceStorage(key: string) {
     const storage: IStorage = {
       get: () => TelephonyGlobalConfig.get(key),
@@ -94,7 +103,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           handleChanged(value);
         TelephonyGlobalConfig.on(key, finalCallback);
         return () => TelephonyGlobalConfig.off(key, finalCallback);
-      }
+      },
     };
     return storage;
   }
@@ -104,7 +113,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       get: () => TelephonyGlobalConfig.get(key),
       set: (value: string) => {
         TelephonyGlobalConfig.put(key, value);
-      }
+      },
     });
   }
 
@@ -134,7 +143,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     );
     notificationCenter.on(
       RTC_MEDIA_ACTION.VOLUME_CHANGED,
-      this._handleVolumeChanged
+      this._handleVolumeChanged,
     );
   }
 
@@ -151,16 +160,27 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
-    }
+    },
   ) {
     if (delta.deleted.length || delta.hashChanged) {
       manager.ensureDevice();
     }
     if (delta.added.length) {
-      manager.setDevice({
-        source: SOURCE_TYPE.NEW_DEVICE,
-        deviceId: _.last(delta.added)!.deviceId
+      const useableDevices = delta.added.filter(device => {
+        if (!device.label) return true;
+        const { bluetoothMode } = this._extractBluetoothInfo(device.label) || {
+          bluetoothMode: null,
+        };
+        if (bluetoothMode && bluetoothMode === BLUE_TOOTH_MODE.HANDS_FREE) {
+          return true;
+        }
+        return false;
       });
+      useableDevices.length &&
+        manager.setDevice({
+          source: SOURCE_TYPE.NEW_DEVICE,
+          deviceId: _.last(useableDevices)!.deviceId,
+        });
     }
   }
 
@@ -210,11 +230,11 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       this._handlerDeviceChange(
         this._microphoneSyncManager,
         audioInputs.devices,
-        audioInputs.delta
+        audioInputs.delta,
       );
       notificationCenter.emit(
         RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED,
-        audioInputs.devices
+        audioInputs.devices,
       );
     }
     if (
@@ -225,18 +245,62 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       this._handlerDeviceChange(
         this._speakerSyncManager,
         audioOutputs.devices,
-        audioOutputs.delta
+        audioOutputs.delta,
       );
       this._handlerDeviceChangeForRinger(
         this._ringerSyncManager,
         audioOutputs.devices,
-        audioOutputs.delta
+        audioOutputs.delta,
       );
       notificationCenter.emit(
         RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED,
-        audioOutputs.devices
+        audioOutputs.devices,
       );
     }
+  }
+
+  // @ts-ignore
+  onMediaPermissionChanged(newState: PermissionState): void {
+    notificationCenter.emit(
+      RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED,
+      this._rtcEngine.getAudioInputs(),
+    );
+    notificationCenter.emit(
+      RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED,
+      this._rtcEngine.getAudioOutputs(),
+    );
+    telephonyLogger.tags(LOG_TAG).info('detect microphone permission changed.');
+    if (newState !== 'granted') return;
+    telephonyLogger.tags(LOG_TAG).info('process microphone.');
+    this._switchStereoToHandsFreeIfNeed(
+      this._rtcEngine.getAudioInputs(),
+      this._rtcEngine.getCurrentAudioInput(),
+      id =>
+        this._microphoneSyncManager.setDevice({
+          deviceId: id,
+          source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
+        }),
+    );
+    telephonyLogger.tags(LOG_TAG).info('process speaker.');
+    this._switchStereoToHandsFreeIfNeed(
+      this._rtcEngine.getAudioOutputs(),
+      this._rtcEngine.getCurrentAudioOutput(),
+      id =>
+        this._speakerSyncManager.setDevice({
+          deviceId: id,
+          source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
+        }),
+    );
+    telephonyLogger.tags(LOG_TAG).info('process ringer.');
+    this._switchStereoToHandsFreeIfNeed(
+      this.getRingerDevicesList(),
+      this._currentRingerId,
+      id =>
+        this._ringerSyncManager.setDevice({
+          deviceId: id,
+          source: SOURCE_TYPE.DEVICE_COMPATIBILITY,
+        }),
+    );
   }
 
   private _handlerDeviceChangeForRinger(
@@ -246,12 +310,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
-    }
+    },
   ) {
     if (
       !([
         RINGER_ADDITIONAL_TYPE.ALL,
-        RINGER_ADDITIONAL_TYPE.OFF
+        RINGER_ADDITIONAL_TYPE.OFF,
       ] as string[]).includes(ringerStorage.get())
     ) {
       this._handlerDeviceChange(manager, devices, delta);
@@ -265,14 +329,64 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         ...outputs,
         {
           deviceId: RINGER_ADDITIONAL_TYPE.ALL,
-          label: RINGER_ADDITIONAL_TYPE.ALL
+          label: RINGER_ADDITIONAL_TYPE.ALL,
         } as MediaDeviceInfo,
         {
           deviceId: RINGER_ADDITIONAL_TYPE.OFF,
-          label: RINGER_ADDITIONAL_TYPE.OFF
-        } as MediaDeviceInfo
+          label: RINGER_ADDITIONAL_TYPE.OFF,
+        } as MediaDeviceInfo,
       ];
     }
     return outputs;
+  }
+
+  private _switchStereoToHandsFreeIfNeed(
+    devices: MediaDeviceInfo[],
+    currentDeviceId: string,
+    setDeviceId: (deviceId: string) => void,
+  ) {
+    const currentDevice = _.find(
+      devices,
+      device => device.deviceId === currentDeviceId,
+    );
+    if (currentDevice) {
+      const bluetoothInfo = this._extractBluetoothInfo(currentDevice.label);
+      if (
+        bluetoothInfo &&
+        bluetoothInfo.bluetoothMode === BLUE_TOOTH_MODE.STEREO
+      ) {
+        telephonyLogger.tags(LOG_TAG).info('detect bluetooth in stereo mode.');
+        const handsFreeDevice = _.find(devices, device => {
+          const info = this._extractBluetoothInfo(device.label);
+          return !!(
+            info &&
+            info.bluetoothMode === BLUE_TOOTH_MODE.HANDS_FREE &&
+            info.deviceName === bluetoothInfo.deviceName
+          );
+        });
+        if (handsFreeDevice) {
+          setDeviceId(handsFreeDevice.deviceId);
+          telephonyLogger
+            .tags(LOG_TAG)
+            .info(
+              'switch bluetooth device: ',
+              currentDevice,
+              ' to:',
+              handsFreeDevice,
+            );
+        }
+      }
+    }
+  }
+
+  private _extractBluetoothInfo(label: string) {
+    const match = /\((.*) (Hands-Free|Stereo)\) \(Bluetooth\)$/.exec(label);
+    if (match) {
+      return {
+        deviceName: match[1],
+        bluetoothMode: match[2],
+      };
+    }
+    return null;
   }
 }

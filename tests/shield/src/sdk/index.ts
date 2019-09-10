@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './mockService';
-export * from './SdkItFramework';
+// comment for this is used in IT
+// export * from './SdkItFramework';
 export * from './globalConfig';
-export * from './types'
-export * from './utils'
+export * from './types';
+export * from './utils';

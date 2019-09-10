@@ -13,9 +13,9 @@ import {
   ModuleParams,
   ModuleClass,
   ModuleType,
-  mainLogger,
-  PerformanceTracer,
-} from 'foundation';
+} from 'foundation/telephony';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import notificationCenter from '../../service/notificationCenter';
 import { RC_INFO, SERVICE } from '../../service/eventKey';
 import { RCInfoService } from '../../module/rcInfo';

@@ -12,7 +12,7 @@ import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
 import { AvatarActions } from './AvatarActions';
 import { NewActions } from './NewActions';
 import { BackNForward } from './BackNForward';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { HomeStore } from '@/modules/home/store';
 
 type TopBarProps = WithTranslation & {

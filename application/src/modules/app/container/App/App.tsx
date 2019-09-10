@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { HighlightStyle } from 'jui/pattern/ConversationCard';
 import ThemeProvider from '@/containers/ThemeProvider';

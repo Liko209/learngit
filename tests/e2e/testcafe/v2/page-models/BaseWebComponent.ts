@@ -19,11 +19,18 @@ export abstract class BaseWebComponent {
   }
 
   async ensureLoaded(timeout: number = 10e3) {
-    await this.t.expect(this.exists).ok({ timeout });
+    await H.retryUntilPass(async () => {
+      await this.t.expect(this.exists).ok({ timeout });
+      await this.t.expect(this.visible).ok();
+    });
   }
 
   async ensureDismiss(timeout: number = 10e3) {
-    await this.t.expect(this.exists).notOk({ timeout });
+    await H.retryUntilPass(async () => {
+      if (await this.exists) {
+        await this.t.expect(this.visible).notOk({ timeout });
+      }
+    });
   }
 
   async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
@@ -130,7 +137,7 @@ export abstract class BaseWebComponent {
     return this.getSelector('div[role="progressbar"]:not([data-test-automation-id="conversation-list-spinner"])');
   }
 
-  get  conversationListSpinner() {
+  get conversationListSpinner() {
     return this.getSelectorByAutomationId('conversation-list-spinner');
   }
 
@@ -177,7 +184,9 @@ export abstract class BaseWebComponent {
 
   // Some specific scenarios
   async getNumber(sel: Selector) {
-    if (await sel.exists == false) {
+    // there is a chance that UMI won't update immediately
+    await this.t.wait(1e3);
+    if (!await sel.exists) {
       return 0;
     }
     const text = await sel.innerText;

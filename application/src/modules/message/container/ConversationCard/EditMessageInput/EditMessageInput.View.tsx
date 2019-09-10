@@ -14,6 +14,7 @@ import { observer } from 'mobx-react';
 import { handleAtMention } from 'jui/pattern/MessageInput/Mention/handleAtMention';
 import { IMessageService } from '@/modules/message/interface';
 import { reaction, IReactionDisposer } from 'mobx';
+import { getScrollParent } from '../../ConversationPage/Stream/helper';
 
 type State = {
   modules: object;
@@ -22,7 +23,7 @@ type Props = EditMessageInputViewProps & WithTranslation;
 @observer
 class EditMessageInputViewComponent extends Component<Props, State> {
   @IMessageService private _messageService: IMessageService;
-
+  private _ref: React.RefObject<HTMLDivElement> = React.createRef();
   private _messageInputRef: React.RefObject<
     JuiMessageInput
   > = React.createRef();
@@ -65,7 +66,24 @@ class EditMessageInputViewComponent extends Component<Props, State> {
 
   focusEditor = () => {
     if (this._messageInputRef.current) {
+      this.scrollEditAreaIntoView();
       this._messageInputRef.current.focusEditor();
+    }
+  };
+
+  scrollEditAreaIntoView = () => {
+    const target = this._ref.current;
+    if (target) {
+      const container = getScrollParent(target, false);
+      if (container) {
+        const { bottom: targetBottom } = target.getBoundingClientRect();
+        const { bottom: containerBottom } = container.getBoundingClientRect();
+        const delta = targetBottom - containerBottom;
+        const offset = 16; // This avoids prevent the bottom of the edit area coincides with the bottom of the container.
+        if (delta > 0) {
+          container.scrollTop += delta + offset;
+        }
+      }
     }
   };
 
@@ -77,19 +95,21 @@ class EditMessageInputViewComponent extends Component<Props, State> {
     const { draft, text, error, gid, t, id, saveDraft } = this.props;
     const { modules } = this.state;
     return (
-      <JuiMessageInput
-        ref={this._messageInputRef}
-        defaultValue={draft || handleAtMention(text)}
-        error={error ? t(error) : error}
-        modules={modules}
-        autofocus={false}
-        isEditMode
-        onChange={saveDraft}
-        onBlur={this.blurHandler}
-        placeholder={t('message.action.typeNewMessage')}
-      >
-        <Mention id={gid} pid={id} isEditMode ref={this._mentionRef} />
-      </JuiMessageInput>
+      <div ref={this._ref}>
+        <JuiMessageInput
+          ref={this._messageInputRef}
+          defaultValue={draft || handleAtMention(text)}
+          error={error ? t(error) : error}
+          modules={modules}
+          autofocus={false}
+          isEditMode
+          onChange={saveDraft}
+          onBlur={this.blurHandler}
+          placeholder={t('message.action.typeNewMessage')}
+        >
+          <Mention id={gid} pid={id} isEditMode ref={this._mentionRef} />
+        </JuiMessageInput>
+      </div>
     );
   }
 }

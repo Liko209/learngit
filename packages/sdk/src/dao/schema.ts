@@ -3,7 +3,7 @@
  * @Date: 2018-02-23 23:42:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { ISchema } from 'foundation';
+import { ISchema } from 'foundation/db';
 
 /**
  * Generator unique and indices

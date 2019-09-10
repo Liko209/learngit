@@ -74,6 +74,10 @@ export class ConfigLoader {
     return this._getAttribute('exclude_tags');
   }
 
+  get caseFilter(): string {
+    return this._getAttribute('case_filter');
+  }
+
   get browsers(): string[] {
     return this._getAttribute('browsers');
   }

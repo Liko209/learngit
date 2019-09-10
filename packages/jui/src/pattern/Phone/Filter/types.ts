@@ -7,8 +7,8 @@ import { ChangeEvent, ReactElement } from 'react';
 import { JuiOutlineTextFieldProps } from '../../../components/Forms/OutlineTextField';
 
 type FilterIconState = Pick<
-JuiOutlineTextFieldProps,
-'iconName' | 'iconPosition'
+  JuiOutlineTextFieldProps,
+  'iconName' | 'iconPosition'
 >;
 
 interface IUseInput {
@@ -29,7 +29,9 @@ interface IJuiChangePhoneFilter {
 type JuiPhoneFilterProps = {
   placeholder: string;
   clearButtonLabel: string;
+  tooltip?: string;
   onChange: IJuiChangePhoneFilter;
+  value?: string;
 };
 
 interface IJuiPhoneFilter {

@@ -10,7 +10,7 @@ import { MeetingsService } from 'sdk/module/meetings';
 import { MEETING_ACTION } from 'sdk/module/meetings/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { promisedComputed } from 'computed-async-mobx';
 import { computed } from 'mobx';
 import { Group } from 'sdk/module/group/entity';
@@ -20,18 +20,29 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { ENTITY_NAME, PERMISSION_KEYS } from '@/store';
 import UserPermissionModel from '@/store/models/UserPermission';
 import { UserPermission } from 'sdk/module/permission/entity';
+import { container } from 'framework/ioc';
+import { ElectronService } from '@/modules/electron';
 
 class MeetingViewModel extends AbstractViewModel<MeetingProps> {
+
   startMeeting = async () => {
     const id = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const result = await ServiceLoader.getInstance<MeetingsService>(
-      ServiceConfig.MEETINGS_SERVICE,
-    ).startMeeting([id]);
-    if (result.action === MEETING_ACTION.DEEP_LINK) {
-      window.open(result.link);
+
+    const result = await ServiceLoader.getInstance<MeetingsService>(ServiceConfig.MEETINGS_SERVICE).startMeeting([id]);
+    if (result.action === MEETING_ACTION.DEEP_LINK && !!result.link) {
+      this.openWindow(result.link);
     } else {
       // show alert
       mainLogger.info(result.reason || 'start video error');
+    }
+  };
+
+  openWindow = (link: string) => {
+    if (window.jupiterElectron && window.jupiterElectron.openWindow) {
+      const electronService = container.get(ElectronService);
+      electronService.openWindow(link);
+    } else {
+      window.open(link);
     }
   };
 
@@ -48,7 +59,7 @@ class MeetingViewModel extends AbstractViewModel<MeetingProps> {
   });
 
   @computed
-  private get _group() {
+  get _group() {
     const { groupId } = this.props;
     if (groupId) {
       return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);

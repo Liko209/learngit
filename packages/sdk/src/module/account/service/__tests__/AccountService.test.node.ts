@@ -13,6 +13,9 @@ import { ServiceLoader } from '../../../serviceLoader';
 import { setRCToken } from '../../../../authenticator/utils';
 import { AuthUserConfig } from '../../config/AuthUserConfig';
 import { generateUUID } from '../../../../utils/mathUtils';
+import { UserPermission } from 'sdk/module/permission/entity';
+import { notificationCenter, ENTITY } from 'sdk/service';
+import { UserPermissionType } from 'sdk/module/permission';
 
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
@@ -312,5 +315,24 @@ describe('AccountService', () => {
 
       expect(accountService.isAccountReady()).toBeFalsy();
     });
+  });
+
+  describe('user in blacklist', () => {
+    it('should emit update when has subscribe update', () => {
+      accountService.onForceLogout = jest.fn();
+      accountService.onPermissionUpdated({body: {entities: [
+        {
+          id: 1,
+          permissions: {USERS_BLACKLIST: true},
+        },
+      ]}});
+      expect(accountService.onForceLogout).toHaveBeenCalledWith(true);
+    });
+
+    it ('should not logout if no permissions', () => {
+      accountService.onForceLogout = jest.fn();
+      accountService.onPermissionUpdated();
+      expect(accountService.onForceLogout).not.toHaveBeenCalled();
+    })
   });
 });

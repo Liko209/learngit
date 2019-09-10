@@ -22,7 +22,6 @@ import {
 import { JuiTextField } from '../../components/Forms';
 import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton } from '../../components/Buttons';
-import ReactDOM from 'react-dom';
 import { isFunction, debounce } from 'lodash';
 
 type Props = {
@@ -183,6 +182,7 @@ class JuiHeader extends PureComponent<Props, State> {
   private _mouseDownTime: number;
   private _timerForClearAll: NodeJS.Timeout;
   private _inputRef: RefObject<any> = createRef();
+  private _timerId: NodeJS.Timeout;
 
   state = {
     showHoverActions: false,
@@ -258,11 +258,7 @@ class JuiHeader extends PureComponent<Props, State> {
     }
     e.preventDefault();
     e.stopPropagation();
-    const input =
-      this._inputRef.current &&
-      (ReactDOM.findDOMNode(
-        this._inputRef.current,
-      ) as HTMLDivElement).querySelector('input');
+    const input = this._inputRef.current;
 
     if (!input) {
       return;
@@ -314,9 +310,7 @@ class JuiHeader extends PureComponent<Props, State> {
     if (!this._inputRef.current) {
       return 0;
     }
-    const inputField = (ReactDOM.findDOMNode(
-      this._inputRef.current,
-    ) as HTMLDivElement).querySelector('input') as HTMLInputElement;
+    const inputField = this._inputRef.current;
     // Initialize
     let iCaretPos = 0;
 
@@ -349,6 +343,7 @@ class JuiHeader extends PureComponent<Props, State> {
 
   private _clearTimeout = () => {
     clearTimeout(this._timerForClearAll);
+    clearTimeout(this._timerId);
     delete this._timerForClearAll;
   };
 
@@ -357,7 +352,7 @@ class JuiHeader extends PureComponent<Props, State> {
     e.stopPropagation();
   };
 
-  _onFocus = (e: MouseEvent) => {
+  private _onFocus = (e: MouseEvent) => {
     const { onFocus } = this.props;
     // prevent drag & drop
     e.stopPropagation();
@@ -366,10 +361,17 @@ class JuiHeader extends PureComponent<Props, State> {
     onFocus && onFocus();
   };
 
+  private _onBlur = (e: MouseEvent) => {
+    const { onBlur } = this.props;
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+
+    onBlur && onBlur();
+  };
+
   private _renderDialerInput() {
     const {
-      onBlur,
-      onFocus,
       onChange,
       dialerValue,
       placeholder,
@@ -377,7 +379,6 @@ class JuiHeader extends PureComponent<Props, State> {
       onKeyDown,
       Back,
     } = this.props;
-    const fakeFunc = () => {};
 
     // TODO: change delete button's icon
     /* eslint-disable react/jsx-no-duplicate-props */
@@ -391,9 +392,9 @@ class JuiHeader extends PureComponent<Props, State> {
           )}
         </StyledDialerBtnContainer>
         <SearchInput
-          onBlur={onBlur || fakeFunc}
-          onFocus={onFocus || fakeFunc}
-          onChange={onChange || fakeFunc}
+          onBlur={this._onBlur}
+          onFocus={this._onFocus}
+          onChange={onChange}
           placeholder={placeholder || ''}
           value={dialerValue || ''}
           onMouseDown={this._handleMouseDownOnInput}
@@ -405,10 +406,10 @@ class JuiHeader extends PureComponent<Props, State> {
           InputProps={{
             disableUnderline: true,
           }}
-          onKeyDown={onKeyDown || fakeFunc}
+          onKeyDown={onKeyDown}
           autoFocus
           autoComplete="off"
-          ref={this._inputRef}
+          inputRef={this._inputRef}
         />
         <StyledDialerBtnContainer>
           {dialerValue && dialerValue.length && (
@@ -435,8 +436,20 @@ class JuiHeader extends PureComponent<Props, State> {
       this._clearTimeout();
     }
   }
+
+  private _setFocus() {
+    const { focus } = this.props;
+    if (focus && this._inputRef.current) {
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(() => {
+        this._inputRef.current && this._inputRef.current.focus();
+      }, 0);
+    }
+  }
+
   render() {
     const { showDialerInputField, RecentCallBtn } = this.props;
+    this._setFocus();
 
     return (
       <StyledHeader

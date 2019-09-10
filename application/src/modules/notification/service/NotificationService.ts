@@ -15,12 +15,13 @@ import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
 import { isCurrentUserDND } from '../utils';
+import { IMediaService } from '@/interface/media';
 
 const logger = mainLogger.tags('AbstractNotificationManager');
 
@@ -29,6 +30,8 @@ class NotificationService implements INotificationService {
   private _permission: INotificationPermission;
   @ISoundNotification
   private _soundNotification: ISoundNotification;
+  @IMediaService
+  private _mediaService: IMediaService;
   private _uiNotificationDistributors: Map<string, AbstractNotification<any>>;
   private _uiNotificationDistributor: AbstractNotification<any>;
   private _maximumFirefoxTxtLength = 40;
@@ -134,8 +137,9 @@ class NotificationService implements INotificationService {
       logger.log('not necessary to play sound');
       return;
     }
+    const mediaTrackId = this._mediaService.createTrack(scope, 400);
     this._soundNotification.create(source, {
-      trackId: scope,
+      trackId: mediaTrackId,
       autoplay: true,
     });
     delete opts.sound;

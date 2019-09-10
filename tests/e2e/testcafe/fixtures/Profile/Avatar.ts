@@ -1,10 +1,11 @@
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { SITE_URL, BrandTire } from '../../config';
-import { ITestMeta } from '../../v2/models';
+import { SITE_URL, BrandTire, SITE_ENV } from '../../config';
+import { ITestMeta, IGroup } from '../../v2/models';
 import * as assert from 'assert';
 import { AvatarEditDialog } from '../../v2/page-models/AppRoot/HomePage/AvatarEditDialog';
+import { v4 as uuid } from 'uuid';
 
 
 fixture('Profile/Avatar')
@@ -12,6 +13,7 @@ fixture('Profile/Avatar')
   .afterEach(teardownCase());
 
 
+const filePath = '../../sources/avatar.jpg';
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-2581'],
@@ -78,8 +80,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -87,8 +89,8 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('And The zoom control is hidden.', async () => {
-    await t.expect(avatarEditDialog.zoomControl.exists).notOk();
+  await h(t).withLog('And The zoom control is showed.', async () => {
+    await t.expect(avatarEditDialog.zoomControl.exists).ok();
   });
 
   await h(t).withLog('And "Upload photo" button is displayed.', async () => {
@@ -114,14 +116,17 @@ test.meta(<ITestMeta>{
   maintainers: ['Potar.he'],
   keywords: ['Profile', 'Avatar']
 })('Check the custom avatar if the user has set the photo', async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
+  const loginUser = h(t).rcData.mainCompany.users[4];
   const avatarData = {
-    "creator_id": 90996739,
+    // "creator_id": 90996739,
     "url": "https://glipasialabnet-glpci1xmn.s3.amazonaws.com/web/customer_files/72507404/1.jpg?Expires=2075494478&AWSAccessKeyId=AKIAJTSETWOUUVBJDLCA&Signature=5lupBH7xxLX6qYhMPaIjDLYqWtg%3D",
     "offset": "43x0",
     "crop": "172x172",
   }
 
+  if (SITE_ENV === 'XMN-UP') {
+    avatarData['url'] = 'https://glipasialabnet-xmnup.s3.amazonaws.com/web/customer_files/2891251724/download.png?Expires=2075494478&AWSAccessKeyId=AKIAIV55VIWRKLRZEYSA&Signature=Aij%2FJGSfmBoZJvllvKApk4c003w%3D';
+  }
 
   await h(t).withLog('Given I have a extension has avatar photo in backend', async () => {
     await h(t).glip(loginUser).init();
@@ -172,8 +177,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -181,8 +186,8 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('And The zoom control is hidden.', async () => {
-    await t.expect(avatarEditDialog.zoomControl.exists).notOk();
+  await h(t).withLog('And The zoom control is show.', async () => {
+    await t.expect(avatarEditDialog.zoomControl.exists).ok();
   });
 
   await h(t).withLog('And "Upload photo" button is displayed.', async () => {
@@ -209,9 +214,9 @@ test.meta(<ITestMeta>{
     await t.drag(avatarEditDialog.image, 30, 0)
   });
 
-  await h(t).withLog('Then the photo is not  moved ', async () => {
+  await h(t).withLog('Then the photo is moved ', async () => {
     const currentLeft = await avatarEditDialog.image.getBoundingClientRectProperty('left');
-    assert.ok(currentLeft == leftValue, "avatar photo moved...")
+    assert.ok(currentLeft !== leftValue, "avatar photo moved...")
   });
 
 });
@@ -223,7 +228,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Potar.he'],
   keywords: ['Profile', 'Avatar']
 })('Check the crop window displays after selecting an image in photo view && JPG circle cursor is move && GIF circle cursor is fix', async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
+  const loginUser = h(t).rcData.mainCompany.users[4];
 
   const jpgPath = '../../sources/avatar.jpg';
   const gifPath = '../../sources/avatar.gif';
@@ -262,8 +267,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -271,8 +276,8 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await avatarEditDialog.uploadFile(filePath);
   });
 
   // jpg
@@ -380,7 +385,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Potar.he'],
   keywords: ['Profile', 'Avatar']
 })('Check the avatar can be saved successfully after user set the photo', async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
+  const loginUser = h(t).rcData.mainCompany.users[4];
 
   const filePath = '../../sources/avatar.jpg';
 
@@ -421,8 +426,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -516,8 +521,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -525,7 +530,7 @@ test.meta(<ITestMeta>{
     await avatarEditDialog.ensureLoaded();
   });
 
-  await h(t).withLog('When I upload a jpg photo', async () => {
+  await h(t).withLog('When I upload a photo', async () => {
     await avatarEditDialog.uploadFile(filePath);
   });
 
@@ -572,7 +577,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Potar.he'],
   keywords: ['Profile', 'Avatar']
 })('Check when the photo display is reset to default and the zoom control is reset to 1x', async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
+  const loginUser = h(t).rcData.mainCompany.users[4];
 
   const firstFilePath = '../../sources/avatar.jpg';
   const secondFilePath = '../../sources/avatar1.jpg'
@@ -612,8 +617,8 @@ test.meta(<ITestMeta>{
     await editProfileDialog.ensureLoaded();
   }, true);
 
-  await h(t).withLog('When I click avatar edit icon', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+  await h(t).withLog('When I upload a photo', async () => {
+    await editProfileDialog.uploadFile(filePath);
   });
 
   const avatarEditDialog = app.homePage.AvatarEditDialog;
@@ -640,7 +645,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I open "Edit Profile Photo" again and upload a jpg photo', async () => {
-    await editProfileDialog.clickAvatarEditDiv();
+    await editProfileDialog.uploadFile(filePath);
     await avatarEditDialog.ensureLoaded();
     await avatarEditDialog.uploadFile(firstFilePath);
   });
@@ -697,3 +702,196 @@ async function checkImageAtMiddle(avatarEditDialog: AvatarEditDialog) {
     )
   })
 }
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2902'],
+  maintainers: ['Potar.he'],
+  keywords: ['Profile', 'Avatar']
+})('Check the default/group/team avatar cannot be open.', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[0]
+
+  await h(t).withLog('Given I have a be checked avatar extension has not avatar photo in backend', async () => {
+    await h(t).glip(anotherUser).init();
+    const hasAvatarInBackend = !!await h(t).glip(anotherUser).getPersonPartialData('headshot');
+    if (hasAvatarInBackend) {
+      await h(t).resetGlipAccount(anotherUser);
+    }
+  });
+
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  await h(t).withLog('And loginUser has a chat with the extension', async () => {
+    await h(t).glip(loginUser).init();
+    await h(t).scenarioHelper.createOrOpenChat(chat)
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, anotherUser);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And enter the chat', async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  })
+
+  const conversationPage = app.homePage.messageTab.conversationPage
+  await h(t).withLog('When I open profile of the extension ', async () => {
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog('And click the avatar', async () => {
+    await profileDialog.ensureLoaded();
+    await profileDialog.clickAvatar();
+  });
+
+  await h(t).withLog('Then the  profile dialog should keep open', async () => {
+    await profileDialog.ensureLoaded();
+  }, true);
+
+
+  await h(t).withLog('And the avatar viewer should not be opened ', async () => {
+    await app.homePage.viewerDialog.ensureDismiss();
+  });
+
+
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-2903'],
+  maintainers: ['Potar.he'],
+  keywords: ['Profile', 'Avatar']
+})('Check the loading status when custom avatar can be opened in full screen.', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[0];
+  const anotherUser = users[4]
+  const avatarData = {
+    // "creator_id": 90996739,
+    "url": "https://glipasialabnet-glpci1xmn.s3.amazonaws.com/web/customer_files/72507404/1.jpg?Expires=2075494478&AWSAccessKeyId=AKIAJTSETWOUUVBJDLCA&Signature=5lupBH7xxLX6qYhMPaIjDLYqWtg%3D",
+    "offset": "43x0",
+    "crop": "172x172",
+  }
+
+  if (SITE_ENV === 'XMN-UP') {
+    avatarData['url'] = 'https://glipasialabnet-xmnup.s3.amazonaws.com/web/customer_files/2891251724/download.png?Expires=2075494478&AWSAccessKeyId=AKIAIV55VIWRKLRZEYSA&Signature=Aij%2FJGSfmBoZJvllvKApk4c003w%3D';
+  }
+
+  let fullName;
+  await h(t).withLog('Given I have a extension has avatar photo in backend', async () => {
+    await h(t).glip(anotherUser).init();
+    const hasAvatarInBackend = !!await h(t).glip(anotherUser).getPersonPartialData('headshot');
+    avatarData['creator_id'] = await h(t).glip(anotherUser).toPersonId(anotherUser.rcId);
+    if (!hasAvatarInBackend) {
+      await h(t).glip(anotherUser).updatePerson({
+        headshot: avatarData
+      });
+    }
+    fullName = await h(t).glip(anotherUser).getPersonPartialData('display_name');
+  });
+
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  await h(t).withLog('And loginUser has a chat with the extension', async () => {
+    await h(t).glip(loginUser).init();
+    await h(t).scenarioHelper.createOrOpenChat(chat)
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, anotherUser);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And enter the chat', async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  })
+
+  const conversationPage = app.homePage.messageTab.conversationPage
+  await h(t).withLog('When I open profile of the extension ', async () => {
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog('And click the avatar', async () => {
+    await profileDialog.ensureLoaded();
+    await profileDialog.clickAvatar();
+  });
+
+  const avatarViewer = app.homePage.fileAndImagePreviewer;
+  await h(t).withLog('Then The avatar was open in the full-screen image viewer with the full-size photo.', async () => {
+    await avatarViewer.ensureLoaded();
+    await avatarViewer.shouldBeFullScreen();
+  }, true);
+
+  await h(t).withLog('And the avatar viewer show title: {fullName}', async (step) => {
+    step.setMetadata('fullName', fullName);
+    await t.expect(avatarViewer.avatarUserName.textContent).eql(fullName);
+  });
+
+  await h(t).withLog('And the avatar viewer show close button', async () => {
+    await t.expect(avatarViewer.closeButton.exists).ok();
+  });
+
+  await h(t).withLog('And the avatar viewer show zoom in/out icon', async () => {
+    await t.hover(avatarViewer.imageCanvas);
+    await t.expect(avatarViewer.zoomInButton.exists).ok();
+    await t.expect(avatarViewer.zoomOutButton.exists).ok();
+  });
+
+  await h(t).withLog('And the avatar viewer show reset icon', async () => {
+    await t.expect(avatarViewer.zoomResetButton.exists).ok();
+  });
+
+  await h(t).withLog('When I click close button', async () => {
+    await avatarViewer.clickCloseButton();
+  });
+
+  await h(t).withLog('Then Should see profile dialog.', async () => {
+    await avatarViewer.ensureDismiss();
+    await profileDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click avatar icon again', async () => {
+    await profileDialog.clickAvatar();
+  });
+
+  await h(t).withLog('Then Should see avatar viewer.', async () => {
+    await avatarViewer.ensureLoaded();
+  });
+
+  await h(t).withLog('When I press esc', async () => {
+    await avatarViewer.quitByPressEsc();
+  });
+
+  await h(t).withLog('Then Should see profile dialog.', async () => {
+    await avatarViewer.ensureDismiss();
+    await profileDialog.ensureLoaded();
+  });
+
+});

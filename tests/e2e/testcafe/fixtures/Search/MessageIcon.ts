@@ -96,7 +96,7 @@ test.meta(<ITestMeta>{
     });
 
     await h(t).withLog(`When I click the message icon`, async () => {
-      await result.item.HoverAndClickMessageButton();
+      await result.item.hoverAndClickMessageButton();
     });
 
     await h(t).withLog(`Then the conversation of the result should be opened`, async () => {
@@ -150,7 +150,7 @@ test.meta(<ITestMeta>{
     });
 
     await h(t).withLog(`When I click the message icon`, async () => {
-      await searchDialog.recentPage.conversationByName(name).HoverAndClickMessageButton();
+      await searchDialog.recentPage.conversationByName(name).hoverAndClickMessageButton();
     });
 
     await h(t).withLog(`Then the conversation of the result should be opened`, async () => {

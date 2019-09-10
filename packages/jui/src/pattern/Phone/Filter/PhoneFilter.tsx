@@ -9,9 +9,7 @@ import {
   StyledIconRight,
   JuiOutlineTextField,
 } from '../../../components/Forms/OutlineTextField';
-import {
-  spacing, grey, typography, width,
-} from '../../../foundation/utils';
+import { spacing, grey, typography, width } from '../../../foundation/utils';
 import {
   IUseInput,
   IJuiPhoneFilter,
@@ -57,10 +55,12 @@ const PhoneFilter: IJuiPhoneFilter = ({
   clearButtonLabel,
   placeholder,
   onChange,
+  tooltip,
+  value = '',
 }) => {
   const ref: any = useRef(null);
 
-  const [value, setValue] = useInput('', onChange);
+  const [inputValue, setValue] = useInput(value, onChange);
 
   const onFilterChange: IChangePhoneFilter = e => setValue(e.target.value);
 
@@ -70,15 +70,15 @@ const PhoneFilter: IJuiPhoneFilter = ({
     ref.current.focus();
   };
 
-  const iconState: FilterIconState = value
+  const iconState: FilterIconState = inputValue
     ? {
-      iconName: ['filter', 'close'],
-      iconPosition: 'both',
-    }
+        iconName: ['filter', 'close'],
+        iconPosition: 'both',
+      }
     : {
-      iconName: 'filter',
-      iconPosition: 'left',
-    };
+        iconName: 'filter',
+        iconPosition: 'left',
+      };
 
   const iconRightProps = {
     tabIndex: 0,
@@ -98,9 +98,10 @@ const PhoneFilter: IJuiPhoneFilter = ({
       size="small"
       radiusType="rounded"
       ref={ref}
-      value={value}
+      value={inputValue}
       InputProps={inputProps}
       IconRightProps={iconRightProps}
+      IconRightToolTip={tooltip}
       onChange={onFilterChange}
       onClickIconRight={onFilterClear}
       data-test-automation-id="phoneFilter"

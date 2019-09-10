@@ -10,13 +10,15 @@ import { JuiButton } from 'jui/components/Buttons';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { RegionSettingItemViewProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
-import { JuiModal, JuiDialogTitle } from 'jui/components/Dialog';
+import { JuiDialogTitle, JuiModal } from 'jui/components/Dialog';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiRegionSelect } from 'jui/components/Selects';
 import { JuiTextField } from 'jui/components/Forms';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { dataTrackingForSetting } from '@/modules/setting/container/SettingItem/utils/dataTrackingForSetting';
 
+const Modal = withEscTracking(JuiModal);
 const DATA_REACTING_CONFIG = {
   name: 'regionSettings',
   type: 'phoneGeneral',
@@ -129,7 +131,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     );
     return (
       this.state.dialogOpen && (
-        <JuiModal
+        <Modal
           modalProps={{
             'data-test-automation-id': 'dialog-regionSetting',
           }}
@@ -182,7 +184,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
               data-test-automation-id="dialog-regionSetting-areaCodeTextField"
             />
           )}
-        </JuiModal>
+        </Modal>
       )
     );
   }

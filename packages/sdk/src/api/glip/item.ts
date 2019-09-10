@@ -3,7 +3,11 @@
  * @Date: 2018-03-14 20:26:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { NETWORK_METHOD, NETWORK_VIA, TEN_MINUTE_TIMEOUT } from 'foundation';
+import {
+  NETWORK_METHOD,
+  NETWORK_VIA,
+  TEN_MINUTE_TIMEOUT,
+} from 'foundation/network';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import { IdModel, Raw } from '../../framework/model';
@@ -14,6 +18,7 @@ import {
   StoredFile,
   NoteItem,
   ZoomMeetingItem,
+  ConferenceItem,
 } from '../../module/item/entity';
 
 import { RequestHolder } from '../requestHolder';
@@ -58,11 +63,14 @@ function getItemServerUrl(id: number): string {
 class ItemAPI extends Api {
   static basePath = '/item';
   static sendFileItem(data: object) {
-    return this.glipNetworkClient.post<Raw<ItemFile>>({ data, path: '/file' });
+    return ItemAPI.glipNetworkClient.post<Raw<ItemFile>>({
+      data,
+      path: '/file',
+    });
   }
 
   static requestAmazonFilePolicy(fileInfo: AmazonFilePolicyRequestModel) {
-    return this.glipNetworkClient.post<AmazonFileUploadPolicyData>({
+    return ItemAPI.glipNetworkClient.post<AmazonFileUploadPolicyData>({
       path: '/s3/v1/post-policy',
       data: fileInfo,
     });
@@ -74,7 +82,7 @@ class ItemAPI extends Api {
     callback: ProgressCallback,
     requestHolder?: RequestHolder,
   ) {
-    return this.customNetworkClient(host).http<string>(
+    return ItemAPI.customNetworkClient(host).http<string>(
       {
         path: '',
         method: NETWORK_METHOD.POST,
@@ -95,18 +103,18 @@ class ItemAPI extends Api {
 
   static cancelUploadRequest(requestHolder: RequestHolder) {
     if (requestHolder && requestHolder.request) {
-      this.uploadNetworkClient.cancelRequest(requestHolder.request);
+      ItemAPI.uploadNetworkClient.cancelRequest(requestHolder.request);
     }
   }
 
   static requestById(id: number) {
-    return this.glipNetworkClient.get<Raw<ItemFile>>({
+    return ItemAPI.glipNetworkClient.get<Raw<ItemFile>>({
       path: getItemServerUrl(id),
     });
   }
 
   static getItems(typeId: number, groupId: number, newerThan: number) {
-    return this.glipNetworkClient.get<Raw<Item>[]>({
+    return ItemAPI.glipNetworkClient.get<Raw<Item>[]>({
       path: '/items',
       params: {
         type_id: typeId,
@@ -117,7 +125,7 @@ class ItemAPI extends Api {
   }
 
   static requestRightRailItems(groupId: number) {
-    return this.glipNetworkClient.get<IRightRailItemModel>({
+    return ItemAPI.glipNetworkClient.get<IRightRailItemModel>({
       path: '/web_client_right_rail_items',
       params: {
         group_id: groupId,
@@ -126,19 +134,37 @@ class ItemAPI extends Api {
   }
 
   static getNoteBody(id: number) {
-    return this.glipNetworkClient.get<Raw<NoteItem>>({
+    return ItemAPI.glipNetworkClient.get<Raw<NoteItem>>({
       path: `/pages_body/${id}`,
     });
   }
 
   static putItem<T>(id: number, type: string, data: Partial<T>) {
-    return this.glipNetworkClient.put<Raw<T>>({ data, path: `/${type}/${id}` });
+    return ItemAPI.glipNetworkClient.put<Raw<T>>({
+      data,
+      path: `/${type}/${id}`,
+    });
   }
 
   static startZoomMeeting(data: Partial<ZoomMeetingItem>) {
     return this.glipNetworkClient.post<Raw<ZoomMeetingItem>>({
       data,
       path: '/meeting',
+    });
+  }
+
+  static startRCConference(data: any) {
+    return this.glipNetworkClient.post<Raw<ConferenceItem>>({
+      data,
+      path: '/conference',
+    });
+  }
+
+  static cancelRCV(id: number) {
+    // empty response
+    return this.glipNetworkClient.post({
+      path: '/rcv/cancel-call',
+      data: { meeting_item_id: id },
     });
   }
 }

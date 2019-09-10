@@ -6,16 +6,16 @@
 
 import { DataTracking } from '@/interface/setting';
 import _ from 'lodash';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 
 const dataTrackingForSetting = (config: DataTracking, value?: any) => {
   const { optionTransform, eventName, ...rest } = config;
   const option = optionTransform ? optionTransform(value) : value;
   const parameters = option
     ? {
-      option,
-      ...rest,
-    }
+        option,
+        ...rest,
+      }
     : rest;
   dataAnalysis.track(
     eventName || 'Jup_Web/DT_settings_updateSetting',
@@ -24,7 +24,8 @@ const dataTrackingForSetting = (config: DataTracking, value?: any) => {
 };
 
 const debounceTrackData = _.debounce(
-  (dataTracking: DataTracking, newValue?: any) => dataTrackingForSetting(dataTracking, newValue),
+  (dataTracking: DataTracking, newValue?: any) =>
+    dataTrackingForSetting(dataTracking, newValue),
   1000,
 );
 

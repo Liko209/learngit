@@ -15,34 +15,37 @@ import meetings from '../../../assets/jupiter-icon/icon-videocam.svg';
 import setting from '../../../assets/jupiter-icon/icon-settings.svg';
 
 const getTitleKnob = () => text('title', 'Global UXD');
-const getStatusKnob = () => text('status', '🏝on vacation 10/16-10/24');
+const getStatusKnob = () => text('status', 'on vacation 10/16-10/24');
+const getStatusEmoji = () => text('emoji', ':joy:');
+
 storiesOf('Pattern', module).add('ConversationPageHeader', () => {
   return (
     <JuiConversationPageHeader
       title={getTitleKnob()}
-      status={getStatusKnob()}
+      colonsEmoji={getStatusEmoji()}
+      statusPlainText={getStatusKnob()}
       SubTitle={
         <JuiButtonBar overlapSize={2}>
           <JuiCheckboxButton
-            tooltipTitle='This is a public team'
-            checkedIconName='lock'
-            color='grey.500'
-            iconName='lock_open'
+            tooltipTitle="This is a public team"
+            checkedIconName="lock"
+            color="grey.500"
+            iconName="lock_open"
           />
           <JuiCheckboxButton
-            tooltipTitle='Add to Favorite'
-            color='accent.gold'
-            checkedIconName='star'
-            iconName='star_border'
+            tooltipTitle="Add to Favorite"
+            color="accent.gold"
+            checkedIconName="star"
+            iconName="star_border"
           />
         </JuiButtonBar>
       }
       Right={
         <JuiButtonBar overlapSize={1}>
-          <JuiIconButton tooltipTitle='Start Conference Call' symbol={phone} />
-          <JuiIconButton tooltipTitle='Start Video Call' symbol={meetings} />
+          <JuiIconButton tooltipTitle="Start Conference Call" symbol={phone} />
+          <JuiIconButton tooltipTitle="Start Video Call" symbol={meetings} />
           <JuiIconButton
-            tooltipTitle='Conversation Settings'
+            tooltipTitle="Conversation Settings"
             symbol={setting}
           />
         </JuiButtonBar>

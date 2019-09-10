@@ -93,6 +93,11 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     OpenProfile.show(this.props.groupId, null, null, {
       disableRestoreFocus: true,
     });
+
+    analyticsCollector.profileDialog(
+      this.props.isTeam ? 'Team' : 'Group',
+      'rightShelf_showAll',
+    );
   };
 
   addTeamMembers() {
@@ -119,7 +124,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     });
     analyticsCollector.openMiniProfile(ANALYTICS_KEY);
   });
-  
+
   buildPresence = moize((id: number) => {
     return <Presence uid={id} borderSize="medium" />
   })
@@ -144,6 +149,32 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     );
   }
 
+  private get _renderAddMembers() {
+    const { t, canAddMembers, isTeam } = this.props;
+
+    if (!canAddMembers) {
+      return null;
+    }
+
+    const addButtonTip = isTeam
+      ? t('people.team.addTeamMembers')
+      : t('people.group.addPeople');
+
+    return (
+      <JuiIconButton
+        variant="plain"
+        color="grey.500"
+        size="small"
+        tooltipTitle={addButtonTip}
+        aria-label={addButtonTip}
+        onClick={this.onAddMemberButtonClick}
+        data-test-automation-id="rightShelfMemberListHeaderAddButton"
+      >
+        addmember_border
+      </JuiIconButton>
+    );
+  }
+
   render() {
     const {
       t,
@@ -157,12 +188,9 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       shouldShowLink,
       loadingH,
       allMemberLength,
-      isTeam,
       shouldHide,
     } = this.props;
-    const addButtonTip = isTeam
-      ? t('people.team.addTeamMembers')
-      : t('people.group.addPeople');
+
     return shouldHide ? null : (
       <>
         <MemberListHeader
@@ -181,17 +209,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
               </JuiLink>
             ) : null}
           </div>
-          <JuiIconButton
-            variant="plain"
-            color="grey.500"
-            size="small"
-            tooltipTitle={addButtonTip}
-            aria-label={addButtonTip}
-            onClick={this.onAddMemberButtonClick}
-            data-test-automation-id="rightShelfMemberListHeaderAddButton"
-          >
-            addmember_border
-          </JuiIconButton>
+          {this._renderAddMembers}
         </MemberListHeader>
         <MemberListBody
           loading={isLoading}

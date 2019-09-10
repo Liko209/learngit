@@ -4,9 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export type SortableModel<T> = {
-  id: number;
+import { IdModel } from './Model';
+
+export type DisplayNameModel = IdModel & {
   displayName: string;
+};
+
+export type SortableModel<T> = DisplayNameModel & {
   sortWeights: number[];
   lowerCaseName: string;
   entity: T;

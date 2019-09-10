@@ -9,6 +9,7 @@ import { shallow } from 'enzyme';
 import { PhoneLinkView } from '../PhoneLink.View';
 import { JuiConversationNumberLink } from 'jui/pattern/ConversationCard';
 import * as helper from '../helper';
+import { JuiItemTextValue } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 
 jest.mock('../helper.ts', () => ({
   isSupportWebRTC: jest.fn().mockReturnValue(true),
@@ -76,6 +77,40 @@ describe('PhoneLinkView', () => {
       const event = { preventDefault: jest.fn() };
       wrapper.find(JuiConversationNumberLink).simulate('click', event);
       expect(props.directCall).not.toHaveBeenCalled();
+    }
+
+    @test('should not link if login user has no WebRTC permission. [JPT-2749]')
+    t5() {
+      const props = {
+        text: '123-123-12-211',
+        isRCUser: true,
+        type: 'conference',
+        canUseConference: false,
+        directCall: jest.fn(),
+        updateCanUseTelephony: async () => {},
+      } as any;
+      jest.spyOn(helper, 'isSupportWebRTC').mockReturnValue(true);
+
+      const wrapper = shallow(<PhoneLinkView {...props} />);
+      expect(wrapper.find(JuiConversationNumberLink).exists()).toBeFalsy();
+      expect(wrapper.find(JuiItemTextValue).exists()).toBeTruthy();
+    }
+
+    @test('should link if login user has WebRTC permission. [JPT-2750]')
+    t6() {
+      const props = {
+        text: '123-123-12-211',
+        isRCUser: true,
+        type: 'conference',
+        canUseConference: true,
+        directCall: jest.fn(),
+        updateCanUseTelephony: async () => {},
+      } as any;
+      jest.spyOn(helper, 'isSupportWebRTC').mockReturnValue(true);
+
+      const wrapper = shallow(<PhoneLinkView {...props} />);
+      expect(wrapper.find(JuiConversationNumberLink).exists()).toBeTruthy();
+      expect(wrapper.find(JuiItemTextValue).exists()).toBeFalsy();
     }
   }
 });

@@ -6,11 +6,10 @@
 
 import styled from '../../foundation/styled-components';
 
-const StyledContainer = styled('div')<{ offset: number }>`
+const StyledContainer = styled.div`
   flex: 1;
   display: flex;
   position: absolute;
-  right: ${({ offset }) => 10 * offset}px;
   opacity: 0;
   &.show {
     position: static;

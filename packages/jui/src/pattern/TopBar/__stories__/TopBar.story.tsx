@@ -13,7 +13,7 @@ import {
 } from '../../../components/Buttons/IconButton';
 import { MenuListCompositionProps } from '../../MenuListComposition';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiMenuList, JuiMenuItem } from '../../../components';
+import { JuiMenuList, JuiMenuItem } from '../../../components/Menus';
 
 import { JuiHistoryOperation, OPERATION } from '../../HistoryOperation';
 import bulletedMenu from '../../../assets/jupiter-icon/icon-bubble_lines.svg';

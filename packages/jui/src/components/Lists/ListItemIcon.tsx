@@ -3,7 +3,6 @@
  * @Date: 2018-09-27 13:53:47
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { memo } from 'react';
 import MuiListItemIcon, {
   ListItemIconProps as MuiListItemIconProps,
 } from '@material-ui/core/ListItemIcon';
@@ -14,7 +13,7 @@ import {
 
 type JuiListItemIconProps = MuiListItemIconProps;
 
-const MuiListItemIconWrapper = styled(MuiListItemIcon)`
+const JuiListItemIcon = styled(MuiListItemIcon)`
   && {
     display: flex;
     align-items: center;
@@ -29,13 +28,6 @@ const MuiListItemIconWrapper = styled(MuiListItemIcon)`
   }
 `;
 
-const JuiListItemIconComponent = (props: JuiListItemIconProps) => {
-  const { children } = props;
-  return <MuiListItemIconWrapper {...props}>{children}</MuiListItemIconWrapper>;
-};
-
-JuiListItemIconComponent.displayName = 'JuiListItemIcon';
-
-const JuiListItemIcon = memo(JuiListItemIconComponent);
+JuiListItemIcon.displayName = 'JuiListItemIcon';
 
 export { JuiListItemIcon, JuiListItemIconProps };

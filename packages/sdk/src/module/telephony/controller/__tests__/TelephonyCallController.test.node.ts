@@ -13,16 +13,25 @@ import {
   RTC_CALL_ACTION,
   RTC_CALL_ACTION_ERROR_CODE,
   RECORD_STATE as RTC_RECORD_STATE,
+  RTCCallActionSuccessOptions,
+  RTC_CALL_ACTION_DIRECTION,
 } from 'voip';
 import { HOLD_STATE, CALL_STATE, RECORD_STATE, MUTE_STATE } from '../../entity';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { ToggleController } from '../ToggleController';
-import { CALL_ACTION_ERROR_CODE } from '../../types';
+import {
+  CALL_ACTION_ERROR_CODE,
+  CallDelegate,
+  MAKE_CALL_ERROR_CODE,
+  TRANSFER_TYPE,
+} from '../../types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 jest.mock('voip');
 jest.mock('sdk/service/notificationCenter');
-
+jest.mock('sdk/module/phoneNumber');
 describe('TelephonyCallController', () => {
   class MockDelegate implements ITelephonyCallDelegate {
     onCallStateChange(callId: string, state: RTC_CALL_STATE) {}
@@ -31,6 +40,20 @@ describe('TelephonyCallController', () => {
   class MockEntitySource {
     put() {}
     update() {}
+  }
+
+  class MockCallDelegate implements CallDelegate {
+    onCallStateChange(callId: number, state: RTC_CALL_STATE) {}
+    onCallActionSuccess(
+      callId: number,
+      callAction: RTC_CALL_ACTION,
+      options: RTCCallActionSuccessOptions,
+    ) {}
+    onCallActionFailed(
+      callId: number,
+      callAction: RTC_CALL_ACTION,
+      code: number,
+    ) {}
   }
 
   class MockEntityCache {
@@ -48,9 +71,12 @@ describe('TelephonyCallController', () => {
   let rtcCall: RTCCall;
   let mockEntitySource: MockEntitySource;
   let mockEntityCache: MockEntityCache;
-  const callId = '123';
+  const callId = 123;
+  const toNum = '123';
   let holdToggle: ToggleController;
   let recordToggle: ToggleController;
+  let mockCallDelegate: MockCallDelegate;
+  let phoneNumberService: PhoneNumberService;
 
   function setup() {
     mockDelegate = new MockDelegate();
@@ -66,6 +92,14 @@ describe('TelephonyCallController', () => {
     rtcCall = new RTCCall(false, '', null, null, null);
     holdToggle = new ToggleController();
     recordToggle = new ToggleController();
+    mockCallDelegate = new MockCallDelegate();
+
+    phoneNumberService = new PhoneNumberService();
+    ServiceLoader.getInstance = jest.fn().mockImplementation(config => {
+      if (config === ServiceConfig.PHONE_NUMBER_SERVICE) {
+        return phoneNumberService;
+      }
+    });
 
     Object.assign(callController, {
       _rtcCall: rtcCall,
@@ -86,7 +120,7 @@ describe('TelephonyCallController', () => {
       callController._handleCallStateChanged = jest.fn();
       callController.hangUp();
       expect(callController._handleCallStateChanged).toHaveBeenCalledWith(
-        RTC_CALL_STATE.DISCONNECTED,
+        CALL_STATE.DISCONNECTING,
       );
       expect(rtcCall.hangup).toHaveBeenCalled();
     });
@@ -119,9 +153,11 @@ describe('TelephonyCallController', () => {
   describe('hold', () => {
     it('should resolve when call is held successfully', (done: jest.DoneCallback) => {
       const options = '';
-      expect.assertions(4);
+      expect.assertions(5);
       callController._updateCallHoldState = jest.fn();
       callController._updateCallRecordState = jest.fn();
+      mockCallDelegate.onCallActionSuccess = jest.fn();
+      callController.setCallDelegate(mockCallDelegate);
       rtcCall.getRecordState = jest
         .fn()
         .mockReturnValue(RTC_RECORD_STATE.RECORDING);
@@ -137,14 +173,17 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallRecordState).toHaveBeenCalledWith(
         RECORD_STATE.RECORDING_DISABLED,
       );
+      expect(mockCallDelegate.onCallActionSuccess).toHaveBeenCalled();
       expect(holdToggle.onSuccess).toHaveBeenCalled();
     });
 
     it('should reject when call hold is failed', (done: jest.DoneCallback) => {
       callController._updateCallHoldState = jest.fn();
       callController._updateCallRecordState = jest.fn();
+      mockCallDelegate.onCallActionFailed = jest.fn();
+      callController.setCallDelegate(mockCallDelegate);
       rtcCall.getRecordState = jest.fn().mockReturnValue(RTC_RECORD_STATE.IDLE);
-      expect.assertions(4);
+      expect.assertions(5);
       callController
         .hold()
         .then(result => {
@@ -164,6 +203,23 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallRecordState).toHaveBeenCalledWith(
         RECORD_STATE.IDLE,
       );
+      expect(mockCallDelegate.onCallActionFailed).toHaveBeenCalled();
+    });
+  });
+
+  describe('isOnHold', () => {
+    it('should return true when call is on hold', () => {
+      callController['_getCallEntity'] = jest.fn().mockReturnValue({
+        hold_state: HOLD_STATE.HELD,
+      });
+      const res = callController.isOnHold();
+      expect(res).toBeTruthy();
+    });
+
+    it('should return false when no call entity', () => {
+      callController['_getCallEntity'] = jest.fn().mockReturnValue(null);
+      const res = callController.isOnHold();
+      expect(res).toBeFalsy();
     });
   });
 
@@ -278,6 +334,19 @@ describe('TelephonyCallController', () => {
         RECORD_STATE.IDLE,
       );
       expect(recordToggle.onFailure).toHaveBeenCalled();
+    });
+  });
+
+  describe('muteAll', () => {
+    it('should mute two direction', () => {
+      callController['_updateCallMuteState'] = jest.fn();
+      callController.muteAll();
+      expect(rtcCall.mute).toHaveBeenCalledWith(
+        RTC_CALL_ACTION_DIRECTION.LOCAL,
+      );
+      expect(rtcCall.mute).toHaveBeenCalledWith(
+        RTC_CALL_ACTION_DIRECTION.REMOTE,
+      );
     });
   });
 
@@ -397,7 +466,15 @@ describe('TelephonyCallController', () => {
     it('should pass the idle state to call controller', () => {
       const spy = jest.spyOn(callController, '_handleCallStateChanged');
       callController.onCallStateChange(RTC_CALL_STATE.IDLE);
-      expect(spy).toHaveBeenCalledWith(RTC_CALL_STATE.IDLE);
+      expect(spy).toHaveBeenCalledWith(CALL_STATE.IDLE);
+    });
+
+    it('should handle disconnecting when call is disconnected', () => {
+      callController['_handleCallStateChanged'] = jest.fn();
+      callController.onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
+      expect(callController._handleCallStateChanged).toHaveBeenCalledWith(
+        CALL_STATE.DISCONNECTED,
+      );
     });
   });
 
@@ -426,12 +503,15 @@ describe('TelephonyCallController', () => {
   });
 
   describe('_handleCallStateChanged', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
     it('should update call state and hold when state is connected', () => {
       jest.spyOn(rtcCall, 'getCallInfo').mockReturnValue({ sessionId: '123' });
       Date.now = jest.fn().mockReturnValue(1);
       callController._getCallEntity = jest.fn().mockReturnValue({});
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._handleCallStateChanged(RTC_CALL_STATE.CONNECTED);
+      callController._handleCallStateChanged(CALL_STATE.CONNECTED);
       expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
         {
           call_state: CALL_STATE.CONNECTED,
@@ -445,7 +525,7 @@ describe('TelephonyCallController', () => {
     it('should update call state and hold when state is connecting', () => {
       callController._getCallEntity = jest.fn().mockReturnValue({});
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._handleCallStateChanged(RTC_CALL_STATE.CONNECTING);
+      callController._handleCallStateChanged(CALL_STATE.CONNECTING);
       expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
         {
           call_state: CALL_STATE.CONNECTING,
@@ -453,7 +533,8 @@ describe('TelephonyCallController', () => {
       ]);
     });
 
-    it('should update call state and save sip data and hold when state is disconnected', () => {
+    it('should update call state and save sip data when state is disconnecting', () => {
+      clearMocks();
       const call = {};
       jest.spyOn(rtcCall, 'getCallInfo').mockReturnValue({
         sessionId: '123',
@@ -463,27 +544,36 @@ describe('TelephonyCallController', () => {
       });
       callController._getCallEntity = jest.fn().mockReturnValue(call);
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._handleCallStateChanged(RTC_CALL_STATE.DISCONNECTED);
+      callController._handleCallStateChanged(CALL_STATE.DISCONNECTING);
       expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
         {
-          call_state: CALL_STATE.DISCONNECTED,
-          disconnectTime: 1,
-          call_id: '1',
-          call_state: 'disconnected',
-          disconnectTime: 1,
+          call_state: CALL_STATE.DISCONNECTING,
           from_tag: 'f',
           to_tag: 't',
+          call_id: '1',
         },
       ]);
       expect(call).toEqual(
         expect.objectContaining({
           call_id: '1',
-          call_state: 'disconnected',
-          disconnectTime: 1,
+          call_state: 'Disconnecting',
           from_tag: 'f',
           to_tag: 't',
         }),
       );
+    });
+
+    it('should update call state when state is disconnected', () => {
+      const call = {};
+      callController._getCallEntity = jest.fn().mockReturnValue(call);
+      const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
+      callController._handleCallStateChanged(CALL_STATE.DISCONNECTED);
+      expect(spy).toHaveBeenCalledWith(ENTITY.CALL, [
+        {
+          call_state: CALL_STATE.DISCONNECTED,
+          disconnectTime: expect.any(Number),
+        },
+      ]);
     });
   });
 
@@ -679,6 +769,87 @@ describe('TelephonyCallController', () => {
       callController._handleToggleState(RTC_CALL_ACTION.MUTE, false);
       expect(holdToggle.onSuccess).not.toHaveBeenCalled();
       expect(recordToggle.onSuccess).not.toHaveBeenCalled();
+    });
+  });
+  describe('transfer', () => {
+    beforeEach(() => {
+      phoneNumberService.getE164PhoneNumber = jest
+        .fn()
+        .mockResolvedValue(toNum);
+    });
+    it('should reject not network when disconnect network', (done: jest.DoneCallback) => {
+      const options = CALL_ACTION_ERROR_CODE.NOT_NETWORK;
+      expect(
+        callController.transfer(TRANSFER_TYPE.WARM_TRANSFER, toNum),
+      ).rejects.toEqual(options);
+      callController.onCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER, options);
+      done();
+    });
+    it('should resolve warm transfer success when type is WARM_TRANSFER', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      const options = '';
+      expect(
+        callController.transfer(TRANSFER_TYPE.WARM_TRANSFER, toNum),
+      ).resolves.toEqual(options);
+      callController.onCallActionSuccess(
+        RTC_CALL_ACTION.WARM_TRANSFER,
+        options as RTCCallActionSuccessOptions,
+      );
+      done();
+    });
+    it('should reject fail when type is WARM_TRANSFER', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      const options = CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER;
+      expect(
+        callController.transfer(TRANSFER_TYPE.WARM_TRANSFER, toNum),
+      ).rejects.toEqual(options);
+      callController.onCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER, options);
+      done();
+    });
+
+    it('should resolve transfer success when type is BLIND_TRANSFER', async (done: jest.DoneCallback) => {
+      const options = '';
+      expect(
+        callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
+      ).resolves.toEqual(options);
+      callController.onCallActionSuccess(
+        RTC_CALL_ACTION.TRANSFER,
+        options as RTCCallActionSuccessOptions,
+      );
+      setTimeout(() => {
+        expect(rtcCall.transfer).toHaveBeenCalledWith('123');
+        done();
+      });
+    });
+    it('should reject fail when type is BLIND_TRANSFER', (done: jest.DoneCallback) => {
+      expect.assertions(1);
+      const options = CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER;
+      expect(
+        callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
+      ).rejects.toEqual(options);
+      callController.onCallActionFailed(RTC_CALL_ACTION.TRANSFER, options);
+      done();
+    });
+    it('should reject fail when number can not e164', async (done: jest.DoneCallback) => {
+      phoneNumberService.getE164PhoneNumber = jest.fn().mockResolvedValue('');
+      await expect(
+        callController.transfer(TRANSFER_TYPE.BLIND_TRANSFER, toNum),
+      ).rejects.toEqual(CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER);
+      done();
+    });
+    it('should resolve to voicemail success when type is TO_VOICEMAIL', async (done: jest.DoneCallback) => {
+      const options = '';
+      expect(
+        callController.transfer(TRANSFER_TYPE.TO_VOICEMAIL, toNum),
+      ).resolves.toEqual(options);
+      callController.onCallActionSuccess(
+        RTC_CALL_ACTION.TRANSFER,
+        options as RTCCallActionSuccessOptions,
+      );
+      setTimeout(() => {
+        expect(rtcCall.transfer).toHaveBeenCalledWith('*0123');
+        done();
+      });
     });
   });
 });

@@ -11,7 +11,7 @@ import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
 import { Raw } from '../../../framework/model/Raw';
 import notificationCenter from '../../../service/notificationCenter';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
@@ -20,18 +20,28 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { SettingService, SettingEntityIds } from 'sdk/module/setting';
-import {
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  VIDEO_SERVICE_OPTIONS,
-} from '../constants';
-import GroupService from 'sdk/module/group';
+import { VIDEO_SERVICE_OPTIONS, SETTING_KEYS } from '../constants';
+import { ConversationPreference } from '../entity/Profile';
+import { ConversationPreferenceHandler } from './ConversationPreferenceHandler';
+import { ProfileEntityObservable } from './ProfileEntityObservable';
 
 class ProfileDataController {
+  private _conversationPreferenceHandler: ConversationPreferenceHandler;
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
     public entityCacheController: IEntityCacheController<Profile>,
-  ) {}
+    public profileEntityObservable: ProfileEntityObservable,
+  ) {
+    this._registerObservers();
+  }
+
+  private _registerObservers() {
+    this._conversationPreferenceHandler = new ConversationPreferenceHandler([
+      SETTING_KEYS.CONVERSATION_AUDIO,
+      SETTING_KEYS.CONVERSATION_NOTIFICATION,
+    ]);
+    this.profileEntityObservable.register(this._conversationPreferenceHandler);
+  }
 
   async profileHandleData(
     profile: Raw<Profile> | null,
@@ -98,53 +108,13 @@ class ProfileDataController {
     const profile = await this.getProfile();
     return (profile && profile.favorite_group_ids) || [];
   }
-  async _isTeam(conversationId: number) {
-    const groupService = ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
-    );
-    const group = await groupService.getById(conversationId);
-    return !!(group && group.is_team);
-  }
-  async _getGlobalSetting(conversationId: number) {
-    const settingService = ServiceLoader.getInstance<SettingService>(
-      ServiceConfig.SETTING_SERVICE,
-    );
-    const model = await settingService.getById<
-      DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
-    >(SettingEntityIds.Notification_NewMessages);
-    const value = model && model.value;
-    let isMute;
-    switch (value) {
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE:
-        isMute = false;
-        break;
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF:
-        isMute = true;
-        break;
-      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION:
-      default:
-        isMute = await this._isTeam(conversationId);
-        break;
-    }
-    return isMute;
-  }
 
-  async isNotificationMute(conversationId: number) {
-    const profile = await this.getProfile();
-    const notification =
-      profile &&
-      profile.conversation_level_notifications &&
-      profile.conversation_level_notifications[conversationId];
-    if (!notification) {
-      return this._getGlobalSetting(conversationId);
-    }
-    if (notification.muted) {
+  async isNotificationMute(cid: number) {
+    const model = await this.getConversationPreference(cid);
+    if (model.muted) {
       return true;
     }
-    if (notification.desktop_notifications === undefined) {
-      return this._getGlobalSetting(conversationId);
-    }
-    return !notification.desktop_notifications;
+    return !model.desktopNotifications;
   }
 
   async isVideoServiceEnabled(option: VIDEO_SERVICE_OPTIONS): Promise<boolean> {
@@ -173,6 +143,7 @@ class ProfileDataController {
               notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
                 transformedData,
               ]);
+              this.profileEntityObservable.onProfileUpdate(transformedData);
             }
           }
           return transformedData;
@@ -183,6 +154,20 @@ class ProfileDataController {
       mainLogger.warn(`handleProfile error:${e}`);
       return null;
     }
+  }
+
+  unRegisterAllObservers() {
+    this.profileEntityObservable.unRegisterAll();
+  }
+
+  async getConversationPreference(
+    cid: number,
+  ): Promise<ConversationPreference> {
+    const profile = await this.getProfile();
+    return await this._conversationPreferenceHandler.buildEntityInfo(
+      profile,
+      cid,
+    );
   }
 }
 

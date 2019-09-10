@@ -13,7 +13,7 @@ import {
   DidUploadFileCallback,
 } from './types';
 import { notificationCenter, EVENT_TYPES } from 'sdk/service';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService, ItemNotification } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
@@ -32,6 +32,7 @@ import { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
+import { SHORT_CUT_KEYS } from '@/AnalyticsCollector/constants';
 
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
@@ -249,6 +250,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     }
   };
 
+  onEscTrackedCancelDuplicateFiles = () => {
+    this.cancelDuplicateFiles();
+    analyticsCollector.shortcuts(SHORT_CUT_KEYS.ESCAPE);
+  }
+
   private _clearUpSelectedFiles = () => {
     this.selectedFiles = [];
   };
@@ -307,6 +313,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       this.props.id,
     );
     analyticsCollector.sendPost(
+      'drag',
       'conversation thread',
       'file',
       group.analysisType,

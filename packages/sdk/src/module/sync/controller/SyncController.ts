@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERROR_CODES_NETWORK, mainLogger, PerformanceTracer } from 'foundation';
+import { ERROR_CODES_NETWORK } from 'foundation/error';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { indexData, initialData, remainingData } from '../../../api';
 import { IndexDataModel } from '../../../api/glip/user';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -21,7 +23,7 @@ import { RawPresence } from '../../presence/entity';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { progressManager } from '../../../utils/progress';
+import { progressManager } from 'sdk/utils/progress';
 import { CompanyService } from '../../company';
 import { Group, GroupService } from '../../group';
 import { ItemService } from '../../item/service';
@@ -43,6 +45,7 @@ import { IndexTaskController } from './IndexTaskController';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { dataCollectionHelper } from 'sdk/framework';
 import { transform } from 'sdk/service/utils';
+import { LoginInfo } from 'sdk/types';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -132,7 +135,8 @@ class SyncController {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
       this._traceLoginData(true);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      const glipLoginInfo: LoginInfo = { success: true, isFirstLogin: true };
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, glipLoginInfo);
     } catch (e) {
       mainLogger.error(LOG_TAG, 'fetch initial data error');
       this._traceLoginData(false);
@@ -140,7 +144,8 @@ class SyncController {
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig.getAccountType();
       if (accountType === ACCOUNT_TYPE_ENUM.RC) {
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, false);
+        const glipLoginInfo: LoginInfo = { success: false, isFirstLogin: true };
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, glipLoginInfo);
       } else {
         notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
       }
@@ -347,13 +352,15 @@ class SyncController {
     });
     performanceTracer.end({ key: this._getPerformanceKey(source, 'account') });
 
-    await Promise.all([
-      this._handleIncomingCompany(companies, source, changeMap),
-      this._handleIncomingItem(items, source, changeMap),
-      this._handleIncomingPresence(presences, source, changeMap),
-      this._handleIncomingState(arrState, mergedGroups, source, changeMap),
-    ])
-      .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
+    await this._handleIncomingProfile(transProfile, source, changeMap)
+      .then(() =>
+        Promise.all([
+          this._handleIncomingCompany(companies, source, changeMap),
+          this._handleIncomingItem(items, source, changeMap),
+          this._handleIncomingPresence(presences, source, changeMap),
+          this._handleIncomingState(arrState, mergedGroups, source, changeMap),
+        ]),
+      )
       .then(() => this._handleIncomingPerson(people, source, changeMap))
       .then(() => this._handleIncomingGroup(pureGroups, source, changeMap))
       .then(() =>
@@ -366,6 +373,10 @@ class SyncController {
         );
       })
       .then(() => {
+        mainLogger.debug(
+          LOG_INDEX_DATA,
+          `emit index data key===${[...changeMap.keys()]}`,
+        );
         if (changeMap.size > 0) {
           const s = Date.now();
           changeMap.forEach((value: ChangeModel, key: string) => {
@@ -395,7 +406,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingCompany() company.length: ${companies &&
-        companies.length}, source: ${source}`,
+      companies.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<CompanyService>(
@@ -415,7 +426,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingItem() item.length: ${items &&
-        items.length}, source: ${source}`,
+      items.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<ItemService>(
@@ -435,7 +446,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPresence() item.length: ${presences &&
-        presences.length}, source: ${source}`,
+      presences.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PresenceService>(
@@ -456,7 +467,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingState() states.length: ${states &&
-        states.length}, source: ${source}`,
+      states.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
 
@@ -501,7 +512,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPerson() persons.length: ${persons &&
-        persons.length}, source: ${source}`,
+      persons.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PersonService>(
@@ -521,7 +532,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingGroup() groups.length: ${groups &&
-        groups.length}, source: ${source}`,
+      groups.length}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<GroupService>(
@@ -542,7 +553,7 @@ class SyncController {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPost() posts.length: ${posts &&
-        posts.map(post => post._id)}, source: ${source}`,
+      posts.map(post => post._id)}, source: ${source}`,
     );
     const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PostService>(
@@ -587,7 +598,7 @@ class SyncController {
       }
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
     } catch (error) {
-      mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
+      mainLogger.warn(`sync/handleData: ${error}`);
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });

@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseResponse, mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { BaseResponse } from 'foundation/network';
 import { JError, JRCError, ERROR_CODES_RC } from '../../error';
 import { IResponseParser } from './types';
 
@@ -41,7 +42,7 @@ export class RCResponseParser implements IResponseParser {
         return new JRCError(errorInfo.errorCode, errorInfo.errorMessage);
       }
     }
-    mainLogger.tags(this.name).info(`can not parse RC response: ${response}`);
+    mainLogger.tags(this.name).info(`can not parse RC response: ${JSON.stringify(response)}`);
     return null;
   }
 
@@ -55,6 +56,8 @@ export class RCResponseParser implements IResponseParser {
   }
 
   isKnownError(errorInfo: ErrorInfo): boolean {
-    return Object.values(ERROR_CODES_RC).some((code: string) => errorInfo.errorCode === code);
+    return Object.values(ERROR_CODES_RC).some(
+      (code: string) => errorInfo.errorCode === code,
+    );
   }
 }

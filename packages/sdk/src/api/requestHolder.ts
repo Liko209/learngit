@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IRequest } from 'foundation';
+import { IRequest } from 'foundation/network';
 
 type RequestHolder = {
   request?: IRequest;

@@ -3,16 +3,18 @@
  * @Date: 2019-04-10 16:47:06
  * Copyright © RingCentral. All rights reserved.
  */
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { config } from '../../../module.config';
 import { getEntity } from '@/store/utils';
 import { GlobalSearchStore } from '../../../store';
 
-jest.mock('sdk/dao');
-jest.mock('@/store/utils');
-
 import { SearchCellViewModel } from '../SearchCell.ViewModel';
 import { SearchItemTypes, SEARCH_SCOPE, SEARCH_VIEW } from '../../../types';
+
+jest.mock('sdk/dao');
+jest.mock('@/store/utils');
+jest.mock('sdk/module/config');
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);

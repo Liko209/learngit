@@ -9,6 +9,11 @@ import { TypeDictionary } from 'sdk/utils';
 import { ENTITY_NAME } from '@/store';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
+jest.mock('emoji-mart', () => ({
+  getEmojiDataFromNative: () => ({
+    colons: ':rainbow:',
+  }),
+}));
 jest.mock('i18next', () => ({
   languages: ['en'],
   services: {
@@ -47,6 +52,28 @@ describe('TestConversationCardViewModel', () => {
       expect(conversationCardVM.post).toMatchObject({
         ...mockPostValue,
       });
+    }
+  }
+  @testable
+  class colonsEmoji {
+    @test('should return colon emoji when get awayStatus')
+    @mockEntity({
+      awayStatus: ":rainbow:"
+    })
+    t1() {
+      const conversationCardVM = new ConversationCardViewModel();
+      expect(conversationCardVM.colonsEmoji).toBe(':rainbow:')
+    }
+  }
+  @testable
+  class statusPlainText {
+    @test('should return colon emoji when get awayStatus')
+    @mockEntity({
+      awayStatus: ":rainbow: hello world"
+    })
+    t1() {
+      const conversationCardVM = new ConversationCardViewModel();
+      expect(conversationCardVM.statusPlainText).toBe('  ')
     }
   }
 

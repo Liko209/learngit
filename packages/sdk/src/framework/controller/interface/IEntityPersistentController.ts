@@ -13,7 +13,10 @@ interface IEntityPersistentController<
 > extends IDao<T, IdType> {
   getEntityNotificationKey(): string;
 
-  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
+  getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]>;
 
   saveToMemory?: (entities: T[]) => void;
 }

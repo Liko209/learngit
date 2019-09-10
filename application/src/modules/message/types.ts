@@ -9,4 +9,10 @@ type MessageModuleBootstrapOptions = {
   extensions: ReactNode;
 };
 
-export { MessageModuleBootstrapOptions };
+enum MESSAGE_TYPE {
+  DIRECT_MESSAGE,
+  MENTION,
+  TEAM,
+}
+
+export { MessageModuleBootstrapOptions, MESSAGE_TYPE };

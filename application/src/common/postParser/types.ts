@@ -109,6 +109,7 @@ type Replacer = TextRange & {
 
 type HighlightContextInfo = {
   keyword: string;
+  dataTrackingJumpToConversation?: Function;
 };
 
 const SearchHighlightContext = createContext<HighlightContextInfo>({

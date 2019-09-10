@@ -5,8 +5,9 @@
  */
 
 import { RCAuthApi } from '../RCAuthApi';
-import { NETWORK_VIA, NETWORK_METHOD, HA_PRIORITY } from 'foundation';
+import { NETWORK_VIA, NETWORK_METHOD, HA_PRIORITY } from 'foundation/network';
 import { ApiConfiguration } from '../../config';
+
 jest.mock('../../api');
 jest.mock('foundation/network/NetworkRequestExecutor');
 
@@ -79,7 +80,7 @@ describe('RCAuthApi', () => {
   describe('generateRCCode', () => {
     it('should be called with correct params', () => {
       RCAuthApi.generateRCCode('clienid', 100);
-      expect(RCAuthApi.rcNetworkClient.http).toBeCalledWith({
+      expect(RCAuthApi.rcNetworkClient.http).toHaveBeenCalledWith({
         path: '/v1.0/interop/generate-code',
         method: 'post',
         via: NETWORK_VIA.HTTP,
@@ -99,7 +100,7 @@ describe('RCAuthApi', () => {
       } as any;
       const mockCallBack = jest.fn();
       RCAuthApi.requestServerStatus(mockCallBack);
-      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toBeCalledWith(
+      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toHaveBeenCalledWith(
         {
           path: '/v1.0/status',
           method: NETWORK_METHOD.GET,
@@ -109,7 +110,7 @@ describe('RCAuthApi', () => {
         },
         NETWORK_VIA.HTTP,
       );
-      expect(mockCallBack).toBeCalledWith(true, 0);
+      expect(mockCallBack).toHaveBeenCalledWith(true, 0);
     });
 
     it('should call callback with true when request success', () => {
@@ -126,7 +127,7 @@ describe('RCAuthApi', () => {
       } as any;
       const mockCallBack = jest.fn();
       RCAuthApi.requestServerStatus(mockCallBack);
-      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toBeCalledWith(
+      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toHaveBeenCalledWith(
         {
           path: '/v1.0/status',
           method: NETWORK_METHOD.GET,
@@ -136,7 +137,7 @@ describe('RCAuthApi', () => {
         },
         NETWORK_VIA.HTTP,
       );
-      expect(mockCallBack).toBeCalledWith(false, 20);
+      expect(mockCallBack).toHaveBeenCalledWith(false, 20);
     });
   });
 });

@@ -1,8 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": [
-      "./fixtures/Profile/RemoveTeamMember.ts"
-    ],
-    "browsers": ["selenium:chrome"]
-  }
-}

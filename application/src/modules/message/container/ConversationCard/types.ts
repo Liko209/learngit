@@ -18,6 +18,8 @@ type ConversationCardProps = {
 
 type ConversationCardViewProps = {
   id: number;
+  colonsEmoji: string;
+  statusPlainText: string;
   post: PostModel;
   hideText: boolean;
   creator: PersonModel;

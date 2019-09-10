@@ -9,12 +9,15 @@ import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
 import {
-  kRTCAnonymous,
   kRTCProvisioningOptions,
   kRetryIntervalList,
 } from '../account/constants';
 import { IRTCCallDelegate } from './IRTCCallDelegate';
-import { REGISTRATION_EVENT, RTC_PROV_EVENT } from '../account/types';
+import {
+  REGISTRATION_EVENT,
+  RTC_PROV_EVENT,
+  ALLOW_CALL_FLAG,
+} from '../account/types';
 import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
@@ -66,34 +69,38 @@ class RTCAccount implements IRTCAccount {
     );
   }
 
-  public handleProvisioning() {
+  handleProvisioning() {
     this._provManager.acquireSipProv();
   }
 
-  public clearLocalProvisioning() {
+  clearLocalProvisioning() {
     this._provManager.clearProvInfo();
   }
 
-  public makeCall(
+  makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ): RTCCall | null {
+  ): RTCCall | undefined {
     rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'makeCall');
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
-      return null;
+      return undefined;
     }
-    if (!this._callManager.allowCall()) {
+    const allowCallFlag: boolean =
+      options && options.extraCall
+        ? this._callManager.allowCall(ALLOW_CALL_FLAG.EXTRA_OUTBOUND_CALL)
+        : this._callManager.allowCall();
+    if (!allowCallFlag) {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return null;
+      return undefined;
     }
     if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
       rtcLogger.warn(
         LOG_TAG,
         'Failed to make call. Account is in Unregistered state',
       );
-      return null;
+      return undefined;
     }
     let callOption: RTCCallOptions;
     if (options) {
@@ -120,22 +127,6 @@ class RTCAccount implements IRTCAccount {
     return call;
   }
 
-  public makeAnonymousCall(
-    toNumber: string,
-    delegate: IRTCCallDelegate,
-    options?: RTCCallOptions,
-  ): RTCCall | null {
-    let optionsWithAnonymous: RTCCallOptions;
-    if (options) {
-      optionsWithAnonymous = options;
-      optionsWithAnonymous.fromNumber = kRTCAnonymous;
-    } else {
-      optionsWithAnonymous = { fromNumber: kRTCAnonymous };
-    }
-    rtcLogger.debug(LOG_TAG, 'make anonymous call');
-    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
-  }
-
   isReady(): boolean {
     return this._state === RTC_ACCOUNT_STATE.REGISTERED;
   }
@@ -154,6 +145,10 @@ class RTCAccount implements IRTCAccount {
 
   getCallByUuid(uuid: string): RTCCall | null {
     return this._callManager.getCallByUuid(uuid);
+  }
+
+  getRegistrationStatusCode(): number {
+    return this._regManager.getRegistrationStatusCode();
   }
 
   logout() {
@@ -188,7 +183,7 @@ class RTCAccount implements IRTCAccount {
     }
   }
 
-  public notifyNoAudioStateEvent(
+  notifyNoAudioStateEvent(
     uuid: string,
     noAudioStateEvent: RTCNoAudioStateEvent,
   ) {
@@ -196,10 +191,7 @@ class RTCAccount implements IRTCAccount {
       this._delegate.onNoAudioStateEvent(uuid, noAudioStateEvent);
   }
 
-  public notifyNoAudioDataEvent(
-    uuid: string,
-    noAudioDataEvent: RTCNoAudioDataEvent,
-  ) {
+  notifyNoAudioDataEvent(uuid: string, noAudioDataEvent: RTCNoAudioDataEvent) {
     this._delegate && this._delegate.onNoAudioDataEvent(uuid, noAudioDataEvent);
   }
 
@@ -318,7 +310,7 @@ class RTCAccount implements IRTCAccount {
       );
       return;
     }
-    if (!this._callManager.allowCall()) {
+    if (!this._callManager.allowCall(ALLOW_CALL_FLAG.INBOUND_CALL)) {
       rtcLogger.warn(
         LOG_TAG,
         'Failed to receive incoming call. Max call count is reached',

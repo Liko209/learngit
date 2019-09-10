@@ -91,7 +91,7 @@ test.meta(<ITestMeta>{
   // open via URL
   await h(t).withLog(`When I open conversation B: ${otherUserName} via URL `, async () => {
     const url = new URL(SITE_URL)
-    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${nonTopChat.glipId}`;
+    const NEW_URL = `${url.origin}/messages/${nonTopChat.glipId}`;
     await t.navigateTo(NEW_URL);
     await app.homePage.ensureLoaded();
   });
@@ -112,6 +112,7 @@ test.meta(<ITestMeta>{
     await h(t).withLog(`Then "${chatName}" should keep its position 2 in directMessage section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
       await directMessagesSection.nthConversationEntry(1).groupIdShouldBe(chatId);
+      await t.wait(2e3);
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
@@ -240,7 +241,7 @@ test.skip.meta(<ITestMeta>{
 
   await h(t).withLog(`When I open conversation B: "${topTeam.name}" via URL `, async () => {
     const url = new URL(SITE_URL)
-    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${topTeam.glipId}`;
+    const NEW_URL = `${url.origin}/messages/${topTeam.glipId}`;
     await t.navigateTo(NEW_URL);
     await app.homePage.ensureLoaded();
   });
@@ -455,7 +456,7 @@ test.skip.meta(<ITestMeta>{
 
   await h(t).withLog(`When I open conversation A: "${otherUserName}" via URL `, async () => {
     const url = new URL(SITE_URL)
-    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${topChat.glipId}`;
+    const NEW_URL = `${url.origin}/messages/${topChat.glipId}`;
     await t.navigateTo(NEW_URL);
     await app.homePage.ensureLoaded();
   });

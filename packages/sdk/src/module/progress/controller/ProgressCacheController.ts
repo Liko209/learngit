@@ -5,7 +5,7 @@
  */
 
 import { Progress } from '../entity';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 

@@ -6,15 +6,15 @@
 
 import { PostSearchHandler } from '../PostSearchHandler';
 import { SearchRequestInfo } from '../types';
-import { SearchAPI } from '../../../../../api/glip/search';
-import { SubscribeController } from '../../../../base/controller/SubscribeController';
-import { SOCKET } from '../../../../../service/eventKey';
+import { SearchAPI } from 'sdk/api/glip/search';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
+import { SOCKET } from 'sdk/service/eventKey';
 import {
   JServerError,
   ERROR_CODES_SERVER,
   JError,
   ERROR_TYPES,
-} from '../../../../../error';
+} from 'sdk/error';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -22,8 +22,8 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-jest.mock('../../../../base/controller/SubscribeController');
-jest.mock('../../../../../api/glip/search');
+jest.mock('sdk/module/base/controller/SubscribeController');
+jest.mock('sdk/api/glip/search');
 
 describe('PostSearchController', () => {
   let postSearchHandler: PostSearchHandler;
@@ -51,7 +51,9 @@ describe('PostSearchController', () => {
 
     it('should subscribe socket search changed when constructor', () => {
       const controller = new PostSearchHandler();
-      expect(SubscribeController.buildSubscriptionController).toBeCalledWith({
+      expect(
+        SubscribeController.buildSubscriptionController,
+      ).toHaveBeenCalledWith({
         [SOCKET.SEARCH]: controller.handleSearchResults,
       });
     });
@@ -62,6 +64,7 @@ describe('PostSearchController', () => {
       clearMocks();
       setUp();
     });
+
     const countResults = {
       request_id: 123,
       content_types: {
@@ -206,8 +209,8 @@ describe('PostSearchController', () => {
         ],
         requestId: 123,
       });
-      expect(SearchAPI.search).toBeCalled();
-      expect(SearchAPI.scrollSearch).toBeCalled();
+      expect(SearchAPI.search).toHaveBeenCalled();
+      expect(SearchAPI.scrollSearch).toHaveBeenCalled();
     });
 
     it('should return response with request, and we should save the resolve, reject ', async () => {
@@ -245,10 +248,10 @@ describe('PostSearchController', () => {
       });
 
       SearchAPI.search = jest.fn().mockReturnValue(res);
-
-      expect(postSearchHandler.startSearch(searchParams)).rejects.toThrowError(
+      expect(postSearchHandler.startSearch(searchParams)).rejects.toThrow(
         error,
       );
+      postSearchHandler['_clearSearchTimeout']();
     });
 
     it('should filter posts which does not belong to search conversation', async () => {
@@ -330,7 +333,7 @@ describe('PostSearchController', () => {
       expect(SearchAPI.search).toHaveBeenCalledWith({
         previous_server_request_id: requestId,
       });
-      expect(subscribeController.unsubscribe).toBeCalled();
+      expect(subscribeController.unsubscribe).toHaveBeenCalled();
       expect(postSearchHandler['_searchInfo']).toBeUndefined();
     });
 
@@ -356,7 +359,7 @@ describe('PostSearchController', () => {
       postSearchHandler['_searchInfo'] = undefined as any;
       postSearchHandler.endPostSearch = jest.fn();
       await postSearchHandler.handleSearchResults({} as any);
-      expect(postSearchHandler.endPostSearch).toBeCalled();
+      expect(postSearchHandler.endPostSearch).toHaveBeenCalled();
     });
 
     it('should set search ended when results is null', () => {
@@ -392,7 +395,7 @@ describe('PostSearchController', () => {
       };
       postSearchHandler['_handlePostsAndItems'] = jest.fn();
       postSearchHandler.handleSearchResults(searchedResult);
-      expect(postSearchHandler['_handlePostsAndItems']).not.toBeCalled();
+      expect(postSearchHandler['_handlePostsAndItems']).not.toHaveBeenCalled();
     });
   });
 
@@ -418,6 +421,7 @@ describe('PostSearchController', () => {
       SearchAPI.scrollSearch = jest.fn().mockResolvedValue({});
 
       expect(postSearchHandler.scrollSearchPosts()).rejects.toThrow();
+      postSearchHandler['_clearSearchTimeout']();
     });
 
     it('should just return empty data when do scroll search but no active search', async () => {
@@ -504,7 +508,7 @@ describe('PostSearchController', () => {
         items: [],
         posts: [],
       });
-      expect(SearchAPI.scrollSearch).toBeCalledWith({
+      expect(SearchAPI.scrollSearch).toHaveBeenCalledWith({
         scroll_request_id: 1,
         search_request_id: requestId,
       });

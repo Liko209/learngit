@@ -10,4 +10,3 @@ export * from './IconButton';
 export * from './CheckboxButton';
 export * from './ButtonBar';
 export * from './LozengeButton';
-export * from './LinkButton';

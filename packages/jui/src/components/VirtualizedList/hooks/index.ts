@@ -1,4 +1,3 @@
-export * from './useFirstRenderRef';
 export * from './useForceUpdate';
 export * from './useMountState';
 export * from './usePrevious';

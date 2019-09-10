@@ -3,7 +3,7 @@
  * @Date: 2019-02-02 14:33:31
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
 import { LeaveBlockerService } from './service';
 import { ILeaveBlockerService } from './interface';
 

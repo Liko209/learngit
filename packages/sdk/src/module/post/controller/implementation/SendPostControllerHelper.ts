@@ -17,6 +17,10 @@ import { Post } from '../../entity';
 import { RawPostInfo } from '../../types';
 import { Raw } from '../../../../framework/model';
 import { transform } from '../../../../service/utils';
+import _ from 'lodash';
+import { Item } from 'sdk/module/item/entity';
+import { JSdkError, ERROR_CODES_SDK } from 'sdk/error';
+import { Nullable } from 'sdk/types';
 
 export type LinksArray = { url: string }[];
 
@@ -91,6 +95,54 @@ class SendPostControllerHelper {
     }
 
     return buildPost;
+  }
+
+  async buildShareItemPost(
+    options: {
+      fromPost: Post;
+      itemIds: number[];
+      targetGroupId: number;
+    },
+    getItemById: (id: number) => Promise<Nullable<Item>>,
+  ) {
+    const { fromPost, itemIds, targetGroupId } = options;
+    const now = Date.now();
+    const vers = versionHash();
+    const linkIds = itemIds.filter(id =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_LINK),
+    );
+    const noLinkIds = _.difference(itemIds, linkIds);
+    const mapToLinks = async (id: number) => {
+      const item = await getItemById(id);
+      if (!item || item.deactivated) {
+        throw new JSdkError(ERROR_CODES_SDK.ITEM_DEACTIVATED, 'item deactivated.');
+      }
+      return {
+        url: item.url,
+        source: 'streamPostLink',
+        history: [{ url: item.url }],
+        do_not_render: false,
+      };
+    };
+    const links = await Promise.all(
+      linkIds.map(mapToLinks).filter(item => !!item),
+    );
+    return {
+      links,
+      is_new: true,
+      source: 'Jupiter',
+      version: vers,
+      new_version: vers,
+      created_at: now,
+      modified_at: now,
+      group_id: targetGroupId,
+      item_ids: noLinkIds,
+      from_company_id: fromPost.company_id,
+      from_group_id: fromPost.group_id,
+      item_data: fromPost.item_data || {
+        version_map: {},
+      },
+    } as Post;
   }
 
   transformData(data: Raw<Post>[] | Raw<Post>): Post[] {

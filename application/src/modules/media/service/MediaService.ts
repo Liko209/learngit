@@ -15,6 +15,7 @@ import SettingModel from '@/store/models/UserSetting';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
+import { trackManager } from '../TrackManager';
 
 const SETTING_ITEM__VOLUME = SettingEntityIds.Phone_Volume;
 const SETTING_ITEM__SPEAKER_SOURCE = SettingEntityIds.Phone_SpeakerSource;
@@ -48,6 +49,18 @@ class MediaService implements IMediaService {
   canPlayType(mimeType: string) {
     mediaManager.canPlayType(mimeType);
     return true;
+  }
+
+  createTrack(trackId: string, weight?: number) {
+    const newTrack = trackManager.createTrack({
+      id: trackId,
+      weight,
+    });
+    return newTrack.id;
+  }
+
+  setDuckVolume(volume: number) {
+    trackManager.setDuckVolume(volume);
   }
 
   @computed

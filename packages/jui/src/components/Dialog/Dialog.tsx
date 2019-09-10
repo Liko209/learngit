@@ -4,21 +4,26 @@ import MuiDialog, {
 } from '@material-ui/core/Dialog';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled, { css } from 'styled-components';
-import { HotKeys } from '../../hoc/HotKeys';
+import { width } from '../../foundation/utils';
 
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
   fixedAtTop?: boolean;
+  allowOverflowY?: boolean;
 };
 
 type JuiDialogProps = StyledDialogProps & {
-  enableEscapeClose?: boolean;
-  onClose?: (event: KeyboardEvent) => void;
+  onClose?: (
+    event: KeyboardEvent | React.MouseEvent,
+    reason?: 'backdropClick' | 'escapeKeyDown',
+  ) => void;
 };
 
-const FilteredMuiDialog = ({ fixedAtTop, ...rest }: StyledDialogProps) => (
-  <MuiDialog {...rest} />
-);
+const FilteredMuiDialog = ({
+  fixedAtTop,
+  allowOverflowY,
+  ...rest
+}: StyledDialogProps) => <MuiDialog {...rest} />;
 
 const fixedAtTopStyle = css`
   display: inline-flex;
@@ -27,26 +32,29 @@ const fixedAtTopStyle = css`
 `;
 
 const StyledDialog = styled(FilteredMuiDialog)`
-  & .paper {
-    width: 100%;
-    ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
+  & {
+    .MuiDialog-paperWidthXs {
+      max-width: ${width(100)};
+    }
+
+    .paper {
+      width: 100%;
+      ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
+    }
+
+    .paper.overflow-y {
+      overflow-y: visible;
+    }
   }
-  & .paper.overflow-y {
-    overflow-y: visible;
+  & .MuiDialog-paper {
+    overflow-y: ${(modalProps: { allowOverflowY: boolean }) =>
+      modalProps.allowOverflowY ? 'unset' : 'auto'};
   }
 `;
 
 const WrapDialog = (props: JuiDialogProps) => {
-  const {
-    enableEscapeClose = false,
-    disableEscapeKeyDown,
-    onClose,
-    size = 'medium',
-    classes,
-    ...rest
-  } = props;
+  const { onClose, size = 'medium', classes, ...rest } = props;
 
-  const enableEscapeCloseHotKey = enableEscapeClose && !disableEscapeKeyDown;
   const initClasses = {
     ...classes,
     paper: `paper ${(classes && classes.paper) || ''}`,
@@ -72,17 +80,7 @@ const WrapDialog = (props: JuiDialogProps) => {
       break;
   }
 
-  return enableEscapeCloseHotKey ? (
-    <HotKeys
-      keyMap={{
-        esc: event => onClose && onClose(event) && false,
-      }}
-    >
-      <StyledDialog {...rest} classes={initClasses} onClose={onClose} />
-    </HotKeys>
-  ) : (
-    <StyledDialog {...rest} classes={initClasses} onClose={onClose} />
-  );
+  return <StyledDialog {...rest} classes={initClasses} onClose={onClose} />;
 };
 
 const JuiDialog = withMobileDialog<JuiDialogProps>({ breakpoint: 'xs' })(

@@ -1,17 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Menus 2 Lines MenuItem With Avatar 1`] = `
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c4.c4 {
+.c5.c5 {
   padding: 0;
 }
 
-.c4.c4 .list-item-primary {
+.c5.c5 .list-item-primary {
   display: block;
   color: #212121;
   font-size: 0.875rem;
@@ -24,7 +18,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   word-break: break-word;
 }
 
-.c4.c4 .list-item-secondary {
+.c5.c5 .list-item-secondary {
   display: block;
   color: #757575;
   font-size: 0.75rem;
@@ -37,11 +31,11 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   word-break: break-word;
 }
 
-.c4.c4.multiline {
+.c5.c5.multiline {
   margin: 0;
 }
 
-.c3.c3 {
+.c4.c4 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -51,16 +45,20 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   background-color: #f5f6fb;
 }
 
-.c3.c3:hover {
+.c4.c4:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c3.c3:active {
+.c4.c4:active {
   opacity: 0.76;
 }
 
-.c3 > .avatar-short-name {
+.c4:focus {
+  outline: none;
+}
+
+.c4 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -88,7 +86,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
 }
 
 .c0.c0 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -98,10 +96,6 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c0.c0:focus {
@@ -119,6 +113,12 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
 
 .c0.c0:active .c1 {
   color: #fff;
+}
+
+.c6 .c3:hover,
+.c6 .c3:active {
+  cursor: default;
+  opacity: 1;
 }
 
 <li
@@ -143,7 +143,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
     className="MuiListItemIcon-root c1 c2"
   >
     <div
-      className="MuiAvatar-root c3"
+      className="MuiAvatar-root c3 c4"
       size="medium"
     >
       <img
@@ -153,7 +153,8 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
     </div>
   </div>
   <div
-    className="MuiListItemText-root c4 MuiListItemText-multiline multiline"
+    className="MuiListItemText-root c5 MuiListItemText-multiline multiline"
+    flex="1 1 auto"
   >
     <span
       className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -196,7 +197,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
 }
 
 .c4.c4 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -206,10 +207,6 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c4.c4[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c4.c4:focus {
@@ -230,7 +227,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
 }
 
 .c1.c1 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -240,10 +237,6 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c1.c1[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c1.c1:focus {
@@ -401,7 +394,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
 }
 
 .c0.c0 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -411,10 +404,6 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c0.c0:focus {
@@ -476,7 +465,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
 
 exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuItem 1`] = `
 .c0.c0 {
-  padding: 4px 16px 4px 16px;
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -486,10 +475,6 @@ exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuIt
   min-height: 32px;
   min-width: 112px;
   box-sizing: border-box;
-}
-
-.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
 }
 
 .c0.c0:focus {

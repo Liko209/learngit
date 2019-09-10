@@ -4,10 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { getEntity } from '@/store/utils';
 import { TaskView } from '../Task.View';
 import { shallow } from 'enzyme';
+import { config } from '@/modules/viewer/module.config';
 import { JuiTimeMessage } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 
 jest.mock('@/store/utils');
 jest.mock('i18next', () => ({

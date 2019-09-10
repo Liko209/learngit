@@ -56,12 +56,21 @@ export type ZIndex = typeof zIndex & MuiZIndex;
 
 export { Transitions, Shadows };
 
+export type Shape = {
+  borderRadius: number;
+  border1: string;
+  border2: string;
+  border3: string;
+  border4: string;
+};
+
 export type Theme = {
   palette: Palette;
   typography: Typography;
   opacity: Opacity;
   radius: Radius;
   zIndex: ZIndex;
+  shape: Shape;
 } & MuiTheme;
 
 export type PaletteOptions = typeof palette;

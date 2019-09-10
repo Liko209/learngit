@@ -25,40 +25,36 @@ test(formalName('Show massage draft when refreshing App', ['P2', 'JPT-2360']), a
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId1, teamId2, conversation1, conversation2;
-  await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
-    teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `1 ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId]
-    });
-    teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `2 ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId]
-    });
+  const msg = uuid();
+
+  await h(t).withLog('Given I have a extension that has at least 1 team', async (step) => {
+    const oldTeams: any[] = await h(t).glip(loginUser).getTeams().then(res => res.data.teams
+      .filter(team => !team.is_archived && !team.deactivated && !!team.members));
+    if (oldTeams.length == 0) {
+      let team = <IGroup>{
+        type: "Team",
+        name: uuid(),
+        owner: loginUser,
+        members: [loginUser],
+      };
+      await h(t).scenarioHelper.createTeam(team)
+    }
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });;
 
   const teamSection = app.homePage.messageTab.teamsSection;
-  await h(t).withLog('Then I can check conversation A and B exist', async () => {
-    await teamSection.expand();
-    conversation1 = teamSection.conversationEntryById(teamId1);
-    conversation2 = teamSection.conversationEntryById(teamId2);
-    await t.expect(conversation1.exists).ok({ timeout: 10e3 });
-    await t.expect(conversation2.exists).ok({ timeout: 10e3 });
-  });
-
-  const msg = uuid();
   const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
-  await h(t).withLog(`And I enter conversation A to type message "${msg}"`, async () => {
-    await conversation1.enter();
+  await h(t).withLog(`When I enter first conversation to type message "{msg}"`, async (step) => {
+    step.setMetadata('msg', msg);
+    await teamSection.nthConversationEntry(0).enter();
     await t.typeText(inputField, msg)
   }, true);
 
@@ -68,7 +64,7 @@ test(formalName('Show massage draft when refreshing App', ['P2', 'JPT-2360']), a
   });
 
   await h(t).withLog(`Then I can find input field still is ${msg}`, async () => {
-    await t.expect(conversation1.hasDraftMessage).notOk();
+    await t.expect(teamSection.nthConversationEntry(0).hasDraftMessage).notOk();
     await t.expect(inputField.textContent).eql(msg);
   });
 });
@@ -538,7 +534,7 @@ test.meta(<ITestMeta>{
   const msg = uuid();
   const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
   const url = new URL(SITE_URL)
-  const Conversation1_URL = `${url.protocol}//${url.hostname}/messages/${team1.glipId}`;
+  const Conversation1_URL = `${url.origin}/messages/${team1.glipId}`;
   await h(t).withLog(`When I enter conversation A to type message "{msg}"`, async (step) => {
     step.setMetadata('msg', msg);
     await conversation1.enter();

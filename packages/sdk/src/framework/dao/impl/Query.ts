@@ -10,7 +10,7 @@ import {
   IQuery,
   IFilter,
   IDatabase,
-} from 'foundation';
+} from 'foundation/db';
 import { errorHandler } from '../errors/handler';
 import { IQueryOpt } from '../interface/IQueryOpt';
 import { ModelIdType, IdModel } from '../../model';

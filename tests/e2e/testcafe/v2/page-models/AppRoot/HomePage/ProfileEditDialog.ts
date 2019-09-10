@@ -23,7 +23,7 @@ export class ProfileEditDialog extends BaseWebComponent {
   async clickAvatarEditIcon() {
     await this.t.click(this.avatarEditIcon);
   }
-  
+
   get firstName() {
     return this.getSelectorByAutomationId('editProfileFirstNameItem');
   }
@@ -39,6 +39,12 @@ export class ProfileEditDialog extends BaseWebComponent {
   get webpage() {
     return this.getSelectorByAutomationId('editProfileWebpageItem');
   }
+
+  // for testcafe upload enter point
+  get uploadInputEntry() {
+    return this.getSelectorByAutomationIdUnderSelf('upload-file-input');
+  }
+
   get cancelButton() {
     return this.getSelectorByAutomationId('DialogCancelButton');
   }
@@ -54,7 +60,7 @@ export class ProfileEditDialog extends BaseWebComponent {
   get webpageInlineError() {
     return this.webpage.find('p');
   }
-  
+
   async inputFirstName(web: string, options: TypeActionOptions = { replace: true }) {
     await this.clickAndTypeText(this.firstName, web, options);
   }
@@ -88,6 +94,12 @@ export class ProfileEditDialog extends BaseWebComponent {
   async typeRandomLocation(length: number, options: TypeActionOptions = { replace: true }) {
     await this.inputLocation(this.randomString(length), options);
   }
+
+  /** actions */
+  async uploadFile(filePath: string) {
+    await this.t.setFilesToUpload(this.uploadInputEntry, filePath)
+  }
+
   async updateFirstName(text: string, options?) {
     await this.t.typeText(this.firstName, text, options);
   }

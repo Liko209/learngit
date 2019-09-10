@@ -92,7 +92,8 @@ test.meta(<ITestMeta>{
         await t.expect(telephonyDialog.SwitchToptap.exists).ok();
     });
     await h(t).withLog('Then the call window should not be displayed at the Jupiter', async () => {
-        await t.expect(telephonyDialog.header.exists).notOk();
+        await t.expect(telephonyDialog.visible).notOk();
+        await t.expect(telephonyDialog.header.exists).ok();
     });
   });
 test.meta(<ITestMeta>{

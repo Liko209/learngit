@@ -8,7 +8,9 @@ import { toTitleCase } from '@/utils/string';
 import enLngJson from '../public/locales/en/translations.json';
 import i18nOptions from './i18nOptions';
 
-const OPEN_PSEUDO = ['production', 'public'].includes(process.env.JUPITER_ENV || 'other');
+const CLOSE_PSEUDO = ['production', 'public'].includes(
+  process.env.JUPITER_ENV || 'other',
+);
 
 /**
  * momentWhitelist: white list for moment
@@ -78,7 +80,7 @@ const config: i18next.InitOptions = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  postProcess: OPEN_PSEUDO ? ['pseudo'] : false,
+  postProcess: CLOSE_PSEUDO ? false : ['pseudo'],
   whitelist: Object.keys(whitelist),
   nsSeparator: ':::',
   load: 'currentOnly',
@@ -99,7 +101,7 @@ i18next
   .use(initReactI18next)
   .use(intervalPlural);
 
-if (OPEN_PSEUDO) {
+if (!CLOSE_PSEUDO) {
   const Pseudo = require('@/utils/i18next-pseudo'); // eslint-disable-line
   i18next.use(new Pseudo());
 }

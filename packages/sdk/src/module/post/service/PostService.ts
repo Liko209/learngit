@@ -60,6 +60,7 @@ class PostService extends EntityBaseService<Post> {
       this.postController = new PostController(
         this._groupService,
         this._groupConfigService,
+        this.getEntitySource(),
       );
     }
     return this.postController;
@@ -225,6 +226,12 @@ class PostService extends EntityBaseService<Post> {
     return await this.getPostController()
       .getPostItemController()
       .getLatestPostIdByItem(groupId, itemId);
+  }
+
+  async shareItem(postId: number, itemId: number, targetGroupId: number) {
+    return await this.getPostController()
+      .getSendPostController()
+      .shareItem(postId, itemId, targetGroupId);
   }
 
   private get _postDataController() {

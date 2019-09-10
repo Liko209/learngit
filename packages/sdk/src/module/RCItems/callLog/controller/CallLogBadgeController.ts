@@ -8,7 +8,8 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { BadgeService } from 'sdk/module/badge';
 import { notificationCenter, EVENT_TYPES, ENTITY } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { CallLog } from '../entity';
 import { MISSED_CALL_BADGE_ID, CALL_RESULT } from '../constants';
@@ -147,7 +148,7 @@ class CallLogBadgeController {
 
     let unreadChanged = false;
     if (
-      data.__deactivated ||
+      data.deleted ||
       (this._lastReadMissed && this._lastReadMissed >= data.__timestamp)
     ) {
       if (this._unreadMap.has(data.id)) {

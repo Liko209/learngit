@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ITelephonyDaoDelegate } from 'foundation';
+import { ITelephonyDaoDelegate } from 'foundation/telephony';
 import { RTCSipProvisionInfo } from '../api/types';
 import { rtcLogger } from './RTCLoggerProxy';
 import { kProvisioningInfoKey } from './constants';
@@ -15,22 +15,22 @@ class RTCDaoManager {
   private static _singleton: RTCDaoManager | null = null;
   private _delegate: ITelephonyDaoDelegate | null = null;
 
-  public static instance(): RTCDaoManager {
+  static instance(): RTCDaoManager {
     if (!RTCDaoManager._singleton) {
       return (RTCDaoManager._singleton = new RTCDaoManager());
     }
     return RTCDaoManager._singleton;
   }
 
-  public static destroy() {
+  static destroy() {
     RTCDaoManager._singleton = null;
   }
 
-  public setDaoDelegate(delegate: ITelephonyDaoDelegate) {
+  setDaoDelegate(delegate: ITelephonyDaoDelegate) {
     this._delegate = delegate;
   }
 
-  public saveProvisionInfo(provisionInfo: RTCSipProvisionInfo) {
+  saveProvisionInfo(provisionInfo: RTCSipProvisionInfo) {
     if (!this._delegate) {
       rtcLogger.warn(
         LOG_TAG,
@@ -41,7 +41,7 @@ class RTCDaoManager {
     this._delegate.put(kProvisioningInfoKey, provisionInfo);
   }
 
-  public readProvisioning(): RTCSipProvisionInfo | null {
+  readProvisioning(): RTCSipProvisionInfo | null {
     if (!this._delegate) {
       rtcLogger.warn(
         LOG_TAG,
@@ -52,7 +52,7 @@ class RTCDaoManager {
     return this._delegate.get(kProvisioningInfoKey);
   }
 
-  public removeProvisioning() {
+  removeProvisioning() {
     if (!this._delegate) {
       rtcLogger.warn(
         LOG_TAG,

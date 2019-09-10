@@ -29,7 +29,10 @@ type IndexConstraint = {
 type Delta = { x: number; y: number; z: number };
 
 type VirtualizedListChild = JSX.Element | { key: string | number; type?: any };
-
+enum SCROLL_ALIGN {
+  TOP = 'top',
+  BOTTOM = 'bottom',
+}
 type JuiVirtualizedListProps = {
   role?: string;
   tabIndex?: number;
@@ -38,6 +41,7 @@ type JuiVirtualizedListProps = {
   fixedRowHeight?: number;
   overscan?: number;
   initialScrollToIndex?: number;
+  initialScrollAlignTo?: SCROLL_ALIGN;
   stickToBottom?: boolean;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
@@ -51,6 +55,7 @@ type JuiVirtualizedListProps = {
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   onBottomStatusChange?: (atBottom: boolean) => void;
+  highlightedIndex?: number;
 };
 
 export {
@@ -62,4 +67,5 @@ export {
   Delta,
   UndefinedAble,
   ScrollInfo,
+  SCROLL_ALIGN,
 };

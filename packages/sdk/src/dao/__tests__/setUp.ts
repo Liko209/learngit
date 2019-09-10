@@ -4,7 +4,6 @@
  */
 // import WebApplication from 'sdk/WebApplication';
 // import { daoManager } from '../';
-// import { init as initFoundation } from 'foundation';
 
 // initFoundation({
 //   dbAdapter: 'dexie'

@@ -16,7 +16,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
 import { Action } from 'history';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/module/group/constants';
 import { getGlobalValue } from '@/store/utils/entities';
@@ -148,7 +148,7 @@ export class MessageRouterChangeHelper {
 
   static async verifyGroup(id: number, showToaster = true) {
     const groupService = ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE
+      ServiceConfig.GROUP_SERVICE,
     );
     const { canBeShown, reason } = await groupService.isGroupCanBeShown(id);
     logger.log(`Verifying group ${id}`);
@@ -162,12 +162,15 @@ export class MessageRouterChangeHelper {
     }
 
     const messageMap = {
-      [GROUP_CAN_NOT_SHOWN_REASON.NOT_AUTHORIZED]: 'people.prompt.conversationPrivate',
-      [GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED]: 'people.prompt.conversationArchived',
-      [GROUP_CAN_NOT_SHOWN_REASON.DEACTIVATED]: 'people.prompt.conversationDeleted',
+      [GROUP_CAN_NOT_SHOWN_REASON.NOT_AUTHORIZED]:
+        'people.prompt.conversationPrivate',
+      [GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED]:
+        'people.prompt.conversationArchived',
+      [GROUP_CAN_NOT_SHOWN_REASON.DEACTIVATED]:
+        'people.prompt.conversationDeleted',
     };
 
-    Notification.flashToast({
+    messageMap[reason] && Notification.flashToast({
       message: messageMap[reason],
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,

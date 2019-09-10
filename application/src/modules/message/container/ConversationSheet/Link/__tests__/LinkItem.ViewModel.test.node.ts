@@ -8,6 +8,8 @@ import * as utils from '@/store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
 import { LinkItemProps } from '../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { testable, test } from 'shield';
+import { mockEntity } from 'shield/application';
 
 const itemService = {
   deleteItem: jest.fn(),
@@ -60,4 +62,25 @@ describe('LinkItemViewModel', () => {
     setUp(123321);
     expect(linkItemVM.canClosePreview).toBeFalsy();
   });
+});
+
+describe('LinkItemViewModel', () => {
+  @testable
+  class linkPreview {
+    @test(
+      'should isLinkPreviewDisabled be false when link preview of profile is true [JPT-2817]',
+    )
+    @mockEntity({ value: true })
+    t1() {
+      expect(linkItemVM.isLinkPreviewDisabled).toBeFalsy();
+    }
+
+    @test(
+      'should  isLinkPreviewDisabled be true when link preview of profile is false [JPT-2817]',
+    )
+    @mockEntity({ value: false })
+    t2() {
+      expect(linkItemVM.isLinkPreviewDisabled).toBeTruthy();
+    }
+  }
 });

@@ -8,18 +8,19 @@ import {
   sleep,
   toFirstLetterUpperCase,
   getDisplayNameByCaller,
+  onVoicemailNotificationClick,
+  onMissedCallNotificationClick,
 } from '../helpers';
+import * as utils from '@/store/utils';
+import history from '@/history';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { Notification } from '@/containers/Notification';
+import { VOICEMAILS_ROOT_PATH, CALL_LOG_ROOT_PATH } from '../interface/constant';
+import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
 
 jest.mock('@/utils/i18nT', () => ({
   i18nP: (key: string) => key,
-}));
-
-jest.mock('@/store/utils', () => ({
-  getEntity: (name: string, id: number) => ({
-    userDisplayName: 'xxx',
-  }),
 }));
 
 jest.mock('@/modules/common/container/PhoneNumberFormat', () => ({
@@ -73,6 +74,9 @@ describe('helpers', () => {
           id: 1,
         }),
       });
+      jest
+        .spyOn(utils, 'getEntity')
+        .mockImplementation(() => ({ userDisplayName: 'xxx' }));
       const activeCall = {
         from: '123',
         to: '456',
@@ -125,6 +129,52 @@ describe('helpers', () => {
       };
       const displayName = await getDisplayNameByCaller(activeCall);
       expect(displayName).toBe('456');
+    });
+  });
+
+  describe('onVoicemailNotificationClick', () => {
+    it('Should open voicemail page when user not in voicemail page [JPT-2823]', () => {
+      history.location = { pathname: '/message' };
+      history.push = jest.fn();
+
+      onVoicemailNotificationClick();
+
+      expect(history.push).toHaveBeenCalledWith(VOICEMAILS_ROOT_PATH);
+    });
+
+    it('Should flash toast when the voicemail not existed [JPT-2824]', async () => {
+      jest.spyOn(Notification, 'flashToast');
+      jest.spyOn(ServiceLoader, 'getInstance').mockReturnValueOnce({
+        getById: jest.fn().mockResolvedValue(null),
+      });
+
+      await onVoicemailNotificationClick();
+
+      expect(Notification.flashToast).toHaveBeenCalled();
+    });
+
+    it('Should flash toast when the voicemail not alive [JPT-2824]', async () => {
+      jest.spyOn(Notification, 'flashToast');
+      jest.spyOn(ServiceLoader, 'getInstance').mockReturnValueOnce({
+        getById: jest.fn().mockResolvedValue({
+          availability: MESSAGE_AVAILABILITY.DELETED,
+        }),
+      });
+
+      await onVoicemailNotificationClick();
+
+      expect(Notification.flashToast).toHaveBeenCalled();
+    });
+  });
+
+  describe('onMissedCallNotificationClick', () => {
+    it('Should open call history page when user not in call history page [JPT-2794]', () => {
+      history.location = { pathname: '/message' };
+      history.push = jest.fn();
+
+      onMissedCallNotificationClick();
+
+      expect(history.push).toHaveBeenCalledWith(CALL_LOG_ROOT_PATH);
     });
   });
 });

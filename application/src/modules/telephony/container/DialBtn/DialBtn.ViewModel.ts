@@ -3,7 +3,7 @@
  * @Date: 2019-04-29 16:16:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
@@ -35,7 +35,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
   private _makeCall = async (val: string) => {
     // make sure line 30 run before end()
-    if (!(await this._telephonyService.makeCall(val))) {
+    if (!(await this._telephonyService.directCall(val))) {
       await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });

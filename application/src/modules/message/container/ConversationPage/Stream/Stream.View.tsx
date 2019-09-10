@@ -7,7 +7,9 @@ import _ from 'lodash';
 import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import { observable, runInAction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger, PerformanceTracer, dataAnalysis } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -29,9 +31,12 @@ import {
   ThresholdStrategy,
   JuiVirtualizedListHandles,
   ItemWrapper,
-  ScrollInfo,
+  SCROLL_ALIGN,
 } from 'jui/components/VirtualizedList';
-import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
+import {
+  DefaultLoadingWithDelay,
+  DefaultLoadingMore,
+} from 'jui/hoc/withLoading';
 import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
@@ -92,7 +97,9 @@ class StreamViewComponent extends Component<Props> {
       } as React.CSSProperties),
   );
 
-  async componentDidMount() {
+  private _firstTracer: boolean = false;
+
+  componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     dataAnalysis.page('Jup_Web/DT_msg_conversationHistory');
@@ -103,22 +110,9 @@ class StreamViewComponent extends Component<Props> {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
       jumpToPostId: prevJumpToPostId,
-      loadingStatus: prevLoadingStatus,
     } = prevProps;
-    const {
-      postIds,
-      mostRecentPostId,
-      hasMore,
-      lastPost,
-      jumpToPostId,
-      loadingStatus,
-    } = this.props;
+    const { postIds, hasMore, lastPost, jumpToPostId } = this.props;
 
-    if (postIds.length && mostRecentPostId) {
-      if (!postIds.includes(mostRecentPostId)) {
-        this._updateIgnoredStatus(false);
-      }
-    }
     const newPostAddedAtEnd =
       prevPostIds.length !== 0 &&
       // TODO this is a Hotfix for FIJI-4825
@@ -138,16 +132,6 @@ class StreamViewComponent extends Component<Props> {
     }
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
-
-    if (
-      loadingStatus === STATUS.SUCCESS &&
-      prevLoadingStatus === STATUS.PENDING
-    ) {
-      this._performanceTracer.end({
-        key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
-        count: postIds.length,
-      });
-    }
 
     if (this._isAtBottom === null && this._listRef.current) {
       this._isAtBottom = this._listRef.current.isAtBottom();
@@ -280,13 +264,24 @@ class StreamViewComponent extends Component<Props> {
   @action
   private _handleVisibilityChanged = (
     { startIndex, stopIndex }: IndexRange,
-    { scrollHeight, scrollTop, clientHeight }: ScrollInfo,
+    target?: HTMLElement,
   ) => {
+    if (!target) return;
+    const { scrollHeight, scrollTop, clientHeight } = target;
     const {
       items,
       firstHistoryUnreadPostId = 0,
       historyReadThrough = 0,
+      postIds,
     } = this.props;
+    if (!this._firstTracer) {
+      this._performanceTracer.end({
+        key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+        count: postIds.length,
+      });
+      this._firstTracer = true;
+    }
+
     const listEl = this._listRef.current;
     const lastPostVisible = stopIndex === items.length - 1;
 
@@ -470,8 +465,16 @@ class StreamViewComponent extends Component<Props> {
       isAboveScrollToLatestCheckPoint: this._isAboveScrollToLatestCheckPoint,
     };
     const initialPosition = this.props.jumpToPostId
-      ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
-      : items.length - 1;
+      ? {
+          initialScrollToIndex: this._findStreamItemIndexByPostId(
+            this.props.jumpToPostId,
+          ),
+          initialScrollAlignTo: SCROLL_ALIGN.TOP,
+        }
+      : {
+          initialScrollToIndex: items.length - 1,
+          initialScrollAlignTo: SCROLL_ALIGN.BOTTOM,
+        };
     /* eslint-disable implicit-arrow-linebreak */
     return (
       <JuiStream>
@@ -494,7 +497,6 @@ class StreamViewComponent extends Component<Props> {
                       height={height}
                       stickToBottom
                       loadMoreStrategy={this._loadMoreStrategy}
-                      initialScrollToIndex={initialPosition}
                       minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
                       loadInitialData={this._loadInitialPosts}
                       loadMore={loadMore}
@@ -503,6 +505,7 @@ class StreamViewComponent extends Component<Props> {
                       loadingMoreRenderer={this._defaultLoadingMore}
                       onVisibleRangeChange={this._handleVisibilityChanged}
                       onBottomStatusChange={this._bottomStatusChangeHandler}
+                      {...initialPosition}
                     >
                       {this._renderStreamItems()}
                     </JuiInfiniteList>

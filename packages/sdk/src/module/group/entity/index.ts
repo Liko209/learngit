@@ -4,24 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  GroupQueryType,
-  FEATURE_STATUS,
-  FEATURE_TYPE,
-  TeamPermission,
-  Group,
-  GroupCommon,
-  TeamPermissionParams,
-  GroupTyping,
-} from './Group';
-
-export {
-  GroupQueryType,
-  FEATURE_STATUS,
-  FEATURE_TYPE,
-  TeamPermission,
-  Group,
-  GroupCommon,
-  TeamPermissionParams,
-  GroupTyping,
-};
+export * from './Group';

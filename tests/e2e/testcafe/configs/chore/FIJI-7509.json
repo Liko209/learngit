@@ -1,0 +1,1 @@
+{"on_merge":{"fixtures":["fixtures/**/*.ts"],"include_tags":[],"exclude_tags":[], "case_filter": "tags in ('JPT-70')"}}

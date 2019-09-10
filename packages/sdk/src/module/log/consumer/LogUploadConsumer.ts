@@ -3,7 +3,7 @@
  * @Date: 2018-12-26 15:21:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogEntity, LOG_LEVEL } from 'foundation';
+import { LogEntity, LOG_LEVEL } from 'foundation/log';
 import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
@@ -15,13 +15,28 @@ import { ILogProducer, ILogConsumer } from '../collectors';
 import { IAccessor } from './types';
 import _ from 'lodash';
 
-/* eslint-disable */
-
 const PERSISTENT_STATE = {
   INIT: 'INIT',
   NO_SURE: 'NO_SURE',
   NOT_EMPTY: 'NOT_EMPTY',
   EMPTY: 'EMPTY',
+};
+
+const transform = {
+  toPersistent: (logEntities: LogEntity[]): PersistentLogEntity => {
+    const target: PersistentLogEntity = {
+      id: randomInt(),
+      sessionId: logEntities[0].sessionId,
+      startTime: logEntities[0].timestamp,
+      endTime: logEntities[logEntities.length - 1].timestamp,
+      logs: logEntities,
+      size: _.sumBy(logEntities, log => log.size),
+    };
+    return target;
+  },
+  toLogEntity: (persistentLog: PersistentLogEntity): LogEntity[] => {
+    return persistentLog.logs;
+  },
 };
 
 class PersistentTask extends Task {}
@@ -58,29 +73,12 @@ class UploadPersistentLogTask extends Task {
   }
 }
 
-const transform = {
-  toPersistent: (logEntities: LogEntity[]): PersistentLogEntity => {
-    const target: PersistentLogEntity = {
-      id: randomInt(),
-      sessionId: logEntities[0].sessionId,
-      startTime: logEntities[0].timestamp,
-      endTime: logEntities[logEntities.length - 1].timestamp,
-      logs: logEntities,
-      size: _.sumBy(logEntities, log => log.size),
-    };
-    return target;
-  },
-  toLogEntity: (persistentLog: PersistentLogEntity): LogEntity[] => {
-    return persistentLog.logs;
-  },
-};
-
 function retryDelay(retryCount: number) {
   return Math.min(10 * 1000 + retryCount * 20000, 90 * 1000);
 }
 
 function timeout(time: number) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     setTimeout(resolve, time);
   });
 }
@@ -124,6 +122,8 @@ export class LogUploadConsumer implements ILogConsumer {
             break;
           case 'ignore':
             await loopController.ignore();
+            break;
+          default:
             break;
         }
       },
@@ -325,9 +325,8 @@ export class LogUploadConsumer implements ILogConsumer {
             });
             this._persistentFSM.consume();
           } else {
-            if (this._persistentFSM.state === PERSISTENT_STATE.NOT_EMPTY) {
+            this._persistentFSM.state === PERSISTENT_STATE.NOT_EMPTY &&
               this._persistentFSM.consume();
-            }
           }
         }),
       );
@@ -360,6 +359,7 @@ export class LogUploadConsumer implements ILogConsumer {
 
   private _uploadAvailable(): boolean {
     const { uploadEnabled, uploadQueueLimit } = configManager.getConfig();
+    /* eslint-disable no-constant-condition */
     do {
       if (!uploadEnabled) break;
       if (this._flushMode) break;

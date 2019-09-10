@@ -3,7 +3,8 @@
  * @Date: 2019-05-27 10:01:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { RCItemApi } from 'sdk/api/ringcentral';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';

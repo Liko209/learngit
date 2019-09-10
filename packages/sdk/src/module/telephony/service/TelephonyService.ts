@@ -18,6 +18,7 @@ import {
   notificationCallback,
   TelephonyDataCollectionInfoConfigType,
   CallOptions,
+  TRANSFER_TYPE,
 } from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
@@ -33,6 +34,9 @@ import {
   ActiveCall,
 } from 'sdk/module/rcEventSubscription/types';
 import { RTCSipEmergencyServiceAddr } from 'voip';
+import { IPersonService } from 'sdk/module/person/service/IPersonService';
+import { IPhoneNumberService } from 'sdk/module/phoneNumber/service/IPhoneNumberService';
+import { IRCInfoService } from 'sdk/module/rcInfo/service/IRCInfoService';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
@@ -40,7 +44,12 @@ class TelephonyService extends EntityBaseService<Call>
   private _userConfig: TelephonyUserConfig;
   private _phoneSetting: PhoneSetting;
   private _callSwitchController: CallSwitchController;
-  constructor() {
+
+  constructor(
+    private _personService: IPersonService,
+    private _phoneNumberService: IPhoneNumberService,
+    private _rcInfoService: IRCInfoService,
+  ) {
     super({ isSupportedCache: true, entityName: 'CALL' });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
@@ -88,6 +97,9 @@ class TelephonyService extends EntityBaseService<Call>
       this._telephonyEngineController = new TelephonyEngineController(
         this.userConfig,
         this.getEntityCacheController(),
+        this._personService,
+        this._phoneNumberService,
+        this._rcInfoService,
       );
     }
     return this._telephonyEngineController;
@@ -136,7 +148,6 @@ class TelephonyService extends EntityBaseService<Call>
 
   hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
-    this._callSwitchController.onCallEnded(callId);
   };
 
   mute = (callId: number) => {
@@ -198,6 +209,16 @@ class TelephonyService extends EntityBaseService<Call>
       .getAccountController()
       .forward(callId, phoneNumber);
 
+  transfer = async (
+    callId: number,
+    type: TRANSFER_TYPE,
+    transferTo: string,
+  ) => {
+    await this.telephonyController
+      .getAccountController()
+      .transfer(callId, type, transferTo);
+  };
+
   replyWithPattern = (
     callId: number,
     pattern: RTC_REPLY_MSG_PATTERN,
@@ -258,6 +279,10 @@ class TelephonyService extends EntityBaseService<Call>
     return this.telephonyController.getRemoteEmergencyAddress();
   };
 
+  hasActiveDL = () => {
+    return this.telephonyController.hasActiveDL();
+  };
+
   getLocalEmergencyAddress = () => {
     return this.telephonyController.getLocalEmergencyAddress();
   };
@@ -289,6 +314,10 @@ class TelephonyService extends EntityBaseService<Call>
 
   subscribeSipProvReceived = (listener: notificationCallback) => {
     this.telephonyController.subscribeSipProvReceived(listener);
+  };
+
+  getCallIdList = () => {
+    return this.telephonyController.getAccountController().getCallIdList();
   };
 }
 

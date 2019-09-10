@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 
 export function newConversation() {
   dataAnalysis.page('Jup_Web/DT_msg_newConversation');

@@ -13,14 +13,13 @@ function mockEntity(data: any) {
     descriptor: PropertyDescriptor,
   ) {
     const oldFn = descriptor.value;
-    const hasParam = oldFn.length > 0;
 
     const _mockEntity = (args: any) => {
       const isEach = descriptor.value.isEach;
       (getEntity as jest.Mock) = createMockEntity(data, args, isEach);
     };
 
-    descriptor.value = descriptorAOP(hasParam, _mockEntity, oldFn);
+    descriptor.value = descriptorAOP(target, _mockEntity, oldFn);
     return descriptor;
   };
 }
@@ -32,13 +31,12 @@ mockEntity.multi = function(data: any[]) {
     descriptor: PropertyDescriptor,
   ) {
     const oldFn = descriptor.value;
-    const hasParam = oldFn.length > 0;
 
     const _mockEntity = () => {
       (getEntity as jest.Mock) = createMultiFn(data);
     };
 
-    descriptor.value = descriptorAOP(hasParam, _mockEntity, oldFn);
+    descriptor.value = descriptorAOP(target, _mockEntity, oldFn);
     return descriptor;
   };
 };

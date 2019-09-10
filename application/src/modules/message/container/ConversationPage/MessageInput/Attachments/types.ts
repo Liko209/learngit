@@ -18,6 +18,7 @@ type SelectFile = {
 
 type AttachmentsProps = {
   id: number;
+  onPostClicked?: () => void;
   viewRef?: React.RefObject<any>;
   forceSaveDraft: boolean;
 };
@@ -38,6 +39,7 @@ type AttachmentsViewProps = {
   cancelDuplicateFiles: () => void;
   uploadDuplicateFiles: () => void;
   updateDuplicateFiles: () => void;
+  onEscTrackedCancelDuplicateFiles: () => void;
   cleanFiles: () => void;
   reloadFiles: () => void;
   sendFilesOnlyPost: () => Promise<void>;

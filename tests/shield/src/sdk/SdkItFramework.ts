@@ -14,51 +14,34 @@ import { notificationCenter, SERVICE } from 'sdk/service';
 
 import { wait } from '../utils';
 import { globalConfig } from './globalConfig';
-import { GlipDataHelper } from './mocks/server/glip/data/data';
-import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
-import { GlipData, InitialData } from './mocks/server/glip/types';
-import { parseInitialData } from './mocks/server/glip/utils';
-import { InstanceManager } from './mocks/server/InstanceManager';
-import { MockSocketServer } from './mocks/server/MockSocketServer';
-import { ProxyServer } from './mocks/server/ProxyServer';
-import { SocketServerManager } from './mocks/server/SocketServerManager';
-import { IMockRequestResponse, MockApi, MockResponse } from './types';
-import { blockExternalRequest, createApiResponse } from './utils';
+import {
+  GlipDataHelper,
+  createInitialDataHelper,
+} from './mocks/glip/data/data';
+import { MockGlipServer } from './mocks/glip/MockGlipServer';
+import { GlipData, InitialData } from './mocks/glip/types';
+import { parseInitialData } from './mocks/glip/utils';
+import { InstanceManager } from './server/InstanceManager';
+import { ProxyServer } from './server/ProxyServer';
+import { SocketServerManager } from './server/SocketServerManager';
+import {
+  IMockRequestResponse,
+  MockApi,
+  MockResponse,
+  ItContext,
+} from './types';
+import { IGlipIndex } from './mocks/glip/api/index/index.get.contract';
+import {
+  blockExternalRequest,
+  createApiResponse,
+  createResponse,
+} from './utils';
+import { GlipScenario } from 'shield/sdk/mocks/glip/GlipScenario';
 
 import assert = require('assert');
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 
-type ItContext = {
-  // ACCOUNT user info
-  userContext: {
-    glipUserId: () => number;
-    glipCompanyId: () => number;
-  };
-  // ACCOUNT data template
-  template: {
-    BASIC: InitialData;
-    STANDARD: InitialData;
-  };
-  // some useful helper for  test
-  helper: {
-    // apply template
-    useInitialData: (initialData: InitialData) => GlipData;
-    // model build helper
-    glipDataHelper: () => GlipDataHelper;
-    mockResponse: MockResponse;
-    // mock api response
-    mockApi: MockApi;
-    // glip socketServer, use to send message to client.
-    socketServer: MockSocketServer;
-    clearMocks: () => void;
-  };
-  // sdk setup/cleanUp
-  sdk: {
-    setup: (mode?: 'glip' | 'rc') => Promise<void>;
-    cleanUp: () => Promise<void>;
-  };
-};
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetModules();
@@ -105,10 +88,7 @@ async function cleanUp() {
   debug('clean sdk end.');
 }
 
-export function itForSdk(
-  name: string,
-  caseExecutor: (itCtx: ItContext) => void,
-) {
+export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
   let userId: number;
   let companyId: number;
   const proxyServer = InstanceManager.get(ProxyServer);
@@ -117,14 +97,17 @@ export function itForSdk(
     userId = _userId;
     companyId = _companyId;
     globalConfig.set('userId', String(userId));
+
     return new GlipDataHelper(_companyId, _userId);
   };
   let glipData: GlipData;
+  let glipInitialData: InitialData;
   let glipDataHelper: GlipDataHelper;
   const useInitialData = (initialData: InitialData) => {
+    glipInitialData = initialData;
     glipData = parseInitialData(initialData);
     glipDataHelper = useAccount(initialData.company_id, initialData.user_id);
-    return glipData;
+    return createInitialDataHelper(initialData);
   };
 
   const getGlipDataHelper = () => {
@@ -137,7 +120,6 @@ export function itForSdk(
   };
 
   const mockResponse: MockResponse = (requestResponse, extractor, mapper) => {
-    // const requestResponse = createSuccessResponse(apiPath, response);
     if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
       const requestResponsePool: IMockRequestResponse[] = [];
       jest
@@ -148,11 +130,14 @@ export function itForSdk(
       ? extractor(requestResponse as any)
       : requestResponse;
     const pool = proxyServer.getRequestResponsePool();
-    pool.push({
+    const pathRegexp = pathToRegexp(requestResponse.path);
+    const mockRequestResponse = {
       ...requestResponse,
       mapper,
-      pathRegexp: pathToRegexp(requestResponse.path),
-    });
+      pathRegexp,
+      pathRegexpString: String(pathRegexp),
+    };
+    pool.push(mockRequestResponse);
     return extractResult;
   };
 
@@ -164,6 +149,51 @@ export function itForSdk(
     );
   };
 
+  function isExtendsOf(target: any, prototype: any): boolean {
+    if (!prototype) {
+      return false;
+    }
+    if (prototype === target) {
+      return true;
+    }
+    if (prototype !== Object.prototype) {
+      return isExtendsOf(target, Reflect.getPrototypeOf(prototype));
+    }
+    return false;
+  }
+
+  const useScenario: ItContext['helper']['useScenario'] = async (
+    cls,
+    props,
+  ) => {
+    if (isExtendsOf(GlipScenario, cls)) {
+      const emptyIndexData: InitialData = _.cloneDeep({
+        ...glipInitialData,
+        companies: [],
+        items: [],
+        people: [],
+        public_teams: [],
+        groups: [],
+        teams: [],
+        posts: [],
+      });
+      const result = new cls(
+        itCtx,
+        createInitialDataHelper(emptyIndexData),
+        props,
+      );
+      return new Promise(resolve => {
+        debug('useScenario: sync scenario data');
+        mockApi(IGlipIndex, createResponse({ data: emptyIndexData }));
+        sdk.syncService.syncData({
+          onIndexHandled: async () => {
+            resolve(result as any);
+          },
+        });
+      });
+    }
+    return {} as any;
+  };
   // provide for it case to mock data.
   const itCtx: ItContext = {
     helper: {
@@ -173,14 +203,15 @@ export function itForSdk(
       useInitialData,
       socketServer: SocketServerManager.get('glip'),
       glipDataHelper: getGlipDataHelper,
+      useScenario,
     },
     userContext: {
       glipUserId: () => userId,
       glipCompanyId: () => companyId,
     },
     template: {
-      BASIC: require('./mocks/server/glip/data/template/accountData/empty-account.json'),
-      STANDARD: require('./mocks/server/glip/data/template/accountData/test-account.json'),
+      BASIC: require('./mocks/glip/data/template/accountData/empty-account.json'),
+      STANDARD: require('./mocks/glip/data/template/accountData/test-account.json'),
     },
     sdk: {
       cleanUp,
@@ -191,6 +222,7 @@ export function itForSdk(
     },
   };
   describe(name, () => {
+    useInitialData(itCtx.template.BASIC);
     caseExecutor(itCtx);
   });
 }

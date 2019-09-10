@@ -73,7 +73,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I delete the filter condition', async () => {
     await t.selectText(voicemailPage.filterInput).pressKey('delete');
-    await t.expect(voicemailItem.exists).notOk();
   });
 
   await h(t).withLog('Then the voicemail is in the "play" status', async () => {
@@ -91,7 +90,7 @@ async function expectVoicemailItemInPlayStatus(t, voicemailItem) {
 async function expectVoicemailPlaying(t, itemId, app) {
 
   // '[' and ']' need to be escaped
-  const audioId = `\\[voicemail-track\\]-\\[${itemId}\\]`;
+  const audioId = `\\[voicemail\\]-\\[${itemId}\\]`;
   await t.expect(app.getSelector(`#${audioId}`).exists).ok();
   assert.strictEqual(await audioElementPaused(app, audioId), false, 'expect paused of audio is false but it is true');
 }

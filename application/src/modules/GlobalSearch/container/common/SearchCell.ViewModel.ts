@@ -3,7 +3,7 @@
  * @Date: 2019-04-02 19:43:46
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { action, observable } from 'mobx';
 import GroupModel from '@/store/models/Group';
 import { SearchViewModel } from './Search.ViewModel';

@@ -13,6 +13,7 @@ jest.mock('sdk/module/config/service/UserConfigService');
 jest.mock('sdk/dao');
 jest.mock('sdk/api');
 jest.mock('@/store/utils');
+jest.mock('sdk/module/config');
 
 describe('PhoneTab', () => {
   @testable

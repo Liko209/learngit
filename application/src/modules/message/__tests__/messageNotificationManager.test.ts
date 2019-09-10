@@ -3,16 +3,21 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
+jest.unmock('@/common/emojiHelpers/map/mapAscii');
+jest.unmock('@/common/emojiHelpers/map/mapEmojiOne');
+jest.unmock('@/common/emojiHelpers/map/mapUnicode');
+
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import * as utils from '@/store/utils';
 import { MessageNotificationManager } from '../MessageNotificationManager';
 import * as VM from '../MessageNotificationViewModel';
 import GroupModel from '@/store/models/Group';
 import PostModel from '../../../store/models/Post';
-import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
+import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS, SOUNDS_TYPE } from 'sdk/module/profile';
 import * as i18n from '@/utils/i18nT';
 import { CONVERSATION_TYPES } from '@/constants';
 import { ENTITY_NAME } from '@/store';
+import { MESSAGE_TYPE } from '../types';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AccountUserConfig');
@@ -94,6 +99,7 @@ describe('messageNotificationManager', () => {
 
   const mockedProfileService = {
     isNotificationMute: jest.fn().mockReturnValue(false),
+    getConversationPreference: () => conversationPreferences
   };
 
   const mockedCompanyService = {
@@ -104,6 +110,11 @@ describe('messageNotificationManager', () => {
   const settingItem = {
     value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
   };
+  const conversationPreferences = {
+    audioNotifications: {
+      id: SOUNDS_TYPE.Default
+    }
+  }
   function mockSettingItemValue(value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS) {
     settingItem.value = value;
   }
@@ -204,7 +215,7 @@ describe('messageNotificationManager', () => {
       });
     });
     describe('when post is from a conversation which has customized settings for notifications', () => {
-      it('should not show notification when post is from a conversation which has muted notifications and user is not mentioned in this post', async () => {
+      it('should not show notification when post is from a conversation which has muted notifications and user is not mentioned in this post [JPT-2834]', async () => {
         mockedProfileService.isNotificationMute.mockReturnValue(true);
         const result = await notificationManager.shouldEmitNotification(
           postMessage,
@@ -486,5 +497,23 @@ sfdasfasd`);
       });
     });
   });
-
+  describe('getCurrentMessageSoundSetting()', () => {
+    it('should be Triple_Beeps when global setting for sound is Triple_Beeps and current conversation preference for sound is default [JPT-2836]', async () => {
+      settingItem.value = {id: SOUNDS_TYPE.Triple_Beeps};
+      const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.DIRECT_MESSAGE, new GroupModel(group));
+      expect(soundSetting).toBe(SOUNDS_TYPE.Triple_Beeps)
+    })
+    it('should be Alert when global setting for sound is Triple_Beeps but current conversation preference for sound is Alert', async () => {
+      settingItem.value = {id: SOUNDS_TYPE.Triple_Beeps};
+      conversationPreferences.audioNotifications.id = SOUNDS_TYPE.Alert;
+      const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.DIRECT_MESSAGE, new GroupModel(group));
+      expect(soundSetting).toBe(SOUNDS_TYPE.Alert)
+    })
+    it('should be Double_Beeps when message type is @mention and global setting for @mention sound is Double_Beeps but current conversation preference for sound is Alert', async () => {
+      settingItem.value = {id: SOUNDS_TYPE.Double_Beeps};
+      conversationPreferences.audioNotifications.id = SOUNDS_TYPE.Alert;
+      const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.MENTION, new GroupModel(group));
+      expect(soundSetting).toBe(SOUNDS_TYPE.Double_Beeps)
+    })
+  })
 });

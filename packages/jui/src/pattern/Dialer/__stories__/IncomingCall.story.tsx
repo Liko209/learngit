@@ -7,62 +7,88 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiFabButton } from '../../../components/Buttons';
+import { JuiFabButton, JuiIconButton } from '../../../components/Buttons';
 import { JuiDraggableDialog } from '../../../components/Dialog';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
 import { boolean } from '@storybook/addon-knobs';
 
-import { JuiIncomingCall, JuiDialer } from '..';
+import {
+  JuiIncomingCall,
+  JuiDialer,
+  StyledActionText,
+  JuiEndAndAnswer,
+} from '..';
 
 const Ignore = () => (
-  <JuiFabButton
-    color='common.white'
-    size='small'
-    iconName='close'
-    tooltipTitle='Close'
-  />
+  <>
+    <JuiFabButton
+      color="grey.200"
+      size="medium"
+      iconName="ignore"
+      showShadow={false}
+    />
+    <StyledActionText>Ignore</StyledActionText>
+  </>
 );
 
+Ignore.displayName = 'Ignore';
+
 const VoiceMail = () => (
-  <JuiFabButton
-    color='semantic.negative'
-    size='moreLarge'
-    showShadow={false}
-    tooltipPlacement='top'
-    iconName='hand_up'
-    tooltipTitle='End'
-  />
+  <>
+    <JuiFabButton
+      color="semantic.negative"
+      size="mediumLarge"
+      showShadow={false}
+      tooltipPlacement="top"
+      iconName="voicemail"
+    />
+    <StyledActionText>To Voicemail</StyledActionText>
+  </>
 );
 
 VoiceMail.displayName = 'VoiceMail';
 
 const Answer = () => (
-  <JuiFabButton
-    color='semantic.positive'
-    size='moreLarge'
-    showShadow={false}
-    tooltipPlacement='top'
-    iconName='phone'
-    tooltipTitle='Answer'
-  />
+  <>
+    <JuiFabButton
+      color="semantic.positive"
+      size="mediumLarge"
+      showShadow={false}
+      tooltipPlacement="top"
+      iconName="answer"
+    />
+    <StyledActionText>Answer</StyledActionText>
+  </>
 );
 
 Answer.displayName = 'Answer';
 
+const EndAndAnswer = () => (
+  <>
+    <JuiEndAndAnswer />
+    <StyledActionText>End & Answer</StyledActionText>
+  </>
+);
+
+EndAndAnswer.displayName = 'EndAndAnswer';
+
 const More = () => (
-  <JuiFabButton
-    color='grey.200'
-    size='moreLarge'
-    showShadow={false}
-    tooltipPlacement='top'
-    iconName='call_more'
-    tooltipTitle='More'
-  />
+  <>
+    <JuiFabButton
+      color="grey.200"
+      size="medium"
+      showShadow={false}
+      tooltipPlacement="top"
+      iconName="call_more"
+    />
+    <StyledActionText>More</StyledActionText>
+  </>
 );
 
 More.displayName = 'More';
 
-const Actions = [VoiceMail, Answer, More];
+const Actions = [Ignore, More, VoiceMail, Answer];
+const MultipleActions = [Ignore, More, EndAndAnswer, VoiceMail];
 
 const knobs = {
   open: () => boolean('open', false),
@@ -74,7 +100,7 @@ const Avatar = () => (
     src={knobs.img() ? avatarImg : null}
     cover
     imgProps={{ draggable: false }}
-    color='blueberry'
+    color="blueberry"
   >
     <span>JH</span>
   </JuiAvatar>
@@ -84,10 +110,22 @@ storiesOf('Pattern', module).add('Incoming Call', () => {
   return (
     <JuiDialer>
       <JuiIncomingCall
-        name='Terry Webster'
-        phone='(650) 555-1234'
+        name="Terry Webster"
+        phone="(650) 555-1234"
         Actions={Actions}
-        Ignore={Ignore}
+        Avatar={Avatar}
+      />
+    </JuiDialer>
+  );
+});
+
+storiesOf('Pattern', module).add('Multiple Incoming Call', () => {
+  return (
+    <JuiDialer>
+      <JuiIncomingCall
+        name="Terry Webster"
+        phone="(650) 555-1234"
+        Actions={MultipleActions}
         Avatar={Avatar}
       />
     </JuiDialer>

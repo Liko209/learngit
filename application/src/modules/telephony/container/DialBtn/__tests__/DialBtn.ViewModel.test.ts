@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable, Jupiter } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { DialBtnViewModel } from '../DialBtn.ViewModel';
@@ -29,7 +30,7 @@ let dialBtnViewModel: DialBtnViewModel;
 
 beforeAll(() => {
   dialBtnViewModel = new DialBtnViewModel();
-  dialBtnViewModel._telephonyService.makeCall = jest.fn();
+  dialBtnViewModel._telephonyService.directCall = jest.fn();
   Object.defineProperty(
     dialBtnViewModel._telephonyService,
     'lastCalledNumber',
@@ -41,13 +42,13 @@ beforeAll(() => {
 });
 
 describe('dialBtnViewModel', () => {
-  it('should call makeCall function', () => {
+  it('should call directCall function', () => {
     dialBtnViewModel._telephonyStore.inputString = '123';
     dialBtnViewModel.makeCall();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
     );
-    expect(_telephonyService.makeCall).toBeCalled();
+    expect(_telephonyService.directCall).toHaveBeenCalled();
   });
 
   it('should call updateInputString function', () => {
@@ -57,6 +58,6 @@ describe('dialBtnViewModel', () => {
     expect(
       dialBtnViewModel._telephonyStore
         .enterFirstLetterThroughKeypadForInputString,
-    ).toBeCalled();
+    ).toHaveBeenCalled();
   });
 });

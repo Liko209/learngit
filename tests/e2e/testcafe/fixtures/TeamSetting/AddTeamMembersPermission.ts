@@ -29,17 +29,22 @@ test.meta(<ITestMeta>{
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init()
 
-  let teamId;
-  await h(t).withLog('Given I have team', async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      description: "need description??",
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId, guest.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: adminUser,
+    members: [adminUser, memberUser, guest]
+  }
+
+  await h(t).withLog('Given I have a team with guest', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension} `, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
@@ -50,7 +55,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`And admin set Add team member permission toggle is "on" on team settings page`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.clickSetting();
@@ -59,7 +64,7 @@ test.meta(<ITestMeta>{
   })
 
   await h(t).withLog(`When admin open team profile dialog`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   });
@@ -75,13 +80,17 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the add team member dialog should be popup`, async () => {
     await t.expect(addTeamMemberDialog.exists).ok();
-    await addTeamMemberDialog.cancel();
+    await addTeamMemberDialog.clickCancelButton();
   });
 
 
-  await h(t).withLog(`When member of the team open team profile dialog ${memberUser.company.number}#${memberUser.extension}`, async () => {
+  await h(t).withLog(`When member of the team open team profile dialog {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: memberUser.company.number,
+      extension: memberUser.extension,
+    });
     await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   })
@@ -96,12 +105,16 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the add team member dialog should be popup`, async () => {
     await t.expect(addTeamMemberDialog.exists).ok();
-    await addTeamMemberDialog.cancel();
+    await addTeamMemberDialog.clickCancelButton();
   });
 
-  await h(t).withLog(`When member (guest role) of the team open team profile dialog ${guest.company.number}#${guest.extension}`, async () => {
+  await h(t).withLog(`When member (guest role) of the team open team profile dialog {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: guest.company.number,
+      extension: guest.extension,
+    });
     await app.homePage.logoutThenLoginWithUser(SITE_URL, guest);
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   })
@@ -174,7 +187,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the add team member dialog should be popup`, async () => {
     await t.expect(addTeamMemberDialog.exists).ok();
-    await addTeamMemberDialog.cancel();
+    await addTeamMemberDialog.clickCancelButton();
   });
 
   await h(t).withLog(`When I logout and login  with member ${memberUser.company.number}#${memberUser.extension}`, async () => {

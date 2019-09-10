@@ -9,11 +9,11 @@ type UndefinedAble<T> = T | undefined;
 type NonFunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? never : K
 }[keyof T] &
-string;
+  string;
 type FunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
 }[keyof T] &
-string;
+  string;
 
 interface INewable<T> {
   new (...args: any[]): T;
@@ -24,6 +24,11 @@ interface ISdkConfig {
   db?: DeepPartial<DBConfig>;
 }
 
+type LoginInfo = {
+  success: boolean,
+  isFirstLogin?: boolean,
+}
+
 export {
   INewable,
   ISdkConfig,
@@ -32,6 +37,7 @@ export {
   UndefinedAble,
   NonFunctionPropertyNames,
   FunctionPropertyNames,
+  LoginInfo,
 };
 export * from './api';
 export * from './db';

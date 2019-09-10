@@ -79,7 +79,10 @@ type Header = {
   'X-RC-Access-Token-Data'?: string;
 };
 
-type RetryStrategy = (doRetry: () => void, retryCounter: number) => void;
+interface IRetryStrategy {
+  doRetry(): void;
+  cancel(): void;
+}
 
 interface IBaseRequest<T = any> {
   host: string;
@@ -106,6 +109,7 @@ interface IRequest<T = any> extends IBaseRequest<T> {
   HAPriority: HA_PRIORITY;
   via: NETWORK_VIA;
   retryCount: number;
+  ignoreNetwork: boolean;
   timeout: number;
   requestConfig: object;
   readonly authFree: boolean;
@@ -116,7 +120,7 @@ interface IRequest<T = any> extends IBaseRequest<T> {
   needAuth(): boolean;
 
   cancel?: (reason?: string) => void;
-  retryStrategy?: RetryStrategy;
+  retryStrategy?: IRetryStrategy;
 }
 
 interface IResponse<T = any> extends IBaseResponse<T> {
@@ -247,5 +251,5 @@ export {
   ITokenRefreshListener,
   IHandleType,
   NETWORK_HANDLE_TYPE,
-  RetryStrategy,
+  IRetryStrategy,
 };

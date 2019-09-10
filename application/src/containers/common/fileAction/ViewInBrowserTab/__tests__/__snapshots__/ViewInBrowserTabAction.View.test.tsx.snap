@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ViewInBrowserTabAction should render correctly 1`] = `
+<ForwardRef
+  data-test-automation-id="viewInBrowserTab"
+  icon={
+    <ForwardRef(JuiIconography)
+      iconColor={
+        Array [
+          "grey",
+          "500",
+        ]
+      }
+      iconSize="small"
+      symbol="icon-external_link.svg"
+    />
+  }
+  onClick={[Function]}
+>
+  <Translation
+    ns="translations"
+  >
+    <Component />
+  </Translation>
+</ForwardRef>
+`;
+
+exports[`ViewInBrowserTabAction should show correct text in browser [JPT-2926] 1`] = `"message.fileAction.viewInNewTab"`;

@@ -27,8 +27,8 @@ export const RecentSearchType = {
 };
 
 type Props = ListSearchResultViewProps &
-WithTranslation &
-ListSearchResultProps;
+  WithTranslation &
+  ListSearchResultProps;
 
 @observer
 class ListSearchResultViewComponent extends Component<Props> {
@@ -44,14 +44,18 @@ class ListSearchResultViewComponent extends Component<Props> {
     const { currentTab, search } = this.props;
     const searchResult = await search(currentTab);
     this.setState({ searchResult });
-  }
+  };
 
   render() {
-    const { t, currentTab, type } = this.props;
+    const { t, currentTab, type, isShow, pageDataTracking } = this.props;
     const { searchResult } = this.state;
 
     if (type !== currentTab || !searchResult) {
       return null;
+    }
+
+    if (isShow) {
+      pageDataTracking && pageDataTracking();
     }
 
     return (

@@ -17,3 +17,4 @@ export * from './TimeMessage';
 export * from './CodeSnippet';
 export * from './SectionDivider';
 export * from './AudioConferenceDescription';
+export * from './AudioConferenceJoin';

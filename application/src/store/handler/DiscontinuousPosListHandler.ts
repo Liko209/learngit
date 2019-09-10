@@ -21,22 +21,33 @@ enum DiscontinuousPostListType {
 
 class PostProvider implements IEntityDataProvider<Post> {
   async getByIds(ids: number[]) {
-    const postService = ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE);
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     const { posts, items } = await postService.getPostsByIds(ids);
     // set items to store.
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items, false);
     return posts;
   }
 }
-class DiscontinuousPosListHandler extends IdListPaginationHandler<Post, PostModel> {
-  constructor(sourceIds: number[], postProvider?: IEntityDataProvider<Post>) {
+class DiscontinuousPosListHandler extends IdListPaginationHandler<
+  Post,
+  PostModel
+> {
+  constructor(
+    sourceIds: number[],
+    postProvider?: IEntityDataProvider<Post>,
+    pageSize?: number,
+  ) {
     const filterFunc = (post: PostModel) => !post.deactivated;
 
-    const isMatchFunc = (post: Post) => this._sourceIds.includes(post.id) && !post.deactivated;
+    const isMatchFunc = (post: Post) =>
+      this._sourceIds.includes(post.id) && !post.deactivated;
 
     const options = {
       filterFunc,
       isMatchFunc,
+      pageSize,
       eventName: ENTITY.DISCONTINUOUS_POST,
       entityName: ENTITY_NAME.POST,
       entityDataProvider: postProvider || new PostProvider(),

@@ -14,7 +14,6 @@ import {
 import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
-import { isChrome } from './utils';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
@@ -43,19 +42,18 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
       ServiceConfig.RC_INFO_SERVICE,
     );
     const isEnable =
-      isChrome() &&
-      ((await this._telephonyService.getVoipCallPermission()) ||
-        (await rcInfoService.isRCFeaturePermissionEnabled(
-          ERCServiceFeaturePermission.VIDEO_CONFERENCING,
-        )) ||
-        (await rcInfoService.isRCFeaturePermissionEnabled(
-          ERCServiceFeaturePermission.CONFERENCING,
-        )));
+      (await this._telephonyService.getVoipCallPermission()) ||
+      (await rcInfoService.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.VIDEO_CONFERENCING,
+      )) ||
+      (await rcInfoService.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.CONFERENCING,
+      ));
     return isEnable ? ESettingItemState.ENABLE : ESettingItemState.INVISIBLE;
   };
 
   private _onPermissionChange = async () => {
-    isChrome() && (await this.getUserSettingEntity());
+    await this.getUserSettingEntity();
   };
 
   private _onVolumeUpdate = (type: number, value: string) => {

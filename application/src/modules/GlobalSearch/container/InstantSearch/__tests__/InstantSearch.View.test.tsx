@@ -5,7 +5,8 @@
  */
 
 import React from 'react';
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { JuiTypography } from 'jui/foundation/Typography';
 
 import { TAB_TYPE } from '@/modules/GlobalSearch/container/InstantSearch/types';

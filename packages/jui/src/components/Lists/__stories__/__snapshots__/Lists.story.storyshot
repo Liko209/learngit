@@ -54,7 +54,7 @@ exports[`Storyshots Components/Lists List Button Items: Components/Lists List Bu
 
 .c0.c0.c0:focus,
 .c0.c0.c0.selected {
-  background-color: #4475fd;
+  background-color: #0684bd;
   border: none;
 }
 
@@ -151,14 +151,14 @@ exports[`Storyshots Components/Lists List Button Items: Components/Lists List Bu
 `;
 
 exports[`Storyshots Components/Lists List Controls: Components/Lists List Controls 1`] = `
-.c5 {
+.c4 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c6 {
+.c5 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -167,91 +167,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c7.c7 .c4,
-.c7.c7 .c4 svg {
-  font-size: 20px;
-}
-
-.c7.c7:hover .c4 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c7.c7:active .c4 {
-  color: #9e9e9e;
-}
-
-.c7.c7.c7.c7.disabled .c4 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c8.c8 .c4,
-.c8.c8 .c4 svg {
-  font-size: 20px;
-}
-
-.c8.c8:hover .c4 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c8.c8:active .c4 {
-  color: #9e9e9e;
-}
-
-.c8.c8.c8.c8.disabled .c4 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c9.c9 .c4,
-.c9.c9 .c4 svg {
-  font-size: 20px;
-}
-
-.c9.c9:hover .c4 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c9.c9:active .c4 {
-  color: #0684bd;
-}
-
-.c9.c9.c9.c9.disabled .c4 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c10.c10 .c4,
-.c10.c10 .c4 svg {
-  font-size: 20px;
-}
-
-.c10.c10:hover .c4 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c10.c10:active .c4 {
-  color: #0684bd;
-}
-
-.c10.c10.c10.c10.disabled .c4 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c11.c11 .c4,
-.c11.c11 .c4 svg {
-  font-size: 20px;
-}
-
-.c11.c11:hover .c4 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c11.c11:active .c4 {
-  color: #edb63c;
-}
-
-.c11.c11.c11.c11.disabled .c4 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c3.c3 {
@@ -265,8 +180,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   border-radius: 50%;
 }
 
-.c3.c3 .c4,
-.c3.c3 .c4 svg {
+.c3.c3 .icon,
+.c3.c3 .icon svg {
   font-size: 16px;
 }
 
@@ -274,15 +189,19 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   background-color: rgba(158,158,158,0.12);
 }
 
-.c3.c3:hover .c4 {
+.c3.c3:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c3.c3:active .c4 {
+.c3.c3:active .icon {
   color: #9e9e9e;
 }
 
-.c3.c3.c3.c3.disabled .c4 {
+.c3.c3.c3.c3.disabled {
+  background-color: inherit;
+}
+
+.c3.c3.c3.c3.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -304,6 +223,19 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   display: -ms-flexbox;
   display: flex;
   padding-left: 8px;
+  color: #000;
+}
+
+.c0.c0.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c0.c0:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c0.c0 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c2.c2 {
@@ -313,12 +245,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 .c2.c2 a,
 .c2.c2 button {
   margin-right: 0;
-}
-
-.c1 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
 }
 
 .c1.c1 {
@@ -374,10 +300,16 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -398,7 +330,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -411,11 +346,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
             className="MuiIconButton-label"
           >
             <span
-              className="c4  icon c5"
-              size="small"
+              className="  icon c4"
             >
               <svg
-                className="c6"
+                className="c5"
                 role="img"
               >
                 <use
@@ -443,10 +377,16 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -467,7 +407,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -480,11 +423,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
             className="MuiIconButton-label"
           >
             <span
-              className="c4  icon c5"
-              size="small"
+              className="  icon c4"
             >
               <svg
-                className="c6"
+                className="c5"
                 role="img"
               >
                 <use
@@ -512,10 +454,16 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -536,7 +484,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -549,11 +500,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
             className="MuiIconButton-label"
           >
             <span
-              className="c4  icon c5"
-              size="small"
+              className="  icon c4"
             >
               <svg
-                className="c6"
+                className="c5"
                 role="img"
               >
                 <use
@@ -581,10 +531,16 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
         className="MuiListItemText-root c1"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -605,7 +561,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
+          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
@@ -618,11 +577,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
             className="MuiIconButton-label"
           >
             <span
-              className="c4  icon c5"
-              size="small"
+              className="  icon c4"
             >
               <svg
-                className="c6"
+                className="c5"
                 role="img"
               >
                 <use
@@ -666,6 +624,19 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   display: -ms-flexbox;
   display: flex;
   padding-left: 8px;
+  color: #000;
+}
+
+.c0.c0.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c0.c0:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c0.c0 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c1.c1 {
@@ -688,12 +659,6 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   border-radius: 4px;
   overflow: hidden;
   min-width: unset;
-}
-
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
 }
 
 .c4.c4 {
@@ -753,6 +718,11 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -774,6 +744,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       </div>
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -797,6 +768,11 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
@@ -818,6 +794,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       </div>
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -848,10 +825,16 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -875,10 +858,16 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       role="button"
+      style={
+        Object {
+          "cursor": "default",
+        }
+      }
       tabIndex={0}
     >
       <div
         className="MuiListItemText-root c4"
+        flex="1 1 auto"
       >
         <span
           className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"

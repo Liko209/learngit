@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { DatabaseKeyType } from 'foundation';
+import { DatabaseKeyType } from 'foundation/db';
 
 export type ModelIdType = DatabaseKeyType;
 

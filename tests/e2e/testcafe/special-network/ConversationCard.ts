@@ -9,7 +9,7 @@ import { setupCase, teardownCase } from '../init';
 import { h } from '../v2/helpers';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
-import { ITestMeta } from '../v2/models';
+import { ITestMeta, IGroup } from '../v2/models';
 
 fixture('ConversationStream/AudioConference')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -27,40 +27,43 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
 
-  let teamId;
   const messageTab = app.homePage.messageTab;
-  await h(t).withLog('Given I have an extension with 1 team chat', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
+
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  await h(t).withLog('Given team T1 initial member only login user.', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
 
   await h(t).withLog(`And I enter the team conversation`, async () => {
-    await messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   let postData;
   await h(t).withLog(`When I disconnect network and send one post to current conversation`, async () => {
     await h(t).turnOffNetwork();
-    postData = await h(t).platform(loginUser).sendTextPost(postContent, teamId).then(res => res.data);
+    postData = await h(t).platform(loginUser).sendTextPost(postContent, team.glipId).then(res => res.data);
   });
 
   let targetPost;
   await h(t).withLog(`Then I can see an unsent post in conversation stream`, async () => {
     targetPost = messageTab.conversationPage.postItemById(postData.id);
     await t.expect(targetPost.exists).ok();
-    console.log('alex: ', postData);
-    // ALEX TODO: 判断 post 为未发送类型
+    // TODO: 判断 post 为未发送类型
   });
 
   await h(t).withLog(`When I hover "reload" icon`, async () => {
@@ -103,15 +106,15 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
 
-  let teamId;
   const messageTab = app.homePage.messageTab;
-  await h(t).withLog('Given I have an extension with 1 team chat', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  await h(t).withLog('Given team T1 initial member only login user.', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -122,13 +125,13 @@ test.meta(<ITestMeta>{
   );
 
   await h(t).withLog(`And I enter the team conversation`, async () => {
-    await messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   let postData;
   await h(t).withLog(`When I disconnect network and send one post to current conversation`, async () => {
     await h(t).turnOffNetwork();
-    postData = await h(t).platform(loginUser).sendTextPost(postContent, teamId).then(res => res.data);
+    postData = await h(t).platform(loginUser).sendTextPost(postContent, team.glipId).then(res => res.data);
   });
 
   let targetPost;

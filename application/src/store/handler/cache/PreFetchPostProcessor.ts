@@ -5,7 +5,7 @@
  */
 
 import { IProcessor } from 'sdk/framework/processor/IProcessor';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 export default class PreFetchPostProcessor implements IProcessor {
   constructor(

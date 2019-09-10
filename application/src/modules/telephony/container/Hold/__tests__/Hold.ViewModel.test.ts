@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { HoldViewModel } from '../Hold.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
 import * as common from '@/modules/common/module.config';

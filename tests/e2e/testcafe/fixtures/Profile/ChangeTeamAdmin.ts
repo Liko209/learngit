@@ -30,17 +30,21 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
   const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
   const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
 
-  let teamId;
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: u1,
+    members: [u1, u2]
+  }
   await h(t).withLog('Given I have one team with admin and member', async () => {
-    teamId = await h(t).platform(u1).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [u1.rcId, u2.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with admin u1 ${u1.company.number}#${u1.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with u1 {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: u1.company.number,
+      extension: u1.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, u1);
     await app.homePage.ensureLoaded();
   });
@@ -48,7 +52,7 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When admin u1 open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   });
@@ -165,7 +169,11 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
 
   //check the settings when admin changed to member
-  await h(t).withLog(`And I login Jupiter with u2: ${u2.company.number}#${u2.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with u2 {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: u2.company.number,
+      extension: u2.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, u2);
     await app.homePage.ensureLoaded();
   });
@@ -212,7 +220,11 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   });
 
   //check the settings when admin changed to member
-  await h(t).withLog(`Given I login Jupiter with u3:${u3.company.number}#${u3.extension}`, async () => {
+  await h(t).withLog(`Given I logout and login Jupiter with u3: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: u3.company.number,
+      extension: u3.extension,
+    })
     await profileDialog.clickCloseButton();
     await app.homePage.logoutThenLoginWithUser(SITE_URL, u3);
   });
@@ -257,17 +269,21 @@ test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1',
   const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
   const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
 
-  let teamId;
-  await h(t).withLog('Given I have one team', async () => {
-    teamId = await h(t).platform(u1).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [u1.rcId, u2.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: u1,
+    members: [u1, u2]
+  }
+  await h(t).withLog('Given I have one team with admin and member', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with non-admin ${u2.company.number}#${u2.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with non-admin {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: u2.company.number,
+      extension: u2.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, u2);
     await app.homePage.ensureLoaded();
   });
@@ -275,7 +291,7 @@ test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1',
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   });
@@ -306,17 +322,21 @@ test(formalName(`Can't revoke himself/herself when login user is the only admin 
   const profileDialog = app.homePage.profileDialog;
   const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
 
-  let teamId;
-  await h(t).withLog('Given I have one team', async () => {
-    teamId = await h(t).platform(u1).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [u1.rcId, u2.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: u1,
+    members: [u1, u2]
+  }
+  await h(t).withLog('Given I have one team with admin and member', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${u1.company.number}#${u1.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: u2.company.number,
+      extension: u2.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, u1);
     await app.homePage.ensureLoaded();
   });
@@ -324,7 +344,7 @@ test(formalName(`Can't revoke himself/herself when login user is the only admin 
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   });
@@ -347,17 +367,21 @@ test(formalName(`The whole "More" menu will be hidden when this admin is the onl
   const profileDialog = app.homePage.profileDialog;
   const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
 
-  let teamId;
-  await h(t).withLog('Given I have one team', async () => {
-    teamId = await h(t).platform(u1).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [u1.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: u1,
+    members: [u1]
+  }
+  await h(t).withLog('Given I have one team with admin', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${u1.company.number}#${u1.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: u1.company.number,
+      extension: u1.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, u1);
     await app.homePage.ensureLoaded();
   });
@@ -365,7 +389,7 @@ test(formalName(`The whole "More" menu will be hidden when this admin is the onl
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   });
@@ -392,21 +416,25 @@ test(formalName(`Make all team members as admin of this team when no admin in th
   const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
   const u3Name = await h(t).glip(u1).getPersonPartialData('display_name', u3.rcId);
 
-  let teamId;
-  await h(t).withLog('Given I have one team', async () => {
-    teamId = await h(t).platform(u1).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [u1.rcId, u2.rcId, u3.rcId],
-    });
+  const team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: u1,
+    members: [u1, u2, u3]
+  }
+  await h(t).withLog('Given I have one team with admin and 2 members', async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`And remove the admin from the team`, async () => {
-    await h(t).glip(u1).removeTeamMembers(teamId, [u1.rcId]);
+    await h(t).glip(u1).removeTeamMembers(team.glipId, [u1.rcId]);
   });
 
-  await h(t).withLog(`And I login Jupiter with a member u3 ${u3.company.number}#${u3.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with a member u3 {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: u2.company.number,
+      extension: u3.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, u3);
     await app.homePage.ensureLoaded();
   });
@@ -414,7 +442,7 @@ test(formalName(`Make all team members as admin of this team when no admin in th
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When I open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   });
@@ -431,7 +459,8 @@ test(formalName(`Make all team members as admin of this team when no admin in th
     await t.click(profileDialog.memberEntryByName(u2Name).moreButton);
   });
 
-  await h(t).withLog(`Then show "${makeTeamAdminText}" button`, async () => {
+  await h(t).withLog(`Then show "{makeTeamAdminText}" button`, async (step) => {
+    step.setMetadata('makeTeamAdminText', makeTeamAdminText);
     await t.expect(profileDialog.memberMoreMenu.makeTeamAdminItem.withExactText(makeTeamAdminText).exists).ok();
   });
 

@@ -234,4 +234,21 @@ describe('PostCacheController', () => {
       expect(postCacheController.getUsedIds()).toEqual([1, 2, 3]);
     });
   });
+
+  describe('isInRange()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return false if id < 0', () => {
+      const result = postCacheController.isInRange(-1);
+      expect(result).toEqual(false);
+    });
+
+    it('should return true if id > 0', () => {
+      const result = postCacheController.isInRange(1);
+      expect(result).toEqual(true);
+    });
+  });
 });

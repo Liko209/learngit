@@ -16,7 +16,10 @@ interface IEntitySourceController<
 
   getEntitiesLocally(ids: IdType[], includeDeactivated: boolean): Promise<T[]>;
 
-  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
+  getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]>;
 
   getRequestController(): IRequestController<T, IdType> | null;
 }

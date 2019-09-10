@@ -30,7 +30,7 @@ import {
   DeltaDataHandler,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 type CountChangeCallback = (count: number) => void;
 

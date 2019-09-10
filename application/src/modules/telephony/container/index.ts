@@ -7,3 +7,4 @@
 export * from './Dialer';
 export * from './Call';
 export * from './Dialpad';
+export * from './AudioConference';

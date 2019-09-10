@@ -34,15 +34,16 @@ test(formalName('Only admin has the ability to remove members from the team', ['
   const memberName = await h(t).glip(admin1).getPersonPartialData('display_name', member.rcId);
   const removeFromTeamText = "Remove from team";
 
-  let teamId;
+  let team = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: admin1,
+    members: [admin1, admin2, member]
+  }
   await h(t).withLog(`Given I have one team with 2 admins and 1 member`, async () => {
-    teamId = await h(t).platform(admin1).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [admin1.rcId, admin2.rcId, member.rcId]
-    })
+    await h(t).scenarioHelper.createTeam(team);
     const adminIds = await h(t).glip(admin1).toPersonId([admin1.rcId, admin2.rcId]);
-    await h(t).glip(admin1).updateGroup(teamId, {
+    await h(t).glip(admin1).updateGroup(team.glipId, {
       permissions: {
         admin: {
           uids: adminIds
@@ -51,7 +52,11 @@ test(formalName('Only admin has the ability to remove members from the team', ['
     });
   });
 
-  await h(t).withLog(`Given I login Jupiter with admin1: ${admin1.company.number}#${admin1.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with admin1 {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: admin1.company.number,
+      extension: admin1.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, admin1);
     await app.homePage.ensureLoaded();
   });
@@ -60,7 +65,7 @@ test(formalName('Only admin has the ability to remove members from the team', ['
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog('And admin1 open team profile dialog', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   }, true);
@@ -106,7 +111,7 @@ test(formalName('Only admin has the ability to remove members from the team', ['
     await profileDialog.ensureLoaded();
     await t.expect(profileDialog.memberEntryByName(adminName2).exists).notOk();
     await H.retryUntilPass(async () => {
-      const members = await h(t).glip(admin1).getGroup(teamId).then(res => res.data.members);
+      const members = await h(t).glip(admin1).getGroup(team.glipId).then(res => res.data.members);
       const adminPersonsId = await h(t).glip(admin1).toPersonId(admin2.rcId);
       assert.ok(!_.includes(members, adminPersonsId), `Have not removed ${adminName2} from api`);
     })
@@ -136,7 +141,7 @@ test(formalName('Only admin has the ability to remove members from the team', ['
     await profileDialog.ensureLoaded();
     await t.expect(profileDialog.memberEntryByName(memberName).exists).notOk();
     await H.retryUntilPass(async () => {
-      const members = await h(t).glip(admin1).getGroup(teamId).then(res => res.data.members);
+      const members = await h(t).glip(admin1).getGroup(team.glipId).then(res => res.data.members);
       const adminPersonsId = await h(t).glip(admin1).toPersonId(member.rcId);
       assert.ok(!_.includes(members, adminPersonsId), `Have not removed ${memberName} from api`);
     })
@@ -155,7 +160,7 @@ test(formalName('The remove team member permission should sync dynamically', ['J
   await h(t).glip(anotherAdmin).init();
   await h(t).glip(loginMember).init()
 
-  const members = [loginAdmin.rcId, anotherAdmin.rcId, loginMember.rcId]
+  const members = [loginAdmin, anotherAdmin, loginMember]
 
   const loginAdminName = await h(t).glip(anotherAdmin).getPersonPartialData('display_name', loginAdmin.rcId);
   const anotherAdminName = await h(t).glip(anotherAdmin).getPersonPartialData('display_name', anotherAdmin.rcId);
@@ -164,15 +169,16 @@ test(formalName('The remove team member permission should sync dynamically', ['J
   const loginMemberPersonId = await h(t).glip(anotherAdmin).toPersonId(loginMember.rcId);
   const removeFromTeamText = "Remove from team";
 
-  let teamId;
+  let team = <IGroup>{
+    name: uuid(),
+    owner: anotherAdmin,
+    type: 'Team',
+    members
+  }
   await h(t).withLog(`Given I have one team with 2 admins and 1 member`, async () => {
-    teamId = await h(t).platform(anotherAdmin).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members
-    })
+    await h(t).scenarioHelper.createTeam(team);
     const adminIds = await h(t).glip(anotherAdmin).toPersonId([loginAdmin.rcId, anotherAdmin.rcId]);
-    await h(t).glip(anotherAdmin).updateGroup(teamId, {
+    await h(t).glip(anotherAdmin).updateGroup(team.glipId, {
       permissions: {
         admin: {
           uids: adminIds
@@ -190,14 +196,14 @@ test(formalName('The remove team member permission should sync dynamically', ['J
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog('And login user open team profile dialog', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   }, true);
 
 
   await h(t).withLog(`When The other admin changed login user's role to non-admin`, async () => {
-    await h(t).glip(anotherAdmin).updateGroup(teamId, {
+    await h(t).glip(anotherAdmin).updateGroup(team.glipId, {
       permissions: {
         admin: {
           uids: [].concat(anotherAdminPersonId)
@@ -228,13 +234,13 @@ test(formalName('The remove team member permission should sync dynamically', ['J
   });
 
   await h(t).withLog('And login user open team profile dialog', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
   }, true);
 
   await h(t).withLog(`And The other admin changed login user's role to admin`, async () => {
-    await h(t).glip(anotherAdmin).updateGroup(teamId, {
+    await h(t).glip(anotherAdmin).updateGroup(team.glipId, {
       permissions: {
         admin: {
           uids: [].concat(anotherAdminPersonId, loginMemberPersonId)
@@ -276,7 +282,7 @@ test(formalName('The remove team member permission should sync dynamically', ['J
       await profileDialog.ensureLoaded();
       await t.expect(profileDialog.memberEntryByName(memberName).exists).notOk();
       await H.retryUntilPass(async () => {
-        const members = await h(t).glip(loginMember).getGroup(teamId).then(res => res.data.members);
+        const members = await h(t).glip(loginMember).getGroup(team.glipId).then(res => res.data.members);
         assert.ok(!_.includes(members, personId), `Have not removed ${memberName} from api`);
       })
     }, true);

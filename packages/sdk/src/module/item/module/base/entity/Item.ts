@@ -27,6 +27,7 @@ export type ItemVersions = {
   orig_width?: number;
   pages?: ItemVersionPage[];
   status?: string;
+  ready?: boolean;
   deactivated?: boolean;
   stored_file_id: number;
   date: number;

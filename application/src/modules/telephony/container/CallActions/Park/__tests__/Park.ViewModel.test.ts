@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { ParkViewModel } from '../Park.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../../interface/constant';
 import { TelephonyService } from '../../../../service/TelephonyService';

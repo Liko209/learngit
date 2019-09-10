@@ -12,11 +12,27 @@ import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { MEETING_SERVICE_TYPE } from '../../types';
 import _ from 'lodash';
 
+import { RCVAdaptorController } from '../../modules/rcv/RCVAdaptorController';
+import { ZoomAdaptorController } from '../../modules/zoom/ZoomAdaptorController';
+
 jest.mock('sdk/module/account');
 jest.mock('sdk/module/profile');
+jest.mock('../../modules/rcv/RCVAdaptorController');
+jest.mock('../../modules/zoom/ZoomAdaptorController');
 
 describe('MeetingsAdaptorController', () => {
   let profileService: ProfileService;
+  let rcv: RCVAdaptorController;
+  let zoom: ZoomAdaptorController;
+
+  function getController() {
+    const controller = new MeetingsAdaptorController();
+    rcv = new RCVAdaptorController();
+    zoom = new ZoomAdaptorController();
+    controller['_zoomController'] = zoom;
+    controller['_rcvController'] = rcv;
+    return controller;
+  }
 
   function setUp() {
     profileService = new ProfileService();
@@ -34,6 +50,8 @@ describe('MeetingsAdaptorController', () => {
         }
       });
   }
+
+
 
   describe('getMeetingServiceType', () => {
     beforeEach(() => {
@@ -62,9 +80,7 @@ describe('MeetingsAdaptorController', () => {
             return secondVS;
           }
         });
-
-      const controller = new MeetingsAdaptorController();
-      return controller;
+      return getController();
     }
     it('should return RCV when user is RC account, and in RCV beta and has RCV service - deep link', async () => {
       setUp();
@@ -111,11 +127,13 @@ describe('MeetingsAdaptorController', () => {
     function innerSetup(meetingType: MEETING_SERVICE_TYPE) {
       const controller = new MeetingsAdaptorController();
       Object.assign(controller, {
-        _meetingController: {
+        _zoomController: {
           startMeeting: jest.fn(),
-          isRCVideo: jest
-            .fn()
-            .mockReturnValue(MEETING_SERVICE_TYPE.RCV === meetingType),
+          isRCVideo: jest.fn().mockReturnValue(false),
+        },
+        _rcvController: {
+          startMeeting: jest.fn(),
+          isRCVideo: jest.fn().mockReturnValue(true),
         },
       });
       jest
@@ -131,14 +149,55 @@ describe('MeetingsAdaptorController', () => {
     it('should call rcv startMeeting', async () => {
       const controller = innerSetup(MEETING_SERVICE_TYPE.RCV);
       await controller.startMeeting([]);
-      expect(controller['_meetingController'].startMeeting).toHaveBeenCalled();
-      expect(controller['_meetingController'].isRCVideo()).toBeTruthy();
+      expect(controller['_zoomController'].startMeeting).not.toHaveBeenCalled();
+      expect(controller['_rcvController'].startMeeting).toHaveBeenCalled();
     });
     it('should call zoom startMeeting', async () => {
       const controller = innerSetup(MEETING_SERVICE_TYPE.ZOOM);
       await controller.startMeeting([]);
-      expect(controller['_meetingController'].startMeeting).toHaveBeenCalled();
-      expect(controller['_meetingController'].isRCVideo()).toBeFalsy();
+      expect(controller['_zoomController'].startMeeting).toHaveBeenCalled();
+      expect(controller['_rcvController'].startMeeting).not.toHaveBeenCalled();
     });
   });
+
+  describe('cancelMeeting', () => {
+    it('should call zoom cancelMeeting', async () => {
+      zoom.cancelMeeting.mockResolvedValueOnce('');
+      const controller = getController();
+      await controller.cancelMeeting(14748549140)
+      expect(zoom.cancelMeeting).toHaveBeenCalled();
+    });
+    it('should call rcv cancelMeeting', async () => {
+      rcv.cancelMeeting.mockResolvedValueOnce('');
+      const controller = getController();
+      await controller.cancelMeeting(590168171)
+      expect(rcv.cancelMeeting).toHaveBeenCalled();
+    });
+  })
+  describe('getJoinUrl', () => {
+    it('should call zoom getJoinUrl', async () => {
+      zoom.getJoinUrl.mockResolvedValueOnce('');
+      const controller = getController();
+      await controller.getJoinUrl(14748549140)
+      expect(zoom.getJoinUrl).toHaveBeenCalled();
+    });
+    it('should call rcv getJoinUrl', async () => {
+      rcv.getJoinUrl.mockResolvedValueOnce('');
+      const controller = getController();
+      await controller.getJoinUrl(590168171)
+      expect(rcv.getJoinUrl).toHaveBeenCalled();
+    });
+  })
+  describe('_getSuitableMeetingController', () => {
+    it('should return rcv adaptor', () => {
+      const controller = new MeetingsAdaptorController();
+      const a = controller['_getSuitableMeetingController'](MEETING_SERVICE_TYPE.RCV);
+      expect(a instanceof RCVAdaptorController).toBeTruthy();
+    });
+    it('should return zoom adaptor', () => {
+      const controller = new MeetingsAdaptorController();
+      const a = controller['_getSuitableMeetingController'](MEETING_SERVICE_TYPE.ZOOM);
+      expect(a instanceof ZoomAdaptorController).toBeTruthy();
+    });
+  })
 });

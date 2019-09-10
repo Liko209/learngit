@@ -11,6 +11,7 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('TeamSetting/PinPost')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -25,25 +26,30 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
+  let team = <IGroup>{
+    name: uuid(),
+    description: "need description??",
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser],
+  }
 
-  let teamId;
   await h(t).withLog('Given I have team with 1 admin and 1 member', async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      description: "need description??",
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension} `, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser: {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
 
   const profileDialog = app.homePage.profileDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
-  const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
+  const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When admin open Team Setting Dialog of the team and turn Post Messages toggle off`, async () => {
@@ -65,7 +71,7 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
 
   await h(t).withLog(`Then The sending post and pinning post status in the team should disable (via API).`, async () => {
     await H.retryUntilPass(async () => {
-      const userPermissionsValue = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data.permissions.user.level);
+      const userPermissionsValue = await h(t).glip(adminUser).getGroup(team.glipId).then(res => res.data.permissions.user.level);
       assert.ok(!(1 << 0 & Number(userPermissionsValue)), `permission value Error: ${userPermissionsValue}`);
       assert.ok(!(1 << 3 & Number(userPermissionsValue)), `permission value Error: ${userPermissionsValue}`);
     });
@@ -91,7 +97,7 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
 
   await h(t).withLog(`Then The sending post status should on and pinning post should off (via API).`, async () => {
     await H.retryUntilPass(async () => {
-      const userPermissionsValue = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data.permissions.user.level);
+      const userPermissionsValue = await h(t).glip(adminUser).getGroup(team.glipId).then(res => res.data.permissions.user.level);
       assert.ok(1 << 0 & Number(userPermissionsValue), `permission value Error: ${userPermissionsValue}`);
       assert.ok(!(1 << 3 & Number(userPermissionsValue)), `permission value Error: ${userPermissionsValue}`);
     });
@@ -111,7 +117,7 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
 
   await h(t).withLog(`Then The sending post status should on and pinning post should on (via API).`, async () => {
     await H.retryUntilPass(async () => {
-      const userPermissionsValue = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data.permissions.user.level);
+      const userPermissionsValue = await h(t).glip(adminUser).getGroup(team.glipId).then(res => res.data.permissions.user.level);
       assert.ok(1 << 0 & Number(userPermissionsValue), `permission value Error: ${userPermissionsValue}`);
       assert.ok(1 << 3 & Number(userPermissionsValue), `permission value Error: ${userPermissionsValue}`);
     });

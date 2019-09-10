@@ -5,14 +5,12 @@
  */
 
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { itForSdk, readJson } from 'shield/sdk';
+import { readApiJson } from 'shield/sdk';
+import { jit } from 'shield/sdk/SdkItFramework';
 import { PersonService } from 'sdk/module/person';
-import { ItemService } from 'sdk/module/item';
-import { JError, JNetworkError } from 'sdk/error';
-import { createResponse } from 'shield/sdk/mocks/server/utils';
-import { IGlipPersonPut } from 'shield/sdk/mocks/server/glip/api/person/person.put.contract';
+import { IGlipPersonPut } from 'shield/sdk/mocks/glip/api/person/person.put.contract';
 
-itForSdk('edit personal info', ({ helper, sdk, userContext, template }) => {
+jit('edit personal info', ({ helper, sdk, userContext, template }) => {
   let personService: PersonService;
   const glipData = helper.useInitialData(template.BASIC);
 
@@ -50,7 +48,7 @@ itForSdk('edit personal info', ({ helper, sdk, userContext, template }) => {
         location: 'xmn',
       };
       helper.mockResponse(
-        readJson<any>(require('./data/EDIT_PROFILE.SUCCESS.json')),
+        readApiJson<any>(require('./data/EDIT_PROFILE.SUCCESS.json')),
         data => {
           return data;
         },
@@ -77,7 +75,7 @@ itForSdk('edit personal info', ({ helper, sdk, userContext, template }) => {
       };
 
       helper.mockResponse(
-        readJson<any>(require('./data/EDIT_PROFILE.SUCCESS.json')),
+        readApiJson<any>(require('./data/EDIT_PROFILE.SUCCESS.json')),
         data => {
           data.response.data = {
             ...data.response.data,
@@ -90,14 +88,14 @@ itForSdk('edit personal info', ({ helper, sdk, userContext, template }) => {
       );
 
       helper.mockResponse(
-        readJson<any>(require('./data/CREATE_FILE_DATA.SUCCESS.json')),
+        readApiJson<any>(require('./data/CREATE_FILE_DATA.SUCCESS.json')),
         data => {
           return data;
         },
       );
 
       helper.mockResponse(
-        readJson<any>(require('./data/UPLOAD_FILE.SUCCESS.json')),
+        readApiJson<any>(require('./data/UPLOAD_FILE.SUCCESS.json')),
         data => {
           return data;
         },
@@ -126,7 +124,7 @@ itForSdk('edit personal info', ({ helper, sdk, userContext, template }) => {
       };
       if (data.personSuccess) {
         helper.mockResponse(
-          readJson<any>(require('./data/EDIT_PROFILE.SUCCESS.json')),
+          readApiJson<any>(require('./data/EDIT_PROFILE.SUCCESS.json')),
           data => {
             return data;
           },
@@ -137,7 +135,7 @@ itForSdk('edit personal info', ({ helper, sdk, userContext, template }) => {
 
       if (data.createFileSuccess) {
         helper.mockResponse(
-          readJson<any>(require('./data/CREATE_FILE_DATA.SUCCESS.json')),
+          readApiJson<any>(require('./data/CREATE_FILE_DATA.SUCCESS.json')),
           data => {
             return data;
           },
@@ -155,7 +153,7 @@ itForSdk('edit personal info', ({ helper, sdk, userContext, template }) => {
 
       if (data.uploadFileSuccess) {
         helper.mockResponse(
-          readJson<any>(require('./data/UPLOAD_FILE.SUCCESS.json')),
+          readApiJson<any>(require('./data/UPLOAD_FILE.SUCCESS.json')),
           data => {
             return data;
           },

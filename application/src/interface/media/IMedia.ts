@@ -16,7 +16,7 @@ interface IMedia {
   setLoop: (loop: boolean) => IMedia;
   setMute: (muted: boolean) => IMedia;
   setVolume: (volume: number) => IMedia;
-  setOutputDevices: (devices?: MediaDeviceType[] | 'all') => IMedia;
+  setOutputDevices: (devices: MediaDeviceType[] | 'all' | null) => IMedia;
   setCurrentTime: (time: number, continuePlay?: boolean) => IMedia;
   dispose: () => void;
   onReset: (handler: () => void) => void;

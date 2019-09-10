@@ -40,6 +40,7 @@ const JuiVirtualizedBoxSelect = React.memo(
       isFullWidth,
       MenuProps,
       automationId,
+      disabled,
       ...rest
     } = props;
     return (
@@ -54,6 +55,7 @@ const JuiVirtualizedBoxSelect = React.memo(
           input={
             <StyledSelect
               classes={CLASSES}
+              className={disabled ? 'disabled' : ''}
               style={isFullWidth ? { width: '100%' } : {}}
             />
           }

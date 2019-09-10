@@ -14,6 +14,7 @@ interface ISearchItemModel {
 type Props = {
   id: number;
   didChange: () => void;
+  recentId: number;
 };
 
 type BaseViewProps = {
@@ -27,6 +28,7 @@ type BaseViewProps = {
   addRecentRecord: () => void;
   onClose: () => void;
   onClear: () => void;
+  dataTrackingDomain: string;
 };
 
 export {

@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { SanitizedFileItem, FileItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
 import { FileItemUtils } from '../utils';
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 
 class FileItemDao extends SubItemDao<SanitizedFileItem> {
   static COLLECTION_NAME = 'fileItem';

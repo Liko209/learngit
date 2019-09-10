@@ -18,7 +18,10 @@ enum UserPermissionType {
   CAN_MENTION_TEAM = 'CAN_MENTION_TEAM',
   CAN_SHOW_ALL_GROUP = 'CAN_SHOW_ALL_GROUP',
   CAN_USE_VIDEO_CALL = 'CAN_USE_VIDEO_CALL',
+  CAN_VIEW_FILE_PREVIEW_BACKGROUND_CONTAIN = 'CAN_VIEW_FILE_PREVIEW_BACKGROUND_CONTAIN',
+  USERS_BLACKLIST = 'USERS_BLACKLIST',
+  SENTRY_ERROR_FILTER = 'SENTRY_ERROR_FILTER',
 }
 
-export type FeatureFlagType = string | number;
+export type FeatureFlagType = string | number | Array<any>;
 export default UserPermissionType;

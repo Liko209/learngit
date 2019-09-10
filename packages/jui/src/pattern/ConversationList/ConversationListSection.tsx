@@ -17,6 +17,7 @@ type SectionProps = {
   onCollapse?: Function;
   umi?: JSX.Element;
   title: string;
+  extraScrollPadding?: number;
 } & JuiSectionHeaderProps;
 
 type SectionStates = {
@@ -47,6 +48,14 @@ class JuiConversationListSection extends PureComponent<
       expanded: this.props.expanded || false,
     };
     this._handleClick = this._handleClick.bind(this);
+  }
+
+  static getDerivedStateFromProps(props: SectionProps, state: SectionStates) {
+    // parent will change expanded so use this change current expanded
+    return {
+      ...state,
+      expanded: props.expanded,
+    };
   }
 
   render() {

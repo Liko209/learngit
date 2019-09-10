@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/Search/RecentlySearch.ts"
+    ],
+    "include_tags": [
+      "JPT-1216"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

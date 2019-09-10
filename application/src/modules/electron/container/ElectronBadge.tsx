@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { ElectronService } from '../service';
 
 type ElectronBadgeProps = {

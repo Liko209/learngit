@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { jupiter, container } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { IMediaService, MediaEventName } from '@/interface/media';
 import { MediaService } from '@/modules/media/service';
 import { AudioPlayerViewModel } from '../AudioPlayer.ViewModel';
 import { Media } from '@/modules/media/Media';
 import { JuiAudioStatus } from 'jui/components/AudioPlayer';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 jupiter.registerService(IMediaService, MediaService);
 

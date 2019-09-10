@@ -11,7 +11,7 @@ import {
 } from 'sdk/framework/processor';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { ItemService } from 'sdk/module/item';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 describe('ThumbnailPreloadProcessor', () => {
@@ -72,7 +72,7 @@ describe('ThumbnailPreloadProcessor', () => {
       const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
       spy.mockImplementationOnce(() => {});
       await thumbnailPreloadProcessor.process();
-      expect(spy).toBeCalledWith({
+      expect(spy).toHaveBeenCalledWith({
         id: 1,
         url: 'https://glipasialabnet-xmnup66666',
       });
@@ -128,7 +128,7 @@ describe('ThumbnailPreloadProcessor', () => {
         const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
         spy.mockImplementationOnce(() => {});
         await thumbnailPreloadProcessor.process();
-        expect(spy).toBeCalledWith({
+        expect(spy).toHaveBeenCalledWith({
           id: 1,
           url: 'https://glipasialabnet-xmnup66666',
         });
@@ -171,7 +171,7 @@ describe('ThumbnailPreloadProcessor', () => {
         const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
         spy.mockImplementationOnce(() => {});
         await thumbnailPreloadProcessor.process();
-        expect(spy).not.toBeCalled();
+        expect(spy).not.toHaveBeenCalled();
       },
     );
 
@@ -219,7 +219,7 @@ describe('ThumbnailPreloadProcessor', () => {
 
       const mainLoggerSpy = jest.spyOn(mainLogger, 'warn');
       await thumbnailPreloadProcessor.process();
-      expect(mainLoggerSpy).toBeCalledWith(
+      expect(mainLoggerSpy).toHaveBeenCalledWith(
         'ThumbnailPreloadProcessor: process(): error=',
         'error',
       );
@@ -253,7 +253,7 @@ describe('ThumbnailPreloadProcessor', () => {
       const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
       spy.mockImplementationOnce(() => {});
       await thumbnailPreloadProcessor.process();
-      expect(spy).not.toBeCalled();
+      expect(spy).not.toHaveBeenCalled();
     });
   });
 });

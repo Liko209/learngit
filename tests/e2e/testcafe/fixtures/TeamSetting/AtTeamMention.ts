@@ -12,6 +12,7 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('TeamSetting/AtTeamMention')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -26,25 +27,30 @@ test(formalName(`Admin can only turn on @team mention toggle if the allow member
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
+  let team = <IGroup>{
+    name: uuid(),
+    description: "need description??",
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser],
+  }
 
-  let teamId;
   await h(t).withLog('Given I have team with 1 admin and 1 member', async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      description: "need description??",
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I login Jupiter with ${adminUser.company.number}#${adminUser.extension} `, async () => {
+  await h(t).withLog(`And I login Jupiter with adminUser {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: adminUser.company.number,
+      extension: adminUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
   });
 
   const profileDialog = app.homePage.profileDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
-  const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
+  const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   await h(t).withLog(`When admin open Team Setting Dialog of the team and turn Post Messages toggle off`, async () => {

@@ -13,6 +13,7 @@ import { ConversationListItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { extraScrollPadding } from '@/utils/system';
 
 type Props = ConversationListItemViewProps & WithTranslation;
 type State = {
@@ -27,7 +28,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
 
   private _requiredShownPresenceConversationTypes = [
     CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-    // CONVERSATION_TYPES.ME
+    CONVERSATION_TYPES.ME,
   ];
 
   state = {
@@ -57,7 +58,13 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     ) : null;
   };
   private get _indicator() {
-    return <Indicator selected={this.props.selected} id={this.props.groupId} showUmi={this._showUmi} />;
+    return (
+      <Indicator
+        selected={this.props.selected}
+        id={this.props.groupId}
+        showUmi={this._showUmi}
+      />
+    );
   }
 
   private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
@@ -101,6 +108,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
       <>
         <JuiConversationListItem
           className="conversation-list-item"
+          extraScrollPadding={extraScrollPadding}
           data-test-automation-id="conversation-list-item"
           tabIndex={0}
           isItemHover={isHover}

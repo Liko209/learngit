@@ -7,7 +7,7 @@ import { Config } from './config';
 import { initModel, closeDB } from "./models";
 import { FileService, MetricService, DashboardService } from "./services";
 import { LogUtils, PptrUtils } from "./utils";
-import * as scenes from "./scenes";
+import { scenes } from "./scenes";
 
 const logger = LogUtils.getLogger(__filename);
 
@@ -32,6 +32,7 @@ const hasAtLeastOneTagInTargetLists = (tags: string[], ...targetLists) => {
     let startTime = Date.now();
     // check report dir
     await FileService.checkReportPath();
+    await FileService.cleanProfiles();
 
     const versionInfo = await DashboardService.getVersionInfo();
 

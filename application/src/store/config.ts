@@ -1,4 +1,5 @@
-import { service, mainLogger } from 'sdk';
+import { service } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
@@ -51,127 +52,156 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.PERSON]: {
     event: [ENTITY.PERSON],
-    service: () => ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.GROUP_STATE]: {
     event: [ENTITY.GROUP_STATE],
-    service: () => ServiceLoader.getInstance<StateService>(ServiceConfig.STATE_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<StateService>(ServiceConfig.STATE_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.MY_STATE]: {
     event: [ENTITY.MY_STATE],
-    service: () => ServiceLoader.getInstance<StateService>(ServiceConfig.STATE_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<StateService>(ServiceConfig.STATE_SERVICE),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.ITEM]: {
     event: [`${ENTITY.ITEM}.*.*`],
-    service: () => ServiceLoader.getInstance<ItemService>(ServiceConfig.ITEM_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<ItemService>(ServiceConfig.ITEM_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
     modelCreator: (model: IdModel) => ModelCreator.createItemModel(model),
   },
   [ENTITY_NAME.POST]: {
     event: [`${ENTITY.POST}.*`],
-    service: () => ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.DISCONTINUOUS_POST]: {
     event: [ENTITY.DISCONTINUOUS_POST],
-    service: () => ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PRESENCE]: {
     event: [ENTITY.PRESENCE],
-    service: () => ServiceLoader.getInstance<PresenceService>(
-      ServiceConfig.PRESENCE_SERVICE,
-    ),
+    service: () =>
+      ServiceLoader.getInstance<PresenceService>(
+        ServiceConfig.PRESENCE_SERVICE,
+      ),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.COMPANY]: {
     event: [ENTITY.COMPANY],
-    service: () => ServiceLoader.getInstance<CompanyService>(ServiceConfig.COMPANY_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<CompanyService>(ServiceConfig.COMPANY_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PROGRESS]: {
     event: [ENTITY.PROGRESS],
     service: () => ({
-      getById: (id: number) => ServiceLoader.getInstance<ProgressService>(
-        ServiceConfig.PROGRESS_SERVICE,
-      ).getByIdSync(id),
+      getById: (id: number) =>
+        ServiceLoader.getInstance<ProgressService>(
+          ServiceConfig.PROGRESS_SERVICE,
+        ).getByIdSync(id),
     }),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PROFILE]: {
     event: [ENTITY.PROFILE],
-    service: () => ServiceLoader.getInstance<ProfileService>(ServiceConfig.PROFILE_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<ProfileService>(ServiceConfig.PROFILE_SERVICE),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: CACHE_COUNT,
   },
 
   [ENTITY_NAME.GROUP_CONFIG]: {
     event: [ENTITY.GROUP_CONFIG],
-    service: () => ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    ),
+    service: () =>
+      ServiceLoader.getInstance<GroupConfigService>(
+        ServiceConfig.GROUP_CONFIG_SERVICE,
+      ),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.USER_SETTING]: {
     event: [ENTITY.USER_SETTING],
-    service: () => ServiceLoader.getInstance<SettingService>(ServiceConfig.SETTING_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<SettingService>(ServiceConfig.SETTING_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.USER_PERMISSION]: {
     event: [ENTITY.USER_PERMISSION],
-    service: () => ServiceLoader.getInstance<PermissionService>(
-      ServiceConfig.PERMISSION_SERVICE,
-    ),
+    service: () =>
+      ServiceLoader.getInstance<PermissionService>(
+        ServiceConfig.PERMISSION_SERVICE,
+      ),
     type: HANDLER_TYPE.SINGLE_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
+  [ENTITY_NAME.CONVERSATION_PREFERENCE]: {
+    event: [ENTITY.CONVERSATION_PREFERENCE],
+    service: () => ({
+      getById: (id: number) =>
+        ServiceLoader.getInstance<ProfileService>(
+          ServiceConfig.PROFILE_SERVICE,
+        ).getConversationPreference(id),
+    }),
+    type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PHONE_NUMBER]: {
     event: [ENTITY.PHONE_NUMBER],
-    service: () => ServiceLoader.getInstance<PhoneNumberService>(
-      ServiceConfig.PHONE_NUMBER_SERVICE,
-    ),
+    service: () =>
+      ServiceLoader.getInstance<PhoneNumberService>(
+        ServiceConfig.PHONE_NUMBER_SERVICE,
+      ),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: PHONE_NUMBER_CACHE_COUNT,
   },
   [ENTITY_NAME.CALL]: {
     event: [ENTITY.CALL],
-    service: () => ServiceLoader.getInstance<TelephonyService>(
-      ServiceConfig.TELEPHONY_SERVICE,
-    ),
+    service: () =>
+      ServiceLoader.getInstance<TelephonyService>(
+        ServiceConfig.TELEPHONY_SERVICE,
+      ),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CALL_CACHE_COUNT,
   },
   [ENTITY_NAME.BADGE]: {
     event: [ENTITY.BADGE],
-    service: () => ServiceLoader.getInstance<BadgeService>(ServiceConfig.BADGE_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<BadgeService>(ServiceConfig.BADGE_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.VOICE_MAIL]: {
     event: [ENTITY.VOICE_MAIL],
-    service: () => ServiceLoader.getInstance<VoicemailService>(
-      ServiceConfig.VOICEMAIL_SERVICE,
-    ),
+    service: () =>
+      ServiceLoader.getInstance<VoicemailService>(
+        ServiceConfig.VOICEMAIL_SERVICE,
+      ),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.CALL_LOG]: {
     event: [ENTITY.CALL_LOG],
-    service: () => ServiceLoader.getInstance<CallLogService>(ServiceConfig.CALL_LOG_SERVICE),
+    service: () =>
+      ServiceLoader.getInstance<CallLogService>(ServiceConfig.CALL_LOG_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },

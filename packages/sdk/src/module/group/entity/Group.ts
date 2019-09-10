@@ -5,6 +5,7 @@
  */
 
 import { ExtendedBaseModel } from '../../models';
+import { SortableModel } from 'sdk/framework/model';
 
 type GroupQueryType = 'all' | 'group' | 'team' | 'favorite';
 
@@ -74,6 +75,18 @@ type GroupTyping = {
   clear?: boolean;
 };
 
+type FuzzySearchGroupOptions = {
+  fetchAllIfSearchKeyEmpty?: boolean;
+  myGroupsOnly?: boolean;
+  recentFirst?: boolean;
+  meFirst?: boolean;
+  filterFunc?: (group: Group) => boolean;
+  sortFunc?: (
+    groupA: SortableModel<Group>,
+    groupB: SortableModel<Group>,
+  ) => number;
+};
+
 export {
   GroupQueryType,
   FEATURE_STATUS,
@@ -83,4 +96,5 @@ export {
   GroupCommon,
   TeamPermissionParams,
   GroupTyping,
+  FuzzySearchGroupOptions,
 };

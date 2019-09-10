@@ -26,7 +26,7 @@ import {
 //   return newO;
 // }
 class LokiCollection<T extends object, Key extends DatabaseKeyType>
-implements IDatabaseCollection<T, Key> {
+  implements IDatabaseCollection<T, Key> {
   private collection: Loki.Collection<T>;
   constructor(db: Loki, collectionName: string) {
     this.collection = db.getCollection<T>(collectionName);
@@ -37,7 +37,9 @@ implements IDatabaseCollection<T, Key> {
   }
 
   primaryKeys(query?: IQuery<T>): Promise<Key[]> {
-    return this.getAll(query).then((result: T[]) => result.map(item => item[this.primaryKeyName()]));
+    return this.getAll(query).then((result: T[]) =>
+      result.map(item => item[this.primaryKeyName()]),
+    );
   }
 
   primaryKeyName(): string {
@@ -52,8 +54,7 @@ implements IDatabaseCollection<T, Key> {
     const key = newItem[unique];
     const result = this.collection.find({
       [unique]: key,
-    } as any)[0];
-
+    } as any)[0]
     if (result) {
       const { $loki } = result;
       this.collection.update(_.assign(newItem, { $loki }));
@@ -63,9 +64,7 @@ implements IDatabaseCollection<T, Key> {
   }
 
   async bulkPut(array: T[]): Promise<void> {
-    await Promise.all(
-      array.map(async (item: T) => this.put(item)),
-    );
+    await Promise.all(array.map(async (item: T) => this.put(item)));
   }
 
   async get(key: Key): Promise<T | null> {

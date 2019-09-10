@@ -4,15 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import './jest/setup/console';
+import './jest/setup/emoji';
 import './jest/setup/timezone';
 import './jest/setup/mobx';
 import './jest/setup/styledTheme';
 import './jest/setup/media';
 import './jest/setup/selection';
 import './jest/setup/promise';
-
-import { FakeStorage } from './utils';
+import './jest/setup/thirdParty';
+import * as setupTimer from './jest/setup/timer';
+import {
+  FakeStorage
+} from './utils';
 /* eslint-disable */
+jest.mock('styled-components', () => require('./jest/setup/styled-components'));
 
 const log = reason => {
   throw reason;
@@ -38,6 +43,8 @@ beforeAll(() => {
 afterAll(() => {
   delete window.localStorage;
   delete window.sessionStorage;
+  delete window.logger;
+  setupTimer.tearDown();
 
   process.off('unhandledRejection', log);
   process.env.LISTENING_TO_UNHANDLED_REJECTION = false;

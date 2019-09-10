@@ -22,7 +22,7 @@ describe('NetworkRequestHandler', () => {
     it('should call initPendingTasks', () => {
       const spy = jest.spyOn(handler, 'initPendingTasks');
       handler.init();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -30,7 +30,7 @@ describe('NetworkRequestHandler', () => {
     it('should call set 4 times', () => {
       const spy = jest.spyOn(handler.pendingTasks, 'set');
       handler.initPendingTasks();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -46,8 +46,8 @@ describe('NetworkRequestHandler', () => {
       const spy = jest.spyOn(handler, 'appendTask');
       const spy1 = jest.spyOn(handler, 'notifyRequestArrived');
       handler.addApiRequest(getFakeRequest(), false);
-      expect(spy1).toBeCalled();
-      expect(spy).toBeCalled();
+      expect(spy1).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should call _callXApiResponseCallback when request is limited in survival mode', () => {
@@ -58,12 +58,12 @@ describe('NetworkRequestHandler', () => {
       jest.spyOn(handler, 'appendTask');
       jest.spyOn(handler, 'notifyRequestArrived');
       handler.addApiRequest(getFakeRequest(), false);
-      expect(handler.isSurvivalModeEnabled).toBeCalled();
-      expect(handler.isInSurvivalMode).toBeCalled();
-      expect(handler.canHandleInSurvivalMode).toBeCalled();
-      expect(handler._callXApiResponseCallback).toBeCalled();
-      expect(handler.appendTask).not.toBeCalled();
-      expect(handler.notifyRequestArrived).not.toBeCalled();
+      expect(handler.isSurvivalModeEnabled).toHaveBeenCalled();
+      expect(handler.isInSurvivalMode).toHaveBeenCalled();
+      expect(handler.canHandleInSurvivalMode).toHaveBeenCalled();
+      expect(handler._callXApiResponseCallback).toHaveBeenCalled();
+      expect(handler.appendTask).not.toHaveBeenCalled();
+      expect(handler.notifyRequestArrived).not.toHaveBeenCalled();
     });
   });
 
@@ -78,7 +78,7 @@ describe('NetworkRequestHandler', () => {
     it('should resume', () => {
       const spy = jest.spyOn(handler, 'notifyRequestArrived');
       handler.resume();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
       expect(handler.isPause).not.toBeTruthy();
     });
   });
@@ -88,8 +88,8 @@ describe('NetworkRequestHandler', () => {
       const spy = jest.spyOn(handler, 'cancelAllPendingTasks');
       const spy1 = jest.spyOn(handler, 'cancelAllConsumers');
       handler.cancelAll();
-      expect(spy1).toBeCalled();
-      expect(spy).toBeCalled();
+      expect(spy1).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -104,7 +104,7 @@ describe('NetworkRequestHandler', () => {
       consumer.onCancelRequest = jest.fn();
       jest.spyOn(handler.consumers, 'get').mockReturnValueOnce(consumer);
       handler.cancelRequest(getFakeRequest());
-      expect(consumer.onCancelRequest).toBeCalled();
+      expect(consumer.onCancelRequest).toHaveBeenCalled();
     });
 
     it('should call onCancelRequest', () => {
@@ -112,8 +112,8 @@ describe('NetworkRequestHandler', () => {
       jest.spyOn(handler, 'deletePendingRequest');
       jest.spyOn(handler, '_callXApiResponseCallback');
       handler.cancelRequest(getFakeRequest());
-      expect(handler.deletePendingRequest).toBeCalled();
-      expect(handler._callXApiResponseCallback).toBeCalled();
+      expect(handler.deletePendingRequest).toHaveBeenCalled();
+      expect(handler._callXApiResponseCallback).toHaveBeenCalled();
     });
   });
 
@@ -126,7 +126,7 @@ describe('NetworkRequestHandler', () => {
       });
       handler.notifyTokenRefreshed();
       spys.forEach(spy => {
-        expect(spy).toBeCalled();
+        expect(spy).toHaveBeenCalled();
       });
     });
   });
@@ -139,7 +139,7 @@ describe('NetworkRequestHandler', () => {
       const spy = jest.spyOn(handler, '_changeTaskWeight');
       const request = handler.produceRequest(getFakeRequest().via);
       expect(request).toEqual(task.request);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
     it('should handle NETWORK_VIA.ALL when via isViaReachable', () => {
       const task = getFakeTask();
@@ -168,6 +168,7 @@ describe('NetworkRequestHandler', () => {
       expect(tasks.length).toEqual(0);
     });
   });
+
   describe('hasImmediateTask', () => {
     it('should return false when pendingTasks has no immediate task', () => {
       handler.pendingTasks.get = jest.fn().mockReturnValue([]);
@@ -209,7 +210,7 @@ describe('NetworkRequestHandler', () => {
     it('should add to consumers', () => {
       jest.spyOn(handler.consumers, 'get');
       handler.getRequestConsumer(NETWORK_VIA.HTTP);
-      expect(handler.consumers.get).toBeCalledWith(NETWORK_VIA.HTTP);
+      expect(handler.consumers.get).toHaveBeenCalledWith(NETWORK_VIA.HTTP);
     });
   });
 
@@ -235,7 +236,7 @@ describe('NetworkRequestHandler', () => {
         'onConsumeArrived',
       );
       handler.notifyRequestArrived(NETWORK_VIA.HTTP);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should should call onConsumeArrived', () => {
@@ -245,7 +246,7 @@ describe('NetworkRequestHandler', () => {
         'onConsumeArrived',
       );
       handler.notifyRequestArrived(NETWORK_VIA.ALL);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -256,7 +257,7 @@ describe('NetworkRequestHandler', () => {
       handler.pendingTasks.get.mockReturnValueOnce(queue);
       const spy = jest.spyOn(queue, 'push');
       handler.appendTask(getFakeTask(), true);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should unshift when not tail', () => {
@@ -265,7 +266,7 @@ describe('NetworkRequestHandler', () => {
       handler.pendingTasks.get.mockReturnValueOnce(queue);
       const spy = jest.spyOn(queue, 'unshift');
       handler.appendTask(getFakeTask(), false);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -278,7 +279,7 @@ describe('NetworkRequestHandler', () => {
       });
       handler.cancelAllConsumers();
       spys.forEach(spy => {
-        expect(spy).toBeCalled();
+        expect(spy).toHaveBeenCalled();
       });
     });
   });
@@ -287,7 +288,7 @@ describe('NetworkRequestHandler', () => {
     it('should init pendingTasks', () => {
       const spy = jest.spyOn(handler, 'initPendingTasks');
       handler.cancelAllPendingTasks();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -325,20 +326,23 @@ describe('NetworkRequestHandler', () => {
     it('should call refreshOAuthToken of tokenManager', () => {
       const spy = jest.spyOn(handler.tokenManager, 'refreshOAuthToken');
       handler.onAccessTokenInvalid(fakeHandleType);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
   describe('onSurvivalModeDetected', () => {
     it('should call setSurvivalMode and cancelAllPendingTasks', () => {
-      handler.setNetworkRequestSurvivalMode(getFakeSurvivalMode());
+      const mode = getFakeSurvivalMode();
+      handler.setNetworkRequestSurvivalMode(mode);
       jest.spyOn(handler, 'isSurvivalModeEnabled').mockReturnValueOnce(true);
       const spy = jest.spyOn(
         handler.networkRequestSurvivalMode,
         'setSurvivalMode',
       );
       handler.onSurvivalModeDetected(SURVIVAL_MODE.NORMAL, 1);
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
+
+      mode.clearTimer();
     });
   });
 });

@@ -2,7 +2,6 @@ div[role='presentation'] > .virtualized_select-list-container {
   max-height: 416px;
   overflow: hidden;
   display: flex;
-  padding: 8px 0;
 }
 
 div[role='presentation'] > .virtualized_select-list-container > div {

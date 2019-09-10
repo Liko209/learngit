@@ -20,109 +20,7 @@ Array [
   font-size: 24px;
 }
 
-.c18.c18 .c15,
-.c18.c18 .c15 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c15 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c15,
-.c19.c19 .c15 svg {
-  font-size: 20px;
-}
-
-.c19.c19:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c19.c19:active .c15 {
-  color: #9e9e9e;
-}
-
-.c19.c19.c19.c19.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c15,
-.c20.c20 .c15 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c20.c20:active .c15 {
-  color: #0684bd;
-}
-
-.c20.c20.c20.c20.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c15,
-.c21.c21 .c15 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c21.c21:active .c15 {
-  color: #0684bd;
-}
-
-.c21.c21.c21.c21.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c15,
-.c22.c22 .c15 svg {
-  font-size: 20px;
-}
-
-.c22.c22:hover .c15 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c22.c22:active .c15 {
-  color: #edb63c;
-}
-
-.c22.c22.c22.c22.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c23.c23 .c15,
-.c23.c23 .c15 svg {
-  font-size: 16px;
-}
-
-.c23.c23:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c23.c23:active .c15 {
-  color: #9e9e9e;
-}
-
-.c23.c23.c23.c23.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c14.c14 {
+.c15.c15 {
   padding: 0;
   width: 16px;
   height: 16px;
@@ -133,28 +31,32 @@ Array [
   border-radius: 0;
 }
 
-.c14.c14 .c15,
-.c14.c14 .c15 svg {
+.c15.c15 .icon,
+.c15.c15 .icon svg {
   font-size: 16px;
 }
 
-.c14.c14:hover {
+.c15.c15:hover {
   background-color: transparent;
 }
 
-.c14.c14:hover .c15 {
+.c15.c15:hover .icon {
   color: rgba(6,132,189,0.88);
 }
 
-.c14.c14:active .c15 {
+.c15.c15:active .icon {
   color: #0684bd;
 }
 
-.c14.c14.c14.c14.disabled .c15 {
+.c15.c15.c15.c15.disabled {
+  background-color: inherit;
+}
+
+.c15.c15.c15.c15.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c14.c14 .rippleVisible {
+.c15.c15 .rippleVisible {
   color: #0684bd;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -164,7 +66,7 @@ Array [
   animation-name: cBKRfH;
 }
 
-.c2.c2 {
+.c3.c3 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -174,16 +76,20 @@ Array [
   background-color: #6FAFEB;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2 > .avatar-short-name {
+.c3:focus {
+  outline: none;
+}
+
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -200,7 +106,13 @@ Array [
   align-items: center;
 }
 
-.c13 {
+.c18 .c2:hover,
+.c18 .c2:active {
+  cursor: default;
+  opacity: 1;
+}
+
+.c14 {
   border: 1px solid rgba(255,55,55,.1);
   border-color: #e0e0e0;
   border-radius: 4px;
@@ -220,21 +132,21 @@ Array [
   color: #0684bd;
 }
 
-.c13 > button {
+.c14 > button {
   margin-right: 4px;
   border-radius: 0;
 }
 
-.c13 > span {
+.c14 > span {
   color: #616161;
   font-size: 12px;
 }
 
-.c13:hover {
+.c14:hover {
   border-color: #0684bd;
 }
 
-.c13:active {
+.c14:active {
   background-color: #e1f4fb;
 }
 
@@ -242,7 +154,7 @@ Array [
   padding: 12px 12px 16px 16px;
 }
 
-.c3 {
+.c4 {
   position: relative;
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
@@ -267,7 +179,7 @@ Array [
   background: #fafafa;
 }
 
-.c5 {
+.c6 {
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
@@ -285,7 +197,7 @@ Array [
   white-space: nowrap;
 }
 
-.c6 {
+.c7 {
   color: #212121;
   font-size: 0.75rem;
   font-weight: 400;
@@ -298,21 +210,39 @@ Array [
   word-break: break-word;
 }
 
-.c7 {
-  padding-left: 4px;
+.c8 {
+  padding-left: 8px;
   box-sizing: border-box;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  line-height: 16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
-.c10 {
+.c8.c8 .emoji-mart-emoji {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(16%);
+  -ms-transform: translateY(16%);
+  transform: translateY(16%);
+  padding-right: 4px;
+}
+
+.c11 {
   color: #9e9e9e;
   white-space: nowrap;
   font-size: 0.75rem;
@@ -323,7 +253,7 @@ Array [
   text-align: right;
 }
 
-.c9 {
+.c10 {
   margin-left: 4px;
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -331,7 +261,7 @@ Array [
   display: inline-flex;
 }
 
-.c4 {
+.c5 {
   padding: 12px 16px 8px 0px;
   display: -webkit-box;
   display: -webkit-flex;
@@ -343,7 +273,7 @@ Array [
   align-items: center;
 }
 
-.c8 {
+.c9 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -356,20 +286,20 @@ Array [
   line-height: 16px;
 }
 
-.c8 span:first-child {
+.c9 span:first-child {
   padding-left: 4px;
 }
 
-.c11 {
+.c12 {
   padding: 0px 16px 16px 0px;
   font-size: 0;
 }
 
-.c11 .conversation-item-cards:last-child {
+.c12 .conversation-item-cards:last-child {
   margin-bottom: 0;
 }
 
-.c12 {
+.c13 {
   padding: 0px 16px 16px 0px;
 }
 
@@ -380,7 +310,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
+        className="MuiAvatar-root c2 c3 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -388,28 +318,49 @@ Array [
       </div>
     </div>
     <div
-      className="c3"
+      className="c4"
     >
       <div
-        className="c4"
+        className="c5"
       >
         <div
-          className="c5"
+          className="c6"
         >
           <div
-            className="c6"
+            className="c7"
             data-name="name"
           >
             John Smith
           </div>
           <div
-            className="c7"
+            className="c8"
             data-name="cardHeaderUserStatus"
           >
-            🏃 in the meeting
+            <span
+              aria-label="📅, date"
+              className="emoji-mart-emoji"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+              onMouseLeave={[Function]}
+              title={null}
+            >
+              <span
+                style={
+                  Object {
+                    "backgroundImage": "url(/emoji/emojione/64.png)",
+                    "backgroundPosition": "49.01960784313725% 94.11764705882352%",
+                    "backgroundSize": "5200% 5200%",
+                    "display": "inline-block",
+                    "height": 14,
+                    "width": 14,
+                  }
+                }
+              />
+            </span>
+            in the meeting
           </div>
           <div
-            className="c8"
+            className="c9"
             data-name="cardHeaderNotification"
           >
             <span>
@@ -418,11 +369,11 @@ Array [
           </div>
         </div>
         <div
-          className="c9"
+          className="c10"
           data-test-automation-id="cardHeaderRightSection"
         >
           <div
-            className="c10"
+            className="c11"
             data-name="time"
           >
             3:15 PM
@@ -430,16 +381,16 @@ Array [
         </div>
       </div>
       <div
-        className="c11"
+        className="c12"
       >
         any content
       </div>
       <div
-        className="c12"
+        className="c13"
       >
         <div
           aria-describedby={null}
-          className="c13"
+          className="c14"
           data-name="footerLikeButton"
           onClick={[Function]}
           onMouseLeave={[Function]}
@@ -450,7 +401,7 @@ Array [
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c14"
+            className="MuiButtonBase-root MuiIconButton-root c15"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
             disabled={false}
@@ -460,7 +411,10 @@ Array [
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -473,8 +427,7 @@ Array [
               className="MuiIconButton-label"
             >
               <span
-                className="c15 thumbup icon c16"
-                size="small"
+                className=" thumbup icon c16"
               >
                 <svg
                   className="c17"
@@ -513,109 +466,7 @@ Array [
   font-size: 24px;
 }
 
-.c18.c18 .c15,
-.c18.c18 .c15 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c15 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c15,
-.c19.c19 .c15 svg {
-  font-size: 20px;
-}
-
-.c19.c19:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c19.c19:active .c15 {
-  color: #9e9e9e;
-}
-
-.c19.c19.c19.c19.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c15,
-.c20.c20 .c15 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c20.c20:active .c15 {
-  color: #0684bd;
-}
-
-.c20.c20.c20.c20.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c15,
-.c21.c21 .c15 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c21.c21:active .c15 {
-  color: #0684bd;
-}
-
-.c21.c21.c21.c21.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c15,
-.c22.c22 .c15 svg {
-  font-size: 20px;
-}
-
-.c22.c22:hover .c15 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c22.c22:active .c15 {
-  color: #edb63c;
-}
-
-.c22.c22.c22.c22.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c23.c23 .c15,
-.c23.c23 .c15 svg {
-  font-size: 16px;
-}
-
-.c23.c23:hover .c15 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c23.c23:active .c15 {
-  color: #9e9e9e;
-}
-
-.c23.c23.c23.c23.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c14.c14 {
+.c15.c15 {
   padding: 0;
   width: 16px;
   height: 16px;
@@ -626,28 +477,32 @@ Array [
   border-radius: 0;
 }
 
-.c14.c14 .c15,
-.c14.c14 .c15 svg {
+.c15.c15 .icon,
+.c15.c15 .icon svg {
   font-size: 16px;
 }
 
-.c14.c14:hover {
+.c15.c15:hover {
   background-color: transparent;
 }
 
-.c14.c14:hover .c15 {
+.c15.c15:hover .icon {
   color: rgba(6,132,189,0.88);
 }
 
-.c14.c14:active .c15 {
+.c15.c15:active .icon {
   color: #0684bd;
 }
 
-.c14.c14.c14.c14.disabled .c15 {
+.c15.c15.c15.c15.disabled {
+  background-color: inherit;
+}
+
+.c15.c15.c15.c15.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
-.c14.c14 .rippleVisible {
+.c15.c15 .rippleVisible {
   color: #0684bd;
   opacity: 0.24;
   -webkit-transform: scale(1);
@@ -657,7 +512,7 @@ Array [
   animation-name: cBKRfH;
 }
 
-.c2.c2 {
+.c3.c3 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -667,16 +522,20 @@ Array [
   background-color: #6FAFEB;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2 > .avatar-short-name {
+.c3:focus {
+  outline: none;
+}
+
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -693,7 +552,13 @@ Array [
   align-items: center;
 }
 
-.c13 {
+.c18 .c2:hover,
+.c18 .c2:active {
+  cursor: default;
+  opacity: 1;
+}
+
+.c14 {
   border: 1px solid rgba(255,55,55,.1);
   border-color: #e0e0e0;
   border-radius: 4px;
@@ -713,21 +578,21 @@ Array [
   color: #0684bd;
 }
 
-.c13 > button {
+.c14 > button {
   margin-right: 4px;
   border-radius: 0;
 }
 
-.c13 > span {
+.c14 > span {
   color: #616161;
   font-size: 12px;
 }
 
-.c13:hover {
+.c14:hover {
   border-color: #0684bd;
 }
 
-.c13:active {
+.c14:active {
   background-color: #e1f4fb;
 }
 
@@ -735,7 +600,7 @@ Array [
   padding: 12px 12px 16px 16px;
 }
 
-.c3 {
+.c4 {
   position: relative;
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
@@ -760,7 +625,7 @@ Array [
   background: #fafafa;
 }
 
-.c5 {
+.c6 {
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
@@ -778,7 +643,7 @@ Array [
   white-space: nowrap;
 }
 
-.c6 {
+.c7 {
   color: #212121;
   font-size: 0.75rem;
   font-weight: 400;
@@ -791,21 +656,39 @@ Array [
   word-break: break-word;
 }
 
-.c7 {
-  padding-left: 4px;
+.c8 {
+  padding-left: 8px;
   box-sizing: border-box;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  line-height: 16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
-.c10 {
+.c8.c8 .emoji-mart-emoji {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(16%);
+  -ms-transform: translateY(16%);
+  transform: translateY(16%);
+  padding-right: 4px;
+}
+
+.c11 {
   color: #9e9e9e;
   white-space: nowrap;
   font-size: 0.75rem;
@@ -816,7 +699,7 @@ Array [
   text-align: right;
 }
 
-.c9 {
+.c10 {
   margin-left: 4px;
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -824,7 +707,7 @@ Array [
   display: inline-flex;
 }
 
-.c4 {
+.c5 {
   padding: 12px 16px 8px 0px;
   display: -webkit-box;
   display: -webkit-flex;
@@ -836,7 +719,7 @@ Array [
   align-items: center;
 }
 
-.c8 {
+.c9 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -849,20 +732,20 @@ Array [
   line-height: 16px;
 }
 
-.c8 span:first-child {
+.c9 span:first-child {
   padding-left: 4px;
 }
 
-.c11 {
+.c12 {
   padding: 0px 16px 16px 0px;
   font-size: 0;
 }
 
-.c11 .conversation-item-cards:last-child {
+.c12 .conversation-item-cards:last-child {
   margin-bottom: 0;
 }
 
-.c12 {
+.c13 {
   padding: 0px 16px 16px 0px;
 }
 
@@ -873,7 +756,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
+        className="MuiAvatar-root c2 c3 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -881,28 +764,49 @@ Array [
       </div>
     </div>
     <div
-      className="c3"
+      className="c4"
     >
       <div
-        className="c4"
+        className="c5"
       >
         <div
-          className="c5"
+          className="c6"
         >
           <div
-            className="c6"
+            className="c7"
             data-name="name"
           >
             John Smith
           </div>
           <div
-            className="c7"
+            className="c8"
             data-name="cardHeaderUserStatus"
           >
-            🏃 in the meeting
+            <span
+              aria-label="📅, date"
+              className="emoji-mart-emoji"
+              onClick={[Function]}
+              onMouseEnter={[Function]}
+              onMouseLeave={[Function]}
+              title={null}
+            >
+              <span
+                style={
+                  Object {
+                    "backgroundImage": "url(/emoji/emojione/64.png)",
+                    "backgroundPosition": "49.01960784313725% 94.11764705882352%",
+                    "backgroundSize": "5200% 5200%",
+                    "display": "inline-block",
+                    "height": 14,
+                    "width": 14,
+                  }
+                }
+              />
+            </span>
+            in the meeting
           </div>
           <div
-            className="c8"
+            className="c9"
             data-name="cardHeaderNotification"
           >
             <span>
@@ -911,11 +815,11 @@ Array [
           </div>
         </div>
         <div
-          className="c9"
+          className="c10"
           data-test-automation-id="cardHeaderRightSection"
         >
           <div
-            className="c10"
+            className="c11"
             data-name="time"
           >
             3:15 PM
@@ -923,16 +827,16 @@ Array [
         </div>
       </div>
       <div
-        className="c11"
+        className="c12"
       >
         any content
       </div>
       <div
-        className="c12"
+        className="c13"
       >
         <div
           aria-describedby={null}
-          className="c13"
+          className="c14"
           data-name="footerLikeButton"
           onClick={[Function]}
           onMouseLeave={[Function]}
@@ -943,7 +847,7 @@ Array [
         >
           <button
             aria-label=""
-            className="MuiButtonBase-root MuiIconButton-root c14"
+            className="MuiButtonBase-root MuiIconButton-root c15"
             data-name="actionBarLike"
             data-test-automation-id="actionBarLike"
             disabled={false}
@@ -953,7 +857,10 @@ Array [
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             onMouseDown={[Function]}
+            onMouseEnter={[Function]}
             onMouseLeave={[Function]}
+            onMouseOut={[Function]}
+            onMouseOver={[Function]}
             onMouseUp={[Function]}
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
@@ -966,8 +873,7 @@ Array [
               className="MuiIconButton-label"
             >
               <span
-                className="c15 thumbup icon c16"
-                size="small"
+                className=" thumbup icon c16"
               >
                 <svg
                   className="c17"

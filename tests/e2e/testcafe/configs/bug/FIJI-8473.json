@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ConversationList/LeftRail.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

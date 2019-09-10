@@ -5,7 +5,8 @@
  */
 // import { UserConfig } from 'sdk/service/account';
 // import { getEntity } from '../../../../../../store/utils';
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { config } from '../../../../module.config';
 import { GlobalSearchStore } from '../../../../store';
 import i18nT from '@/utils/i18nT';
@@ -16,6 +17,7 @@ import { SearchService } from 'sdk/module/search';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { getGlobalValue, getEntity } from '@/store/utils';
 
+jest.mock('sdk/module/config');
 jest.mock('@/utils/i18nT');
 jest.mock('@/store/utils');
 

@@ -9,6 +9,8 @@ import { shallow } from 'enzyme';
 import { FullSearchView } from '../FullSearch.View';
 import history from '@/history';
 
+jest.unmock('react-quill');
+jest.unmock('quill');
 jest.mock('@/modules/message/container/ConversationSheet', () => ({}));
 
 describe('FullSearch.View', () => {

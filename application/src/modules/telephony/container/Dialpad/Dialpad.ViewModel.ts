@@ -5,10 +5,8 @@
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { container } from 'framework';
-import {
-  computed, observable, action, comparer,
-} from 'mobx';
+import { container } from 'framework/ioc';
+import { computed, observable, action, comparer } from 'mobx';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
@@ -16,11 +14,16 @@ import { CALL_WINDOW_STATUS } from '../../FSM';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { formatSeconds } from '@/utils/date';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
+  );
+
+  private _featuresFlagsService: FeaturesFlagsService = container.get(
+    FeaturesFlagsService,
   );
 
   id = this._telephonyStore.dialpadBtnId;
@@ -120,12 +123,17 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get canUseTelephony() {
-    return this._telephonyStore.canUseTelephony;
+    return this._featuresFlagsService.canIUseTelephony;
   }
 
   @computed
   get startMinimizeAnimation() {
     return this._telephonyStore.startMinimizeAnimation;
+  }
+
+  @computed
+  get isConference() {
+    return this._telephonyStore.isConference;
   }
 
   dispose = () => {

@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { AttachmentsViewProps } from './types';
+import { AttachmentsViewProps, AttachmentsProps } from './types';
 import {
   AttachmentList,
   ItemInfo,
@@ -15,10 +15,12 @@ import {
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { getFileIcon } from '@/common/getFileIcon';
 import { postParser } from '@/common/postParser';
+import { JuiGrid } from 'jui/foundation/Layout/Grid';
+import { JuiButton } from 'jui/components/Buttons';
 
 @observer
 class AttachmentsViewComponent extends Component<
-  AttachmentsViewProps & WithTranslation
+  AttachmentsViewProps & WithTranslation & AttachmentsProps
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
@@ -34,6 +36,7 @@ class AttachmentsViewComponent extends Component<
           duplicateFileNames={duplicateFiles.map(({ name }) =>
             postParser(name, { fileName: true }),
           )}
+          onEscTrackedCancel={this.props.onEscTrackedCancelDuplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}
@@ -63,20 +66,32 @@ class AttachmentsViewComponent extends Component<
   private _resolveIcon = (item: ItemInfo) => getFileIcon(item.name);
 
   render() {
-    const { files, cancelUploadFile, canPost } = this.props;
+    const { t, files, cancelUploadFile, canPost, onPostClicked } = this.props;
     return (
       <>
         {canPost && files.length > 0 ? (
-          <AttachmentList
-            iconResolver={this._resolveIcon}
-            files={files}
-            fileNames={files.map(({ id, name }) => ({
-              id,
-              fileNameChildren: postParser(name, { fileName: true }),
-            }))}
-            removeAttachment={cancelUploadFile}
-            data-test-automation-id="message-attachment-node"
-          />
+          <>
+            <AttachmentList
+              iconResolver={this._resolveIcon}
+              files={files}
+              fileNames={files.map(({ id, name }) => ({
+                id,
+                fileNameChildren: postParser(name, { fileName: true }),
+              }))}
+              removeAttachment={cancelUploadFile}
+              data-test-automation-id="message-attachment-node"
+            />
+            <JuiGrid container justify="center">
+              <JuiButton
+                size="medium"
+                variant="contained"
+                onClick={onPostClicked}
+                data-test-automation-id="post-button"
+              >
+                {t('message.postButton')}
+              </JuiButton>
+            </JuiGrid>
+          </>
         ) : null}
         {this._showDuplicateFilesDialogIfNeeded()}
       </>

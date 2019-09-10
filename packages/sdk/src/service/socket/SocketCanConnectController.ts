@@ -3,13 +3,14 @@
  * @Date: 2019-03-11 19:17:03
  * Copyright © RingCentral. All rights reserved.
  */
-import { canConnect, CanConnectModel } from '../../api/glip/user';
-import { PresenceService } from '../../module/presence/service/PresenceService';
-import { PRESENCE } from '../../module/presence/constant/Presence';
-import { AccountService } from '../../module/account/service';
-import { mainLogger, getSpartaRandomTime } from 'foundation';
-import { SyncService } from '../../module/sync/service';
-import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
+import { canConnect, CanConnectModel } from 'sdk/api/glip/user';
+import { PresenceService } from 'sdk/module/presence/service/PresenceService';
+import { PRESENCE } from 'sdk/module/presence/constant/Presence';
+import { AccountService } from 'sdk/module/account/service';
+import { mainLogger } from 'foundation/log';
+import { getSpartaRandomTime } from 'foundation/utils';
+import { SyncService } from 'sdk/module/sync/service';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 const INTERVAL = 3000;
 

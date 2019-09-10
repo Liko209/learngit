@@ -10,7 +10,7 @@ import {
   NETWORK_METHOD,
   REQUEST_HEADER_KEYS,
   CONTENT_TYPES,
-} from 'foundation';
+} from 'foundation/network';
 import { RC_ITEM_API } from './constants';
 import {
   RCItemSyncResponse,

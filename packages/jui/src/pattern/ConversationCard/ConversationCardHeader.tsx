@@ -4,12 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
+import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from '../Emoji';
 import {
   spacing,
   typography,
   grey,
   ellipsis,
   width,
+  height,
 } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 import _ from 'lodash';
@@ -28,11 +31,22 @@ const StyledName = styled('div')`
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
-  padding-left: ${spacing(1)};
+  padding-left: ${spacing(2)};
   box-sizing: border-box;
   color: ${grey('600')};
   ${typography('caption2')};
+  line-height: ${height(4)};
   ${ellipsis()};
+  display: flex;
+  align-items: center;
+  && {
+    .emoji-mart-emoji {
+      position: relative;
+      top: 50%;
+      transform: translateY(16%);
+      padding-right: ${spacing(1)};
+    }
+  }
 `;
 const StyledTime = styled('div')`
   color: ${grey('500')};
@@ -62,7 +76,8 @@ const StyledNotification = styled.div`
 
 type ConversationCardHeaderProps = {
   name: string;
-  status?: string;
+  colonsEmoji: string;
+  statusPlainText: string;
   time: string;
   children?: React.ReactNode;
   from?: JSX.Element;
@@ -123,35 +138,48 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 
   componentDidMount() {
-    // this.setHeaderItemMaxWidth();
+    this.setHeaderItemMaxWidth();
     window.addEventListener('resize', this.setHeaderItemMaxWidth);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.setHeaderItemMaxWidth);
   }
-
-  componentDidUpdate() {
-    this.setHeaderItemMaxWidth();
+  componentDidUpdate(prevProps: ConversationCardHeaderProps) {
+    const { name, statusPlainText } = this.props;
+    if (
+      prevProps.name !== name ||
+      prevProps.statusPlainText !== statusPlainText
+    ) {
+      this.setHeaderItemMaxWidth();
+    }
   }
 
   render() {
     const {
       name,
-      status,
+      colonsEmoji,
+      statusPlainText,
       notification,
       repliedEntity,
       from,
       time,
       children,
     } = this.props;
+
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
           <StyledName data-name="name">{name}</StyledName>
-          {status ? (
+          {colonsEmoji || statusPlainText ? (
             <StyledStatus data-name="cardHeaderUserStatus">
-              {status}
+              <Emoji
+                emoji={colonsEmoji || ''}
+                set="emojione"
+                size={14}
+                backgroundImageFn={backgroundImageFn}
+              />
+              {statusPlainText}
             </StyledStatus>
           ) : null}
           {notification ? (

@@ -85,7 +85,6 @@ const openNoteViewer = async (title: string, id: number) => {
     </>,
     {
       fullScreen: true,
-      enableEscapeClose: true,
       onClose: () => dismiss(),
     },
   );

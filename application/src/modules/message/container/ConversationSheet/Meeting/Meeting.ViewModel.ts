@@ -6,7 +6,7 @@
 
 import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MEETING_TITLE } from './types';
 import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
@@ -17,6 +17,11 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import RCVideoMeetingItemModel from '@/store/models/RCVideoMeetingItem';
 import { MeetingsService } from 'sdk/module/meetings';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { ElectronService } from '@/modules/electron';
+import { container } from 'framework/ioc';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { MEETING_ACTION } from 'sdk/module/meetings/types';
+import { mainLogger } from 'foundation/log';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -78,6 +83,44 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     return a;
   };
 
+  joinMeeting = async () => {
+    const joinUrl = await ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).getJoinUrl(this.props.ids[0]);
+    if (window.jupiterElectron && window.jupiterElectron.openWindow) {
+      const _electronService = container.get<ElectronService>(ElectronService);
+      _electronService.openWindow(joinUrl);
+    } else {
+      window.open(joinUrl);
+    }
+  };
+
+  callbackMeeting = async () => {
+    const id = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const result = await ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).startMeeting([id]);
+    if (result.action === MEETING_ACTION.DEEP_LINK) {
+      window.open(result.link);
+    } else {
+      // show alert
+      mainLogger.info(result.reason || 'start video error');
+    }
+  };
+
+  cancelMeeting = async () => {
+    await ServiceLoader.getInstance<MeetingsService>(
+      ServiceConfig.MEETINGS_SERVICE,
+    ).cancelMeeting(this.props.ids[0]);
+  };
+
+  @computed
+  get isMeetingOwner() {
+    return (
+      this.meetingItem.creatorId === getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID)
+    );
+  }
+
   @computed
   get meetingTitle() {
     const status = this.meetingItem.meetingStatus;
@@ -94,6 +137,7 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     }
     return '';
   }
+
   @computed
   get duration() {
     const { duration } = this.meetingItem;

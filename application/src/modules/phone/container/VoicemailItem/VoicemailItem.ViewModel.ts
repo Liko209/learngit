@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
@@ -169,7 +170,6 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     if (!this.selected) {
       this.props.onVoicemailPlay(id);
     }
-    await this.voicemailService.updateReadStatus(id, READ_STATUS.READ);
 
     if (this.audio) {
       const ret = await this.voicemailService.buildDownloadUrl(this.audio.uri);
@@ -180,11 +180,14 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       if (oldCache && oldCache.downloadUrl === ret) {
         return true;
       }
+
+      const trackId = this._phoneStore.mediaTrackIds.voicemail;
+
       const media = this._mediaService.createMedia({
+        trackId,
         id: id.toString(),
-        trackId: 'voicemail-track',
         src: ret,
-        outputDevices: [],
+        outputDevices: null,
       });
       this._phoneStore.updateAudio(id, {
         media,
@@ -204,6 +207,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   @action
   onPlay = () => {
     analyticsCollector.playPauseVoicemail(ANALYTICS_KEY.VOICEMAIL_ACTION_PLAY);
+    this.isUnread && this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
     this._mediaPlaying = true;
   };
 

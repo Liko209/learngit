@@ -3,9 +3,9 @@
  * @Date: 2019-04-01 17:16:07
  * Copyright © RingCentral. All rights reserved.
  */
-
 import {
   JuiVirtualizedListHandles,
+  ThresholdStrategy,
 } from 'jui/components/VirtualizedList';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
@@ -21,9 +21,10 @@ import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
 
-import { PerformanceTracer } from 'sdk';
+import { PerformanceTracer } from 'foundation/performance';
 import { GLOBAL_SEARCH_PERFORMANCE_KEYS } from '../../performanceKeys';
 import {
+  INITIAL_DATA_COUNT,
   MAX_COUNT,
   ITEM_HEIGHT,
   MAX_HEIGHT,
@@ -31,26 +32,40 @@ import {
 } from './config';
 
 type Props = ItemListProps &
-ItemListViewProps &
-WithTranslation & { terms: string[] };
+  ItemListViewProps &
+  WithTranslation & { terms: string[] };
 
 @observer
 class ItemListViewComponent extends Component<Props> {
   private _infiniteListProps = {
-    minRowHeight: ITEM_HEIGHT,
+    height: MAX_HEIGHT,
+    fixedRowHeight: ITEM_HEIGHT,
     loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
     loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
+    loadMoreStrategy: new ThresholdStrategy({
+      threshold: 40,
+      minBatchCount: 10,
+    }),
   };
-
+  private _keyMap = {};
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<
-  JuiVirtualizedListHandles
+    JuiVirtualizedListHandles
   > = React.createRef();
   private _dataList = React.createRef<DataList>();
-
   private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
+
+  constructor(props: Props) {
+    super(props);
+
+    this._keyMap = {
+      up: this.onKeyUp,
+      down: this.onKeyDown,
+      enter: this.onEnter,
+    };
+  }
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -63,15 +78,15 @@ class ItemListViewComponent extends Component<Props> {
     return fnMap.get(fnKey);
   };
 
-  hoverHighlight = (index: number) => this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
+  hoverHighlight = (index: number) =>
+    this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
 
   // if search item removed need update selectIndex
-  selectIndexChange = (index: number) => this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
+  selectIndexChange = (index: number) =>
+    this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
 
   scrollToView = () => {
-    const {
-      selectIndex, startIndex, stopIndex, setRangeIndex,
-    } = this.props;
+    const { selectIndex, startIndex, stopIndex, setRangeIndex } = this.props;
     if (selectIndex >= stopIndex) {
       this._dataList.current &&
         this._dataList.current.loadMore('down', MAX_COUNT);
@@ -124,6 +139,8 @@ class ItemListViewComponent extends Component<Props> {
         didChange={this.selectIndexChange(index)}
         id={id}
         key={id}
+        analysisSource="fullSearchResultsPage"
+        dataTrackingDomain="fullSearch"
       />
     );
   };
@@ -138,11 +155,12 @@ class ItemListViewComponent extends Component<Props> {
   private _renderItems() {
     const { listHandler, type } = this.props;
     return listHandler.sortableListStore.getIds.map(
-      (id: number, index: number) => this.createSearchItem({
-        id,
-        type,
-        index,
-      }),
+      (id: number, index: number) =>
+        this.createSearchItem({
+          id,
+          type,
+          index,
+        }),
     );
   }
 
@@ -153,22 +171,14 @@ class ItemListViewComponent extends Component<Props> {
     }
 
     return (
-      <HotKeys
-        keyMap={{
-          up: this.onKeyUp,
-          down: this.onKeyDown,
-          enter: this.onEnter,
-        }}
-      >
+      <HotKeys keyMap={this._keyMap} global>
         <DataList
           ref={this._dataList}
-          initialDataCount={30}
+          initialDataCount={INITIAL_DATA_COUNT}
           listHandler={listHandler}
           reverse
           InfiniteListProps={Object.assign(this._infiniteListProps, {
-            height: MAX_HEIGHT,
             ref: this._listRef,
-            overscan: 20,
             onVisibleRangeChange: setRangeIndex,
           })}
         >

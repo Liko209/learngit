@@ -38,6 +38,7 @@ jest.mock('@/containers/Dialog', () => ({
   Dialog: {
     simple: jest.fn(),
   },
+  withEscTracking: jest.fn(),
 }));
 jest.mock('../../Profile/Dialog/Group/Content/AddMembers', () => ({
   AddMembers: () => 'Add Member Dialog',
@@ -66,6 +67,7 @@ const props = {
   shouldHide: false,
   loadingH: 100,
   dispose: jest.fn(),
+  canAddMembers: true,
 };
 let wrapper;
 describe('RightShelfMemberList.View', () => {

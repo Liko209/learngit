@@ -8,6 +8,7 @@ import { ProvisionDataOptions, UA_EVENT } from '../types';
 import { RTCCallOptions } from '../../api/types';
 import { EventEmitter2 } from 'eventemitter2';
 import { opusModifier } from '../../utils/utils';
+import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 class MockUserAgent extends EventEmitter2 {
   public transport: any;
@@ -121,7 +122,7 @@ describe('RTCSipUserAgent', () => {
       jest.spyOn(userAgent, 'makeCall');
     }
 
-    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall [JPT-973] [JPT-975]', async () => {
+    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall [JPT-973] [JPT-975],[JPT-2781]', async () => {
       setupMakeCall();
       const options: RTCCallOptions = {};
       userAgent.makeCall(phoneNumber, options);
@@ -129,6 +130,33 @@ describe('RTCSipUserAgent', () => {
         phoneNumber,
         { homeCountryId: '1' },
       );
+    });
+
+    it('Should call invite api of WebPhone with input audio deviceId if get current audio input deviceId succeed when UserAgent makeCall [JPT-2782]', () => {
+      setupMakeCall();
+      const options: RTCCallOptions = {};
+      const sessionDescriptionHandlerOptions = {
+        constraints: {
+          audio: {
+            deviceId: {
+              exact: '1111',
+            },
+          },
+          video: false,
+        },
+      };
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioInput')
+        .mockReturnValue('1111');
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+        phoneNumber,
+        {
+          homeCountryId: '1',
+          sessionDescriptionHandlerOptions,
+        },
+      );
+      RTCMediaDeviceManager.instance().destroy();
     });
 
     it('Should call the invite function of WebPhone with homeCountryId param when UserAgent makeCall [JPT-972]', async () => {
@@ -248,6 +276,26 @@ describe('RTCSipUserAgent', () => {
           ],
           homeCountryId: '1',
         },
+      );
+    });
+
+    it('Should call the invite function of WebPhone without extra header when UserAgent makeCall without header args. [JPT-2715]', async () => {
+      setupMakeCall();
+      const options: RTCCallOptions = {};
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+        phoneNumber,
+        { homeCountryId: '1' },
+      );
+    });
+
+    it('Should call the invite function of WebPhone with access code header when UserAgent makeCall with accessCode. [JPT-2716]', async () => {
+      setupMakeCall();
+      const options: RTCCallOptions = { accessCode: '100' };
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+        phoneNumber,
+        { extraHeaders: ['rc-tap: rcc;accessCode=100'], homeCountryId: '1' },
       );
     });
   });

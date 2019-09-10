@@ -22,6 +22,14 @@ class MeetingsController {
     return this.meetingsAdaptorController.getMeetingServiceType();
   }
 
+  cancelMeeting(itemId: number): Promise<void> {
+    return this.meetingsAdaptorController.cancelMeeting(itemId);
+  }
+
+  getJoinUrl(itemId: number): Promise<string> {
+    return this.meetingsAdaptorController.getJoinUrl(itemId);
+  }
+
   protected get meetingsAdaptorController() {
     if (!this._meetingsAdaptorController) {
       this._meetingsAdaptorController = new MeetingsAdaptorController();

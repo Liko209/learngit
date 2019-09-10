@@ -7,7 +7,7 @@ import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { withTranslation, WithTranslation } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
-import { JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { Dialog } from '@/containers/Dialog';
@@ -19,12 +19,19 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { catchError } from '@/common/catchError';
+import { dataAnalysis } from 'foundation/analysis';
 
 type Props = MenuViewProps & RouteComponentProps & WithTranslation;
 
 @observer
 class MenuViewComponent extends Component<Props> {
   checked: boolean = false;
+
+  moreActionsDataTracking(actionName: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_conversationListMoreActions', {
+      action: actionName,
+    });
+  }
 
   renderCloseMenuItem() {
     const { t, closable } = this.props;
@@ -72,10 +79,11 @@ class MenuViewComponent extends Component<Props> {
   private _handleReadOrUnreadConversation = async (
     event: MouseEvent<HTMLElement>,
   ) => {
-    const { onClose, toggleRead } = this.props;
+    const { onClose, toggleRead, isUnread } = this.props;
     try {
       event.stopPropagation();
       onClose(event);
+      this.moreActionsDataTracking(isUnread ? 'markAsRead' : 'markAsUnread');
       await toggleRead();
     } catch {
       const message = `people.prompt.${this._getKeyReadOrUnread()}`;
@@ -96,6 +104,7 @@ class MenuViewComponent extends Component<Props> {
   private _handleRemoveFavorite = (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     this.props.onClose(event);
+    this.moreActionsDataTracking('removeFromFavorite');
     return this.props.toggleFavorite();
   };
 
@@ -104,6 +113,7 @@ class MenuViewComponent extends Component<Props> {
     server: 'people.prompt.notAbleToFavoriteThisMessageForServerIssue',
   })
   private _handleFavorite = () => {
+    this.moreActionsDataTracking('favorite');
     return this.props.toggleFavorite();
   };
 
@@ -118,6 +128,7 @@ class MenuViewComponent extends Component<Props> {
     const { t } = this.props;
     event.stopPropagation();
     this.props.onClose(event);
+    this.moreActionsDataTracking('close');
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversationWithoutConfirmDialog();
     } else {

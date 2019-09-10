@@ -2,8 +2,6 @@
 
 exports[`Storyshots Components/Buttons Contained Button: Components/Buttons Contained Button 1`] = `
 .c0.c0 {
-  min-width: 104px;
-  padding: 10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -16,6 +14,13 @@ exports[`Storyshots Components/Buttons Contained Button: Components/Buttons Cont
   color: #0684bd;
   text-align: center;
   box-shadow: unset;
+  padding: 8px 12px;
+  min-width: 88px;
+}
+
+.c0.c0.MuiButton-sizeLarge {
+  padding: 10px 16px;
+  min-width: 96px;
 }
 
 .c0.c0.containedButtonStyle {
@@ -116,8 +121,6 @@ exports[`Storyshots Components/Buttons Contained Button: Components/Buttons Cont
 
 exports[`Storyshots Components/Buttons Text Button: Components/Buttons Text Button 1`] = `
 .c0.c0 {
-  min-width: 104px;
-  padding: 10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -130,6 +133,13 @@ exports[`Storyshots Components/Buttons Text Button: Components/Buttons Text Butt
   color: #0684bd;
   text-align: center;
   box-shadow: unset;
+  padding: 8px 12px;
+  min-width: 88px;
+}
+
+.c0.c0.MuiButton-sizeLarge {
+  padding: 10px 16px;
+  min-width: 96px;
 }
 
 .c0.c0.containedButtonStyle {

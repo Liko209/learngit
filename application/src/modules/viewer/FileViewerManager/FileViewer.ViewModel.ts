@@ -32,7 +32,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   private _itemId: number;
   private _groupId: number;
   private _dismiss: Function;
-  @observable private _currentScale: number = 1;
+  @observable private _currentScale: number = 0;
   @observable private _currentVersion: ItemVersions;
   @observable private _currentPageIdx: number = 0;
   @observable private _textFieldValue: number = 1;

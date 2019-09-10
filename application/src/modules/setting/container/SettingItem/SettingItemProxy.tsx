@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { SETTING_ITEM_TYPE, SettingItem } from '@/interface/setting';
 import { SettingStore } from '../../store/SettingStore';
 import { LinkSettingItem } from './Link';

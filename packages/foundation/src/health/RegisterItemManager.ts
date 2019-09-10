@@ -6,13 +6,13 @@
 import _ from 'lodash';
 
 import { logManager } from '../log';
-import { BuildUtils } from '../utils';
+// import { BuildUtils } from '../utils';
 import { IRegisterItemManager, UniqueItem } from './types';
 
 const LOG_TAG = '[RegisterItemManager]';
 
 export class RegisterItemManager<T extends UniqueItem>
-implements IRegisterItemManager<T> {
+  implements IRegisterItemManager<T> {
   private _items: T[] = [];
 
   constructor(private _name: string) {}
@@ -31,6 +31,7 @@ implements IRegisterItemManager<T> {
         .getLogger(LOG_TAG)
         .tags(this._name)
         .warn(warnText);
+      /*
       if (
         !BuildUtils.isProductionBuild() &&
         !BuildUtils.isPublicBuild() &&
@@ -38,6 +39,7 @@ implements IRegisterItemManager<T> {
       ) {
         throw new Error(warnText);
       }
+      */
     }
     this._items.push(item);
   }

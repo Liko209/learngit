@@ -1,5 +1,6 @@
 const baseConfig = require('./jest-default.config');
 
+process.env.IT = true;
 module.exports = {
   ...baseConfig,
   displayName: {

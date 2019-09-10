@@ -26,7 +26,11 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
     super(props);
     this.reaction(
       () => this._file.latestVersion, // According to file's latest versions to decide update/create thumbnail or not
-      this._getThumbsUrlWithSize,
+      () => {
+        if(this.props.type === 'image') {
+          this._getThumbsUrlWithSize();
+        }
+      },
       {
         fireImmediately: true,
       },

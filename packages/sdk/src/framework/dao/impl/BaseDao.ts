@@ -9,8 +9,8 @@ import {
   LokiDB,
   IDatabaseCollection,
   IDatabase,
-  mainLogger,
-} from 'foundation';
+} from 'foundation/db';
+import { mainLogger } from 'foundation/log';
 import Query from './Query';
 import { Throw } from '../../../utils';
 import { errorHandler } from '../errors/handler';
@@ -44,12 +44,8 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
     return this.db;
   }
 
-  async put(item: T | T[]): Promise<void> {
+  async put(item: T): Promise<void> {
     try {
-      if (Array.isArray(item)) {
-        await this.bulkPut(item);
-        return;
-      }
       if (this._isValidateItem(item, true)) {
         await this.db.ensureDBOpened();
         await this.collection.put(item);
@@ -65,7 +61,7 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
         this._isValidateItem(item, true),
       );
       await this.doInTransaction(async () => {
-        this.collection.bulkPut(validArray);
+        await this.collection.bulkPut(validArray);
       });
     } catch (err) {
       errorHandler(err);
@@ -161,16 +157,8 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
     }
   }
 
-  async update(
-    item: Partial<T> | Partial<T>[],
-    shouldDoPut: boolean = true,
-  ): Promise<void> {
+  async update(item: Partial<T>, shouldDoPut: boolean = true): Promise<void> {
     try {
-      if (Array.isArray(item)) {
-        const array = item;
-        await this.bulkUpdate(array, shouldDoPut);
-        return;
-      }
       if (this._isValidateItem(item, true)) {
         await this.db.ensureDBOpened();
         const primaryKeyName = this.collection.primaryKeyName();
@@ -204,8 +192,8 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
       const primaryKeyName = this.collection.primaryKeyName();
       if (shouldDoPut) {
         const ids = array.map((iter: Partial<T>) => iter[primaryKeyName]);
+        const exists = await this.primaryKeys(ids);
         await this.doInTransaction(async () => {
-          const exists = await this.primaryKeys(ids);
           if (!exists || exists.length === 0) {
             await this.bulkPut(array as T[]);
           } else if (exists && exists.length === array.length) {

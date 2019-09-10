@@ -3,14 +3,15 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-import { mainLogger, ILogger } from 'sdk';
+import { mainLogger, ILogger } from 'foundation/log';
 import { isElectron, isWindows, isEdge } from '@/common/isUserAgent';
 import { NotificationStore } from '../store/NotificationStore';
 import { NotificationOpts } from '../interface';
 
-const delay = (interval: number) => new Promise(resolve => {
-  setTimeout(resolve, interval);
-});
+const delay = (interval: number) =>
+  new Promise(resolve => {
+    setTimeout(resolve, interval);
+  });
 
 export abstract class AbstractNotification<T> {
   protected _store: NotificationStore<T>;

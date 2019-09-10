@@ -3,7 +3,7 @@
  * @Date: 2018-03-05 13:30:00
  */
 
-import { DBManager, IDatabase } from 'foundation';
+import { DBManager, IDatabase } from 'foundation/db';
 import Query from '../Query';
 import BaseDao from '../BaseDao';
 import { randomItems } from './dummy';

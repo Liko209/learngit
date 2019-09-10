@@ -3,7 +3,7 @@
  * @Date: 2018-07-10 13:36:19
  * Copyright © RingCentral. All rights reserved
  */
-import { HttpResponseBuilder, HttpResponse } from 'foundation';
+import { HttpResponseBuilder, HttpResponse } from 'foundation/network';
 import { loginGlip, ITokenModel, RCAuthApi } from '../../api';
 import { RCPasswordAuthenticator } from '..';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';

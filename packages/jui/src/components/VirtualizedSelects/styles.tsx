@@ -38,6 +38,7 @@ const StyledSelect = styled<StyledSelectProps>(Input)`
   ${typography('body1')};
   color: ${grey('900')};
   width: ${width(50)};
+  height: ${height(8)};
   ${({ heightSize }: StyledSelectProps) => {
     if (heightSize === 'default') {
       return css`

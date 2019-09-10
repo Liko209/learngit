@@ -6,7 +6,8 @@
 
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
-import { container, jupiter, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { TelephonyStore } from '../../../store';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyService } from '../../../service/TelephonyService';
@@ -60,5 +61,12 @@ describe('DialerViewModel', () => {
   });
   it('should initialize with dialerId', async () => {
     expect(typeof dialerViewModel.dialerId).toBe('string');
+  });
+
+  describe('isIncomingCall()', () => {
+    it('should isIncomingCall is false when in incoming page but isTransferPage is true', async () => {
+      dialerViewModel._telephonyStore.isTransferPage = true;
+      expect(dialerViewModel.isIncomingCall).toBeFalsy();
+    });
   });
 });

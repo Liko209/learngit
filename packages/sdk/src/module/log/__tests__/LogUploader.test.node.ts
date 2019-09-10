@@ -1,5 +1,5 @@
 import { LogUploader } from '../LogUploader';
-import { LogEntity } from 'foundation';
+import { LogEntity } from 'foundation/log';
 import { AccountService } from '../../account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
@@ -7,6 +7,7 @@ import { ServiceLoader } from '../../serviceLoader';
 import { Pal } from '../../../pal/pal';
 import { IApplicationInfo } from '../../../pal/applicationInfo';
 import pako from 'pako';
+import { getClientId, extractLogMessageLine } from '../utils';
 
 jest.mock('pako', () => {
   return {
@@ -30,6 +31,7 @@ jest.mock('../../../pal/pal', () => {
 });
 jest.mock('../../../module/account');
 jest.mock('axios');
+jest.mock('sdk/module/log/utils');
 
 function createError(status: number): AxiosError {
   return (status
@@ -49,6 +51,7 @@ describe('LogUploader', () => {
     platform: 'desktop',
     env: 'prod',
   };
+  getClientId.mockReturnValue('mock-client-id');
   describe('upload()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -137,6 +140,7 @@ describe('LogUploader', () => {
       mockLog1.message = 'a';
       const mockLog2 = new LogEntity();
       mockLog2.message = 'b';
+      extractLogMessageLine.mockImplementation(log => `${log.message}\t\n`);
       const result = logUploader.transform([mockLog1, mockLog2]);
       expect(result).toEqual('a\t\nb\t\n');
     });
@@ -167,6 +171,34 @@ describe('LogUploader', () => {
         3,
       );
       expect(result).toEqual('aaa');
+    });
+  });
+
+  describe('getUserInfo', () => {
+    it('should get from getUserInfo', async () => {
+      (accountService.getCurrentUserInfo as jest.Mock).mockResolvedValue({
+        id: 12345,
+        email: 'abc@rc.com',
+      });
+      const logUploader = new LogUploader();
+      const userInfo = await logUploader['_getUserInfo']();
+      expect(userInfo).toEqual({
+        userId: 12345,
+        email: 'abc@rc.com',
+      });
+    });
+    it('should use clientId to represent userId', async () => {
+      (accountService.getCurrentUserInfo as jest.Mock).mockRejectedValue(
+        undefined,
+      );
+      getClientId.mockReturnValue('client-id');
+      const logUploader = new LogUploader();
+      const userInfo = await logUploader['_getUserInfo']();
+
+      expect(userInfo).toEqual({
+        email: 'service@glip.com',
+        userId: 'client-id',
+      });
     });
   });
 });

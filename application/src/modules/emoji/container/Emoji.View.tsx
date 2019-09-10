@@ -51,6 +51,7 @@ class EmojiView extends Component<Types> {
       title,
       emojiOpenStatus,
       tooltip,
+      icon = 'emoji',
     } = this.props;
     return (
       <JuiEmojiWithTheme
@@ -59,7 +60,7 @@ class EmojiView extends Component<Types> {
         set={set}
         sheetSize={sheetSize}
         title={title}
-        handlerIcon="emoji"
+        handlerIcon={icon}
         handleEmojiClick={handleEmojiClick}
         handleKeepOpenChange={this.handleKeepOpenChange}
         isKeepOpen={emojiOpenStatus}

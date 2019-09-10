@@ -44,7 +44,7 @@ exports[`Storyshots Pattern/ConversationPageMember JuiConversationPageMember: Pa
 }
 
 .c0.c0.c0 {
-  margin-left: 4px;
+  padding: 0px 10px;
 }
 
 .c0:active {

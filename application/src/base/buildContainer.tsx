@@ -7,7 +7,7 @@ import React, { Component, ComponentType } from 'react';
 import { computed, action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import StoreViewModel from '@/store/ViewModel';
 import { IPlugin } from './IPlugin';
 
@@ -57,7 +57,11 @@ function buildContainer<P = {}, S = {}, SS = any>({
         .filter(this._isViewProp)
         .forEach((key: string) => {
           if (props[key] && props[key] !== this.vm[key]) {
-            const errorMessage = `buildContainer Error: '${Container.displayName}.props.${key}: ${props[key]}' conflict with '${ViewModel.name}.${key}: ${this.vm[key]}'`;
+            const errorMessage = `buildContainer Error: '${
+              Container.displayName
+            }.props.${key}: ${props[key]}' conflict with '${
+              ViewModel.name
+            }.${key}: ${this.vm[key]}'`;
 
             if (
               process.env.NODE_ENV === 'development' ||

@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, inject, Jupiter } from 'framework';
+import { Jupiter } from 'framework/Jupiter';
+import { inject } from 'framework/ioc';
+import { AbstractModule } from 'framework/AbstractModule';
 import { MEETING_SERVICE } from './interface/constant';
 
 class MeetingModule extends AbstractModule {

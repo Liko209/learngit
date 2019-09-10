@@ -7,7 +7,7 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { FlipProps, FlipViewProps } from './types';
 import { observable, computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { RCInfoService, ForwardingFlipNumberModel } from 'sdk/module/rcInfo';
 import { Notification } from '@/containers/Notification';

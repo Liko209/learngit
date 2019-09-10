@@ -13,6 +13,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RECORD_STATE as RTC_RECORD_STATE,
+  RTC_CALL_ACTION_DIRECTION,
 } from 'voip';
 
 import {
@@ -25,11 +26,19 @@ import {
 } from '../entity';
 import { ENTITY } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
-import { CALL_ACTION_ERROR_CODE, CallOptions } from '../types';
+import {
+  CALL_ACTION_ERROR_CODE,
+  CallOptions,
+  CallDelegate,
+  TRANSFER_TYPE,
+} from '../types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { isOnline } from '../constants';
 
 type CallActionResult = string | CALL_ACTION_ERROR_CODE;
 
@@ -42,6 +51,7 @@ interface IResultRejectFn {
 }
 
 const ACR_ON = -8;
+const NUMBER_PREFIX = '*0';
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _rtcCall: RTCCall;
@@ -53,6 +63,7 @@ class TelephonyCallController implements IRTCCallDelegate {
   >;
   private _holdToggle: ToggleController;
   private _recordToggle: ToggleController;
+  private _callDelegate: CallDelegate;
 
   constructor(
     entityId: number,
@@ -92,6 +103,15 @@ class TelephonyCallController implements IRTCCallDelegate {
     return this._entityId;
   }
 
+  setCallDelegate(delegate: CallDelegate) {
+    this._callDelegate = delegate;
+  }
+
+  isOnHold() {
+    const callEntity = this._getCallEntity();
+    return callEntity ? callEntity.hold_state === HOLD_STATE.HELD : false;
+  }
+
   setRtcCall(call: RTCCall, isSwitchCall: boolean, callOption?: CallOptions) {
     this._rtcCall = call;
     const callEntity = this._getCallEntity();
@@ -116,7 +136,6 @@ class TelephonyCallController implements IRTCCallDelegate {
   }
 
   private _setSwitchCallInfo(callEntity: Call, callOption: CallOptions) {
-
     const isOutbound = callOption.callDirection === CALL_DIRECTION.OUTBOUND;
     if (isOutbound) {
       callEntity.to_num = callOption.replaceNumber || '';
@@ -129,37 +148,65 @@ class TelephonyCallController implements IRTCCallDelegate {
     callEntity.direction = CALL_DIRECTION.OUTBOUND;
   }
 
+  private _handleCallDisconnectingState(call: Call) {
+    if (
+      call.call_state !== CALL_STATE.DISCONNECTED &&
+      call.call_state !== CALL_STATE.DISCONNECTING
+    ) {
+      call.call_state = CALL_STATE.DISCONNECTING;
+      this._setSipData(call);
+      notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+    }
+  }
+
+  private _handleCallDisconnectedState(call: Call) {
+    call.call_state = CALL_STATE.DISCONNECTED;
+    if (!call.disconnectTime) {
+      call.disconnectTime = Date.now();
+    }
+    notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+  }
+
+  private _handleCallConnectedState(call: Call) {
+    call.call_state = CALL_STATE.CONNECTED;
+    call.hold_state = HOLD_STATE.IDLE;
+    call.record_state = RECORD_STATE.IDLE;
+    call.connectTime = Date.now();
+    call.session_id = this._rtcCall.getCallInfo().sessionId;
+    notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+  }
+
+  private _handleCallConnectingState(call: Call) {
+    call.call_state = CALL_STATE.CONNECTING;
+    notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
+  }
+
   private _getCallEntity() {
     const originalCall = this._entityCacheController.getSynchronously(
       this._entityId,
     );
     return originalCall ? _.cloneDeep(originalCall) : null;
   }
-  private _handleCallStateChanged(state: RTC_CALL_STATE) {
+
+  private _handleCallStateChanged(state: CALL_STATE) {
     const call = this._getCallEntity();
     if (call) {
       switch (state) {
-        case RTC_CALL_STATE.CONNECTING:
-          call.call_state = CALL_STATE.CONNECTING;
+        case CALL_STATE.CONNECTING:
+          this._handleCallConnectingState(call);
           break;
-        case RTC_CALL_STATE.CONNECTED:
-          call.call_state = CALL_STATE.CONNECTED;
-          call.hold_state = HOLD_STATE.IDLE;
-          call.record_state = RECORD_STATE.IDLE;
-          call.connectTime = Date.now();
-          call.session_id = this._rtcCall.getCallInfo().sessionId;
+        case CALL_STATE.CONNECTED:
+          this._handleCallConnectedState(call);
           break;
-        case RTC_CALL_STATE.DISCONNECTED:
-          call.call_state = CALL_STATE.DISCONNECTED;
-          if (!call.disconnectTime) {
-            call.disconnectTime = Date.now();
-          }
-          this._setSipData(call);
+        case CALL_STATE.DISCONNECTING:
+          this._handleCallDisconnectingState(call);
+          break;
+        case CALL_STATE.DISCONNECTED:
+          this._handleCallDisconnectedState(call);
           break;
         default:
           break;
       }
-      notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
     } else {
       telephonyLogger.warn(`No entity is found for call: ${this._entityId}`);
     }
@@ -174,7 +221,12 @@ class TelephonyCallController implements IRTCCallDelegate {
   }
 
   async onCallStateChange(state: RTC_CALL_STATE) {
-    this._handleCallStateChanged(state);
+    const callState: CALL_STATE = (state as string) as CALL_STATE;
+
+    state === RTC_CALL_STATE.DISCONNECTED &&
+      this._handleCallStateChanged(CALL_STATE.DISCONNECTING);
+
+    this._handleCallStateChanged(callState);
   }
 
   private _handleHoldAction(isSuccess: boolean) {
@@ -301,6 +353,10 @@ class TelephonyCallController implements IRTCCallDelegate {
       case RTC_CALL_ACTION.PARK:
         res = this._handleParkAction(isSuccess, options);
         break;
+      case RTC_CALL_ACTION.TRANSFER:
+      case RTC_CALL_ACTION.WARM_TRANSFER:
+        res = options as CALL_ACTION_ERROR_CODE;
+        break;
       default:
         break;
     }
@@ -315,6 +371,12 @@ class TelephonyCallController implements IRTCCallDelegate {
   ) {
     const res = this._handleActionResult(callAction, true, options);
     this._handleCallActionCallback(callAction, true, res);
+    this._callDelegate &&
+      this._callDelegate.onCallActionSuccess(
+        this._entityId,
+        callAction,
+        options,
+      );
   }
 
   private _updateCallHoldState(state: HOLD_STATE) {
@@ -340,10 +402,12 @@ class TelephonyCallController implements IRTCCallDelegate {
   onCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
     const res = this._handleActionResult(callAction, false, code);
     this._handleCallActionCallback(callAction, false, res);
+    this._callDelegate &&
+      this._callDelegate.onCallActionFailed(this._entityId, callAction, code);
   }
 
   hangUp() {
-    this._handleCallStateChanged(RTC_CALL_STATE.DISCONNECTED);
+    this._handleCallStateChanged(CALL_STATE.DISCONNECTING);
     this._rtcCall.hangup();
   }
 
@@ -360,6 +424,12 @@ class TelephonyCallController implements IRTCCallDelegate {
   mute() {
     this._updateCallMuteState(MUTE_STATE.MUTED);
     this._rtcCall.mute();
+  }
+
+  muteAll() {
+    this._updateCallMuteState(MUTE_STATE.MUTED);
+    this._rtcCall.mute(RTC_CALL_ACTION_DIRECTION.LOCAL);
+    this._rtcCall.mute(RTC_CALL_ACTION_DIRECTION.REMOTE);
   }
 
   unmute() {
@@ -476,6 +546,40 @@ class TelephonyCallController implements IRTCCallDelegate {
       this._saveCallActionCallback(RTC_CALL_ACTION.FORWARD, resolve, reject);
       this._rtcCall.forward(phoneNumber);
     });
+  }
+
+  async transfer(type: TRANSFER_TYPE, transferTo: string) {
+    return new Promise(async (resolve, reject) => {
+      this._saveCallActionCallback(
+        type === TRANSFER_TYPE.WARM_TRANSFER
+          ? RTC_CALL_ACTION.WARM_TRANSFER
+          : RTC_CALL_ACTION.TRANSFER,
+        resolve,
+        reject,
+      );
+      if (!isOnline()) {
+        reject(CALL_ACTION_ERROR_CODE.NOT_NETWORK);
+      }
+      if (type === TRANSFER_TYPE.WARM_TRANSFER) {
+        this._rtcCall.warmTransfer(transferTo);
+      } else {
+        const phoneNumberService = ServiceLoader.getInstance<
+          PhoneNumberService
+        >(ServiceConfig.PHONE_NUMBER_SERVICE);
+        let number = await phoneNumberService.getE164PhoneNumber(transferTo);
+        if (!number) {
+          reject(CALL_ACTION_ERROR_CODE.INVALID_PHONE_NUMBER);
+        }
+        if (type === TRANSFER_TYPE.TO_VOICEMAIL) {
+          number = this._handleNumberToVoicemail(number);
+        }
+        this._rtcCall.transfer(number);
+      }
+    });
+  }
+
+  private _handleNumberToVoicemail(number: string) {
+    return `${NUMBER_PREFIX}${number}`;
   }
 
   ignore() {

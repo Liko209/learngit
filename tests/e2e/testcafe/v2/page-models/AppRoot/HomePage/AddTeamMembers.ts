@@ -8,19 +8,19 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('DialogTitle').withText('Add team members');
+    return this.getSelectorByAutomationId('DialogTitle');
   }
 
   get memberInput() {
     return this.getComponent(SearchComoBox, this.self.find('*[role="combobox"]'));
   }
 
-  get input() {
+  get inputArea() {
     return this.memberInput.self.find('input')
   }
 
   get addButton() {
-    return this.self.find('button').withText('Add');
+    return this.getSelectorByAutomationIdUnderSelf('DialogOKButton');
   }
 
   get isAddButtonDisabled(): Promise<boolean> {
@@ -36,21 +36,16 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   get cancelButton() {
-    return this.self.find('button').withText('Cancel');
+    return this.getSelectorByAutomationIdUnderSelf('DialogCancelButton');
   }
 
-  async add() {
+  async clickAddButton() {
     await this.t.click(this.addButton);
   }
 
-  async cancel() {
+  async clickCancelButton() {
     await this.t.click(this.cancelButton);
   }
-
-  async shouldBePopup() {
-    await this.t.expect(this.self.exists).ok();
-  }
-
 
 }
 

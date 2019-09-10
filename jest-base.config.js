@@ -6,9 +6,12 @@ module.exports = {
   roots: ['application', 'packages', 'tests/shield'],
   collectCoverageFrom: [
     `${process.env.APP}/src/**/*.(js|jsx|ts|tsx)`,
-    `!${process.env.APP}/src/**/__tests__/*`,
+    `!${process.env.APP}/**/__tests__/**/*`,
     `!${process.env.APP}/src/**/*.d.ts`,
     `!${process.env.APP}/src/**/*.View.tsx`,
+    `!${process.env.APP}/src/**/index.(ts|tsx)`,
+    `!${process.env.App}/src/**/AnalyticsCollector.ts`,
+    `!<rootDir>/application/src/config/**/*`,
     '!<rootDir>/packages/jui/**/*',
     '!<rootDir>/packages/rcui/**/*',
     '!<rootDir>/tests/shield/**/*',
@@ -28,6 +31,7 @@ module.exports = {
     '^react-native$': 'react-native-web',
     '^@/(.*)$': '<rootDir>/application/src/$1',
     '^foundation/(?!src)(.*)$': '<rootDir>/packages/foundation/src/$1',
+    '^framework/(.*)$': '<rootDir>/packages/framework/src/$1',
     '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
     '^jui/(.*)$': '<rootDir>/packages/jui/src/$1',
     '^rcui/(.*)$': '<rootDir>/packages/rcui/src/$1',
@@ -36,7 +40,10 @@ module.exports = {
       '<rootDir>/config/jest/__mocks__/fileMock.js',
     '\\.(css|less)$': '<rootDir>/config/jest/__mocks__/cssMock.js',
   },
-  modulePathIgnorePatterns: [`${process.env.APP}/build`],
+  modulePathIgnorePatterns: [
+    `${process.env.APP}/build`,
+    `${process.env.APP}.*/__mocks__/*`,
+  ],
   moduleFileExtensions: [
     'web.ts',
     'ts',

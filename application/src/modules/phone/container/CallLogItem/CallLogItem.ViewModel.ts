@@ -3,7 +3,7 @@
  * @Date: 2019-06-03 14:44:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';

@@ -7,7 +7,7 @@
 import { IMeetingController } from '../controller/IMeetingController';
 import { StartMeetingResultType, MEETING_ACTION } from '../../types';
 import { ZoomMeetingItem } from 'sdk/module/item/entity';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PersonService } from 'sdk/module/person';
 import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
@@ -41,6 +41,22 @@ class ZoomDeepLinkController implements IMeetingController {
         reason: 'Request to start meeting failed',
       };
     }
+  }
+
+  cancelMeeting(itemId: number): Promise<void> {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+
+    return itemService.cancelZoomMeeting(itemId);
+  }
+
+  async getJoinUrl(itemId: number): Promise<string> {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    const model = (await itemService.getById(itemId)) as ZoomMeetingItem;
+    return (model && model.join_url) || '';
   }
 
   private async _requestToCreateMeeting(groupIds: number[]) {

@@ -11,7 +11,7 @@ import {
   JOB_KEY,
   JobInfo,
 } from 'sdk/framework/utils/jobSchedule';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const LOG_TAG = '[TaskController]';
 class TaskController implements ITaskController {

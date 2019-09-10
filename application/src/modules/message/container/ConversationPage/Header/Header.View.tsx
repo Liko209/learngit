@@ -12,7 +12,7 @@ import {
   JuiConversationPageHeaderSubtitle,
 } from 'jui/pattern/ConversationPageHeader';
 import { JuiButtonBar } from 'jui/components/Buttons';
-import { Favorite, Privacy, Member } from '@/containers/common';
+import { Favorite, Privacy, Member, Mute } from '@/containers/common';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 import { IMessageStore } from '@/modules/message/interface';
@@ -21,14 +21,14 @@ import { Menu } from './Menu';
 type HeaderProps = {
   title: string;
   analysisSource: string;
-
+  colonsEmoji: string;
+  statusPlainText: string;
   type: CONVERSATION_TYPES;
   actions: {
     name: string;
     iconName: string;
     tooltip: string;
   }[];
-  customStatus: string | null;
   groupId: number;
 } & WithTranslation;
 
@@ -47,7 +47,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
   @computed
   private get _ActionButtons() {
-    const { groupId, analysisSource } = this.props;
+    const { groupId } = this.props;
 
     const { conversationHeaderExtensions } = this._messageStore;
     const actionButtons = conversationHeaderExtensions.map(
@@ -55,7 +55,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         <Comp
           key={`ACTION_${groupId}${Comp.displayName}`}
           groupId={groupId}
-          analysisSource={analysisSource}
+          analysisSource="conversationHeader"
         />
       ),
     );
@@ -66,29 +66,43 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   private _SubTitle() {
-    const { type, groupId } = this.props;
+    const { type, groupId, analysisSource } = this.props;
 
     return (
       <JuiConversationPageHeaderSubtitle>
         <JuiButtonBar overlapSize={2}>
-          <Favorite key={groupId} id={groupId} size="medium" />
+          <Favorite
+            key={groupId}
+            id={groupId}
+            size="medium"
+            dataTrackingProps={{
+              source: 'conversationHeader: another entry',
+              conversationType: analysisSource,
+            }}
+          />
           {type === CONVERSATION_TYPES.TEAM ? (
-            <Privacy id={groupId} size="medium" />
+            <Privacy
+              id={groupId}
+              size="medium"
+              analysisSource="conversationHeader"
+            />
           ) : null}
           <Member id={groupId} />
+          <Mute groupId={groupId} />
         </JuiButtonBar>
       </JuiConversationPageHeaderSubtitle>
     );
   }
 
   render() {
-    const { title, customStatus } = this.props;
+    const { title, colonsEmoji, statusPlainText } = this.props;
 
     return (
       <JuiConversationPageHeader
         data-test-automation-id="conversation-page-header"
         title={title}
-        status={customStatus}
+        colonsEmoji={colonsEmoji}
+        statusPlainText={statusPlainText}
         SubTitle={this._SubTitle()}
         Right={this._ActionButtons}
       />

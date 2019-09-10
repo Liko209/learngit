@@ -21,7 +21,7 @@ import PostModel from '@/store/models/Post';
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 import { PostCacheController } from './PostCacheController';
 import { ConversationPostFocBuilder } from './ConversationPostFocBuilder';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
 const LOG_TAG = 'ConversationPostCacheController';

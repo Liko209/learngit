@@ -25,6 +25,7 @@ describe('RecentCallItemView', () => {
         startTime: '2019-06-28T02:09:28.595Z',
         direction: CALL_DIRECTION.INBOUND,
         handleClick: () => {},
+        isTransferPage: false,
       };
       const Wrapper = shallow(<RecentCallItemView {...props} />);
       expect(Wrapper).toMatchSnapshot();

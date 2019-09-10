@@ -18,6 +18,8 @@ type SearchItems = {
 
 type ListSearchResultProps = {
   type: TAB_TYPE;
+  pageDataTracking?: Function;
+  isShow?: boolean;
 };
 
 type ListSearchResultViewProps = {

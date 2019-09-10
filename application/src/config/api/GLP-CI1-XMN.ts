@@ -25,5 +25,6 @@ const config: DeepPartial<ApiConfig> = {
     clientSecret: '',
   },
   data_collection: '',
+  segment: '',
 };
 export default config;

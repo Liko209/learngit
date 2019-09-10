@@ -25,7 +25,7 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { LOADING_DELAY } from '../RightRail/constants';
 
-const GUEST_SECTION_HEIGHT = 95;
+const GUEST_SECTION_HEIGHT = 85;
 const AVATAR_PADDING = 4;
 const AVATAR_WIDTH = 32;
 const AVATAR_MARGIN_BOTTOM = 8;
@@ -291,6 +291,12 @@ class RightShelfMemberListViewModel
       width < RIGHT_SHELF_MIN_WIDTH ? RIGHT_SHELF_MIN_WIDTH : width;
     this._setData();
   };
+
+  @computed
+  get canAddMembers() {
+    return !this.isTeam ||
+      this.group.isCurrentUserHasPermissionAddMember;
+  }
 }
 
 export { RightShelfMemberListViewModel };

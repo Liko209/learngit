@@ -8,6 +8,11 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { HeaderViewModel } from '../Header.ViewModel';
 
 jest.mock('@/store/utils');
+jest.mock('emoji-mart', () => ({
+  getEmojiDataFromNative: () => ({
+    colons: ':rainbow:',
+  }),
+}));
 jest.mock('i18next', () => ({
   languages: ['en'],
   services: {
@@ -128,6 +133,18 @@ describe('ConversationPageHeaderViewModel', () => {
     });
     (getGlobalValue as jest.Mock).mockReturnValue(1);
     expect(vm.customStatus).toBe(null);
+  });
+  it('should return emoji when get customStatus', () => {
+    (getEntity as jest.Mock).mockReturnValue({
+      awayStatus: ':rainbow: in the meeting',
+    })
+    expect(vm.colonsEmoji).toBe(':rainbow:');
+  });
+  it('should return status text when get customStatus', () => {
+    (getEntity as jest.Mock).mockReturnValue({
+      awayStatus: 'in the meeting',
+    })
+    expect(vm.statusPlainText).toBe('  ');
   });
   describe('title', () => {
     it('conversation types is sms', async () => {

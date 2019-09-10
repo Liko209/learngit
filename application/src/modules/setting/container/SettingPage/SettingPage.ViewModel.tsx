@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { SettingStore } from '../../store';
 import { SettingPageProps, SettingPageViewProps } from './types';
@@ -17,7 +17,15 @@ class SettingPageViewModel extends StoreViewModel<SettingPageProps>
 
   @computed
   get page() {
-    return this._settingStore.getPageById(this.props.id);
+    const val = this._settingStore.getPageById(this.props.id);
+    if (!val) {
+      throw Error(
+        `[SettingPageViewComponent] trying to render a setting page without page ${
+          this.props.id
+        } info`,
+      );
+    }
+    return val;
   }
 
   @computed

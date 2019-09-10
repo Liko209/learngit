@@ -26,11 +26,18 @@
   */
 
 const excludeDomSnapshot = {
-  kind: ['Forms/Slider'],
+  kind: ['Forms/Slider', 'Components/ExpansionPanel'],
   name: ['SuffixFollowTextField', 'IconList', 'Iconography', 'Tooltip'],
-  matchFunction: ({ name, kind }) => {
+  matchFunction: ({
+    name,
+    kind
+  }) => {
     return /HoC/.test(kind);
   },
 };
 
-export { excludeDomSnapshot, excludeImageSnapshot, fullScreenStory };
+export {
+  excludeDomSnapshot,
+  excludeImageSnapshot,
+  fullScreenStory
+};

@@ -13,7 +13,7 @@ class MediaManager {
 
   private _muted: boolean = false;
   private _globalVolume: number = 1;
-  private _outputDevices: MediaDeviceType[] = [];
+  private _allOutputDevices: MediaDeviceType[] = [];
 
   private _medias: Media[] = [];
   private _mediaCounters: number = 1000;
@@ -24,13 +24,13 @@ class MediaManager {
       trackId: mediaTrack.id,
       mediaId: opts.id || `${this._mediaCounters++}`,
     });
-    const newMedia = new Media(
-      Object.assign({}, opts, {
-        trackId: mediaTrack.id,
-        id: mediaId,
-      }),
-    );
+    const newMedia = new Media({
+      ...opts,
+      trackId: mediaTrack.id,
+      id: mediaId,
+    });
     this._medias.push(newMedia);
+    this._mediaDisposed(newMedia);
     return newMedia;
   }
 
@@ -55,20 +55,34 @@ class MediaManager {
       return;
     }
     this._globalVolume = vol;
-    trackManager.setAllTrackVolume(vol);
+    trackManager.setAllTrackMasterVolume(vol);
   }
 
   setOutputDevices(devices: MediaDeviceType[]) {
     if (Array.isArray(devices) && devices.length === 0) {
       return;
     }
-    this._outputDevices = devices;
+    this._allOutputDevices = devices;
     trackManager.setAllTrackOutputDevices(devices);
   }
 
   updateAllOutputDevices(devices: MediaDeviceType[]) {
     trackManager.updateAllOutputDevices(devices);
     this._updateAllDevicesMedia(devices);
+    this._allOutputDevices = devices;
+  }
+
+  getAllDevicesMedia() {
+    return this._medias.filter(media => {
+      if (Array.isArray(media.outputDevices)) {
+        return (
+          media.outputDevices.length !== 0 &&
+          Utils.difference(media.outputDevices, this._allOutputDevices)
+            .length === 0
+        );
+      }
+      return false;
+    });
   }
 
   canPlayType(mimeType: string) {
@@ -89,15 +103,21 @@ class MediaManager {
     trackManager.dispose();
     this._muted = false;
     this._globalVolume = 1;
-    this._outputDevices = [];
+    this._allOutputDevices = [];
   }
 
   private _updateAllDevicesMedia(devices: MediaDeviceType[]) {
-    const allDevicesMedia = this._medias.filter(media => {
-      return Utils.difference(media.outputDevices, devices).length === 0;
-    });
+    const allDevicesMedia = this.getAllDevicesMedia();
     allDevicesMedia.forEach(media => {
       media.setOutputDevices(devices);
+    });
+  }
+
+  private _mediaDisposed(media: Media) {
+    media.onDisposed(() => {
+      this._medias.forEach(
+        (m, idx) => m === media && this._medias.splice(idx, 1),
+      );
     });
   }
 
@@ -110,7 +130,7 @@ class MediaManager {
   }
 
   get outputDevices() {
-    return this._outputDevices;
+    return this._allOutputDevices;
   }
 
   get canPlayTypes() {

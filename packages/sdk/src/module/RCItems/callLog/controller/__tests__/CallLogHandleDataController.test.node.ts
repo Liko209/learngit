@@ -9,7 +9,6 @@ import { CALL_RESULT } from '../../constants';
 import { notificationCenter } from 'sdk/service';
 import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
 import { TELEPHONY_STATUS } from 'sdk/module/rcEventSubscription/constants';
-import { CallLog } from '../../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 describe('CallLogHandleDataController', () => {
@@ -33,6 +32,9 @@ describe('CallLogHandleDataController', () => {
     getById: jest.fn(),
     getPhoneNumbers: jest.fn(),
   } as any;
+  const mockNotificationController = {
+    onReceivedNotification: jest.fn(),
+  } as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -51,6 +53,7 @@ describe('CallLogHandleDataController', () => {
     controller = new CallLogHandleDataController(
       mockConfig,
       mockSourceController,
+      mockNotificationController,
     );
   });
 
@@ -167,6 +170,9 @@ describe('CallLogHandleDataController', () => {
       expect(
         mockSourceController.bulkUpdate.mock.calls[0][0][0],
       ).toHaveProperty('__isPseudo', true);
+      expect(
+        mockNotificationController.onReceivedNotification,
+      ).toHaveBeenCalled();
     });
 
     it('should parse and save/notify pseudo data for anonymous number', async () => {
@@ -200,6 +206,9 @@ describe('CallLogHandleDataController', () => {
       expect(
         mockSourceController.bulkUpdate.mock.calls[0][0][0],
       ).toHaveProperty('from', undefined);
+      expect(
+        mockNotificationController.onReceivedNotification,
+      ).toHaveBeenCalled();
     });
   });
 

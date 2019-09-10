@@ -5,7 +5,9 @@
  */
 
 import { SearchUtils } from '../SearchUtils';
+
 const soundex = require('soundex-code');
+
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -16,6 +18,15 @@ describe('SearchUtils', () => {
   beforeEach(() => {
     clearMocks();
   });
+
+  const formattedTerms = {
+    formattedKeys: [],
+    validFormattedKeys: [],
+  };
+
+  const formatFunc = (originalTerms: string[]) => {
+    return formattedTerms;
+  };
 
   describe('isFuzzyMatched', () => {
     it.each`
@@ -137,5 +148,185 @@ describe('SearchUtils', () => {
         expect(SearchUtils.isSpecialChar(srcStr)).toBe(expectRes);
       },
     );
+  });
+
+  describe('getMatchedWeight', () => {
+    it('should return max matched-weight with position matched ', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora', 'bruce'],
+        true,
+      );
+      expect(result).toBe(2.2);
+    });
+
+    it('should return max matched-weight without position matched ', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora', 'bruce'],
+        false,
+      );
+      expect(result).toBe(2);
+    });
+
+    it('should return one max-matched-weight when only key with start-with matched', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora'],
+        true,
+      );
+      expect(result).toBe(1.1);
+    });
+
+    it('should return one max-matched-weight when only one start-with matched', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['dora', 'uce'],
+        true,
+      );
+      expect(result).toBe(1.1);
+    });
+
+    it('should return zero when on one start-with matched', () => {
+      const result = SearchUtils.getMatchedWeight(
+        ['dora', 'bruce'],
+        ['ora', 'uce'],
+        true,
+      );
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('toDefaultSearchKeyTerms', () => {
+    it('should return undefined when search is undefined', () => {
+      const term = SearchUtils.toDefaultSearchKeyTerms(undefined);
+      expect(term).toEqual({
+        searchKey: undefined,
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      });
+    });
+    it('should return correct value when search is not undefined', () => {
+      const term = SearchUtils.toDefaultSearchKeyTerms('abc');
+      expect(term).toEqual({
+        searchKey: 'abc',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      });
+    });
+  });
+
+  describe('formatTerms', () => {
+    it('should not call format when search key is empty or undefined', () => {
+      SearchUtils.getTermsFromText = jest.fn();
+
+      const terms = {
+        searchKey: undefined,
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+
+      SearchUtils.formatTerms(terms, formatFunc);
+      expect(SearchUtils.getTermsFromText).not.toHaveBeenCalled();
+    });
+
+    it('should call format when search key is valid', async () => {
+      SearchUtils.getTermsFromText = jest.fn();
+      SearchUtils.isUseSoundex = jest.fn().mockResolvedValue(false);
+      const terms = {
+        searchKey: 'Abc haa ',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+
+      await SearchUtils.formatTerms(terms, formatFunc);
+      expect(SearchUtils.getTermsFromText).toHaveBeenCalledWith(
+        terms.searchKey.toLowerCase().trim(),
+      );
+      expect(SearchUtils.isUseSoundex).toHaveBeenCalled();
+    });
+
+    it('should call format when search key is valid and has formatFunc', async () => {
+      SearchUtils.getTermsFromText = jest.fn();
+      SearchUtils.isUseSoundex = jest.fn().mockResolvedValue(false);
+      const terms = {
+        searchKey: 'Abc haa ',
+        searchKeyTerms: [],
+        searchKeyTermsToSoundex: [],
+        searchKeyFormattedTerms: {
+          formattedKeys: [],
+          validFormattedKeys: [],
+        },
+      };
+
+      const formattedTerms = {
+        formattedKeys: [
+          { original: 'abc', formatted: 'abc' },
+          { original: 'haa', formatted: 'haa' },
+        ],
+        validFormattedKeys: [
+          { original: 'abc', formatted: 'abc' },
+          { original: 'haa', formatted: 'haa' },
+        ],
+      };
+
+      await SearchUtils.formatTerms(terms, (originalTerms: string[]) => {
+        return formattedTerms;
+      });
+      expect(SearchUtils.getTermsFromText).toHaveBeenCalledWith(
+        terms.searchKey.toLowerCase().trim(),
+      );
+      expect(SearchUtils.isUseSoundex).toHaveBeenCalled();
+      expect(terms.searchKeyFormattedTerms).toEqual(formattedTerms);
+    });
+  });
+
+  describe('genSearchKeyTerms', () => {
+    it('should return correct terms', async () => {
+      SearchUtils.formatTerms = jest.fn();
+      await SearchUtils.genSearchKeyTerms(undefined, formatFunc);
+      expect(SearchUtils.formatTerms).toHaveBeenCalledWith(
+        {
+          searchKey: undefined,
+          searchKeyTerms: [],
+          searchKeyTermsToSoundex: [],
+          searchKeyFormattedTerms: {
+            formattedKeys: [],
+            validFormattedKeys: [],
+          },
+        },
+        formatFunc,
+      );
+
+      await SearchUtils.genSearchKeyTerms('abc haa', formatFunc);
+      expect(SearchUtils.formatTerms).toHaveBeenCalledWith(
+        {
+          searchKey: 'abc haa',
+          searchKeyTerms: [],
+          searchKeyTermsToSoundex: [],
+          searchKeyFormattedTerms: {
+            formattedKeys: [],
+            validFormattedKeys: [],
+          },
+        },
+        formatFunc,
+      );
+    });
   });
 });

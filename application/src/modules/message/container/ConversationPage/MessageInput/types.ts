@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { DeltaStatic } from 'quill';
+import { SendTrigger } from '@/AnalyticsCollector/types';
 
 type OnPostCallback = () => void;
 
@@ -31,6 +33,7 @@ type MessageInputViewProps = {
       handler: () => void;
     };
   };
+  handleContentSent: (trigger: SendTrigger, contents: DeltaStatic) => void;
 };
 
 export { MessageInputProps, MessageInputViewProps, OnPostCallback };

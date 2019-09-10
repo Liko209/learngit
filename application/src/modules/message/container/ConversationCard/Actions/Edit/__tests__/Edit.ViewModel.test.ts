@@ -6,7 +6,7 @@
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { EditViewModel } from '../Edit.ViewModel';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import { IMessageService, IMessageStore } from '@/modules/message/interface';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';

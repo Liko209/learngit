@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable, Jupiter } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { TelephonyStore } from '../../../store';
@@ -43,7 +44,7 @@ beforeEach(() => {
 
 describe('CallViewModel', () => {
   it('`showIcon` should equals `false` when initializing', async () => {
-    expect(callViewModel.showIcon.cached.value).toBe(false);
+    expect(callViewModel.showIcon).toBe(false);
   });
 
   it('`_uid` should be empty', () => {
@@ -83,5 +84,13 @@ describe('CallViewModel', () => {
     callViewModel._telephonyService.directCall = jest.fn();
     callViewModel.call();
     expect(callViewModel._telephonyService.directCall).toBeCalledWith(phone);
+  });
+
+  it('Should return false when service directCall return false', async () => {
+    callViewModel = new CallViewModel({ phone: '123' });
+    callViewModel._telephonyService.directCall = jest.fn().mockReturnValue(false);
+    const result = await callViewModel.call();
+    expect(callViewModel.phoneNumber).toBeTruthy();
+    expect(result).toBeFalsy();
   });
 });

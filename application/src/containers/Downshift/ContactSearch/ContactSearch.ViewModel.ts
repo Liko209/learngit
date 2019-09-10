@@ -28,8 +28,10 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   constructor(props: ContactSearchProps) {
     super(props);
-    const { prefillMembers } = this.props;
-    prefillMembers && this._setSelectedItems(prefillMembers);
+    this.autorun(() => {
+      const { prefillMembers } = this.props;
+      prefillMembers && this._setSelectedItems(prefillMembers);
+    });
     this.reaction(
       () => this.props.groupId,
       () => {
@@ -89,14 +91,13 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
       ServiceConfig.SEARCH_SERVICE,
     );
     const params = {
-      searchKey: query,
       excludeSelf: this._isExcludeMe,
       recentFirst: true,
     };
     if (this.groupMembers.length) {
       Object.assign(params, { arrangeIds: this.groupMembers });
     }
-    const result = await searchService.doFuzzySearchPersons(params);
+    const result = await searchService.doFuzzySearchPersons(query, params);
     const { hasMembers } = this.props;
     const existMembers = hasMembers
       ? [...this.existMembers, ...hasMembers]

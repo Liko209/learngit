@@ -9,7 +9,7 @@ import MuiMenuItem, {
 } from '@material-ui/core/MenuItem';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import { JuiIconography } from '../../foundation/Iconography';
-import styled from '../../foundation/styled-components';
+import styled, { css } from '../../foundation/styled-components';
 import {
   width,
   height,
@@ -22,14 +22,18 @@ import {
 // type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
 type MuiListItemPropsFixed = MuiMenuItemProps & { button?: any };
 
+type MenuItemSize = 'large' | 'medium';
+
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
-  avatar?: JSX.Element;
+  avatar?: React.ReactElement;
   secondaryAction?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
   searchString?: string;
   hasSecondaryAction?: boolean;
+  highlighted?: boolean;
+  size?: MenuItemSize;
 } & MuiListItemPropsFixed;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
@@ -48,16 +52,22 @@ const FilteredMenuItem = React.forwardRef(
       maxWidth,
       searchString,
       hasSecondaryAction,
+      highlighted,
+      size,
       ...rest
     }: JuiMenuItemProps,
     ref,
   ) => <MuiMenuItem ref={ref as any} {...rest} />,
 );
 
+const highlightedStyle = css`
+  background-color: ${palette('grey', '500', 1)};
+`;
+
 const StyledMenuItem = styled(FilteredMenuItem)`
   && {
-    padding: ${({ hasSecondaryAction }) =>
-      spacing(1, hasSecondaryAction ? 0 : 4, 1, 4)};
+    padding: ${({ size, theme }) =>
+      size === 'large' ? spacing(2, 5)({ theme }) : spacing(1, 4)({ theme })};
     ${typography('caption1')};
     color: ${grey('700')};
     height: auto;
@@ -65,17 +75,16 @@ const StyledMenuItem = styled(FilteredMenuItem)`
     min-width: ${width(28)};
     max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
     box-sizing: border-box;
-    &[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-      padding-right: ${spacing(12)};
-    }
 
     &:focus {
       background-color: ${palette('grey', '0', 0.12)};
     }
 
     &:hover {
-      background-color: ${palette('grey', '500', 1)};
+      ${highlightedStyle};
     }
+
+    ${({ highlighted }) => (highlighted ? highlightedStyle : '')}
 
     &:active {
       background-color: ${palette('primary', 'main')};
@@ -101,6 +110,7 @@ const JuiMenuItem = React.memo(
         maxWidth,
         classes,
         hasSecondaryAction,
+        size = 'medium',
         ...rest
       }: JuiMenuItemProps,
       ref,
@@ -121,6 +131,7 @@ const JuiMenuItem = React.memo(
           maxWidth={maxWidth}
           hasSecondaryAction={hasSecondaryAction}
           ref={ref}
+          size={size}
           {...rest}
         >
           {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}

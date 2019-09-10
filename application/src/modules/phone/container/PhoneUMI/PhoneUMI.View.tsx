@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { JuiUmi } from 'jui/components';
+import { JuiUmi } from 'jui/components/Umi';
 import { PhoneUMIViewProps, PhoneUMIProps, PhoneUMIType } from './types';
 
 @observer

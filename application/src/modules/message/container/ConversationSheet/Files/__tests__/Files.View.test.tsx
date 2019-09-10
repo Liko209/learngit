@@ -6,7 +6,8 @@
 import { testable, test } from 'shield';
 import React from 'react';
 import { shallow } from 'enzyme';
-import { container, Jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { FilesView } from '../Files.View';
 import {
   JuiPreviewImage,
@@ -15,14 +16,12 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 import { ImageCard } from 'jui/pattern/ConversationCard/Files/style';
 import { config } from '@/modules/viewer/module.config';
-import * as Viewer from '@/modules/viewer/container/Viewer';
+import * as Viewer from '@/modules/viewer/container/ViewerView';
 import { VIEWER_SERVICE } from '@/modules/viewer/interface';
-
-jest.mock('styled-components', () => require('./styled-components'));
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
-jest.mock('@/modules/viewer/container/Viewer');
+jest.mock('@/modules/viewer/container/ViewerView');
 describe('FilesView', () => {
   const mockEvent = {
     stopPropagation: () => undefined,
@@ -38,6 +37,7 @@ describe('FilesView', () => {
             id: 1,
             origWidth: 0,
             name: '0',
+            ready: false,
             downloadUrl: 'downloadUrl',
           },
         },
@@ -46,6 +46,7 @@ describe('FilesView', () => {
       [],
     ],
     urlMap: { get: () => '1' },
+    getFilePreviewBackgroundContainPermission: { get: () => false },
     isRecentlyUploaded: () => false,
     getCropImage: () => null,
     getShowDialogPermission: () => true,
@@ -121,6 +122,7 @@ describe('FilesView', () => {
     isRecentlyUploaded: () => false,
     getCropImage: () => null,
     getShowDialogPermission: () => true,
+    getFilePreviewBackgroundContainPermission: { get: () => false },
   };
   @testable
   class _handleFileClick {
@@ -155,7 +157,7 @@ describe('FilesView', () => {
         ...someFilesProps,
         progresses: { get: () => 1 },
       };
-      props.files[1][0].item.type = 'pdf';
+      props.files[1][0].item.latestVersion.status = 'first_page_ready';
       const wrapper = shallow(<FilesView {...props} />);
       wrapper
         .find(JuiFileWithPreview)
@@ -165,6 +167,27 @@ describe('FilesView', () => {
 
       setTimeout(() => {
         expect(viewerService.open).not.toHaveBeenCalled();
+        done();
+      }, 0);
+    }
+
+    @test('should the user should able to open file when file status no ready but item.ready is true')
+    t2(done: jest.DoneCallback) {
+      const props: any = {
+        ...someFilesProps,
+        progresses: { get: () => 1 },
+      };
+      props.files[1][0].item.latestVersion.status = 'first_page_ready';
+      props.files[1][0].item.latestVersion.ready = true;
+      const wrapper = shallow(<FilesView {...props} />);
+      wrapper
+        .find(JuiFileWithPreview)
+        .shallow()
+        .find(FileCard)
+        .simulate('click', mockEvent);
+
+      setTimeout(() => {
+        expect(viewerService.open).toHaveBeenCalled();
         done();
       }, 0);
     }

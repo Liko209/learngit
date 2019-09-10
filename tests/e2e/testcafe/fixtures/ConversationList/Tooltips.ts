@@ -4,12 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { ITestMeta } from '../../v2/models';
+import { ITestMeta, IGroup } from '../../v2/models';
 
 const moreTooltipText = 'More';
 
@@ -30,16 +29,18 @@ test.meta(<ITestMeta>{
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
+  const team = <IGroup>{
+    type: 'Team',
+    name: `Team ${uuid()}`,
+    owner: loginUser,
+    members: [loginUser],
+  }
+
   await h(t).withLog('Given I have an extension with certain team', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `Team ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId],
-    });
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
       number: loginUser.company.number,
       extension: loginUser.extension,
@@ -48,12 +49,13 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('Then "More" tooltip is displayed when I hover "More" menu next to the conversation entry', async () => {
-    const teamsSection = app.homePage.messageTab.teamsSection;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  await h(t).withLog('When I hover "More" menu next to the conversation entry', async () => {
     await teamsSection.expand();
-    const teamEntry = teamsSection.conversationEntryById(teamId);
-    await teamEntry.hoverMoreButton();
-    await teamEntry.showTooltip(moreTooltipText);
+    await teamsSection.conversationEntryById(team.glipId).hoverMoreButton();
+  });
+
+  await h(t).withLog('Then "More" tooltip is displayed', async () => {
+    await teamsSection.conversationEntryById(team.glipId).showTooltip(moreTooltipText);
   }, true);
-},
-);
+});

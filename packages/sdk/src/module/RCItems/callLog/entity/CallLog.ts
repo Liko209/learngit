@@ -67,7 +67,6 @@ type CallLog = IdModel<string> & {
   deleted?: boolean;
   __localInfo: number;
   __timestamp: number;
-  __deactivated: boolean;
   __isPseudo?: boolean;
 };
 

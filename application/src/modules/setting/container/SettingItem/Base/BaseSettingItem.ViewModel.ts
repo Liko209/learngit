@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { UserSettingEntity } from 'sdk/module/setting';
 import { SettingItem } from '@/interface/setting';

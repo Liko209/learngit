@@ -56,6 +56,10 @@ class PortalManager extends EventEmitter2 {
     this.emit(EventKey, this.portals);
   }
 
+  isOpened(key: any) {
+    return this.portals.has(key);
+  }
+
   unRegister(key: number) {
     this.portals.delete(key);
     this.emit(EventKey, this.portals);

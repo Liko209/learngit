@@ -11,8 +11,8 @@ class DataAnalysis {
     this._segAnalysis = new SegAnalysisController();
   }
 
-  init() {
-    this._segAnalysis.init();
+  init(key: string) {
+    this._segAnalysis.init(key);
   }
 
   setProduction(isProduction: boolean) {

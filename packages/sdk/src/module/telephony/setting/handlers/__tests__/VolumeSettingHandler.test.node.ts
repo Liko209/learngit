@@ -13,13 +13,11 @@ import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlob
 import { VolumeSettingHandler } from '../VolumeSettingHandler';
 import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
-import { isChrome } from '../utils';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
 import { CONFIG_EVENT_TYPE } from 'sdk/module/config/constants';
 
-jest.mock('../utils');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 function clearMocks() {
   jest.clearAllMocks();
@@ -110,17 +108,8 @@ describe('VolumeSettingHandler', () => {
     afterEach(() => {
       cleanUp();
     });
-    it('should emit update when devices change', (done: jest.DoneCallback) => {
-      isChrome.mockReturnValue(false);
-      settingHandler['_onPermissionChange']();
-      setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        done();
-      });
-    });
 
     it('should emit update when devices change', (done: jest.DoneCallback) => {
-      isChrome.mockReturnValue(true);
       settingHandler['_onPermissionChange']();
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
@@ -230,8 +219,7 @@ describe('VolumeSettingHandler', () => {
       cleanUp();
     });
 
-    it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
-      isChrome.mockReturnValue(true);
+    it('JPT-2094 Only chrome/electron show microphone/speaker/ringer settings in "Audio sources" section', async () => {
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
@@ -244,12 +232,6 @@ describe('VolumeSettingHandler', () => {
       );
       mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
       rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(false);
-      expect(await settingHandler['_getEntityState']()).toEqual(
-        ESettingItemState.INVISIBLE,
-      );
-      isChrome.mockReturnValue(false);
-      mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
-      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
       expect(await settingHandler['_getEntityState']()).toEqual(
         ESettingItemState.INVISIBLE,
       );

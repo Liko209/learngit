@@ -12,12 +12,11 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
-import defaultGroupAvatar from './defaultGroupAvatar.png';
-import defaultTeamAvatar from './defaultTeamAvatar.png';
+import defaultGroupAvatar from 'jui/assets/jupiter-icon/icon-default-group-avatar.svg';
+import defaultTeamAvatar from 'jui/assets/jupiter-icon/icon-default-team-avatar.svg';
 
 class GroupAvatarViewModel extends AbstractViewModel<GroupAvatarProps>
   implements GroupAvatarViewProps {
-  @computed
   get _cid() {
     return this.props.cid; // conversation id
   }
@@ -28,7 +27,7 @@ class GroupAvatarViewModel extends AbstractViewModel<GroupAvatarProps>
   }
 
   @computed
-  get src() {
+  get icon() {
     return this._group.isTeam ? defaultTeamAvatar : defaultGroupAvatar;
   }
 }

@@ -37,7 +37,7 @@ import {
 } from './utils';
 import { URLParser } from './parsers/URLParser';
 import moize from 'moize';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { AtMentionTransformer } from './parsers/AtMentionTransformer';
 
 /* eslint-disable no-use-before-define */

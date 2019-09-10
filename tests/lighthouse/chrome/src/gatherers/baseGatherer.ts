@@ -26,7 +26,7 @@ abstract class BaseGatherer extends Gatherer {
     try {
       return await this._beforePass(passContext)
     } catch (err) {
-      this.logger.error((err as Error).stack);
+      this.logger.error(err);
       throw err;
     }
   }
@@ -35,7 +35,7 @@ abstract class BaseGatherer extends Gatherer {
     try {
       return await this._pass(passContext)
     } catch (err) {
-      this.logger.error((err as Error).stack);
+      this.logger.error(err);
       throw err;
     }
   }
@@ -44,7 +44,7 @@ abstract class BaseGatherer extends Gatherer {
     try {
       return await this._afterPass(passContext)
     } catch (err) {
-      this.logger.error((err as Error).stack);
+      this.logger.error(err);
       throw err;
     }
   }
@@ -63,8 +63,17 @@ abstract class BaseGatherer extends Gatherer {
     }
   }
 
-  pushGatherer(keys: Array<string>) {
+  pushGatherer(keys: Array<string>, suffix: string = '', specialKeys: Array<string> = []) {
     for (let k of keys) {
+      let key = k;
+      if (suffix && suffix.length > 0 && specialKeys && specialKeys.length > 0 && specialKeys.indexOf(k) > -1) {
+        key = `${key}_${suffix}`;
+      }
+
+      if (!this.consoleMetrics[key]) {
+        this.consoleMetrics[key] = [];
+      }
+
       let arr = this.tmpConsoleMetrics[k];
       if (arr.length === 0) {
         continue;
@@ -77,16 +86,13 @@ abstract class BaseGatherer extends Gatherer {
           return a.time > b.time ? a : b;
         }
       });
-      this.consoleMetrics[k].push(item);
+
+      this.consoleMetrics[key].push(item);
     }
   }
 
 
   async gathererConsole(keys: Array<string>, passContext): Promise<void> {
-    for (let k of keys) {
-      this.consoleMetrics[k] = [];
-    }
-
     const trace = '[PerformanceTracer]';
     const driver = passContext.driver;
     let ws = await driver.wsEndpoint();

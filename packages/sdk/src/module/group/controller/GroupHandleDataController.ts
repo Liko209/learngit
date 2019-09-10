@@ -3,7 +3,7 @@
  * @Date: 2018-04-16 09:35:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import _ from 'lodash';
 
 import GroupAPI from '../../../api/glip/group';
@@ -190,6 +190,12 @@ class GroupHandleDataController {
         deactivatedData && deactivatedData.length
           ? [...groups, ...deactivatedData]
           : groups;
+
+      // update total unread first
+      await ServiceLoader.getInstance<StateService>(
+        ServiceConfig.STATE_SERVICE,
+      ).handleGroupChangeForTotalUnread(allGroups);
+
       if (changeMap) {
         changeMap.set(ENTITY.GROUP, { entities: allGroups });
       } else {

@@ -8,7 +8,7 @@ import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
 import { mountWithTheme } from 'shield/utils';
-import { JuiListItemText } from 'jui/components';
+import { JuiListItemText } from 'jui/components/Lists';
 import { CallLogStatus } from 'jui/pattern/Phone/CallLog';
 import { CallLogItemView } from '../CallLogItem.View';
 import { ContactInfo } from '../../ContactInfo';

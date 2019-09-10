@@ -5,15 +5,12 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import {
-  Foundation,
-  NetworkManager,
-  Token,
-  dataAnalysis,
-  sleepModeDetector,
-  mainLogger,
-  Performance,
-} from 'foundation';
+import Foundation from 'foundation/Foundation';
+import { NetworkManager, Token } from 'foundation/network';
+import { dataAnalysis } from 'foundation/analysis';
+import { sleepModeDetector } from 'foundation/utils';
+import { mainLogger } from 'foundation/log';
+import { Performance } from 'foundation/performance';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
@@ -26,7 +23,7 @@ import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
 import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
-import { ApiConfig, DBConfig, ISdkConfig } from './types';
+import { ApiConfig, DBConfig, ISdkConfig, LoginInfo } from './types';
 import { AccountService } from './module/account';
 import { setGlipToken } from './authenticator/utils';
 import { AccountGlobalConfig } from './module/account/config';
@@ -34,13 +31,10 @@ import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 import { PhoneParserUtility } from './utils/phoneParser';
 import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
-import {
-  PermissionService,
-  LaunchDarklyController,
-  SplitIOController,
-} from 'sdk/module/permission';
 import { jobScheduler } from './framework/utils/jobSchedule';
 import { UserConfigService } from './module/config';
+import { CrashManager } from './module/crash';
+import { EnvConfig } from './module/env/config';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -59,11 +53,24 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-    public permissionService: PermissionService,
-  ) {}
+  ) {
+    CrashManager.getInstance().monitor();
+  }
 
   async init(config: ISdkConfig) {
     this._sdkConfig = config;
+    // Use default config value
+    const apiConfig: ApiConfig = merge(
+      {},
+      defaultApiConfig,
+      this._sdkConfig.api,
+    );
+    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
+
+    Foundation.init({
+      dbAdapter: dbConfig.adapter,
+    });
+    Api.init(apiConfig, this.networkManager);
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -79,6 +86,8 @@ class Sdk {
     );
     configMigrator.observeUserDictionaryStatus();
 
+    this._initDataAnalysis();
+
     // Check is already login
     const loginResp = await this.accountManager.syncLogin(
       AutoAuthenticator.name,
@@ -91,28 +100,12 @@ class Sdk {
       }
     }
     this._subscribeNotification();
-    this._initDataAnalysis();
     mainLogger.tags(LOG_TAG).info('sdk init finished');
   }
 
   async onStartLogin() {
     mainLogger.tags(LOG_TAG).info('onStartLogin');
-    // Use default config value
-    const apiConfig: ApiConfig = merge(
-      {},
-      defaultApiConfig,
-      this._sdkConfig.api,
-    );
-    const dbConfig: DBConfig = merge({}, defaultDBConfig, this._sdkConfig.db);
-
-    Foundation.init({
-      dbAdapter: dbConfig.adapter,
-    });
-    Api.init(apiConfig, this.networkManager);
     await this.daoManager.initDatabase(this.clearAllData);
-
-    this.permissionService.injectControllers(new LaunchDarklyController());
-    this.permissionService.injectControllers(new SplitIOController());
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
@@ -142,8 +135,9 @@ class Sdk {
 
     this.accountManager.updateSupportedServices();
 
+    const rcLoginInfo: LoginInfo = { success: true, isFirstLogin: authResponse.isFirstLogin };
     if (authResponse.isRCOnlyMode) {
-      notificationCenter.emitKVChange(SERVICE.RC_LOGIN);
+      notificationCenter.emitKVChange(SERVICE.RC_LOGIN, rcLoginInfo);
       const accountService = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       );
@@ -157,12 +151,13 @@ class Sdk {
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig.getAccountType();
       if (accountType === ACCOUNT_TYPE_ENUM.RC) {
-        notificationCenter.emitKVChange(SERVICE.RC_LOGIN);
+        notificationCenter.emitKVChange(SERVICE.RC_LOGIN, rcLoginInfo);
       }
 
       const lastIndexTimestamp = this.syncService.getIndexTimestamp();
       if (lastIndexTimestamp) {
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        const glipLoginInfo: LoginInfo = { success: true, isFirstLogin: authResponse.isFirstLogin };
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, glipLoginInfo);
       } else {
         mainLogger.tags(LOG_TAG).info('start loading');
         isInLoading = true;
@@ -221,6 +216,7 @@ class Sdk {
     ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
+    CrashManager.getInstance().dispose();
   }
 
   updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
@@ -255,8 +251,10 @@ class Sdk {
   }
 
   private _initDataAnalysis() {
-    dataAnalysis.init();
+    const isRunningE2E = EnvConfig.getIsRunningE2E();
+    !isRunningE2E && dataAnalysis.init(Api.httpConfig.segment);
   }
+
 
   private _resetDataAnalysis() {
     dataAnalysis.reset();

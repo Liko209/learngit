@@ -44,10 +44,10 @@ describe('Utils', () => {
       const formatMediaId = Utils.formatMediaId({
         trackId,
         mediaId,
-        description
+        description,
       });
       expect(formatMediaId).toEqual(
-        `[${trackId}]-[${mediaId}]-[${description}]`
+        `[${trackId}]-[${mediaId}]-[${description}]`,
       );
     });
     it('should return formated id without description', () => {
@@ -55,7 +55,7 @@ describe('Utils', () => {
       const mediaId = 'media100';
       const formatMediaId = Utils.formatMediaId({
         trackId,
-        mediaId
+        mediaId,
       });
       expect(formatMediaId).toEqual(`[${trackId}]-[${mediaId}]`);
     });
@@ -67,7 +67,7 @@ describe('Utils', () => {
         Utils.formatMediaId({
           trackId,
           mediaId,
-          description
+          description,
         });
       }).toThrow();
     });

@@ -15,7 +15,7 @@ type TitleType = {
   name: string;
   downloadUrl: any;
   createdAt: string;
-  textFieldValue: number;
+  textFieldValue?: number;
   currentPageIdx: number;
   pageTotal: number;
   fileId: number;
@@ -24,17 +24,20 @@ type TitleType = {
 };
 interface IViewerView {
   pages?: {
-    url: string;
+    url?: string;
     viewport?: {
       origHeight: number;
       origWidth: number;
     };
   }[];
-  title?: TitleType;
+  title?: any;
   viewerDestroyer: Function;
   currentPageIdx: number;
   currentScale: number;
   onUpdate: (opts: UpdateParamsType) => void;
+  onContentLoad?: () => void;
+  onContentError?: () => void;
+  dispose?: () => void;
 }
 
 export { IViewerView, UpdateParamsType, TitleType };

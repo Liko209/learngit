@@ -9,7 +9,6 @@ import { EventEmitter2 } from 'eventemitter2';
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
-  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
 } from '../../signaling/types';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import {
@@ -17,8 +16,9 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from '../../api/types';
-import { rtcLogger } from '../../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
+import { CallReport } from '../../report/Call';
+import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 const mockUuid = 'mock_uuid';
 
@@ -45,7 +45,6 @@ describe('sip call session', () => {
     }
   }
   class MediaStreams extends EventEmitter2 {
-    public onMediaConnectionStateChange: any;
     private _testConnection: string;
     private _session: any;
     private _mediaStatsTimerCallback: any;
@@ -76,13 +75,6 @@ describe('sip call session', () => {
 
     stopMediaStats() {
       clearInterval(this._mediaStatsTimer);
-    }
-
-    emitMediaConnectionFailed() {
-      this.onMediaConnectionStateChange(
-        this._session,
-        WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_FAILED,
-      );
     }
 
     release() {
@@ -117,7 +109,7 @@ describe('sip call session', () => {
       this.emit(WEBPHONE_SESSION_STATE.BYE);
     }
     emitSessionError() {
-      this.emit(WEBPHONE_SESSION_STATE.FAILED);
+      this.emit(WEBPHONE_SESSION_STATE.FAILED, {statusCode: 487, reasonPhrase: 'Test'});
     }
 
     emitSdhCreated() {
@@ -138,10 +130,6 @@ describe('sip call session', () => {
       this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
     }
 
-    set onMediaConnectionStateChange(callback: any) {
-      this.mediaStreams.onMediaConnectionStateChange = callback;
-    }
-
     terminate = jest.fn();
     flip = jest.fn();
     startRecord = jest.fn();
@@ -154,17 +142,18 @@ describe('sip call session', () => {
     reject = jest.fn();
     toVoicemail = jest.fn();
   }
-
+  let report: CallReport;
   let sipCallSession: RTCSipCallSession;
   let mockSession: VirtualSession;
   function initSession() {
-    sipCallSession = new RTCSipCallSession(mockUuid);
+    report = new CallReport();
+    sipCallSession = new RTCSipCallSession(mockUuid, report);
     mockSession = new VirtualSession();
     sipCallSession.setSession(mockSession);
   }
   describe('setsession()', () => {
     it('should _session is null when initialization JPT-573', () => {
-      const sipCallSession = new RTCSipCallSession(mockUuid);
+      const sipCallSession = new RTCSipCallSession(mockUuid, new CallReport());
       expect(sipCallSession.getSession()).toBe(null);
     });
 
@@ -321,7 +310,7 @@ describe('sip call session', () => {
       expect(mockSession.accept).toHaveBeenCalled();
     });
     it('Should not crash when answer() is called and setSession() is not called', () => {
-      const callSession = new RTCSipCallSession(mockUuid);
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       jest.spyOn(callSession, 'answer');
       callSession.answer();
       expect(callSession.answer).toHaveBeenCalled();
@@ -349,7 +338,7 @@ describe('sip call session', () => {
       expect(mockSession.toVoicemail).toHaveBeenCalled();
     });
     it('Should not crash when reject() is called and setSession() is not called', () => {
-      const callSession = new RTCSipCallSession(mockUuid);
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       jest.spyOn(callSession, 'sendToVoicemail');
       callSession.sendToVoicemail();
       expect(callSession.sendToVoicemail).toHaveBeenCalled();
@@ -396,7 +385,7 @@ describe('sip call session', () => {
 
   describe('Transfer call', () => {
     it('should call webphone transfer api when transfer is called', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
       vsession.transfer.mockResolvedValue(null);
@@ -407,53 +396,59 @@ describe('sip call session', () => {
 
   describe('Reply with pattern', () => {
     it('should call webphone replyWithMessage api when replyWithPattern is called with in a meeting', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
-      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.IN_A_MEETING);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.IN_A_MEETING, 0, RTC_REPLY_MSG_TIME_UNIT.MINUTE);
       expect(vsession.replyWithMessage).toHaveBeenCalledWith({
         replyType: 5,
         callbackDirection: 0,
         timeUnits: 0,
+        timeValue: 0,
       });
     });
     it('should call webphone replyWithMessage api when replyWithPattern is called with on my way', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
-      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.ON_MY_WAY);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.ON_MY_WAY, 5, RTC_REPLY_MSG_TIME_UNIT.MINUTE);
       expect(vsession.replyWithMessage).toHaveBeenCalledWith({
         replyType: 2,
         callbackDirection: 0,
         timeUnits: 0,
+        timeValue: 5,
       });
     });
     it('should call webphone replyWithMessage api when replyWithPattern is called with on the other line', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
-      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.ON_THE_OTHER_LINE);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.ON_THE_OTHER_LINE, 5, RTC_REPLY_MSG_TIME_UNIT.MINUTE);
       expect(vsession.replyWithMessage).toHaveBeenCalledWith({
         replyType: 6,
         callbackDirection: 0,
         timeUnits: 0,
+        timeValue: 5,
       });
     });
     it('should call webphone replyWithMessage api when replyWithPattern is called with on call you back later', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
       callSession.replyWithPattern(
         RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER,
+        0,
+        RTC_REPLY_MSG_TIME_UNIT.MINUTE
       );
       expect(vsession.replyWithMessage).toHaveBeenCalledWith({
         replyType: 4,
         callbackDirection: 0,
         timeUnits: 0,
+        timeValue: 0,
       });
     });
     it('should call webphone replyWithMessage api when replyWithPattern is called with on call you back later in 5 min', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
       callSession.replyWithPattern(
@@ -469,18 +464,19 @@ describe('sip call session', () => {
       });
     });
     it('should call webphone replyWithMessage api when replyWithPattern is called with on call me back', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
-      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER, 0, RTC_REPLY_MSG_TIME_UNIT.MINUTE);
       expect(vsession.replyWithMessage).toHaveBeenCalledWith({
         replyType: 4,
         callbackDirection: 1,
         timeUnits: 0,
+        timeValue: 0,
       });
     });
     it('should call webphone replyWithMessage api when replyWithPattern is called with on call me back in 5 hour', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
       callSession.replyWithPattern(
@@ -496,7 +492,7 @@ describe('sip call session', () => {
       });
     });
     it('should call webphone replyWithMessage api when replyWithPattern is called with on call me back in 5 day', () => {
-      const callSession = new RTCSipCallSession();
+      const callSession = new RTCSipCallSession(mockUuid, new CallReport());
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
       callSession.replyWithPattern(
@@ -514,14 +510,10 @@ describe('sip call session', () => {
   });
 
   describe('WebPhone SDK APIs', () => {
-    it('reconnectMedia() API - succeed', async () => {
+    it('reconnectMedia() API - succeed', done => {
       initSession();
-      const succeededFunc = jest.fn((session: any) => {
-        expect(session).toEqual(mockSession);
-      });
-      const failedFunc = jest.fn((error: any, session: any) => {
-        expect(session).toEqual(mockSession);
-      });
+      const succeededFunc = jest.fn();
+      const failedFunc = jest.fn();
       const options = {
         eventHandlers: {
           succeeded: succeededFunc,
@@ -529,25 +521,17 @@ describe('sip call session', () => {
         },
       };
       sipCallSession.reconnectMedia(options);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 100);
-        }),
-      ).resolves.toEqual('new');
-      expect(succeededFunc).toHaveBeenCalled();
-      sipCallSession.destroy();
+      setImmediate(() => {
+        expect(succeededFunc).toHaveBeenCalled();
+        sipCallSession.destroy();
+        done();
+      });
     });
 
-    it('reconnectMedia() API - failed', async () => {
+    it('reconnectMedia() API - failed', done => {
       initSession();
-      const succeededFunc = jest.fn((session: any) => {
-        expect(session).toEqual(mockSession);
-      });
-      const failedFunc = jest.fn((error: any, session: any) => {
-        expect(session).toEqual(mockSession);
-      });
+      const succeededFunc = jest.fn();
+      const failedFunc = jest.fn();
       const options = {
         eventHandlers: {
           succeeded: succeededFunc,
@@ -556,131 +540,67 @@ describe('sip call session', () => {
       };
       mockSession.mediaStreams.testConnectionMode = 'reject';
       sipCallSession.reconnectMedia(options);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 100);
-        }),
-      ).resolves.toEqual('new');
-      expect(failedFunc).toHaveBeenCalled();
-      sipCallSession.destroy();
-    });
-
-    it('onMediaConnectionStateChange property should be called when receiving a media connection event', () => {
-      global.console = {
-        error: jest.fn(),
-        warn: jest.fn(),
-        log: jest.fn(),
-      };
-      initSession();
-      const mediaStreams = mockSession.mediaStreams;
-      const tmpError = rtcLogger.error;
-      rtcLogger.error = jest.fn((label, msg) => {});
-      mediaStreams.emitMediaConnectionFailed();
-      expect(rtcLogger.error).toHaveBeenCalled();
-      rtcLogger.error = tmpError;
-      sipCallSession.destroy();
+      setImmediate(() => {
+        expect(failedFunc).toHaveBeenCalled();
+        sipCallSession.destroy();
+        done();
+      });
     });
 
     it('getMediaStats API - valid callback and valid interval', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
+      const callback = jest.fn();
       sipCallSession.getMediaStats(callback, 2000);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 2100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(2000);
       expect(callback).toHaveBeenCalled();
       sipCallSession.destroy();
     });
 
     it('getMediaStats API - valid callback and invalid interval', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
+      const callback = jest.fn();
       sipCallSession.getMediaStats(callback, -1);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(1000);
       expect(callback).toHaveBeenCalled();
       sipCallSession.destroy();
     });
 
     it('getMediaStats API - valid callback and  interval = null', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
-      sipCallSession.getMediaStats(callback);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
-      expect(callback).toHaveBeenCalled();
-      expect(callback.mock.calls.length).toBe(1);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
-      expect(callback.mock.calls.length).toBe(2);
+      const callback = jest.fn();
+      sipCallSession.getMediaStats(callback, 1000);
+      jest.advanceTimersByTime(1000);
+      expect(callback).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(1000);
+      expect(callback).toHaveBeenCalledTimes(2);
       sipCallSession.destroy();
     });
 
     it('stopMediaStats API ', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
-      sipCallSession.getMediaStats(callback);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      const callback = jest.fn();
+      sipCallSession.getMediaStats(callback, 1000);
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
       sipCallSession.stopMediaStats();
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
       sipCallSession.destroy();
     });
 
     it('_releaseMediaStreams private function ', async () => {
+      jest.useFakeTimers();
       initSession();
-      const callback = jest.fn((report: any, session: any) => {});
-      sipCallSession.getMediaStats(callback);
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      const callback = jest.fn();
+      sipCallSession.getMediaStats(callback, 1000);
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
       sipCallSession.destroy();
-      await expect(
-        new Promise((resolve: any) => {
-          setTimeout(() => {
-            resolve('new');
-          }, 1100);
-        }),
-      ).resolves.toEqual('new');
+      jest.advanceTimersByTime(1000);
       expect(callback.mock.calls.length).toBe(1);
     });
   });
@@ -747,6 +667,80 @@ describe('sip call session', () => {
       RTCMediaDeviceManager.instance()._gotMediaDevices(deviceInfos);
     }
 
+    it('should answer call with input audio deviceId if get current input audio deviceId when accept incoming call [JPT-2845]', done => {
+      const mockInputAudioId = '1111';
+      const sessionDescriptionHandlerOptions = {
+        constraints: {
+          audio: {
+            deviceId: {
+              exact: mockInputAudioId,
+            },
+          },
+          video: false,
+        },
+      };
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioInput')
+        .mockReturnValue(mockInputAudioId);
+      initSession();
+      sipCallSession.answer();
+      setImmediate(() => {
+        expect(mockSession.accept).toHaveBeenCalledWith({
+          sessionDescriptionHandlerOptions,
+        });
+        RTCMediaDeviceManager.instance().destroy();
+        done();
+      });
+    });
+
+    it('should answer call without input audio deviceId if get current input audio deviceId failed when accept incoming call [JPT-2844]', done => {
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioInput')
+        .mockReturnValue('');
+      initSession();
+      sipCallSession.answer();
+      setImmediate(() => {
+        expect(mockSession.accept).toHaveBeenCalledWith();
+        RTCMediaDeviceManager.instance().destroy();
+        done();
+      });
+    });
+
+    it('should set output audio deviceId into media stream if get current output audio deviceId succeed when new SipCallSession [JPT-2843]', done => {
+      (RTCSipCallSession.prototype as any)._setAudioOutputDevice = jest.fn();
+      const mockOutputAudioId = '1111';
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioOutput')
+        .mockReturnValue(mockOutputAudioId);
+      jest.spyOn(rtcLogger, 'debug');
+      sipCallSession = new RTCSipCallSession(mockUuid);
+      setImmediate(() => {
+        expect(
+          (sipCallSession as any)._setAudioOutputDevice,
+        ).toHaveBeenCalledWith(mockOutputAudioId);
+        RTCMediaDeviceManager.instance().destroy();
+        jest.clearAllMocks();
+        done();
+      });
+    });
+
+    it('should do noting if get current output audio deviceId failed when new SipCallSession [JPT-2842]', done => {
+      (RTCSipCallSession.prototype as any)._setAudioOutputDevice = jest.fn();
+      jest
+        .spyOn(RTCMediaDeviceManager.instance(), 'getCurrentAudioOutput')
+        .mockReturnValue('');
+      jest.spyOn(rtcLogger, 'debug');
+      sipCallSession = new RTCSipCallSession(mockUuid);
+      setImmediate(() => {
+        expect(
+          (sipCallSession as any)._setAudioOutputDevice,
+        ).not.toHaveBeenCalled();
+        RTCMediaDeviceManager.instance().destroy();
+        jest.clearAllMocks();
+        done();
+      });
+    });
+
     it('should do nothing if hasDefaultAudioDevice equals false when outbound call received session accept event [JPT-1457]', done => {
       initDefaultAudioDevice(false);
       initSession();
@@ -760,19 +754,6 @@ describe('sip call session', () => {
       });
     });
 
-    it('should set default audio device to session when outbound call received session accept event and hasDefaultAudioDevice equals true [JPT-1458]', done => {
-      initDefaultAudioDevice(true);
-      initSession();
-      jest.spyOn(sipCallSession, '_setAudioOutputDevice').mockImplementation();
-      jest.spyOn(sipCallSession, '_setAudioInputDevice').mockImplementation();
-      mockSession.emitSessionAccepted();
-      setImmediate(() => {
-        expect(sipCallSession._setAudioOutputDevice).toHaveBeenCalled();
-        expect(sipCallSession._setAudioInputDevice).toHaveBeenCalled();
-        done();
-      });
-    });
-
     it('should do nothing if hasDefaultAudioDevice equals false when incoming call received session confirmed event [JPT-1512]', () => {
       initDefaultAudioDevice(false);
       initSession();
@@ -781,19 +762,6 @@ describe('sip call session', () => {
       mockSession.emitSessionConfirmed();
       expect(sipCallSession._setAudioOutputDevice).not.toHaveBeenCalled();
       expect(sipCallSession._setAudioInputDevice).not.toHaveBeenCalled();
-    });
-
-    it('should set default audio device to session when incoming call received session confirmed event and hasDefaultAudioDevice equals true [JPT-1513]', done => {
-      initDefaultAudioDevice(true);
-      initSession();
-      jest.spyOn(sipCallSession, '_setAudioOutputDevice').mockImplementation();
-      jest.spyOn(sipCallSession, '_setAudioInputDevice').mockImplementation();
-      mockSession.emitSessionConfirmed();
-      setImmediate(() => {
-        expect(sipCallSession._setAudioOutputDevice).toHaveBeenCalled();
-        expect(sipCallSession._setAudioInputDevice).toHaveBeenCalled();
-        done();
-      });
     });
 
     it('should call _setAudioInput API of call session when upper layer call setAudioInput API.[JPT-2262]', () => {

@@ -25,8 +25,8 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
   flex-direction: column;
 }
 
-.c1.c1 {
-  padding: 4px 16px 4px 16px;
+.c2.c2 {
+  padding: 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -38,25 +38,25 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
   box-sizing: border-box;
 }
 
-.c1.c1[class*='MuiListItem-secondaryAction'][role='menuitem'] {
-  padding-right: 48px;
-}
-
-.c1.c1:focus {
+.c2.c2:focus {
   background-color: rgba(0,0,0,0.12);
 }
 
-.c1.c1:hover {
+.c2.c2:hover {
   background-color: rgba(158,158,158,0.12);
 }
 
-.c1.c1:active {
+.c2.c2:active {
   background-color: #0684bd;
   color: #fff;
 }
 
-.c1.c1:active .c2 {
+.c2.c2:active .c3 {
   color: #fff;
+}
+
+.c1 {
+  height: 8px;
 }
 
 <div
@@ -87,6 +87,11 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
       }
       tabIndex={-1}
     >
+      <div>
+        <div
+          className="c1"
+        />
+      </div>
       <div
         style={
           Object {
@@ -97,7 +102,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
       <div>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -118,7 +123,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -139,7 +144,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -160,7 +165,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={true}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters Mui-disabled MuiListItem-button Mui-disabled"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters Mui-disabled MuiListItem-button Mui-disabled"
           data-disabled={true}
           onBlur={[Function]}
           onClick={[Function]}
@@ -182,7 +187,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -204,7 +209,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -226,7 +231,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -248,7 +253,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -270,7 +275,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -292,7 +297,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -314,7 +319,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -336,7 +341,7 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
         </li>
         <li
           aria-disabled={false}
-          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
+          className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c2 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
           onBlur={[Function]}
           onClick={[Function]}
           onDragLeave={[Function]}
@@ -363,6 +368,9 @@ exports[`Storyshots Components/VirtualizedMenus VirtualizedMenuList: Components/
             "height": 31744,
           }
         }
+      />
+      <div
+        className="c1"
       />
     </div>
   </div>

@@ -25,10 +25,12 @@ const getFakeResponse = () => {
 let manager: SocketRequestHelper;
 describe('SocketManager', () => {
   function setUp() {
+    jest.useFakeTimers();
     manager = new SocketRequestHelper();
   }
 
   function clearMocks() {
+    jest.clearAllTimers();
     jest.resetAllMocks();
     jest.restoreAllMocks();
     jest.clearAllMocks();
@@ -43,8 +45,8 @@ describe('SocketManager', () => {
       const spy = jest.spyOn(manager, '_setRequestTimer');
       const spy1 = jest.spyOn(manager, '_setRequestTimer');
       manager.newRequest(getFakeRequest());
-      expect(spy).toBeCalled();
-      expect(spy1).toBeCalled();
+      expect(spy).toHaveBeenCalled();
+      expect(spy1).toHaveBeenCalled();
     });
   });
 
@@ -57,8 +59,8 @@ describe('SocketManager', () => {
       const spy1 = jest.spyOn(manager, '_removeRequestTimer');
       const spy2 = jest.spyOn(manager, '_handleRegisteredRequest');
       manager.newResponse(getFakeResponse());
-      expect(spy2).toBeCalled();
-      expect(spy1).toBeCalled();
+      expect(spy2).toHaveBeenCalled();
+      expect(spy1).toHaveBeenCalled();
     });
   });
 
@@ -76,11 +78,12 @@ describe('SocketManager', () => {
       manager.newRequest(getFakeRequest()).catch(() => {});
       manager.onSocketDisconnect();
       setTimeout(() => {
-        expect(spy1).toBeCalledTimes(3);
-        expect(spy2).toBeCalledTimes(3);
-        expect(spy3).toBeCalledTimes(3);
+        expect(spy1).toHaveBeenCalledTimes(3);
+        expect(spy2).toHaveBeenCalledTimes(3);
+        expect(spy3).toHaveBeenCalledTimes(3);
         done();
       });
+      jest.runAllTimers();
     });
 
     it('should not call removeRequestTimer when socket disconnect but requestTimerMap is empty', done => {
@@ -93,11 +96,12 @@ describe('SocketManager', () => {
       manager['requestTimerMap'].clear();
       manager.onSocketDisconnect();
       setTimeout(() => {
-        expect(spy1).toBeCalledTimes(3);
-        expect(spy2).toBeCalledTimes(3);
-        expect(spy3).toBeCalledTimes(0);
+        expect(spy1).toHaveBeenCalledTimes(3);
+        expect(spy2).toHaveBeenCalledTimes(3);
+        expect(spy3).toHaveBeenCalledTimes(0);
         done();
       });
+      jest.runAllTimers();
     });
   });
 });

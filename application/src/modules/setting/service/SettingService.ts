@@ -3,8 +3,8 @@
  * @Date: 2019-05-19 18:23:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { inject } from 'framework';
-import { mainLogger } from 'sdk';
+import { inject } from 'framework/ioc';
+import { mainLogger } from 'foundation/log';
 import {
   ISettingService,
   SettingPage,

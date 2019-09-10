@@ -7,7 +7,7 @@ import { action, computed, observable } from 'mobx';
 import _ from 'lodash';
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue, getSingleEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';

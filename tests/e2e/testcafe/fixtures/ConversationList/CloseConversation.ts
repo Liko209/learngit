@@ -25,7 +25,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       members: [loginUser, users[5]],
     }
     let favoriteChat = <IGroup>{
-      type: 'DirectMessage',
+      type: 'Group',
       owner: loginUser,
       members: [loginUser, users[5], users[6]],
     }
@@ -40,6 +40,11 @@ test(formalName('Close current conversation directly, and navigate to blank page
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat (in favorite) and I team chat', async () => {
       await h(t).scenarioHelper.createTeamsOrChats([privateChat, favoriteChat, team]);
       await h(t).glip(loginUser).favoriteGroups([+favoriteChat.glipId]);
+    });
+
+    await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+      await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+      await h(t).glip(loginUser).clearAllUmi();
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
@@ -133,6 +138,11 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       await h(t).scenarioHelper.createTeamsOrChats([privateChat, team]);
     });
 
+    await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+      await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+      await h(t).glip(loginUser).clearAllUmi();
+    });
+
     let urlBeforeClose, currentGroupId;
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
       await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
@@ -209,9 +219,9 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B', async () => {
     await h(t).scenarioHelper.createTeamsOrChats([privateChat, team]);
   });
-
-  await h(t).withLog('And I clean all UMI before login', async () => {
-    await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+    await h(t).glip(loginUser).clearAllUmi();
   });
 
   await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
@@ -253,9 +263,9 @@ test.meta(<ITestMeta>{
   const dialog = app.homePage.messageTab.closeConversationModal;
   await h(t).withLog('Then a confirm dialog should be popup', async () => {
     await t.expect(dialog.title.withText(title).exists).ok();
-    await t.expect(dialog.getSelector('p').withText(content).exists).ok();
-    await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
-    await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
+    await t.expect(dialog.confirmMessage.withText(content)).ok();
+    await t.expect(dialog.dontAskAgainCheckboxLabel.textContent).eql(checkboxLabel);
+    await t.expect(dialog.closeButton.withText(button).exists).ok();
   });
 
   await h(t).withLog(`When I don't select "Don't ask me again" then click "Close Conversation" button`, async () => {
@@ -274,9 +284,9 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then should be show the confirm dialog again', async () => {
     await t.expect(dialog.title.withText(title).exists).ok();
-    await t.expect(dialog.getSelector('p').withText(content)).ok();
-    await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
-    await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
+    await t.expect(dialog.confirmMessage.withText(content)).ok();
+    await t.expect(dialog.dontAskAgainCheckboxLabel.textContent).eql(checkboxLabel);
+    await t.expect(dialog.closeButton.withText(button).exists).ok();
   });
 });
 
@@ -303,8 +313,9 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     await h(t).scenarioHelper.createTeamsOrChats([privateChat, team]);
   });
 
-  await h(t).withLog('And I clean all UMI before login', async () => {
-    await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+    await h(t).glip(loginUser).clearAllUmi();
   });
 
   await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
@@ -342,8 +353,8 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
   await h(t).withLog('Then a confirm dialog should be popup', async () => {
     await t.expect(closeConversationDialog.title.withText(title).exists).ok();
-    await t.expect(closeConversationDialog.getSelector('p').withText(content)).ok();
-    await t.expect(closeConversationDialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
+    await t.expect(closeConversationDialog.confirmMessage.withText(content)).ok();
+    await t.expect(closeConversationDialog.dontAskAgainCheckboxLabel.textContent).eql(checkboxLabel);
     await t.expect(closeConversationDialog.closeButton.find('span').withText(button).exists).ok();
   });
 
@@ -402,6 +413,11 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
   await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group team(in favorite)', async () => {
     await h(t).scenarioHelper.createTeamsOrChats([privateChat, favoriteChat, team]);
     await h(t).glip(loginUser).favoriteGroups([+favoriteChat.glipId, +meChatId]);
+  });
+
+  await h(t).withLog('And send a message to ensure privateChat (then clear umi) in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', privateChat, loginUser);
+    await h(t).glip(loginUser).clearAllUmi();
   });
 
   const app = new AppRoot(t);
@@ -632,3 +648,78 @@ test(formalName('Check can cancel confirm dialog when user first time use close 
       await t.expect(teamEntry.exists).ok();
     });
   });
+
+
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-318'], priority: ['P2'], keywords: ['ConversationList', 'FavoriteSection', 'closeConversation'], maintainers: ['potar.he']
+})('Expand & Collapse', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+
+  const chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, users[5]]
+  }
+  const favoriteChat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, users[6]]
+  }
+  const team = <IGroup>{
+    type: 'Team',
+    members: [loginUser],
+    owner: loginUser,
+    name: uuid()
+  }
+
+  await h(t).withLog('Given I have an extension with 2 private chats and 1 team', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([chat, favoriteChat, team]);
+  });
+
+  await h(t).withLog('And there is a conversation in each (Favorites/DirectMessages/Teams) section ', async () => {
+    await h(t).glip(loginUser).favoriteGroups(favoriteChat.glipId);
+  });
+
+  const app = new AppRoot(t);
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I open more menu on a conversation in favorites section', async () => {
+    await app.homePage.messageTab.favoritesSection.nthConversationEntry(0).openMoreMenu();
+  });
+
+  const moreMenu = app.homePage.messageTab.moreMenu;
+  await h(t).withLog('Then Close option should not display, only show remove favorites option', async () => {
+    await moreMenu.close.shouldBeDisabled();
+    await moreMenu.favoriteToggler.shouldBeName('Remove from Favorites');
+  });
+
+  await h(t).withLog('When I open more menu on a conversation in DirectMessages section', async () => {
+    await moreMenu.quitByPressEsc();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).openMoreMenu();
+  });
+
+  await h(t).withLog('Then Close option should display', async () => {
+    await moreMenu.close.shouldBeEnabled();
+  });
+
+  await h(t).withLog('When I open more menu on a conversation in Teams section', async () => {
+    await moreMenu.quitByPressEsc();
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).openMoreMenu();
+  });
+
+  await h(t).withLog('Then Close option should display', async () => {
+    await moreMenu.close.shouldBeEnabled();
+  });
+});

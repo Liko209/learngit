@@ -10,11 +10,7 @@ import {
   SETTING_ITEM_TYPE,
   SelectSettingItem,
 } from '@/interface/setting';
-import {
-  SETTING_SECTION__DESKTOP_NOTIFICATIONS,
-  SETTING_SECTION__EMAIL_NOTIFICATIONS,
-  SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
-} from '@/modules/notification/notificationSettingManager/constant';
+import { SETTING_SECTION } from '@/modules/notification/notificationSettingManager/constant';
 import {
   MESSAGE_SETTING_SCOPE,
   MESSAGE_SETTING_ITEM,
@@ -28,7 +24,7 @@ import {
 } from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
-import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
+import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSourceItem.View';
 import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
 import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
 import {
@@ -40,9 +36,11 @@ import {
   BadgeCountSelectDataTrackingOption,
   EmailNotificationSelectDataTrackingOption,
 } from './dataTrackingTransformer';
+import { SETTING_PAGE__MESSAGES } from '@/modules/setting/manager/placeholder/constant';
+import { MESSAGE_SETTING_SECTION } from './constant';
 
 const NewMessageSelectDataTrackingOption: {
-  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string;
+  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
 } = {
   always: 'All new messages',
   mentions_or_dms: 'Direct messages and mentions',
@@ -53,9 +51,10 @@ class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
 
   async init() {
+    this.registerMessageSettingPage();
     this._settingService.registerItem(
       MESSAGE_SETTING_SCOPE,
-      SETTING_SECTION__DESKTOP_NOTIFICATIONS,
+      SETTING_SECTION.DESKTOP_NOTIFICATIONS,
       {
         id: MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
         automationId: 'newMessages',
@@ -133,32 +132,84 @@ class MessageSettingManager implements IMessageSettingManager {
     emailNotificationSettingItems.forEach(i =>
       this._settingService.registerItem(
         MESSAGE_SETTING_SCOPE,
-        SETTING_SECTION__EMAIL_NOTIFICATIONS,
+        SETTING_SECTION.EMAIL_NOTIFICATIONS,
         i,
       ),
     );
-    this._settingService.registerItem(
-      MESSAGE_SETTING_SCOPE,
-      SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
-      {
-        id: MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
-        automationId: 'newMessageBadgeCount',
-        weight: 100,
-        type: SETTING_ITEM_TYPE.SELECT,
-        dataTracking: {
-          name: 'newMessageBadgeCount',
-          type: 'otherNotificationSettings',
-          optionTransform: value => BadgeCountSelectDataTrackingOption[value],
-        },
-        sourceRenderer: BadgeCountSourceItem,
-        ...buildTitleAndDesc(
-          'notificationAndSounds',
-          'otherNotificationSettings',
-          'newMessageBadgeCount',
-        ),
-      } as SelectSettingItem<NEW_MESSAGE_BADGES_OPTIONS>,
-    );
+
     this.registerSounds();
+  }
+  registerConversationListSection() {
+    const titleBodyBuilder = buildTitleAndDesc('Messages', 'conversationList');
+    this._settingService.registerSection(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_PAGE__MESSAGES,
+      {
+        id: MESSAGE_SETTING_SECTION.CONVERSATION_LIST,
+        title: 'setting.Messages.conversationList.title',
+        weight: 100,
+        automationId: 'conversationList',
+        items: [
+          {
+            id: MESSAGE_SETTING_ITEM.MAX_CONVERSATIONS,
+            automationId: 'maxConversations',
+            ...titleBodyBuilder('maxConversations'),
+            type: SETTING_ITEM_TYPE.SELECT,
+            dataTracking: {
+              name: 'maxConversations',
+              type: 'messages',
+            },
+            weight: 100,
+          },
+          {
+            id: MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
+            automationId: 'newMessageBadgeCount',
+            weight: 200,
+            type: SETTING_ITEM_TYPE.SELECT,
+            dataTracking: {
+              name: 'newMessageBadgeCount',
+              type: 'messages',
+              optionTransform: value =>
+                BadgeCountSelectDataTrackingOption[value],
+            },
+            sourceRenderer: BadgeCountSourceItem,
+            ...titleBodyBuilder('newMessageBadgeCount'),
+          } as SelectSettingItem<NEW_MESSAGE_BADGES_OPTIONS>,
+        ],
+      },
+    );
+  }
+  registerMessageThreadSection() {
+    const titleBodyBuilder = buildTitleAndDesc('Messages', 'messageThread');
+
+    this._settingService.registerSection(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_PAGE__MESSAGES,
+      {
+        id: MESSAGE_SETTING_SECTION.MESSAGE_THREAD,
+        title: 'setting.Messages.messageThread.title',
+        weight: 200,
+        automationId: 'messageThread',
+        items: [
+          {
+            id: MESSAGE_SETTING_ITEM.SHOW_LINK_PREVIEWS,
+            automationId: 'showLinkPreviews',
+            ...titleBodyBuilder('linkPreviews'),
+            type: SETTING_ITEM_TYPE.TOGGLE,
+            dataTracking: {
+              name: 'linkPreview',
+              type: 'messages',
+            },
+            weight: 100,
+          },
+        ],
+      },
+    );
+  }
+
+  registerMessageSettingPage() {
+    this.registerConversationListSection();
+    this.registerMessageThreadSection();
   }
   registerSounds() {
     this._settingService.registerItem(

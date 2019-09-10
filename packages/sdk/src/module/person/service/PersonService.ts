@@ -29,8 +29,9 @@ import { IPersonService } from './IPersonService';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { PerformanceTracer } from 'foundation';
+import { PerformanceTracer } from 'foundation/performance';
 import { EditablePersonInfo, HeadShotInfo } from '../types';
+import { Nullable } from 'sdk/types';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -196,6 +197,13 @@ class PersonService extends EntityBaseService<Person>
     ).getUserConfig() as SyncUserConfig;
 
     return syncConfig && syncConfig.getFetchedRemaining();
+  }
+
+  setCustomStatus(personId: number, status: string): Promise<Nullable<Person>> {
+    return this.getPersonController().personActionController.setCustomStatus(
+      personId,
+      status,
+    );
   }
 
   async editPersonalInfo(

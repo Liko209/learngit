@@ -7,12 +7,13 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
-import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
 import { JuiNewActions } from 'jui/pattern/TopBar';
 import { JuiFabButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { NewMessage } from '@/containers/NewMessage';
 import { withRCMode } from '@/containers/withRCMode';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type NewActionsProps = WithTranslation & ViewProps;
 
@@ -36,14 +37,23 @@ class NewActions extends React.Component<NewActionsProps> {
     );
   };
 
-  handleCreateTeam = () => CreateTeam.show();
+  handleCreateTeam = () => {
+    analyticsCollector.createTeamDialog();
+    CreateTeam.show();
+  };
 
-  handleNewMessage = () => NewMessage.show();
+  handleNewMessage = () => {
+    analyticsCollector.newMessageDialog();
+    NewMessage.show();
+  };
 
   renderCreateTeam() {
     const { t, canCreateTeam } = this.props;
     return canCreateTeam ? (
-      <JuiMenuItem onClick={this.handleCreateTeam}>
+      <JuiMenuItem
+        onClick={this.handleCreateTeam}
+        data-test-automation-id="createTeam"
+      >
         {t('people.team.CreateTeam')}
       </JuiMenuItem>
     ) : null;
@@ -75,8 +85,8 @@ class NewActions extends React.Component<NewActionsProps> {
         }}
       >
         <JuiMenuList>
-          {this.renderCreateTeam()}
           {this.renderSendNewMessage()}
+          {this.renderCreateTeam()}
         </JuiMenuList>
       </JuiNewActions>
     );

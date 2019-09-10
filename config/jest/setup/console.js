@@ -16,6 +16,9 @@ if (!process.env.JUI_TEST) {
       return;
     }
     rawConsoleError.apply(console, [message, ...args]);
+    if (process.env.IT) {
+      return;
+    }
     throw message instanceof Error ? message : new Error(message);
   };
 
@@ -24,6 +27,9 @@ if (!process.env.JUI_TEST) {
       return;
     }
     rawConsoleWarn.apply(console, [message, ...args]);
+    if (process.env.IT) {
+      return;
+    }
     throw message;
   };
 }

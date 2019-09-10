@@ -7,7 +7,7 @@ import styled from '../../foundation/styled-components';
 import { palette } from '../../foundation/utils/styles';
 
 const JuiConversationNumberLink = styled.a`
-  color: ${palette('primary', 'light')};
+  color: ${palette('primary', 'main')};
   &:hover {
     text-decoration: underline;
   }

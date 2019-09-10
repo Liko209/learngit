@@ -13,7 +13,7 @@ import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PersonDao } from '../../person/dao/PersonDao';
 import { daoManager } from '../../../dao';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const LOG_TAG = '[ProfileActionController]';
 

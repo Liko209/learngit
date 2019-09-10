@@ -28,11 +28,11 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get avatar() {
-    return this.getSelectorByAutomationId('previewerSenderAvatar');
+    return this.getSelectorByAutomationId('viewerSenderAvatar');
   }
 
   get sender() {
-    return this.getSelectorByAutomationId('previewerSenderInfo');
+    return this.getSelectorByAutomationId('viewerSenderInfo');
   }
 
   get senderName() {
@@ -44,7 +44,12 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('previewerTitle');
+    return this.getSelectorByAutomationId('viewerTitle');
+  }
+
+  //for avatar only
+  get avatarUserName() {
+    return this.title.find('h2')
   }
 
   get fileName() {
@@ -83,6 +88,10 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
   get moreButton() {
     return this.getSelectorByAutomationId('fileActionMore', this.self);
+  }
+
+  async clickMoreButton() {
+    await this.t.click(this.moreButton);
   }
 
   get downloadButton() {
@@ -206,3 +215,4 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     await this.t.hover(this.imageCanvas);
   }
 }
+

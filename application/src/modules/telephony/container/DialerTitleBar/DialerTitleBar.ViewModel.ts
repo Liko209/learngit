@@ -5,7 +5,7 @@
  */
 import { computed, observable, action } from 'mobx';
 import i18next from 'i18next';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { formatSeconds } from '@/utils/date';
 import { DialerTitleBarProps } from './types';
@@ -70,6 +70,19 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps> {
   @computed
   get isForward() {
     return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
+  }
+
+  @computed
+  get isTransfer() {
+    return (
+      this._telephonyStore.isTransferPage ||
+      this._telephonyStore.isWarmTransferPage
+    );
+  }
+
+  @computed
+  get canCompleteTransfer() {
+    return this._telephonyStore.canCompleteTransfer;
   }
 
   dispose = () => {

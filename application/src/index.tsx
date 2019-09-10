@@ -5,7 +5,7 @@
  */
 import 'reflect-metadata';
 import './polyfill';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { Application } from './Application';
 
 container.get(Application).run();

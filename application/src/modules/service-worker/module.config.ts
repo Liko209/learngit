@@ -1,4 +1,4 @@
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 import { Upgrade } from './upgrade';
 import { ServiceWorkerModule } from './ServiceWorkerModule';
 

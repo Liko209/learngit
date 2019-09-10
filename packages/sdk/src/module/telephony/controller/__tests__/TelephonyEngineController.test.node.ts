@@ -15,6 +15,7 @@ import { TelephonyAccountController } from '../TelephonyAccountController';
 import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 
 jest.mock('../../../config');
+jest.unmock('ua-parser-js');
 
 const mockIsVoipCallingAvailable = jest.fn();
 const mockGetRCBrandId = jest.fn();
@@ -143,6 +144,31 @@ describe('TelephonyEngineController', () => {
     });
   });
 
+  describe('createAccount', () => {
+    beforeEach(() => {
+      Object.assign(engineController, {
+        rtcEngine: {
+          setUserInfo: jest.fn(),
+          createAccount: jest.fn()
+        },
+      });
+      engineController.getUserInfo = jest.fn();
+      jest
+        .spyOn(engineController, 'getVoipCallPermission')
+        .mockReturnValueOnce(true);
+    })
+    it('should not create multiple account', async () => {
+      await engineController.createAccount();
+      expect(engineController.getAccountController()).toBe(accountController);
+    })
+
+    it('should create account when no account is there', async () => {
+      engineController._accountController = undefined;
+      await engineController.createAccount();
+      expect(engineController.getAccountController).not.toBeUndefined();
+    });
+  })
+
   describe('getRemoteEmergencyAddress', () => {
     it('should call account controller to get address', () => {
       accountController.getRemoteEmergencyAddress = jest
@@ -150,6 +176,23 @@ describe('TelephonyEngineController', () => {
         .mockReturnValue('test');
       const res = engineController.getRemoteEmergencyAddress();
       expect(res).toBe('test');
+    });
+  });
+
+  describe('hasActiveDL', () => {
+    it('should return true when getRemoteEmergencyAddress return not empty', () => {
+      engineController.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('test');
+      const res = engineController.hasActiveDL();
+      expect(res).toBeTruthy();
+    });
+    it('should return false when getRemoteEmergencyAddress return empty', () => {
+      engineController.getRemoteEmergencyAddress = jest
+        .fn()
+        .mockReturnValue('');
+      const res = engineController.hasActiveDL();
+      expect(res).toBeFalsy();
     });
   });
 

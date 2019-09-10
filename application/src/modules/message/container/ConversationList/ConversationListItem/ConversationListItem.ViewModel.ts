@@ -73,6 +73,7 @@ class ConversationListItemViewModel extends StoreViewModel<
       .getGlobalStore()
       .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
     setTimeout(() => history.push(`/messages/${this.groupId}`), 0);
+    this.groupService.clearDraftFlagIfNotReallyExisted(this.groupId);
   };
 
   @computed
@@ -83,12 +84,16 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   @computed
-  get umiHint() {
-    const groupState = getEntity<GroupState, GroupStateModel>(
+  private get _groupState() {
+    return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     );
-    return !!groupState.unreadCount;
+  }
+
+  @computed
+  get umiHint() {
+    return !!this._groupState.unreadCount;
   }
 
   @computed

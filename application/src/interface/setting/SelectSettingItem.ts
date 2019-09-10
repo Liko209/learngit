@@ -27,6 +27,12 @@ type SelectSettingItem<T> = SettingItem & {
   }) => React.ReactNode;
 
   /**
+   * Before menu open
+   * return false to stop opening
+   */
+  onBeforeOpen?: () => Promise<boolean>;
+
+  /**
    * Default source when source not given by sdk
    */
   defaultSource?: T[];

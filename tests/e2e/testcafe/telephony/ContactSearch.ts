@@ -9,8 +9,8 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
-import { MiscUtils } from '../v2/utils'
 import { E911Address } from './e911address';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Telephony/Dialer')
   .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
@@ -22,18 +22,11 @@ test.meta(<ITestMeta>{
   maintainers: ['Lex.Huang'],
   keywords: ['ContactSearch']
 })('Can make outbound call when click the contact of search results', async (t) => {
-  const loginUser = h(t).rcData.mainCompany.users[0];
-  const callee = h(t).rcData.mainCompany.users[1];
-  const { extension } = callee;
+  const [loginUser, caller, callee, ...rest] = h(t).rcData.mainCompany.users
   const app = new AppRoot(t);
+  const searchStr = callee.extension.replace('+', '');
 
-  const searchStr = extension.replace('+', '');
-
-  await h(t).glip(loginUser).init();
-  await h(t).platform(loginUser).init();
-  await h(t).platform(loginUser).updateDevices(() => E911Address);
-  await h(t).glip(loginUser).resetProfileAndState();
-
+  let calleeSession: WebphoneSession;
   await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
       number: loginUser.company.number,
@@ -41,6 +34,10 @@ test.meta(<ITestMeta>{
     });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And callee login webphone', async () => {
+    calleeSession = await h(t).newWebphoneSession(callee);
   });
 
   await h(t).withLog('When I click the to dialPad button', async () => {
@@ -64,27 +61,36 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then a call should be initiated', async () => {
     await t.expect(telephonyDialog.hangupButton.exists).ok();
-    await t.expect(telephonyDialog.extension.withText(extension).exists).ok();
+    await t.expect(telephonyDialog.phoneNumber.withText(callee.extension).exists).ok();
   });
 
-  await h(t).withLog('When I end the call', async () => {
+  await h(t).withLog('And callee should receive the call', async () => {
+    await calleeSession.waitForStatus('invited');
+  });
+
+  await h(t).withLog('Final  I end the call', async () => {
     await telephonyDialog.clickHangupButton()
   });
 
-  await h(t).withLog(`And I enter "{searchStr}" into input field via keyboard again`, async (step) => {
+  let callerSession: WebphoneSession;
+  await h(t).withLog(`When I receive a income call`, async () => {
+    callerSession = await h(t).newWebphoneSession(caller);
+    await callerSession.makeCall(loginUser.extension);
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('And I forward to callee "{searchStr}" ', async (step) => {
     step.setMetadata('searchStr', searchStr);
+    await telephonyDialog.clickMoreOptionsButton();
+    await telephonyDialog.hoverForwardButton();
+    await telephonyDialog.clickCustomForwardButton();
     await telephonyDialog.typeTextInDialer(searchStr);
-  });
-
-  await h(t).withLog('Click the the 2nd item via mouse', async () => {
     await telephonyDialog.contactSearchList.ensureLoaded();
-    await t.wait(1e3);
-    await telephonyDialog.contactSearchList.selectNth(1)
+    await telephonyDialog.contactSearchList.selectNth(0);
   });
 
-  await h(t).withLog('Then a call should be initiated', async () => {
-    await t.expect(telephonyDialog.hangupButton.exists).ok();
-    await t.expect(telephonyDialog.extension.withText(extension).exists).ok();
+  await h(t).withLog('Then callee should receive the call', async () => {
+    await calleeSession.waitForStatus('invited');
   });
 });
 

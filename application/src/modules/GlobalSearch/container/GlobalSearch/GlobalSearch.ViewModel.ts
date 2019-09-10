@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, action } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GlobalSearchProps, GlobalSearchViewProps, SEARCH_VIEW } from './types';
 import { GlobalSearchStore } from '../../store';
@@ -26,19 +26,24 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
   }
 
   @computed
-  get currentView() {
-    return this._globalSearchStore.currentView;
+  get needFocus() {
+    return this._globalSearchStore.needFocus;
   }
 
   @computed
-  get showClear() {
-    return this._globalSearchStore.searchKey !== '';
+  get currentView() {
+    return this._globalSearchStore.currentView;
   }
 
   @action
   onClear = () => {
     this._globalSearchStore.clearSearchKey();
-  }
+  };
+
+  @action
+  onBlur = () => {
+    this._globalSearchStore.setFocus(false);
+  };
 
   @action
   onChange = (searchKey: string) => {
@@ -48,12 +53,12 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
       key === '' ? SEARCH_VIEW.RECENT_SEARCH : SEARCH_VIEW.INSTANT_SEARCH;
     store.setCurrentView(currentView);
     store.setSearchKey(searchKey);
-  }
+  };
 
   @action
   onClose = () => {
     this._globalSearchStore.setOpen(false);
-  }
+  };
 }
 
 export { GlobalSearchViewModel };

@@ -5,7 +5,7 @@
  */
 
 import { IdModel, Raw, ModelIdType } from '../../model';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import _ from 'lodash';
 import { IPartialEntitySourceController } from '../interface/IPartialEntitySourceController';
 import notificationCenter from '../../../service/notificationCenter';
@@ -37,6 +37,7 @@ class PartialModifyController<
       doPartialNotify,
       saveLocalFirst = true,
       forceDoUpdateEntity = false,
+      shouldRollback = true,
       handleRollbackPartialEntity,
     } = params;
 
@@ -72,6 +73,7 @@ class PartialModifyController<
         doPartialNotify,
         saveLocalFirst,
         forceDoUpdateEntity,
+        shouldRollback,
         handleRollbackPartialEntity,
       );
     } while (false);
@@ -129,6 +131,7 @@ class PartialModifyController<
     doPartialNotify?: PartialNotifyFunc<T>,
     saveLocalFirst = true,
     forceDoUpdateEntity: boolean = false,
+    shouldRollback: boolean = true,
     handleRollbackPartialEntity?: HandleRollbackPartialEntityFunc<T>,
   ): Promise<T> {
     let result: T;
@@ -167,21 +170,25 @@ class PartialModifyController<
         result = await doUpdateEntity(mergedEntity);
       } catch (e) {
         mainLogger.error('handlePartialUpdate: doUpdateEntity failed');
-        const handledRollbackEntity =
-          (handleRollbackPartialEntity &&
-            handleRollbackPartialEntity(mergedEntity, rollbackPartialEntity)) ||
-          rollbackPartialEntity;
-        const fullRollbackEntity = this.getMergedEntity(
-          handledRollbackEntity,
-          mergedEntity,
-        );
-        await this._doPartialSaveAndNotify(
-          mergedEntity,
-          fullRollbackEntity,
-          handledRollbackEntity,
-          doPartialNotify,
-        );
-
+        if (shouldRollback) {
+          const handledRollbackEntity =
+            (handleRollbackPartialEntity &&
+              handleRollbackPartialEntity(
+                mergedEntity,
+                rollbackPartialEntity,
+              )) ||
+            rollbackPartialEntity;
+          const fullRollbackEntity = this.getMergedEntity(
+            handledRollbackEntity,
+            mergedEntity,
+          );
+          await this._doPartialSaveAndNotify(
+            mergedEntity,
+            fullRollbackEntity,
+            handledRollbackEntity,
+            doPartialNotify,
+          );
+        }
         throw e;
       }
     }

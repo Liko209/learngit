@@ -10,38 +10,41 @@ import { AccountService } from 'sdk/module/account';
 import { Api } from 'sdk/api';
 import { RCVDeepLinkController } from '../RCVDeepLinkController';
 import { MEETING_ACTION } from '../../../types';
+import ItemAPI from 'sdk/api/glip/item';
 
 jest.mock('sdk/module/account');
 jest.mock('sdk/api');
+jest.mock('sdk/api/glip/item');
 
 describe('RCVDeepLinkController', () => {
-  describe('startMeeting', () => {
-    function setUp(tk: any, value: any) {
-      ServiceLoader.getInstance = jest
-        .fn()
-        .mockImplementation((config: string) => {
-          if (config === ServiceConfig.ACCOUNT_SERVICE) {
-            return {
-              authUserConfig: AuthUserConfig.prototype,
-            };
-          }
-        });
-      const authUserConfig = ServiceLoader.getInstance<AccountService>(
-        ServiceConfig.ACCOUNT_SERVICE,
-      ).authUserConfig;
-      jest.spyOn(authUserConfig, 'getGlipToken').mockReturnValue(tk);
-
-      Object.defineProperty(Api, 'httpConfig', {
-        get: () => {
+  function setUp(tk: any, glipServer: any) {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        if (config === ServiceConfig.ACCOUNT_SERVICE) {
           return {
-            glip: { server: value },
+            authUserConfig: AuthUserConfig.prototype,
           };
-        },
-        configurable: true,
+        }
       });
-      const controller = new RCVDeepLinkController();
-      return controller;
-    }
+    const authUserConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).authUserConfig;
+    jest.spyOn(authUserConfig, 'getGlipToken').mockReturnValue(tk);
+
+    Object.defineProperty(Api, 'httpConfig', {
+      get: () => {
+        return {
+          glip: { server: glipServer },
+        };
+      },
+      configurable: true,
+    });
+    const controller = new RCVDeepLinkController();
+    return controller;
+  }
+  describe('startMeeting', () => {
+
 
     beforeEach(() => {
       jest.resetAllMocks();
@@ -67,6 +70,22 @@ describe('RCVDeepLinkController', () => {
       const controller = setUp('url', undefined);
       const result = await controller.startMeeting([]);
       expect(result.action).toEqual(MEETING_ACTION.ERROR);
+    });
+  });
+  describe('cancelMeeting', () => {
+    it('cancelMeeting', async () => {
+      ItemAPI.cancelRCV.mockResolvedValueOnce('');
+      const controller = new RCVDeepLinkController();
+      await controller.cancelMeeting(1);
+      expect(ItemAPI.cancelRCV).toHaveBeenCalled();
+    });
+  });
+  describe('getJoinUrl', () => {
+    it('cancelMeeting', async () => {
+
+      const controller = setUp('tk', 'https://app.glip.com');
+      const a = await controller.getJoinUrl(1)
+      expect(a).toEqual('https://app.glip.com/api/rcv/join-call/waiting-page?meeting_item_id=1&tk=tk')
     });
   });
 });

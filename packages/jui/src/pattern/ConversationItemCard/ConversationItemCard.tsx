@@ -38,7 +38,7 @@ const SubTitle = styled.span`
   color: ${palette('text', 'secondary')};
   flex-grow: 2;
 `;
-const HeaderActionsWrapper = styled(JuiButtonBar)<JuiButtonBarProps>`
+const HeaderActionsWrapper = styled(JuiButtonBar) <JuiButtonBarProps>`
   position: absolute;
   right: ${spacing(1.5)};
   top: ${spacing(1.5)};
@@ -77,10 +77,10 @@ const ItemCardHeader = styled.div<ItemCardProps>`
 
 const ItemCardContent = styled(props => (
   <JuiCardContent {...omit(props, ['hasPadding'])} />
-))<{ hasPadding: boolean }>`
+)) <{ hasPadding: boolean }>`
   &&& {
     padding: ${({ hasPadding }) =>
-      hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0)};
+    hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0)};
     ${typography('body1')};
   }
 `;
@@ -104,7 +104,7 @@ type JuiConversationItemCardProps = {
   children?: React.ReactNode;
   contentHasPadding?: boolean;
   isShowLoading?: boolean;
-  subTitle?: string;
+  subTitle?: JSX.Element;
   Footer?: JSX.Element | null;
   footerPadding?: boolean;
   complete?: boolean;
@@ -114,7 +114,7 @@ type JuiConversationItemCardProps = {
 
 class JuiConversationItemCard extends React.PureComponent<
   JuiConversationItemCardProps
-> {
+  > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;
     titleClick && titleClick(e);
@@ -152,8 +152,8 @@ class JuiConversationItemCard extends React.PureComponent<
               {Icon}
             </JuiIconography>
           ) : (
-            Icon
-          )}
+              Icon
+            )}
           {title ? (
             <ItemTitle
               data-test-automation-id="conversation-item-cards-title"

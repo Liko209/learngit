@@ -36,6 +36,7 @@
     },
     "time": {
       "at": "at",
+      "dateAtTime": "{{date}} at {{time}}",
       "today": "Today",
       "yesterday": "Yesterday",
       "tomorrow": "Tomorrow",
@@ -82,7 +83,10 @@
     "reload": "Reload",
     "goToConversation": "Go to conversation",
     "country": "Country",
-    "eg": "e.g."
+    "eg": "e.g.",
+    "clear": "Clear",
+    "clearText": "Clear Text",
+    "guest": "Guest"
   },
   "presence": {
     "available": "Available",
@@ -111,8 +115,10 @@
     "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
+    "shareStatus": "Share status",
+    "clearStatus": "Clear status",
     "aboutRingCentral": "About RingCentral",
-    "sendFeedback": "Send Feedback",
+    "sendFeedback": "Send feedback",
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Date",
@@ -162,6 +168,14 @@
     "Results": "Results ({{count}})",
     "NoMatchesFound": "No matches found",
     "SearchForContactsAndKeywords": "Search for contacts and keywords"
+  },
+  "groupSearch": {
+    "inputGhostText": "Type person or team name",
+    "dialogTitle": "Switch conversation",
+    "listTitle": "Recent conversations"
+  },
+  "shareFile": {
+    "dialogTitle": "Share file"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -216,11 +230,12 @@
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
     },
-    "sharedItems": "shared items",
+    "sharedItems": "{{userName}} shared items",
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",
       "on": "on",
+      "createTeamInfo": "<0>{{userName}}</0> <1>created a team</1> <2>{{displayName}}</2> <1>on {{createTime}}</1>",
       "postInitialTitle": "Get Started",
       "shareFile": "Share a file",
       "createTask": "Create a task",
@@ -265,6 +280,7 @@
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
+      "shareFile": "Share file",
       "deletePostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete this post. Try again later.",
       "deletePostFailedForNetworkIssue": "We weren't able to delete this post. Check your network connection, then try again.",
       "editPostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to apply edits to this post. Try again later.",
@@ -273,7 +289,7 @@
       "viewInPostFailedWithNetworkIssue": "Sorry, we weren't able to jump to the post. Check your network connection, then try again.",
       "contentLength": "A maximum of 10000 characters can be sent",
       "contentIllegal": "Javascript not allowed",
-      "deletePostTitle": "Delete Post?",
+      "deletePostTitle": "Delete post?",
       "deleteFileTitle": "Delete the file?",
       "deletePostContent": "Are you sure you want to delete this post?",
       "deleteFileContent": "Are you sure you want to delete this file <0>{{fileName}}</0>?",
@@ -315,7 +331,9 @@
     "fileAction": {
       "deleteFile": "Delete file",
       "editFileName": "Edit filename",
-      "viewInPost": "View in post"
+      "viewInPost": "View in post",
+      "viewInBrowser": "View in browser",
+      "viewInNewTab": "View in new tab"
     },
     "Messages": "Messages",
     "message": "Message",
@@ -332,7 +350,8 @@
       "initializing": "Initializing...",
       "failure": "The message service failed to start.",
       "tryAgain": " Please try again later."
-    }
+    },
+    "postButton": "Post"
   },
   "item": {
     "activity": {
@@ -359,7 +378,8 @@
       "started a video chat": "started a video chat",
       "replied": "replied",
       "reply": "replied to",
-      "via": "via"
+      "via": "via",
+      "join": "Join"
     },
     "meeting": {
       "videoCallInProgress": "Video Call in progress",
@@ -452,6 +472,14 @@
     "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
     "pinnedMore": "and {{num}} more",
     "prompt": {
+      "shareSuccess": "File shared successfully.",
+      "shareFileNoAuth": "This team doesn't allow members to post. You cannot share files to it.",
+      "shareFileNotMember": "You are no longer a member of this team. You can no longer share files to it.",
+      "shareFileTeamDeleted": "This team was deleted. You can no longer share files to it.",
+      "shareFileTeamArchived": "This team was archived. You can no longer share files to it.",
+      "shareFileDeleted": "This file was deleted and can no longer be shared.",
+      "shareFileBackendError": "Sorry, something went wrong on our end and we aren't able to share the file. Try again later.",
+      "shareFileNetworkError": "We aren't able to share the file. Check your network connection, then try again.",
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
       "fileNoLongerExists": "Sorry, we weren’t able to upload the file because it no longer exists.",
       "notAbleToCancelUpload": "Sorry, we weren't able to cancel the upload.",
@@ -501,7 +529,7 @@
       "showAllCount": "Show all {{count}}",
       "Members": "Members",
       "SearchContactPlaceholder": "Enter names or email addresses",
-      "CreateTeam": "Create Team",
+      "CreateTeam": "Create team",
       "Create": "Create",
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
       "MembersMayPostMessages": "Allow members to post messages",
@@ -571,7 +599,7 @@
     },
     "company": {},
     "prompt": {
-      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this Team. To join, contact the team administrator.",
+      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this team. To join, contact the team administrator.",
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
@@ -614,7 +642,7 @@
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
       "conversationArchived": "This team was archived. To know more, contact the team administrator.",
-      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator.",
+      "conversationPrivate": "Sorry, you're not a member of this team. To join, contact the team administrator.",
       "newConversationTitle": "New conversation",
       "newConversationBaseTip": "Adding people will start a new conversation without the current message history.",
       "newConversationGroupTip": "If you'd like to keep the history, you can <0>convert to a team</0> instead.",
@@ -623,13 +651,21 @@
     }
   },
   "contact": {
-    "Contacts": "Contacts"
+    "Contacts": "Contacts",
+    "noContacts": "No contacts",
+    "filterContacts": "Filter contacts",
+    "noMatchesFound": "No matches found",
+    "tab": {
+      "allContacts": "All contacts",
+      "company": "Company directory"
+    }
   },
   "calendar": {
     "Calendar": "Calendar"
   },
   "telephony": {
     "Phone": "Phone",
+    "conferenceCall": "Conference call",
     "Ext": "Ext.",
     "action": {
       "minimize": "Minimize",
@@ -653,7 +689,17 @@
       "customForward": "Custom...",
       "flip": "Flip",
       "recentCall": "Recent calls",
-      "backToDialer": "Back to dialer"
+      "backToDialer": "Back to dialer",
+      "ignore": "Ignore",
+      "voicemail": "To Voicemail",
+      "answer": "Answer",
+      "more": "More",
+      "endAndAnswer": "End & Answer",
+      "transfer": "Transfer",
+      "toVoiceMail": "To Voicemail",
+      "askFirst": "Ask first",
+      "transferring": "Transferring...",
+      "completeTransfer": "Complete transfer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -675,12 +721,13 @@
     "sendToVoicemail": "Send to voicemail",
     "moreOptions": "More options",
     "answerTheCall": "Answer the call",
+    "endAndAnswerTheCall": "End and Answer the call",
     "unknownCaller": "Unknown Caller",
     "unknownCallee": "Unknown",
     "prompt": {
       "emergencyAddressIsUnknown": "You emergency address is unknown. You are limited to making outbound calls to extensions in your organization only.",
       "e911ServiceMayBeLimitedOrUnavailable": "E911 Service may be limited or unavailable. Your specific location may not be automatically communicated to the dispatcher.",
-      "e911ExtensionNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
+      "noDLNotAllowedToMakeCall": "Your extension is not allowed to make outbound calls with the RingCentral app currently, please contact your account representative for an upgrade.",
       "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
       "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
@@ -717,9 +764,17 @@
         "noNetwork": "Sorry, we weren't able to switch the call. Check your network connection, then try again.",
         "backendError": "Sorry, something went wrong on our end and we weren't able to switch the call. Try again later.",
         "callEnded": "Your call with {{displayName}} is ended."
-      }
+      },
+      "transferCall": {
+        "backendError": "Transfer failed",
+        "transferSuccess": "Call transferred"
+      },
+      "voicemailDeleted": "The voicemail was deleted.",
+      "audioConferenceBackendError": "Sorry, something went wrong on our end and we weren't able to start the conference. Try again later. ",
+      "audioConferenceNetworkError": "Sorry, we aren't able to start the conference. Check your network connection, then try again. "
     },
     "notification": {
+      "newVoicemail": "Left a voicemail",
       "incomingCall": "Incoming Call",
       "answer": "Answer",
       "unknownCaller": "Unknown Caller"
@@ -871,6 +926,7 @@
     "noMatchesFound": "No matches found",
     "noCallLogAvailable": "No call logs",
     "noVoicemailAvailable": "No voicemail records",
+    "startConference": "Start conference call",
     "prompt": {
       "numberHasBeenBlocked": "The number has been blocked",
       "numberHasBeenUnblocked": "The number has been unblocked",
@@ -940,15 +996,7 @@
     "notificationAndSounds": {
       "title": "Notifications and sounds",
       "otherNotificationSettings": {
-        "title": "Other notification settings",
-        "newMessageBadgeCount": {
-          "options": {
-            "groups_and_mentions": "Direct messages and mentions only",
-            "all": "All new messages"
-          },
-          "description": "Choose how the app will count new messages in the app badge count",
-          "label": "New message badge count"
-        }
+        "title": "Other notification settings"
       },
       "sounds": {
         "directMessages": {
@@ -1056,6 +1104,30 @@
         }
       }
     },
+    "Messages": {
+      "conversationList": {
+        "title": "Conversation list",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        },
+        "maxConversations": {
+          "label": "Max conversations",
+          "description": "Choose the maximum amount of read conversations the app will display in your conversation rail (unreads will always display)"
+        }
+      },
+      "messageThread": {
+        "title": "Message thread",
+        "linkPreviews": {
+          "label": "Show link previews",
+          "description": "Disable content preview links"
+        }
+      }
+    },
     "sounds": "Sounds",
     "messages": "Messages",
     "meetings": "Meetings",
@@ -1117,7 +1189,8 @@
       "volume": {
         "label": "Volume control",
         "description": "Update the app volume"
-      }
+      },
+      "microphonePermissionBlocked": "To use this function, go to your browser settings to allow RingCentral to access microphone."
     },
     "useDefault": "Use system default",
     "speaker": "Speaker",
@@ -1125,11 +1198,25 @@
     "allDevices": "All audio sources",
     "off": "Off",
     "microphone": "Microphone",
-    "builtInMicrophone": "Built-in microphone",
-    "builtInSpeaker": "Built-in speaker",
     "prompt": {
       "updateRegionalSettingsBackendError": "Sorry, something went wrong on our end and we weren't able to save your region settings. Try again later.",
       "updateRegionalSettingsNetworkError": "Sorry, we weren't able to save your region settings due to a poor network connection. Try again."
+    },
+    "conversationPreferences": {
+      "entry": "Notification preferences",
+      "title": "Conversation notification preferences",
+      "muted": "Mute all notifications everywhere",
+      "desktopNotifications": "Enable desktop notifications",
+      "audioNotifications": "Enable desktop sound notifications",
+      "pushNotifications": "Enable mobile notifications",
+      "emailNotifications": "Enable email notifications",
+      "options": {
+        "mobileNotifications": {
+          "0": "Off",
+          "1": "Every message",
+          "firstonly": "First new message only"
+        }
+      }
     }
   },
   "viewer": {
@@ -1154,11 +1241,7 @@
       "enablePermissionAction": "Enable notifications",
       "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
     },
-    "notificationBlockedDialog": {
-      "title": "Notifications not allowed",
-      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
-      "button": "OK"
-    }
+    "notificationPermissionBlocked": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications."
   },
   "feedback": {
     "name": "Feedback",
@@ -1176,6 +1259,22 @@
     "issueTitle": "Summary",
     "issueDescription": "What happened?",
     "sendingInBackground": "Sending feedback..."
+  },
+  "customstatus": {
+    "title": "Share status",
+    "items": {
+      "item1": "Out of office",
+      "item2": "In a meeting",
+      "item3": "Out sick",
+      "item4": "Working remotely",
+      "item5": "Vacationing",
+      "item6": "Traveling"
+    },
+    "placeHolder": "Share custom status",
+    "shareCustomStatusNetworkError": "Sorry, we weren't able to share your custom status. Check your network connection, then try again.",
+    "clearCustomStatusNetworkError": "Sorry, we weren't able to clear your custom status. Check your network connection, then try again.",
+    "shareCustomStatusServerError": "Sorry, something went wrong on our end, we weren't able to share your custom status. Try again later.",
+    "clearCustomStatusServerError": "Sorry, something went wrong on our end, we weren't able to clear your custom status. Try again later."
   },
   "electron": {
     "upgrade": {

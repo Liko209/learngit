@@ -9,11 +9,11 @@ import { IHealthModule, IHealthModuleManager } from './types';
 
 export class HealthModuleManager implements IHealthModuleManager {
   private static _instance: HealthModuleManager;
-  private _manager: RegisterItemManager<
-  IHealthModule
-  > = new RegisterItemManager('HealthModuleManager');
+  private _manager: RegisterItemManager<IHealthModule>;
 
-  private constructor() {}
+  private constructor() {
+    this._manager = new RegisterItemManager('HealthModuleManager');
+  }
 
   static getInstance() {
     if (!HealthModuleManager._instance) {

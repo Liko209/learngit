@@ -9,29 +9,28 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { NotificationBrowserSettingItemViewProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { JuiToggleButton } from 'jui/components/Buttons';
-import { JuiModal } from 'jui/components/Dialog';
 import { PERMISSION } from '@/modules/notification/Permission';
 import {
   INotificationPermission,
   INotificationService,
   NOTIFICATION_PRIORITY,
 } from '@/modules/notification/interface';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
+import { Notification } from '@/containers/Notification';
 import i18nT from '@/utils/i18nT';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { catchError } from '@/common/catchError';
 
 const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
 type State = {
-  dialogOpen: boolean;
   waitForPermission: boolean;
 };
 @observer
 class NotificationBrowserSettingItemViewComponent extends Component<
   Props,
   State
-  > {
+> {
   private get _permission(): INotificationPermission {
     return jupiter.get(INotificationPermission);
   }
@@ -42,48 +41,17 @@ class NotificationBrowserSettingItemViewComponent extends Component<
   constructor(props: Props) {
     super(props);
     this.state = {
-      dialogOpen: false,
       waitForPermission: false,
     };
   }
 
-  private _handleDialog = (isShow: boolean) => {
-    this.setState({
-      dialogOpen: isShow,
+  private _onNotificationDenied = () => {
+    Notification.flagWarningToast('notification.notificationPermissionBlocked');
+
+    dataAnalysis.track('Jup_Web/DT_settings_notification_blocked', {
+      endPoint: 'web',
     });
-    if (isShow) {
-      dataAnalysis.page('Jup_Web/DT_settings_notification_blocked', {
-        endPoint: 'web',
-      });
-    } else {
-      dataAnalysis.track(
-        'Jup_Web_settings_DesktopNotifications_blocked_closeDialog',
-        { endPoint: 'web' },
-      );
-    }
   };
-
-  private _handleDialogClose = () => {
-    this._handleDialog(false);
-  };
-
-  private _renderDialog() {
-    const { t } = this.props;
-    const dialogTitle = t('notification.notificationBlockedDialog.title');
-    const dialogContent = t('notification.notificationBlockedDialog.content');
-    const dialogButton = t('notification.notificationBlockedDialog.button');
-    return (
-      this.state.dialogOpen && (
-        <JuiModal
-          open={this.state.dialogOpen}
-          content={dialogContent}
-          okText={dialogButton}
-          title={dialogTitle}
-          onOK={this._handleDialogClose}
-        />
-      )
-    );
-  }
 
   private _showEnabledNotification = async () => {
     const title = await i18nT('notification.notificationEnabled');
@@ -126,7 +94,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
           const permission = await this._requestPermission();
           try {
             if (permission === PERMISSION.DENIED) {
-              this._handleDialog(true);
+              this._onNotificationDenied();
             }
             if (permission === PERMISSION.GRANTED) {
               await this.props.setToggleState(checked);
@@ -145,7 +113,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
           this._showEnabledNotification();
           break;
         case PERMISSION.DENIED:
-          this._handleDialog(true);
+          this._onNotificationDenied();
           break;
         default:
           break;
@@ -173,14 +141,14 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     const hidden = desktopNotifications === undefined;
     return (
       <JuiSettingSectionItem
-        id='notificationBrowserSetting'
-        automationId='notificationBrowser'
+        id="notificationBrowserSetting"
+        automationId="notificationBrowser"
         label={label}
         description={description}
       >
         {!hidden && (
           <JuiToggleButton
-            data-test-automation-id='settingItemToggleButton-notificationBrowser'
+            data-test-automation-id="settingItemToggleButton-notificationBrowser"
             checked={checked}
             onChange={this.handleToggleChange}
             aria-label={
@@ -190,7 +158,6 @@ class NotificationBrowserSettingItemViewComponent extends Component<
             }
           />
         )}
-        {this._renderDialog()}
       </JuiSettingSectionItem>
     );
   }

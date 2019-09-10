@@ -21,6 +21,7 @@ import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
+import { promisedComputed } from 'computed-async-mobx';
 import PostModel from '@/store/models/Post';
 import {
   ToastType,
@@ -62,7 +63,8 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     });
   }
 
-  isRecentlyUploaded = (id: number) => UploadFileTracker.tracker().getMapID(id) !== id
+  isRecentlyUploaded = (id: number) =>
+    UploadFileTracker.tracker().getMapID(id) !== id;
 
   getCropImage = async () => {
     const images = this.files[FileType.image];
@@ -70,7 +72,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     await Promise.all(
       images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)),
     );
-  }
+  };
 
   getShowDialogPermission = async () => {
     const permissionService = ServiceLoader.getInstance<PermissionService>(
@@ -79,7 +81,19 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return await permissionService.hasPermission(
       UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
     );
-  }
+  };
+
+  getFilePreviewBackgroundContainPermission = promisedComputed(
+    false,
+    async () => {
+      const permissionService = ServiceLoader.getInstance<PermissionService>(
+        ServiceConfig.PERMISSION_SERVICE,
+      );
+      return await permissionService.hasPermission(
+        UserPermissionType.CAN_VIEW_FILE_PREVIEW_BACKGROUND_CONTAIN,
+      );
+    },
+  );
 
   @action
   private _fetchUrl = async (
@@ -91,7 +105,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       this.urlMap.set(item.id, thumbnail.url);
     }
     return thumbnail.url;
-  }
+  };
 
   private _handleItemChanged = (
     payload: NotificationEntityPayload<Progress>,
@@ -105,12 +119,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         this._progressMap.set(looper, newItem);
       });
     }
-  }
+  };
 
   dispose = () => {
     super.dispose();
     notificationCenter.off(ENTITY.PROGRESS, this._handleItemChanged);
-  }
+  };
 
   @computed
   get _ids() {
@@ -220,7 +234,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         });
       }
     }
-  }
+  };
 }
 
 export { FilesViewModel };

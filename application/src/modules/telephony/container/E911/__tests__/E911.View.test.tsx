@@ -6,12 +6,16 @@
 import React from 'react';
 import { test, testable } from 'shield';
 import { mountWithTheme } from 'shield/utils';
-import { ReactWrapper } from 'enzyme';
+import { ReactWrapper, shallow } from 'enzyme';
 import { JuiDialogTitle } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
+import { Notification, notificationKey } from '@/containers/Notification';
+import { JuiButton } from 'jui/components/Buttons/Button';
 
 import { E911View } from '../E911.View';
+
+jest.mock('@/containers/Notification');
 
 const defaultFields = {
   customerName: 'John Doe',
@@ -140,6 +144,44 @@ describe('E911View', () => {
       );
       expect(wrapper.find(E911Disclaimers).text()).toBe(
         'telephony.e911.outOfCountryTitle',
+      );
+    }
+  }
+
+  @testable
+  class JPT2915 {
+    @test('should dismiss when confirm address in the setting [JPT-2915]')
+    async t1() {
+      Notification.removeNotification = jest.fn();
+      const props = {
+        value: {
+          street2: 'street2',
+          countryName: 'countryName',
+          customerName: 'customerName',
+          stateName: 'stateName',
+        },
+        setCheckBox() {},
+        checkboxList: [
+          {
+            i18text: 'i18text',
+            checked: false,
+          },
+        ],
+        countryList: [],
+        stateList: [],
+        fields: defaultFields,
+        handleFieldChange() {},
+        shouldShowSelectState: false,
+        onSubmit() {
+          return true;
+        },
+        closeE911() {},
+      };
+      const wrapper = shallow(<E911View {...props} />);
+      const confirmBtn = wrapper.find(JuiButton).at(1);
+      await confirmBtn.simulate('click');
+      expect(Notification.removeNotification).toHaveBeenCalledWith(
+        notificationKey.E911_TOAST,
       );
     }
   }

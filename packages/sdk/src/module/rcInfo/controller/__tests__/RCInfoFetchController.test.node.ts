@@ -244,6 +244,18 @@ describe('RCInfoFetchController', () => {
     });
   });
 
+  describe('getUserEmail()', () => {
+    it('should return email', async () => {
+      rcInfoFetchController[
+        'rcInfoUserConfig'
+      ].getExtensionInfo = jest
+      .fn()
+      .mockReturnValue({contact: {email: "a@ringcentral.com"}} as RCExtensionInfo);
+      const result  = await rcInfoFetchController.getUserEmail();
+      expect(result).toEqual("a@ringcentral.com");
+    });
+  });
+
   describe('requestRCRolePermissions()', () => {
     it('should send request and save to storage', async () => {
       RCInfoApi.requestRCRolePermissions = jest

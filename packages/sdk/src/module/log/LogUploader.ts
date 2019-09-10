@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { RESPONSE_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
+import { LogEntity, mainLogger } from 'foundation/log';
+import { RESPONSE_STATUS_CODE } from 'foundation/network';
 import { Api } from 'sdk/api';
 import { Pal } from 'sdk/pal';
 import { ILogUploader } from './consumer';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
-import { extractLogMessageLine } from './utils';
+import { extractLogMessageLine, getClientId } from './utils';
 import { ILogChunkSplitStrategy } from './types';
 import { ErrorChunkStrategy } from './ErrorChunkStrategy';
 import pako from 'pako';
@@ -102,7 +103,7 @@ export class LogUploader implements ILogUploader {
     } catch (error) {
       mainLogger.debug('getUserInfo fail', error);
     }
-    const { email = DEFAULT_EMAIL, id = '' } = userInfo || {};
+    const { email = DEFAULT_EMAIL, id = getClientId() } = userInfo || {};
     return {
       email,
       userId: id,

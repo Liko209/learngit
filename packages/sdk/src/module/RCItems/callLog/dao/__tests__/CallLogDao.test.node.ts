@@ -6,11 +6,17 @@
 
 import { CallLogDao } from '../CallLogDao';
 import { CallLogViewDao } from '../CallLogViewDao';
-import { daoManager, BaseDao, QUERY_DIRECTION } from 'sdk/dao';
+import { daoManager, BaseDao } from 'sdk/dao';
 import { CALL_LOG_SOURCE } from '../../constants';
+import { setup } from 'sdk/dao/__tests__/utils';
 
-jest.mock('sdk/dao');
 jest.mock('../CallLogViewDao');
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 
 describe('CallLogDao', () => {
   let dao: CallLogDao;
@@ -22,47 +28,43 @@ describe('CallLogDao', () => {
   } as any;
 
   beforeEach(() => {
-    viewDao = new CallLogViewDao({} as any);
-    daoManager.getDao = jest.fn().mockReturnValue(viewDao);
-    dao = new CallLogDao({} as any);
-    dao.doInTransaction = jest.fn().mockImplementationOnce(async func => {
-      await func();
+    clearMocks();
+
+    const { database } = setup();
+    viewDao = new CallLogViewDao(database);
+    daoManager.getDao = jest.fn().mockImplementation(x => {
+      switch (x) {
+        case CallLogViewDao:
+          return viewDao;
+        default:
+          break;
+      }
+      return undefined;
     });
+
+    dao = new CallLogDao(database);
   });
 
   describe('put', () => {
     it('should put item in dao and viewDao', async () => {
-      dao['_putCallLogView'] = jest.fn();
-
       await dao.put(mockCallLog);
-      expect(BaseDao.prototype.put).toHaveBeenCalled();
-      expect(dao['_putCallLogView']).toHaveBeenCalled();
-    });
-
-    it('should put array in dao and viewDao', async () => {
-      dao['_bulkPutCallLogView'] = jest.fn();
-
-      await dao.put([mockCallLog]);
-      expect(BaseDao.prototype.put).toHaveBeenCalled();
-      expect(dao['_bulkPutCallLogView']).toHaveBeenCalled();
+      expect(viewDao.put).toHaveBeenCalled();
+      expect(viewDao.toViewItem).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('bulkPut', () => {
     it('should bulkPut array in dao and viewDao', async () => {
-      dao['_bulkPutCallLogView'] = jest.fn();
-
       await dao.bulkPut([mockCallLog]);
-      expect(BaseDao.prototype.bulkPut).toHaveBeenCalled();
-      expect(dao['_bulkPutCallLogView']).toHaveBeenCalled();
+      expect(viewDao.bulkPut).toHaveBeenCalled();
+      expect(viewDao.toViewItem).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('clear', () => {
     it('should clear in dao and viewDao', async () => {
       await dao.clear();
-      expect(BaseDao.prototype.clear).toHaveBeenCalled();
-      expect(viewDao.clear).toHaveBeenCalled();
+      expect(viewDao.clear).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -71,8 +73,7 @@ describe('CallLogDao', () => {
       const mockKey = 'mockKey';
 
       await dao.delete(mockKey);
-      expect(BaseDao.prototype.delete).toHaveBeenCalled();
-      expect(viewDao.delete).toHaveBeenCalled();
+      expect(viewDao.delete).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -80,43 +81,30 @@ describe('CallLogDao', () => {
     it('should bulkDelete in dao and viewDao', async () => {
       const mockKeys = ['mockKey'];
       await dao.bulkDelete(mockKeys);
-      expect(BaseDao.prototype.bulkDelete).toHaveBeenCalled();
-      expect(viewDao.bulkDelete).toHaveBeenCalled();
+      expect(viewDao.bulkDelete).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('update', () => {
     it('should update item in dao and viewDao', async () => {
-      dao['_updateCallLogView'] = jest.fn();
-
       await dao.update(mockCallLog);
-      expect(BaseDao.prototype.update).toHaveBeenCalled();
-      expect(dao['_updateCallLogView']).toHaveBeenCalled();
-    });
-
-    it('should update array in dao and viewDao', async () => {
-      dao['_bulkUpdateCallLogView'] = jest.fn();
-
-      await dao.update([mockCallLog]);
-      expect(BaseDao.prototype.update).toHaveBeenCalled();
-      expect(dao['_bulkUpdateCallLogView']).toHaveBeenCalled();
+      expect(viewDao.update).toHaveBeenCalled();
+      expect(viewDao.toPartialViewItem).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('bulkUpdate', () => {
     it('should bulkUpdate array in dao and viewDao', async () => {
-      dao['_bulkUpdateCallLogView'] = jest.fn();
-
       await dao.bulkUpdate([mockCallLog]);
-      expect(BaseDao.prototype.bulkUpdate).toHaveBeenCalled();
-      expect(dao['_bulkUpdateCallLogView']).toHaveBeenCalled();
+      expect(viewDao.bulkUpdate).toHaveBeenCalled();
+      expect(viewDao.toPartialViewItem).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('queryCallLogs', () => {
     it('should queryCallLogs in viewDao', async () => {
       await dao.queryCallLogs({});
-      expect(viewDao.queryCallLogs).toHaveBeenCalled();
+      expect(viewDao.queryCallLogs).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -128,7 +116,7 @@ describe('CallLogDao', () => {
         .mockReturnValue({ count: jest.fn().mockReturnValue(mockCount) });
 
       expect(await dao.callLogCount()).toEqual(mockCount);
-      expect(dao.createQuery).toHaveBeenCalled();
+      expect(dao.createQuery).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -161,34 +149,6 @@ describe('CallLogDao', () => {
 
       expect(await dao['_fetchCallLogsFunc']([])).toEqual(mockCallLog);
       expect(dao.batchGet).toHaveBeenCalled();
-    });
-  });
-
-  describe('_putCallLogView', () => {
-    it('should put in viewDao', async () => {
-      await dao['_putCallLogView'](mockCallLog);
-      expect(viewDao.put).toHaveBeenCalled();
-    });
-  });
-
-  describe('_bulkPutCallLogView', () => {
-    it('should bulkPut in viewDao', async () => {
-      await dao['_bulkPutCallLogView']([mockCallLog]);
-      expect(viewDao.bulkPut).toHaveBeenCalled();
-    });
-  });
-
-  describe('_updateCallLogView', () => {
-    it('should update in viewDao', async () => {
-      await dao['_updateCallLogView'](mockCallLog, true);
-      expect(viewDao.update).toHaveBeenCalled();
-    });
-  });
-
-  describe('_bulkUpdateCallLogView', () => {
-    it('should bulkUpdate in viewDao', async () => {
-      await dao['_bulkUpdateCallLogView']([mockCallLog], true);
-      expect(viewDao.bulkUpdate).toHaveBeenCalled();
     });
   });
 

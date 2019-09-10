@@ -12,6 +12,7 @@ import {
   palette,
   width,
 } from '../../../foundation/utils/styles';
+import { StyledAvatar } from '../../Avatar';
 
 const JuiDialogHeaderMeta = styled.div`
   display: flex;
@@ -23,7 +24,15 @@ const JuiDialogHeaderMeta = styled.div`
   }
 `;
 
-const JuiDialogHeaderMetaLeft = styled.div``;
+const JuiDialogHeaderMetaLeft = styled.div`
+  ${StyledAvatar} {
+    :hover,
+    :active {
+      cursor: default;
+      opacity: 1;
+    }
+  }
+`;
 
 const DialogHeaderMetaRightTitle = styled.h3`
   ${typography('body1')};

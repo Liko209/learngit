@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
-import { service, mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { IdModel, ModelIdType, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
@@ -10,9 +10,9 @@ import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import IUsedCache from './IUsedCache';
 import { EntityBaseService } from 'sdk/framework/service';
+import { EVENT_TYPES } from 'sdk/service/constants';
 
 const modelProvider = new ModelProvider();
-const { EVENT_TYPES } = service;
 /* eslint-disable */
 export default class MultiEntityMapStore<
   T extends IdModel<IdType>,
@@ -272,6 +272,17 @@ export default class MultiEntityMapStore<
   getByServiceSynchronously(id: IdType): T | null {
     if (this._service && this._service.getSynchronously) {
       return this._service.getSynchronously(id);
+    }
+
+    return null;
+  }
+
+  find(identifier: (entity: K) => boolean) {
+    const values = this._data.values()
+    for (const val of values) {
+      if (identifier(val)) {
+        return val;
+      }
     }
 
     return null;

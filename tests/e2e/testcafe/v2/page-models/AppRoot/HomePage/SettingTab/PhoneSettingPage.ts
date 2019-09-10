@@ -41,24 +41,24 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   get defaultAppSelectBox() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBox-defaultPhoneApp',
+      'selectBox-defaultPhoneApp',
       this.generalSection,
     );
   }
 
   get phoneAppDropDownItems() {
-    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+    return this.getSelectorByAutomationClass('selectBoxItem');
   }
 
   get ringCentralAppItem() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBoxItem-defaultPhoneApp-glip',
+      'selectBoxItem-defaultPhoneApp-glip',
     );
   }
 
   get ringCentralPhoneItem() {
     return this.getSelectorByAutomationId(
-      'settingItemSelectBoxItem-defaultPhoneApp-ringcentral',
+      'selectBoxItem-defaultPhoneApp-ringcentral',
     );
   }
 
@@ -85,11 +85,11 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection);
+    return this.getSelectorByAutomationId('selectBox-callerID', this.generalSection);
   }
 
   get callerIDDropDownItems() {
-    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+    return this.getSelectorByAutomationClass('selectBoxItem');
   }
 
   get updateRegionDialog() {
@@ -157,6 +157,10 @@ export class PhoneSettingPage extends BaseWebComponent {
 
   async clickDefaultAppSelectBox() {
     await this.t.click(this.defaultAppSelectBox);
+  }
+
+  async hoverRingCentralPhone() {
+    await this.t.hover(this.ringCentralPhoneItem);
   }
 
   async clickRingCentralPhone() {

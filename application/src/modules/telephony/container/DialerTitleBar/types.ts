@@ -10,6 +10,8 @@ type DialerTitleBarViewProps = {
   timing: string;
   isDialer: boolean;
   isForward: boolean;
+  isTransfer: boolean;
+  canCompleteTransfer: boolean;
 };
 
 export { DialerTitleBarProps, DialerTitleBarViewProps };

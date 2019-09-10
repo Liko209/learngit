@@ -5,12 +5,12 @@
  */
 
 import fs from 'fs';
-import { itForSdk } from 'shield/sdk';
-import { h } from 'shield/application';
+import { jit } from 'shield/sdk/SdkItFramework';
+import { h } from 'shield/application/it';
 
 jest.setTimeout(300 * 1000);
 
-itForSdk('Service Integration test', ({ helper, template, sdk }) => {
+jit('Service Integration test', ({ helper, template, sdk }) => {
   const glipData = helper.useInitialData(template.BASIC);
   const team1 = helper
     .glipDataHelper()

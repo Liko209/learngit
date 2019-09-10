@@ -5,7 +5,6 @@
 import { DebugGatherer } from ".";
 import { SearchPage } from "../pages";
 import { Config } from "../config";
-import { PptrUtils } from "../utils";
 import { FileService } from "../services";
 import { globals } from '../globals';
 
@@ -20,13 +19,15 @@ class SearchGatherer extends DebugGatherer {
     'scroll_search_post'
   ];
 
-  constructor(keywords: Array<string>) {
+  constructor() {
     super();
 
-    this.keywords = keywords;
+    this.keywords = Config.searchKeywords;
   }
 
   async _beforePass(passContext) {
+    await this.disableCache(passContext);
+
     await this.gathererConsole(this.metricKeys, passContext);
   }
 
@@ -34,20 +35,21 @@ class SearchGatherer extends DebugGatherer {
     let searchPage = new SearchPage(passContext);
 
     // pre loaded
-    await this.search(searchPage, Config.sceneRepeatCount);
+    await this.search(searchPage, Config.sceneRepeatCount, passContext.driver);
   }
 
   async _afterPass(passContext) {
     let searchPage = new SearchPage(passContext);
 
+    globals.startCollectProcessInfo();
     this.beginGathererConsole();
 
-    let filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(passContext.driver));
+    let filePath = await FileService.trackingHeapObjects(passContext.driver);
     globals.pushMemoryFilePath(filePath);
     // switch conversation
-    await this.search(searchPage, Config.sceneRepeatCount);
+    await this.search(searchPage, Config.sceneRepeatCount, passContext.driver);
 
-    filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(passContext.driver));
+    filePath = await FileService.trackingHeapObjects(passContext.driver);
     globals.pushMemoryFilePath(filePath);
 
     this.endGathererConsole();
@@ -63,7 +65,7 @@ class SearchGatherer extends DebugGatherer {
     return result;
   }
 
-  async search(page: SearchPage, searchCount: number = -1) {
+  async search(page: SearchPage, searchCount: number = -1, driver) {
     if (!this.keywords || this.keywords.length <= 1) {
       this.logger.warn("keywords size is less than 1, switch fail!");
       return;
@@ -85,7 +87,7 @@ class SearchGatherer extends DebugGatherer {
 
       await page.switchAllSeachTab();
 
-      await page.scrollMessageTab();
+      // await page.scrollMessageTab();
 
       await page.closeSearch();
 

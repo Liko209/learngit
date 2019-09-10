@@ -102,22 +102,6 @@ const JuiProfileDialogContentMemberListItemName = styled('p')`
   ${ellipsis()}
 `;
 
-const JuiProfileDialogContentMemberListItemAdmin = styled.span`
-  color: ${palette('common', 'white')};
-  border-radius: ${spacing(2)};
-  text-align: center;
-  background-color: ${palette('secondary', 'main')};
-  padding: ${spacing(0, 1.5)};
-  ${typography('caption1')};
-  margin-left: ${spacing(3)};
-`;
-
-const JuiProfileDialogContentMemberListItemGuest = styled(
-  JuiProfileDialogContentMemberListItemAdmin,
-)`
-  background-color: ${grey('400')};
-`;
-
 const JuiProfileDialogContentMemberShadow = styled('div')`
   background: white;
   border-radius: ${spacing(0, 0, 1, 1)};
@@ -139,8 +123,6 @@ export {
   JuiProfileDialogContentMemberList,
   JuiProfileDialogContentMemberListItem,
   JuiProfileDialogContentMemberListItemName,
-  JuiProfileDialogContentMemberListItemAdmin,
-  JuiProfileDialogContentMemberListItemGuest,
   JuiProfileDialogContentMemberShadow,
   JuiProfileDialogContentMemberListItemRightWrapper,
 };

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { dataAnalysis } from 'foundation';
+import { dataAnalysis } from 'foundation/analysis';
 
 const name = 'Jup_Web/DT_phone_call_media_report';
 

@@ -4,12 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { getGlobalValue } from '@/store/utils';
+import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { MemberHeaderViewProps } from './types';
-import { MembersViewModel } from '../Members.ViewModel';
+import GroupModel from '@/store/models/Group';
+import { Group } from 'sdk/module/group/entity';
+import { ENTITY_NAME } from '@/store';
+import { StoreViewModel } from '@/store/ViewModel';
+import { COUNT_TO_SHOW_SEARCH } from '../constants';
+import { MemberHeaderViewProps, MemberHeaderProps } from './types';
 
-class MemberHeaderViewModel extends MembersViewModel
+class MemberHeaderViewModel extends StoreViewModel<MemberHeaderProps>
   implements MemberHeaderViewProps {
   @computed
   get hasShadow() {
@@ -18,7 +22,19 @@ class MemberHeaderViewModel extends MembersViewModel
 
   @computed
   get isCurrentUserHasPermissionAddMember() {
-    return this.group.isCurrentUserHasPermissionAddMember;
+    return this.group.isCurrentUserHasPermissionAddMember && this.group.isMember;
+  }
+
+  @computed
+  get group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
+  }
+
+  @computed
+  get hasSearch() {
+    return (
+      this.group.members && this.group.members.length > COUNT_TO_SHOW_SEARCH
+    );
   }
 }
 export { MemberHeaderViewModel };

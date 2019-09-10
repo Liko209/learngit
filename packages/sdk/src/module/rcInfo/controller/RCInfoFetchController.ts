@@ -25,7 +25,7 @@ import {
   CountryRecord,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { RC_INFO } from 'sdk/service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
@@ -361,6 +361,11 @@ class RCInfoFetchController {
     return (await this.rcInfoUserConfig.getExtensionInfo()) || undefined;
   }
 
+  async getUserEmail(): Promise<string | undefined> {
+    const extensionInfo = await this.getRCExtensionInfo();
+    return extensionInfo && _.get(extensionInfo, 'contact.email');
+  }
+  
   async getRCExtensionId(): Promise<number | undefined> {
     const extensionInfo = await this.getRCExtensionInfo();
     return extensionInfo && extensionInfo.id;

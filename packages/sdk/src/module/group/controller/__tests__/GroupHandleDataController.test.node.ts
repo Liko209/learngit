@@ -14,7 +14,6 @@ import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
 import { Post } from '../../../post/entity';
 import { Profile } from '../../../profile/entity';
-import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
@@ -22,7 +21,6 @@ import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../sync';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { GroupConfigService } from 'sdk/module/groupConfig';
 
 jest.mock('sdk/module/groupConfig');
 jest.mock('../../../../module/config');
@@ -66,6 +64,16 @@ jest.mock('../../../../api/glip/group', () => {
     requestGroupById: jest.fn(),
   };
 });
+
+const groupConfigService = {
+  handleMyMostRecentPostChange: jest.fn(),
+  getById: jest.fn(),
+}
+
+const stateService = {
+  getAllGroupStatesFromLocal: jest.fn(),
+  handleGroupChangeForTotalUnread: jest.fn(),
+}
 
 function generateFakeGroups(
   count: number,
@@ -114,10 +122,8 @@ function clearMocks() {
 
 describe('GroupHandleDataController', () => {
   let entitySourceController: EntitySourceController<any>;
-  let stateService: StateService;
   let personService: PersonService;
   let profileService: ProfileService;
-  let groupConfigService: GroupConfigService;
   let groupService = {
     getGroupsByIds: jest.fn(),
     isValid: jest.fn(),
@@ -126,13 +132,11 @@ describe('GroupHandleDataController', () => {
 
   function setUp() {
     entitySourceController = new EntitySourceController<Group>(
-      null as any,
-      null as any,
+      groupService as any,
+      entitySourceController,
     );
-    stateService = new StateService(null as any);
     personService = new PersonService();
     profileService = new ProfileService();
-    groupConfigService = new GroupConfigService();
     groupService = {
       getGroupsByIds: jest.fn(),
       isValid: jest.fn(),

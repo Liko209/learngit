@@ -51,6 +51,10 @@ describe('Media', () => {
     const media = new Media(baseMediaOpts);
     expect(media).toBeInstanceOf(Media);
   });
+  it('should catch error when not track', () => {
+    jest.spyOn(trackManager, 'getTrack').mockReturnValue(null);
+    expect(() => new Media(baseMediaOpts)).toThrowError();
+  });
   describe('create media with options', () => {
     it('should setup default options', () => {
       const media = new Media(baseMediaOpts);
@@ -60,7 +64,7 @@ describe('Media', () => {
       expect(media.volume).toEqual(1);
       expect(media.muted).toBeFalsy();
       expect(media.loop).toBeFalsy();
-      expect(media.outputDevices).toEqual([]);
+      expect(media.outputDevices).toEqual(null);
     });
     it('should set loop when setup loop', () => {
       const media = new Media(
@@ -185,6 +189,19 @@ describe('Media', () => {
       expect(noUseTrack.currentMediaId).toEqual(baseMediaOpts.id);
       expect(noUseTrack.playing).toBeTruthy();
     });
+    it('should catch error when play with empty source', () => {
+      const useTrack = new MediaTrack(useTrackOpts);
+      jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
+      const media = new Media({
+        src: [],
+        id: 'baseId',
+        trackId: 'useTrackId',
+      });
+      expect(useTrack.currentMediaId).toEqual(media.id);
+      expect(() => {
+        media.play()
+      }).toThrowError();
+    })
   });
   describe('media loop play', () => {
     beforeEach(() => {
@@ -368,8 +385,8 @@ describe('Media', () => {
       expect(media.src).toEqual(newSrc);
       expect(media.playing).toBeFalsy();
       expect(media.currentTime).toEqual(0);
-    })
-  })
+    });
+  });
   describe('media set mute', () => {
     it('should track and media set mute when media setMute called and media in track', () => {
       const useTrack = new MediaTrack(useTrackOpts);
@@ -400,22 +417,22 @@ describe('Media', () => {
       jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
       const media = new Media(baseMediaOpts);
       expect(media.volume).toEqual(1);
-      expect(useTrack.volume).toEqual(1);
+      expect(useTrack.currentMediaVolume).toEqual(1);
 
       media.setVolume(0.5);
       expect(media.volume).toEqual(0.5);
-      expect(useTrack.volume).toEqual(0.5);
+      expect(useTrack.currentMediaVolume).toEqual(0.5);
     });
     it('should media set volume and track not set volume when media setVolume called and media not in track', () => {
       const noUseTrack = new MediaTrack(noUseTrackOpts);
       jest.spyOn(trackManager, 'getTrack').mockReturnValue(noUseTrack);
       const media = new Media(baseMediaOpts);
       expect(media.volume).toEqual(1);
-      expect(noUseTrack.volume).toEqual(1);
+      expect(noUseTrack.currentMediaVolume).toEqual(1);
 
       media.setVolume(0.5);
       expect(media.volume).toEqual(0.5);
-      expect(noUseTrack.volume).toEqual(1);
+      expect(noUseTrack.currentMediaVolume).toEqual(1);
     });
   });
   describe('media set loop', () => {
@@ -479,6 +496,15 @@ describe('Media', () => {
       expect(media.outputDevices).toEqual(allDevices);
       expect(useTrack.outputDevices).toEqual(allDevices);
     });
+    it('should set none output device when media setOutputDevices null called and media in track', () => {
+      const useTrack = new MediaTrack(useTrackOpts);
+      jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
+
+      const media = new Media(baseMediaOpts);
+      media.setOutputDevices(null);
+      expect(media.outputDevices).toEqual(null);
+      expect(useTrack.outputDevices).toEqual(null);
+    });
     it('should set output device when media setOutputDevices called and media not in track', () => {
       const noUseTrack = new MediaTrack(noUseTrackOpts);
       jest.spyOn(trackManager, 'getTrack').mockReturnValue(noUseTrack);
@@ -487,7 +513,7 @@ describe('Media', () => {
       const media = new Media(baseMediaOpts);
       media.setOutputDevices(devices);
       expect(media.outputDevices).toEqual(devices);
-      expect(noUseTrack.outputDevices).toEqual([]);
+      expect(noUseTrack.outputDevices).toEqual(null);
     });
     it('should set all output device when media setOutputDevices all called and media not in track', () => {
       const allDevices = ['device1', 'device2', 'device3'];
@@ -500,7 +526,16 @@ describe('Media', () => {
       const media = new Media(baseMediaOpts);
       media.setOutputDevices('all');
       expect(media.outputDevices).toEqual(allDevices);
-      expect(noUseTrack.outputDevices).toEqual([]);
+      expect(noUseTrack.outputDevices).toEqual(null);
+    });
+    it('should set none output device when media setOutputDevices null called and media not in track', () => {
+      const noUseTrack = new MediaTrack(noUseTrackOpts);
+      jest.spyOn(trackManager, 'getTrack').mockReturnValue(noUseTrack);
+
+      const media = new Media(baseMediaOpts);
+      media.setOutputDevices(null);
+      expect(media.outputDevices).toEqual(null);
+      expect(noUseTrack.outputDevices).toEqual(null);
     });
   });
   describe('media on event', () => {
@@ -644,6 +679,39 @@ describe('Media', () => {
       expect(useTrack.sounds.length).toEqual(0);
       expect(media.currentTime).toEqual(0);
     });
+    it('should call onReset when media bind onReset event', () => {
+      const useTrack = new MediaTrack(useTrackOpts);
+      jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
+      const media = new Media(baseMediaOpts);
+      expect(useTrack.currentMediaId).toEqual(media.id);
+
+      const onResetMockFun1 = jest.fn();
+      const onResetMockFun2 = jest.fn();
+      media.onReset(() => {
+        onResetMockFun1();
+      })
+      media.onReset(() => {
+        onResetMockFun2();
+      })
+
+      media.dispose();
+      expect(onResetMockFun1).toBeCalled();
+      expect(onResetMockFun2).toBeCalled();
+    })
+    it('should call onDisposed when media bind onDisposed event', () => {
+      const useTrack = new MediaTrack(useTrackOpts);
+      jest.spyOn(trackManager, 'getTrack').mockReturnValue(useTrack);
+      const media = new Media(baseMediaOpts);
+      expect(useTrack.currentMediaId).toEqual(media.id);
+
+      const onDisposedMockFun = jest.fn();
+      media.onDisposed(() => {
+        onDisposedMockFun();
+      })
+
+      media.dispose();
+      expect(onDisposedMockFun).toBeCalled();
+    })
   });
   describe('get current time', () => {
     beforeEach(() => {

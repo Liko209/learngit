@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RouteProps } from 'react-router-dom';
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 
 type NavConfig = {
   url: string | (() => string);
@@ -13,7 +13,6 @@ type NavConfig = {
   title: string | Promise<string>;
   placement: 'top' | 'bottom';
   umi?: JSX.Element;
-  disable?: boolean | Promise<boolean>;
 };
 
 type RouteConfig = {

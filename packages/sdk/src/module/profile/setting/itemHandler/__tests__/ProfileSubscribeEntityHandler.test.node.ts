@@ -25,7 +25,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe.skip('ProfileSubscribeEntityHandler', () => {
+describe('ProfileSubscribeEntityHandler', () => {
   let profileService: ProfileService;
   let accountService: AccountService;
   let settingHandler: ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>;

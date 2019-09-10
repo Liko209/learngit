@@ -33,6 +33,9 @@ import { SequenceProcessorHandler, IProcessor } from 'sdk/framework/processor';
 import { IdModel } from 'sdk/framework/model';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { Call, CALL_STATE } from '../entity';
+import { Presence } from 'sdk/module/presence/entity';
+import { AccountService } from 'sdk/module/account';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
 const MAX_CALL_CACHE_CNT = 30;
 const MODULE_NAME = 'CallSwitchController';
@@ -81,6 +84,8 @@ class CallSwitchController {
   private _endedCalls: CallUniqueRecord[] = [];
   private _currentActiveCalls: ActiveCallWithSequence[] = [];
   private _lastBannerIsShown = false;
+  private _currentUserGlipId: number;
+
   /* eslint-disable */
   private _updateSwitchCallQueue = new SequenceProcessorHandler({
     name: MODULE_NAME,
@@ -106,9 +111,14 @@ class CallSwitchController {
 
     notificationCenter.on(RC_INFO.EXTENSION_INFO, this._checkSubscription);
     notificationCenter.on(ENTITY.CALL, this._handleCallStateChanged);
+    notificationCenter.on(ENTITY.PRESENCE, this._handleGlipPresenceChange);
     notificationCenter.on(
       SERVICE.WAKE_UP_FROM_SLEEP,
       this._clearAndSyncRCPresence,
+    );
+    notificationCenter.on(
+      SERVICE.RC_EVENT_SUBSCRIPTION.SUBSCRIPTION_CONNECTED,
+      this._handleRCSubscriptionConnected,
     );
     notificationCenter.on(WINDOW.ONLINE, this._clearAndSyncRCPresence);
     await this._checkSubscription();
@@ -485,27 +495,61 @@ class CallSwitchController {
     return call;
   }
 
+  private _handleRCSubscriptionConnected = async () => {
+    if (this._lastBannerIsShown) {
+      mainLogger
+        .tags(MODULE_NAME)
+        .log('sync user rc presence when rc subscription connected');
+      await this._syncLatestUserPresenceDebounce();
+    }
+  };
+
+  private _handleGlipPresenceChange = (
+    payload: NotificationEntityPayload<Presence>,
+  ) => {
+    if (!this._lastBannerIsShown) {
+      return;
+    }
+
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      const currentUserPresence = payload.body.entities.get(this._userGlipId);
+      if (
+        currentUserPresence &&
+        currentUserPresence.presence !== PRESENCE.ONCALL
+      ) {
+        this._syncLatestPresenceWhenHasBanner();
+      }
+    }
+  };
+
   private _handleCallStateChanged = (
     payload: NotificationEntityPayload<Call>,
   ) => {
     if (payload.type === EVENT_TYPES.UPDATE) {
       const call: Call[] = Array.from(payload.body.entities.values());
-      const hasCallEnded = call.some((item: Call) => {
-        return item.call_state === CALL_STATE.DISCONNECTED;
+      let hasEndedCall = false;
+      call.forEach((item: Call) => {
+        if (this._isValidEndedCall(item)) {
+          this._onCallEnded(item);
+          hasEndedCall = true;
+        }
       });
 
-      if (hasCallEnded) {
+      if (hasEndedCall) {
         this._updateBannerStatus();
-        this._syncLatestPresenceAfterCallEnd();
+        this._syncLatestPresenceWhenHasBanner();
       }
     }
   };
 
-  private _syncLatestPresenceAfterCallEnd = _.debounce(async () => {
-    mainLogger
-      .tags(MODULE_NAME)
-      .log('sync user rc presence after call ended + 5s');
-    await this._syncLatestUserPresence();
+  private _syncLatestPresenceWhenHasBanner = _.debounce(async () => {
+    if (this._lastBannerIsShown) {
+      mainLogger
+        .tags(MODULE_NAME)
+        .log('sync user rc presence after call ended + 5s when has banner');
+
+      await this._syncLatestUserPresence();
+    }
   }, SYNC_RC_PRESENCE_AFTER_CALL_DELAY);
 
   private _clearAndSyncRCPresence = () => {
@@ -517,11 +561,9 @@ class CallSwitchController {
     this._syncLatestUserPresenceDebounce();
   };
 
-  private _syncLatestUserPresenceDebounce = _.debounce(
-    async () => {
-      await this._syncLatestUserPresence();
-    },
-    SYNC_RC_PRESENCE_DEBOUNCE_TIME);
+  private _syncLatestUserPresenceDebounce = _.debounce(async () => {
+    await this._syncLatestUserPresence();
+  }, SYNC_RC_PRESENCE_DEBOUNCE_TIME);
 
   private _syncLatestUserPresence = async () => {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
@@ -551,24 +593,26 @@ class CallSwitchController {
     }
   }
 
-  async onCallEnded(callId: number) {
-    const callEntity = await this._telephonyService.getById(callId);
+  private _onCallEnded(callEntity: Call) {
     mainLogger.tags(MODULE_NAME).log('onCallEnded, call is', callEntity);
-    if (
+    const record = {
+      id: callEntity.id,
+      callId: callEntity.call_id!,
+      fromTag: callEntity.from_tag!,
+      toTag: callEntity.to_tag!,
+    };
+    this._removeExistCallByCallData(record);
+    this._recordEndedCalls(record);
+  }
+
+  private _isValidEndedCall(callEntity: Call) {
+    return !!(
       callEntity &&
+      callEntity.call_state === CALL_STATE.DISCONNECTING &&
       callEntity.call_id &&
       callEntity.from_tag &&
       callEntity.to_tag
-    ) {
-      const record = {
-        id: callEntity.id,
-        callId: callEntity.call_id,
-        fromTag: callEntity.from_tag,
-        toTag: callEntity.to_tag,
-      };
-      this._removeExistCallByCallData(record);
-      this._recordEndedCalls(record);
-    }
+    );
   }
 
   private _removeExistCallByCallData(record: CallUniqueRecord) {
@@ -587,6 +631,17 @@ class CallSwitchController {
       fromTag: (call.sipData && call.sipData.fromTag) || '',
       toTag: (call.sipData && call.sipData.toTag) || '',
     };
+  }
+
+  private get _userGlipId() {
+    if (!this._currentUserGlipId) {
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      const accountConfig = accountService.userConfig;
+      this._currentUserGlipId = accountConfig.getGlipUserId();
+    }
+    return this._currentUserGlipId;
   }
 }
 

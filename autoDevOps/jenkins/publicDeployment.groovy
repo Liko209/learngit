@@ -113,7 +113,7 @@ def buildStage(Context context) {
         sh "sed -i 's/{{buildCommit}}/${context.gitHead.substring(0,9)}/;s/{{buildTime}}/${context.timestamp}/' static/js/versionInfo.*.chunk.js || true"
         sh """rm -f precache-manifest.js.bak || true && cp -f precache-manifest.*.js precache-manifest.js.bak &&  awk -v rev="    \\"revision\\": \\"${context.timestamp}\\"," '/versionInfo/{sub(/.+/,rev,last)} NR>1{print last} {last=\$0} END {print last}' precache-manifest.js.bak > precache-manifest.*.js"""
         // in order to support gzip_static, we should create gz file after build, detail: FIJI-7895
-        sh """find . -type f -size +150c -name "*.css" -o -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.map" -o -name "*.svg"  -o -name "*.xml" | xargs -I{} bash -c 'gzip -9 < {} > {}.gz'"""
+        sh """find . -type f -size +150c \\( -name "*.wasm" -o -name "*.css" -o -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.map" -o -name "*.svg"  -o -name "*.xml" \\) | xargs -I{} bash -c 'gzip -9 < {} > {}.gz'"""
     }
     // make package
     context.buildPackageName = "${context.gitBranch}-${context.gitHead}-${context.timeLabel}.tar.gz".toString()

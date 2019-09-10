@@ -37,6 +37,7 @@ const defaultConfig: ApiConfig = {
     },
   },
   data_collection: '',
+  segment: '',
 };
 
 export { defaultConfig };

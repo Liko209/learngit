@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Route, withRouter } from 'react-router-dom';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { PhoneTabRouter } from './PhoneTabRouter';
 import { PhoneTabProps } from './types';

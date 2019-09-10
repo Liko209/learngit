@@ -41,7 +41,7 @@ describe('SelectSettingItemView', () => {
     jest.restoreAllMocks();
   });
 
-  describe('_handleChange()', () => {
+  describe('handleChange()', () => {
     it('should display error when failed to change [JPT-1784]', async () => {
       const { view } = setup({
         saveSetting: jest
@@ -51,7 +51,7 @@ describe('SelectSettingItemView', () => {
           ),
       });
 
-      await view._handleChange({ target: { value: 'B' } });
+      await view.handleChange({ target: { value: 'B' } });
 
       expect(Notification.flashToast).toHaveBeenCalled();
     });

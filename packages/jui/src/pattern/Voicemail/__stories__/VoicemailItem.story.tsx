@@ -15,28 +15,30 @@ import {
   JuiExpansionPanel,
   JuiExpansionPanelSummary,
   JuiExpansionPanelDetails,
-} from '../../../components/ExpansionPanel';
+} from 'rcui/components/ExpansionPanel';
 
 const knobs = {
   isLoading: () => boolean('isLoading', false),
   showPreivew: () => boolean('showPreivew', true),
-  transcription: () => text('transcription', `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-  malesuada lacus ex, sit amet blandit leo lobortis eget.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.`),
+  transcription: () =>
+    text(
+      'transcription',
+      `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+  malesuada lacus ex, sit amet blandit leo lobortis eget.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.`,
+    ),
 };
 
-storiesOf('Pattern/Voicemail', module)
-  .add('VoicemailItem', () => (
-    <JuiExpansionPanel>
-      <JuiExpansionPanelSummary>
-        <JuiTranscriptionPreview
-          isLoading={knobs.isLoading()}
-          showPreivew={knobs.showPreivew()}
-          transcription={knobs.transcription()}
-        />
-      </JuiExpansionPanelSummary>
-      <JuiExpansionPanelDetails>
-        <JuiTranscriptionDetails transcription={knobs.transcription()} />
-      </JuiExpansionPanelDetails>
-    </JuiExpansionPanel>
-  ))
-  ;
+storiesOf('Pattern/Voicemail', module).add('VoicemailItem', () => (
+  <JuiExpansionPanel>
+    <JuiExpansionPanelSummary>
+      <JuiTranscriptionPreview
+        isLoading={knobs.isLoading()}
+        showPreivew={knobs.showPreivew()}
+        transcription={knobs.transcription()}
+      />
+    </JuiExpansionPanelSummary>
+    <JuiExpansionPanelDetails>
+      <JuiTranscriptionDetails transcription={knobs.transcription()} />
+    </JuiExpansionPanelDetails>
+  </JuiExpansionPanel>
+));

@@ -40,6 +40,18 @@ describe('get doc title', () => {
     });
   });
 
+  describe('get contacts title [JPT-2799]', () => {
+    it('should return all contacts when go to all contacts', async () => {
+      const title = await getDocTitle('/contacts/all-contacts');
+      expect(title).toEqual('contact.Contacts - contact.tab.allContacts');
+    });
+
+    it('should return company when go to company', async () => {
+      const title = await getDocTitle('/contacts/company');
+      expect(title).toEqual('contact.Contacts - contact.tab.company');
+    });
+  });
+
   describe('get others title', () => {
     it('should return current page title title when get diff page', async () => {
       let title = await getDocTitle('/dashboard');
@@ -56,7 +68,15 @@ describe('get doc title', () => {
       title = await getDocTitle('/settings/general');
       expect(title).toEqual('setting.Settings - setting.general');
       title = await getDocTitle('/settings/notification_and_sounds');
-      expect(title).toEqual('setting.Settings - setting.notificationAndSounds.title');
+      expect(title).toEqual(
+        'setting.Settings - setting.notificationAndSounds.title',
+      );
+    });
+  });
+
+  describe('get undefined title', () => {
+    it('should get empty title when route not defined url', async () => {
+      expect(await getDocTitle('/xxxx')).toEqual('');
     });
   });
 });

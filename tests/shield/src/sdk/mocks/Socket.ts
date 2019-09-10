@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { INetworkRequestExecutorListener } from 'foundation/network/network';
-import { InstanceManager } from '../mocks/server/InstanceManager';
-import { ProxyServer } from '../mocks/server/ProxyServer';
+import { InstanceManager } from 'shield/sdk/server/InstanceManager';
+import { ProxyServer } from 'shield/sdk/server/ProxyServer';
 import { SocketRequest } from 'foundation/network/client/socket';
 
 export default class Socket {

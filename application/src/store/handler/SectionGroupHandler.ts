@@ -23,7 +23,8 @@ import ProfileModel from '@/store/models/Profile';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import _ from 'lodash';
 import { autorun, computed, reaction, action } from 'mobx';
-import { mainLogger, PerformanceTracer } from 'sdk';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { MAINTAIN_DIRECTION, QUERY_DIRECTION } from 'sdk/dao';
 import { AccountService } from 'sdk/module/account';
 import { GroupService } from 'sdk/module/group';
@@ -41,7 +42,7 @@ import {
 } from 'sdk/service/notificationCenter';
 import { TDelta } from '../base/fetch/types';
 import { STORE_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
+import { PreFetchConversationDataHandler } from './PreFetchConversationDataHandler';
 
 function groupTransformFunc(data: Group): ISortableModel {
   const {
@@ -513,13 +514,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (deleted.length) {
       const trulyDeleted = _.differenceBy(deleted, addedIds);
       trulyDeleted.forEach((groupId: number) => {
-        preFetchConversationDataHandler.removeCache(groupId);
+        PreFetchConversationDataHandler.getInstance().removeCache(groupId);
       });
     }
 
     if (updated.length) {
       updated.forEach((group: ISortableModel) => {
-        if (!preFetchConversationDataHandler.isGroupCachedBefore(group.id)) {
+        if (!PreFetchConversationDataHandler.getInstance().isGroupCachedBefore(group.id)) {
           this._addToFetchProcessor(group.id);
         }
       });
@@ -529,7 +530,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (added.length) {
       const trulyAdded = _.differenceBy(addedIds, deleted);
       trulyAdded.forEach((groupId: number) => {
-        if (!preFetchConversationDataHandler.isGroupCachedBefore(groupId)) {
+        if (!PreFetchConversationDataHandler.getInstance().isGroupCachedBefore(groupId)) {
           this._addToFetchProcessor(groupId);
         }
       });
@@ -786,7 +787,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _addToFetchProcessor(groupId: number) {
-    preFetchConversationDataHandler.addProcessor(groupId);
+    PreFetchConversationDataHandler.getInstance().addProcessor(groupId);
   }
 
   private _getPerformanceKey(sectionType: SECTION_TYPE): string {

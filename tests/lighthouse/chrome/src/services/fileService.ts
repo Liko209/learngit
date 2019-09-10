@@ -9,6 +9,7 @@ import * as FormData from 'form-data';
 import { LogUtils } from '../utils';
 import { Config } from '../config';
 import * as uuid from 'uuid/v4';
+import * as extract from "extract-zip";
 
 const logger = LogUtils.getLogger(__filename);
 
@@ -134,18 +135,22 @@ class FileService {
    * @description: save report into disk
    */
   static async saveReportIntoDisk(report: any, fileName: string) {
-    let reportPath = path.join(REPORT_DIR_PATH, `${fileName}.html`);
-    fs.writeFileSync(reportPath, report);
-    logger.info(`report has saved.[${reportPath}]`);
+    if (report) {
+      let reportPath = path.join(REPORT_DIR_PATH, `${fileName}.html`);
+      fs.writeFileSync(reportPath, report);
+      logger.info(`report has saved.[${reportPath}]`);
+    }
   }
 
   /**
    * @description: save artifacts into disk
    */
   static async saveArtifactsIntoDisk(artifacts: any, fileName: string) {
-    let artifactsPath = path.join(REPORT_DIR_PATH, `${fileName}.artifacts.json`);
-    fs.writeFileSync(artifactsPath, JSON.stringify(artifacts));
-    logger.info(`artifacts has saved.[${artifactsPath}]`);
+    if (artifacts) {
+      let artifactsPath = path.join(REPORT_DIR_PATH, `${fileName}.artifacts.json`);
+      fs.writeFileSync(artifactsPath, JSON.stringify(artifacts));
+      logger.info(`artifacts has saved.[${artifactsPath}]`);
+    }
   }
 
   /**
@@ -176,9 +181,11 @@ class FileService {
    * @description: save data into disk
    */
   static async saveDataIntoDisk(data: any, fileName: string) {
-    let dataPath = path.join(REPORT_DIR_PATH, `${fileName}.data.json`);
-    fs.writeFileSync(dataPath, JSON.stringify(data));
-    logger.info(`data has saved.[${dataPath}]`);
+    if (data) {
+      let dataPath = path.join(REPORT_DIR_PATH, `${fileName}.data.json`);
+      fs.writeFileSync(dataPath, JSON.stringify(data));
+      logger.info(`data has saved.[${dataPath}]`);
+    }
   }
 
   /**
@@ -200,7 +207,7 @@ class FileService {
   }
 
   /**
-  * @description: save dashboard into disk
+  * @description: save heap into disk
   */
   static async saveHeapIntoDisk(heap: string): Promise<string> {
     if (Config.takeHeapSnapshot) {
@@ -210,6 +217,127 @@ class FileService {
       return heapPath;
     } else {
       return '';
+    }
+  }
+
+  /**
+   * @description: save heap int disk
+   */
+  static async trackingHeapObjects(driver): Promise<string> {
+    let heapPath = path.join(HEAP_DIR_PATH, `${uuid()}.heapsnapshot`);
+
+    if (!Config.takeHeapSnapshot) {
+      return heapPath;
+    }
+
+    logger.info('tracking heap object...');
+
+    const listener = (data) => {
+      if (data.chunk) {
+        fs.appendFileSync(heapPath, data.chunk);
+      }
+    }
+
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.enable');
+
+    driver.on('HeapProfiler.addHeapSnapshotChunk', listener);
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.startTrackingHeapObjects');
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.stopTrackingHeapObjects');
+
+    driver.off('HeapProfiler.addHeapSnapshotChunk', listener);
+
+    driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
+    await driver.sendCommand('HeapProfiler.disable');
+
+    return heapPath;
+  }
+
+  public static async downloadZip(url: string, fileName: string): Promise<string> {
+
+    const dirPath = path.join(process.cwd(), 'downloads');
+    const filePath = path.join(dirPath, fileName);
+
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
+    }
+
+    if (fs.existsSync(filePath)) {
+      logger.info(`[${filePath}] is exists, skip download.`);
+      return filePath;
+    }
+
+    logger.info(`start download [${url}].`);
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    fs.writeFileSync(filePath, response.data);
+
+    return filePath;
+  }
+
+  public static async extractProfiles(source): Promise<string> {
+    const parentDir = path.join(process.cwd(), 'profiles');
+    if (!fs.existsSync(parentDir)) {
+      fs.mkdirSync(parentDir);
+    }
+
+    const targetDir = path.join(parentDir, uuid());
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir);
+    }
+
+    if (!fs.existsSync(source)) {
+      return targetDir;
+    }
+    let first = true, dir;
+    return new Promise((resolved) => {
+      extract(source, {
+        dir: targetDir,
+        defaultDirMode: 0x777,
+        defaultFileMode: 0x777,
+        onEntry: (entry) => {
+          if (first) {
+            first = false;
+            dir = entry.fileName
+          }
+        }
+      }, (err) => {
+        resolved(dir ? path.join(targetDir, dir) : targetDir);
+      });
+    });
+  }
+
+  public static cleanProfiles(): void {
+    const profilePath = path.join(process.cwd(), 'profiles');
+
+    if (!fs.existsSync(profilePath)) {
+      return;
+    }
+
+    fs.readdirSync(profilePath).forEach((entry) => {
+      if (entry.indexOf('-') < 0) {
+        return;
+      }
+
+      const entryPath = path.join(profilePath, entry);
+      if (fs.lstatSync(entryPath).isDirectory()) {
+        FileService.deleteDir(entryPath);
+      }
+    });
+  }
+
+  public static deleteDir(dirPath: string): void {
+    if (fs.existsSync(dirPath)) {
+      fs.readdirSync(dirPath).forEach((entry) => {
+        const entryPath = path.join(dirPath, entry);
+        if (fs.lstatSync(entryPath).isDirectory()) {
+          FileService.deleteDir(entryPath);
+        } else {
+          fs.unlinkSync(entryPath);
+        }
+      });
+      fs.rmdirSync(dirPath);
     }
   }
 }

@@ -6,11 +6,11 @@ import { Page } from './page';
 import { PptrUtils } from '../utils';
 
 class HomePage extends Page {
-  private topBarAvatar: string = 'div[data-test-automation-id="topBarAvatar"]';
+  private conversationItem: string = "div.conversation-list-section li.conversation-list-item";
 
   async waitForCompleted(): Promise<boolean> {
     let page = await this.page();
-    return await PptrUtils.waitForSelector(page, this.topBarAvatar);
+    return await PptrUtils.waitForSelector(page, this.conversationItem);
   }
 }
 

@@ -3,7 +3,8 @@
  * @Date: 2019-06-27 08:34:14
  * Copyright © RingCentral. All rights reserved.
  */
-import { AbstractModule, ModuleConfig } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { ModuleConfig } from 'framework/types';
 
 type IDummyService = {};
 

@@ -12,6 +12,7 @@ import {
   MediaEventType,
   DEFAULT_TRACK_ID,
   MediaDeviceType,
+  MediaTrackOptions,
 } from '@/interface/media';
 import { trackManager } from './TrackManager';
 import { MediaTrack } from './MediaTrack';
@@ -25,11 +26,12 @@ class Media implements IMedia {
   private _volume: number;
   private _loop: boolean;
   private _autoplay: boolean;
-  private _outputDevices: MediaDeviceType[];
+  private _outputDevices: MediaDeviceType[] | null;
   private _currentTime: number;
   private _useTrack: MediaTrack;
   private _events: MediaEvents[] = [];
-  private _onResetHandler: () => void;
+  private _onResetHandlers: (() => void)[] = [];
+  private _onDisposedHandler: () => void;
 
   constructor(options: MediaOptions) {
     this._setup(options);
@@ -108,7 +110,7 @@ class Media implements IMedia {
 
   setVolume(volume: number) {
     if (this._isMediaInTrack()) {
-      this._useTrack.setVolume(volume);
+      this._useTrack.setMediaVolume(volume);
     }
     this._volume = volume;
     return this;
@@ -122,20 +124,18 @@ class Media implements IMedia {
     return this;
   }
 
-  setOutputDevices(devices?: MediaOptions['outputDevices']) {
-    if (this._isMediaInTrack()) {
-      if (Array.isArray(devices)) {
-        this._useTrack.setOutputDevices(devices);
-        this._outputDevices = devices;
-      } else if (devices === 'all') {
-        const allOutputDevicesId = trackManager.getAllOutputDevicesId();
-        this._useTrack.setOutputDevices(allOutputDevicesId);
-        this._outputDevices = allOutputDevicesId;
-      }
-    } else if (Array.isArray(devices)) {
+  setOutputDevices(devices: MediaOptions['outputDevices']) {
+    const isMediaInTrack = this._isMediaInTrack();
+    if (Array.isArray(devices)) {
+      isMediaInTrack && this._useTrack.setOutputDevices(devices);
       this._outputDevices = devices;
     } else if (devices === 'all') {
-      this._outputDevices = trackManager.getAllOutputDevicesId();
+      const allOutputDevicesId = trackManager.getAllOutputDevicesId();
+      isMediaInTrack && this._useTrack.setOutputDevices(allOutputDevicesId);
+      this._outputDevices = allOutputDevicesId;
+    } else if (devices === null) {
+      isMediaInTrack && this._useTrack.setOutputDevices(null);
+      this._outputDevices = null;
     }
     return this;
   }
@@ -173,15 +173,24 @@ class Media implements IMedia {
       this._useTrack.dispose();
     }
     this._resetMedia();
+    this._onDisposedHandler && this._onDisposedHandler();
   }
 
   onReset(handler: () => void) {
-    this._onResetHandler = handler;
+    this._onResetHandlers.push(handler);
+  }
+
+  onDisposed(handler: () => void) {
+    this._onDisposedHandler = handler;
   }
 
   private _resetMedia = () => {
     this._currentTime = 0;
-    this._onResetHandler && this._onResetHandler();
+    this._onResetHandlers &&
+      this._onResetHandlers.forEach(handler => handler());
+    if (this._isMediaInTrack()) {
+      this._useTrack.dispose();
+    }
   };
 
   private _setup(o: MediaOptions) {
@@ -197,6 +206,8 @@ class Media implements IMedia {
     this._outputDevices =
       o.outputDevices && Array.isArray(o.outputDevices)
         ? o.outputDevices
+        : o.outputDevices === null || o.outputDevices === undefined
+        ? null
         : trackManager.getAllOutputDevicesId();
 
     const useTrack = this._getUseTrack();
@@ -216,13 +227,13 @@ class Media implements IMedia {
     return this._useTrack.currentMediaId === this._mediaId;
   }
 
-  private _getCurrentMediaOptions() {
+  private _getCurrentMediaOptions(): MediaTrackOptions {
     return {
       id: this._trackId || DEFAULT_TRACK_ID,
       mediaId: this._mediaId,
       src: this._src,
       muted: this._muted,
-      volume: this._volume,
+      mediaVolume: this._volume,
       loop: this._loop,
       autoplay: this._autoplay,
       outputDevices: this._outputDevices,

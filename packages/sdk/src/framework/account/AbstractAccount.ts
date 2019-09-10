@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import { EventEmitter2 } from 'eventemitter2';
 import { IAccount } from './IAccount';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const EVENT_SUPPORTED_SERVICE_CHANGE = 'SUPPORTED_SERVICE_CHANGE';
 const MODULE_NAME = 'AbstractAccount';

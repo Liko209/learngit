@@ -29,6 +29,14 @@ class MeetingsService extends EntityBaseService<{ id: number }>
     return this.meetingsController.getMeetingServiceType();
   }
 
+  cancelMeeting(itemId: number): Promise<void> {
+    return this.meetingsController.cancelMeeting(itemId);
+  }
+
+  getJoinUrl(itemId: number): Promise<string> {
+    return this.meetingsController.getJoinUrl(itemId);
+  }
+
   protected get meetingsController() {
     if (!this._meetingsController) {
       this._meetingsController = new MeetingsController();

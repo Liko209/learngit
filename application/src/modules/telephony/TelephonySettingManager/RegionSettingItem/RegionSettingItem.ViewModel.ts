@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { computed, observable, action } from 'mobx';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { RCInfoService } from 'sdk/module/rcInfo';

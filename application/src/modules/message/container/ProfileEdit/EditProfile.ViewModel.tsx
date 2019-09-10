@@ -18,7 +18,7 @@ import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Markdown } from 'glipdown';
 import portalManager from '@/common/PortalManager';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import {
   EditProfileProps,
   EditProfileViewModelProps,

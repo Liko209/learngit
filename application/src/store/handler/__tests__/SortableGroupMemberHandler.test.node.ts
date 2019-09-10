@@ -66,7 +66,9 @@ describe('SortableGroupMemberHandler', () => {
       sortableGroupMemberHandler['_handleGroupUpdate'] = jest.fn();
       sortableGroupMemberHandler['_subscribeGroupChange']();
 
-      expect(sortableGroupMemberHandler['_handleGroupUpdate']).not.toBeCalled();
+      expect(
+        sortableGroupMemberHandler['_handleGroupUpdate'],
+      ).not.toHaveBeenCalled();
     });
 
     it('should not handle when is not initialized', () => {
@@ -88,7 +90,9 @@ describe('SortableGroupMemberHandler', () => {
       sortableGroupMemberHandler['_initGroupData'] = jest.fn();
       sortableGroupMemberHandler['_foc'] = undefined as any;
       sortableGroupMemberHandler['_subscribeGroupChange']();
-      expect(sortableGroupMemberHandler['_initGroupData']).not.toBeCalled();
+      expect(
+        sortableGroupMemberHandler['_initGroupData'],
+      ).not.toHaveBeenCalled();
     });
 
     it('should update member list when member is changed', () => {
@@ -121,7 +125,7 @@ describe('SortableGroupMemberHandler', () => {
       } as any;
       sortableGroupMemberHandler['_subscribeGroupChange']();
 
-      expect(sortableGroupMemberHandler['_initGroupData']).toBeCalled();
+      expect(sortableGroupMemberHandler['_initGroupData']).toHaveBeenCalled();
     });
 
     it('should update member list admin changed', () => {
@@ -166,7 +170,7 @@ describe('SortableGroupMemberHandler', () => {
       } as any;
       sortableGroupMemberHandler['_subscribeGroupChange']();
 
-      expect(sortableGroupMemberHandler['_initGroupData']).toBeCalled();
+      expect(sortableGroupMemberHandler['_initGroupData']).toHaveBeenCalled();
     });
   });
 
@@ -181,7 +185,7 @@ describe('SortableGroupMemberHandler', () => {
       const foc = { dispose: jest.fn() };
       sortableGroupMemberHandler['_foc'] = foc as any;
       sortableGroupMemberHandler.dispose();
-      expect(foc.dispose).toBeCalled();
+      expect(foc.dispose).toHaveBeenCalled();
       expect(sortableGroupMemberHandler['_isFetchBegin']).toBeFalsy();
     });
   });
@@ -241,7 +245,7 @@ describe('SortableGroupMemberHandler', () => {
       expect(sortableGroupMemberHandler['_isFetchBegin']).toBeTruthy();
       setTimeout(() => {
         expect(sortableGroupMemberHandler.sortedMemberIds).toEqual(expectRes);
-        expect(personService.getPersonsByIds).toBeCalledWith([
+        expect(personService.getPersonsByIds).toHaveBeenCalledWith([
           1,
           2,
           3,
@@ -284,7 +288,7 @@ describe('SortableGroupMemberHandler', () => {
 
       setTimeout(() => {
         expect(sortableGroupMemberHandler.sortedMemberIds).toEqual(expectRes);
-        expect(personService.getPersonsByIds).toBeCalledWith([
+        expect(personService.getPersonsByIds).toHaveBeenCalledWith([
           1,
           2,
           3,

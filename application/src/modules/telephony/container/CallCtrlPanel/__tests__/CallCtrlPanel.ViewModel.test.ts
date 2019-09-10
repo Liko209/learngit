@@ -1,4 +1,4 @@
-import { container, decorate, injectable } from 'framework';
+import { container, decorate, injectable } from 'framework/ioc';
 import { TelephonyStore } from '../../../store';
 import { CallCtrlPanelViewModel } from '../CallCtrlPanel.ViewModel';
 import { getEntity } from '@/store/utils';
@@ -6,6 +6,8 @@ import { observable } from 'mobx';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('@/store/utils');
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
+
 decorate(injectable(), TelephonyStore);
 
 container.bind(TelephonyStore).to(TelephonyStore);
@@ -61,4 +63,13 @@ describe('CallCtrlPanelViewModel', () => {
       expect(callCtrlPanelViewModel.uid).toEqual('bar');
     });
   });
+
+  describe('isConference', () => {
+    it('Should return value of `isConference` on TelephonyStore', () => {
+      Object.defineProperty(callCtrlPanelViewModel._telephonyStore, 'isConference', {
+        get: jest.fn(() => true),
+      });
+      expect(callCtrlPanelViewModel.isConference).toEqual(true);
+    });
+  })
 });

@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Tag Tag: Tag Tag 1`] = `
+.c0 {
+  display: inline-block;
+  color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  background-color: #FF8800;
+  padding: 0px 4px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 16px;
+  margin-left: 12px;
+  min-width: 44px;
+  max-width: 164px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+<div>
+  <span
+    className="c0"
+    color="primary"
+  >
+    tag test overflowsannsadsndjdnsaasddksjnadsndsasdasdadsadsdsa
+  </span>
+</div>
+`;

@@ -4,12 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { AbstractViewModel } from '@/base';
 import { TelephonyService } from '../../service';
 import { CallProps, CallViewProps } from './types';
 import { computed, action } from 'mobx';
-import { promisedComputed } from 'computed-async-mobx';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import GroupModel from '@/store/models/Group';
@@ -22,9 +21,9 @@ import {
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 
 class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
@@ -97,7 +96,7 @@ class CallViewModel extends AbstractViewModel<CallProps>
 
   @action
   call = async () => {
-    if (!this.phoneNumber) return;
+    if (!this.phoneNumber) return false;
 
     const isCallSuccess = await this._telephonyService.directCall(
       this.phoneNumber,
@@ -105,6 +104,8 @@ class CallViewModel extends AbstractViewModel<CallProps>
     if (!isCallSuccess) {
       this._telephonyService.hangUp();
     }
+
+    return isCallSuccess;
   };
 
   @action
@@ -114,23 +115,18 @@ class CallViewModel extends AbstractViewModel<CallProps>
     }
   };
 
-  showIcon = promisedComputed(false, async () => {
-    const phoneNumber = this.phoneNumber;
-    const { id, groupId } = this.props;
-    const canUseTelephony = await this._featuresFlagsService.canUseTelephony();
-    if (canUseTelephony && phoneNumber) {
-      if (id) {
-        return this._currentUserId !== id;
+  @computed
+  get showIcon() {
+    if (this._featuresFlagsService.canIUseTelephony && this.phoneNumber) {
+      if (this.props.id) {
+        return this._currentUserId !== this.props.id;
       }
-      if (groupId) {
-        const group = this._group;
-        if (group) {
-          return group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
-        }
+      if (this._group) {
+        return this._group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
       }
     }
     return false;
-  });
+  }
 }
 
 export { CallViewModel };

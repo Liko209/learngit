@@ -18,7 +18,8 @@ import { ItemService } from '../../../item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { DEFAULT_RETRY_COUNT, mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { DEFAULT_RETRY_COUNT } from 'foundation/network';
 import { PostDataController } from '../PostDataController';
 
 class PostActionController implements IPostActionController {
@@ -82,6 +83,7 @@ class PostActionController implements IPostActionController {
     params: EditPostType,
     doUpdateEntity: (newPost: Post) => Promise<any>,
     forceDoUpdateEntity?: boolean,
+    shouldRollback?: boolean,
   ) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
@@ -94,6 +96,7 @@ class PostActionController implements IPostActionController {
 
     return this.partialModifyController.updatePartially({
       forceDoUpdateEntity,
+      shouldRollback,
       doUpdateEntity,
       entityId: params.postId,
       preHandlePartialEntity: preHandlePartial,
@@ -117,6 +120,7 @@ class PostActionController implements IPostActionController {
       params,
       (newPost: Post) => reSendFunc(newPost, true),
       true,
+      false,
     );
   }
 

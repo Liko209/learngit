@@ -15,6 +15,7 @@ import { getGlobalValue } from '@/store/utils';
 import { observable, computed, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { withEscTracking } from '@/containers/Dialog';
 
 type Props = WithTranslation;
 
@@ -24,6 +25,7 @@ type versionInfoType = {
   deployedVersion: string;
 };
 
+const Modal = withEscTracking(JuiModal);
 const Param = styled.p`
   color: ${grey('700')};
   font-size: ${({ theme }) => theme.typography.body2.fontSize};
@@ -85,7 +87,7 @@ class About extends Component<Props> {
     } = this.versionInfo;
 
     return (
-      <JuiModal
+      <Modal
         open={isShowDialog}
         title={t('home.aboutRingCentral')}
         okText={t('common.dialog.done')}
@@ -109,7 +111,7 @@ class About extends Component<Props> {
           {new Date().getFullYear()} RingCentral, Inc.{' '}
           {t('home.allRightsReserved')}.
         </Param>
-      </JuiModal>
+      </Modal>
     );
   }
 }

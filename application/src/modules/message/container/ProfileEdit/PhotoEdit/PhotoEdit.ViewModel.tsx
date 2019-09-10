@@ -14,26 +14,13 @@ import { PhotoEditProps } from './types';
 const CONTENT_SIZE = 280;
 const AVATAR_SIZE = 80;
 class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
-  @observable currentImageUrl: string = this.headShotUrl;
-  @observable uploadImageType: string;
+  @observable currentImageUrl: string =
+    this.props.file && window.URL.createObjectURL(this.props.file);
+  @observable uploadImageType: string = this.props.file && this.props.file.type;
   @observable sliderValue: number = 1;
   @observable currentFile?: File = this.props.file;
   @observable initSize: { width: number; height: number };
   @observable transform: Transform = { scale: 1, translateX: 0, translateY: 0 };
-
-  constructor(props: PhotoEditProps) {
-    super(props);
-    this.reaction(
-      () => this.props.file,
-      (file: File) => {
-        if (!file) return;
-        this.currentImageUrl = window.URL.createObjectURL(file);
-      },
-      {
-        fireImmediately: true,
-      },
-    );
-  }
 
   @action
   handleSliderChange = debounce(

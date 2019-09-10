@@ -23,7 +23,8 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
   const name = text('name', 'John Smith');
   const groupName = text('Group name', 'Team AAA');
   const activity = text('activity', 'shared 22 files');
-  const status = text('status', '🏃 in the meeting');
+  const statusPlainText = text('statusText', 'in the meeting');
+  const emoji = text('emoji', ':date:');
   const mode = boolean('navigation', false) ? 'navigation' : undefined;
   const disabled = boolean('Team name disabled', false);
   const from = mode && (
@@ -31,14 +32,14 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
       preposition={<>in</>}
       onClick={noop}
       name={groupName}
-      prefix={<JuiIconography iconSize='small' symbol={team} />}
+      prefix={<JuiIconography iconSize="small" symbol={team} />}
       disabled={disabled}
     />
   );
   const card = (key: string) => (
     <JuiConversationCard
       Avatar={
-        <JuiAvatar color='lake' size='medium'>
+        <JuiAvatar color="lake" size="medium">
           SH
         </JuiAvatar>
       }
@@ -47,15 +48,16 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
     >
       <JuiConversationCardHeader
         name={name}
-        status={status}
-        time='3:15 PM'
+        colonsEmoji={emoji}
+        statusPlainText={statusPlainText}
+        time="3:15 PM"
         from={from}
         notification={<span>{activity}</span>}
       />
       <JuiConversationCardBody>any content</JuiConversationCardBody>
       <JuiConversationCardFooter>
         <JuiConversationPostLike
-          title='like'
+          title="like"
           iLiked
           likedUsersCount={10}
           onClick={() => {}}

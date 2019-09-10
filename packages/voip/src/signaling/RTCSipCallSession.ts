@@ -14,19 +14,21 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_MEDIA_ACTION,
+  RTC_CALL_ACTION_DIRECTION,
 } from '../api/types';
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
   RC_REFER_EVENT,
+  AcceptOptions,
 } from './types';
 import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
 import { CallReport } from '../report/Call';
-import { CALL_REPORT_PROPS } from '../report/types';
+import { CALL_REPORT_PROPS, CallEventCategory } from '../report/types';
 import { kRTCGetStatsInterval } from '../account/constants';
 import { RTCMediaStatsManager } from './RTCMediaStatsManager';
 
@@ -37,23 +39,41 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
   private _inviteResponse: any = null;
   private _uuid: string = '';
+  private _report: CallReport;
   private _mediaElement: RTCMediaElement | null;
   private _mediaStatsManager: RTCMediaStatsManager;
   private _referClientContext: any = null;
 
   private _onInputDeviceChanged = (deviceId: string) => {
+    rtcLogger.info(
+      LOG_TAG,
+      `set input audio device ${deviceId} when input device changed`,
+    );
     this._setAudioInputDevice(deviceId);
   };
   private _onOutputDeviceChanged = (deviceId: string) => {
+    rtcLogger.info(
+      LOG_TAG,
+      `set output audio device ${deviceId} when output device changed`,
+    );
     this._setAudioOutputDevice(deviceId);
   };
 
-  constructor(uuid: string) {
+  constructor(uuid: string, report: CallReport) {
     super();
     this._uuid = uuid;
+    this._report = report;
     this._mediaElement = RTCMediaElementManager.instance().createMediaElement(
       this._uuid,
     );
+    const outputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioOutput();
+    if (outputDeviceId) {
+      rtcLogger.info(
+        LOG_TAG,
+        `set output audio device ${outputDeviceId} when new call session`,
+      );
+      this._setAudioOutputDevice(outputDeviceId);
+    }
     this._mediaStatsManager = new RTCMediaStatsManager();
   }
   destroy() {
@@ -85,11 +105,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session = null;
   }
 
-  public hasSentPackages(): boolean {
+  hasSentPackages(): boolean {
     return this._mediaStatsManager.hasSentPackages();
   }
 
-  public hasReceivedPackages(): boolean {
+  hasReceivedPackages(): boolean {
     return this._mediaStatsManager.hasReceivedPackages();
   }
 
@@ -108,8 +128,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
       this._onSessionDisconnected();
     });
-    this._session.on(WEBPHONE_SESSION_STATE.FAILED, () => {
-      this._onSessionError();
+    this._session.on(WEBPHONE_SESSION_STATE.FAILED, (response: any) => {
+      this._onSessionError(response);
     });
     this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
@@ -131,6 +151,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
       this._onSessionReinviteFailed(session);
     });
+    this._session.on(
+      WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_STATE_CHANGED,
+      (state: any) => {
+        this._onMediaConnectionStateChange(state);
+      },
+    );
     RTCMediaDeviceManager.instance().on(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
       this._onInputDeviceChanged,
@@ -139,41 +165,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
       this._onOutputDeviceChanged,
     );
-    this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
-  }
-
-  private _initAudioDeviceChannel() {
-    const inputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioInput();
-    if (inputDeviceId !== '') {
-      this._setAudioInputDevice(inputDeviceId);
-    }
-    const outputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioOutput();
-    if (outputDeviceId !== '') {
-      this._setAudioOutputDevice(outputDeviceId);
-    }
-  }
-
-  private _onReferRequestAccepted() {
-    this.emit(
-      CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      RTC_CALL_ACTION.WARM_TRANSFER,
-    );
-  }
-
-  private _onReferRequestRejected() {
-    this.emit(
-      CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-      RTC_CALL_ACTION.WARM_TRANSFER,
-    );
   }
 
   private _onSessionAccepted() {
-    this._initAudioDeviceChannel();
     this.emit(CALL_SESSION_STATE.ACCEPTED);
   }
 
   private _onSessionConfirmed(response: any) {
-    this._initAudioDeviceChannel();
     this.emit(CALL_SESSION_STATE.CONFIRMED, response);
   }
 
@@ -181,7 +179,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this.emit(CALL_SESSION_STATE.DISCONNECTED);
   }
 
-  private _onSessionError() {
+  private _onSessionError(response: any) {
+    this._report.updateCallEvent(
+      CallEventCategory.InviteError,
+      `${response.statusCode} ${response.reasonPhrase}`,
+    );
     this.emit(CALL_SESSION_STATE.ERROR);
   }
 
@@ -272,14 +274,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this.emit(CALL_SESSION_STATE.REINVITE_FAILED, session);
   }
 
-  private _onMediaConnectionStateChange(session: any, event: any) {
-    rtcLogger.debug(LOG_TAG, `WebRTC media connection state = ${event}`);
+  private _onMediaConnectionStateChange(event: any) {
+    this._report.updateCallEvent(CallEventCategory.MediaEvent, event);
     switch (event) {
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_FAILED:
         rtcLogger.error(LOG_TAG, `Reconnecting media. State = ${event}`);
         break;
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_CONNECTED:
-        CallReport.instance().updateEstablishment(
+        this._report.updateEstablishment(
           CALL_REPORT_PROPS.MEDIA_CONNECTED_TIME,
         );
         break;
@@ -318,10 +320,25 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   transfer(target: string) {
     this._session
       .transfer(target)
-      .then(() => {
-        this.emit(
-          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.TRANSFER,
+      .then((referClientContext: any) => {
+        this._referClientContext = referClientContext;
+        this._referClientContext.on(
+          RC_REFER_EVENT.REFER_REQUEST_ACCEPTED,
+          () => {
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+              RTC_CALL_ACTION.TRANSFER,
+            );
+          },
+        );
+        this._referClientContext.on(
+          RC_REFER_EVENT.REFER_REQUEST_REJECTED,
+          () => {
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+              RTC_CALL_ACTION.TRANSFER,
+            );
+          },
         );
       })
       .catch(() => {
@@ -337,13 +354,19 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         this._referClientContext.on(
           RC_REFER_EVENT.REFER_REQUEST_ACCEPTED,
           () => {
-            this._onReferRequestAccepted();
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+              RTC_CALL_ACTION.WARM_TRANSFER,
+            );
           },
         );
         this._referClientContext.on(
           RC_REFER_EVENT.REFER_REQUEST_REJECTED,
           () => {
-            this._onReferRequestRejected();
+            this.emit(
+              CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+              RTC_CALL_ACTION.WARM_TRANSFER,
+            );
           },
         );
       })
@@ -424,21 +447,75 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       });
   }
 
-  mute() {
+  mute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      this._session.mute();
+      if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
+        rtcLogger.info(LOG_TAG, 'Mute Local media steams success');
+        this._session.mute();
+      } else {
+        rtcLogger.info(LOG_TAG, 'Mute Remote media steams success');
+        this.toggleRemoteMute(true);
+      }
     }
   }
 
-  unmute() {
+  unmute(direction: RTC_CALL_ACTION_DIRECTION) {
     if (this._session) {
-      this._session.unmute();
+      if (direction === RTC_CALL_ACTION_DIRECTION.LOCAL) {
+        rtcLogger.info(LOG_TAG, 'Unmute Local media steams success');
+        this._session.unmute();
+      } else {
+        rtcLogger.info(LOG_TAG, 'Unmute Remote media steams success');
+        this.toggleRemoteMute(false);
+      }
+    }
+  }
+
+  toggleRemoteMute(mute: boolean): void {
+    if (
+      !this._session.sessionDescriptionHandler ||
+      !this._session.sessionDescriptionHandler.peerConnection
+    ) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'there is not peer connection so mute remote failed',
+      );
+      return;
+    }
+    const pc = this._session.sessionDescriptionHandler.peerConnection;
+    if (pc.getReceivers) {
+      pc.getReceivers().forEach((receivers: any) => {
+        if (receivers.track) {
+          receivers.track.enabled = !mute;
+        }
+      });
     }
   }
 
   answer() {
     if (this._session) {
-      this._session.accept();
+      const inputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioInput();
+      if (inputDeviceId) {
+        rtcLogger.info(
+          LOG_TAG,
+          `set input audio device ${inputDeviceId} when accept incoming call`,
+        );
+        const sessionDescriptionHandlerOptions = {
+          constraints: {
+            audio: {
+              deviceId: {
+                exact: inputDeviceId,
+              },
+            },
+            video: false,
+          },
+        };
+        const acceptOptions: AcceptOptions = {};
+        acceptOptions.sessionDescriptionHandlerOptions = sessionDescriptionHandlerOptions;
+        this._session.accept(acceptOptions);
+      } else {
+        this._session.accept();
+      }
     }
   }
 

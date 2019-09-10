@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components/Menus';
 import { ViewProps } from './types';
 
 type Props = ViewProps & WithTranslation;
@@ -16,7 +16,7 @@ class QuoteViewComponent extends React.Component<Props> {
   private _handleClick = () => {
     const { quote } = this.props;
     quote();
-  }
+  };
   render() {
     const { disabled, t } = this.props;
     return (

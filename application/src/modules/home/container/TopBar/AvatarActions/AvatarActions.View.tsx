@@ -8,7 +8,7 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
-import { JuiMenuList } from 'jui/components';
+import { JuiMenuList } from 'jui/components/Menus';
 import {
   JuiAvatarActions,
   JuiStyledDropdown,
@@ -16,11 +16,13 @@ import {
 } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
+import { analyticsCollector } from '@/AnalyticsCollector';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis } from 'foundation/analysis';
 import { PresenceMenu } from '../PresenceMenu';
 import { OpenProfile } from '@/common/OpenProfile';
 import { DropdownContactInfo } from '../DropdownContactInfo';
+import { ShareStatusItem } from '../ShareStatus';
 
 type Props = ViewProps & WithTranslation;
 
@@ -85,6 +87,11 @@ class AvatarActionsComponent extends React.Component<Props> {
 
   openProfile = () => {
     OpenProfile.show(this.props.currentUserId);
+
+    analyticsCollector.profileDialog(
+      'Person',
+      'topbar_dropdown',
+    );
   };
 
   handleDropdown = () => {
@@ -92,11 +99,19 @@ class AvatarActionsComponent extends React.Component<Props> {
   };
 
   handleAboutPage = () => this.props.toggleAboutPage();
-
+  handleCustomStatus = () => this.props.handleCustomStatus();
   handleSendFeedback = () => this.props.handleSendFeedback();
+  handleClearStatus = () => this.props.handleClearStatus();
 
   render() {
-    const { handleSignOut, t, presence, person } = this.props;
+    const {
+      handleSignOut,
+      t,
+      presence,
+      person,
+      awayStatus,
+      colons,
+    } = this.props;
 
     return (
       <JuiAvatarActions
@@ -119,6 +134,12 @@ class AvatarActionsComponent extends React.Component<Props> {
             content={t('home.viewProfile')}
           />
           <JuiMenuList data-test-automation-id="avatarMenu">
+            <ShareStatusItem
+              awayStatus={awayStatus}
+              colons={colons}
+              handleClearStatus={this.handleClearStatus}
+              handleCustomStatus={this.handleCustomStatus}
+            />
             <PresenceMenu presence={presence} title={this.title} />
             <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}

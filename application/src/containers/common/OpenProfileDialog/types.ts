@@ -11,6 +11,10 @@ type OpenProfileDialogProps = {
   profileDialog: React.ComponentType<any>;
   beforeClick?: (event: MouseEvent<HTMLElement>) => void;
   afterClick?: (event: MouseEvent<HTMLElement>) => void;
+  dataTrackingProps: {
+    category: string;
+    source: string;
+  };
 };
 
 type OpenProfileDialogViewProps = {};

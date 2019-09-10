@@ -32,6 +32,7 @@
     "dotenv": "^6.0.0",
     "execa": "^2.0.3",
     "faker": "^4.1.0",
+    "filtrex": "github:link89/filtrex",
     "flatted": "^2.0.0",
     "glip-account-pool-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/glip-account-pool-client-1.0.4.tgz",
     "glob": "^7.1.2",
@@ -59,7 +60,8 @@
     "ua-parser-js": "^0.7.19",
     "uuid": "^3.3.2",
     "webphone-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/webphone-client-10.2.12.tgz",
-    "zip-dir": "^1.0.2"
+    "zip-dir": "^1.0.2",
+    "ua-parser-js": "^0.7.20"
   },
   "devDependencies": {
     "nodemon": "^1.18.3"

@@ -3,7 +3,7 @@
  * @Date: 2018-10-11 09:40:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { HomeStore } from '@/modules/home/store';
 import { notificationCenter, SERVICE } from 'sdk/service';
 
@@ -19,13 +19,14 @@ import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import Wrapper from './Wrapper';
 
-import { dao, mainLogger } from 'sdk';
+import { dao } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AboutView } from '@/containers/About';
-import { Notification } from '@/containers/Notification';
+import { Notification, notificationKey } from '@/containers/Notification';
 import {
   ToastType,
   ToastMessageAlign,
@@ -39,8 +40,11 @@ type Props = WithTranslation & HomeViewProps;
 class HomeViewComponent extends Component<Props> {
   private _homeStore: HomeStore = container.get(HomeStore);
   constructor(props: Props) {
-    super(props)
-    notificationCenter.on(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
+    super(props);
+    notificationCenter.on(
+      SERVICE.RC_INFO_SERVICE.E911_UPDATED,
+      this.showE911Confirm,
+    );
   }
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
@@ -55,7 +59,10 @@ class HomeViewComponent extends Component<Props> {
 
   componentWillUnmount() {
     window.removeEventListener('storage', this._storageEventHandler);
-    notificationCenter.off(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
+    notificationCenter.off(
+      SERVICE.RC_INFO_SERVICE.E911_UPDATED,
+      this.showE911Confirm,
+    );
   }
 
   showE911Confirm = async () => {
@@ -76,6 +83,7 @@ class HomeViewComponent extends Component<Props> {
     }
 
     const flagToast = Notification.flagToast({
+      key: notificationKey.E911_TOAST,
       message: (
         <>
           {`${t('home.confirmEmergencyAddress')} `}
@@ -98,7 +106,7 @@ class HomeViewComponent extends Component<Props> {
       dismissible: true,
       onClose: markE911,
     });
-  }
+  };
 
   private _storageEventHandler = (event: StorageEvent) => {
     if (!event.key) {

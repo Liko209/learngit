@@ -1,6 +1,6 @@
 import { ErrorChunkStrategy } from '../ErrorChunkStrategy';
 import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
-import { LOG_LEVEL } from 'foundation/src';
+import { LOG_LEVEL } from 'foundation/log';
 
 describe('ErrorChunkStrategy', () => {
   describe('split()', () => {

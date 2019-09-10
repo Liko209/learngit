@@ -13,11 +13,14 @@ type MediaTrackOptions = {
   loop?: boolean;
   autoplay?: boolean;
   currentTime?: number;
-  outputDevices?: MediaDeviceType[];
+  outputDevices?: MediaDeviceType[] | null;
   masterVolume?: number;
+  duckVolume?: number;
   mediaId?: string;
+  mediaVolume?: number;
   mediaEvents?: MediaEvents[];
   onReset?: () => void;
+  weight?: number;
 };
 
 const DEFAULT_TRACK_ID = 'default-track';

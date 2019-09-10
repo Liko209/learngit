@@ -22,3 +22,8 @@ export type UserContextInfo = {
   browser: string;
   os: string;
 };
+
+export type ErrorFilterType = {
+  messages: string[];
+  tags?: { [key: string]: string };
+};

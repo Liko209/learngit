@@ -3,11 +3,12 @@
  * @Date: 2019-01-04 13:10:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from '../entity';
+import { Item, ConferenceItem, ZoomMeetingItem } from '../entity';
 import { Raw } from '../../../framework/model';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { buildRequestController } from '../../../framework/controller';
 import { Api } from '../../../api';
+import ItemAPI from 'sdk/api/glip/item';
 import {
   GlipTypeUtil,
   TypeDictionary,
@@ -17,6 +18,8 @@ import { ProgressService } from '../../progress';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { IItemService } from '../service/IItemService';
+import { mainLogger } from 'foundation/log';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -26,11 +29,13 @@ const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_LINK, 'link'],
   [TypeDictionary.TYPE_ID_CODE, 'code'],
   [TypeDictionary.TYPE_ID_CONFERENCE, 'conference'],
+  [TypeDictionary.TYPE_ID_MEETING, 'meeting']
 ]);
 class ItemActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
     private _entitySourceController: IEntitySourceController<Item>,
+    private _itemService: IItemService,
   ) {}
 
   async doNotRenderItem(id: number, type: string) {
@@ -43,6 +48,28 @@ class ItemActionController {
 
     const doUpdateModel = async (updateItem: Item) =>
       await this._buildItemRequestController(type).put(updateItem);
+
+    await this._partialModifyController.updatePartially({
+      entityId: id,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: doUpdateModel,
+    });
+  }
+
+  async cancelZoomMeeting(id: number) {
+    const preHandlePartial = (
+      partialPost: Partial<Raw<ZoomMeetingItem>>,
+    ): Partial<Raw<ZoomMeetingItem>> => ({
+      ...partialPost,
+      status: 'cancelled',
+    });
+    const doUpdateModel = async (updateItem: Item) => {
+      const requestController = this._buildItemRequestController(
+        itemPathMap.get(GlipTypeUtil.extractTypeId(id)) as string,
+      );
+      return await requestController.put(updateItem);
+    }
+
 
     await this._partialModifyController.updatePartially({
       entityId: id,
@@ -100,6 +127,20 @@ class ItemActionController {
       );
       progressService.deleteProgress(itemId);
     }
+  }
+
+  async startConference(groupId: number): Promise<ConferenceItem> {
+    const rawConference = await ItemAPI.startRCConference({
+      group_ids: [groupId],
+    });
+    const conferences = await this._itemService.handleIncomingData([
+      rawConference,
+    ]);
+    if (conferences && conferences.length) {
+      return conferences[0];
+    }
+    mainLogger.warn('start conference raw data', rawConference);
+    throw new Error('empty result');
   }
 }
 

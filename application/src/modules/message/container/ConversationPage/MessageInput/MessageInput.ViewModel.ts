@@ -28,18 +28,20 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import {isMentionIdsContainTeam} from '../../ConversationCard/utils'
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { SendTrigger } from '@/AnalyticsCollector/types';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import { ZipItemLevel } from 'sdk/module/log/types';
 import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
+import { DeltaStatic } from 'quill';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
@@ -68,10 +70,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private _onPostCallbacks: OnPostCallback[] = [];
   private _groupConfigService: GroupConfigService;
   private _groupService: GroupService;
-
+  private _trigger: SendTrigger;
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
-  
+
   get items() {
     return this._itemService.getUploadItems(this.props.id);
   }
@@ -82,7 +84,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   error: string = '';
 
   private _upHandler = debounce(
-    ()=>this.props.onUpArrowPressed(this._rawDraft),
+    () => {
+      this.props.onUpArrowPressed(this._rawDraft);
+      return true;
+    },
     this._debounceFactor,
     {
       leading: true,
@@ -150,18 +155,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     );
 
     this.keyboardEventHandler.up.handler.cancel();
-
-    this.keyboardEventHandler = {
-      enter: {
-        key: 13,
-        handler: _.noop,
-      },
-      up: {
-        key: 38,
-        empty: true,
-        handler: (_.noop as any),
-      },
-    };
   }
 
   @action
@@ -238,10 +231,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     });
   }
 
-  forceSaveDraft = () => {
+  @action
+  forceSaveDraft = async() => {
     const draft = isEmpty(this.draft) ? '' : this.draft;
     this._memoryDraftMap.set(this.props.id, draft);
-    this._groupConfigService.updateDraft({
+    await this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
     });
@@ -256,7 +250,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @computed
-  get _group() {
+  private get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
@@ -310,22 +304,27 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return function () {
       // @ts-ignore
       const quill = (this as any).quill;
-      const { content, mentionIds } = markdownFromDelta(quill.getContents());
-      const mentionIdsContainTeam = isMentionIdsContainTeam(mentionIds);
-      if (content.length > CONTENT_LENGTH) {
-        vm.error = ERROR_TYPES.CONTENT_LENGTH;
-        return;
-      }
-      if (content.includes(CONTENT_ILLEGAL)) {
-        vm.error = ERROR_TYPES.CONTENT_ILLEGAL;
-        return;
-      }
-      vm.error = '';
-      const items = vm.items;
-      if (content.trim() || items.length > 0) {
-        vm._sendPost(content, mentionIds, mentionIdsContainTeam);
-      }
+      vm.handleContentSent('enter', quill.getContents());
     };
+  }
+
+  handleContentSent = (trigger: SendTrigger, contents: DeltaStatic) => {
+    this._trigger = trigger;
+    const { content, mentionIds } = markdownFromDelta(contents);
+    const mentionIdsContainTeam = isMentionIdsContainTeam(mentionIds);
+    if (content.length > CONTENT_LENGTH) {
+      this.error = ERROR_TYPES.CONTENT_LENGTH;
+      return;
+    }
+    if (content.includes(CONTENT_ILLEGAL)) {
+      this.error = ERROR_TYPES.CONTENT_ILLEGAL;
+      return;
+    }
+    this.error = '';
+    const items = this.items;
+    if (content.trim() || items.length > 0) {
+      this._sendPost(content, mentionIds, mentionIdsContainTeam);
+    }
   }
 
   private _sendPost = async (content: string, ids: number[], containsTeamMention: boolean) => {
@@ -367,10 +366,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._onPostCallbacks.push(callback);
   }
 
+  @action
   private _trackSendPost(containsTeamMention:boolean) {
     const type = this.items.length ? 'file' : 'text';
     const isAtTeam = containsTeamMention ? 'yes' : 'no'
     analyticsCollector.sendPost(
+      this._trigger,
       'conversation thread',
       type,
       this._group.analysisType,

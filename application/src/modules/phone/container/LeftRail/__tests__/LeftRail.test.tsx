@@ -12,12 +12,17 @@ import { MISSED_CALL_BADGE_ID } from 'sdk/module/RCItems/callLog/constants';
 import { PhoneUMI } from '../../PhoneUMI';
 import { mockEntity, mockSingleEntity } from 'shield/application';
 import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { jupiter } from 'framework/Jupiter';
+import { AppStore } from '@/modules/app/store';
 
 jest.mock('sdk/dao');
 jest.mock('sdk/api');
 jest.mock('@/store/utils');
+jest.mock('sdk/module/config');
 
 describe('LeftRail', () => {
+  jupiter.registerClass(AppStore);
+
   const mockMissedCall = 10;
   const mockUnReadVoiceMail = 3;
   const entityMock = (name: string, id: string) => {
@@ -32,7 +37,7 @@ describe('LeftRail', () => {
     @mockSingleEntity(CALLING_OPTIONS.GLIP)
     @mockEntity(entityMock)
     t1() {
-      const wrapper = mountWithTheme(<LeftRail current='' />);
+      const wrapper = mountWithTheme(<LeftRail current="" />);
       expect(wrapper.find(PhoneUMI).length).toBe(2);
 
       const callHistoryUMI = wrapper.find(PhoneUMI).at(0);
@@ -46,7 +51,7 @@ describe('LeftRail', () => {
     @mockEntity(entityMock)
     @mockSingleEntity(CALLING_OPTIONS.GLIP)
     t1() {
-      const wrapper = mountWithTheme(<LeftRail current='' />);
+      const wrapper = mountWithTheme(<LeftRail current="" />);
       expect(wrapper.find(PhoneUMI).length).toBe(2);
 
       const voicemailUMI = wrapper.find(PhoneUMI).at(1);
@@ -62,7 +67,7 @@ describe('LeftRail', () => {
     @mockSingleEntity(CALLING_OPTIONS.RINGCENTRAL)
     @mockEntity(entityMock)
     t1() {
-      const wrapper = mountWithTheme(<LeftRail current='' />);
+      const wrapper = mountWithTheme(<LeftRail current="" />);
       expect(wrapper.find(PhoneUMI).length).toBe(2);
       const callHistoryUMI = wrapper.find(PhoneUMI).at(0);
       expect(callHistoryUMI.text()).toBe(null);

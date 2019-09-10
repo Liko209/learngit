@@ -159,4 +159,11 @@ describe('ToastCallError', () => {
     const i18nkey = 'telephony.prompt.switchCall.noNetwork';
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
+
+  it('should not transfer with unexpected error [JPT-2765]', () => {
+    ToastCallError.toast = jest.fn();
+    ToastCallError.toastTransferError();
+    const i18nkey = 'telephony.prompt.transferCall.backendError';
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
 });

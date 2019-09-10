@@ -7,17 +7,54 @@
 import { CallLogViewDao } from '../CallLogViewDao';
 import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../../constants';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
+import { setup } from 'sdk/dao/__tests__/utils';
 
-jest.mock('sdk/dao');
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 
 describe('CallLogDao', () => {
   let viewDao: CallLogViewDao;
   const mockCallLog = {
     id: 'mockId',
   } as any;
-  const fetchFunc = jest.fn().mockImplementation(ids => ids);
+  const realCall = {
+    id: 'AR0QdKQxa4YozUA',
+    action: 'Incoming Fax',
+    direction: 'Inbound',
+    duration: 32,
+    extension: {
+      id: 149857004,
+      uri: 'https://api-xmnup.lab.nordigy.ru/restapi/v1.0/accou',
+    },
+    from: {
+      name: 'mThor QA account',
+      phoneNumber: '+18332120337',
+      id: 'AR0QdKQxa4YozUA',
+    },
+    result: 'Received',
+    sessionId: '13461780004',
+    startTime: '2019-08-14T02:25:33.476Z',
+    to: {
+      name: 'Freda Song',
+      phoneNumber: '+12054170105',
+      extensionId: '149857004',
+    },
+    type: 'Fax',
+    uri:
+      'https://api-xmnup.lab.nordigy.ru/restapi/v1.0/account/149845004/extension/149857004/call-log/AR0QdKQxa4YozUA?view=Simple',
+    __deactivated: false,
+    __localInfo: 1,
+    __timestamp: 1565749533476,
+  };
+  let fetchFunc = jest.fn().mockImplementation(ids => ids);
   beforeEach(() => {
-    viewDao = new CallLogViewDao({} as any);
+    clearMocks();
+    const { database } = setup();
+    viewDao = new CallLogViewDao(database);
+    fetchFunc = jest.fn().mockImplementation(ids => ids);
   });
 
   describe('queryCallLogs', () => {
@@ -51,7 +88,7 @@ describe('CallLogDao', () => {
     });
 
     it('should get correct call logs', async () => {
-      viewDao.get = jest.fn().mockReturnValue(mockCallLog);
+      viewDao.get = jest.fn().mockResolvedValue(mockCallLog);
       const mockViews = [
         {
           id: '1',
@@ -199,6 +236,34 @@ describe('CallLogDao', () => {
           ['+18885439783', { creationTime: 4, id: 'AMUI2OaT-n78zUA' }],
         ]),
       );
+    });
+  });
+
+  describe('toViewItem', () => {
+    it('should convert to expected call view', () => {
+      expect(viewDao.toViewItem(realCall as any)).toEqual({
+        __localInfo: 1,
+        __timestamp: 1565749533476,
+        caller: { name: 'mThor QA account', phoneNumber: '+18332120337' },
+        id: 'AR0QdKQxa4YozUA',
+      });
+    });
+  });
+
+  describe('toPartialViewItem', () => {
+    it('should convert to partial expected call view', () => {
+      expect(viewDao.toPartialViewItem(realCall as any)).toEqual({
+        __localInfo: 1,
+        __timestamp: 1565749533476,
+        caller: { name: 'mThor QA account', phoneNumber: '+18332120337' },
+        id: 'AR0QdKQxa4YozUA',
+      });
+    });
+  });
+
+  describe('getCollection', () => {
+    it('should return collection of db', () => {
+      expect(viewDao.getCollection()).toEqual(expect.anything());
     });
   });
 });

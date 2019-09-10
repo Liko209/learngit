@@ -21,7 +21,7 @@ const getDefaultMatchFunc = (type: CallLogType) => (model: CallLog) => {
 
   return !!(
     model &&
-    !model.__deactivated &&
+    !model.deleted &&
     (type === CallLogType.MissedCall ? isMissedCall : true)
   );
 };

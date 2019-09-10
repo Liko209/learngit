@@ -6,7 +6,8 @@
 
 import Api from '../../../api';
 import { SearchAPI } from '../search';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA } from 'foundation/network';
+
 jest.mock('../../../api');
 
 function clearMocks() {
@@ -28,7 +29,7 @@ describe('SearchAPI', () => {
       const spy = jest.spyOn(Api.glipNetworkClient, 'get');
       const params = { id: 1 } as any;
       SearchAPI.search(params);
-      expect(spy).toBeCalledWith({
+      expect(spy).toHaveBeenCalledWith({
         params,
         path: '/search',
         via: NETWORK_VIA.SOCKET,
@@ -45,7 +46,7 @@ describe('SearchAPI', () => {
       const spy = jest.spyOn(Api.glipNetworkClient, 'get');
       const params = { id: 1 } as any;
       SearchAPI.scrollSearch(params);
-      expect(spy).toBeCalledWith({
+      expect(spy).toHaveBeenCalledWith({
         params,
         path: '/search_scroll',
         via: NETWORK_VIA.SOCKET,

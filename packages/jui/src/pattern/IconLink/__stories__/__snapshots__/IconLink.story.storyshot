@@ -2,8 +2,6 @@
 
 exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
 .c2.c2 {
-  min-width: 104px;
-  padding: 10px 16px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -16,6 +14,13 @@ exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
   color: #0684bd;
   text-align: center;
   box-shadow: unset;
+  padding: 8px 12px;
+  min-width: 88px;
+}
+
+.c2.c2.MuiButton-sizeLarge {
+  padding: 10px 16px;
+  min-width: 96px;
 }
 
 .c2.c2.containedButtonStyle {

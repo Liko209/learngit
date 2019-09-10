@@ -14,11 +14,12 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDialogHeader } from 'jui/components/Dialog/DialogHeader';
-import { dataAnalysis, PerformanceTracer } from 'sdk';
+import { PerformanceTracer } from 'foundation/performance';
+import { dataAnalysis } from 'foundation/analysis';
 import { JuiZoomButtonGroup } from 'jui/pattern/DragZoom';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { JuiViewerImg } from 'jui/pattern/Viewer/ViewerTitle';
+import { JuiImageWithStatusView } from 'jui/pattern/Viewer/ViewerContentView';
 import {
   JuiTransition,
   imageViewerHeaderAnimation,
@@ -49,6 +50,7 @@ type ViewerViewType = {
   TitleRenderer: ComponentType<any>;
   PageRenderer: ComponentType<any>;
   layout?: LAYOUT;
+  unNeedZoomButtonGroup?: boolean;
 };
 
 const LeftResponsive = withResponsive(
@@ -78,6 +80,8 @@ const DocumentResponsive = withResponsive(
 type State = {
   contextValue: ViewerContextType;
   initialScale: number;
+  deleteItem: boolean;
+  loading: boolean;
 };
 /*eslint-disable*/
 @observer
@@ -88,15 +92,22 @@ class ViewerViewComponent extends Component<
   private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
   constructor(props: ViewerViewType & WithTranslation) {
     super(props);
+    const { dataModule } = props;
     this.state = {
       contextValue: {
         show: true,
         closeViewer: this.closeViewer,
         onTransitionExited: this.onTransitionExited,
         onTransitionEntered: this.onTransitionEntered,
+        onContentLoad: dataModule.onContentLoad,
+        onContentError: dataModule.onContentError,
         isAnimating: true,
+        setDeleteItem: this.setDeleteItem,
+        setLoading: this.setLoading,
       },
       initialScale: 0,
+      deleteItem: false,
+      loading: false,
     };
   }
 
@@ -147,8 +158,9 @@ class ViewerViewComponent extends Component<
     ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
       window.removeEventListener(v, this._handlerScroll);
     });
+    this.props.dataModule.dispose && this.props.dataModule.dispose();
   }
-
+  /* eslint-disable react/no-access-state-in-setstate */
   closeViewer = () => {
     this.setState({
       contextValue: {
@@ -157,6 +169,16 @@ class ViewerViewComponent extends Component<
         isAnimating: true,
       },
     });
+  };
+
+  setDeleteItem = (value: boolean) => {
+    this.setState({
+      deleteItem: value,
+    });
+  };
+
+  setLoading = (value: boolean) => {
+    this.setState({ loading: value });
   };
 
   onTransitionEntered = () => {
@@ -239,13 +261,13 @@ class ViewerViewComponent extends Component<
     const { dataModule } = this.props;
     if (dataModule.pages) {
       const items = dataModule.pages.map((page, i) => {
-        return <JuiViewerImg src={page.url} key={i} />;
+        return <JuiImageWithStatusView src={page.url || ''} key={i} />;
       });
       return (
         <JuiViewerSidebar
           open={true}
           items={items}
-          data-test-automation-id='ViewerSidebar'
+          data-test-automation-id="ViewerSidebar"
           selectedIndex={dataModule.currentPageIdx}
           onSelectedChanged={this._handlePageIdxChanged}
         />
@@ -261,29 +283,41 @@ class ViewerViewComponent extends Component<
     return `${scaleStr}%`;
   };
 
+  private _showZoomBtnGroup = () => {
+    const { dataModule } = this.props;
+    return dataModule.currentScale !== 0
+  }
+
   render() {
-    const { t, dataModule, TitleRenderer, layout, PageRenderer } = this.props;
+    const {
+      t,
+      dataModule,
+      TitleRenderer,
+      layout,
+      PageRenderer,
+      unNeedZoomButtonGroup,
+    } = this.props;
     const { currentScale } = dataModule;
     const { show } = this.state.contextValue;
     const { initialScale } = this.state;
     return (
       <ViewerContext.Provider value={this.state.contextValue}>
-        <JuiViewerBackground data-test-automation-id='Viewer' show={show}>
+        <JuiViewerBackground data-test-automation-id="Viewer" show={show}>
           <JuiTransition
             appear={true}
             show={show}
-            duration='standard'
-            easing='sharp'
+            duration="standard"
+            easing="sharp"
             onExited={this.onTransitionExited}
             animation={imageViewerHeaderAnimation}
           >
-            <JuiDialogHeader data-test-automation-id='ViewerHeader'>
+            <JuiDialogHeader fullscreen data-test-automation-id="ViewerHeader">
               <TitleRenderer
                 {...dataModule.title}
                 closeViewer={this.closeViewer}
               />
             </JuiDialogHeader>
-            <JuiDivider key='divider-filters' />
+            <JuiDivider key="divider-filters" />
           </JuiTransition>
           <>
             <JuiResponsiveLayout>
@@ -295,51 +329,54 @@ class ViewerViewComponent extends Component<
                   <>
                     <PageRenderer
                       dataModule={dataModule}
+                      deleteItem={this.state.deleteItem}
                       handleScaleChanged={this._handleScaleChanged}
                       handlePageIdxChanged={this._handlePageIdxChanged}
                     />
-                    <JuiZoomButtonGroup
-                      className='zoomGroup'
-                      resetMode={true}
-                      data-test-automation-id='ViewerZoomButtonGroup'
-                      centerText={this._getScaleDisplayString()}
-                      ZoomOut={
-                        <JuiIconButton
-                          variant='plain'
-                          tooltipTitle={t('viewer.ZoomOut')}
-                          ariaLabel={t('viewer.ZoomOut')}
-                          data-test-automation-id='ViewerZoomOutButton'
-                          disabled={currentScale === MIN_SCALE}
-                          onClick={() => this._handleZoomOut()}
-                        >
-                          zoom_out
-                        </JuiIconButton>
-                      }
-                      ZoomIn={
-                        <JuiIconButton
-                          variant='plain'
-                          tooltipTitle={t('viewer.ZoomIn')}
-                          ariaLabel={t('viewer.ZoomIn')}
-                          data-test-automation-id='ViewerZoomInButton'
-                          disabled={currentScale === MAX_SCALE}
-                          onClick={() => this._handleZoomIn()}
-                        >
-                          zoom_in
-                        </JuiIconButton>
-                      }
-                      ZoomReset={
-                        <JuiIconButton
-                          variant='plain'
-                          tooltipTitle={t('viewer.ZoomReset')}
-                          ariaLabel={t('viewer.ZoomReset')}
-                          data-test-automation-id='ViewerResetButton'
-                          disabled={currentScale === initialScale}
-                          onClick={() => this._handleReset()}
-                        >
-                          reset_zoom
-                        </JuiIconButton>
-                      }
-                    />
+                    {!unNeedZoomButtonGroup && this._showZoomBtnGroup() && (
+                      <JuiZoomButtonGroup
+                        className="zoomGroup"
+                        resetMode={true}
+                        data-test-automation-id="ViewerZoomButtonGroup"
+                        centerText={this._getScaleDisplayString()}
+                        ZoomOut={
+                          <JuiIconButton
+                            variant="plain"
+                            tooltipTitle={t('viewer.ZoomOut')}
+                            ariaLabel={t('viewer.ZoomOut')}
+                            data-test-automation-id="ViewerZoomOutButton"
+                            disabled={currentScale === MIN_SCALE}
+                            onClick={() => this._handleZoomOut()}
+                          >
+                            zoom_out
+                          </JuiIconButton>
+                        }
+                        ZoomIn={
+                          <JuiIconButton
+                            variant="plain"
+                            tooltipTitle={t('viewer.ZoomIn')}
+                            ariaLabel={t('viewer.ZoomIn')}
+                            data-test-automation-id="ViewerZoomInButton"
+                            disabled={currentScale === MAX_SCALE}
+                            onClick={() => this._handleZoomIn()}
+                          >
+                            zoom_in
+                          </JuiIconButton>
+                        }
+                        ZoomReset={
+                          <JuiIconButton
+                            variant="plain"
+                            tooltipTitle={t('viewer.ZoomReset')}
+                            ariaLabel={t('viewer.ZoomReset')}
+                            data-test-automation-id="ViewerResetButton"
+                            disabled={currentScale === initialScale}
+                            onClick={() => this._handleReset()}
+                          >
+                            reset_zoom
+                          </JuiIconButton>
+                        }
+                      />
+                    )}
                   </>
                 }
               />

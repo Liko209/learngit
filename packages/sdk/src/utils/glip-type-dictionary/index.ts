@@ -6,7 +6,7 @@
 import TypeDictionary from './types';
 import GlipTypeUtil, { TYPE_ID_MASK } from './util';
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { UndefinedAble } from 'sdk/types';
 
 interface IMessage<V> {
@@ -98,7 +98,7 @@ function parseSocketMessage(message: string | ISystemMessage) {
       if (obj.search_results) {
         result[socketKeyMap.SEARCH] = obj.search_results;
       }
-      if (obj.force_logout) {
+      if (obj.force_logout && obj.instance_id === undefined) {
         result[socketKeyMap.LOGOUT] = obj.force_logout;
       }
 

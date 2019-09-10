@@ -1,9 +1,10 @@
-/// <reference path="../../__tests__/types.d.ts" />
+// / <reference path="../../__tests__/types.d.ts" />
 import Api from '../api';
 import { HandleByGlip } from '../handlers';
 import NetworkClient from '../NetworkClient';
 import { apiConfig } from './utils';
-import { NetworkManager, OAuthTokenManager } from 'foundation';
+import { NetworkManager, OAuthTokenManager } from 'foundation/network';
+
 jest.mock('../NetworkClient');
 
 describe('Api', () => {

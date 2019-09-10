@@ -8,7 +8,8 @@ import { TowardIcons } from './TowardIcons';
 import { OPERATION } from './types';
 import styled from '../../foundation/styled-components';
 import { ellipsis } from '../../foundation/utils/styles';
-import { JuiMenuItem, JuiPopover, JuiMenuList } from '../../components';
+import { JuiMenuItem, JuiMenuList } from '../../components/Menus';
+import { JuiPopover } from '../../components/Popover';
 
 type TowardsProps = {
   type: OPERATION;

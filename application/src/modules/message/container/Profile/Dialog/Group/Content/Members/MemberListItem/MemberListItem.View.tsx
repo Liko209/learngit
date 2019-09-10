@@ -14,13 +14,14 @@ import { ANALYTICS_KEY } from '../constants';
 import {
   JuiProfileDialogContentMemberListItem,
   JuiProfileDialogContentMemberListItemName,
-  JuiProfileDialogContentMemberListItemAdmin,
-  JuiProfileDialogContentMemberListItemGuest,
   JuiProfileDialogContentMemberListItemRightWrapper,
 } from 'jui/pattern/Profile/Dialog';
+import { RuiTag } from 'rcui/components/Tag';
+
 import { Menu } from '../Menu';
 import { MembersViewProps } from './types';
 import { ProfileMiniCard } from '@/modules/message/container/MiniCard/Profile';
+import { ProfileMiniCardPerson } from '@/modules/message/container/Profile/MiniCard/Person';
 
 type State = {
   isHover: boolean;
@@ -60,7 +61,7 @@ class MemberListItem extends React.Component<
 
     profileMiniCard.show({
       anchor,
-      id: pid,
+      cardContent: <ProfileMiniCardPerson id={pid} />,
     });
 
     analyticsCollector.openMiniProfile(ANALYTICS_KEY);
@@ -83,8 +84,6 @@ class MemberListItem extends React.Component<
     const presence = <Presence uid={pid} borderSize="medium" />;
     const ListItem = JuiProfileDialogContentMemberListItem;
     const ListItemName = JuiProfileDialogContentMemberListItemName;
-    const ListItemAdmin = JuiProfileDialogContentMemberListItemAdmin;
-    const ListItemGuest = JuiProfileDialogContentMemberListItemGuest;
     const ListRightWrapper = JuiProfileDialogContentMemberListItemRightWrapper;
     const isCurrentUserSelf = currentUserId === pid;
     const ableChangeAdmin = !(adminNumber === 1 && isCurrentUserSelf);
@@ -101,14 +100,10 @@ class MemberListItem extends React.Component<
           {person.userDisplayName}
         </ListItemName>
         {isThePersonAdmin && (
-          <ListItemAdmin data-test-automation-id="profileDialogMemberListItemPersonAdmin">
-            {t('people.profile.admin')}
-          </ListItemAdmin>
+          <RuiTag content={t('people.profile.admin')} color="primary" data-test-automation-id="profileDialogMemberListItemPersonAdmin" />
         )}
         {isThePersonGuest && (
-          <ListItemGuest data-test-automation-id="profileDialogMemberListItemPersonGuest">
-            {t('people.profile.guest')}
-          </ListItemGuest>
+          <RuiTag content={t('people.profile.guest')} color="secondary" data-test-automation-id="profileDialogMemberListItemPersonGuest" />
         )}
         {isTeam && isCurrentUserAdmin && isHover && ableChangeAdmin && (
           <ListRightWrapper>

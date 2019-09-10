@@ -7,10 +7,15 @@ import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
 import { observable, autorun, action } from 'mobx';
-import { ToastProps, ToastMessageAlign } from '../ToastWrapper/Toast/types';
+import {
+  ToastProps,
+  ToastMessageAlign,
+  ToastType,
+} from '../ToastWrapper/Toast/types';
 import { Omit } from 'jui/foundation/utils/typeHelper';
 
 type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
+  key?: string;
   dismissible?: boolean;
   autoHideDuration?: number;
   onClose?: () => void;
@@ -29,13 +34,13 @@ class Notification extends AbstractViewModel {
       Notification._buffer.push(props);
       return {};
     }
-    const { onClose, ...rest } = props;
+    const { onClose, key, ...rest } = props;
     const duplicateIndex = notificationData.findIndex(
       ({ message }) => message === props.message,
     );
-    const id = Date.now();
+    const id = key || Date.now();
     const dismiss = () => {
-      Notification._removeNotification(id);
+      Notification.removeNotification(id);
       onClose && onClose();
     };
     const toast = {
@@ -54,7 +59,7 @@ class Notification extends AbstractViewModel {
   }
 
   @action
-  private static _removeNotification(id: number) {
+  static removeNotification(id: number | string) {
     _.remove(notificationData, item => item.id === id);
   }
 
@@ -75,6 +80,33 @@ class Notification extends AbstractViewModel {
       ...props,
     };
     return Notification._showNotification(config);
+  }
+
+  static flagToastWithType(message: string, type: ToastType) {
+    const config = {
+      message,
+      type,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: true,
+    };
+    return Notification.flagToast(config);
+  }
+
+  static flagWarningToast(message: string) {
+    return this.flagToastWithType(message, ToastType.WARN);
+  }
+
+  static flagSuccessToast(message: string) {
+    return this.flagToastWithType(message, ToastType.SUCCESS);
+  }
+
+  static flagErrorToast(message: string) {
+    return this.flagToastWithType(message, ToastType.ERROR);
+  }
+
+  static flagInfoToast(message: string) {
+    return this.flagToastWithType(message, ToastType.INFO);
   }
 
   static checkBufferAvailability() {

@@ -11,7 +11,7 @@ import {
   RESPONSE_HEADER_KEY,
   HA_PRIORITY,
   REQUEST_PRIORITY,
-} from 'foundation';
+} from 'foundation/network';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
 import { ITokenModel, RCAuthCodeInfo } from './types';

@@ -3,7 +3,7 @@
  * @Date: 2019-05-19 16:28:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { createDecorator } from 'framework';
+import { createDecorator } from 'framework/ioc';
 import { SettingPage } from './SettingPage';
 import { SettingSection } from './SettingSection';
 import { SettingItem } from './SettingItem';

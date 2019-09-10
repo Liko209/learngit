@@ -11,7 +11,7 @@ import {
   MAX_RECORD_COUNT,
   SYNC_STATUS,
 } from './constants';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { silentSyncProcessorHandler } from './SilentSyncProcessorHandler';
 import { SilentSyncProcessor } from './SilentSyncProcessor';
 import {

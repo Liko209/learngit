@@ -12,7 +12,7 @@ import {
   RouteComponentProps,
   Route,
 } from 'react-router-dom';
-import { jupiter } from 'framework';
+import { jupiter } from 'framework/Jupiter';
 import { ISettingService } from '@/interface/setting';
 import { SettingStore } from '../../store';
 import { SETTING_ROUTE_ROOT } from '../../constant';

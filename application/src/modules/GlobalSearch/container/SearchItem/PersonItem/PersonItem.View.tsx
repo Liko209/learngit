@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
@@ -13,6 +13,7 @@ import { Avatar } from '@/containers/Avatar';
 
 import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 type PersonItemProps = ViewProps & WithTranslation & { automationId?: string };
 @observer
@@ -24,7 +25,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
   goToConversation = async () => {
     const { goToConversation, person } = this.props;
     await goToConversation(person.id);
-  }
+  };
 
   handleGoToConversation = (evt: React.MouseEvent) => {
     const { addRecentRecord, onClear, onClose } = this.props;
@@ -33,13 +34,30 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
     this.goToConversation();
     onClear();
     onClose();
-  }
+  };
+
+  private _gotoConversationFromHover = (evt: React.MouseEvent) => {
+    const { dataTrackingDomain } = this.props;
+    analyticsCollector.gotoConversationFromSearch(
+      `${dataTrackingDomain}_peopleHoverMessage`,
+    );
+    this.handleGoToConversation(evt);
+  };
+
+  private _gotoConversationFromClick = (evt: React.MouseEvent) => {
+    const { dataTrackingDomain } = this.props;
+    analyticsCollector.gotoConversationFromSearch(
+      `${dataTrackingDomain}_peopleRow`,
+    );
+    this.handleGoToConversation(evt);
+  };
 
   onCallClose = () => {
-    const { addRecentRecord, onClose } = this.props;
+    const { addRecentRecord, onClose, dataTrackingDomain } = this.props;
     addRecentRecord();
     onClose();
-  }
+    analyticsCollector.outboundCallFromPeople(`${dataTrackingDomain}_people`);
+  };
 
   render() {
     const { extensions } = this._globalSearchStore;
@@ -62,7 +80,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
       <JuiIconButton
         data-test-automation-id="goToConversationIcon"
         tooltipTitle={t('message.message')}
-        onClick={this.handleGoToConversation}
+        onClick={this._gotoConversationFromHover}
         variant="plain"
         size="small"
         key="search item go to conversation icon"
@@ -72,16 +90,16 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
     );
     const callIcon = extensions['searchItem']
       ? [...extensions['searchItem']].map(
-        (Extension: React.ComponentType<any>) => (
-          <Extension
-            key={`GLOBAL_SEARCH_EXTENSION_${Extension.displayName}`}
-            variant="plain"
-            id={id}
-            onClick={this.onCallClose}
-            size="small"
-          />
-        ),
-      )
+          (Extension: React.ComponentType<any>) => (
+            <Extension
+              key={`GLOBAL_SEARCH_EXTENSION_${Extension.displayName}`}
+              variant="plain"
+              id={id}
+              onCallSuccess={this.onCallClose}
+              size="small"
+            />
+          ),
+        )
       : null;
 
     return (
@@ -90,7 +108,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
         onMouseLeave={onMouseLeave}
         hovered={hovered}
         key={id}
-        onClick={this.handleGoToConversation}
+        onClick={this._gotoConversationFromClick}
         Avatar={<Avatar uid={id} size="small" />}
         value={userDisplayName}
         terms={terms}

@@ -7,7 +7,8 @@
 export {
   RecentSearchModel,
   RecentSearchTypes,
-  FuzzySearchPersonOptions,
+  FuzzySearchContactOptions,
+  FuzzySearchPhoneContactOptions,
   PersonSortingOrder,
   PhoneContactEntity,
 } from './Search';

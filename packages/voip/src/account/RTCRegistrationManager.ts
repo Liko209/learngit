@@ -40,13 +40,13 @@ class RTCRegistrationManager extends EventEmitter2
     this.reRegister();
   }
 
-  public onReRegisterAction(): void {
+  onReRegisterAction(): void {
     if (this._userAgent) {
       this._userAgent.reRegister();
     }
   }
 
-  public onProvisionReadyAction(
+  onProvisionReadyAction(
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ): void {
@@ -54,7 +54,7 @@ class RTCRegistrationManager extends EventEmitter2
     this._restartUA(provisionData, options);
   }
 
-  public onUnregisterAction() {
+  onUnregisterAction() {
     this.emit(REGISTRATION_EVENT.LOGOUT_ACTION);
     setImmediate(() => {
       if (this._userAgent) {
@@ -63,11 +63,11 @@ class RTCRegistrationManager extends EventEmitter2
     });
   }
 
-  public onReceiveIncomingInviteAction(callSession: any) {
+  onReceiveIncomingInviteAction(callSession: any) {
     this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
   }
 
-  public onSwitchBackProxyAction() {
+  onSwitchBackProxyAction() {
     this.emit(REGISTRATION_EVENT.SWITCH_BACK_PROXY_ACTION);
   }
 
@@ -154,7 +154,7 @@ class RTCRegistrationManager extends EventEmitter2
     });
   }
 
-  public provisionReady(provisionData: any, provisionOptions: any) {
+  provisionReady(provisionData: any, provisionOptions: any) {
     this._eventQueue.push(
       {
         name: REGISTRATION_EVENT.PROVISION_READY,
@@ -169,7 +169,7 @@ class RTCRegistrationManager extends EventEmitter2
     );
   }
 
-  public reRegister() {
+  reRegister() {
     this._eventQueue.push(
       {
         name: REGISTRATION_EVENT.RE_REGISTER,
@@ -178,6 +178,10 @@ class RTCRegistrationManager extends EventEmitter2
         this._fsm.reRegister();
       },
     );
+  }
+
+  public getRegistrationStatusCode(): number {
+    return !this._userAgent ? -1 : this._userAgent.getStatusCode();
   }
 
   public makeCall(
@@ -213,14 +217,11 @@ class RTCRegistrationManager extends EventEmitter2
     );
   }
 
-  public createOutgoingCallSession(
-    phoneNumber: string,
-    options: RTCCallOptions,
-  ): any {
+  createOutgoingCallSession(phoneNumber: string, options: RTCCallOptions): any {
     return this._userAgent.makeCall(phoneNumber, options);
   }
 
-  public logout() {
+  logout() {
     this._eventQueue.push(
       {
         name: REGISTRATION_EVENT.LOGOUT,

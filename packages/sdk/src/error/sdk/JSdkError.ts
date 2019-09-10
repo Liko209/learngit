@@ -1,4 +1,4 @@
-import { JError } from 'foundation';
+import { JError } from 'foundation/error';
 import { ERROR_TYPES } from '../types';
 
 export class JSdkError extends JError {

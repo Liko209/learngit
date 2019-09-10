@@ -1,0 +1,17 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/NewConversation/NewConversation.ts",
+      "fixtures/PhoneTab/Voicemail/CheckStatus.ts",
+      "fixtures/ConversationStream/Event.ts"
+    ],
+    "include_tags": [
+      "JPT-2604",
+      "JPT-2503",
+      "JPT-262"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

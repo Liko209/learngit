@@ -3,9 +3,7 @@
  * @Date: 2018-11-22 11:27:02
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  observable, action, comparer, computed,
-} from 'mobx';
+import { observable, action, comparer, computed } from 'mobx';
 import { ProfileDialogGroupViewModel } from '../../Group.ViewModel';
 import { MembersProps, MembersViewProps } from './types';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
@@ -25,14 +23,16 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   _filteredMemberIds: number[] = [];
   @observable
   keywords: string = '';
-  changeSearchInputDebounce: () => void;
+
+  @action
+  changeSearchInput = (keywords: string) => {
+    this.keywords = keywords;
+  };
+
+  changeSearchInputDebounce = debounce(this.changeSearchInput, DELAY_DEBOUNCE);
 
   constructor(props: MembersProps) {
     super(props);
-    this.changeSearchInputDebounce = debounce(
-      this.changeSearchInput.bind(this),
-      DELAY_DEBOUNCE,
-    );
     this.reaction(() => this.id, this.createSortableHandler, {
       fireImmediately: true,
     });
@@ -58,12 +58,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   createSortableHandler = () => {
     // This handler need observable
     this._sortableGroupMemberHandler = new SortableGroupMemberHandler(this.id);
-  }
-
-  @action
-  changeSearchInput = (keywords: string) => {
-    this.keywords = keywords;
-  }
+  };
 
   @action
   handleSearch = async () => {
@@ -71,12 +66,11 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       const searchService = ServiceLoader.getInstance<SearchService>(
         ServiceConfig.SEARCH_SERVICE,
       );
-      const result = await searchService.doFuzzySearchPersons({
-        searchKey: this.keywords,
+      const result = await searchService.doFuzzySearchPersons(this.keywords, {
         excludeSelf: false,
         arrangeIds: this._sortableGroupMemberHandler.allSortedMemberIds,
         fetchAllIfSearchKeyEmpty: true,
-        asIdsOrder: true,
+        recentFirst: true,
       });
       const ids = result.sortableModels.map(
         (person: SortableModel<Person>) => person.id,
@@ -86,7 +80,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     }
 
     return null;
-  }
+  };
 
   @action
   hasMore = () => {
@@ -95,23 +89,23 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     }
 
     return this.group.members.length !== this.filteredMemberIds.length;
-  }
+  };
 
   @action
   loadInitialData = async () => {
     await this._sortableGroupMemberHandler.fetchGroupMembersByPage(20);
 
     await this.handleSearch();
-  }
+  };
 
   @action
   loadMore = async (direction: 'up' | 'down', count: number) => {
     await this._sortableGroupMemberHandler.fetchGroupMembersByPage(count);
-  }
+  };
 
   dispose = () => {
     this._sortableGroupMemberHandler &&
       this._sortableGroupMemberHandler.dispose();
-  }
+  };
 }
 export { MembersViewModel };

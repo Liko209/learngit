@@ -8,12 +8,13 @@ import { RCSubscriptionController } from '../RCSubscriptionController';
 import { RCEventSubscriptionConfig } from '../../config';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { notificationCenter } from 'sdk/service';
+import { notificationCenter, SERVICE } from 'sdk/service';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { RcSubscriptionApi } from 'sdk/api/ringcentral/RcSubscriptionApi';
 import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
 import Pubnub from 'pubnub';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PNCategories } from '../types';
 
 jest.mock('sdk/framework/utils/jobSchedule');
 jest.mock('sdk/api/ringcentral/RcSubscriptionApi');
@@ -52,6 +53,7 @@ describe('RCSubscriptionController', () => {
     eventFilters: [
       '/restapi/v1.0/account/37439510/extension/1428352020/message-store',
       '/restapi/v1.0/account/37439510/extension/1428352020/missed-calls',
+      '/restapi/v1.0/account/37439510/extension/1428352020/voicemail',
       '/restapi/v1.0/account/37439510/extension/1428352020/presence?detailedTelephonyState=true&sipData=true',
     ],
     expirationTime: '2999-06-30T01:03:22.973Z',
@@ -108,6 +110,45 @@ describe('RCSubscriptionController', () => {
       rcSubscriptionController['_initStatus'] = 0;
     });
 
+    it('should create new subscription and start pubnub when old subscription expired', async (done: any) => {
+      rcSubscriptionController['_pubNub'] = pubNub;
+      rcSubscriptionController['_initStatus'] = 0;
+      const expiredSubscription = {
+        ...subscriptionInfo,
+        expirationTime: '1999-06-30T01:03:22.973Z',
+        expiresIn: 1,
+        status: 'Active',
+        creationTime: '1019-05-31T01:03:22.973Z',
+      };
+      rcSubscriptionController['_pubNubChanel'] = {
+        address: 'adr',
+        subscriberKey: ' s key',
+      };
+      userConfig.getRcEventSubscription = jest
+        .fn()
+        .mockResolvedValue(expiredSubscription);
+
+      RcSubscriptionApi.createSubscription = jest
+        .fn()
+        .mockResolvedValue(subscriptionInfo);
+
+      await rcSubscriptionController.startSubscription();
+      setTimeout(() => {
+        expect(pubNub.addListener).toHaveBeenCalledWith({
+          message: rcSubscriptionController['_notifyMessages'],
+          status: rcSubscriptionController['_notifyStatus'],
+        });
+        expect(pubNub.subscribe).toHaveBeenCalledWith({
+          channels: ['address'],
+        });
+        expect(userConfig.setRcEventSubscription).toHaveBeenCalledWith(
+          subscriptionInfo,
+        );
+
+        done();
+      });
+    });
+
     it('should just return when is initializing', async (done: any) => {
       rcSubscriptionController['_initStatus'] = 1;
       rcSubscriptionController['_hasValidSubscriptionInfo'] = jest.fn();
@@ -124,7 +165,6 @@ describe('RCSubscriptionController', () => {
     it('should just subscribe when subscribe is alive and do not need update', async (done: any) => {
       await rcSubscriptionController.startSubscription();
       setTimeout(() => {
-        expect(userConfig.setRcEventSubscription).toHaveBeenCalled();
         expect(
           rcSubscriptionController['_pubNub'].addListener,
         ).toHaveBeenCalledWith({
@@ -142,7 +182,7 @@ describe('RCSubscriptionController', () => {
         expect(jobScheduler.scheduleJob).toHaveBeenCalled();
         done();
       });
-      expect.assertions(7);
+      expect.assertions(6);
     });
 
     it('should pause subscribe when error happened', async (done: any) => {
@@ -162,16 +202,26 @@ describe('RCSubscriptionController', () => {
 
     it('should update subscribe when new subscription has new events', async (done: any) => {
       rcSubscriptionController['_initStatus'] = 0;
-
       const newSub = _.cloneDeep(subscriptionInfo);
       newSub.eventFilters = ['111', '222'];
       userConfig.getRcEventSubscription = jest.fn().mockResolvedValue(newSub);
+
+      const newResponse = {
+        ...newSub,
+        expirationTime: '3999-06-30T01:03:22.973Z',
+      };
       RcSubscriptionApi.updateSubscription = jest
         .fn()
-        .mockResolvedValue(newSub);
+        .mockResolvedValue(newResponse);
+      rcSubscriptionController['_pubNubChanel'] = {
+        address: 'adr',
+        subscriberKey: ' s key',
+      };
       await rcSubscriptionController.startSubscription();
       setTimeout(() => {
-        expect(userConfig.setRcEventSubscription).toHaveBeenCalled();
+        expect(userConfig.setRcEventSubscription).toHaveBeenCalledWith(
+          newResponse,
+        );
         expect(
           rcSubscriptionController['_pubNub'].addListener,
         ).toHaveBeenCalledWith({
@@ -192,6 +242,7 @@ describe('RCSubscriptionController', () => {
               '/restapi/v1.0/account/~/extension/~/message-store',
               '/restapi/v1.0/account/~/extension/~/missed-calls',
               '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
+              '/restapi/v1.0/account/~/extension/~/voicemail',
             ],
           },
         );
@@ -239,6 +290,7 @@ describe('RCSubscriptionController', () => {
             '/restapi/v1.0/account/~/extension/~/presence?detailedTelephonyState=true&sipData=true',
             '/restapi/v1.0/account/~/extension/~/message-store',
             '/restapi/v1.0/account/~/extension/~/missed-calls',
+            '/restapi/v1.0/account/~/extension/~/voicemail',
           ],
         });
         expect(RcSubscriptionApi.updateSubscription).not.toHaveBeenCalled();
@@ -268,14 +320,16 @@ describe('RCSubscriptionController', () => {
     it('should renew when subscription is going to expired', async () => {
       rcSubscriptionController['_startPubNub'] = jest.fn();
       rcSubscriptionController['_lastSubscription'] = subscriptionInfo as any;
-      RcSubscriptionApi.renewSubscription.mockResolvedValue(subscriptionInfo);
+      const newInfo = {
+        ...subscriptionInfo,
+        expirationTime: '3999-06-30T01:03:22.973Z',
+      };
+      RcSubscriptionApi.renewSubscription.mockResolvedValue(newInfo);
       await rcSubscriptionController['_renewSubscription']();
       expect(RcSubscriptionApi.renewSubscription).toHaveBeenCalledWith(
         subscriptionInfo.id,
       );
-      expect(userConfig.setRcEventSubscription).toHaveBeenCalledWith(
-        subscriptionInfo,
-      );
+      expect(userConfig.setRcEventSubscription).toHaveBeenCalledWith(newInfo);
       expect(rcSubscriptionController['_startPubNub']).toHaveBeenCalled();
     });
 
@@ -309,8 +363,33 @@ describe('RCSubscriptionController', () => {
     });
 
     it('should print log when call _notifyStatus', () => {
-      rcSubscriptionController['_notifyStatus']({});
+      rcSubscriptionController['_notifyStatus']({} as any);
       expect(mainLogger.tags).toHaveBeenCalled();
+    });
+
+    it.each`
+      status                                                              | result
+      ${{ category: PNCategories.PNConnectedCategory }}                   | ${true}
+      ${{ category: PNCategories.PNReconnectedCategory }}                 | ${true}
+      ${{ error: true, category: PNCategories.PNReconnectedCategory }}    | ${false}
+      ${{ category: PNCategories.PNAccessDeniedCategory }}                | ${false}
+      ${{ category: PNCategories.PNBadRequestCategory }}                  | ${false}
+      ${{ category: PNCategories.PNNetworkDownCategory }}                 | ${false}
+      ${{ category: PNCategories.PNNetworkIssuesCategory }}               | ${false}
+      ${{ category: PNCategories.PNNetworkUpCategory }}                   | ${false}
+      ${{ category: PNCategories.PNRequestMessageCountExceededCategory }} | ${false}
+      ${{ category: PNCategories.PNTimeoutCategory }}                     | ${false}
+      ${{ category: PNCategories.PNUnknownCategory }}                     | ${false}
+    `('should notify $result when receive $status', ({ status, result }) => {
+      rcSubscriptionController['_notifyStatus'](status as any);
+      if (result) {
+        expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+          SERVICE.RC_EVENT_SUBSCRIPTION.SUBSCRIPTION_CONNECTED,
+          true,
+        );
+      } else {
+        expect(notificationCenter.emitKVChange).not.toHaveBeenCalled();
+      }
     });
   });
 

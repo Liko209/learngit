@@ -9,6 +9,7 @@ import { IconButtonSize } from 'jui/components/Buttons';
 type MoreProps = {
   id: number;
   size?: IconButtonSize;
+  automationId?: string;
 };
 
 type MoreViewProps = MoreProps & {

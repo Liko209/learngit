@@ -18,7 +18,11 @@ type ViewProps = {
   ) => void;
   handleSignOut: () => void;
   handleSendFeedback: () => void;
+  handleCustomStatus: () => void;
+  handleClearStatus: () => void;
   handleOpen: () => void;
+  awayStatus: string;
+  colons: string;
 };
 
 export { Props, ViewProps };

@@ -5,7 +5,7 @@
  */
 
 import { computed, observable } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { StoreViewModel } from '@/store/ViewModel';

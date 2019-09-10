@@ -50,6 +50,7 @@ const name2icon = {
   dashboard: 'dashboard',
   dashboard_border: 'dashboard_border',
   chat: 'chat',
+  share: 'share',
   direct_message: 'people',
   team: 'team',
   work: 'work',
@@ -151,8 +152,15 @@ const name2icon = {
   dial: 'dial',
   forwardcall: 'forwardcall',
   addmember_border: 'add-member_border',
+  view: 'view',
   speaker: 'speaker',
   'speaker-mute': 'speaker-mute',
+  end_and_answer: 'end--answer',
+  ignore: 'ignore',
+  mute: 'mute-notification',
+  'item-list-selected': 'item-list-selected',
+  'transfer-call': 'transfer-call',
+  askfirst: 'askfirst',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

@@ -7,7 +7,7 @@
 import { observable, action } from 'mobx';
 // import { ENTITY_NAME } from '@/store';
 // import { getEntity } from '@/store/utils';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props } from './types';
 import { notificationCenter, SERVICE } from 'sdk/service';

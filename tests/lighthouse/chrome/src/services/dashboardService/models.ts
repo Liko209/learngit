@@ -38,6 +38,13 @@ class MemoryDiffItem {
   sizeChangeForGlip: string;
 }
 
+class LongTask {
+  name: string;
+  entryType: string;
+  startTime: number;
+  duration: number;
+}
+
 class DashboardItem {
   sceneId: number;
   metric: {
@@ -55,6 +62,7 @@ class DashboardItem {
   b: DashboardPair;
   startMemory: DashboardPair;
   memoryGrowth: DashboardPair;
+  longTasks: Array<LongTask>;
 
   memoryDiffArray: Array<Array<MemoryDiffItem>>;
 }
@@ -64,5 +72,6 @@ export {
   SceneSummary,
   DashboardItem,
   MemoryDiffItem,
-  DashboardPair
+  DashboardPair,
+  LongTask
 }

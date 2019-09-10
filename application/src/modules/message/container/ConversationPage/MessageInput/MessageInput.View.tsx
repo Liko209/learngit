@@ -31,10 +31,11 @@ class MessageInputViewComponent extends Component<
   {
     modules: object;
   }
-  > {
+> {
   private _mentionRef: RefObject<any> = createRef();
   private _attachmentsRef: RefObject<any> = createRef();
   private _emojiRef: RefObject<any> = createRef();
+  private _messageInputRef: RefObject<any> = createRef();
   private _imageDownloader: ImageDownloader;
   state = {
     modules: {},
@@ -166,8 +167,18 @@ class MessageInputViewComponent extends Component<
     ),
   );
 
+  onPostClicked = () => {
+    const contents = this._messageInputRef.current.getContents();
+    this.props.handleContentSent('button', contents);
+  };
+
   private _getAttachmentsNode = moize((id: number) => (
-    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft />
+    <Attachments
+      ref={this._attachmentsRef}
+      id={id}
+      forceSaveDraft
+      onPostClicked={this.onPostClicked}
+    />
   ));
 
   private _getFooterNode = moize((hasInput: boolean) => (
@@ -189,6 +200,7 @@ class MessageInputViewComponent extends Component<
 
     return (
       <JuiMessageInput
+        ref={this._messageInputRef}
         data-test-automation-id="message-input"
         value={draft}
         onChange={contentChange}

@@ -7,7 +7,9 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 import { ScrollPosition } from 'jui/components/VirtualizedList/hooks';
 
-type Props = {};
+type Props = {
+  displayCallerIdSelector: boolean;
+};
 
 type ViewProps = {
   isError: boolean;
@@ -19,7 +21,9 @@ type ViewProps = {
   decreaseFocusIndex: () => void;
   focusIndex: number;
   makeCall: (focusIndex?: number) => void;
+  selectCallItem: (focusIndex?: number) => void;
   dialerInputFocused: boolean;
+  isTransferPage: boolean;
 } & Props;
 
 export { Props, ViewProps };

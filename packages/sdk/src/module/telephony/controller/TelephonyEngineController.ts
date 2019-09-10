@@ -5,10 +5,10 @@
  */
 import {
   ITelephonyNetworkDelegate,
-  IRequest,
   ITelephonyDaoDelegate,
-  telephonyLogger,
-} from 'foundation';
+} from 'foundation/telephony';
+import { telephonyLogger } from 'foundation/log';
+import { IRequest } from 'foundation/network';
 import { RTCEngine, RTCSipEmergencyServiceAddr } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
@@ -28,6 +28,9 @@ import { Call } from '../entity';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 import { notificationCallback } from '../types';
 import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
+import { IPersonService } from 'sdk/module/person/service/IPersonService';
+import { IPhoneNumberService } from 'sdk/module/phoneNumber/service/IPhoneNumberService';
+import { IRCInfoService } from 'sdk/module/rcInfo/service/IRCInfoService';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -73,6 +76,9 @@ class TelephonyEngineController {
   constructor(
     telephonyConfig: TelephonyUserConfig,
     entityCacheController: IEntityCacheController<Call>,
+    private _personService: IPersonService,
+    private _phoneNumberService: IPhoneNumberService,
+    private _rcInfoService: IRCInfoService,
   ) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
     this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
@@ -156,8 +162,15 @@ class TelephonyEngineController {
     // Engine can hold multiple accounts for multiple calls
     this._preCallingPermission = await this.getVoipCallPermission();
     this.rtcEngine.setUserInfo(await this.getUserInfo());
-    if (this._preCallingPermission) {
-      this._accountController = new TelephonyAccountController(this.rtcEngine);
+    // only one account is supported
+    if (this._preCallingPermission && !this._accountController) {
+      telephonyLogger.debug('creating telephony account');
+      this._accountController = new TelephonyAccountController(
+        this.rtcEngine,
+        this._personService,
+        this._phoneNumberService,
+        this._rcInfoService,
+      );
       this._accountDelegate &&
         this._accountController.setAccountDelegate(this._accountDelegate);
       this._entityCacheController &&
@@ -238,6 +251,10 @@ class TelephonyEngineController {
 
   getRemoteEmergencyAddress() {
     return this._accountController.getRemoteEmergencyAddress();
+  }
+
+  hasActiveDL() {
+    return !!this.getRemoteEmergencyAddress();
   }
 
   isEmergencyAddrConfirmed() {

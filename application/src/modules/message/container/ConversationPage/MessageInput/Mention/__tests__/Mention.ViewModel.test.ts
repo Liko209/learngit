@@ -7,8 +7,9 @@ import { getEntity } from '@/store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { toJS } from 'mobx';
 
+jest.unmock('react-quill');
+jest.unmock('quill');
 jest.mock('@/store/utils');
 jest.mock('sdk/module/search');
 
@@ -69,7 +70,7 @@ describe('mentionViewModel', () => {
   it('_doFuzzySearchPersons()', async () => {
     mockSearchService = {
       doFuzzySearchPersons: jest.fn().mockResolvedValue({
-        sortableModels: [{id: 1}, {id: 2}, {id: 3}],
+        sortableModels: [{ id: 1 }, { id: 2 }, { id: 3 }],
       }),
     };
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockSearchService);
@@ -79,11 +80,11 @@ describe('mentionViewModel', () => {
       memberIds: mockGroupEntityData.members,
     });
 
-    expect(mockSearchService.doFuzzySearchPersons).toHaveBeenCalledWith({
-      searchKey: '',
+    expect(mockSearchService.doFuzzySearchPersons).toHaveBeenCalledWith('', {
       excludeSelf: true,
       arrangeIds: mockGroupEntityData.members,
       fetchAllIfSearchKeyEmpty: true,
+      recentFirst: true,
     });
     expect(mentionViewModel.membersId).toEqual([1, 2, 3]);
   });
@@ -99,16 +100,16 @@ describe('mentionViewModel', () => {
       quill,
     });
     handler();
-    expect(quill.getModule).not.toBeCalled();
+    expect(quill.getModule).not.toHaveBeenCalled();
     mentionViewModel.open = true;
     // currentIndex default will be 1 because of title will within VL
     mentionViewModel.membersId = [1];
     mentionViewModel.membersDisplayName = ['name'];
     handler();
-    expect(quill.getModule).toBeCalledWith('mention');
-    expect(mentionModules.select).toBeCalledWith(
-      mentionViewModel.membersId[ mentionViewModel.currentIndex],
-      mentionViewModel.membersDisplayName[ mentionViewModel.currentIndex],
+    expect(quill.getModule).toHaveBeenCalledWith('mention');
+    expect(mentionModules.select).toHaveBeenCalledWith(
+      mentionViewModel.membersId[mentionViewModel.currentIndex],
+      mentionViewModel.membersDisplayName[mentionViewModel.currentIndex],
       mentionViewModel._denotationChar,
       mentionViewModel.isTeam,
     );

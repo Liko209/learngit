@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, action, observable } from 'mobx';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { ContentSearchParams, ESearchContentTypes } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
 import { SearchedResultData } from 'sdk/module/post/controller/implementation/types';

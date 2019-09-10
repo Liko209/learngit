@@ -11,6 +11,13 @@ const JuiProfileMiniCardPersonStatus = styled('div')`
   ${typography('body1')};
   ${ellipsis()};
   color: ${grey('500')};
+  && {
+    .emoji-mart-emoji {
+      position: relative;
+      top: 50%;
+      transform: translateY(10%);
+    }
+  }
 `;
 
 JuiProfileMiniCardPersonStatus.displayName = 'JuiProfileMiniCardPersonStatus';

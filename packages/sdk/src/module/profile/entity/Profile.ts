@@ -13,7 +13,25 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
+  AUDIO_SOUNDS_INFO,
+  SOUNDS_TYPE,
+  RINGS_TYPE,
 } from '../constants';
+import { IdModel } from 'sdk/framework/model';
+
+type CONVERSATION_NOTIFICATIONS_VALUE = {
+  [groupId: number]: {
+    muted?: boolean;
+    desktop_notifications?: boolean;
+    push_notifications?: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+    email_notifications?: EMAIL_NOTIFICATION_OPTIONS;
+  };
+};
+
+type AUDIO_NOTIFICATIONS = {
+  gid: number;
+  sound: SOUNDS_TYPE | RINGS_TYPE;
+};
 
 type Profile = ExtendedBaseModel & {
   person_id?: number;
@@ -21,7 +39,6 @@ type Profile = ExtendedBaseModel & {
   favorite_post_ids: number[];
   skip_close_conversation_confirmation?: boolean;
   me_tab: boolean;
-  conversation_level_notifications?: object;
 
   // call settings
   [SETTING_KEYS.CALL_OPTION]?: CALLING_OPTIONS;
@@ -50,9 +67,25 @@ type Profile = ExtendedBaseModel & {
 
   // conversation settings
   [SETTING_KEYS.MAX_LEFTRAIL_GROUP]?: string;
+  [SETTING_KEYS.CONVERSATION_NOTIFICATION]?: CONVERSATION_NOTIFICATIONS_VALUE;
+  [SETTING_KEYS.CONVERSATION_AUDIO]?: AUDIO_NOTIFICATIONS[];
+  [SETTING_KEYS.SHOW_LINK_PREVIEWS]: boolean;
+
   // meetings
   video_service?: string;
   rcv_beta?: boolean;
 };
+type ConversationPreference = IdModel<number> & {
+  muted: boolean;
+  desktopNotifications: boolean;
+  audioNotifications: AUDIO_SOUNDS_INFO;
+  pushNotifications: MOBILE_TEAM_NOTIFICATION_OPTIONS;
+  emailNotifications: EMAIL_NOTIFICATION_OPTIONS;
+};
 
-export { Profile };
+export {
+  Profile,
+  ConversationPreference,
+  CONVERSATION_NOTIFICATIONS_VALUE,
+  AUDIO_NOTIFICATIONS,
+};

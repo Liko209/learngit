@@ -6,18 +6,16 @@
 import { SocketFSM, StateHandlerType } from './SocketFSM';
 import notificationCenter from '../notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../eventKey';
-import {
-  mainLogger,
-  HealthModuleManager,
-  BaseHealthModule,
-  powerMonitor,
-} from 'foundation';
-import { AccountService } from '../../module/account/service';
+import { mainLogger } from 'foundation/log';
+import { HealthModuleManager, BaseHealthModule } from 'foundation/health';
+import { powerMonitor } from 'foundation/utils';
+import { AccountService } from 'sdk/module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
-import { getCurrentTime } from '../../utils/jsUtils';
-import { SyncService } from '../../module/sync/service';
-import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { getCurrentTime } from 'sdk/utils/jsUtils';
+import { SyncService } from 'sdk/module/sync/service';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { MODULE_IDENTIFY, MODULE_NAME } from './constants';
+import { LoginInfo } from 'sdk/types';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -111,8 +109,8 @@ export class SocketManager {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
-    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
-      success && this._onLogin();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (loginInfo: LoginInfo) => {
+      loginInfo.success && this._onLogin();
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {
@@ -157,7 +155,7 @@ export class SocketManager {
     this._reconnectRetryCount = this._reconnectRetryCount + 1;
     this.error(
       `${errMsg}, clearing socket address$ and re do index, nth:${
-        this._reconnectRetryCount
+      this._reconnectRetryCount
       }`,
     );
   }
@@ -302,7 +300,7 @@ export class SocketManager {
     }
     this.info(
       `Not renew socketFSM: _hasLoggedIn[${this._hasLoggedIn}], _isOffline[${
-        this._isOffline
+      this._isOffline
       }]`,
     );
     if (this._hasLoggedIn && !this._isOffline) {
@@ -350,7 +348,7 @@ export class SocketManager {
   private _canConnectCallback(id: number) {
     this.info(
       `_startFSM can reconnect callback _startRealFSM id:${id} this._currentId:${
-        this._currentId
+      this._currentId
       }`,
     );
     if (id === this._currentId) {

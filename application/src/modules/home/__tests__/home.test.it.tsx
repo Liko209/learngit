@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { itForSdk } from 'shield/sdk';
-import { h, bootstrap, TestApp } from 'shield/application';
+import { jit } from 'shield/sdk/SdkItFramework';
+import { h, bootstrap, TestApp } from 'shield/application/it';
 import { wait } from 'shield/utils';
 import { LeftRail } from '../../message/container/LeftRail';
-import { JuiListNavItem } from 'jui/components';
+import { JuiListNavItem } from 'jui/components/Lists';
 import { ConversationListItemText } from 'jui/pattern/ConversationList/ConversationListItemText';
 import ThemeProvider from '@/containers/ThemeProvider';
 
-itForSdk('Service Integration test', ({ helper, template, sdk }) => {
+jit('Service Integration test', ({ helper, template, sdk }) => {
   helper.useInitialData(template.STANDARD);
 
   describe('test', () => {

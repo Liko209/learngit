@@ -12,7 +12,7 @@ import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { Dialog } from '@/containers/Dialog';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 
 type Props = ProgressActionsViewProps & WithTranslation;
 

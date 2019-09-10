@@ -187,7 +187,7 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('update multi groups, should add to cache when update a not exist group', () => {
-      groupEntityCacheController.update([
+      groupEntityCacheController.bulkUpdate([
         testTeamData[0],
         {
           id: 3,
@@ -201,7 +201,7 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('update, should not add to cache when update a not exist group but not a individual group', () => {
-      groupEntityCacheController.update([
+      groupEntityCacheController.bulkUpdate([
         {
           id: 2,
           is_team: false,
@@ -215,7 +215,7 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('should add to cache when put a individual group', () => {
-      groupEntityCacheController.put([
+      groupEntityCacheController.bulkPut([
         testTeamData[0],
         {
           id: 3,
@@ -231,7 +231,7 @@ describe('GroupEntityCacheController', () => {
     it('should put to team id cache when a put a team include me', () => {
       const res = groupEntityCacheController.getTeamIdsIncludeMe();
       expect(res).toEqual(new Set());
-      groupEntityCacheController.put([
+      groupEntityCacheController.bulkPut([
         {
           id: 2,
           creator_id: 1,
@@ -245,7 +245,7 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('should not add to cache when put a multiple people group or team', () => {
-      groupEntityCacheController.put([
+      groupEntityCacheController.bulkPut([
         {
           id: 2,
           is_team: false,
@@ -259,7 +259,7 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('should delete cached team id when delete a team include me', () => {
-      groupEntityCacheController.put([
+      groupEntityCacheController.bulkPut([
         {
           id: 2,
           creator_id: 1,
@@ -276,7 +276,7 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('delete, should delete the corresponding individual group as well', () => {
-      groupEntityCacheController.put([
+      groupEntityCacheController.bulkPut([
         {
           id: 2,
           is_team: false,

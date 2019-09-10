@@ -15,7 +15,7 @@ import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import PersonModel from '@/store/models/Person';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { i18nP } from '@/utils/i18nT';
 import { Props, ViewProps } from './types';

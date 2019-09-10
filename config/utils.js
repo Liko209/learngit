@@ -31,8 +31,19 @@ class FakeStorage {
   }
 }
 
+const wrapFunction = (func, options = {}) => {
+  const { before, after } = options;
+  const rawFunc = func;
+  const wrapped = (...params) => {
+    before && before(...params);
+    const result = rawFunc(...params);
+    return after ? after(result, ...params) : result;
+  };
+  return wrapped;
+};
 
 module.exports = {
   copyProps,
-  FakeStorage
-}
+  FakeStorage,
+  wrapFunction,
+};

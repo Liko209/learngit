@@ -4,7 +4,7 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 import { Omit } from 'jui/foundation/utils/typeHelper';
-import { createDecorator } from 'framework';
+import { createDecorator } from 'framework/ioc';
 import { INotificationPermission as permissionInterface } from 'sdk/pal';
 import { RINGS_TYPE, SOUNDS_TYPE } from 'sdk/module/profile';
 import { IMedia, MediaOptions } from '@/interface/media';

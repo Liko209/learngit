@@ -22,10 +22,10 @@ import GroupModel from '@/store/models/Group';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
-import { IntegrationItem, Item } from 'sdk/module/item/entity';
-import IntegrationItemModel from '@/store/models/IntegrationItem';
-import { i18nP } from '@/utils/i18nT';
+import {  Item } from 'sdk/module/item/entity';
+import { getColonsEmoji, getStatusPlainText } from '@/common/getSharedStatus';
 import { repliedEntityHandlers } from './utils';
+import { getIntegration } from '../ConversationSheet/IntegrationItem/getIntegration';
 
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
@@ -109,24 +109,8 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   get name() {
     // get name from items if this post is integration post
     // post -> itemIds -> isIntegration -> integrationItem.activity
-    const integrationItems = this.integrationItems;
-    if (integrationItems.length > 0) {
-      if (this.post.itemIds.length === 1) {
-        const integrationItemID = integrationItems[0];
-        const item = getEntity<IntegrationItem, IntegrationItemModel>(
-          ENTITY_NAME.ITEM,
-          integrationItemID as number,
-        );
-        return item.activity || this.creator.userDisplayName;
-      }
-      return `${this.creator.userDisplayName} ${i18nP('message.sharedItems')}`;
-    }
-    return this.creator.userDisplayName;
-  }
-
-  @computed
-  get customStatus() {
-    return this.creator.awayStatus;
+    const userName = this.creator.userDisplayName || '';
+    return getIntegration(this.post, userName) || userName;
   }
 
   @computed
@@ -147,7 +131,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
   get showActivityStatus() {
     const { parentId, existItemIds } = this.post;
-  
+
     return !parentId && Boolean(existItemIds.length);
   }
 
@@ -159,13 +143,27 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
       return null;
     }
 
-    const { typeId, ...rest } = getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, parentId);
+    const { typeId, ...rest } = getEntity<Item, ItemModel>(
+      ENTITY_NAME.ITEM,
+      parentId,
+    );
 
     if (!repliedEntityHandlers[typeId]) {
       return null;
     }
 
     return repliedEntityHandlers[typeId](rest);
+  }
+  @computed
+  get colonsEmoji() {
+    const status = this.creator.awayStatus || '';
+    return getColonsEmoji(status);
+  }
+  @computed
+  get statusPlainText() {
+    const status = this.creator.awayStatus || '';
+
+    return getStatusPlainText(status);
   }
 }
 

@@ -1,5 +1,6 @@
 import Dexie from 'dexie';
 import { execQuery } from '../queryExecutor';
+// import { DexieTester } from './Setup';
 import {
   extractCollectionsToIds,
   extractCollectionsToFirstNames,
@@ -8,15 +9,16 @@ import {
   IPerson,
 } from '../../__tests__/utils';
 
-// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
-// Make IDBKeyRange global so your code can create key ranges.
 Dexie.dependencies.indexedDB = require('fake-indexeddb');
 Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+
+// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
+// Make IDBKeyRange global so your code can create key ranges.
 
 describe('execQuery<IPerson>()', () => {
   let table: Dexie.Table<IPerson>;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     ({ table } = await setupDexie());
   });
 

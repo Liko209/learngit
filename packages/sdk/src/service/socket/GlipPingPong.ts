@@ -3,7 +3,7 @@
  * @Date: 2019-03-01 14:12:15
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { getCurrentTime } from '../../utils/jsUtils';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';

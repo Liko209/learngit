@@ -35,7 +35,7 @@ export type Person = ExtendedBaseModel & {
   me_group_id: number;
   is_webmail?: boolean;
   first_user?: boolean;
-  externally_registered?: boolean;
+  externally_registered?: string;
   state_id?: number;
   profile_id?: number;
   first_name?: string;

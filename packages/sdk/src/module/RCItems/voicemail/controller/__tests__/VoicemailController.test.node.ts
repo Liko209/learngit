@@ -8,6 +8,8 @@ import { VoicemailController } from '../VoicemailController';
 import { VoicemailActionController } from '../VoicemailActionController';
 import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySourceController';
 import { VoicemailBadgeController } from '../VoicemailBadgeController';
+import { VoicemailHandleDataController } from '../VoicemailHandleDataController';
+
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -41,6 +43,14 @@ describe('VoicemailController', () => {
     it('should return voicemailBadgeController', () => {
       expect(voicemailController.voicemailBadgeController).toBeInstanceOf(
         VoicemailBadgeController,
+      );
+    });
+  });
+
+  describe('voicemailHandleDataController', () => {
+    it('should return voicemailHandleDataController', () => {
+      expect(voicemailController.voicemailHandleDataController).toBeInstanceOf(
+        VoicemailHandleDataController,
       );
     });
   });

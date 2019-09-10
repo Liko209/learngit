@@ -3,7 +3,7 @@
  * @Date: 2019-01-18 13:39:25
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { TypeDictionary } from '../../../utils';
 import ItemApi from '../../../api/glip/item';
 import { IItemService } from '../service/IItemService';

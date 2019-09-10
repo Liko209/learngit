@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { HealthModuleManager, BaseHealthModule } from 'foundation';
+import { HealthModuleManager, BaseHealthModule } from 'foundation/health';
 import { HealthStatusItemProvider } from '../HealthStatusItemProvider';
 
 describe('HealthStatusItemProvider', () => {

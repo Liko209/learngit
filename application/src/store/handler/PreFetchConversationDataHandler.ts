@@ -10,8 +10,21 @@ import { SequenceProcessorHandler } from 'sdk/framework/processor';
 import PreFetchPostProcessor from '@/store/handler/cache/PreFetchPostProcessor';
 import pinnedPostCacheController from './cache/PinnedPostCacheController';
 import conversationPostCacheController from './cache/ConversationPostCacheController';
+import bookmarkCacheController from './cache/BookmarkCacheController';
+import atMentionCacheController from './cache/AtMentionCacheController';
+import { AT_MENTION_ID, BOOKMARK_ID } from './constant';
+import { Profile } from 'sdk/module/profile/entity';
+import ProfileModel from '../models/Profile';
+import { getSingleEntity } from '../utils';
+import { ENTITY_NAME } from '..';
+import { autorun } from 'mobx';
+import { MyState } from 'sdk/module/state';
+import MyStateModel from '../models/MyState';
+import { mainLogger } from 'foundation/log';
 
+const LOG_TAG = '[PreFetchConversationDataHandler]';
 class PreFetchConversationDataHandler {
+  private static _instance: PreFetchConversationDataHandler;
   private _cachedGroupIds: Set<number>;
   private _preFetchControllers: IPreFetchController[] = [];
   private _preFetchQueueHandler: SequenceProcessorHandler;
@@ -22,9 +35,55 @@ class PreFetchConversationDataHandler {
     this._preFetchQueueHandler = new SequenceProcessorHandler({
       name: 'PreFetchConversationDataHandler',
     });
-
+    this._subscribeNotification();
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this._onNetWorkChanged(onLine);
+    });
+  }
+
+  static getInstance() {
+    if (!this._instance) {
+      this._instance = new PreFetchConversationDataHandler([
+        conversationPostCacheController,
+        pinnedPostCacheController,
+        bookmarkCacheController,
+        atMentionCacheController,
+      ]);
+    }
+    return this._instance;
+  }
+
+  private _subscribeNotification() {
+    autorun(reaction => {
+      const favoritePostIds = getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'favoritePostIds',
+      );
+      if (favoritePostIds) {
+        this.addProcessor(BOOKMARK_ID);
+        reaction.dispose();
+        mainLogger
+          .tags(LOG_TAG)
+          .info(
+            '_subscribeNotification() prefetch bookmark then dispose autorun',
+          );
+      }
+    });
+
+    autorun(reaction => {
+      const atMentionPostIds = getSingleEntity<MyState, MyStateModel>(
+        ENTITY_NAME.MY_STATE,
+        'atMentionPostIds',
+      );
+      if (atMentionPostIds) {
+        this.addProcessor(AT_MENTION_ID);
+        reaction.dispose();
+        mainLogger
+          .tags(LOG_TAG)
+          .info(
+            '_subscribeNotification() prefetch atMention then dispose autorun',
+          );
+      }
     });
   }
 
@@ -35,7 +94,9 @@ class PreFetchConversationDataHandler {
 
   private _onNetWorkChanged(onLine: boolean) {
     if (onLine) {
-      this._preFetchControllers.map(controller => this._preFetchUnCachedGroupData(controller));
+      this._preFetchControllers.map(controller =>
+        this._preFetchUnCachedGroupData(controller),
+      );
     }
   }
 
@@ -79,11 +140,15 @@ class PreFetchConversationDataHandler {
   }
 
   setCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller => controller.setCurrentCacheConversation(groupId));
+    this._preFetchControllers.forEach(controller =>
+      controller.setCurrentCacheConversation(groupId),
+    );
   }
 
   releaseCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller => controller.releaseCurrentConversation(groupId));
+    this._preFetchControllers.forEach(controller =>
+      controller.releaseCurrentConversation(groupId),
+    );
   }
 
   removeCache(groupId: number) {
@@ -97,10 +162,4 @@ class PreFetchConversationDataHandler {
   }
 }
 
-const preFetchConversationDataHandler = new PreFetchConversationDataHandler([
-  conversationPostCacheController,
-  pinnedPostCacheController,
-]);
-
-export default preFetchConversationDataHandler;
 export { PreFetchConversationDataHandler };

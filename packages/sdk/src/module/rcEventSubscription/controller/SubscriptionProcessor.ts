@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { IProcessor } from 'sdk/framework/processor';
 
 class SubscriptionProcessor implements IProcessor {

@@ -3,10 +3,8 @@
  * @Date: 2019-01-15 10:53:30
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { ImageItemViewProps } from './types';
 import { FileViewModel } from '../common/File/File.ViewModel';
 
-class ImageItemViewModel extends FileViewModel implements ImageItemViewProps {}
+class ImageItemViewModel extends FileViewModel {}
 
 export { ImageItemViewModel };

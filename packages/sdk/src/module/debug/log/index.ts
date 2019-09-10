@@ -4,20 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IDebugModule } from '../types';
+import { BaseDebugModule } from '../BaseDebugModule';
 
-class DebugLogModule implements IDebugModule {
-  private _instance: object = {};
-
-  constructor() {}
-
-  inject(name: string, m: any) {
-    this._instance[name] = m;
-  }
-
-  get() {
-    return this._instance;
-  }
-}
+class DebugLogModule extends BaseDebugModule {}
 const debugLog = new DebugLogModule();
 export { debugLog };

@@ -101,6 +101,7 @@ describe('PostService', () => {
         null as any,
         null as any,
         null as any,
+        null as any,
       );
 
       postController.getPostDataController = jest
@@ -220,6 +221,7 @@ describe('PostService', () => {
         null as any,
         null as any,
         null as any,
+        null as any,
       );
       postController.getPostActionController = jest
         .fn()
@@ -228,6 +230,8 @@ describe('PostService', () => {
         });
 
       sendPostController = new SendPostController(
+        null as any,
+        null as any,
         null as any,
         null as any,
         null as any,
@@ -262,6 +266,32 @@ describe('PostService', () => {
       setUp();
 
       postService.postController = postController;
+    });
+  });
+
+  describe('shareItem', () => {
+    let sendPostController: SendPostController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+
+      postService.postController = postController;
+    });
+    it('should call sendPostController.shareItem', async () => {
+      sendPostController = new SendPostController(
+        null as any,
+        null as any,
+        null as any,
+        null as any,
+        null as any,
+      );
+      postController.getSendPostController = jest
+        .fn()
+        .mockImplementation(() => {
+          return sendPostController;
+        });
+      await postService.shareItem(1, 2, 3);
+      expect(sendPostController.shareItem).toHaveBeenCalledWith(1, 2, 3);
     });
   });
 });

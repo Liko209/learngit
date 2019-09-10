@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { withEscTracking } from '@/containers/Dialog';
 import { JuiModal } from 'jui/components/Dialog';
 import { Avatar } from '@/containers/Avatar';
 import {
@@ -18,6 +19,8 @@ import {
 import portalManager from '@/common/PortalManager';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { withUploadFile } from 'jui/hoc/withUploadFile';
+import { showNotImageTypeToast } from './utils';
 import { PhotoEdit } from './PhotoEdit';
 import {
   EditProfileViewModelProps,
@@ -26,10 +29,19 @@ import {
 } from './types';
 import { editItemSource } from './constant';
 
+const Modal = withEscTracking(JuiModal);
+@withUploadFile
+class UploadArea extends Component<any> {
+  render() {
+    return <div />;
+  }
+}
+
 @observer
 class EditProfileViewComponent extends Component<
   EditProfileViewModelProps & EditProfileProps & WithTranslation
 > {
+  private _uploadRef: RefObject<any> = createRef();
   state = {
     currentFocusItem: '',
   };
@@ -43,6 +55,30 @@ class EditProfileViewComponent extends Component<
           {this._renderItem(section)}
         </JuiEditProfileSection>
       );
+    });
+  };
+
+  private _showUploadFileDialog = () => {
+    // for Edge bug: FIJI-2818
+    setTimeout(() => {
+      const ref = this._uploadRef.current;
+      if (ref) {
+        ref.showFileDialog();
+      }
+    }, 0);
+  };
+
+  handleFileChanged = async (files: FileList) => {
+    if (!files) return;
+    const file = files[0];
+    if (!(await showNotImageTypeToast(file.type))) {
+      return;
+    }
+    const { currentPersonInfo, onPhotoEdited } = this.props;
+    PhotoEdit.show({
+      onPhotoEdited,
+      file,
+      person: currentPersonInfo,
     });
   };
 
@@ -80,15 +116,7 @@ class EditProfileViewComponent extends Component<
     );
   };
 
-  handleMaskClick = () => {
-    const { currentPersonInfo, onPhotoEdited, localInfo } = this.props;
-
-    PhotoEdit.show({
-      onPhotoEdited,
-      file: localInfo && localInfo.file,
-      person: currentPersonInfo,
-    });
-  };
+  handleMaskClick = () => this._showUploadFileDialog();
 
   _renderItem = (section: EditItemSourceType[]) => {
     const { t, isLoading } = this.props;
@@ -135,7 +163,7 @@ class EditProfileViewComponent extends Component<
       localInfo,
     } = this.props;
     return (
-      <JuiModal
+      <Modal
         open
         size={'medium'}
         title={t('message.prompt.editProfileTitle')}
@@ -152,6 +180,12 @@ class EditProfileViewComponent extends Component<
           scroll: 'body',
         }}
       >
+        <UploadArea
+          onFileChanged={this.handleFileChanged}
+          multiple={false}
+          ref={this._uploadRef}
+          accept="image/*"
+        />
         <JuiEditProfileContent>
           <JuiEditProfileAvatarContent
             imgStyle={{
@@ -175,7 +209,7 @@ class EditProfileViewComponent extends Component<
             {this._renderSection()}
           </JuiEditProfileSectionContent>
         </JuiEditProfileContent>
-      </JuiModal>
+      </Modal>
     );
   }
 }

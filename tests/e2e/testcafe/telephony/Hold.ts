@@ -15,7 +15,7 @@ import { WebphoneSession } from 'webphone-client';
 import { E911Address } from './e911address';
 
 fixture('Telephony/EntryPoint')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
@@ -25,13 +25,13 @@ test.meta(<ITestMeta>{
   keywords: ['Hold', 'UnHold']
 })('User can hold/unhold the call', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4]
-  const anotherUser = users[5];
+  const loginUser = users[1]
+  const anotherUser = users[2];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
-  await h(t).platform(loginUser).updateDevices(() => E911Address);
+  // await h(t).platform(loginUser).updateDevices(() => E911Address);
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -43,8 +43,12 @@ test.meta(<ITestMeta>{
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
+  await h(t).withLog('And send a message to ensure chat in list', async () => {
+    await h(t).scenarioHelper.sendTextPost('for appear in section', chat, loginUser);
+  });
+
   let session: WebphoneSession;
-  await h(t).withLog('And anpther user login webphone', async () => {
+  await h(t).withLog('And another user login webphone', async () => {
     session = await h(t).newWebphoneSession(anotherUser);
   });
 

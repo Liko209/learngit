@@ -10,7 +10,7 @@ import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 class RecentCallBtnViewModel extends StoreViewModel<Props>

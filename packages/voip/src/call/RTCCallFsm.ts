@@ -11,7 +11,10 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_CALL_ACTION_ERROR_CODE,
+  RTC_CALL_ACTION_DIRECTION,
 } from '../api/types';
+import { FsmStatusCategory } from '../report/types';
+import { CallReport } from '../report/Call';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
@@ -49,9 +52,11 @@ const CallFsmEvent = {
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _callFsmTable: RTCCallFsmTable;
   private _eventQueue: any;
+  private _report: CallReport;
 
-  constructor() {
+  constructor(report: CallReport) {
     super();
+    this._report = report;
     this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = async.queue((task: any, callback: any) => {
       callback(task.params);
@@ -78,35 +83,35 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     );
   }
 
-  public state(): string {
+  state(): string {
     return this._callFsmTable.state;
   }
 
-  public answer() {
+  answer() {
     this._eventQueue.push({ name: CallFsmEvent.ANSWER }, () => {
       this._onAnswer();
     });
   }
 
-  public reject() {
+  reject() {
     this._eventQueue.push({ name: CallFsmEvent.REJECT }, () => {
       this._onReject();
     });
   }
 
-  public ignore() {
+  ignore() {
     this._eventQueue.push({ name: CallFsmEvent.IGNORE }, () => {
       this._callFsmTable.ignore();
     });
   }
 
-  public sendToVoicemail() {
+  sendToVoicemail() {
     this._eventQueue.push({ name: CallFsmEvent.SEND_TO_VOICEMAIL }, () => {
       this._onSendToVoicemail();
     });
   }
 
-  public hangup() {
+  hangup() {
     this._eventQueue.push({ name: CallFsmEvent.HANGUP }, () => {
       this._onHangup();
     });
@@ -133,15 +138,15 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
   }
 
-  mute(): void {
+  mute(direction: RTC_CALL_ACTION_DIRECTION): void {
     this._eventQueue.push({ name: CallFsmEvent.MUTE }, () => {
-      this._onMute();
+      this._onMute(direction);
     });
   }
 
-  unmute(): void {
+  unmute(direction: RTC_CALL_ACTION_DIRECTION): void {
     this._eventQueue.push({ name: CallFsmEvent.UNMUTE }, () => {
-      this._onUnmute();
+      this._onUnmute(direction);
     });
   }
 
@@ -221,61 +226,61 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
   }
 
-  public accountReady() {
+  accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {
       this._onAccountReady();
     });
   }
 
-  public accountNotReady() {
+  accountNotReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_NOT_READY }, () => {
       this._onAccountNotReady();
     });
   }
 
-  public sessionAccepted() {
+  sessionAccepted() {
     this._eventQueue.push({ name: CallFsmEvent.SESSION_ACCEPTED }, () => {
       this._onSessionAccepted();
     });
   }
 
-  public sessionConfirmed() {
+  sessionConfirmed() {
     this._eventQueue.push({ name: CallFsmEvent.SESSION_CONFIRMED }, () => {
       this._onSessionConfirmed();
     });
   }
 
-  public sessionDisconnected() {
+  sessionDisconnected() {
     this._eventQueue.push({ name: CallFsmEvent.SESSION_DISCONNECTED }, () => {
       this._onSessionDisconnected();
     });
   }
 
-  public holdSuccess() {
+  holdSuccess() {
     this._eventQueue.push({ name: CallFsmEvent.HOLD_SUCCESS }, () => {
       this._onHoldSuccess();
     });
   }
 
-  public holdFailed() {
+  holdFailed() {
     this._eventQueue.push({ name: CallFsmEvent.HOLD_FAILED }, () => {
       this._onHoldFailed();
     });
   }
 
-  public unholdSuccess() {
+  unholdSuccess() {
     this._eventQueue.push({ name: CallFsmEvent.UNHOLD_SUCCESS }, () => {
       this._onUnholdSuccess();
     });
   }
 
-  public unholdFailed() {
+  unholdFailed() {
     this._eventQueue.push({ name: CallFsmEvent.UNHOLD_FAILED }, () => {
       this._onUnholdFailed();
     });
   }
 
-  public sessionError() {
+  sessionError() {
     this._eventQueue.push({ name: CallFsmEvent.SESSION_ERROR }, () => {
       this._onSessionError();
     });
@@ -329,12 +334,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.STOP_RECORD_ACTION);
   }
 
-  onMuteAction() {
-    this.emit(CALL_FSM_NOTIFY.MUTE_ACTION);
+  onMuteAction(direction: RTC_CALL_ACTION_DIRECTION) {
+    this.emit(CALL_FSM_NOTIFY.MUTE_ACTION, direction);
   }
 
-  onUnmuteAction() {
-    this.emit(CALL_FSM_NOTIFY.UNMUTE_ACTION);
+  onUnmuteAction(direction: RTC_CALL_ACTION_DIRECTION) {
+    this.emit(CALL_FSM_NOTIFY.UNMUTE_ACTION, direction);
   }
 
   onReportCallActionFailed(name: string): void {
@@ -426,12 +431,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._callFsmTable.stopRecord();
   }
 
-  private _onMute() {
-    this._callFsmTable.mute();
+  private _onMute(direction: RTC_CALL_ACTION_DIRECTION) {
+    this._callFsmTable.mute(direction);
   }
 
-  private _onUnmute() {
-    this._callFsmTable.unmute();
+  private _onUnmute(direction: RTC_CALL_ACTION_DIRECTION) {
+    this._callFsmTable.unmute(direction);
   }
 
   private _onAnswer() {
@@ -524,6 +529,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onLeaveConnected() {
     this.emit(CALL_FSM_NOTIFY.LEAVE_CONNECTED);
+  }
+
+  onUpdateFsmState(state: FsmStatusCategory): void {
+    this._report.updateFsmStatus(state);
   }
 }
 

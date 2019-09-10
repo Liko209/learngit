@@ -40,10 +40,8 @@ class EntityCacheController<
     return this._initialStatus !== CACHE_INITIAL_STATUS.NONE;
   }
 
-  async put(item: T | T[]): Promise<void> {
-    if (Array.isArray(item)) {
-      await this.bulkPut(item);
-    } else if (item) {
+  async put(item: T): Promise<void> {
+    if (item) {
       this.putInternal(item);
     }
   }
@@ -70,7 +68,7 @@ class EntityCacheController<
     });
   }
 
-  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+  async update(item: Partial<T>): Promise<void> {
     this._updatePartially(item);
   }
 
@@ -116,17 +114,19 @@ class EntityCacheController<
     return '';
   }
 
-  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
-    const values = await this.getAll();
+  async getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]> {
+    let values = await this.getAll();
     if (filterFunc) {
-      const filterEntities: T[] = [];
-      values.forEach((entity: T) => {
-        if (filterFunc(entity)) {
-          filterEntities.push(entity);
-        }
-      });
-      return filterEntities;
+      values = values.filter(entity => filterFunc(entity));
     }
+
+    if (sortFunc && values.length) {
+      values.sort(sortFunc);
+    }
+
     return values;
   }
 

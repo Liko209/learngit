@@ -6,7 +6,7 @@ import {
   SOUNDS_TYPE,
   RINGS_TYPE,
 } from 'sdk/module/profile';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { getEntity } from '@/store/utils';
 import { UserSettingEntity } from 'sdk/module/setting';
 import SettingModel from '@/store/models/UserSetting';
@@ -49,9 +49,15 @@ export class SoundNotification implements ISoundNotification {
     const trackId = opts.trackId;
     if (src) {
       const tag = src + trackId;
+      mainLogger.tags('SoundNotification').log('create Sound for',  src);
       if (this._mediaPool.has(tag)) {
         const media = this._mediaPool.get(tag) as IMedia;
-        const { autoplay, loop = false, muted = false, outputDevices } = opts;
+        const {
+          autoplay,
+          loop = false,
+          muted = false,
+          outputDevices = null,
+        } = opts;
         media.setLoop(loop);
         media.setMute(muted);
         media.setOutputDevices(outputDevices);
@@ -62,7 +68,9 @@ export class SoundNotification implements ISoundNotification {
       this._mediaPool.set(tag, media);
       return media;
     }
-    mainLogger.warn('Failed to find the sound source', name);
+    mainLogger
+      .tags('SoundNotification')
+      .warn('Failed to find the sound source', name);
     return;
   }
 }

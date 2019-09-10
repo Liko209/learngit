@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput Attachment Button 1`] = `
-.c3 {
+.c2 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c4 {
+.c3 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -17,23 +17,6 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #9e9e9e;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c1.c1 {
@@ -47,8 +30,8 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   border-radius: 50%;
 }
 
-.c1.c1 .c2,
-.c1.c1 .c2 svg {
+.c1.c1 .icon,
+.c1.c1 .icon svg {
   font-size: 20px;
 }
 
@@ -56,15 +39,19 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   background-color: rgba(158,158,158,0.12);
 }
 
-.c1.c1:hover .c2 {
+.c1.c1:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c1.c1:active .c2 {
+.c1.c1:active .icon {
   color: #9e9e9e;
 }
 
-.c1.c1.c1.c1.disabled .c2 {
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
+.c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -78,143 +65,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   animation-name: cBKRfH;
 }
 
-.c7.c7 .c2,
-.c7.c7 .c2 svg {
-  font-size: 20px;
-}
-
-.c7.c7:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c7.c7:active .c2 {
-  color: #0684bd;
-}
-
-.c7.c7.c7.c7.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c8.c8 .c2,
-.c8.c8 .c2 svg {
-  font-size: 20px;
-}
-
-.c8.c8:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c8.c8:active .c2 {
-  color: #0684bd;
-}
-
-.c8.c8.c8.c8.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c9.c9 .c2,
-.c9.c9 .c2 svg {
-  font-size: 20px;
-}
-
-.c9.c9:hover .c2 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c9.c9:active .c2 {
-  color: #edb63c;
-}
-
-.c9.c9.c9.c9.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c10.c10 .c2,
-.c10.c10 .c2 svg {
-  font-size: 16px;
-}
-
-.c10.c10:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c10.c10:active .c2 {
-  color: #9e9e9e;
-}
-
-.c10.c10.c10.c10.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c11.c11 .c2,
-.c11.c11 .c2 svg {
-  font-size: 16px;
-}
-
-.c11.c11:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c11.c11:active .c2 {
-  color: #0684bd;
-}
-
-.c11.c11.c11.c11.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c12.c12 .c2,
-.c12.c12 .c2 svg {
-  font-size: 16px;
-}
-
-.c12.c12:hover .c2 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c12.c12:active .c2 {
-  color: #fff;
-}
-
-.c12.c12.c12.c12.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c13.c13 .c2,
-.c13.c13 .c2 svg {
-  font-size: 32px;
-}
-
-.c13.c13:hover .c2 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c13.c13:active .c2 {
-  color: #212121;
-}
-
-.c13.c13.c13.c13.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c14.c14 .c2,
-.c14.c14 .c2 svg {
-  font-size: 20px;
-}
-
-.c14.c14:hover .c2 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c14.c14:active .c2 {
-  color: #fff;
-}
-
-.c14.c14.c14.c14.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c5 {
+.c4 {
   display: none;
 }
 
@@ -240,7 +91,6 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
     className="c0"
   >
     <button
-      aria-describedby={null}
       aria-label="Attach file"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-test-automation-id="conversation-chatbar-attachment-button"
@@ -252,14 +102,15 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
       onKeyDown={[Function]}
       onKeyUp={[Function]}
       onMouseDown={[Function]}
+      onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseOut={[Function]}
       onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       tabIndex={0}
-      title={null}
       type="button"
       variant="round"
     >
@@ -267,11 +118,10 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
         className="MuiIconButton-label"
       >
         <span
-          className="c2 attachment icon c3"
-          size="medium"
+          className=" attachment icon c2"
         >
           <svg
-            className="c4"
+            className="c3"
             role="img"
           >
             <use
@@ -281,14 +131,11 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
           </svg>
         </span>
       </span>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </button>
     <div />
     <input
       accept="*"
-      className="c5"
+      className="c4"
       data-test-automation-id="upload-file-input"
       multiple={true}
       onChange={[Function]}
@@ -306,7 +153,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   display: inline-flex;
 }
 
-.c13 {
+.c12 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -339,8 +186,8 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   border-radius: 0;
 }
 
-.c11.c11 .c12,
-.c11.c11 .c12 svg {
+.c11.c11 .icon,
+.c11.c11 .icon svg {
   font-size: 20px;
 }
 
@@ -348,15 +195,19 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   background-color: transparent;
 }
 
-.c11.c11:hover .c12 {
+.c11.c11:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c11.c11:active .c12 {
+.c11.c11:active .icon {
   color: #9e9e9e;
 }
 
-.c11.c11.c11.c11.disabled .c12 {
+.c11.c11.c11.c11.disabled {
+  background-color: inherit;
+}
+
+.c11.c11.c11.c11.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -370,169 +221,16 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   animation-name: cBKRfH;
 }
 
-.c18.c18 .c12,
-.c18.c18 .c12 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c12 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c12 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c12,
-.c19.c19 .c12 svg {
-  font-size: 20px;
-}
-
-.c19.c19:hover .c12 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c19.c19:active .c12 {
-  color: #0684bd;
-}
-
-.c19.c19.c19.c19.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c12,
-.c20.c20 .c12 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c12 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c20.c20:active .c12 {
-  color: #0684bd;
-}
-
-.c20.c20.c20.c20.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c12,
-.c21.c21 .c12 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c12 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c21.c21:active .c12 {
-  color: #edb63c;
-}
-
-.c21.c21.c21.c21.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c12,
-.c22.c22 .c12 svg {
-  font-size: 16px;
-}
-
-.c22.c22:hover .c12 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c22.c22:active .c12 {
-  color: #9e9e9e;
-}
-
-.c22.c22.c22.c22.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c23.c23 .c12,
-.c23.c23 .c12 svg {
-  font-size: 16px;
-}
-
-.c23.c23:hover .c12 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c23.c23:active .c12 {
-  color: #0684bd;
-}
-
-.c23.c23.c23.c23.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c24.c24 .c12,
-.c24.c24 .c12 svg {
-  font-size: 16px;
-}
-
-.c24.c24:hover .c12 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c24.c24:active .c12 {
-  color: #fff;
-}
-
-.c24.c24.c24.c24.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c25.c25 .c12,
-.c25.c25 .c12 svg {
-  font-size: 32px;
-}
-
-.c25.c25:hover .c12 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c25.c25:active .c12 {
-  color: #212121;
-}
-
-.c25.c25.c25.c25.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c26.c26 .c12,
-.c26.c26 .c12 svg {
-  font-size: 20px;
-}
-
-.c26.c26:hover .c12 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c26.c26:active .c12 {
-  color: #fff;
-}
-
-.c26.c26.c26.c26.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c27.lozengeButtonLoading .c17 {
+.c17.lozengeButtonLoading .c16 {
   margin-left: 4px;
 }
 
-.c27.lozengeButtonLoading .c28,
-.c27.lozengeButtonWithArrow .c28,
-.c27.lozengeButtonLoading .c17,
-.c27.lozengeButtonWithArrow .c17,
-.c27.lozengeButtonLoading span,
-.c27.lozengeButtonWithArrow span {
+.c17.lozengeButtonLoading .c18,
+.c17.lozengeButtonWithArrow .c18,
+.c17.lozengeButtonLoading .c16,
+.c17.lozengeButtonWithArrow .c16,
+.c17.lozengeButtonLoading span,
+.c17.lozengeButtonWithArrow span {
   vertical-align: middle;
 }
 
@@ -576,7 +274,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   font-size: 14px;
 }
 
-.c14 {
+.c13 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -596,11 +294,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   font-size: 0;
 }
 
-.c14 > span {
+.c13 > span {
   font-size: 14px;
 }
 
-.c15 {
+.c14 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -620,7 +318,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   font-size: 0;
 }
 
-.c15 > span {
+.c14 > span {
   font-size: 14px;
 }
 
@@ -691,7 +389,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   right: -3px;
 }
 
-.c16 {
+.c15 {
   position: absolute;
   right: -5px;
   top: 1px;
@@ -752,7 +450,10 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
+                  onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -765,11 +466,102 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                     className="MuiIconButton-label"
                   >
                     <span
-                      className="c12 close icon c4"
-                      size="medium"
+                      className=" close icon c4"
                     >
                       <svg
-                        className="c13"
+                        className="c12"
+                        role="img"
+                      >
+                        <use
+                          href="#icon-close"
+                          xlinkHref="#icon-close"
+                        />
+                      </svg>
+                    </span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </div>
+  </div>
+  <br />
+  <div
+    className="c0"
+  >
+    <div
+      className="c1"
+    >
+      <li
+        className="MuiListItem-root c2 MuiListItem-gutters"
+        disabled={false}
+      >
+        <span
+          className="c3 default_file icon c4"
+        >
+          <svg
+            className="c5"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-default-file"
+              xlinkHref="#icon-default-file"
+            />
+          </svg>
+        </span>
+        <div
+          className="c6"
+        >
+          <div
+            className="c13"
+            data-test-automation-id="file-name"
+            opacity={1}
+          >
+            test
+          </div>
+          <div
+            className="c8"
+          >
+            <div
+              className="c9"
+              data-test-automation-id="attachment-action-button"
+            >
+              <div
+                className="c10"
+              >
+                <button
+                  aria-label=""
+                  className="MuiButtonBase-root MuiIconButton-root c11"
+                  disabled={false}
+                  onBlur={[Function]}
+                  onDragLeave={[Function]}
+                  onFocus={[Function]}
+                  onKeyDown={[Function]}
+                  onKeyUp={[Function]}
+                  onMouseDown={[Function]}
+                  onMouseEnter={[Function]}
+                  onMouseLeave={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
+                  onMouseUp={[Function]}
+                  onTouchEnd={[Function]}
+                  onTouchMove={[Function]}
+                  onTouchStart={[Function]}
+                  tabIndex={0}
+                  type="button"
+                  variant="plain"
+                >
+                  <span
+                    className="MuiIconButton-label"
+                  >
+                    <span
+                      className=" close icon c4"
+                    >
+                      <svg
+                        className="c12"
                         role="img"
                       >
                         <use
@@ -818,96 +610,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
           <div
             className="c14"
             data-test-automation-id="file-name"
-            opacity={1}
-          >
-            test
-          </div>
-          <div
-            className="c8"
-          >
-            <div
-              className="c9"
-              data-test-automation-id="attachment-action-button"
-            >
-              <div
-                className="c10"
-              >
-                <button
-                  aria-label=""
-                  className="MuiButtonBase-root MuiIconButton-root c11"
-                  disabled={false}
-                  onBlur={[Function]}
-                  onDragLeave={[Function]}
-                  onFocus={[Function]}
-                  onKeyDown={[Function]}
-                  onKeyUp={[Function]}
-                  onMouseDown={[Function]}
-                  onMouseLeave={[Function]}
-                  onMouseUp={[Function]}
-                  onTouchEnd={[Function]}
-                  onTouchMove={[Function]}
-                  onTouchStart={[Function]}
-                  tabIndex={0}
-                  type="button"
-                  variant="plain"
-                >
-                  <span
-                    className="MuiIconButton-label"
-                  >
-                    <span
-                      className="c12 close icon c4"
-                      size="medium"
-                    >
-                      <svg
-                        className="c13"
-                        role="img"
-                      >
-                        <use
-                          href="#icon-close"
-                          xlinkHref="#icon-close"
-                        />
-                      </svg>
-                    </span>
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-    </div>
-  </div>
-  <br />
-  <div
-    className="c0"
-  >
-    <div
-      className="c1"
-    >
-      <li
-        className="MuiListItem-root c2 MuiListItem-gutters"
-        disabled={false}
-      >
-        <span
-          className="c3 default_file icon c4"
-        >
-          <svg
-            className="c5"
-            role="img"
-            size="medium"
-          >
-            <use
-              href="#icon-default-file"
-              xlinkHref="#icon-default-file"
-            />
-          </svg>
-        </span>
-        <div
-          className="c6"
-        >
-          <div
-            className="c15"
-            data-test-automation-id="file-name"
             opacity={0.26}
           >
             test
@@ -920,11 +622,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
               data-test-automation-id="attachment-action-button"
             >
               <div
-                className="c16"
+                className="c15"
               >
                 <div
                   aria-valuenow={0}
-                  className="MuiCircularProgress-root c17 MuiCircularProgress-colorPrimary MuiCircularProgress-static"
+                  className="MuiCircularProgress-root c16 MuiCircularProgress-colorPrimary MuiCircularProgress-static"
                   role="progressbar"
                   style={
                     Object {
@@ -968,7 +670,10 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
+                  onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -981,11 +686,10 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                     className="MuiIconButton-label"
                   >
                     <span
-                      className="c12 close icon c4"
-                      size="medium"
+                      className=" close icon c4"
                     >
                       <svg
-                        className="c13"
+                        className="c12"
                         role="img"
                       >
                         <use
@@ -1061,7 +765,10 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
+                  onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -1074,11 +781,10 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                     className="MuiIconButton-label"
                   >
                     <span
-                      className="c12 close icon c4"
-                      size="medium"
+                      className=" close icon c4"
                     >
                       <svg
-                        className="c13"
+                        className="c12"
                         role="img"
                       >
                         <use
@@ -1154,7 +860,10 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
+                  onMouseEnter={[Function]}
                   onMouseLeave={[Function]}
+                  onMouseOut={[Function]}
+                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
@@ -1167,11 +876,10 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                     className="MuiIconButton-label"
                   >
                     <span
-                      className="c12 close icon c4"
-                      size="medium"
+                      className=" close icon c4"
                     >
                       <svg
-                        className="c13"
+                        className="c12"
                         role="img"
                       >
                         <use

@@ -136,13 +136,11 @@ class GenericDialerPanelViewComponent extends React.Component<
     const { playAudio, dialerInputFocused } = this.props;
 
     return (
-      <>
-        <DialPad
-          makeMouseEffect={this._clickToInput}
-          makeKeyboardEffect={playAudio}
-          shouldHandleKeyboardEvts={dialerInputFocused}
-        />
-      </>
+      <DialPad
+        makeMouseEffect={this._clickToInput}
+        makeKeyboardEffect={playAudio}
+        shouldHandleKeyboardEvts={dialerInputFocused}
+      />
     );
   };
 
@@ -153,22 +151,23 @@ class GenericDialerPanelViewComponent extends React.Component<
       displayCallerIdSelector,
     } = this.props;
     return (
-      <>
-        <ContactSearchContainer addMargin={displayCallerIdSelector}>
-          <ContactSearchList
-            onContactSelected={onContactSelected}
-            inputStringProps={inputStringProps}
-          />
-        </ContactSearchContainer>
-      </>
+      <ContactSearchContainer addMargin={displayCallerIdSelector}>
+        <ContactSearchList
+          onContactSelected={onContactSelected}
+          inputStringProps={inputStringProps}
+        />
+      </ContactSearchContainer>
     );
   };
 
-  private _renderRecentCalls = () => (
-    <RecentCallContainer>
-      <RecentCalls />
-    </RecentCallContainer>
-  );
+  private _renderRecentCalls = () => {
+    const { displayCallerIdSelector } = this.props;
+    return (
+      <RecentCallContainer>
+        <RecentCalls displayCallerIdSelector={displayCallerIdSelector} />
+      </RecentCallContainer>
+    );
+  };
 
   private _renderKeypadActions = () => {
     const { shouldEnterContactSearch, shouldDisplayRecentCalls } = this.props;
@@ -200,10 +199,11 @@ class GenericDialerPanelViewComponent extends React.Component<
       shouldDisplayRecentCalls,
       CallActionBtn,
       Back,
+      isTransferPage,
     } = this.props;
 
     const callActionBtn =
-      shouldEnterContactSearch || shouldDisplayRecentCalls
+      (shouldEnterContactSearch || shouldDisplayRecentCalls) && !isTransferPage
         ? undefined
         : CallActionBtn;
 
@@ -223,7 +223,7 @@ class GenericDialerPanelViewComponent extends React.Component<
             deleteInputString={deleteInputString}
             onKeyDown={onKeyDown}
             dialerValue={inputString}
-            Back={Back}
+            Back={!shouldEnterContactSearch ? Back : undefined}
             RecentCallBtn={
               !shouldEnterContactSearch ? RecentCallBtn : undefined
             }

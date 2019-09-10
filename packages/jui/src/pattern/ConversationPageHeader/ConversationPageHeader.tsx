@@ -10,6 +10,8 @@ import MuiToolbar, {
 import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from '@material-ui/core/AppBar';
+import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from '../Emoji';
 import Typography from '@material-ui/core/Typography';
 import { JuiText, JuiTextProps } from '../../components/Text/Text';
 
@@ -25,11 +27,12 @@ import { JuiDivider } from '../../components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
   title?: string;
-  status?: string | React.ReactNode;
+  colonsEmoji?: string;
+  statusPlainText?: string;
   SubTitle?: React.ReactNode;
   Right?: React.ReactNode;
 } & MuiToolbarProps &
-MuiAppBarProps;
+  MuiAppBarProps;
 
 const TitleWrapper = styled<JuiTextProps>(JuiText)`
   && {
@@ -45,9 +48,16 @@ const StatusWrapper = styled.div`
   ${ellipsis()};
   padding-left: ${spacing(1.5)};
   padding-right: ${spacing(1.5)};
+  && {
+    .emoji-mart-emoji {
+      position: relative;
+      top: 50%;
+      transform: translateY(10%);
+    }
+  }
 `;
 
-const StyledPageHeader = styled<JuiConversationPageHeaderProps>(MuiAppBar)`
+const StyledPageHeader = styled(MuiAppBar)`
   && {
     min-height: ${height(12)};
     padding-left: 0;
@@ -82,9 +92,9 @@ const TitleAndStatusWrapper = styled('div')`
 `;
 
 type IJuiConversationPageHeader = React.PureComponent<
-JuiConversationPageHeaderProps
+  JuiConversationPageHeaderProps
 > &
-Dependencies;
+  Dependencies;
 
 class JuiConversationPageHeader
   extends React.PureComponent<JuiConversationPageHeaderProps>
@@ -98,9 +108,10 @@ class JuiConversationPageHeader
     const {
       children,
       title,
-      status,
       SubTitle,
       Right,
+      colonsEmoji,
+      statusPlainText,
       innerRef,
       ...rest
     } = this.props;
@@ -131,9 +142,15 @@ class JuiConversationPageHeader
           <div className="left-wrapper">
             <TitleAndStatusWrapper>
               {titleElement}
-              {status ? (
+              {colonsEmoji || statusPlainText ? (
                 <StatusWrapper data-test-automation-id="conversation-page-header-status">
-                  {status}
+                  <Emoji
+                    emoji={colonsEmoji || ''}
+                    set="emojione"
+                    size={16}
+                    backgroundImageFn={backgroundImageFn}
+                  />
+                  {statusPlainText}
                 </StatusWrapper>
               ) : null}
             </TitleAndStatusWrapper>

@@ -7,6 +7,7 @@ type EmojiProps = {
   handleEmojiClick?: any;
   title?: string;
   sheetSize?: 16 | 20 | 32 | 64;
+  icon?: string;
   set?: 'apple' | 'google' | 'twitter' | 'emojione' | 'messenger' | 'facebook';
   defaultProps?: any;
   tooltip?: string;

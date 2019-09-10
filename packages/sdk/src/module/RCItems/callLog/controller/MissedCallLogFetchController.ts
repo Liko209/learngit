@@ -9,7 +9,7 @@ import { IRCItemSyncConfig } from '../../config/IRCItemSyncConfig';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { CallLog } from '../entity';
 import { RCItemSyncResponse } from 'sdk/api/ringcentral/types/RCItemSync';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../constants';
 import _ from 'lodash';
 import { daoManager } from 'sdk/dao';
@@ -44,7 +44,6 @@ class MissedCallLogFetchController extends AbstractFetchController {
           LOCAL_INFO_TYPE.IS_MISSED |
           LOCAL_INFO_TYPE.IS_MISSED_SOURCE;
         callLog.__timestamp = timestamp;
-        callLog.__deactivated = false;
         result.push(_.cloneDeep(callLog));
       }
     });

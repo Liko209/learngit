@@ -3,7 +3,7 @@
  * @Date: 2019-03-25 13:25:41
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogEntity, mainLogger } from 'foundation';
+import { LogEntity, mainLogger } from 'foundation/log';
 import { ILogCollection } from './types';
 
 function countSize(array: LogEntity[], size: number) {

@@ -56,6 +56,11 @@ describe('NetworkRequestBuilder', () => {
     expect(request).toBeInstanceOf(SocketRequest);
   });
 
+  it('should set ignoreNetwork correctly', () => {
+    builder.setIgnoreNetwork(false);
+    expect(builder.ignoreNetwork).toBeFalsy();
+  });
+
   describe('options()', () => {
     const request: IRequest = {
       host: 'host',
@@ -64,6 +69,7 @@ describe('NetworkRequestBuilder', () => {
       data: {},
       headers: {},
       authFree: true,
+      ignoreNetwork: true,
     };
     builder.options(request);
     expect(builder.host).toEqual(request.host);
@@ -72,5 +78,6 @@ describe('NetworkRequestBuilder', () => {
     expect(builder.data).toEqual(request.data);
     expect(builder.headers).toEqual(request.headers);
     expect(builder.authFree).toEqual(request.authFree);
+    expect(builder.ignoreNetwork).toEqual(request.ignoreNetwork);
   });
 });

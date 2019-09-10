@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar 1`] = `
-.c3 {
+.c2 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c4 {
+.c3 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -17,108 +17,6 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c5.c5 .c2,
-.c5.c5 .c2 svg {
-  font-size: 20px;
-}
-
-.c5.c5:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c5.c5:active .c2 {
-  color: #9e9e9e;
-}
-
-.c5.c5.c5.c5.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #9e9e9e;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c7.c7 .c2,
-.c7.c7 .c2 svg {
-  font-size: 20px;
-}
-
-.c7.c7:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c7.c7:active .c2 {
-  color: #0684bd;
-}
-
-.c7.c7.c7.c7.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c8.c8 .c2,
-.c8.c8 .c2 svg {
-  font-size: 20px;
-}
-
-.c8.c8:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c8.c8:active .c2 {
-  color: #0684bd;
-}
-
-.c8.c8.c8.c8.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c9.c9 .c2,
-.c9.c9 .c2 svg {
-  font-size: 20px;
-}
-
-.c9.c9:hover .c2 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c9.c9:active .c2 {
-  color: #edb63c;
-}
-
-.c9.c9.c9.c9.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c10.c10 .c2,
-.c10.c10 .c2 svg {
-  font-size: 16px;
-}
-
-.c10.c10:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c10.c10:active .c2 {
-  color: #9e9e9e;
-}
-
-.c10.c10.c10.c10.disabled .c2 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c1.c1 {
@@ -132,8 +30,8 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
   border-radius: 0;
 }
 
-.c1.c1 .c2,
-.c1.c1 .c2 svg {
+.c1.c1 .icon,
+.c1.c1 .icon svg {
   font-size: 16px;
 }
 
@@ -141,15 +39,19 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
   background-color: transparent;
 }
 
-.c1.c1:hover .c2 {
+.c1.c1:hover .icon {
   color: rgba(6,132,189,0.88);
 }
 
-.c1.c1:active .c2 {
+.c1.c1:active .icon {
   color: #0684bd;
 }
 
-.c1.c1.c1.c1.disabled .c2 {
+.c1.c1.c1.c1.disabled {
+  background-color: inherit;
+}
+
+.c1.c1.c1.c1.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -212,7 +114,6 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
     onClick={[Function]}
   >
     <button
-      aria-describedby={null}
       aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
@@ -224,14 +125,15 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onKeyDown={[Function]}
       onKeyUp={[Function]}
       onMouseDown={[Function]}
+      onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseOut={[Function]}
       onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       tabIndex={0}
-      title={null}
       type="button"
       variant="plain"
     >
@@ -239,11 +141,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
         className="MuiIconButton-label"
       >
         <span
-          className="c2  icon c3"
-          size="small"
+          className="  icon c2"
         >
           <svg
-            className="c4"
+            className="c3"
             role="img"
           >
             <use
@@ -255,7 +156,6 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       </span>
     </button>
     <button
-      aria-describedby={null}
       aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
@@ -267,14 +167,15 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onKeyDown={[Function]}
       onKeyUp={[Function]}
       onMouseDown={[Function]}
+      onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseOut={[Function]}
       onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       tabIndex={0}
-      title={null}
       type="button"
       variant="plain"
     >
@@ -282,11 +183,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
         className="MuiIconButton-label"
       >
         <span
-          className="c2  icon c3"
-          size="small"
+          className="  icon c2"
         >
           <svg
-            className="c4"
+            className="c3"
             role="img"
           >
             <use
@@ -298,7 +198,6 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       </span>
     </button>
     <button
-      aria-describedby={null}
       aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
@@ -310,14 +209,15 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onKeyDown={[Function]}
       onKeyUp={[Function]}
       onMouseDown={[Function]}
+      onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseOut={[Function]}
       onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       tabIndex={0}
-      title={null}
       type="button"
       variant="plain"
     >
@@ -325,11 +225,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
         className="MuiIconButton-label"
       >
         <span
-          className="c2  icon c3"
-          size="small"
+          className="  icon c2"
         >
           <svg
-            className="c4"
+            className="c3"
             role="img"
           >
             <use
@@ -341,7 +240,6 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       </span>
     </button>
     <button
-      aria-describedby={null}
       aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
@@ -353,14 +251,15 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onKeyDown={[Function]}
       onKeyUp={[Function]}
       onMouseDown={[Function]}
+      onMouseEnter={[Function]}
       onMouseLeave={[Function]}
+      onMouseOut={[Function]}
       onMouseOver={[Function]}
       onMouseUp={[Function]}
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
       tabIndex={0}
-      title={null}
       type="button"
       variant="plain"
     >
@@ -368,11 +267,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
         className="MuiIconButton-label"
       >
         <span
-          className="c2  icon c3"
-          size="small"
+          className="  icon c2"
         >
           <svg
-            className="c4"
+            className="c3"
             role="img"
           >
             <use

@@ -2,25 +2,27 @@
  * @Author: doyle.wu
  * @Date: 2019-01-11 08:37:56
  */
-import { Scene } from "./scene";
-import { Config } from "../config";
+import { IndependenceScene } from ".";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
-import { SwitchConversationGatherer } from "../gatherers";
+import { SwitchConversationGatherer, LongTaskGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
-class SwitchConversationScene extends Scene {
-  private convrsationIds: Array<string> = Config.switchConversationIds;
+class SwitchConversationScene extends IndependenceScene {
 
   tags(): Array<string> {
     return ["SwitchConversationScene", "Message", "MessagePanel", "Conversation", "RightRail", "File", "Image", "Memory", "Trace", "API"];
   }
 
   async preHandle() {
-    this.config = SceneConfigFactory.getCommonLoginConfig({ fpsMode: this.fpsMode });
+    this.config = SceneConfigFactory.getProfileConfig({ fpsMode: this.fpsMode });
 
     this.config.passes[0].gatherers.unshift({
-      instance: new SwitchConversationGatherer(this.convrsationIds)
+      instance: new LongTaskGatherer()
+    });
+
+    this.config.passes[0].gatherers.unshift({
+      instance: new SwitchConversationGatherer()
     });
   }
 
@@ -47,6 +49,10 @@ class SwitchConversationScene extends Scene {
 
   supportDashboard(): boolean {
     return true;
+  }
+
+  getProfileUrl(): string {
+    return "http://xia01-i01-kmo01.lab.rcch.ringcentral.com:9000/kamino/performance.zip";
   }
 }
 

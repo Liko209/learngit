@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Item, ItemFile } from '../entity';
+import { Item, ItemFile, ConferenceItem } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ItemServiceController } from '../controller/ItemServiceController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
@@ -20,20 +20,23 @@ import { IItemService } from './IItemService';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ChangeModel } from '../../sync/types';
 import { NoteItemService } from '../module/note/service';
 import { ITEM_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { RequestHolder, ProgressCallback } from 'sdk/api/glip/item';
+import { ItemEntityCacheController } from '../controller/ItemEntityCacheController'
 
 const INVALID_ITEM_ID = [-1, -2, null];
 const LOG_NAME = 'ItemService';
+const TYPE_ITEM_CACHE_SIZE = 20;
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
   constructor() {
-    super({ isSupportedCache: false }, daoManager.getDao(ItemDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(ItemDao), {
       basePath: '/item',
       networkClient: Api.glipNetworkClient,
     });
@@ -42,6 +45,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
         [SOCKET.ITEM]: this.handleIncomingData,
       }),
     );
+  }
+
+  protected buildEntityCacheController() {
+    return ItemEntityCacheController.buildItemEntityCacheController(TYPE_ITEM_CACHE_SIZE);
   }
 
   getItemDataHandler(): (items: Raw<Item>[]) => void {
@@ -62,6 +69,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
         data: transformedData,
         dao: daoManager.getDao(ItemDao),
         eventKey: ENTITY.ITEM,
+        entitySourceController: this.getEntitySource(),
       },
       ItemNotification.getItemsNotifications,
     );
@@ -243,6 +251,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     );
   }
 
+  cancelZoomMeeting(id: number): Promise<void> {
+    return this._itemServiceController.itemActionController.cancelZoomMeeting(
+      id,
+    );
+  }
+
   async requestSyncGroupItems(groupId: number) {
     await this.itemServiceController.itemSyncController.requestSyncGroupItems(
       groupId,
@@ -287,6 +301,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       file,
       progressCallback,
       requestHolder,
+    );
+  }
+
+  async startConference(groupId: number): Promise<ConferenceItem> {
+    return this.itemServiceController.itemActionController.startConference(
+      groupId,
     );
   }
 }

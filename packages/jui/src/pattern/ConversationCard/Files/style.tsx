@@ -3,11 +3,13 @@
  * @Date: 2018-10-23 13:16:58
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
+import Fab from '@material-ui/core/Fab';
+import ViewSvg from '../../../assets/jupiter-icon/icon-view.svg';
 import {
   JuiTypography,
   JuiTypographyProps,
@@ -30,6 +32,7 @@ import {
   JuiIconography,
   JuiIconographyProps,
 } from '../../../foundation/Iconography';
+import { DotsLoading } from './dotsCssLoading';
 
 const ITEM_WIDTH = 84;
 const FILE_CARD_HEIGHT = 68;
@@ -82,6 +85,26 @@ const FileInfo = styled(MuiListItemText)`
   }
 `;
 
+const FileStatusButton = styled(Fab)`
+  && {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    opacity: 0.8;
+    width: ${spacing(18)};
+    height: ${spacing(18)};
+    background-color: ${palette('common', 'white')};
+    ${typography('body1')};
+    box-shadow: ${({ theme }) => theme.shadows[13]};
+    > span {
+      flex-direction: column;
+    }
+  }
+`;
+
 const FileActionsWrapper = styled.span`
   margin-left: ${spacing(2)};
   display: flex;
@@ -101,18 +124,46 @@ const FileCard = styled(JuiCard)`
   cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `;
 
-type FileCardMediaWrapperProps = JuiCardMediaProps & { disabled?: boolean };
+type FileCardMediaWrapperProps = JuiCardMediaProps & {
+  disabled?: boolean;
+  total: number;
+  needBackgroundContain?: boolean;
+};
 
 const FileCardMediaWrapper = ({
   disabled,
+  needBackgroundContain,
+  total = 0,
   ...rest
-}: FileCardMediaWrapperProps) => <JuiCardMedia {...rest} />;
+}: FileCardMediaWrapperProps) => {
+  const [isHover, setHover] = useState(false);
+  const handleOnMouseEnter = useCallback(() => setHover(true), []);
+  const handleOnMouseLeave = useCallback(() => setHover(false), []);
+  return (
+    <JuiCardMedia
+      {...rest}
+      onMouseEnter={handleOnMouseEnter}
+      onMouseOver={handleOnMouseEnter}
+      onMouseLeave={handleOnMouseLeave}
+    >
+      {isHover && (
+        <FileStatusButton>
+          <JuiIconography symbol={ViewSvg} />
+          {disabled ? <DotsLoading /> : `1/${total}`}
+        </FileStatusButton>
+      )}
+    </JuiCardMedia>
+  );
+};
 
 const FileCardMedia = styled(FileCardMediaWrapper)`
-  height: ${height(50)};
-  background-color: ${palette('accent', 'ash')};
-  opacity: ${({ disabled, theme }) =>
-    disabled ? theme.palette.action.hoverOpacity * 3 : 1};
+  && {
+    position: relative;
+    height: ${height(50)};
+    background-color: ${palette('background', 'default')};
+    background-size: ${({ needBackgroundContain }) =>
+      needBackgroundContain ? 'contain' : 'cover'};
+  }
 `;
 
 const FileCardContent = styled(MuiCardContent)`

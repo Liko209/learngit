@@ -15,9 +15,9 @@ type Props = WithTranslation & CallViewProps & CallProps;
 
 @observer
 class CallViewComponent extends Component<Props> {
-  private _handleClick = (evt: React.MouseEvent) => {
+  private _handleClick = async (evt: React.MouseEvent) => {
     evt.stopPropagation();
-    const { call, onClick, trackCall } = this.props;
+    const { call, onClick, trackCall, onCallSuccess } = this.props;
     if (onClick) {
       onClick();
     } else if (!portalManager.profilePortalIsShow) {
@@ -27,16 +27,15 @@ class CallViewComponent extends Component<Props> {
     /**
      * TODO: move this call making & state changing logic down to SDK
      */
-    call();
+    const isCallSuccess = await call();
+    isCallSuccess && onCallSuccess && onCallSuccess();
     trackCall(this.props.analysisSource);
   };
 
   render() {
-    const {
-      t, phoneNumber, size, variant, color, showIcon,
-    } = this.props;
+    const { t, phoneNumber, size, variant, color, showIcon } = this.props;
 
-    if (!showIcon.get()) {
+    if (!showIcon) {
       return null;
     }
 

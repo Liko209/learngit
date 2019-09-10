@@ -5,7 +5,6 @@
  */
 import { v4 as uuid } from 'uuid';
 
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
@@ -18,7 +17,9 @@ fixture('ConversationList/FavoriteSection')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-6'], priority: ['P2'], keywords: ['ConversationList', 'FavoriteSection'], maintainers: ['potar.he']
+})('Expand & Collapse', async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
@@ -26,48 +27,55 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let pvtChatId, teamId;
+  const chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, users[5]]
+  }
+  const team = <IGroup>{
+    type: 'Team',
+    members: [loginUser],
+    owner: loginUser,
+    name: uuid()
+  }
+
   await h(t).withLog('Given I have an extension with a private chat and a team', async () => {
-    pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[5].rcId],
-    });
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `Team ${uuid()} `,
-      members: [loginUser.rcId, users[5].rcId],
-    });
+    await h(t).scenarioHelper.createTeamsOrChats([chat, team]);
   });
 
   await h(t).withLog('Make sure the conversations are shown and marked as favorite', async () => {
-    await h(t).glip(loginUser).favoriteGroups([+pvtChatId, +teamId])
+    await h(t).glip(loginUser).favoriteGroups([chat.glipId, team.glipId]);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('I can find favorite section expanded by default', async () => {
+  await h(t).withLog('Then I can find favorite section expanded by default', async () => {
     await t.expect(favoritesSection.isExpand).ok();
     await t.expect(favoritesSection.collapse.clientHeight).gt(0);
   });
 
-  await h(t).withLog('Then I click the header of Favorite section', async () => {
+  await h(t).withLog('When I click the header of Favorite section', async () => {
     await t.click(favoritesSection.header);
   });
 
-  await h(t).withLog('I can find favorite section collapsed', async () => {
+  await h(t).withLog('ThenI can find favorite section collapsed', async () => {
     await t.wait(1e3);
     await t.expect(favoritesSection.isExpand).notOk();
     await t.expect(favoritesSection.collapse.clientHeight).eql(0);
   });
 
-  await h(t).withLog('Then I click the header of Favorite section', async () => {
+  await h(t).withLog('When I click the header of Favorite section', async () => {
     await t.click(favoritesSection.header);
   });
 
-  await h(t).withLog('I can find favorite section expanded', async () => {
+  await h(t).withLog('ThenI can find favorite section expanded', async () => {
     await t.wait(1e3);
     await t.expect(favoritesSection.isExpand).ok();
     await t.expect(favoritesSection.collapse.clientHeight).gt(0);
@@ -110,7 +118,11 @@ test.meta(<ITestMeta>{
 
   const app = new AppRoot(t);
 
-  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -162,7 +174,4 @@ test.meta(<ITestMeta>{
     const currentOrders = await getGroupIdsByOrderInFavoriteSection();
     assert(isSameOrder(currentOrders, chatIdsOrderAfterDrag), "conversations in wrong order");
   });
-
-
-
 });

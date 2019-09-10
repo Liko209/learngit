@@ -19,6 +19,8 @@ import { ItemDao } from '../../dao';
 import { daoManager } from '../../../../dao';
 import { ServiceLoader } from '../../../serviceLoader';
 import { PartialUpdateParams } from 'sdk/framework/controller/interface/IPartialModifyController';
+import { IItemService } from '../../service/IItemService';
+import ItemAPI from 'sdk/api/glip/item';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -27,6 +29,7 @@ jest.mock('../../../../framework/controller');
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../service/IItemService');
+jest.mock('sdk/api/glip/item');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -43,9 +46,11 @@ describe('ItemActionController', () => {
     null,
     null,
   );
+  const itemService = { handleIncomingData: jest.fn() } as IItemService;
   const itemActionController = new ItemActionController(
     partialUpdateController,
     entitySourceController,
+    itemService,
   );
   const progressService = new ProgressService();
 
@@ -117,4 +122,86 @@ describe('ItemActionController', () => {
       expect(progressService.deleteProgress).toHaveBeenCalled();
     });
   });
+
+  describe('startConference', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+    });
+    it('should throw error if request failed', async (done: jest.DoneCallback) => {
+      const error = new Error();
+      ItemAPI.startRCConference.mockRejectedValueOnce(error);
+      expect(itemActionController.startConference(12)).rejects.toThrow(error);
+      done();
+    });
+    it('should throw error if request success but handle data error', async (done: jest.DoneCallback) => {
+      const error = new Error();
+      ItemAPI.startRCConference.mockResolvedValueOnce({});
+      itemService.handleIncomingData.mockRejectedValueOnce(error);
+      expect(itemActionController.startConference(12)).rejects.toThrow(error);
+      done();
+    });
+    it('should throw error if request success but could not get conference item', async (done: jest.DoneCallback) => {
+      ItemAPI.startRCConference.mockResolvedValueOnce({});
+      itemService.handleIncomingData.mockResolvedValueOnce([]);
+      expect(itemActionController.startConference(12)).rejects.toThrow();
+      done();
+    });
+    it('should return conference item if every thing works well', async () => {
+      const conference = {
+        group_ids: [167247874],
+        type_id: 41,
+        rc_data: {
+          allowJoinBeforeHost: false,
+          hostCode: '298062755',
+          mode: 'RCC',
+          participantCode: '415440708',
+          phoneNumber: '+12679304000',
+        },
+      };
+      ItemAPI.startRCConference.mockResolvedValueOnce(conference);
+      itemService.handleIncomingData.mockResolvedValueOnce([conference]);
+      const a = await itemActionController.startConference(12);
+      expect(a).toEqual(conference);
+    });
+  });
+  describe('cancelZoomMeeting', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      requestController.put = jest.fn();
+      progressService.deleteProgress = jest.fn();
+      notificationCenter.emitEntityDelete = jest.fn();
+      partialUpdateController.updatePartially = jest.fn();
+    });
+    it('cancelZoomMeeting', async () => {
+      const normalId = Math.abs(
+        GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_MEETING),
+      );
+      partialUpdateController.updatePartially = jest
+        .fn()
+        .mockImplementation((params: PartialUpdateParams<any>) => {
+          const { entityId, preHandlePartialEntity, doUpdateEntity } = params;
+          expect(entityId).toBe(normalId);
+          expect(
+            preHandlePartialEntity!(
+              { id: normalId, status: 'cancelled' },
+              { id: normalId, status: 'not_start', name: 'name' },
+            ),
+          ).toEqual({ id: normalId, status: 'cancelled' });
+          doUpdateEntity!({ id: normalId, status: 'cancelled' });
+        });
+      await itemActionController.cancelZoomMeeting(normalId);
+      expect(partialUpdateController.updatePartially).toHaveBeenCalledWith({
+        entityId: normalId,
+        preHandlePartialEntity: expect.anything(),
+        doUpdateEntity: expect.anything(),
+      });
+      expect(requestController.put).toHaveBeenCalledWith({
+        id: normalId,
+        status: 'cancelled',
+      });
+    })
+  })
 });

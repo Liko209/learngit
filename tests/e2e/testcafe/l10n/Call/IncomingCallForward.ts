@@ -50,7 +50,12 @@ test(formalName('Check Forward for an incoming call', ['P2', 'Call', 'IncomingCa
   await h(t).withLog('When I type number in dialer and click Forward button', async () => {
     await telephonyDialog.tapKeypad("703");
     await telephonyDialog.clickForwardActionButton();
+    await t.wait(2000);
   })
 
   await h(t).log('Then I capture screenshot', { screenshotPath: 'Jupiter_Call_ForwardSuccessfully'})
+
+  await h(t).withLog('End the call', async () => {
+    await session.hangup();
+  })
 });

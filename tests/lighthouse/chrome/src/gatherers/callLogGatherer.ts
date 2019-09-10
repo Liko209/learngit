@@ -57,11 +57,13 @@ class CallLogGatherer extends DebugGatherer {
         page = await phonePage.newPage();
 
         await page.goto(authUrl);
+
         await phonePage.waitForCompleted();
 
         await phonePage.lookupRecentCallLog();
 
         await phonePage.createCallLog();
+
         await phonePage.deleteCallLog();
 
         await phonePage.enterVoiceMailTab();
@@ -85,6 +87,7 @@ class CallLogGatherer extends DebugGatherer {
 
         await driver.clearDataForOrigin(url);
       } catch (err) {
+        this.logger.error(err);
         if (page) {
           await page.close();
         }
@@ -101,7 +104,7 @@ class CallLogGatherer extends DebugGatherer {
         ui: []
       };
     }
-    
+
     return result;
   }
 }

@@ -16,6 +16,7 @@ import {
   primary,
   ellipsis,
 } from '../../../foundation/utils/styles';
+import { StyledAvatar } from '../../../components/Avatar';
 
 type PropsName = {
   needEllipsis?: boolean;
@@ -44,6 +45,25 @@ const JuiProfileDialogContentSummaryLeft = styled('div')`
   width: ${width(20)};
   margin-right: ${spacing(4)};
   flex-shrink: 0;
+
+  ${StyledAvatar} {
+    :hover,
+    :active {
+      cursor: default;
+      opacity: 1;
+    }
+  }
+
+  ${StyledAvatar} > img {
+    &:hover {
+      opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
+      cursor: pointer;
+    }
+
+    &:active {
+      opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
+    }
+  }
 `;
 
 const JuiProfileDialogContentSummaryRight = styled('div')`
@@ -81,6 +101,10 @@ const JuiProfileDialogContentSummaryButton = styled('div')`
   align-items: center;
   cursor: pointer;
   outline: none;
+  margin-right: ${spacing(5)};
+  &:last-child {
+    margin-right: 0;
+  }
   span {
     margin-right: ${spacing(2)};
   }
@@ -98,6 +122,13 @@ const JuiProfileDialogContentSummaryStatus = styled('div')`
   ${ellipsis()};
   color: ${grey('500')};
   margin-top: ${spacing(1)};
+  && {
+    .emoji-mart-emoji {
+      position: relative;
+      top: 50%;
+      transform: translateY(10%);
+    }
+  }
 `;
 
 const JuiProfileDialogContentSummaryTitle = styled(

@@ -1,44 +1,29 @@
 /*
- * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-11-22 09:53:22
+ * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
+ * @Date: 2019-08-26 11:58:42
  * Copyright © RingCentral. All rights reserved.
  */
-/*
- * @Author: Alvin Huang (alvin.huang@ringcentral.com)
- * @Date: 2018-9-30 14:45:02
- * Copyright © RingCentral. All rights reserved.
- */
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiSearchInput } from '..';
-import { boolean } from '@storybook/addon-knobs';
 
-storiesOf('Pattern/SearchBar', module).add('SearchInput', () => {
-  const focus = boolean('focus', false);
+import avatar from './img/avatar.jpg';
 
-  class Test extends React.PureComponent {
-    state = {
-      value: '',
-    };
-    onChange = (e: ChangeEvent<HTMLInputElement>) => {
-      this.setState({
-        value: e.target.value,
-      });
-    };
-    render() {
-      return (
-        <div>
-          <JuiSearchInput
-            focus={focus}
-            value={this.state.value}
-            placeholder='search'
-            onChange={this.onChange}
-            onClear={() => {}}
-            showCloseBtn
-          />
-        </div>
-      );
-    }
-  }
-  return <Test />;
-});
+const defaultProps = {
+  clearText: 'clear',
+  size: 'medium' as any,
+  withCloseIcon: false,
+  value: 'searchKey',
+  onClear: () => {},
+};
+
+storiesOf('Pattern/SearchInput', module)
+  .add('medium', () => {
+    return <JuiSearchInput {...defaultProps} />;
+  })
+  .add('large', () => {
+    return <JuiSearchInput {...defaultProps} size="large" />;
+  })
+  .add('empty', () => {
+    return <JuiSearchInput {...defaultProps} size="large" value="" />;
+  });

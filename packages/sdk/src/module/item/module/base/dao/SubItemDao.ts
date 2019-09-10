@@ -3,7 +3,7 @@
  * @Date: 2019-1-2 15:50:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { IDatabase } from 'foundation';
+import { IDatabase } from 'foundation/db';
 import { isIEOrEdge, isFirefox } from 'sdk/service/utils';
 import _ from 'lodash';
 import { BaseDao } from 'sdk/framework/dao';
@@ -43,7 +43,8 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
       sanitizedItems = sanitizedItems.filter(filterFunc);
     }
 
-    const sortFunc = (lhs: T, rhs: T): number => SortUtils.sortModelByKey(lhs, rhs, [sortKey], desc);
+    const sortFunc = (lhs: T, rhs: T): number =>
+      SortUtils.sortModelByKey(lhs, rhs, [sortKey], desc);
 
     sanitizedItems = sanitizedItems.sort(sortFunc);
     const allItemIds = sanitizedItems.map((x: T) => x.id);
@@ -72,8 +73,8 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return isIEOrEdge
       ? query.filter(item => item.group_ids.includes(groupId))
       : isFirefox
-        ? query.contain('group_ids', groupId)
-        : query.equal('group_ids', groupId);
+      ? query.contain('group_ids', groupId)
+      : query.equal('group_ids', groupId);
   }
 
   toSanitizedItem(item: Item) {
@@ -92,15 +93,18 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   }
 
   shouldSaveSubItem<K extends { id: number; post_ids?: number[] }>(item: K) {
-    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
+    return !!(item.id > 0 && item.post_ids && item.post_ids.length > 0);
   }
 
-  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
-    await super.update(item, false);
+  async update(item: Partial<T>, shouldDoPut = false): Promise<void> {
+    await super.update(item, shouldDoPut);
   }
 
-  async bulkUpdate(partialItems: Partial<T>[]): Promise<void> {
-    await super.bulkUpdate(partialItems, false);
+  async bulkUpdate(
+    partialItems: Partial<T>[],
+    shouldDoPut = false,
+  ): Promise<void> {
+    return super.bulkUpdate(partialItems, shouldDoPut);
   }
 }
 

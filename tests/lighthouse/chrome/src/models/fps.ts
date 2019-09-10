@@ -6,7 +6,8 @@ import {
   Table, Column, Model, DataType
 } from 'sequelize-typescript';
 
-@Table({
+import { IDefineOptions } from 'sequelize-typescript/lib/interfaces/IDefineOptions';
+@Table(<IDefineOptions>{
   modelName: 't_fps',
   indexes: [{
     unique: false,

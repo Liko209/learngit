@@ -17,7 +17,7 @@ import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import { ITEM_HEIGHT } from '../constants';
-import { PerformanceTracer } from 'sdk';
+import { PerformanceTracer } from 'foundation/performance';
 import { GROUP_PERFORMANCE_KEYS } from '../../../performanceKeys';
 
 const InfiniteList = withAutoSizer(JuiInfiniteList);

@@ -23,7 +23,6 @@ type JuiBoxSelectProps = SelectProps & {
 const StyledSelectBoxContainer = styled.div`
   width: 100%;
   text-align: left;
-  padding-bottom: ${spacing(3)};
   max-width: ${spacing(58)};
 `;
 const StyledSelectBoxHeader = styled.div`

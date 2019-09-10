@@ -12,11 +12,12 @@ import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../FeedbackApi';
-import { SessionManager, DateFormatter, mainLogger } from 'sdk';
+import { SessionManager, mainLogger } from 'foundation/log';
+import { DateFormatter } from 'foundation/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { ZipItemLevel } from 'sdk/module/log/types';
-import { saveBlob } from '@/common/blobUtils';
+import { saveBlob } from 'sdk/utils/fileUtils';
 
 type UploadOption = { timeout: number; retry: number; level: ZipItemLevel };
 
@@ -45,10 +46,16 @@ class FeedbackService {
     saveBlob(zipResult.zipName, zipResult.zipBlob);
   };
 
-  zipRecentLogs = async (level?: ZipItemLevel): Promise<{ zipName: string; zipBlob: Blob }> => {
+  zipRecentLogs = async (
+    level?: ZipItemLevel,
+  ): Promise<{ zipName: string; zipBlob: Blob }> => {
     const zipBlob = await LogControlManager.instance().getZipLog(level);
-    const accountService = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE);
-    const uid = accountService.isAccountReady() ? accountService.userConfig.getGlipUserId() : undefined;
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    const uid = accountService.isAccountReady()
+      ? accountService.userConfig.getGlipUserId()
+      : undefined;
     const sessionId = SessionManager.getInstance().getSession();
     return {
       zipBlob,
@@ -56,8 +63,14 @@ class FeedbackService {
     };
   };
 
-  uploadRecentLogs = async (option?: Partial<UploadOption>): Promise<UploadResult | null> => {
-    const { retry = DEFAULT_OPTION.retry, timeout = DEFAULT_OPTION.timeout, level } = { ...DEFAULT_OPTION, ...option };
+  uploadRecentLogs = async (
+    option?: Partial<UploadOption>,
+  ): Promise<UploadResult | null> => {
+    const {
+      retry = DEFAULT_OPTION.retry,
+      timeout = DEFAULT_OPTION.timeout,
+      level,
+    } = { ...DEFAULT_OPTION, ...option };
     const zipResult = await this.zipRecentLogs(level);
     if (!zipResult) {
       logger.debug('Zip log file fail.');
@@ -78,12 +91,15 @@ class FeedbackService {
   };
 
   sendFeedback = async (message: string, comments: string): Promise<void> => {
+    logger.debug('feedback: ', { message, comments });
     /* eslint-disable  no-throw-literal */
     if (!Sentry.getCurrentHub().getClient()) {
       throw 'Sentry is not init.';
     }
     const appContextInfo = await getAppContextInfo();
-    const eventId = Sentry.captureMessage(`[Feedback] ${message}`);
+    const eventId = Sentry.captureMessage(
+      `[Feedback] ${message} ${Date.now()}`,
+    );
     await FeedbackApi.sendFeedback({
       comments,
       event_id: eventId,

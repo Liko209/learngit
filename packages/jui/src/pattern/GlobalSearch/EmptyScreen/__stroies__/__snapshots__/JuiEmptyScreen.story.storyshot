@@ -14,11 +14,11 @@ exports[`Storyshots Pattern/GlobalSearch/EmptyScreen EmptyScreen: Pattern/Global
   -ms-flex-align: center;
   align-items: center;
   box-sizing: border-box;
+  margin: auto;
 }
 
 .c1 {
-  width: 400px;
-  height: 320px;
+  max-width: 400px;
 }
 
 .c2 {

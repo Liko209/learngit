@@ -8,7 +8,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   display: inline-flex;
 }
 
-.c9 {
+.c8 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -41,8 +41,8 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   border-radius: 0;
 }
 
-.c7.c7 .c8,
-.c7.c7 .c8 svg {
+.c7.c7 .icon,
+.c7.c7 .icon svg {
   font-size: 20px;
 }
 
@@ -50,15 +50,19 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   background-color: transparent;
 }
 
-.c7.c7:hover .c8 {
+.c7.c7:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c7.c7:active .c8 {
+.c7.c7:active .icon {
   color: #9e9e9e;
 }
 
-.c7.c7.c7.c7.disabled .c8 {
+.c7.c7.c7.c7.disabled {
+  background-color: inherit;
+}
+
+.c7.c7.c7.c7.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -70,159 +74,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c10.c10 .c8,
-.c10.c10 .c8 svg {
-  font-size: 20px;
-}
-
-.c10.c10:hover .c8 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c10.c10:active .c8 {
-  color: #9e9e9e;
-}
-
-.c10.c10.c10.c10.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c11.c11 .c8,
-.c11.c11 .c8 svg {
-  font-size: 20px;
-}
-
-.c11.c11:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c11.c11:active .c8 {
-  color: #0684bd;
-}
-
-.c11.c11.c11.c11.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c12.c12 .c8,
-.c12.c12 .c8 svg {
-  font-size: 20px;
-}
-
-.c12.c12:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c12.c12:active .c8 {
-  color: #0684bd;
-}
-
-.c12.c12.c12.c12.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c13.c13 .c8,
-.c13.c13 .c8 svg {
-  font-size: 20px;
-}
-
-.c13.c13:hover .c8 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c13.c13:active .c8 {
-  color: #edb63c;
-}
-
-.c13.c13.c13.c13.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c14.c14 .c8,
-.c14.c14 .c8 svg {
-  font-size: 16px;
-}
-
-.c14.c14:hover .c8 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c14.c14:active .c8 {
-  color: #9e9e9e;
-}
-
-.c14.c14.c14.c14.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c15.c15 .c8,
-.c15.c15 .c8 svg {
-  font-size: 16px;
-}
-
-.c15.c15:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c15.c15:active .c8 {
-  color: #0684bd;
-}
-
-.c15.c15.c15.c15.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c16.c16 .c8,
-.c16.c16 .c8 svg {
-  font-size: 16px;
-}
-
-.c16.c16:hover .c8 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c16.c16:active .c8 {
-  color: #fff;
-}
-
-.c16.c16.c16.c16.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c17.c17 .c8,
-.c17.c17 .c8 svg {
-  font-size: 32px;
-}
-
-.c17.c17:hover .c8 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c17.c17:active .c8 {
-  color: #212121;
-}
-
-.c17.c17.c17.c17.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c18.c18 .c8,
-.c18.c18 .c8 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c8 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c18.c18:active .c8 {
-  color: #fff;
-}
-
-.c18.c18.c18.c18.disabled .c8 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c6 {
@@ -388,7 +239,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
           aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
@@ -398,14 +248,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
           onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="plain"
         >
@@ -413,11 +264,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
             className="MuiIconButton-label"
           >
             <span
-              className="c8  icon c1"
-              size="medium"
+              className="  icon c1"
             >
               <svg
-                className="c9"
+                className="c8"
                 role="img"
               >
                 <use
@@ -481,7 +331,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
           aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
@@ -491,14 +340,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
           onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="plain"
         >
@@ -506,11 +356,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
             className="MuiIconButton-label"
           >
             <span
-              className="c8  icon c1"
-              size="medium"
+              className="  icon c1"
             >
               <svg
-                className="c9"
+                className="c8"
                 role="img"
               >
                 <use
@@ -574,7 +423,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
           aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
@@ -584,14 +432,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
           onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="plain"
         >
@@ -599,11 +448,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
             className="MuiIconButton-label"
           >
             <span
-              className="c8  icon c1"
-              size="medium"
+              className="  icon c1"
             >
               <svg
-                className="c9"
+                className="c8"
                 role="img"
               >
                 <use
@@ -667,7 +515,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
           aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
@@ -677,14 +524,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
           onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="plain"
         >
@@ -692,11 +540,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
             className="MuiIconButton-label"
           >
             <span
-              className="c8  icon c1"
-              size="medium"
+              className="  icon c1"
             >
               <svg
-                className="c9"
+                className="c8"
                 role="img"
               >
                 <use

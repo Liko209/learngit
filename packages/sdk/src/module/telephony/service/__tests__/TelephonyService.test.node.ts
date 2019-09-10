@@ -6,7 +6,7 @@
 import { TelephonyService } from '../TelephonyService';
 import { TelephonyEngineController } from '../../controller/TelephonyEngineController';
 import { ITelephonyAccountDelegate } from '../ITelephonyAccountDelegate';
-import { MAKE_CALL_ERROR_CODE } from '../../types';
+import { MAKE_CALL_ERROR_CODE , TRANSFER_TYPE } from '../../types';
 import { MakeCallController } from '../../controller/MakeCallController';
 import { ITelephonyCallDelegate } from '../ITelephonyCallDelegate';
 import {
@@ -24,6 +24,7 @@ import { SettingService } from 'sdk/module/setting';
 import { CallSwitchController } from '../../controller/CallSwitchController';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 
+
 jest.mock('../../controller/CallSwitchController');
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
@@ -40,7 +41,7 @@ describe('TelephonyService', () => {
   let mockSetting: PhoneSetting;
   let mockSettingService: SettingService;
   let callSwitchController: CallSwitchController;
-  const callId = '123';
+  const callId = 123;
   const toNum = '123';
   class MockAcc implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: TELEPHONY_ACCOUNT_STATE) {}
@@ -186,7 +187,6 @@ describe('TelephonyService', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
       expect(accountController.hangUp).toHaveBeenCalledWith('123');
-      expect(callSwitchController.onCallEnded).toHaveBeenCalledWith('123');
     });
   });
   describe('mute', () => {
@@ -333,6 +333,29 @@ describe('TelephonyService', () => {
       callSwitchController.getSwitchCall = jest.fn().mockResolvedValue(retData);
       const r = await telephonyService.getSwitchCall();
       expect(r).toEqual(retData);
+    });
+  });
+
+  describe('transfer', () => {
+    it('should call transfer', async () => {
+      await telephonyService.transfer(
+        callId,
+        TRANSFER_TYPE.BLIND_TRANSFER,
+        toNum,
+      );
+      expect(accountController.transfer).toHaveBeenCalledWith(
+        callId,
+        TRANSFER_TYPE.BLIND_TRANSFER,
+        toNum,
+      );
+    });
+  });
+
+  describe('hasActiveDL', () => {
+    it('should call engineController', async () => {
+      engineController.hasActiveDL = jest.fn().mockReturnValue(true);
+      const res = telephonyService.hasActiveDL();
+      expect(res).toBeTruthy();
     });
   });
 });

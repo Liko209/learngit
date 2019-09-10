@@ -6,6 +6,7 @@
 import { MediaService } from '../MediaService';
 import * as utils from '@/store/utils';
 import { mediaManager } from '../../MediaManager';
+import { trackManager } from '../../TrackManager';
 import { Media } from '../../Media';
 
 describe('MediaService', () => {
@@ -48,6 +49,16 @@ describe('MediaService', () => {
       expect(canPlayType).toHaveBeenCalled();
     });
   });
+
+  describe('setDuckVolume()', () => {
+    it('should set duck volume to all track', () => {
+      const mediaService = new MediaService();
+      expect(trackManager.duckVolume).toEqual(1);
+
+      mediaService.setDuckVolume(0.7);
+      expect(trackManager.duckVolume).toEqual(0.7);
+    })
+  })
   describe('globalVolume', () => {
     it('should get global volume', () => {
       jest

@@ -40,6 +40,16 @@ export type FsmStatusCategory =
   | 'unholding'
   | 'disconnected';
 
+export enum CallEventCategory {
+  InviteError = 'InviteError',
+  RegistrationError = 'RegistrationError',
+  MediaEvent = 'MediaEvent',
+  NetworkEvent = 'NetworkEvent',
+  CallAction = 'CallAction',
+  CallActionSuccess = 'CallActionSuccess',
+  CallActionFailed = 'CallActionFailed',
+}
+
 export type Establishment = Partial<{
   // out
   startTime: number;
@@ -57,16 +67,23 @@ export type Establishment = Partial<{
 
 export type FsmStatus = {
   name: FsmStatusCategory;
-  timestamp: number;
+  timestamp: string;
 };
 
-export interface ICall {
+export type CallEvent = {
+  name: CallEventCategory;
+  info: string;
+  timestamp: string;
+};
+
+export interface ICallReport {
   id: string;
   createTime: Date | null;
   sessionId: string;
   ua: any;
   direction: 'incoming' | 'outgoing' | '';
   establishment: Establishment;
+  events: CallEvent[];
   fsmStatus: FsmStatus[];
   media: MediaReportOutCome | null;
 }
@@ -76,6 +93,8 @@ export type MediaReportProps =
   | 'bytesReceived'
   | 'packetsLost'
   | 'jitter'
+  | 'fractionLost'
+  | 'currentRoundTripTime'
   | 'packetsSent'
   | 'bytesSent';
 
@@ -91,6 +110,8 @@ export type MediaReportItem<T> = {
   bytesReceived: T;
   packetsLost: T;
   jitter: T | MediaReportOutcomeItem<T>;
+  fractionLost: T | MediaReportOutcomeItem<T>;
+  currentRoundTripTime: T | MediaReportOutcomeItem<T>;
   packetsSent: T;
   bytesSent: T;
   none?: boolean; // marker
@@ -99,15 +120,20 @@ export type MediaReportItem<T> = {
 export type MediaReportItemType = MediaReportItem<number>;
 
 export type MediaReportOutCome = MediaReportItem<
-MediaReportOutcomeItem<number>
+  MediaReportOutcomeItem<number>
 >;
 
 export type MediaStatusReport = {
   inboundRtpReport: Pick<
-  MediaReportItemType,
-  'packetsReceived' | 'bytesReceived' | 'packetsLost' | 'jitter'
+    MediaReportItemType,
+    | 'packetsReceived'
+    | 'bytesReceived'
+    | 'packetsLost'
+    | 'jitter'
+    | 'fractionLost'
   >;
   outboundRtpReport: Pick<MediaReportItemType, 'packetsSent' | 'bytesSent'>;
+  rttMS: Pick<MediaReportItemType, 'currentRoundTripTime'>;
 };
 export interface IMediaReport {
   startAnalysis: (arg: any) => void;

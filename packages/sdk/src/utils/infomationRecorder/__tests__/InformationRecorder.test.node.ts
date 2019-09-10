@@ -5,7 +5,7 @@
  */
 import { InformationRecorder } from '../InformationRecorder';
 import { AbstractRecord } from '../AbstractRecord';
-import { LOG_LEVEL } from 'foundation';
+import { LOG_LEVEL } from 'foundation/log';
 
 type TestRecord = {
   toggle: boolean;

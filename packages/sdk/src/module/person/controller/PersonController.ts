@@ -29,7 +29,7 @@ import { PersonEntityCacheController } from './PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { PersonActionController } from './PersonActionController';
 import { buildPartialModifyController } from 'sdk/framework/controller';
 
@@ -53,7 +53,7 @@ const PersonFlags = {
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
 const HEADSHOT_THUMB_WIDTH = 'width';
 const HEADSHOT_THUMB_HEIGHT = 'height';
-
+const RC_SIGNONS = 'rc_signons';
 const SIZE = 'size';
 
 const LOG_TAG = 'PersonController';
@@ -65,13 +65,14 @@ class PersonController {
   constructor() {}
 
   get personActionController() {
-    return new PersonActionController(this.partialModifyController, this._entitySourceController);
+    return new PersonActionController(
+      this.partialModifyController,
+      this._entitySourceController,
+    );
   }
 
   get partialModifyController() {
-    return buildPartialModifyController<Person>(
-      this._entitySourceController
-    );
+    return buildPartialModifyController<Person>(this._entitySourceController);
   }
 
   setDependentController(
@@ -187,7 +188,9 @@ class PersonController {
         url = this._getHighestResolutionHeadshotUrlFromThumbs(
           headshot.thumbs,
           size,
-          headshot.stored_file_id ? headshot.stored_file_id.toString() : undefined,
+          headshot.stored_file_id
+            ? headshot.stored_file_id.toString()
+            : undefined,
         );
       }
       if (!url) {
@@ -230,19 +233,19 @@ class PersonController {
     if (person.first_name && person.last_name) {
       return `${person.first_name} ${person.last_name}`;
     }
-    return person.first_name || person.last_name ||'';
+    return person.first_name || person.last_name || '';
   }
 
-  getFirstName(person: Person){
-    let firstName = person.first_name || "";
+  getFirstName(person: Person) {
+    let firstName = person.first_name || '';
     if (person.rc_extension_id) {
       firstName = person.sanitized_rc_first_name || firstName;
     }
     return firstName;
   }
 
-  getLastName(person: Person){
-    let lastName = person.last_name || "";
+  getLastName(person: Person) {
+    let lastName = person.last_name || '';
     if (person.rc_extension_id) {
       lastName = person.sanitized_rc_last_name || lastName;
     }
@@ -304,18 +307,29 @@ class PersonController {
     );
   }
 
-  isValidPerson = (person: Person) => !person.is_pseudo_user &&
+  private _isRcRegistered(person: Person) {
+    return (
+      this._hasTrueValue(person, PersonFlags.rc_registered) ||
+      person.externally_registered === RC_SIGNONS
+    );
+  }
+
+  private _isEmailAllowed(person: Person) {
+    return this._isRcRegistered(person) || !this._hasBogusEmail(person);
+  }
+
+  isValidPerson = (person: Person) =>
+    !person.is_pseudo_user &&
     !this._isUnregistered(person) &&
     this._isServicePerson(person) &&
-    !this._hasBogusEmail(person) &&
+    this._isEmailAllowed(person) &&
     !this._isDeactivated(person);
 
   isVisible(person: Person): boolean {
     return (
       this.isValidPerson(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
-      !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
-      !this._isDeactivated(person)
+      !this._hasTrueValue(person, PersonFlags.am_removed_guest)
     );
   }
 
@@ -360,13 +374,14 @@ class PersonController {
     if (!phoneParserUtility) {
       return null;
     }
-    const e164Number = phoneParserUtility.getE164();
-    const isShortNumber = phoneParserUtility.isShortNumber();
+    const isShortNumber =
+      phoneParserUtility.isShortNumber() ||
+      phoneParserUtility.isSpecialNumber();
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );
     const numberList = await phoneNumberService.generateMatchedPhoneNumberList(
-      e164Number,
+      phoneNumber,
       phoneParserUtility,
     );
 
@@ -408,11 +423,10 @@ class PersonController {
     const requestController = this._entitySourceController.getRequestController();
     if (requestController) {
       const person = await requestController.get(personId);
-      if(person){
+      if (person) {
         await this._entitySourceController.update(person);
         notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
       }
-      
     }
   }
 

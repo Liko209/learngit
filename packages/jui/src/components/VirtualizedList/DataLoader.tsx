@@ -64,7 +64,7 @@ const JuiDataLoader = ({
         onFailed: setLoadingInitialFailed,
       },
     }),
-    [loadMore, loadMore, loadInitialData],
+    [loadMore, loadInitialData],
   );
 
   const loadData = useCallback(

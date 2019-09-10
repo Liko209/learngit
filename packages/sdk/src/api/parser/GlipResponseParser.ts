@@ -3,7 +3,7 @@
  * @Date: 2019-01-08 15:22:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseResponse, NETWORK_HANDLE_TYPE } from 'foundation';
+import { BaseResponse, NETWORK_HANDLE_TYPE } from 'foundation/network';
 import { JError, JServerError, ERROR_CODES_SERVER } from '../../error';
 import { IResponseParser } from './types';
 

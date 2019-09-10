@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import FileItemModel, { FileType } from '../../store/models/FileItem';
-import { getFileType, isFileReadyForViewer } from '../getFileType';
+import { getFileType, isFileReadyForViewer, isDoc } from '../getFileType';
 import { SupportPreviewImageExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 
 const previewUrl = 'http://www.google.com';
@@ -64,6 +64,17 @@ describe('getFileType', () => {
   });
 
   it('should isFileReadyForViewer return true when status os "ready"', () => {
-    expect(isFileReadyForViewer('ready')).toEqual(true);
+    expect(isFileReadyForViewer('ready', false)).toEqual(true);
+  });
+
+  it('should isFileReadyForViewer return false when ready is true', () => {
+    expect(isFileReadyForViewer('', true)).toEqual(true);
+  });
+  it('should isFileReadyForViewer return false when status null ands ready false', () => {
+    expect(isFileReadyForViewer('', false)).toEqual(false);
+  });
+
+  it('should isDoc return true when type i doc', () => {
+    expect(isDoc('doc')).toEqual(true);
   });
 });

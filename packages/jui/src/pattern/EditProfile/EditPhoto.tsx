@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
-import { spacing, palette } from '../../foundation/utils';
+import { spacing, palette, grey } from '../../foundation/utils';
 
 const JuiEditPhotoUploadContent = styled.div`
   margin: ${spacing(5, 0)};
@@ -17,7 +17,7 @@ const JuiEditPhotoUploadContent = styled.div`
 const JuiEditPhotoEditContent = styled.div`
   position: relative;
   height: ${spacing(86)};
-  background-color: ${palette('common', 'black')};
+  background-color: ${grey('900')};
   margin: ${spacing(0, -6)};
   display: flex;
   justify-content: center;
@@ -58,6 +58,9 @@ const JuiEditPhotoImageEditContent = styled.div`
   > div {
     height: ${spacing(70)};
     width: ${spacing(70)};
+  }
+  img {
+    background-color: ${grey('100')};
   }
 `;
 

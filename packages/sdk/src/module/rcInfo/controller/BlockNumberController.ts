@@ -9,7 +9,7 @@ import { RC_INFO_KEYS } from '../config/constants';
 import { UndefinedAble } from 'sdk/types';
 import { BlockNumberItem, RCInfoApi, BLOCK_STATUS } from 'sdk/api';
 import { CONFIG_EVENT_TYPE } from 'sdk/module/config/constants';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 
 const LOG_TAG = 'BlockNumberController';
 

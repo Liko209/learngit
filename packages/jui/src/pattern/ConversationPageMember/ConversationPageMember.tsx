@@ -8,7 +8,12 @@ import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 import { JuiIconography } from '../../foundation/Iconography';
-import { grey, typography, width } from '../../foundation/utils/styles';
+import {
+  grey,
+  typography,
+  width,
+  spacing,
+} from '../../foundation/utils/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
 import { IconButtonSize, iconSizes } from '../../components/Buttons';
 
@@ -25,13 +30,14 @@ const StyledConversationPageMember = styled.button<MemberProps>`
   align-items: center;
   border: none;
   padding: 0;
-  height: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
+  height: ${({ size = 'medium', theme }) =>
+    width(iconSizes[size] * 2)({ theme })};
   background: none;
   color: ${grey('500')};
   cursor: pointer;
 
   &&& {
-    margin-left: ${width(1)};
+    padding: ${spacing(0, 2.5)};
   }
 
   :active {
@@ -40,10 +46,10 @@ const StyledConversationPageMember = styled.button<MemberProps>`
 
   :hover {
     color: ${({
-    theme: {
-      palette: { tonalOffset, grey },
-    },
-  }) => darken(grey['500'], tonalOffset)};
+      theme: {
+        palette: { tonalOffset, grey },
+      },
+    }) => darken(grey['500'], tonalOffset)};
   }
 
   > span {
@@ -52,7 +58,7 @@ const StyledConversationPageMember = styled.button<MemberProps>`
 `;
 
 class JuiConversationPageMember extends PureComponent<
-JuiConversationPageMemberProps
+  JuiConversationPageMemberProps
 > {
   render() {
     const {

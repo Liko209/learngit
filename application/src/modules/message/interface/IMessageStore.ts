@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { createDecorator } from 'framework';
+import { createDecorator } from 'framework/ioc';
 
 const IMessageStore = createDecorator('IMessageStore');
 
 interface IMessageStore {
-  conversationHeaderExtensions: React.ReactNode[];
+  conversationHeaderExtensions: React.ComponentType[];
   draftMap: Map<number, string>;
   currentFocusedInput?: number;
   isRightRailOpen: boolean;

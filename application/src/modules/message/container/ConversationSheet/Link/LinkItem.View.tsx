@@ -116,8 +116,10 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
   };
 
   render() {
-    const { postItems } = this.props;
-
+    const { postItems, isLinkPreviewDisabled } = this.props;
+    if (isLinkPreviewDisabled) {
+      return null;
+    }
     return <>{postItems.map(this.renderLink)}</>;
   }
 }

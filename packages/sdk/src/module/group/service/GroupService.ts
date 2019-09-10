@@ -34,6 +34,8 @@ import { GroupEntityCacheController } from '../controller/GroupEntityCacheContro
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
+import { UndefinedAble } from 'sdk/types';
+import { FuzzySearchGroupOptions } from '../entity/Group';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -328,20 +330,16 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     );
   }
 
-  async doFuzzySearchALlGroups(
-    searchKey: string,
-    fetchAllIfSearchKeyEmpty?: boolean,
-    includeUserSelf?: boolean,
-    recentFirst?: boolean,
+  async doFuzzySearchAllGroups(
+    searchKey: UndefinedAble<string>,
+    option: FuzzySearchGroupOptions,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
   }> {
     return await this._groupFetchDataController.doFuzzySearchAllGroups(
       searchKey,
-      fetchAllIfSearchKeyEmpty,
-      includeUserSelf,
-      recentFirst,
+      option,
     );
   }
 
@@ -362,6 +360,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
 
   async getGroupEmail(groupId: number): Promise<string> {
     return await this._groupFetchDataController.getGroupEmail(groupId);
+  }
+
+  getGroupName(group: Group): string {
+    return this._groupFetchDataController.getGroupName(group);
   }
 
   setAsTrue4HasMoreConfigByDirection = async (
@@ -445,6 +447,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.getGroupController()
       .getHandleDataController()
       .removeCursorsFromGroup(group);
+  }
+
+  clearDraftFlagIfNotReallyExisted(groupId: number) {
+    return this._groupConfigService.clearDraftFlagIfNotReallyExisted(groupId);
   }
 }
 

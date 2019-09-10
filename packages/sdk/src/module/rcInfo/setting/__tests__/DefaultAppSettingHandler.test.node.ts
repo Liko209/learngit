@@ -24,6 +24,7 @@ jest.mock('sdk/dao');
 jest.mock('sdk/module/profile/service/ProfileService');
 jest.mock('sdk/module/account');
 jest.mock('sdk/module/telephony/service/TelephonyService');
+jest.mock('sdk/service/socket');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -187,7 +188,7 @@ describe('DefaultAppSettingHandler', () => {
       settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
       settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
 
-      notificationCenter.emit(SERVICE.GLIP_LOGIN);
+      notificationCenter.emit(SERVICE.GLIP_LOGIN, {success: true, isFirstLogin: true});
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
         done();

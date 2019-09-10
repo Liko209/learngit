@@ -10,13 +10,13 @@ import { JuiIconography } from '../../../foundation/Iconography';
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiIconButton, JuiFabButton } from '../../../components/Buttons';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
-import { boolean } from '@storybook/addon-knobs';
+import { boolean, text } from '@storybook/addon-knobs';
 import minimize from '../../../assets/jupiter-icon/icon-minimize.svg';
 import tearOff from '../../../assets/jupiter-icon/icon-tear-off.svg';
 import signal2 from '../../../assets/jupiter-icon/icon-signal-2.svg';
 import previous from '../../../assets/jupiter-icon/icon-previous.svg';
 import mic from '../../../assets/jupiter-icon/icon-mic.svg';
-import keypad from '../../../assets/jupiter-icon/icon-keypad.svg';
+import dialer from '../../../assets/jupiter-icon/icon-dialer.svg';
 import hold from '../../../assets/jupiter-icon/icon-hold.svg';
 import callAdd from '../../../assets/jupiter-icon/icon-call-add.svg';
 import record from '../../../assets/jupiter-icon/icon-record.svg';
@@ -29,17 +29,19 @@ import {
   JuiContainer,
   JuiDialer,
   JuiKeypadAction,
+  JuiSwitchCallChip,
+  JuiSwitchCallHeader,
 } from '..';
 
-const Status = () => <JuiIconography iconSize='large' symbol={signal2} />;
+const Status = () => <JuiIconography iconSize="large" symbol={signal2} />;
 
 const MinimizeAction = () => (
   <JuiIconButton
-    key='MinimizeAction'
-    size='small'
-    tooltipTitle='Minimize'
-    variant='plain'
-    color='common.white'
+    key="MinimizeAction"
+    size="small"
+    tooltipTitle="Minimize"
+    variant="plain"
+    color="common.white"
     symbol={minimize}
   />
 );
@@ -48,11 +50,11 @@ MinimizeAction.displayName = 'MinimizeAction';
 
 const DetachOrAttachAction = () => (
   <JuiIconButton
-    key='DetachOrAttachAction'
-    size='small'
-    tooltipTitle='Detach'
-    variant='plain'
-    color='common.white'
+    key="DetachOrAttachAction"
+    size="small"
+    tooltipTitle="Detach"
+    variant="plain"
+    color="common.white"
     symbol={tearOff}
   />
 );
@@ -61,37 +63,37 @@ DetachOrAttachAction.displayName = 'DetachOrAttachAction';
 
 const Actions = [DetachOrAttachAction, MinimizeAction];
 
-const Avatar = () => <JuiAvatar size='medium' src={avatarImg} />;
+const Avatar = () => <JuiAvatar size="large" src={avatarImg} />;
 
 const Back = () => (
   <JuiIconButton
-    size='small'
-    tooltipTitle='Back'
-    variant='plain'
-    color='common.white'
+    tooltipTitle="Back"
+    size="large"
+    variant="plain"
+    color="common.white"
     symbol={previous}
   />
 );
 
-const HoverActions = () => (
-  <JuiIconButton
-    size='large'
-    tooltipTitle='Messages'
-    variant='plain'
-    color='common.white'
-  >
-    messages
-  </JuiIconButton>
-);
-
 const End = () => (
   <JuiFabButton
-    color='semantic.negative'
+    color="semantic.negative"
     disableToolTip
-    size='moreLarge'
+    size="moreLarge"
     showShadow={false}
-    tooltipPlacement='top'
-    iconName='hand_up'
+    tooltipPlacement="top"
+    iconName="hand_up"
+  />
+);
+
+const Transfer = () => (
+  <JuiFabButton
+    color="semantic.positive"
+    disableToolTip
+    size="moreLarge"
+    showShadow={false}
+    tooltipPlacement="top"
+    iconName="transfer-call"
   />
 );
 
@@ -100,11 +102,11 @@ const knobs = {
 };
 
 const MuteAction = () => (
-  <JuiKeypadAction key='muteAction'>
+  <JuiKeypadAction key="muteAction">
     <JuiIconButton
-      color='grey.900'
+      color="grey.900"
       disableToolTip
-      size='xxlarge'
+      size="xxlarge"
       symbol={mic}
     />
     <span>Mute</span>
@@ -114,12 +116,12 @@ const MuteAction = () => (
 MuteAction.displayName = 'MuteAction';
 
 const KeypadAction = () => (
-  <JuiKeypadAction key='keypadAction'>
+  <JuiKeypadAction key="keypadAction">
     <JuiIconButton
-      color='grey.900'
+      color="grey.900"
       disableToolTip
-      size='xxlarge'
-      symbol={keypad}
+      size="xxlarge"
+      symbol={dialer}
     />
     <span>Keypad</span>
   </JuiKeypadAction>
@@ -128,11 +130,11 @@ const KeypadAction = () => (
 KeypadAction.displayName = 'KeypadAction';
 
 const HoldAction = () => (
-  <JuiKeypadAction key='holdAction'>
+  <JuiKeypadAction key="holdAction">
     <JuiIconButton
-      color='grey.900'
+      color="grey.900"
       disableToolTip
-      size='xxlarge'
+      size="xxlarge"
       symbol={hold}
     />
     <span>Hold</span>
@@ -142,11 +144,11 @@ const HoldAction = () => (
 HoldAction.displayName = 'HoldAction';
 
 const AddAction = () => (
-  <JuiKeypadAction key='addAction'>
+  <JuiKeypadAction key="addAction">
     <JuiIconButton
-      color='grey.900'
+      color="grey.900"
       disableToolTip
-      size='xxlarge'
+      size="xxlarge"
       symbol={callAdd}
     />
     <span>Add</span>
@@ -156,11 +158,11 @@ const AddAction = () => (
 AddAction.displayName = 'AddAction';
 
 const RecordAction = () => (
-  <JuiKeypadAction key='recordAction'>
+  <JuiKeypadAction key="recordAction">
     <JuiIconButton
-      color='grey.900'
+      color="grey.900"
       disableToolTip
-      size='xxlarge'
+      size="xxlarge"
       symbol={record}
     />
     <span>Record</span>
@@ -170,11 +172,11 @@ const RecordAction = () => (
 RecordAction.displayName = 'RecordAction';
 
 const CallActionsAction = () => (
-  <JuiKeypadAction key='callActions'>
+  <JuiKeypadAction key="callActions">
     <JuiIconButton
-      color='grey.900'
+      color="grey.900"
       disableToolTip
-      size='xxlarge'
+      size="xxlarge"
       symbol={callMore}
     />
     <span>Call Actions</span>
@@ -192,20 +194,57 @@ const KeypadActions = [
   CallActionsAction,
 ];
 
-storiesOf('Pattern', module).add('Dialer', () => {
+const EndCall = () => (
+  <JuiFabButton
+    color="semantic.negative"
+    size="smallMedium"
+    showShadow={false}
+    tooltipPlacement="bottom"
+    iconName="hand_up"
+  />
+);
+
+const Dialer = (props: { isTransfer: boolean }) => {
+  const { isTransfer } = props;
+  const [active, setActive] = React.useState(true);
+  const CallAction = isTransfer ? Transfer : End;
   return (
     <JuiDialer>
       <JuiHeaderContainer>
-        <JuiTitleBar label='02:32' Actions={Actions} Status={Status} />
-        <JuiHeader
-          Avatar={Avatar}
-          name='Terry Webster'
-          phone='(650) 555-12345'
-          Back={Back}
-          HoverActions={HoverActions}
-        />
+        <JuiTitleBar label="02:32" Actions={Actions} Status={Status} />
+        {isTransfer ? (
+          <JuiSwitchCallHeader>
+            <JuiSwitchCallChip
+              active={active}
+              name={text('Name', 'Arunoda Susiripala')}
+              time={text('Time', '00:00:00')}
+              icon={active ? 'phone' : 'hold'}
+              EndCall={EndCall}
+              onClick={() => setActive(!active)}
+            />
+            <JuiSwitchCallChip
+              active={!active}
+              name={text('Name', 'Jessy Jiang')}
+              time={text('Time', '00:00')}
+              icon={!active ? 'phone' : 'hold'}
+              onClick={() => setActive(!active)}
+            />
+          </JuiSwitchCallHeader>
+        ) : (
+          <JuiHeader
+            Avatar={Avatar}
+            name="Terry Webster"
+            phone="(650) 555-12345"
+            Back={Back}
+          />
+        )}
       </JuiHeaderContainer>
-      <JuiContainer CallAction={End} KeypadActions={KeypadActions} />
+      <JuiContainer CallAction={CallAction} KeypadActions={KeypadActions} />
     </JuiDialer>
   );
+};
+
+storiesOf('Pattern', module).add('Dialer', () => {
+  const isTransfer = boolean('isTransfer', false);
+  return <Dialer isTransfer={isTransfer} />;
 });

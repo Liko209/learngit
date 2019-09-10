@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and controls: Components/Lists/ListItem Single-line item with Avatar and controls 1`] = `
-.c5.custom-root {
+.c6.custom-root {
   padding: 0px;
   width: 36px;
   height: 20px;
 }
 
-.c5.c5 .custom-switchBase {
+.c6.c6 .custom-switchBase {
   width: 36px;
   height: 20px;
   -webkit-transform: translateX(-8px);
@@ -16,19 +16,19 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   padding: 0;
 }
 
-.c5.c5 .custom-switchBase:hover {
+.c6.c6 .custom-switchBase:hover {
   background: none;
 }
 
-.c5:hover .custom-bar {
+.c6:hover .custom-bar {
   opacity: 0.88 !important;
 }
 
-.c5:active .custom-bar {
+.c6:active .custom-bar {
   opacity: 0.76 !important;
 }
 
-.c5 .custom-bar {
+.c6 .custom-bar {
   opacity: 1;
   background: #bfbfbf;
   border-radius: 10px;
@@ -36,36 +36,36 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   margin: 0;
 }
 
-.c5.c5 .custom-icon {
+.c6.c6 .custom-icon {
   width: 12px;
   height: 12px;
   box-shadow: none;
 }
 
-.c5 .custom-disabled .custom-icon {
+.c6 .custom-disabled .custom-icon {
   background: #fff;
 }
 
-.c5.c5 .custom-checked {
+.c6.c6 .custom-checked {
   -webkit-transform: translateX(8px);
   -ms-transform: translateX(8px);
   transform: translateX(8px);
 }
 
-.c5.c5 .custom-checked .custom-icon {
+.c6.c6 .custom-checked .custom-icon {
   background: #fff;
 }
 
-.c5.c5 .custom-checked + .custom-bar {
+.c6.c6 .custom-checked + .custom-bar {
   opacity: 1;
 }
 
-.c5 .custom-disabled.custom-checked + .custom-bar {
+.c6 .custom-disabled.custom-checked + .custom-bar {
   opacity: 1;
   background: #b2e3f4;
 }
 
-.c5 input {
+.c6 input {
   -webkit-transform: translateX(8px);
   -ms-transform: translateX(8px);
   transform: translateX(8px);
@@ -79,6 +79,19 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   display: -ms-flexbox;
   display: flex;
   padding-left: 16px;
+  color: #000;
+}
+
+.c0.c0.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c0.c0:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c0.c0 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c1.c1 {
@@ -86,26 +99,20 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   min-width: 0;
 }
 
-.c4.c4 {
+.c5.c5 {
   margin: 0px 8px;
 }
 
-.c4.c4 a,
-.c4.c4 button {
+.c5.c5 a,
+.c5.c5 button {
   margin-right: 0;
 }
 
-.c3 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c3.c3 {
+.c4.c4 {
   padding: 0;
 }
 
-.c3.c3 .list-item-primary {
+.c4.c4 .list-item-primary {
   display: block;
   color: #212121;
   font-size: 0.875rem;
@@ -118,7 +125,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   word-break: break-word;
 }
 
-.c3.c3 .list-item-secondary {
+.c4.c4 .list-item-secondary {
   display: block;
   color: #757575;
   font-size: 0.75rem;
@@ -131,11 +138,11 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   word-break: break-word;
 }
 
-.c3.c3.multiline {
+.c4.c4.multiline {
   margin: 0;
 }
 
-.c2.c2 {
+.c3.c3 {
   width: 24px;
   height: 24px;
   font-size: 0.75rem;
@@ -145,16 +152,20 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   background-color: #f5f6fb;
 }
 
-.c2.c2:hover {
+.c3.c3:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c2.c2:active {
+.c3.c3:active {
   opacity: 0.76;
 }
 
-.c2 > .avatar-short-name {
+.c3:focus {
+  outline: none;
+}
+
+.c3 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -169,6 +180,12 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+}
+
+.c7 .c2:hover,
+.c7 .c2:active {
+  cursor: default;
+  opacity: 1;
 }
 
 <ul
@@ -189,13 +206,18 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="button"
+    style={
+      Object {
+        "cursor": "default",
+      }
+    }
     tabIndex={0}
   >
     <div
       className="MuiListItemAvatar-root c1"
     >
       <div
-        className="MuiAvatar-root c2"
+        className="MuiAvatar-root c2 c3"
         size="small"
       >
         <img
@@ -205,7 +227,8 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
       </div>
     </div>
     <div
-      className="MuiListItemText-root c3"
+      className="MuiListItemText-root c4"
+      flex="1 1 auto"
     >
       <span
         className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -214,10 +237,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
       </span>
     </div>
     <div
-      className="c4"
+      className="c5"
     >
       <span
-        className="MuiSwitch-root custom-root c5"
+        className="MuiSwitch-root custom-root c6"
       >
         <span
           aria-disabled={false}
@@ -258,14 +281,14 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 `;
 
 exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Components/Lists/ListItem Single-line item with icon 1`] = `
-.c4 {
+.c3 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
-.c5 {
+.c4 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -287,8 +310,8 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   border-radius: 0;
 }
 
-.c2.c2 .c3,
-.c2.c2 .c3 svg {
+.c2.c2 .icon,
+.c2.c2 .icon svg {
   font-size: 20px;
 }
 
@@ -296,15 +319,19 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   background-color: transparent;
 }
 
-.c2.c2:hover .c3 {
+.c2.c2:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c2.c2:active .c3 {
+.c2.c2:active .icon {
   color: #9e9e9e;
 }
 
-.c2.c2.c2.c2.disabled .c3 {
+.c2.c2.c2.c2.disabled {
+  background-color: inherit;
+}
+
+.c2.c2.c2.c2.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -318,74 +345,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   animation-name: cBKRfH;
 }
 
-.c7.c7 .c3,
-.c7.c7 .c3 svg {
-  font-size: 20px;
-}
-
-.c7.c7:hover .c3 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c7.c7:active .c3 {
-  color: #9e9e9e;
-}
-
-.c7.c7.c7.c7.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c8.c8 .c3,
-.c8.c8 .c3 svg {
-  font-size: 20px;
-}
-
-.c8.c8:hover .c3 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c8.c8:active .c3 {
-  color: #0684bd;
-}
-
-.c8.c8.c8.c8.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c9.c9 .c3,
-.c9.c9 .c3 svg {
-  font-size: 20px;
-}
-
-.c9.c9:hover .c3 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c9.c9:active .c3 {
-  color: #0684bd;
-}
-
-.c9.c9.c9.c9.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c10.c10 .c3,
-.c10.c10 .c3 svg {
-  font-size: 20px;
-}
-
-.c10.c10:hover .c3 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c10.c10:active .c3 {
-  color: #edb63c;
-}
-
-.c10.c10.c10.c10.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c0.c0 {
   padding: 8px;
   width: 100%;
@@ -394,6 +353,19 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   display: -ms-flexbox;
   display: flex;
   padding-left: 16px;
+  color: #000;
+}
+
+.c0.c0.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c0.c0:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c0.c0 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c1.c1 {
@@ -418,17 +390,11 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   min-width: unset;
 }
 
-.c6 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c6.c6 {
+.c5.c5 {
   padding: 0;
 }
 
-.c6.c6 .list-item-primary {
+.c5.c5 .list-item-primary {
   display: block;
   color: #212121;
   font-size: 0.875rem;
@@ -441,7 +407,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   word-break: break-word;
 }
 
-.c6.c6 .list-item-secondary {
+.c5.c5 .list-item-secondary {
   display: block;
   color: #757575;
   font-size: 0.75rem;
@@ -454,7 +420,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   word-break: break-word;
 }
 
-.c6.c6.multiline {
+.c5.c5.multiline {
   margin: 0;
 }
 
@@ -476,13 +442,17 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="button"
+    style={
+      Object {
+        "cursor": "default",
+      }
+    }
     tabIndex={0}
   >
     <div
       className="MuiListItemIcon-root c1"
     >
       <button
-        aria-describedby={null}
         aria-label="favorite"
         className="MuiButtonBase-root MuiIconButton-root c2"
         disabled={false}
@@ -492,14 +462,15 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseOut={[Function]}
         onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
         tabIndex={0}
-        title={null}
         type="button"
         variant="plain"
       >
@@ -507,11 +478,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
           className="MuiIconButton-label"
         >
           <span
-            className="c3  icon c4"
-            size="medium"
+            className="  icon c3"
           >
             <svg
-              className="c5"
+              className="c4"
               role="img"
             >
               <use
@@ -524,7 +494,8 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
       </button>
     </div>
     <div
-      className="MuiListItemText-root c6"
+      className="MuiListItemText-root c5"
+      flex="1 1 auto"
     >
       <span
         className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -532,9 +503,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
         Single-line item name
       </span>
     </div>
-    <span
-      className="MuiTouchRipple-root"
-    />
   </div>
 </ul>
 `;
@@ -547,7 +515,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   display: inline-flex;
 }
 
-.c8 {
+.c7 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -580,8 +548,8 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   border-radius: 0;
 }
 
-.c6.c6 .c7,
-.c6.c6 .c7 svg {
+.c6.c6 .icon,
+.c6.c6 .icon svg {
   font-size: 20px;
 }
 
@@ -589,15 +557,19 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   background-color: transparent;
 }
 
-.c6.c6:hover .c7 {
+.c6.c6:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c6.c6:active .c7 {
+.c6.c6:active .icon {
   color: #9e9e9e;
 }
 
-.c6.c6.c6.c6.disabled .c7 {
+.c6.c6.c6.c6.disabled {
+  background-color: inherit;
+}
+
+.c6.c6.c6.c6.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -611,74 +583,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   animation-name: cBKRfH;
 }
 
-.c9.c9 .c7,
-.c9.c9 .c7 svg {
-  font-size: 20px;
-}
-
-.c9.c9:hover .c7 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c9.c9:active .c7 {
-  color: #9e9e9e;
-}
-
-.c9.c9.c9.c9.disabled .c7 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c10.c10 .c7,
-.c10.c10 .c7 svg {
-  font-size: 20px;
-}
-
-.c10.c10:hover .c7 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c10.c10:active .c7 {
-  color: #0684bd;
-}
-
-.c10.c10.c10.c10.disabled .c7 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c11.c11 .c7,
-.c11.c11 .c7 svg {
-  font-size: 20px;
-}
-
-.c11.c11:hover .c7 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c11.c11:active .c7 {
-  color: #0684bd;
-}
-
-.c11.c11.c11.c11.disabled .c7 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c12.c12 .c7,
-.c12.c12 .c7 svg {
-  font-size: 20px;
-}
-
-.c12.c12:hover .c7 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c12.c12:active .c7 {
-  color: #edb63c;
-}
-
-.c12.c12.c12.c12.disabled .c7 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c0.c0 {
   padding: 8px;
   width: 100%;
@@ -687,6 +591,19 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   display: -ms-flexbox;
   display: flex;
   padding-left: 8px;
+  color: #000;
+}
+
+.c0.c0.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c0.c0:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c0.c0 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .c1.c1 {
@@ -718,12 +635,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 .c5.c5 a,
 .c5.c5 button {
   margin-right: 0;
-}
-
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
 }
 
 .c4.c4 {
@@ -779,6 +690,11 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="button"
+    style={
+      Object {
+        "cursor": "default",
+      }
+    }
     tabIndex={0}
   >
     <div
@@ -802,6 +718,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
     </div>
     <div
       className="MuiListItemText-root c4 MuiListItemText-multiline multiline"
+      flex="1 1 auto"
     >
       <span
         className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
@@ -835,7 +752,10 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
         onKeyDown={[Function]}
         onKeyUp={[Function]}
         onMouseDown={[Function]}
+        onMouseEnter={[Function]}
         onMouseLeave={[Function]}
+        onMouseOut={[Function]}
+        onMouseOver={[Function]}
         onMouseUp={[Function]}
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
@@ -848,12 +768,10 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
           className="MuiIconButton-label"
         >
           <span
-            className="c7  icon c2"
-            disabled={false}
-            size="medium"
+            className="  icon c2"
           >
             <svg
-              className="c8"
+              className="c7"
               role="img"
             >
               <use
@@ -867,4 +785,353 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
     </div>
   </div>
 </ul>
+`;
+
+exports[`Storyshots Components/Lists/ListItem list item: Components/Lists/ListItem list item 1`] = `
+.c0 {
+  height: 100%;
+  max-height: 100%;
+  min-height: inherit;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.c2.c2 {
+  padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 16px;
+  color: #000;
+}
+
+.c2.c2.Mui-focusVisible {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.c2.c2:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c2.c2 .rippleVisible {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.c1 {
+  height: 8px;
+}
+
+<div
+  className="c0"
+>
+  <div
+    data-test-automation-id="virtualized-list"
+    onKeyDown={[Function]}
+    onScroll={[Function]}
+    style={
+      Object {
+        "WebkitOverflowScrolling": "touch",
+        "height": "100%",
+        "maxHeight": "100%",
+        "minHeight": "inherit",
+        "overflow": "auto",
+        "overflowAnchor": "none",
+        "transform": "translateZ(0)",
+      }
+    }
+    tabIndex={-1}
+  >
+    <div>
+      <div
+        className="c1"
+      />
+    </div>
+    <div
+      style={
+        Object {
+          "height": 0,
+        }
+      }
+    />
+    <div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+      <div
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root c2 MuiListItem-gutters MuiListItem-button"
+        onBlur={[Function]}
+        onClick={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseEnter={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        role="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
+        tabIndex={0}
+      >
+        list item
+      </div>
+    </div>
+    <div
+      style={
+        Object {
+          "height": 0,
+        }
+      }
+    />
+    <div
+      className="c1"
+    />
+  </div>
+</div>
 `;

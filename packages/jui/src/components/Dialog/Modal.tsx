@@ -29,10 +29,13 @@ type JuiModalProps = {
   cancelBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void | Promise<boolean> | Promise<void>;
-  onCancel?(event?: React.MouseEvent): void;
+  onCancel?(event: React.MouseEvent): void;
   content?: string | JSX.Element;
   fillContent?: boolean;
   loading?: boolean;
+  onClose?(event: React.MouseEvent, reason?: string): void;
+  onEscTracking?: (reason?: string) => void;
+  disableEscapeKeyDown?: boolean;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
@@ -56,7 +59,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
     } = this.props;
     return (
       <>
-        {cancelText ? (
+        {cancelText && (
           <JuiButton
             onClick={onCancel}
             color="primary"
@@ -68,19 +71,21 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           >
             {cancelText}
           </JuiButton>
-        ) : null}
-        <JuiButton
-          onClick={onOK}
-          color={okType}
-          variant={okVariant}
-          autoFocus={false}
-          data-test-automation-id={'DialogOKButton'}
-          disabled={loading}
-          {...okBtnProps}
-          loading={loading}
-        >
-          {okText}
-        </JuiButton>
+        )}
+        {okText && (
+          <JuiButton
+            onClick={onOK}
+            color={okType}
+            variant={okVariant}
+            autoFocus={false}
+            data-test-automation-id={'DialogOKButton'}
+            disabled={loading}
+            {...okBtnProps}
+            loading={loading}
+          >
+            {okText}
+          </JuiButton>
+        )}
       </>
     );
   }
@@ -98,6 +103,14 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
     return content ? renderString(content) : renderString(children);
   }
 
+  onClose = (event: React.MouseEvent, reason?: string) => {
+    const { onEscTracking, onCancel } = this.props;
+    if (onCancel) {
+      onCancel(event);
+      onEscTracking && onEscTracking(reason);
+    }
+  };
+
   render() {
     const {
       open,
@@ -108,10 +121,18 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       contentAfter,
       modalProps,
       fillContent,
+      loading,
+      disableEscapeKeyDown,
     } = this.props;
 
     return (
-      <JuiDialog open={open!} size={size} {...modalProps}>
+      <JuiDialog
+        disableEscapeKeyDown={loading || disableEscapeKeyDown}
+        onClose={this.onClose}
+        open={open!}
+        size={size}
+        {...modalProps}
+      >
         {typeof title === 'string' ? (
           <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
             {title}

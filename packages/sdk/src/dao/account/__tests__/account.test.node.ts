@@ -5,7 +5,7 @@
 import AccountDao from '..';
 import { setupKV } from '../../__tests__/utils';
 
-jest.mock('foundation');
+jest.mock('foundation/db');
 
 describe('AccountDao', () => {
   it('should init', () => {

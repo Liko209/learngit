@@ -41,6 +41,10 @@ class DataList extends React.Component<DataListProps> {
     }
   }
 
+  componentWillUnmount() {
+    this.props.listHandler.dispose();
+  }
+
   @computed
   get hasMore() {
     // Collect mobx dependency for hasMore up and down

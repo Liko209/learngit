@@ -7,6 +7,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { NewMessageView } from '../NewMessage.View';
 import { Notification } from '@/containers/Notification';
+import { JuiModal } from 'jui/components/Dialog';
 
 jest.mock('@/containers/Notification');
 jest.mock('react-i18next', () => {
@@ -40,6 +41,12 @@ describe('NewMessageView', () => {
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       shallow(<NewMessageView {...props} />);
       expect(Notification.flashToast).toHaveBeenCalled();
+    });
+    it('should render withEscTracking when Component rendered ', async () => {
+      const props = { t: () => {} };
+      const Wrapper = shallow(<NewMessageView {...props} />);
+      const modal = Wrapper.shallow().find(JuiModal);
+      expect(modal.props().onEscTracking).toBeTruthy();
     });
   });
 });

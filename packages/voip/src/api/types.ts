@@ -3,7 +3,7 @@
  * @Date: 2018-12-28 10:30:06
  * Copyright © RingCentral. All rights reserved.
  */
-enum RTC_ACCOUNT_STATE {
+export enum RTC_ACCOUNT_STATE {
   IDLE = 'Idle',
   REGISTERED = 'Registered',
   FAILED = 'Failed',
@@ -11,7 +11,7 @@ enum RTC_ACCOUNT_STATE {
   IN_PROGRESS = 'InProgress',
 }
 
-type RTCCallInfo = {
+export type RTCCallInfo = {
   fromName: string;
   fromNum: string;
   toName: string;
@@ -24,26 +24,34 @@ type RTCCallInfo = {
   callId?: string;
 };
 
-type RTCCallOptions = {
+export type RTCCallOptions = {
   fromNumber?: string;
   homeCountryId?: string;
   replacesCallId?: string;
   replacesFromTag?: string;
   replacesToTag?: string;
+  extraCall?: boolean;
+  accessCode?: string;
 };
 
-type RTCCallActionSuccessOptions = {
+export type RTCCallActionSuccessOptions = {
   parkExtension?: string;
+  actionDirection?: RTC_CALL_ACTION_DIRECTION;
 };
 
-enum RTC_CALL_STATE {
+export enum RTC_CALL_ACTION_DIRECTION {
+  LOCAL = 'local',
+  REMOTE = 'remote',
+}
+
+export enum RTC_CALL_STATE {
   IDLE = 'Idle',
   CONNECTING = 'Connecting',
   CONNECTED = 'Connected',
   DISCONNECTED = 'Disconnected',
 }
 
-enum RTC_CALL_ACTION {
+export enum RTC_CALL_ACTION {
   FLIP = 'flip',
   START_RECORD = 'startRecord',
   STOP_RECORD = 'stopRecord',
@@ -59,14 +67,22 @@ enum RTC_CALL_ACTION {
   REPLY_WITH_MSG = 'replyWithMessage',
   REPLY_WITH_PATTERN = 'replyWithPattern',
   CALL_TIME_OUT = 'callTimeOut',
+  DTMF = 'dtmf',
+  SEND_TO_VM = 'sendToVm',
+  IGNORE = 'ignore',
+  REJECT = 'reject',
+  ANSWER = 'answer',
+  HANGUP = 'hangup',
+  LOCAL_MUTE = 'localMute',
+  REMOTE_MUTE = 'remoteMute',
 }
 
-enum RTC_CALL_ACTION_ERROR_CODE {
+export enum RTC_CALL_ACTION_ERROR_CODE {
   INVALID = -1,
   OTHER_ACTION_IN_PROGRESS = -6,
 }
 
-type RTCSipFlags = {
+export type RTCSipFlags = {
   voipFeatureEnabled: boolean;
   voipCountryBlocked: boolean;
   outboundCallsEnabled: boolean;
@@ -76,7 +92,7 @@ type RTCSipFlags = {
   dscpVideo: Number;
 };
 
-type RTCSipEmergencyServiceAddr = {
+export type RTCSipEmergencyServiceAddr = {
   street: string;
   street2: string;
   city: string;
@@ -112,14 +128,14 @@ type RTCSipInfo = {
   switchBackInterval?: number;
 };
 
-type RTCSipProvisionInfo = {
+export type RTCSipProvisionInfo = {
   device: RTCSipDevice;
   sipInfo: RTCSipInfo[];
   sipFlags: RTCSipFlags;
   sipErrorCodes?: string[];
 };
 
-type RTCUserInfo = {
+export type RTCUserInfo = {
   endpointId?: string;
   userAgent?: string;
   rcBrandId?: string;
@@ -127,7 +143,7 @@ type RTCUserInfo = {
   rcExtensionId?: number;
 };
 
-enum RTC_REPLY_MSG_PATTERN {
+export enum RTC_REPLY_MSG_PATTERN {
   WILL_CALL_YOU_BACK_LATER = 'WillCallYouBackLater',
   IN_A_MEETING = 'InAMeeting',
   ON_MY_WAY = 'OnMyWay',
@@ -135,13 +151,13 @@ enum RTC_REPLY_MSG_PATTERN {
   CALL_ME_BACK_LATER = 'CallMeBackLater',
 }
 
-enum RTC_REPLY_MSG_TIME_UNIT {
+export enum RTC_REPLY_MSG_TIME_UNIT {
   MINUTE = 'Minute',
   HOUR = 'Hour',
   DAY = 'Day',
 }
 
-enum RTC_MEDIA_ACTION {
+export enum RTC_MEDIA_ACTION {
   INPUT_DEVICE_CHANGED = 'inputDeviceChanged',
   OUTPUT_DEVICE_CHANGED = 'outputDeviceChanged',
   INPUT_DEVICE_LIST_CHANGED = 'inputDeviceListChanged',
@@ -149,20 +165,20 @@ enum RTC_MEDIA_ACTION {
   VOLUME_CHANGED = 'VOLUME_CHANGED',
 }
 
-enum RECORD_STATE {
+export enum RECORD_STATE {
   IDLE = 'idle',
   RECORDING = 'recording',
   START_RECORD_IN_PROGRESS = 'startRecordInProgress',
   STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
 }
 
-enum RTC_NO_AUDIO_TYPE {
+export enum RTC_NO_AUDIO_TYPE {
   NO_RTP = 'no-rtp',
   NO_RTP_INCOMING = 'no-rtp-incoming',
   NO_RTP_OUTGOING = 'no-rtp-outgoing',
 }
 
-type RTCNoAudioStateEvent = {
+export type RTCNoAudioStateEvent = {
   event: {
     type: 'success';
     timestamp?: number;
@@ -175,7 +191,7 @@ type RTCNoAudioStateEvent = {
   };
 };
 
-type RTCNoAudioDataEvent = {
+export type RTCNoAudioDataEvent = {
   event: {
     type: 'no-rtp';
     timestamp?: number;
@@ -203,25 +219,4 @@ type RTCNoAudioDataEvent = {
       };
     };
   };
-};
-
-export {
-  RTC_ACCOUNT_STATE,
-  RTCCallInfo,
-  RTCUserInfo,
-  RTC_CALL_STATE,
-  RTC_CALL_ACTION,
-  RTC_CALL_ACTION_ERROR_CODE,
-  RTC_REPLY_MSG_PATTERN,
-  RTC_REPLY_MSG_TIME_UNIT,
-  RTCCallOptions,
-  RTCCallActionSuccessOptions,
-  RTCSipFlags,
-  RTC_MEDIA_ACTION,
-  RECORD_STATE,
-  RTC_NO_AUDIO_TYPE,
-  RTCNoAudioStateEvent,
-  RTCNoAudioDataEvent,
-  RTCSipProvisionInfo,
-  RTCSipEmergencyServiceAddr,
 };

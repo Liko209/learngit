@@ -3,7 +3,7 @@
  * @Date: 2019-03-24 11:09:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogEntity } from 'foundation';
+import { LogEntity } from 'foundation/log';
 
 type PersistentLogEntity = {
   id: number;

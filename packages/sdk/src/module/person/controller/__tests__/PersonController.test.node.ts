@@ -703,6 +703,7 @@ describe('PersonService', () => {
       PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
         isShortNumber: jest.fn().mockReturnValue(false),
         getE164: jest.fn().mockReturnValue('+16502270033'),
+        isSpecialNumber: jest.fn().mockReturnValue(false),
       });
       phoneNumberService.generateMatchedPhoneNumberList = jest
         .fn()
@@ -725,6 +726,7 @@ describe('PersonService', () => {
       PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
         isShortNumber: jest.fn().mockReturnValue(false),
         getE164: jest.fn().mockReturnValue('+16502270036'),
+        isSpecialNumber: jest.fn().mockReturnValue(false),
       });
       await preparePhoneNumData();
       phoneNumberService.generateMatchedPhoneNumberList = jest
@@ -777,6 +779,27 @@ describe('PersonService', () => {
         ContactType.GLIP_CONTACT,
       );
       expect(result).toBeNull();
+    });
+
+    it('should match ext when special number is same as ext', async () => {
+      PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+        isShortNumber: jest.fn().mockReturnValue(false),
+        getE164: jest.fn().mockReturnValue('21'),
+        isSpecialNumber: jest.fn().mockReturnValue(true),
+      });
+      phoneNumberService.generateMatchedPhoneNumberList = jest
+        .fn()
+        .mockReturnValue(['21']);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(1);
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '21',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result).not.toBeNull();
+      expect(result.id).toBe(21);
     });
   });
 
@@ -858,14 +881,16 @@ describe('PersonService', () => {
     });
   });
 
-  describe('personActionController', ()=>{
-    it('should return instance of PersonActionController', ()=>{
-      expect(personController.personActionController).toBeInstanceOf(PersonActionController);
-    })
+  describe('personActionController', () => {
+    it('should return instance of PersonActionController', () => {
+      expect(personController.personActionController).toBeInstanceOf(
+        PersonActionController,
+      );
+    });
   });
 
-  describe('getCurrentPerson', ()=>{
-    it('should return current user depends on user id', async()=>{
+  describe('getCurrentPerson', () => {
+    it('should return current user depends on user id', async () => {
       setUp();
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
@@ -878,32 +903,32 @@ describe('PersonService', () => {
     });
   });
 
-  describe('getFirstName', ()=>{
+  describe('getFirstName', () => {
     it.each`
-      rcExtensionId | firstName   | lastName    | sRcFirstName  | res
-      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'f_name'}
-      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'s_name'}
-      ${'1'}        | ${'f_name'} | ${''}       | ${''}         | ${'f_name'}
+      rcExtensionId | firstName   | lastName    | sRcFirstName | res
+      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}  | ${'f_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'}  | ${'s_name'}
+      ${'1'}        | ${'f_name'} | ${''}       | ${''}        | ${'f_name'}
     `(
       'should return first name of the person $res ',
       ({ rcExtensionId, firstName, lastName, sRcFirstName, res }) => {
         const person: any = {
-          sanitized_rc_first_name:sRcFirstName,
+          sanitized_rc_first_name: sRcFirstName,
           first_name: firstName,
           last_name: lastName,
-          rc_extension_id: rcExtensionId
+          rc_extension_id: rcExtensionId,
         };
         expect(personController.getFirstName(person)).toEqual(res);
       },
     );
   });
 
-  describe('getLastName', ()=>{
+  describe('getLastName', () => {
     it.each`
-      rcExtensionId | firstName   | lastName    | sRcLastName   | res
-      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'l_name'}
-      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'}   | ${'s_name'}
-      ${'1'}        | ${'f_name'} | ${'l_name'} | ${''}         | ${'l_name'}
+      rcExtensionId | firstName   | lastName    | sRcLastName | res
+      ${''}         | ${'f_name'} | ${'l_name'} | ${'s_name'} | ${'l_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${'s_name'} | ${'s_name'}
+      ${'1'}        | ${'f_name'} | ${'l_name'} | ${''}       | ${'l_name'}
     `(
       'should return first name of the person $res ',
       ({ rcExtensionId, firstName, lastName, sRcLastName, res }) => {
@@ -911,10 +936,54 @@ describe('PersonService', () => {
           sanitized_rc_last_name: sRcLastName,
           first_name: firstName,
           last_name: lastName,
-          rc_extension_id: rcExtensionId
+          rc_extension_id: rcExtensionId,
         };
         expect(personController.getLastName(person)).toEqual(res);
       },
     );
-  })
+  });
+
+  describe('isVisible', () => {
+    const basicPerson = {
+      id: 1,
+      deactivated: false,
+      flags: 0,
+      email: 'g.com',
+      is_pseudo_user: false,
+      externally_registered: 'google',
+    };
+
+    const PersonFlags = {
+      is_webmail: 1,
+      deactivated: 2,
+      has_registered: 4,
+      externally_registered: 8,
+      externally_registered_password_set: 16,
+      rc_registered: 32,
+      locked: 64,
+      amazon_ses_suppressed: 128,
+      is_kip: 256,
+      has_bogus_email: 512,
+      is_removed_guest: 1024,
+      am_removed_guest: 2048,
+      is_hosted: 4096,
+      invited_by_me: 8192,
+    };
+
+    it.each`
+      case |person                                                 | result
+      ${'deactivated'}|${{ ...basicPerson, deactivated: true }}               | ${false}
+      ${'service person'}|${{ ...basicPerson, email: 'service@glip.com' }}       | ${false}
+      ${'not register'}|${{ ...basicPerson, flags: 0, externally_registered: 'google' }} | ${false} 
+      ${'not register'}|${{ ...basicPerson, flags: PersonFlags.am_removed_guest,}} | ${false} 
+      ${'not register'}|${{ ...basicPerson, flags: PersonFlags.is_removed_guest,}} | ${false} 
+      ${'bogus email not rc login'}|${{ ...basicPerson, flags: PersonFlags.has_bogus_email, externally_registered: 'google' }} | ${false}
+      ${'bogus email and rc login'}|${{ ...basicPerson, flags: PersonFlags.has_bogus_email, externally_registered: 'rc_signons' }} | ${true}
+      ${'normal flag'}|${{ ...basicPerson, flags: PersonFlags.externally_registered, externally_registered: 'google' }} | ${true}
+    `('should return $result when $case  ', ({ person, result }) => {
+      expect(personController.isVisible(person)).toEqual(result);
+    });
+  });
 });
+
+

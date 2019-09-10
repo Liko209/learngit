@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
 
 class FeaturesFlagsModule extends AbstractModule {
   async bootstrap() {}

@@ -8,7 +8,7 @@ import { PhoneParserUtility } from '../PhoneParserUtility';
 import notificationCenter from '../../../service/notificationCenter';
 import { ServiceLoader } from '../../../module/serviceLoader';
 import { MODULE_STATUS } from '../constants';
-import { ModuleParams } from 'foundation';
+import { ModuleParams } from 'foundation/telephony';
 
 const mockModuleFunc = jest.fn();
 jest.mock('foundation/telephony', () => {

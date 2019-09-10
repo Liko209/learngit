@@ -3,7 +3,7 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 import { ISettingService } from '@/interface/setting';
 import { SettingStore } from './store/SettingStore';
 import { SettingService } from './service/SettingService';

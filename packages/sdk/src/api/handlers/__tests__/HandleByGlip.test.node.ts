@@ -3,7 +3,7 @@ import {
   OAuthTokenHandler,
   NETWORK_METHOD,
   NetworkRequestBuilder,
-} from 'foundation';
+} from 'foundation/network';
 import HandleByGlip from '../HandleByGlip';
 
 const handler = new OAuthTokenHandler(HandleByGlip, null);
@@ -72,7 +72,7 @@ describe('HandleByGlip', () => {
       const decoration = HandleByGlip.requestDecoration(null);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
-      expect(decoration).toThrowError();
+      expect(decoration).toThrow();
     });
 
     it('should not add x_rc_access_token_data to headers', () => {
@@ -103,7 +103,7 @@ describe('HandleByGlip', () => {
       HandleByGlip.onRefreshTokenFailure(true);
       expect(
         HandleByGlip.platformHandleDelegate.onRefreshTokenFailure,
-      ).toBeCalledWith(true);
+      ).toHaveBeenCalledWith(true);
     });
   });
 });

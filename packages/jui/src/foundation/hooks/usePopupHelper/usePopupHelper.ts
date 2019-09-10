@@ -3,7 +3,7 @@
  * @Date: 2019-07-02 15:31:33
  * Copyright © RingCentral. All rights reserved.
  */
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { PopupHelper } from './PopupHelper';
 import { Variant, PopupState } from './types';
 
@@ -20,13 +20,17 @@ function usePopupHelper({
     open: false,
     hovered: false,
   });
-  return new PopupHelper({
-    minWidth,
-    popupId,
-    variant,
-    state,
-    setState,
-  });
+  return useMemo(
+    () =>
+      new PopupHelper({
+        minWidth,
+        popupId,
+        variant,
+        state,
+        setState,
+      }),
+    [minWidth, popupId, variant, state],
+  );
 }
 
 export { usePopupHelper };

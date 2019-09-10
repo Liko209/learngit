@@ -21,11 +21,7 @@ class DeviceNameHelper {
     } else if (this._isNoDevice(device)) {
       result = this._getNoDeviceName(t);
     } else if (device.label) {
-      if (this._isBuiltInDevice(device)) {
-        result = this._getBuiltInDeviceName(device, t);
-      } else {
-        result = device.label;
-      }
+      result = device.label;
     } else {
       result = this._getOrderedDeviceName(device, allDevices, t);
     }
@@ -49,10 +45,6 @@ class DeviceNameHelper {
     return device.deviceId === 'off';
   }
 
-  private static _isBuiltInDevice(device: MediaDeviceInfo) {
-    return /(built-in|internal)/gi.test(device.label);
-  }
-
   private static _getDefaultDeviceName(t: Function) {
     return t('setting.useDefault');
   }
@@ -67,14 +59,6 @@ class DeviceNameHelper {
 
   private static _getDeviceOff(t: Function) {
     return t('setting.off');
-  }
-
-  private static _getBuiltInDeviceName(device: MediaDeviceInfo, t: Function) {
-    const MAP = {
-      audioinput: t('setting.builtInMicrophone'),
-      audiooutput: t('setting.builtInSpeaker'),
-    };
-    return MAP[device.kind] || UNKNOWN;
   }
 
   private static _getOrderedDeviceName(

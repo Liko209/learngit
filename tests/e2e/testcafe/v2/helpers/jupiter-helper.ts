@@ -9,8 +9,6 @@ import { ENV_OPTS, SITE_URL } from '../../config';
 export class JupiterHelper {
 
   static urlToRedirectUriState(url: URL) {
-    // const localHosts = ["localhost", "127.0.0.1"];
-    // if (!_.includes(localHosts, url.hostname)) url.protocol = "https";
     const state = url.pathname + url.search.replace('&', '$') + url.hash;
     const redirectUri = url.origin;
     return { state, redirectUri };
@@ -81,8 +79,8 @@ export class JupiterHelper {
     const getRCAuthSession = async (): Promise<string> => {
       const loginSite = new URL(this.authUrl);
       const siteUrl = new URL(SITE_URL);
-      const siteHost = `${siteUrl.protocol}//${siteUrl.hostname}`
-      let response = await axios.get(`${loginSite.protocol}//${loginSite.hostname}/mobile/loginDispatcher`,
+      const siteHost = `${siteUrl.origin}`
+      let response = await axios.get(`${loginSite.origin}/mobile/loginDispatcher`,
         {
           params: {
             responseType: 'code',
@@ -142,7 +140,6 @@ export class JupiterHelper {
       .navigateTo(url)
       .click(envSelect)
       .click(envOption.withText(env))
-      .expect(envSelect.value).eql(env);
     await ClientFunction(() => localStorage.setItem('global.config.RUNNING_E2E', 'true'))();
   }
 }

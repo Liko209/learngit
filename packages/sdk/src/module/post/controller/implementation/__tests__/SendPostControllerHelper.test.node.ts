@@ -5,7 +5,6 @@
  */
 
 import SendPostControllerHelper from '../SendPostControllerHelper';
-const helper = new SendPostControllerHelper();
 import { versionHash } from '../../../../../utils/mathUtils';
 import { GlipTypeUtil } from '../../../../../utils';
 
@@ -13,9 +12,11 @@ jest.mock('../../../../../utils/mathUtils');
 jest.mock('../../../../../utils');
 
 describe('PostActionControllerHelper', () => {
+  let helper: SendPostControllerHelper;
   beforeEach(() => {
     versionHash.mockReturnValueOnce('10');
     GlipTypeUtil.generatePseudoIdByType.mockReturnValueOnce(4);
+    helper = new SendPostControllerHelper();
   });
   describe('buildLinksInfo', () => {
     it.each`
@@ -106,6 +107,95 @@ describe('PostActionControllerHelper', () => {
       );
       expect(versionHash).toHaveBeenCalledTimes(2);
       expect(GlipTypeUtil.generatePseudoIdByType).toHaveBeenCalledTimes(2);
+    });
+  });
+  describe('buildShareItemPost()', () => {
+    it('should build share item post correctly', async () => {
+      GlipTypeUtil.isExpectedType.mockReturnValue(false);
+      const result = await helper.buildShareItemPost(
+        {
+          fromPost: {
+            company_id: 1,
+            group_id: 2,
+            item_data: {
+              version_map: {
+                3: {},
+              },
+            },
+          } as any,
+          itemIds: [2],
+          targetGroupId: 123,
+        },
+        jest.fn(),
+      );
+      expect(result).toEqual(
+        expect.objectContaining({
+          is_new: true,
+          source: 'Jupiter',
+          group_id: 123,
+          from_company_id: 1,
+          from_group_id: 2,
+          links: [],
+          item_ids: [2],
+          item_data: {
+            version_map: {
+              3: {},
+            },
+          },
+        }),
+      );
+    });
+    it('should build share item post correctly when contain links', async () => {
+      GlipTypeUtil.isExpectedType.mockReturnValue(true);
+      // itemService.getById.mockResolvedValue({
+      //   url: 'testUrl',
+      // });
+      // const ss = ServiceLoader.getInstance<ItemService>(
+      //   ServiceConfig.ITEM_SERVICE,
+      // );
+      // console.log('323', ServiceLoader.getInstance());
+      // console.log('444', ServiceLoader);
+      const result = await helper.buildShareItemPost(
+        {
+          fromPost: {
+            company_id: 1,
+            group_id: 2,
+            item_data: {
+              version_map: {
+                3: {},
+              },
+            },
+          } as any,
+          itemIds: [2],
+          targetGroupId: 123,
+        },
+        jest.fn().mockResolvedValue({
+          url: 'testUrl',
+        }),
+      );
+      expect(result).toEqual(
+        expect.objectContaining({
+          is_new: true,
+          source: 'Jupiter',
+          group_id: 123,
+          from_company_id: 1,
+          from_group_id: 2,
+          links: [
+            {
+              url: 'testUrl',
+              source: 'streamPostLink',
+              history: [{ url: 'testUrl' }],
+              do_not_render: false,
+            },
+          ],
+          item_ids: [],
+          item_data: {
+            version_map: {
+              3: {},
+            },
+          },
+        }),
+      );
     });
   });
 });

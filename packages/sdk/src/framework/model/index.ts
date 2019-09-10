@@ -7,8 +7,13 @@
 import { IdModel, ModelIdType } from './Model';
 import { Raw } from './Raw';
 import { IPagination } from './IPagination';
-import { SortableModel } from './SortableModel';
+import { SortableModel, DisplayNameModel } from './SortableModel';
 
 export {
-  IdModel, ModelIdType, Raw, IPagination, SortableModel,
+  IdModel,
+  ModelIdType,
+  Raw,
+  IPagination,
+  SortableModel,
+  DisplayNameModel,
 };

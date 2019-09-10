@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { createDecorator } from 'framework';
+import { createDecorator } from 'framework/ioc';
 import { IMedia } from './IMedia';
 import { MediaOptions } from './Media';
 
@@ -24,6 +24,10 @@ interface IMediaService {
   getMedia(mediaId: string): IMedia | null;
 
   canPlayType(mimeType: string): boolean;
+
+  createTrack(trackId: string, weight?: number): string;
+
+  setDuckVolume(ratio: number): void;
 }
 
 export { IMediaService };

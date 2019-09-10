@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { UmiViewProps } from './types';
-import { JuiUmi } from 'jui/components';
+import { JuiUmi } from 'jui/components/Umi';
 import { observer } from 'mobx-react';
 
 @observer

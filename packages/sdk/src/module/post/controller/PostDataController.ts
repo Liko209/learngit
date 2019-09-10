@@ -3,7 +3,7 @@
  * @Date: 2019-01-22 09:41:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
@@ -28,6 +28,7 @@ import { GroupService } from '../../group';
 import { AccountService } from 'sdk/module/account';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
+import { PerformanceTracer } from 'foundation/performance';
 
 class PostDataController {
   private queue = Promise.resolve();

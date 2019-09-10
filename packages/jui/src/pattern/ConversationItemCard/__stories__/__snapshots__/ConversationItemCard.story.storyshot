@@ -532,7 +532,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   display: inline-flex;
 }
 
-.c10 {
+.c9 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -555,23 +555,6 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   fill: #0684bd;
 }
 
-.c18.c18 .c9,
-.c18.c18 .c9 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c9 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c9 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c8.c8 {
   padding: 0;
   width: 40px;
@@ -583,8 +566,8 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   border-radius: 50%;
 }
 
-.c8.c8 .c9,
-.c8.c8 .c9 svg {
+.c8.c8 .icon,
+.c8.c8 .icon svg {
   font-size: 20px;
 }
 
@@ -592,15 +575,19 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   background-color: rgba(158,158,158,0.12);
 }
 
-.c8.c8:hover .c9 {
+.c8.c8:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c8.c8:active .c9 {
+.c8.c8:active .icon {
   color: #9e9e9e;
 }
 
-.c8.c8.c8.c8.disabled .c9 {
+.c8.c8.c8.c8.disabled {
+  background-color: inherit;
+}
+
+.c8.c8.c8.c8.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -612,142 +599,6 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c19.c19 .c9,
-.c19.c19 .c9 svg {
-  font-size: 20px;
-}
-
-.c19.c19:hover .c9 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c19.c19:active .c9 {
-  color: #0684bd;
-}
-
-.c19.c19.c19.c19.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c9,
-.c20.c20 .c9 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c9 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c20.c20:active .c9 {
-  color: #0684bd;
-}
-
-.c20.c20.c20.c20.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c9,
-.c21.c21 .c9 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c9 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c21.c21:active .c9 {
-  color: #edb63c;
-}
-
-.c21.c21.c21.c21.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c9,
-.c22.c22 .c9 svg {
-  font-size: 16px;
-}
-
-.c22.c22:hover .c9 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c22.c22:active .c9 {
-  color: #9e9e9e;
-}
-
-.c22.c22.c22.c22.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c23.c23 .c9,
-.c23.c23 .c9 svg {
-  font-size: 16px;
-}
-
-.c23.c23:hover .c9 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c23.c23:active .c9 {
-  color: #0684bd;
-}
-
-.c23.c23.c23.c23.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c24.c24 .c9,
-.c24.c24 .c9 svg {
-  font-size: 16px;
-}
-
-.c24.c24:hover .c9 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c24.c24:active .c9 {
-  color: #fff;
-}
-
-.c24.c24.c24.c24.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c25.c25 .c9,
-.c25.c25 .c9 svg {
-  font-size: 32px;
-}
-
-.c25.c25:hover .c9 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c25.c25:active .c9 {
-  color: #212121;
-}
-
-.c25.c25.c25.c25.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c26.c26 .c9,
-.c26.c26 .c9 svg {
-  font-size: 20px;
-}
-
-.c26.c26:hover .c9 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c26.c26:active .c9 {
-  color: #fff;
-}
-
-.c26.c26.c26.c26.disabled .c9 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c7 {
@@ -775,7 +626,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   margin-left: -8px;
 }
 
-.c17 {
+.c16 {
   font-size: 0.75rem;
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -792,36 +643,36 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   outline: none;
 }
 
-.c17:hover {
+.c16:hover {
   background-color: #212121;
 }
 
-.c17.lozengeButtonLoading {
+.c16.lozengeButtonLoading {
   pointer-events: none;
 }
 
-.c17.lozengeButtonLoading .c27 {
+.c16.lozengeButtonLoading .c17 {
   margin-left: 4px;
 }
 
-.c17 .c28 {
+.c16 .c18 {
   margin-left: 8px;
 }
 
-.c17.lozengeButtonLoading .c28,
-.c17.lozengeButtonWithArrow .c28,
-.c17.lozengeButtonLoading .c27,
-.c17.lozengeButtonWithArrow .c27,
-.c17.lozengeButtonLoading span,
-.c17.lozengeButtonWithArrow span {
+.c16.lozengeButtonLoading .c18,
+.c16.lozengeButtonWithArrow .c18,
+.c16.lozengeButtonLoading .c17,
+.c16.lozengeButtonWithArrow .c17,
+.c16.lozengeButtonLoading span,
+.c16.lozengeButtonWithArrow span {
   vertical-align: middle;
 }
 
-.c12 {
+.c11 {
   position: relative;
 }
 
-.c15 {
+.c14 {
   position: absolute;
   bottom: 8px;
   display: -webkit-box;
@@ -836,12 +687,12 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   z-index: 1;
 }
 
-.c13 {
+.c12 {
   position: relative;
   z-index: 0;
 }
 
-.c16.c16 {
+.c15.c15 {
   margin: 0px 6px;
 }
 
@@ -884,7 +735,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   font-size: 20px;
 }
 
-.c11.c11.c11 {
+.c10.c10.c10 {
   padding: 0px 0px 0px 0px;
   font-size: 0.875rem;
   font-weight: 400;
@@ -892,7 +743,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   line-height: 20px;
 }
 
-.c14 {
+.c13 {
   padding: 12px;
   white-space: pre-wrap;
   background: silver;
@@ -938,7 +789,6 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
         onClick={[Function]}
       >
         <button
-          aria-describedby={null}
           aria-label="copy"
           className="MuiButtonBase-root MuiIconButton-root c8"
           date-test-automation-id="copy"
@@ -950,14 +800,15 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
           onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -965,11 +816,10 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
             className="MuiIconButton-label"
           >
             <span
-              className="c9 copy icon c3"
-              size="medium"
+              className=" copy icon c3"
             >
               <svg
-                className="c10"
+                className="c9"
                 role="img"
               >
                 <use
@@ -979,12 +829,8 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
         <button
-          aria-describedby={null}
           aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c8"
           date-test-automation-id="download"
@@ -996,14 +842,15 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           onMouseDown={[Function]}
+          onMouseEnter={[Function]}
           onMouseLeave={[Function]}
+          onMouseOut={[Function]}
           onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -1011,11 +858,10 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
             className="MuiIconButton-label"
           >
             <span
-              className="c9 download icon c3"
-              size="medium"
+              className=" download icon c3"
             >
               <svg
-                className="c10"
+                className="c9"
                 role="img"
               >
                 <use
@@ -1025,32 +871,29 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
     <div
-      className="MuiCardContent-root c11 "
+      className="MuiCardContent-root c10 "
     >
       <div
-        className="c12"
+        className="c11"
       >
         <div
-          className="c13"
+          className="c12"
         >
           <div
-            className="c14"
+            className="c13"
           >
             Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32. The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham. function () function () function () function ()
           </div>
         </div>
         <div
-          className="c15"
+          className="c14"
         >
           <button
-            className="c16 c17"
+            className="c15 c16"
             onClick={[Function]}
           >
             <span>
@@ -1058,7 +901,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
             </span>
           </button>
           <button
-            className="c16 c17"
+            className="c15 c16"
             onClick={[Function]}
           >
             <span>
@@ -1269,7 +1112,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   display: inline-flex;
 }
 
-.c22 {
+.c21 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -1302,8 +1145,8 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   border-radius: 0;
 }
 
-.c20.c20 .c21,
-.c20.c20 .c21 svg {
+.c20.c20 .icon,
+.c20.c20 .icon svg {
   font-size: 20px;
 }
 
@@ -1311,15 +1154,19 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   background-color: transparent;
 }
 
-.c20.c20:hover .c21 {
+.c20.c20:hover .icon {
   color: rgba(158,158,158,0.88);
 }
 
-.c20.c20:active .c21 {
+.c20.c20:active .icon {
   color: #9e9e9e;
 }
 
-.c20.c20.c20.c20.disabled .c21 {
+.c20.c20.c20.c20.disabled {
+  background-color: inherit;
+}
+
+.c20.c20.c20.c20.disabled .icon {
   color: rgba(0,0,0,0.12);
 }
 
@@ -1331,159 +1178,6 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c23.c23 .c21,
-.c23.c23 .c21 svg {
-  font-size: 20px;
-}
-
-.c23.c23:hover .c21 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c23.c23:active .c21 {
-  color: #9e9e9e;
-}
-
-.c23.c23.c23.c23.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c24.c24 .c21,
-.c24.c24 .c21 svg {
-  font-size: 20px;
-}
-
-.c24.c24:hover .c21 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c24.c24:active .c21 {
-  color: #0684bd;
-}
-
-.c24.c24.c24.c24.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c25.c25 .c21,
-.c25.c25 .c21 svg {
-  font-size: 20px;
-}
-
-.c25.c25:hover .c21 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c25.c25:active .c21 {
-  color: #0684bd;
-}
-
-.c25.c25.c25.c25.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c26.c26 .c21,
-.c26.c26 .c21 svg {
-  font-size: 20px;
-}
-
-.c26.c26:hover .c21 {
-  color: rgba(237,182,60,0.88);
-}
-
-.c26.c26:active .c21 {
-  color: #edb63c;
-}
-
-.c26.c26.c26.c26.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c27.c27 .c21,
-.c27.c27 .c21 svg {
-  font-size: 16px;
-}
-
-.c27.c27:hover .c21 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c27.c27:active .c21 {
-  color: #9e9e9e;
-}
-
-.c27.c27.c27.c27.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c28.c28 .c21,
-.c28.c28 .c21 svg {
-  font-size: 16px;
-}
-
-.c28.c28:hover .c21 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c28.c28:active .c21 {
-  color: #0684bd;
-}
-
-.c28.c28.c28.c28.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c29.c29 .c21,
-.c29.c29 .c21 svg {
-  font-size: 16px;
-}
-
-.c29.c29:hover .c21 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c29.c29:active .c21 {
-  color: #fff;
-}
-
-.c29.c29.c29.c29.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c30.c30 .c21,
-.c30.c30 .c21 svg {
-  font-size: 32px;
-}
-
-.c30.c30:hover .c21 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c30.c30:active .c21 {
-  color: #212121;
-}
-
-.c30.c30.c30.c30.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c31.c31 .c21,
-.c31.c31 .c21 svg {
-  font-size: 20px;
-}
-
-.c31.c31:hover .c21 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c31.c31:active .c21 {
-  color: #fff;
-}
-
-.c31.c31.c31.c31.disabled .c21 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c14.c14 {
@@ -1842,7 +1536,6 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                 >
                   <div />
                   <button
-                    aria-describedby={null}
                     aria-label="common.expand"
                     className="MuiButtonBase-root MuiIconButton-root c20"
                     data-test-automation-id="expand-button"
@@ -1854,14 +1547,15 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                     onKeyDown={[Function]}
                     onKeyUp={[Function]}
                     onMouseDown={[Function]}
+                    onMouseEnter={[Function]}
                     onMouseLeave={[Function]}
+                    onMouseOut={[Function]}
                     onMouseOver={[Function]}
                     onMouseUp={[Function]}
                     onTouchEnd={[Function]}
                     onTouchMove={[Function]}
                     onTouchStart={[Function]}
                     tabIndex={0}
-                    title={null}
                     type="button"
                     variant="plain"
                   >
@@ -1869,11 +1563,10 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                       className="MuiIconButton-label"
                     >
                       <span
-                        className="c21 unfold_more icon c15"
-                        size="medium"
+                        className=" unfold_more icon c15"
                       >
                         <svg
-                          className="c22"
+                          className="c21"
                           role="img"
                         >
                           <use

@@ -50,12 +50,13 @@ class RecentSearchViewComponent extends Component<Props> {
     value: number | string;
     index: number;
     type: string;
+    recentId: number;
     queryParams?: {
       groupId: number;
     };
   }) => {
     const { selectIndex, resetSelectIndex } = this.props;
-    const { value, type, index, queryParams } = config;
+    const { value, type, index, queryParams, recentId } = config;
 
     const { Item, title } = SearchSectionsConfig[type];
     const hovered = index === selectIndex;
@@ -68,9 +69,12 @@ class RecentSearchViewComponent extends Component<Props> {
         onMouseLeave={resetSelectIndex}
         title={title}
         didChange={this.selectIndexChange(index)}
+        recentId={recentId}
         id={typeof value === 'string' ? null : value}
         key={typeof value === 'string' ? `${value}${index}` : value}
         params={queryParams}
+        analysisSource="recentSearchedList"
+        dataTrackingDomain="globalSearch"
       />
     );
   };
@@ -96,12 +100,13 @@ class RecentSearchViewComponent extends Component<Props> {
           automationId={'clear'}
         />
         {recentRecord.map((recentSearchModel: RecentRecord, index: number) => {
-          const { value, type, queryParams } = recentSearchModel;
+          const { value, type, queryParams, id } = recentSearchModel;
           return this.createSearchItem({
             index,
             type,
             value,
             queryParams,
+            recentId: id,
           });
         })}
       </>
@@ -118,6 +123,7 @@ class RecentSearchViewComponent extends Component<Props> {
           down: onKeyDown,
           enter: onEnter,
         }}
+        global
       >
         <JuiRecentSearch data-test-automation-id="search-records">
           {this.searchRecordList}

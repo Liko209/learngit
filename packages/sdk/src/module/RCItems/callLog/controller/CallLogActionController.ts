@@ -7,7 +7,8 @@
 import { notificationCenter } from 'sdk/service';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { CallLog } from '../entity';
-import { mainLogger, PerformanceTracer } from 'foundation';
+import { mainLogger } from 'foundation/log';
+import { PerformanceTracer } from 'foundation/performance';
 import { RCItemApi } from 'sdk/api';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ProfileService, SETTING_KEYS } from 'sdk/module/profile';
@@ -31,7 +32,7 @@ class CallLogActionController {
         false,
       );
       callLogs.forEach((value: CallLog) => {
-        value.__deactivated = true;
+        value.deleted = true;
       });
       await RCItemApi.deleteCallLog(entityIds);
       performanceTracer.trace({

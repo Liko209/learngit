@@ -7,7 +7,6 @@ import { observable, action } from 'mobx';
 import { differenceBy } from 'lodash';
 
 import { ENTITY_NAME } from '@/store';
-import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
@@ -15,6 +14,7 @@ import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GroupSearchProps, SelectedMember } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SearchService } from 'sdk/module/search/service';
 
 class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
   @observable existMembers: number[] = [];
@@ -59,15 +59,14 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
 
   @action
   fetchGroups = async (query: string) => {
-    const groupService = ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
     );
-    const result = await groupService.doFuzzySearchALlGroups(
-      query,
-      false,
-      true,
-      true,
-    );
+    const result = await searchService.doFuzzySearchAllGroups(query, {
+      fetchAllIfSearchKeyEmpty: false,
+      myGroupsOnly: true,
+      recentFirst: true,
+    });
 
     return result.sortableModels;
   };

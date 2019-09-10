@@ -77,6 +77,7 @@ class CallLogService extends EntityBaseService<CallLog, string> {
         this.getEntitySource(),
         this.userConfig,
         this.missedCallUserConfig,
+        this.getEntityNotificationController(),
       );
     }
     return this._callLogController;

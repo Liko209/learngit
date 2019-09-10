@@ -3,7 +3,7 @@
  * @Date: 2019-01-17 14:20:22
  * Copyright © RingCentral. All rights reserved.
  */
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 import {
   IMessageStore,
   IMessageService,

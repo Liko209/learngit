@@ -26,6 +26,10 @@ import {
   RingsList,
   RINGS_TYPE,
   SOUNDS_TYPE,
+  mobileTeamNotificationList,
+  MOBILE_TEAM_NOTIFICATION_OPTIONS,
+  MAX_LEFTRAIL_GROUP_VALUE_LIST,
+  MAX_LEFTRAIL_GROUP_DEFAULT_VALUE,
 } from '../constants';
 import { AudioMessageSoundsSettingHandler } from './itemHandler/AudioMessageSoundsSettingHandler';
 
@@ -47,10 +51,18 @@ type HandlerMap = {
   [SettingEntityIds.Notification_DailyDigest]: ProfileSubscribeEntityHandler<
     NOTIFICATION_OPTIONS
   >;
+  [SettingEntityIds.MOBILE_DM]: ProfileSubscribeEntityHandler<
+    MOBILE_TEAM_NOTIFICATION_OPTIONS
+  >;
+  [SettingEntityIds.MOBILE_Team]: ProfileSubscribeEntityHandler<
+    MOBILE_TEAM_NOTIFICATION_OPTIONS
+  >;
   [SettingEntityIds.Audio_TeamMessages]: AudioTeamMessagesSettingHandler;
   [SettingEntityIds.Audio_DirectMessage]: AudioMessageSoundsSettingHandler;
   [SettingEntityIds.Audio_Mentions]: AudioMessageSoundsSettingHandler;
   [SettingEntityIds.Audio_IncomingCalls]: AudioPhoneSoundsSettingHandler;
+  [SettingEntityIds.Max_Conversations]: ProfileSubscribeEntityHandler<number>;
+  [SettingEntityIds.Link_Preview]: ProfileSubscribeEntityHandler<boolean>;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
@@ -120,6 +132,19 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
         id: SettingEntityIds.Notification_DailyDigest,
         setting_key: SETTING_KEYS.EMAIL_TODAY,
       }),
+      [SettingEntityIds.MOBILE_DM]: new ProfileSubscribeEntityHandler<
+        MOBILE_TEAM_NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.MOBILE_DM,
+        setting_key: SETTING_KEYS.MOBILE_DM,
+      }),
+      [SettingEntityIds.MOBILE_Team]: new ProfileSubscribeEntityHandler<
+        MOBILE_TEAM_NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.MOBILE_Team,
+        setting_key: SETTING_KEYS.MOBILE_TEAM,
+        source: mobileTeamNotificationList,
+      }),
       [SettingEntityIds.Audio_TeamMessages]: new AudioTeamMessagesSettingHandler(
         this._profileService,
       ),
@@ -150,6 +175,22 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
           defaultValue: RINGS_TYPE.High_Gong,
         },
       ),
+      // conversations
+      [SettingEntityIds.Link_Preview]: new ProfileSubscribeEntityHandler<
+        boolean
+      >(this._profileService, {
+        id: SettingEntityIds.Link_Preview,
+        setting_key: SETTING_KEYS.SHOW_LINK_PREVIEWS,
+        defaultValue: true,
+      }),
+      [SettingEntityIds.Max_Conversations]: new ProfileSubscribeEntityHandler<
+        number
+      >(this._profileService, {
+        id: SettingEntityIds.Max_Conversations,
+        setting_key: SETTING_KEYS.MAX_LEFTRAIL_GROUP,
+        source: MAX_LEFTRAIL_GROUP_VALUE_LIST,
+        defaultValue: MAX_LEFTRAIL_GROUP_DEFAULT_VALUE,
+      }),
     };
   }
 }

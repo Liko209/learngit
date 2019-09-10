@@ -6,7 +6,7 @@
 
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { IProfileService } from './IProfileService';
-import { Profile } from '../entity/Profile';
+import { Profile, ConversationPreference } from '../entity/Profile';
 import { daoManager } from '../../../dao';
 import { ProfileDao } from '../dao';
 import { Api } from '../../../api';
@@ -60,6 +60,9 @@ class ProfileService extends EntityBaseService<Profile>
       ).unRegisterModuleSetting(this._profileSetting);
       delete this._profileSetting;
     }
+    this.getProfileController()
+      .getProfileDataController()
+      .unRegisterAllObservers();
 
     super.onStopped();
   }
@@ -168,6 +171,23 @@ class ProfileService extends EntityBaseService<Profile>
     return this.getProfileController()
       .getProfileDataController()
       .isVideoServiceEnabled(option);
+  }
+
+  getConversationPreference = async (
+    cid: number,
+  ): Promise<ConversationPreference> => {
+    return await this.getProfileController()
+      .getProfileDataController()
+      .getConversationPreference(cid);
+  };
+
+  async updateConversationPreference(
+    cid: number,
+    model: Partial<ConversationPreference>,
+  ): Promise<void> {
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateConversationPreference(cid, model);
   }
 
   private get profileSetting() {

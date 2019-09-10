@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
 
 class EmojiModule extends AbstractModule {
   async bootstrap() {}

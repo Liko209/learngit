@@ -37,7 +37,7 @@ describe('CallLogBadgeController', () => {
     it('should observe callLog update/reload and profile update', () => {
       notificationCenter.on = jest.fn();
       controller.init();
-      expect(notificationCenter.on).toBeCalledTimes(2);
+      expect(notificationCenter.on).toHaveBeenCalledTimes(2);
       expect(notificationCenter.on).toHaveBeenCalledWith(
         ENTITY.CALL_LOG,
         controller.handleCallLogPayload,
@@ -66,9 +66,9 @@ describe('CallLogBadgeController', () => {
       controller['_registerBadge'] = jest.fn();
       controller['_updateBadge'] = jest.fn();
       await controller.initializeUnreadCount();
-      expect(controller['_updateUnreadCount']).toBeCalledTimes(2);
-      expect(controller['_registerBadge']).toBeCalled();
-      expect(controller['_updateBadge']).toBeCalled();
+      expect(controller['_updateUnreadCount']).toHaveBeenCalledTimes(2);
+      expect(controller['_registerBadge']).toHaveBeenCalled();
+      expect(controller['_updateBadge']).toHaveBeenCalled();
       expect(controller['_badgeStatus']).toEqual(BADGE_STATUS.INITIALIZED);
     });
   });
@@ -91,9 +91,9 @@ describe('CallLogBadgeController', () => {
       controller['_updateBadge'] = jest.fn();
       controller.initializeUnreadCount = jest.fn();
       controller.handleCallLogReload();
-      expect(controller.reset).toBeCalled();
-      expect(controller['_updateBadge']).toBeCalled();
-      expect(controller.initializeUnreadCount).toBeCalled();
+      expect(controller.reset).toHaveBeenCalled();
+      expect(controller['_updateBadge']).toHaveBeenCalled();
+      expect(controller.initializeUnreadCount).toHaveBeenCalled();
     });
   });
 
@@ -107,8 +107,8 @@ describe('CallLogBadgeController', () => {
       controller.handleCallLogs = jest.fn();
       controller.handleCallLogReload = jest.fn();
       await controller.handleCallLogPayload(mockPayload);
-      expect(controller.handleCallLogs).toBeCalledWith(mockData);
-      expect(controller.handleCallLogReload).not.toBeCalled();
+      expect(controller.handleCallLogs).toHaveBeenCalledWith(mockData);
+      expect(controller.handleCallLogReload).not.toHaveBeenCalled();
     });
 
     it('should call handleCallLogs when type is reload', async () => {
@@ -118,8 +118,8 @@ describe('CallLogBadgeController', () => {
       controller.handleCallLogs = jest.fn();
       controller.handleCallLogReload = jest.fn();
       await controller.handleCallLogPayload(mockPayload);
-      expect(controller.handleCallLogs).not.toBeCalled();
-      expect(controller.handleCallLogReload).toBeCalled();
+      expect(controller.handleCallLogs).not.toHaveBeenCalled();
+      expect(controller.handleCallLogReload).toHaveBeenCalled();
     });
 
     it('should do nothing when type is not update or reload', async () => {
@@ -129,8 +129,8 @@ describe('CallLogBadgeController', () => {
       controller.handleCallLogs = jest.fn();
       controller.handleCallLogReload = jest.fn();
       await controller.handleCallLogPayload(mockPayload);
-      expect(controller.handleCallLogs).not.toBeCalled();
-      expect(controller.handleCallLogReload).not.toBeCalled();
+      expect(controller.handleCallLogs).not.toHaveBeenCalled();
+      expect(controller.handleCallLogReload).not.toHaveBeenCalled();
     });
   });
 
@@ -148,7 +148,7 @@ describe('CallLogBadgeController', () => {
       controller['_unreadMap'].set('2', 101);
 
       await controller.handleProfile(mockPayload);
-      expect(controller['_updateBadge']).toBeCalled();
+      expect(controller['_updateBadge']).toHaveBeenCalled();
       expect(controller['_unreadMap'].size).toEqual(1);
     });
   });
@@ -164,9 +164,9 @@ describe('CallLogBadgeController', () => {
       const mockData = [{ id: 1 }, { id: 2 }] as any;
 
       await controller.handleCallLogs(mockData);
-      expect(controller.initializeUnreadCount).toBeCalled();
-      expect(controller['_updateUnreadCount']).toBeCalledTimes(2);
-      expect(controller['_updateBadge']).not.toBeCalled();
+      expect(controller.initializeUnreadCount).toHaveBeenCalled();
+      expect(controller['_updateUnreadCount']).toHaveBeenCalledTimes(2);
+      expect(controller['_updateBadge']).not.toHaveBeenCalled();
     });
 
     it('should handle callLog and update badge without init when status is initialized', async () => {
@@ -180,9 +180,9 @@ describe('CallLogBadgeController', () => {
       const mockData = [{ id: 1 }, { id: 2 }] as any;
 
       await controller.handleCallLogs(mockData);
-      expect(controller.initializeUnreadCount).not.toBeCalled();
-      expect(controller['_updateUnreadCount']).toBeCalledTimes(2);
-      expect(controller['_updateBadge']).toBeCalled();
+      expect(controller.initializeUnreadCount).not.toHaveBeenCalled();
+      expect(controller['_updateUnreadCount']).toHaveBeenCalledTimes(2);
+      expect(controller['_updateBadge']).toHaveBeenCalled();
     });
 
     it('should only handle callLog when status is initializing', async () => {
@@ -196,9 +196,9 @@ describe('CallLogBadgeController', () => {
       const mockData = [{ id: 1 }, { id: 2 }] as any;
 
       await controller.handleCallLogs(mockData);
-      expect(controller.initializeUnreadCount).not.toBeCalled();
-      expect(controller['_updateUnreadCount']).toBeCalledTimes(2);
-      expect(controller['_updateBadge']).not.toBeCalled();
+      expect(controller.initializeUnreadCount).not.toHaveBeenCalled();
+      expect(controller['_updateUnreadCount']).toHaveBeenCalledTimes(2);
+      expect(controller['_updateBadge']).not.toHaveBeenCalled();
     });
   });
 
@@ -208,7 +208,7 @@ describe('CallLogBadgeController', () => {
       const mockData = {
         id: '1',
         result: CALL_RESULT.MISSED,
-        __deactivated: true,
+        deleted: true,
         __timestamp: 123,
       } as any;
       expect(controller['_updateUnreadCount'](mockData)).toBeFalsy();
@@ -220,7 +220,7 @@ describe('CallLogBadgeController', () => {
       const mockData = {
         id: '1',
         result: CALL_RESULT.MISSED,
-        __deactivated: false,
+        deleted: false,
         __timestamp: 123,
       } as any;
       expect(controller['_updateUnreadCount'](mockData)).toBeTruthy();
@@ -232,7 +232,7 @@ describe('CallLogBadgeController', () => {
       const mockData = {
         id: '1',
         result: CALL_RESULT.MISSED,
-        __deactivated: false,
+        deleted: false,
         __timestamp: 100,
       } as any;
       controller['_unreadMap'].set('1', 16);
@@ -245,7 +245,7 @@ describe('CallLogBadgeController', () => {
     it('should remove unread when call log is deactivated', () => {
       const mockData = {
         result: CALL_RESULT.MISSED,
-        __deactivated: true,
+        deleted: true,
         id: '456',
       } as any;
       controller['_unreadMap'].set('456', 123);
@@ -259,7 +259,7 @@ describe('CallLogBadgeController', () => {
       controller['_unreadMap'].set('1', 1);
       controller['_unreadMap'].set('2', 2);
       controller['_updateBadge']();
-      expect(mockBadgeService.updateBadge).toBeCalledWith({
+      expect(mockBadgeService.updateBadge).toHaveBeenCalledWith({
         id: MISSED_CALL_BADGE_ID,
         unreadCount: 2,
       });
@@ -275,7 +275,7 @@ describe('CallLogBadgeController', () => {
         },
       );
       controller['_registerBadge']();
-      expect(mockBadgeService.registerBadge).toBeCalledTimes(1);
+      expect(mockBadgeService.registerBadge).toHaveBeenCalledTimes(1);
     });
   });
 });

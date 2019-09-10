@@ -15,6 +15,8 @@ import { PostService } from 'sdk/module/post';
 
 PostService.getInstance = jest.fn();
 
+jest.unmock('react-quill');
+jest.unmock('quill');
 jest.mock('jui/components/AutoSizer/AutoSizer');
 jest.mock('jui/components/VirtualizedList/InfiniteList');
 jest.mock('sdk/module/post');

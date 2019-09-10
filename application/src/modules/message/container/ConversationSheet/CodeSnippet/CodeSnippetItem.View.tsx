@@ -13,7 +13,7 @@ import { memoize } from 'lodash';
 import copy from 'copy-to-clipboard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { saveBlob } from '@/common/blobUtils';
+import { saveBlob } from 'sdk/utils/fileUtils';
 import {
   postParser,
   HighlightContextInfo,

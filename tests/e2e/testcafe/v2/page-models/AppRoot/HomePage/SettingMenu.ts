@@ -26,8 +26,16 @@ export class SettingMenu extends BaseWebComponent {
     return this.getSelectorByAutomationId('aboutPage', this.self);
   }
 
+  get sendFeedbackButton() {
+    return this.getSelectorByAutomationId('sendFeedback', this.self);
+  }
+
   async clickAboutButton() {
     await this.t.click(this.aboutButton);
+  }
+
+  async clickSendFeedbackButton() {
+    await this.t.click(this.sendFeedbackButton);
   }
 
   async clickLogout() {
@@ -76,6 +84,30 @@ export class SettingMenu extends BaseWebComponent {
 
   async clickDndUnblockButton() {
     await this.t.click(this.dndUnblockButton);
+  }
+
+  get shareStatusButton() {
+    return this.getSelectorByAutomationId('shareStatus');
+  }
+
+  async clickShareStatusButton() {
+    await this.t.click(this.shareStatusButton);
+  }
+
+  get clearStatusButton() {
+    return this.getSelectorByAutomationId('clearStatus');
+  }
+
+  async clickClearStatusButton() { 
+    await this.t.click(this.clearStatusButton);
+  }
+
+  get statusButton() {
+    return this.getSelectorByAutomationId('sharedStatus');
+  }
+
+  async clickStatusButton() {
+    await this.t.click(this.statusButton);
   }
 
 }

@@ -9,7 +9,8 @@ import { SocketFSM } from '../SocketFSM';
 import notificationCenter from '../../notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../eventKey';
 import SocketIO from '../__mocks__/socket';
-import { SocketClient, powerMonitor } from 'foundation';
+import { SocketClient } from 'foundation/network';
+import { powerMonitor } from 'foundation/utils';
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
@@ -107,7 +108,7 @@ describe('Socket Manager', () => {
 
     it('should not be null when has active FSM', () => {
       syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValueOnce(1);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager['_canReconnectController']).not.toBeUndefined();
       expect(socketManager.hasActiveFSM()).toBeTruthy();
 
@@ -117,7 +118,7 @@ describe('Socket Manager', () => {
     it('should not have active FSM if id is incorrect', () => {
       syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
       getCurrentTime.mockReturnValue(2);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager.hasActiveFSM()).toBeFalsy();
     });
 
@@ -127,14 +128,14 @@ describe('Socket Manager', () => {
         .mockImplementation(() => {});
       syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue(1);
 
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager['_startRealFSM']).toHaveBeenCalledTimes(1);
 
       jest
         .spyOn(SocketCanConnectController.prototype, 'isDoingCanConnect')
         .mockReturnValue(true);
 
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager['_startRealFSM']).toHaveBeenCalledTimes(1);
     });
   });
@@ -161,7 +162,7 @@ describe('Socket Manager', () => {
     it('login without timestamp', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       syncUserConfig.getLastIndexTimestamp.mockReturnValue(null);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       expect(socketManager.ongoingFSMCount()).toEqual(0);
     });
@@ -169,7 +170,7 @@ describe('Socket Manager', () => {
     it('initial done event', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       syncUserConfig.getLastIndexTimestamp.mockReturnValue(null);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       expect(socketManager.ongoingFSMCount()).toEqual(0);
     });
@@ -177,7 +178,7 @@ describe('Socket Manager', () => {
     it('initial done event', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       expect(socketManager.ongoingFSMCount()).toEqual(1);
     });
@@ -204,7 +205,7 @@ describe('Socket Manager', () => {
 
       it('online after logged in', () => {
         syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmNameBeforeOnline = socketManager.activeFSM.name;
         expect(!!fsmNameBeforeOnline).toBeTruthy();
@@ -235,7 +236,7 @@ describe('Socket Manager', () => {
 
         // 2. user login should start FSM and should not do ping pong
         syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         expect(socketManager.activeFSM.doGlipPing).toHaveBeenCalledTimes(0);
 
@@ -296,7 +297,7 @@ describe('Socket Manager', () => {
         // 1. use has not not login do nothing
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
         // 2. should not start FSM since there is not socket host
         expect(socketManager['_hasLoggedIn']).toBeTruthy();
         expect(socketManager.hasActiveFSM()).toBeFalsy();
@@ -338,7 +339,7 @@ describe('Socket Manager', () => {
         syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('1');
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
         expect(socketManager._hasLoggedIn).toBeTruthy();
 
         // 1. should do nothing when new url is invalid
@@ -397,7 +398,7 @@ describe('Socket Manager', () => {
         syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('1');
 
         // 1. use reconnect-socket-address first
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         expect(socketManager.isConnected()).toBeFalsy();
         expect(socketManager.activeFSM.serverUrl).toEqual('reconnect_socket');
@@ -422,7 +423,7 @@ describe('Socket Manager', () => {
 
         syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValue('1');
 
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
 
         socketManager.activeFSM.finishConnect();
         socketManager.activeFSM.fireDisconnect();
@@ -456,7 +457,7 @@ describe('Socket Manager', () => {
     describe('reconnect', () => {
       it('reconnect event by attempt reconnection', () => {
         syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         // const fsmName1 = socketManager.activeFSM.name;
 
@@ -465,7 +466,7 @@ describe('Socket Manager', () => {
 
       it('socket reconnect new url', () => {
         syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
-        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         // const fsmName1 = socketManager.activeFSM.name;
 
@@ -505,7 +506,7 @@ describe('Socket Manager', () => {
     //   powerMonitor.onPowerMonitorEvent('lock-screen');
 
     //   // Login will not create FSM if screen is locked.
-    //   notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+    //   notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
     //   expect(socketManager.hasActiveFSM()).toBeTruthy();
     //   const fsmName1 = socketManager.activeFSM.name;
     //   expect(!!fsmName1).toBeTruthy();
@@ -562,7 +563,7 @@ describe('Socket Manager', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       // 4. login user
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager.hasActiveFSM).toBeTruthy();
 
       // 4. now lock the screen
@@ -589,7 +590,7 @@ describe('Socket Manager', () => {
     });
 
     it('logged-in and offline', () => {
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName1 = socketManager.activeFSM.name;
       expect(!!fsmName1).toBeTruthy();
@@ -619,7 +620,7 @@ describe('Socket Manager', () => {
       expect(socketManager.isOffline()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, { success: true });
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName1 = socketManager.activeFSM.name;
       expect(!!fsmName1).toBeTruthy();

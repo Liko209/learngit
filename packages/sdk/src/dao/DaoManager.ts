@@ -7,8 +7,9 @@ import {
   KVStorageManager,
   DexieDB,
   DatabaseType,
-  mainLogger,
-} from 'foundation';
+} from 'foundation/db';
+import { mainLogger } from 'foundation/log';
+
 import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
@@ -21,7 +22,7 @@ const LOG_TAG = 'DaoManager';
 
 class DaoManager extends Manager<
   BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
-> {
+  > {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
   private _isDBInitialized: boolean;
@@ -35,11 +36,14 @@ class DaoManager extends Manager<
     this._observers = [];
   }
 
+  getDatabaseType() {
+    return window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
+      ? DatabaseType.DexieDB
+      : DatabaseType.LokiDB;
+  }
+
   async initDatabase(clearDataFunc: () => Promise<void>): Promise<void> {
-    const dbType =
-      window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
-        ? DatabaseType.DexieDB
-        : DatabaseType.LokiDB;
+    const dbType = this.getDatabaseType();
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
@@ -65,13 +69,19 @@ class DaoManager extends Manager<
             Number(e.newValue) === BLOCK_MESSAGE_VALUE
           ) {
             DaoGlobalConfig.removeDBBlockMessageKey();
-            mainLogger.tags(LOG_TAG).info('initDatabase() delete database due to db version change');
+            mainLogger
+              .tags(LOG_TAG)
+              .info('initDatabase() delete database due to db version change');
             await this.dbManager.deleteDatabase();
           }
         });
       }
     }
     this._notifyDBInitialized();
+  }
+
+  getDataBase() {
+    return this.dbManager.getDatabase();
   }
 
   async openDatabase(): Promise<void> {
@@ -83,7 +93,13 @@ class DaoManager extends Manager<
   }
 
   async deleteDatabase(): Promise<void> {
-    await this.dbManager.deleteDatabase();
+    try {
+      await this.dbManager.deleteDatabase();
+    } catch (error) {
+      this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
+      await this.dbManager.deleteDatabase();
+    }
+
   }
 
   isDatabaseOpen(): boolean {

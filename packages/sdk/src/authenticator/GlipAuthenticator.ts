@@ -6,7 +6,7 @@
 
 import { IAuthenticator, IAuthResponse } from '../framework';
 import { loginGlip, ITokenModel } from '../api';
-import { mainLogger } from 'foundation';
+import { mainLogger } from 'foundation/log';
 import { AccountService } from '../module/account/service';
 import { GlipAccount } from '../account';
 import notificationCenter from '../service/notificationCenter';

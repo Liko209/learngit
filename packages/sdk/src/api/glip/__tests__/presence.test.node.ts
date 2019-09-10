@@ -5,7 +5,7 @@
  */
 import PresenceAPI from '../presence';
 import Api from '../../api';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA } from 'foundation/network';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { PRESENCE_REQUEST_STATUS } from 'sdk/module/presence/constant/Presence';
 

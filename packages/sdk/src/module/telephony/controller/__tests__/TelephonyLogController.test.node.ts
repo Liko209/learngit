@@ -3,7 +3,7 @@
  * @Date: 2019-03-31 21:44:08
  * Copyright © RingCentral. All rights reserved.
  */
-import { telephonyLogger } from 'foundation';
+import { telephonyLogger } from 'foundation/log';
 import { TelephonyLogController } from '../TelephonyLogController';
 import { LOG_LEVEL } from 'voip';
 

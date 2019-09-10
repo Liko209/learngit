@@ -16,7 +16,7 @@ import { KEYS, deepClone, defaultItems } from './util';
 
 class MediaReport implements IMediaReport {
   private static _singleton: MediaReport | null = null;
-  private _queen: MediaReportItemType[] = [];
+  private _queue: MediaReportItemType[] = [];
   private _outcome: MediaReportOutCome | null = null;
   private _accumulator = Object.create(null);
   private _sum = Object.create(null);
@@ -27,7 +27,7 @@ class MediaReport implements IMediaReport {
   }
 
   private _init() {
-    this._queen = [defaultItems()];
+    this._queue = [defaultItems()];
     this._accumulator = Object.create(null);
     this._sum = Object.create(null);
     this._outcome = null;
@@ -38,13 +38,13 @@ class MediaReport implements IMediaReport {
     });
   }
 
-  public static instance() {
+  static instance() {
     return (
       MediaReport._singleton || (MediaReport._singleton = new MediaReport())
     );
   }
 
-  public destroySingleton() {
+  destroySingleton() {
     MediaReport._singleton = null;
   }
 
@@ -64,17 +64,21 @@ class MediaReport implements IMediaReport {
     return +(this._sum[key] / this._total).toFixed(5);
   }
 
-  private _isJitter(key: string): boolean {
-    return key === 'jitter';
+  private _NeedCalculateDiff(key: string): boolean {
+    return (
+      key !== 'jitter' &&
+      key !== 'fractionLost' &&
+      key !== 'currentRoundTripTime'
+    );
   }
 
-  private _calculationDiff(queen: MediaReportItemType[]): MediaReportItemType {
-    const [head, tail = { none: true }] = queen;
+  private _calculationDiff(queue: MediaReportItemType[]): MediaReportItemType {
+    const [head, tail = { none: true }] = queue;
     const item = Object.create(null) as MediaReportItemType;
     KEYS.forEach(key => {
       if (tail.none) tail[key] = 0;
-      // jitter don't calculation diff
-      if (this._isJitter(key)) {
+      // jitter fractionLost and rtt don't calculation diff
+      if (!this._NeedCalculateDiff(key)) {
         item[key] = this._generateItem({
           headMin: tail[key],
           headMax: tail[key],
@@ -94,11 +98,11 @@ class MediaReport implements IMediaReport {
 
   private _calculationOutCome(item: MediaReportItemType): MediaReportOutCome {
     return KEYS.reduce((prev, curr) => {
-      if (!this._isJitter(curr)) {
+      if (this._NeedCalculateDiff(curr)) {
         this._sum[curr] += item[curr];
       }
-      const min = this._isJitter(curr) ? item[curr].min : item[curr];
-      const max = this._isJitter(curr) ? item[curr].max : item[curr];
+      const min = !this._NeedCalculateDiff(curr) ? item[curr].min : item[curr];
+      const max = !this._NeedCalculateDiff(curr) ? item[curr].max : item[curr];
 
       prev[curr] = this._generateItem({
         headMin: this._outcome ? this._outcome[curr].min : min,
@@ -113,10 +117,13 @@ class MediaReport implements IMediaReport {
   private _parse(data: MediaStatusReport): MediaReportItemType {
     return KEYS.reduce(
       (prev, curr) => {
-        prev[curr] =
-          typeof data.inboundRtpReport[curr] === 'undefined'
-            ? data.outboundRtpReport[curr]
-            : data.inboundRtpReport[curr];
+        if (data.inboundRtpReport && data.inboundRtpReport[curr] !== undefined) {
+          prev[curr] = data.inboundRtpReport[curr];
+        } else if (data.outboundRtpReport && data.outboundRtpReport[curr] !== undefined) {
+          prev[curr] = data.outboundRtpReport[curr];
+        } else if (data.rttMS && data.rttMS[curr] !== undefined) {
+          prev[curr] = data.rttMS[curr];
+        }
         return prev;
       },
       Object.create(null) as MediaReportItemType,
@@ -124,25 +131,24 @@ class MediaReport implements IMediaReport {
   }
 
   private _start(item: MediaReportItemType) {
-    this._queen.push(item);
-
-    this._total += 1;
-    if (this._queen.length >= 2) {
+    this._queue.push(item);
+    this._total++;
+    if (this._queue.length >= 2) {
       // Calculate the result, save it, and drop the first one.
       this._outcome = this._calculationOutCome(
-        this._calculationDiff(this._queen),
+        this._calculationDiff(this._queue),
       );
-      this._queen.shift();
+      this._queue.shift();
     }
   }
 
-  public startAnalysis(data: any) {
+  startAnalysis(data: any) {
     if (!data || typeof data !== 'object' || !data.inboundRtpReport) return;
 
     this._start(this._parse(data));
   }
 
-  public stopAnalysis(): MediaReportOutCome {
+  stopAnalysis(): MediaReportOutCome {
     const outcome = deepClone(this.outcome);
     this.destroySingleton();
 

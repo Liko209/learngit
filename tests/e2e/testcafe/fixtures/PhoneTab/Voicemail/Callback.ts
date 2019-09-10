@@ -14,7 +14,7 @@ import { AppRoot } from '../../../v2/page-models/AppRoot';
 import { addOneVoicemailFromAnotherUser } from './utils';
 
 fixture('Setting/EnterPoint')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 
@@ -25,8 +25,8 @@ test.meta(<ITestMeta>{
   keywords: ['voicemail']
 })('Call back from the voicemail', async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const callee = users[4];
-  const caller = users[5];
+  const callee = users[2];
+  const caller = users[3];
 
   const app = new AppRoot(t);
 

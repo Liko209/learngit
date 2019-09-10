@@ -12,36 +12,46 @@ type ChildrenProps = {
   trigger: MousetrapInstance['trigger'];
 };
 
-type keyMapValue =
+type KeyMapValue =
   | ((
-    e: KeyboardEvent,
-    combo: string,
-  ) => (void | boolean) | Promise<void | boolean>)
-  | {
-    handler: (
       e: KeyboardEvent,
       combo: string,
-    ) => (void | boolean) | Promise<void | boolean>;
-    action: string;
-  };
+    ) => (void | boolean) | Promise<void | boolean>)
+  | {
+      handler: (
+        e: KeyboardEvent,
+        combo: string,
+      ) => (void | boolean) | Promise<void | boolean>;
+      action: string;
+    };
 
 type HotKeysProps = {
-  el?: Element;
+  global?: boolean;
+  direction?: 'column' | 'row';
+  customStyle?: React.CSSProperties;
   children?: React.ReactNode | ((props: ChildrenProps) => React.ReactNode);
   keyMap: {
-    [key: string]: keyMapValue;
+    [key: string]: KeyMapValue;
   };
 };
 
 class HotKeys extends PureComponent<HotKeysProps, {}> {
   private _mousetrap: MousetrapInstance;
+  private _el: React.RefObject<HTMLDivElement>;
   constructor(props: HotKeysProps) {
     super(props);
-    this._mousetrap = new Mousetrap(props.el ? props.el : document.body);
+    this._el = React.createRef();
   }
 
   componentDidMount() {
-    const { keyMap } = this.props;
+    const { keyMap, global } = this.props;
+    if (!global && this._el.current) {
+      this._mousetrap = new Mousetrap(this._el.current);
+      this._el.current.focus(); // ensure div has focus
+    } else {
+      this._mousetrap = new Mousetrap(document.body);
+    }
+
     Object.keys(keyMap).forEach((key: string) => {
       const value = keyMap[key];
       if (typeof value === 'object') {
@@ -66,18 +76,38 @@ class HotKeys extends PureComponent<HotKeysProps, {}> {
 
   reset = () => {
     this._mousetrap.reset();
-  }
+  };
 
   unbind = (keys: string | string[], action = undefined) => {
     this._mousetrap.unbind(keys, action);
-  }
+  };
 
   trigger = (key: string, action = undefined) => {
     this._mousetrap.trigger(key, action);
+  };
+
+  get style(): React.CSSProperties {
+    const { customStyle } = this.props;
+    const base = {
+      outline: 0,
+    };
+    if (customStyle) {
+      return {
+        ...base,
+        ...customStyle,
+      };
+    }
+
+    return {
+      ...base,
+      display: 'flex',
+      height: '100%',
+      flexDirection: 'column',
+    } as React.CSSProperties;
   }
 
   render() {
-    const { children } = this.props;
+    const { children, global } = this.props;
     if (children instanceof Function) {
       return children({
         unbind: this.unbind,
@@ -85,7 +115,14 @@ class HotKeys extends PureComponent<HotKeysProps, {}> {
         trigger: this.trigger,
       });
     }
-    return children;
+
+    return global ? (
+      children
+    ) : (
+      <div ref={this._el} tabIndex={-1} style={this.style}>
+        {children}
+      </div>
+    );
   }
 }
 

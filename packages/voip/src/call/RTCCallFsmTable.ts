@@ -8,10 +8,9 @@ import {
   RTC_CALL_ACTION,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
+  RTC_CALL_ACTION_DIRECTION,
 } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-
-import { CallReport } from '../report/Call';
 import { FsmStatusCategory } from '../report/types';
 
 const CallFsmState = {
@@ -73,8 +72,8 @@ interface IRTCCallFsmTableDependency {
   onForwardAction(target: string): void;
   onStartRecordAction(): void;
   onStopRecordAction(): void;
-  onMuteAction(): void;
-  onUnmuteAction(): void;
+  onMuteAction(direction: RTC_CALL_ACTION_DIRECTION): void;
+  onUnmuteAction(direction: RTC_CALL_ACTION_DIRECTION): void;
   onHoldSuccessAction(): void;
   onHoldFailedAction(): void;
   onUnholdSuccessAction(): void;
@@ -91,6 +90,7 @@ interface IRTCCallFsmTableDependency {
     time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ): void;
+  onUpdateFsmState(state: FsmStatusCategory): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -254,16 +254,16 @@ class RTCCallFsmTable extends StateMachine {
         {
           name: CallFsmEvent.MUTE,
           from: CallFsmState.CONNECTED,
-          to: () => {
-            dependency.onMuteAction();
+          to: (direction: RTC_CALL_ACTION_DIRECTION) => {
+            dependency.onMuteAction(direction);
             return CallFsmState.CONNECTED;
           },
         },
         {
           name: CallFsmEvent.UNMUTE,
           from: CallFsmState.CONNECTED,
-          to: () => {
-            dependency.onUnmuteAction();
+          to: (direction: RTC_CALL_ACTION_DIRECTION) => {
+            dependency.onUnmuteAction(direction);
             return CallFsmState.CONNECTED;
           },
         },
@@ -551,9 +551,7 @@ class RTCCallFsmTable extends StateMachine {
       ],
       methods: {
         onTransition(lifecycle) {
-          CallReport.instance().updateFsmStatus(
-            lifecycle.to as FsmStatusCategory,
-          );
+          dependency && dependency.onUpdateFsmState(lifecycle.to as FsmStatusCategory);
           rtcLogger.debug(
             'RTC_Call_FSM',
             `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${

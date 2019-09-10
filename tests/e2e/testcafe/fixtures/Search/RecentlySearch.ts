@@ -89,7 +89,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Whe I click outside the global search box`, async () => {
-    await t.click(searchDialog.self, { offsetX: 1, offsetY: 1 });
+    await t.click('html', { offsetX: 1, offsetY: 1 });
   });
 
   await h(t).withLog(`Then the search dialog dismiss`, async () => {
@@ -288,7 +288,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search ${userNameB} and hover the people result and click message icon`, async () => {
     await searchDialog.typeSearchKeyword(userNameB);
     resultName = await searchDialog.instantPage.nthPeople(0).getName();
-    await searchDialog.instantPage.nthPeople(0).HoverAndClickMessageButton();
+    await searchDialog.instantPage.nthPeople(0).hoverAndClickMessageButton();
   });
 
   await h(t).withLog(`And mouse in the global search box`, async () => {

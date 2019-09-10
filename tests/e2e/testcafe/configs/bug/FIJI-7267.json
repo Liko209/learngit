@@ -1,1 +1,0 @@
-{"on_merge":{"fixtures":["fixtures/ConversationStream/Event.ts","fixtures/ConversationStream/**/*.ts"],"include_tags":[],"exclude_tags":[]}}

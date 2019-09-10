@@ -7,6 +7,7 @@ import { JuiModalProps, JuiDialogFuncProps } from 'jui/components/Dialog';
 import { dialog } from './Dialog';
 import { modal } from './Modal';
 import { ModalPortal } from './ModalPortal';
+import { withEscTracking } from './WrapDataTracking';
 
 export { default as DialogContext } from './DialogContext';
 
@@ -14,6 +15,7 @@ class Dialog {
   static simple(
     component: JSX.Element | React.ComponentType<any>,
     config?: JuiDialogFuncProps,
+    key?: string,
   ) {
     const { componentProps = {}, ...rest } = config || {};
     const newConfig = {
@@ -21,7 +23,7 @@ class Dialog {
       ...rest,
       ...componentProps,
     };
-    return modal(component, newConfig);
+    return modal(component, newConfig, key);
   }
 
   static alert(props: JuiModalProps) {
@@ -37,4 +39,4 @@ class Dialog {
   }
 }
 
-export { Dialog, ModalPortal };
+export { Dialog, ModalPortal, withEscTracking };

@@ -3,7 +3,7 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { AbstractModule } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
 import { INotificationService, INotificationSettingManager } from './interface';
 import { notificationCenter } from 'sdk/service';
 import { SERVICE } from 'sdk/service/eventKey';

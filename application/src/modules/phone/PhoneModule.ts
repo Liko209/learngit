@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, inject, Jupiter } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { PHONE_SERVICE } from './interface/constant';
 
 class PhoneModule extends AbstractModule {

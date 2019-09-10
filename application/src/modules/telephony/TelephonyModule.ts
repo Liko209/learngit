@@ -4,19 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule, inject, Jupiter } from 'framework';
+import { AbstractModule } from 'framework/AbstractModule';
+import { inject } from 'framework/ioc';
+import { Jupiter } from 'framework/Jupiter';
 import { IHomeService } from '@/modules/home/interface/IHomeService';
 import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearchService';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';
 import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation/log';
 import { SERVICE } from 'sdk/service/eventKey';
 import { notificationCenter } from 'sdk/service';
 import { TelephonyNotificationManager } from './TelephonyNotificationManager';
 import { TelephonySettingManager } from './TelephonySettingManager/TelephonySettingManager';
 import { Dialer, Dialpad, Call } from './container';
+import { config } from './telephony.config';
 
 class TelephonyModule extends AbstractModule {
   static TAG: string = '[UI TelephonyModule] ';
@@ -57,7 +60,7 @@ class TelephonyModule extends AbstractModule {
     this._disposeTelephony();
   }
 
-  private _initTelephony() {
+  private async _initTelephony() {
     this._telephonyService.init();
     this._jupiter.emitModuleInitial(TELEPHONY_SERVICE);
     this._notificationManager.init();
@@ -65,16 +68,18 @@ class TelephonyModule extends AbstractModule {
     this._leaveBlockerService.onLeave(this._handleLeave);
     this._homeService.registerExtension('root', Dialer);
     this._homeService.registerExtension('topBar', Dialpad);
+    this._homeService.registerNavItem('telephony', await config.nav!());
     this._globalSearchService.registerExtension('searchItem', Call);
   }
 
   private _disposeTelephony() {
     this._notificationManager.dispose();
     this._settingManager.dispose();
-    this._telephonyService.dispose();
     this._jupiter.emitModuleDispose(TELEPHONY_SERVICE);
     this._leaveBlockerService.offLeave(this._handleLeave);
-    // TODO unregister extensions
+    this._homeService.unRegisterNavItem('telephony');
+    // TODO unregister home extensions
+    this._globalSearchService.unregisterExtension('searchItem', Call);
   }
 
   private _handleVoipCallingStateChanged = (enabled: boolean) => {

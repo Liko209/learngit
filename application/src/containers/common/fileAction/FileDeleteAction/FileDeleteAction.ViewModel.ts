@@ -13,9 +13,7 @@ import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
-import { mainLogger } from 'sdk';
-import { Group } from 'sdk/module/group';
-import GroupModel from '@/store/models/Group';
+import { mainLogger } from 'foundation/log';
 
 class FileDeleteActionViewModel extends FileActionViewModel {
   @observable
@@ -32,13 +30,10 @@ class FileDeleteActionViewModel extends FileActionViewModel {
 
   @computed
   get canDelete() {
-    const groupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
     return (
       this._currentItemVersion &&
-      this._currentItemVersion.creator_id === currentUserId &&
-      !group.isThePersonGuest(currentUserId)
+      this._currentItemVersion.creator_id === currentUserId
     );
   }
 

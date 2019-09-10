@@ -4,10 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, jupiter } from 'framework';
+import { container } from 'framework/ioc';
+import { jupiter } from 'framework/Jupiter';
 import { HomeService } from '../HomeService';
 import { IHomeService } from '../../interface/IHomeService';
 import { config } from '../../module.config';
+
+jest.unmock('react-quill');
+jest.unmock('quill');
 
 jupiter.registerModule(config);
 
@@ -99,5 +103,19 @@ describe('HomeService', () => {
     expect(
       homeService.hasModules(['message', 'telephony', '1122']),
     ).toBeFalsy();
+  });
+
+  it('unRegisterNavItem should call home store removeNavItem function', () => {
+    const homeService = new HomeService();
+    // @ts-ignore
+    homeService._homeStore = {
+      removeNavItem: jest.fn(),
+    };
+    const moduleName = '';
+    homeService.unRegisterNavItem(moduleName);
+    // @ts-ignore
+    expect(homeService._homeStore.removeNavItem).toHaveBeenCalledWith(
+      moduleName,
+    );
   });
 });

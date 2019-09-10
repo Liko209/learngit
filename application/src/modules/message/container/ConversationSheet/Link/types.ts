@@ -16,6 +16,7 @@ type LinkItemViewProps = {
   postItems: LinkItemModel[];
   onLinkItemClose: Function;
   canClosePreview: boolean;
+  isLinkPreviewDisabled: boolean;
 };
 
 export { LinkItemProps, LinkItemViewProps, LinkItemModel };

@@ -7,7 +7,7 @@ import { AbstractRecord } from './AbstractRecord';
 import { Nullable } from 'sdk/types';
 import {
   ILogger, logManager, stringifyParams, LOG_LEVEL,
-} from 'foundation';
+} from 'foundation/log';
 import { toText } from '../stringUtils';
 import _ from 'lodash';
 

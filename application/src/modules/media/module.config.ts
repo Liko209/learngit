@@ -3,7 +3,7 @@
  * @Date: 2019-06-24 10:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { ModuleConfig } from 'framework';
+import { ModuleConfig } from 'framework/types';
 import { MediaModule } from './MediaModule';
 import { MediaService } from './service';
 import { IMediaService } from '@/interface/media';

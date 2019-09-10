@@ -465,7 +465,7 @@ module.exports = {
     ),
     // generate service worker
     new GenerateSW({
-      exclude: [/\.map$/, /asset-manifest\.json$/],
+      exclude: [/\.map$/, /asset-manifest\.json$/, /\.wav$/],
       navigateFallback: `${publicUrl}/index.html`,
       navigateFallbackBlacklist: [
         // Exclude URLs containing a dot, as they're likely a resource in
@@ -473,15 +473,25 @@ module.exports = {
         new RegExp('/[^/]+\\.[^/]+$'),
       ],
       globDirectory: paths.appPublic,
-      globIgnores: ['node_modules/**/*', 'whiteListedId.json', 'index.html'],
+      globIgnores: [
+        'node_modules/**/*',
+        'whiteListedId.json',
+        'index.html',
+        '**/*.wav',
+      ],
       globPatterns: ['**/*'],
       modifyURLPrefix: {
         '': '/',
       },
       cleanupOutdatedCaches: true,
-      importScripts: ['sw-notification.js', 'sw-upgrade.js'],
+      importScripts: [
+        'sw-notification.js',
+        'sw-upgrade.js',
+        'sw-workbox-otherConfigs.js',
+      ],
       runtimeCaching,
     }),
+
     new SentryWebpackPluginWrapper({
       release: appPackage.version,
       include: './build/static/js',

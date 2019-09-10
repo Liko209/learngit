@@ -10,7 +10,7 @@ import {
   NETWORK_VIA,
   REQUEST_PRIORITY,
   HA_PRIORITY,
-} from 'foundation';
+} from 'foundation/network';
 
 jest.mock('../../api');
 

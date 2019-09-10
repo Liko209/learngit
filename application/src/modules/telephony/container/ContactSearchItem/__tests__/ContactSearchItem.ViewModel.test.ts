@@ -8,8 +8,14 @@ import { ContactSearchItemViewModel } from '../ContactSearchItem.ViewModel';
 import { getEntity } from '@/store/utils';
 import { v4 } from 'uuid';
 import { ENTITY_NAME } from '@/store';
+import { container, decorate, injectable } from 'framework/ioc';
+import { TelephonyStore } from '../../../store';
 
-jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => cb());
+decorate(injectable(), TelephonyStore);
+
+container.bind(TelephonyStore).to(TelephonyStore);
+
+jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb());
 
 jest.mock('@/store/utils', () => {
   const mockedUtils = {
@@ -18,11 +24,13 @@ jest.mock('@/store/utils', () => {
   return mockedUtils;
 });
 
+jest.mock('@/store/base/fetch/FetchSortableDataListHandler');
+
 const personID = +new Date();
 const email = 'user20474@jupitertest523.ru';
 const formattedPhoneNumber = '20474';
 
-getEntity.mockImplementation((entityName) => {
+getEntity.mockImplementation(entityName => {
   switch (entityName) {
     case ENTITY_NAME.PHONE_NUMBER:
       return {
@@ -64,13 +72,14 @@ beforeAll(() => {
     directDial,
     selected: false,
     onClick: jest.fn(),
+    itemIndex: 1,
   });
   contactSearchItemViewModel.onAfterMount();
 });
 
 describe('ContactSearchItemViewModel', () => {
   it('should call getEntity()', () => {
-    expect(getEntity).toBeCalledTimes(2);
+    expect(getEntity).toHaveBeenCalledTimes(3);
   });
 
   it('should have direct dial', () => {
@@ -83,10 +92,6 @@ describe('ContactSearchItemViewModel', () => {
 
   it(`should display phone number: ${directDial}`, () => {
     expect(contactSearchItemViewModel.phoneNumber).toBe(directDial);
-  });
-
-  it('should not be selected', () => {
-    expect(contactSearchItemViewModel.selected).toBeFalsy();
   });
 
   it(`should return uid:${personID}`, () => {

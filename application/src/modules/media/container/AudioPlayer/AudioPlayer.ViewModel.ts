@@ -5,8 +5,8 @@
  */
 import StoreViewModel from '@/store/ViewModel';
 import { AudioPlayerProps } from './types';
-import { jupiter } from 'framework';
-import { mainLogger } from 'sdk';
+import { jupiter } from 'framework/Jupiter';
+import { mainLogger } from 'foundation/log';
 import { MediaOptions, IMediaService, IMedia } from '@/interface/media';
 import { observable, action, computed } from 'mobx';
 import { JuiAudioStatus } from 'jui/components/AudioPlayer';

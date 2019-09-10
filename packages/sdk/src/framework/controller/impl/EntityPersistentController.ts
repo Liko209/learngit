@@ -25,7 +25,7 @@ class EntityPersistentController<
     this._subscribeEntityChange();
   }
 
-  async put(item: T | T[]): Promise<void> {
+  async put(item: T): Promise<void> {
     if (this.dao) {
       await this.dao.put(item);
     }
@@ -71,7 +71,7 @@ class EntityPersistentController<
     }
   }
 
-  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+  async update(item: Partial<T>): Promise<void> {
     if (this.dao) {
       await this.dao.update(item);
     }
@@ -124,17 +124,38 @@ class EntityPersistentController<
     return items;
   }
 
-  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+  async getEntities(
+    filterFunc?: (entity: T) => boolean,
+    sortFunc?: (entityA: T, entityB: T) => number,
+  ): Promise<T[]> {
     let items: T[] = [];
     if (this.entityCacheController) {
-      items = await this.entityCacheController.getEntities(filterFunc);
+      items = await this.entityCacheController.getEntities(
+        filterFunc,
+        sortFunc,
+      );
     }
 
     if (items.length === 0 && this.dao) {
       items = await this.dao.getAll();
-      if (items && items.length && this.entityCacheController) {
-        await this.entityCacheController.bulkPut(items);
-        items = await this.entityCacheController.getEntities(filterFunc);
+      if (items && items.length) {
+        if (this.entityCacheController) {
+          await this.entityCacheController.bulkPut(items);
+          items = await this.entityCacheController.getEntities(
+            filterFunc,
+            sortFunc,
+          );
+        } else {
+          const filterItems: T[] = filterFunc
+            ? items.filter(filterFunc)
+            : items;
+
+          if (sortFunc) {
+            filterItems.sort(sortFunc);
+          }
+
+          items = filterItems;
+        }
       }
     }
 

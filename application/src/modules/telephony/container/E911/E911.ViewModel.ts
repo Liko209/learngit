@@ -3,7 +3,7 @@
  * @Date: 2019-07-23 14:24:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
+import { container } from 'framework/ioc';
 import { observable, computed, action, IReactionPublic } from 'mobx';
 import { ChangeEvent } from 'react';
 import { StoreViewModel } from '@/store/ViewModel';

@@ -75,6 +75,8 @@ class InstantSearchViewComponent extends Component<Props> {
         terms={terms}
         id={typeof value === 'string' ? null : value}
         key={typeof value === 'string' ? `${value}${cellIndex}` : value}
+        analysisSource="instantSearchResult"
+        dataTrackingDomain="globalSearch"
       />
     );
   };
@@ -120,6 +122,7 @@ class InstantSearchViewComponent extends Component<Props> {
           down: onKeyDown,
           enter: onEnter,
         }}
+        global
       >
         <JuiInstantSearch data-test-automation-id="search-results">
           {this.searchResultList}

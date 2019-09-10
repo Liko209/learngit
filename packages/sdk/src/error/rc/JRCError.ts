@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { JError } from 'foundation';
+import { JError } from 'foundation/error';
 import { ERROR_TYPES } from '../types';
 
 export class JRCError extends JError {
