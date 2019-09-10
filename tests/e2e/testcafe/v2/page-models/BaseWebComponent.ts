@@ -19,11 +19,18 @@ export abstract class BaseWebComponent {
   }
 
   async ensureLoaded(timeout: number = 10e3) {
-    await this.t.expect(this.exists).ok({ timeout });
+    await H.retryUntilPass(async () => {
+      await this.t.expect(this.exists).ok({ timeout });
+      await this.t.expect(this.visible).ok();
+    });
   }
 
   async ensureDismiss(timeout: number = 10e3) {
-    await this.t.expect(this.exists).notOk({ timeout });
+    await H.retryUntilPass(async () => {
+      if (await this.exists) {
+        await this.t.expect(this.visible).notOk({ timeout });
+      }
+    });
   }
 
   async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {

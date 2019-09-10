@@ -89,7 +89,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Whe I click outside the global search box`, async () => {
-    await t.click(searchDialog.self, { offsetX: 1, offsetY: 1 });
+    await t.click('html', { offsetX: 1, offsetY: 1 });
   });
 
   await h(t).withLog(`Then the search dialog dismiss`, async () => {
