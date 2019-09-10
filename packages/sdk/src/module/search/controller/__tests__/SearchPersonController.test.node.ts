@@ -1120,5 +1120,107 @@ describe('SearchPersonController', () => {
 
       expect(groupService.doFuzzySearchAllGroups).toHaveBeenCalled();
     });
+
+    it('should remove current user when me conversation matched', async () => {
+      const persons = [
+        { id: 1, lowerCaseName: 'dora', sortWeights: [2] },
+        { id: 2, lowerCaseName: 'bruce', sortWeights: [1] },
+        { id: 3, lowerCaseName: 'me', sortWeights: [2] },
+        { id: 4, lowerCaseName: 'benny', sortWeights: [1] },
+      ];
+      const groups = [
+        {
+          id: 13,
+          entity: { id: 13, members: [3, 1, 2] },
+          lowerCaseName: 'dora bruce',
+          sortWeights: [2],
+        },
+        {
+          id: 14,
+          entity: { id: 14, members: [3, 2, 4] },
+          lowerCaseName: 'bruce benny',
+          sortWeights: [1],
+        },
+        {
+          id: 15,
+          entity: { id: 15, members: [3, 4] },
+          lowerCaseName: 'benny',
+          sortWeights: [2],
+        },
+        {
+          id: 16,
+          entity: { id: 16, members: [3] },
+          lowerCaseName: 'me',
+          sortWeights: [2],
+        },
+      ];
+
+      const sortFunc = (
+        lsh: SortableModel<IdModel>,
+        rsh: SortableModel<IdModel>,
+      ) => {
+        return rsh.id - lsh.id;
+      };
+
+      const expectedResult = [
+        {
+          id: 16,
+          entity: { id: 16, members: [3] },
+          lowerCaseName: 'me',
+          sortWeights: [2],
+        },
+        {
+          id: 15,
+          entity: { id: 15, members: [3, 4] },
+          lowerCaseName: 'benny',
+          sortWeights: [2],
+        },
+        {
+          id: 14,
+          entity: { id: 14, members: [3, 2, 4] },
+          lowerCaseName: 'bruce benny',
+          sortWeights: [1],
+        },
+        {
+          id: 13,
+          entity: { id: 13, members: [3, 1, 2] },
+          lowerCaseName: 'dora bruce',
+          sortWeights: [2],
+        },
+       
+        { id: 2, lowerCaseName: 'bruce', sortWeights: [1] },
+        { id: 1, lowerCaseName: 'dora', sortWeights: [2] },
+      ];
+
+      const value = {
+        terms: 'x',
+        sortableModels: persons,
+      };
+      searchPersonController.doFuzzySearchPersons = jest
+        .fn()
+        .mockReturnValue(value);
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(3);
+
+      groupService.doFuzzySearchAllGroups = jest.fn().mockReturnValue({
+        sortableModels: groups,
+      });
+      const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
+        'x',
+        {},
+        {},
+        sortFunc,
+      );
+
+      expect(result).toEqual({
+        terms: 'x',
+        sortableModels: expectedResult,
+      });
+
+      expect(groupService.doFuzzySearchAllGroups).toHaveBeenCalled();
+    });
   });
 });

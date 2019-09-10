@@ -186,32 +186,28 @@ class SearchPersonController {
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
-    let hasMeGroup: boolean = false;
-
+    const currentUserId = userConfig.getGlipUserId();
     const excludeContactsIds = new Set<number>();
     groups.sortableModels.forEach((sortableModel: SortableModel<Group>) => {
       result.sortableModels.push(sortableModel);
       if (!sortableModel.entity.is_team) {
         if (sortableModel.entity.members.length === 2) {
           sortableModel.entity.members.forEach(id => {
-            excludeContactsIds.add(id);
+            if (id !== currentUserId) {
+              excludeContactsIds.add(id);
+            }
           });
         } else if (
           sortableModel.entity.members.length === 1 &&
-          sortableModel.entity.members[0] === userConfig.getGlipUserId()
+          sortableModel.entity.members[0] === currentUserId
         ) {
-          hasMeGroup = true;
+          excludeContactsIds.add(sortableModel.entity.members[0]);
         }
       }
     });
 
     persons.sortableModels.forEach(sortableModel => {
       if (!excludeContactsIds.has(sortableModel.id)) {
-        result.sortableModels.push(sortableModel);
-      } else if (
-        !hasMeGroup &&
-        sortableModel.id === userConfig.getGlipUserId()
-      ) {
         result.sortableModels.push(sortableModel);
       }
     });
