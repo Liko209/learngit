@@ -13,7 +13,6 @@ import {
   height,
   typography,
   palette,
-  grey,
   spacing,
   primary,
 } from '../../foundation/utils/styles';
@@ -58,7 +57,7 @@ const StyledWrapper = styled.div<{ size?: Size }>`
   position: relative;
 `;
 
-const StyledAvatar = styled<JuiAvatarProps>(({customColor, ...rest}) => (
+const StyledAvatar = styled<JuiAvatarProps>(({ customColor, ...rest }) => (
   <MuiAvatar {...rest} />
 ))`
   && {
@@ -66,7 +65,11 @@ const StyledAvatar = styled<JuiAvatarProps>(({customColor, ...rest}) => (
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
     background-color: ${({ color, customColor }) =>
-      customColor ? color : color ? palette('avatar', color) : grey('100')};
+      customColor
+        ? color
+        : color
+        ? palette('avatar', color)
+        : primary('light')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -119,13 +122,10 @@ const StyledCoverAvatarContent = styled.span`
   background-color: ${palette('common', 'white')};
 `;
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
-  <JuiIconography
-    iconSize="inherit"
-    iconColor={['primary', 'light']}
-    {...rest}
-  />
+  <JuiIconography iconSize="inherit" iconColor={['grey', '100']} {...rest} />
 ))<{ size: Size; symbol: SvgSymbol }>`
   font-size: ${({ size }) => sizes[size] * 4}px;
+  background-color: ${palette('primary', 'light')};
 `;
 
 const StyledPresenceWrapper = styled.div`
