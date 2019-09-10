@@ -76,7 +76,7 @@ exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
   fill: currentColor;
   pointer-events: none;
   font-size: inherit;
-  fill: #18a4de;
+  fill: #f5f6fb;
 }
 
 .c0.c0 {
@@ -86,7 +86,7 @@ exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
-  background-color: #f5f6fb;
+  background-color: #18a4de;
 }
 
 .c0.c0:hover {
@@ -121,6 +121,7 @@ exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
 
 .c1 {
   font-size: 32px;
+  background-color: #18a4de;
 }
 
 <div
