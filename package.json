@@ -123,7 +123,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "concurrently -r \"npm run tsc && npm run clean:build\" && npm run lint-all &&  npm run test:changed",
+      "pre-push": "concurrently -r \"npm run tsc && npm run clean:build\" && npm run snapshot && npm run lint-all &&  npm run test:changed",
       "commit-msg": "node scripts/validate-commit-msg.js",
       "post-merge": "node scripts/update-dependencies.js"
     }
