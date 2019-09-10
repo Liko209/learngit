@@ -15,6 +15,7 @@ import {
   palette,
   spacing,
   primary,
+  grey,
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
@@ -50,6 +51,22 @@ const fonts: { [key in Size]: keyof Theme['typography'] } = {
   medium: 'subheading2',
   small: 'caption2',
 };
+const getBackgroundColor = (
+  color?: any,
+  customColor?: any,
+  iconSymbol?: any,
+) => {
+  if (customColor) {
+    return color;
+  }
+  if (color) {
+    return palette('avatar', color);
+  }
+  if (iconSymbol) {
+    return primary('light');
+  }
+  return grey('100');
+};
 
 const StyledWrapper = styled.div<{ size?: Size }>`
   width: ${({ size = 'medium' }) => width(sizes[size])};
@@ -57,19 +74,15 @@ const StyledWrapper = styled.div<{ size?: Size }>`
   position: relative;
 `;
 
-const StyledAvatar = styled<JuiAvatarProps>(({ customColor, ...rest }) => (
-  <MuiAvatar {...rest} />
-))`
+const StyledAvatar = styled<JuiAvatarProps>(
+  ({ customColor, iconSymbol, ...rest }) => <MuiAvatar {...rest} />,
+)`
   && {
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color, customColor }) =>
-      customColor
-        ? color
-        : color
-        ? palette('avatar', color)
-        : primary('light')};
+    background-color: ${({ color, customColor, iconSymbol }) =>
+      getBackgroundColor(color, customColor, iconSymbol)};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -180,7 +193,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     }
 
     avatar = (
-      <StyledAvatar {...rest} {...hoverTriggerProps}>
+      <StyledAvatar iconSymbol={iconSymbol} {...rest} {...hoverTriggerProps}>
         {iconChildren || children}
       </StyledAvatar>
     );
