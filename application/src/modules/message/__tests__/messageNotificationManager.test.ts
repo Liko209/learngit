@@ -509,5 +509,11 @@ sfdasfasd`);
       const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.DIRECT_MESSAGE, new GroupModel(group));
       expect(soundSetting).toBe(SOUNDS_TYPE.Alert)
     })
+    it('should be Double_Beeps when message type is @mention and global setting for @mention sound is Double_Beeps but current conversation preference for sound is Alert', async () => {
+      settingItem.value = {id: SOUNDS_TYPE.Double_Beeps};
+      conversationPreferences.audioNotifications.id = SOUNDS_TYPE.Alert;
+      const soundSetting = await notificationManager.getCurrentMessageSoundSetting(MESSAGE_TYPE.MENTION, new GroupModel(group));
+      expect(soundSetting).toBe(SOUNDS_TYPE.Double_Beeps)
+    })
   })
 });
