@@ -15,10 +15,12 @@ exports[`Storyshots Components/Buttons Contained Button: Components/Buttons Cont
   text-align: center;
   box-shadow: unset;
   padding: 8px 12px;
+  min-width: 88px;
 }
 
 .c0.c0.MuiButton-sizeLarge {
   padding: 10px 16px;
+  min-width: 96px;
 }
 
 .c0.c0.containedButtonStyle {
@@ -132,10 +134,12 @@ exports[`Storyshots Components/Buttons Text Button: Components/Buttons Text Butt
   text-align: center;
   box-shadow: unset;
   padding: 8px 12px;
+  min-width: 88px;
 }
 
 .c0.c0.MuiButton-sizeLarge {
   padding: 10px 16px;
+  min-width: 96px;
 }
 
 .c0.c0.containedButtonStyle {

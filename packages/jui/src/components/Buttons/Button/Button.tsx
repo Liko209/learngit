@@ -15,6 +15,7 @@ import {
   spacing,
   palette,
   rippleEnter,
+  width,
   height,
   grey,
   primary,
@@ -86,8 +87,10 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     text-align: center;
     box-shadow: unset;
     padding: ${spacing(2, 3)};
+    min-width: ${width(22)};
     &.MuiButton-sizeLarge {
       padding: ${spacing(2.5, 4)};
+      min-width: ${width(24)};
     }
     &.containedButtonStyle {
       color: ${ButtonColor};
