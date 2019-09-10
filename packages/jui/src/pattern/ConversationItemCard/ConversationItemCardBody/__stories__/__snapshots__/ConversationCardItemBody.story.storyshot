@@ -83,7 +83,7 @@ exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAv
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
-  background-color: #f5f6fb;
+  background-color: #18a4de;
 }
 
 .c3.c3:hover {
