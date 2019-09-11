@@ -29,6 +29,8 @@ class EditMessageInputViewComponent extends Component<Props, State> {
   > = React.createRef();
   private _mentionRef: React.RefObject<any> = React.createRef();
   private _disposer: IReactionDisposer;
+  private _timer: NodeJS.Timer;
+
   state = {
     modules: {},
   };
@@ -39,6 +41,9 @@ class EditMessageInputViewComponent extends Component<Props, State> {
       (shouldFocus: boolean) => {
         shouldFocus && this.focusEditor();
       },
+      {
+        fireImmediately: true,
+      },
     );
   }
 
@@ -47,6 +52,7 @@ class EditMessageInputViewComponent extends Component<Props, State> {
   }
   componentWillUnmount() {
     this._messageService.blurEditInputFocus();
+    clearTimeout(this._timer);
     this._disposer();
   }
 
@@ -65,10 +71,12 @@ class EditMessageInputViewComponent extends Component<Props, State> {
   }
 
   focusEditor = () => {
-    if (this._messageInputRef.current) {
-      this.scrollEditAreaIntoView();
-      this._messageInputRef.current.focusEditor();
-    }
+    this._timer = setTimeout(() => {
+      if (this._messageInputRef.current) {
+        this.scrollEditAreaIntoView();
+        this._messageInputRef.current.focusEditor();
+      }
+    }, 0);
   };
 
   scrollEditAreaIntoView = () => {

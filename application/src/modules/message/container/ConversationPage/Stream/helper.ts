@@ -7,12 +7,7 @@
 import { debounce } from 'lodash';
 import ReactDOM from 'react-dom';
 
-const ancestorMap = new WeakMap();
 function getScrollParent(element: HTMLElement, includeHidden: boolean = false) {
-  const storedVal = ancestorMap.get(element);
-  if (storedVal) {
-    return storedVal;
-  }
   let parent: HTMLElement | null = element;
   let style = getComputedStyle(element);
   const excludeStaticParent = style.position === 'absolute';
@@ -39,7 +34,6 @@ function getScrollParent(element: HTMLElement, includeHidden: boolean = false) {
     parent = document.body;
   }
   parent = parent || document.body;
-  ancestorMap.set(element, parent);
   return parent;
 }
 
