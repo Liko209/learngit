@@ -482,7 +482,7 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
       // TODO Block incoming call FIJI-4800
     } while (false);
 
-    // need to refactor If not JupiterDefaultApp, should not generate a call
+    // TODO need to refactor If not JupiterDefaultApp, should not generate a call
     const isJupiterDefaultApp = await this._isJupiterDefaultApp();
 
     if (!isJupiterDefaultApp) {
