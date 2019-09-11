@@ -9,6 +9,11 @@ import portalManager from '@/common/PortalManager';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { SHORT_CUT_KEYS } from '@/AnalyticsCollector/constants';
 import { CLOSE_REASON } from './constants';
+import { withDialogLevel } from 'jui/hoc/withDialogLevel';
+import { jupiter } from 'framework/Jupiter';
+import { TelephonyStore } from '@/modules/telephony/store/TelephonyStore';
+
+const DialogView = withDialogLevel(JuiDialog);
 
 type Props = {
   componentProps?: any;
@@ -34,10 +39,12 @@ function modal(
     }
   };
   const Component = component;
+  const store = jupiter.get(TelephonyStore);
+  const canGoTop = !(store.incomingCall || store.call);
   const Dialog = () => (
-    <JuiDialog {...rest} onClose={defaultClose}>
+    <DialogView {...rest} onClose={defaultClose} canGoTop={canGoTop}>
       {Component instanceof Function ? <Component /> : Component}
-    </JuiDialog>
+    </DialogView>
   );
 
   const { dismiss, show } = portalManager.wrapper(Dialog);

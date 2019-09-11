@@ -10,7 +10,7 @@ type WithDialogLevelProps = {
   canGoTop: boolean;
 }
 
-const withDialogLevel = <P extends WithDialogLevelProps>(
+const withDialogLevel = <P extends {}>(
   Component: ComponentType<P>,
 ): SFC<P & WithDialogLevelProps> => {
   return (props: WithDialogLevelProps) => {
