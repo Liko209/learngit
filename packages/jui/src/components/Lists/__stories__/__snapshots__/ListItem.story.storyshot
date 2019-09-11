@@ -149,7 +149,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
-  background-color: #f5f6fb;
+  background-color: #18a4de;
 }
 
 .c3.c3:hover {

@@ -210,7 +210,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
-  background-color: #f5f6fb;
+  background-color: #18a4de;
 }
 
 .c13.c13:hover {
