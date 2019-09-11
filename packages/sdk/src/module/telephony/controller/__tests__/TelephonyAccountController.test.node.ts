@@ -609,9 +609,26 @@ describe('TelephonyAccountController', () => {
         isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(false),
       });
       const spy = jest.spyOn(accountController, '_checkVoipStatus');
-      jest
-        .spyOn(accountController, '_isJupiterDefaultApp')
-        .mockReturnValue(true);
+      await accountController.onReceiveIncomingCall(null);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should return when jupiter is not default calling app', async () => {
+      ServiceLoader.getInstance = jest.fn().mockImplementation(config => {
+        switch (config) {
+          case ServiceConfig.RC_INFO_SERVICE:
+            return {
+              isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
+            };
+          case ServiceConfig.SETTING_SERVICE:
+            return {
+              getById: jest.fn().mockReturnValue(CALLING_OPTIONS.RINGCENTRAL),
+            };
+          default:
+            return {};
+        }
+      });
+      const spy = jest.spyOn(accountController, '_checkVoipStatus');
       await accountController.onReceiveIncomingCall(null);
       expect(spy).not.toHaveBeenCalled();
     });
