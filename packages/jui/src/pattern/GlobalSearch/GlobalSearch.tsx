@@ -42,7 +42,7 @@ type JuiGlobalSearchProps = {
     reason: 'backdropClick' | 'escapeKeyDown',
   ) => void;
   children: React.ReactNode;
-  hidden: boolean;
+  hidden?: boolean;
 } & WithDialogLevelProps;
 
 const JuiGlobalSearchInternal = (props: JuiGlobalSearchProps) => {
