@@ -1,6 +1,10 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/Search/*.ts", "./telephony/**/*.ts"],
+    "fixtures": [
+      "./fixtures/Search/ContactSearch.ts",
+      "./fixtures/Search/Shortcut.ts",
+      "./telephony/**/*.ts"
+    ],
     "include_tags": ["P0", "P1"],
     "browsers": ["selenium:chrome"]
   }
