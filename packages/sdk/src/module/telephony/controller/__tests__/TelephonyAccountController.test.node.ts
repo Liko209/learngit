@@ -26,6 +26,8 @@ import { RTC_SLEEP_MODE_EVENT } from 'voip/src/utils/types';
 import { ActiveCall } from 'sdk/module/rcEventSubscription/types';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { E911Controller } from '../E911Controller';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
 
 jest.mock('../E911Controller');
 jest.mock('../TelephonyCallController');
@@ -34,25 +36,27 @@ jest.mock('../../controller/MakeCallController');
 jest.mock('sdk/module/rcInfo/service/RCInfoService');
 jest.mock('../../../config');
 jest.mock('sdk/module/phoneNumber');
+jest.mock('sdk/module/phoneNumber');
+jest.mock('sdk/module/setting/service/SettingService');
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyDelegate {
-    onMadeOutgoingCall(callId: number) { }
-    onReceiveIncomingCall(callId: number) { }
+    onMadeOutgoingCall(callId: number) {}
+    onReceiveIncomingCall(callId: number) {}
   }
 
   class MockCall implements ITelephonyCallDelegate {
-    onCallStateChange(callId: string, state: RTC_CALL_STATE) { }
+    onCallStateChange(callId: string, state: RTC_CALL_STATE) {}
     onCallActionSuccess(
       callAction: RTC_CALL_ACTION,
       options: RTCCallActionSuccessOptions,
-    ) { }
-    onCallActionFailed(callAction: RTC_CALL_ACTION) { }
+    ) {}
+    onCallActionFailed(callAction: RTC_CALL_ACTION) {}
   }
 
   class MockPhoneNumService implements IPhoneNumberService {
-    isValidNumber() { }
-    getE164PhoneNumber() { }
+    isValidNumber() {}
+    getE164PhoneNumber() {}
   }
 
   function clearMocks() {
@@ -80,9 +84,14 @@ describe('TelephonyAccountController', () => {
     phoneNumberService = new MockPhoneNumService();
 
     rtcAccount = new RTCAccount(null);
-    accountController = new TelephonyAccountController({
-      createAccount: jest.fn().mockReturnValue(rtcAccount),
-    }, {}, phoneNumberService, {});
+    accountController = new TelephonyAccountController(
+      {
+        createAccount: jest.fn().mockReturnValue(rtcAccount),
+      },
+      {},
+      phoneNumberService,
+      {},
+    );
 
     Object.assign(accountController, {
       _callControllerList: callControllerList,
@@ -98,6 +107,13 @@ describe('TelephonyAccountController', () => {
           return {
             getE164PhoneNumber: jest.fn().mockReturnValue(toNum),
             isValidNumber: jest.fn().mockReturnValue(true),
+          };
+        }
+        if (config === ServiceConfig.SETTING_SERVICE) {
+          return {
+            getById: jest
+              .fn()
+              .mockResolvedValue({ value: CALLING_OPTIONS.GLIP }),
           };
         }
       });
@@ -235,9 +251,10 @@ describe('TelephonyAccountController', () => {
         voipFeatureEnabled: true,
       });
 
-      makeCallController.tryMakeCall = jest
-        .fn()
-        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.N11_101, finalNumber: '234' });
+      makeCallController.tryMakeCall = jest.fn().mockReturnValue({
+        result: MAKE_CALL_ERROR_CODE.N11_101,
+        finalNumber: '234',
+      });
       accountController.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
       const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
@@ -248,9 +265,10 @@ describe('TelephonyAccountController', () => {
         voipCountryBlocked: false,
         voipFeatureEnabled: true,
       });
-      makeCallController.tryMakeCall = jest
-        .fn()
-        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: '789' });
+      makeCallController.tryMakeCall = jest.fn().mockReturnValue({
+        result: MAKE_CALL_ERROR_CODE.NO_ERROR,
+        finalNumber: '789',
+      });
       Object.assign(accountController, {
         _makeCallController: makeCallController,
         _telephonyCallDelegate: undefined,
@@ -261,7 +279,11 @@ describe('TelephonyAccountController', () => {
       });
       const res = await accountController.makeCall(toNum, { fromNumber });
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
-      expect(rtcAccount.makeCall).toHaveBeenCalledWith('789', expect.any(Object), { fromNumber: toNum });
+      expect(rtcAccount.makeCall).toHaveBeenCalledWith(
+        '789',
+        expect.any(Object),
+        { fromNumber: toNum },
+      );
       expect(callControllerList.size).toBe(1);
     });
 
@@ -279,9 +301,10 @@ describe('TelephonyAccountController', () => {
         voipCountryBlocked: false,
         voipFeatureEnabled: true,
       });
-      makeCallController.tryMakeCall = jest
-        .fn()
-        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: toNum });
+      makeCallController.tryMakeCall = jest.fn().mockReturnValue({
+        result: MAKE_CALL_ERROR_CODE.NO_ERROR,
+        finalNumber: toNum,
+      });
       await accountController.makeCall(toNum, { accessCode: code });
       expect(rtcAccount.makeCall).toHaveBeenCalledWith(
         toNum,
@@ -295,9 +318,10 @@ describe('TelephonyAccountController', () => {
         voipCountryBlocked: false,
         voipFeatureEnabled: true,
       });
-      makeCallController.tryMakeCall = jest
-        .fn()
-        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: toNum });
+      makeCallController.tryMakeCall = jest.fn().mockReturnValue({
+        result: MAKE_CALL_ERROR_CODE.NO_ERROR,
+        finalNumber: toNum,
+      });
       await accountController.makeCall(toNum, { extraCall: true });
       expect(rtcAccount.makeCall).toHaveBeenCalledWith(
         toNum,
@@ -312,9 +336,10 @@ describe('TelephonyAccountController', () => {
         voipFeatureEnabled: true,
       });
 
-      makeCallController.tryMakeCall = jest
-        .fn()
-        .mockReturnValue({ result: MAKE_CALL_ERROR_CODE.NO_ERROR, finalNumber: toNum });
+      makeCallController.tryMakeCall = jest.fn().mockReturnValue({
+        result: MAKE_CALL_ERROR_CODE.NO_ERROR,
+        finalNumber: toNum,
+      });
       Object.assign(accountController, {
         _makeCallController: makeCallController,
         _telephonyCallDelegate: undefined,
@@ -584,6 +609,9 @@ describe('TelephonyAccountController', () => {
         isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(false),
       });
       const spy = jest.spyOn(accountController, '_checkVoipStatus');
+      jest
+        .spyOn(accountController, '_isJupiterDefaultApp')
+        .mockReturnValue(true);
       await accountController.onReceiveIncomingCall(null);
       expect(spy).not.toHaveBeenCalled();
     });
@@ -592,6 +620,9 @@ describe('TelephonyAccountController', () => {
       ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
         isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
       });
+      jest
+        .spyOn(accountController, '_isJupiterDefaultApp')
+        .mockReturnValue(true);
       jest
         .spyOn(accountController, '_checkVoipStatus')
         .mockReturnValueOnce(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
@@ -604,6 +635,9 @@ describe('TelephonyAccountController', () => {
       ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
         isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
       });
+      jest
+        .spyOn(accountController, '_isJupiterDefaultApp')
+        .mockReturnValue(true);
       accountController._checkVoipStatus = jest
         .fn()
         .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
@@ -630,6 +664,9 @@ describe('TelephonyAccountController', () => {
         partyId: '',
         sessionId: '',
       });
+      jest
+        .spyOn(accountController, '_isJupiterDefaultApp')
+        .mockReturnValue(true);
 
       TelephonyCallController.prototype.getEntityId = jest
         .fn()
@@ -699,24 +736,6 @@ describe('TelephonyAccountController', () => {
       accountController._addControllerToList(callId, callController);
       accountController.transfer(callId, TRANSFER_TYPE.BLIND_TRANSFER, toNum);
       expect(callController.transfer).toHaveBeenCalled();
-       });
-  });
-
-  describe('setLocalEmergencyAddress', () => {
-    it('should set to e911 controller', () => {
-      const data = {} as any;
-      accountController['_e911Controller'].setLocalEmergencyAddress = jest.fn();
-      accountController.setLocalEmergencyAddress(data);
-      expect(accountController['_e911Controller'].setLocalEmergencyAddress).toHaveBeenCalledWith(data);
-    });
-  });
-
-  describe('updateLocalEmergencyAddress', () => {
-    it('should update to e911 controller', () => {
-      const data = {} as any;
-      accountController['_e911Controller'].updateLocalEmergencyAddress = jest.fn();
-      accountController.updateLocalEmergencyAddress(data);
-      expect(accountController['_e911Controller'].updateLocalEmergencyAddress).toHaveBeenCalledWith(data);
     });
   });
 
@@ -725,16 +744,46 @@ describe('TelephonyAccountController', () => {
       const data = {} as any;
       accountController['_e911Controller'].setLocalEmergencyAddress = jest.fn();
       accountController.setLocalEmergencyAddress(data);
-      expect(accountController['_e911Controller'].setLocalEmergencyAddress).toHaveBeenCalledWith(data);
+      expect(
+        accountController['_e911Controller'].setLocalEmergencyAddress,
+      ).toHaveBeenCalledWith(data);
     });
   });
 
   describe('updateLocalEmergencyAddress', () => {
     it('should update to e911 controller', () => {
       const data = {} as any;
-      accountController['_e911Controller'].updateLocalEmergencyAddress = jest.fn();
+      accountController[
+        '_e911Controller'
+      ].updateLocalEmergencyAddress = jest.fn();
       accountController.updateLocalEmergencyAddress(data);
-      expect(accountController['_e911Controller'].updateLocalEmergencyAddress).toHaveBeenCalledWith(data);
+      expect(
+        accountController['_e911Controller'].updateLocalEmergencyAddress,
+      ).toHaveBeenCalledWith(data);
+    });
+  });
+
+  describe('setLocalEmergencyAddress', () => {
+    it('should set to e911 controller', () => {
+      const data = {} as any;
+      accountController['_e911Controller'].setLocalEmergencyAddress = jest.fn();
+      accountController.setLocalEmergencyAddress(data);
+      expect(
+        accountController['_e911Controller'].setLocalEmergencyAddress,
+      ).toHaveBeenCalledWith(data);
+    });
+  });
+
+  describe('updateLocalEmergencyAddress', () => {
+    it('should update to e911 controller', () => {
+      const data = {} as any;
+      accountController[
+        '_e911Controller'
+      ].updateLocalEmergencyAddress = jest.fn();
+      accountController.updateLocalEmergencyAddress(data);
+      expect(
+        accountController['_e911Controller'].updateLocalEmergencyAddress,
+      ).toHaveBeenCalledWith(data);
     });
   });
 });
