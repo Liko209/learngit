@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/Profile/Avatar.ts"],
+    "fixtures": ["./fixtures/Logout.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
