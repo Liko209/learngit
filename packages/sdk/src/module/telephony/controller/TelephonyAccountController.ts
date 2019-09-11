@@ -52,6 +52,9 @@ import { E911Controller } from './E911Controller';
 import { IPersonService } from 'sdk/module/person/service/IPersonService';
 import { IPhoneNumberService } from 'sdk/module/phoneNumber/service/IPhoneNumberService';
 import { IRCInfoService } from 'sdk/module/rcInfo/service/IRCInfoService';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { SettingEntityIds } from 'sdk/module/setting';
+import { CALLING_OPTIONS } from 'sdk/module/profile';
 
 class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
@@ -410,13 +413,13 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
     callController && callController.replyWithPattern(pattern, time, timeUnit);
   }
 
-  onCallStateChange(callId: number, state: RTC_CALL_STATE) { }
+  onCallStateChange(callId: number, state: RTC_CALL_STATE) {}
 
   onCallActionSuccess(
     callId: number,
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
-  ) { }
+  ) {}
 
   onCallActionFailed(
     callId: number,
@@ -438,7 +441,7 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
     }
   }
 
-  onAccountStateChanged(state: RTC_ACCOUNT_STATE) { }
+  onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
 
   onNoAudioStateEvent(uuid: string, noAudioStateEvent: RTCNoAudioStateEvent) {
     this.telephonyDataCollectionController.traceNoAudioStatus(
@@ -449,6 +452,13 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
   onNoAudioDataEvent(uuid: string, noAudioDataEvent: RTCNoAudioDataEvent) {
     this.telephonyDataCollectionController.traceNoAudioData(noAudioDataEvent);
     // implement this to get no audio data event
+  }
+
+  private async _isJupiterDefaultApp() {
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById(SettingEntityIds.Phone_DefaultApp);
+    return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
   private async _shouldShowIncomingCall() {
@@ -471,6 +481,13 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
 
       // TODO Block incoming call FIJI-4800
     } while (false);
+
+    // need to refactor If not JupiterDefaultApp, should not generate a call
+    const isJupiterDefaultApp = await this._isJupiterDefaultApp();
+
+    if (!isJupiterDefaultApp) {
+      showCall = false;
+    }
 
     return showCall;
   }
@@ -499,7 +516,7 @@ class TelephonyAccountController implements IRTCAccountDelegate, CallDelegate {
     if (call.getCallState() === RTC_CALL_STATE.DISCONNECTED) {
       telephonyLogger.info(
         `Call: ${
-        call.getCallInfo().uuid
+          call.getCallInfo().uuid
         } is disconnected already, no need to create call`,
       );
       return;
