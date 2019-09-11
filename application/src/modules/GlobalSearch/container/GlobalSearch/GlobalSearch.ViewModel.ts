@@ -8,6 +8,7 @@ import { container } from 'framework/ioc';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GlobalSearchProps, GlobalSearchViewProps, SEARCH_VIEW } from './types';
 import { GlobalSearchStore } from '../../store';
+import { TelephonyStore } from '@/modules/telephony/store/TelephonyStore';
 
 class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
   implements GlobalSearchViewProps {
@@ -59,6 +60,12 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
   onClose = () => {
     this._globalSearchStore.setOpen(false);
   };
+
+  @computed
+  get canGoTop() {
+    const store = container.get(TelephonyStore);
+    return !(store.incomingCall || store.call);
+  }
 }
 
 export { GlobalSearchViewModel };

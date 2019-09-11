@@ -307,7 +307,7 @@ function withDialogOrNewWindow<T>(
     }
 
     render() {
-      const { callWindowState, isIncomingCall } = this._telephonyStore;
+      const { callWindowState, isIncomingCall, call } = this._telephonyStore;
       const open =
         callWindowState === CALL_WINDOW_STATUS.MINIMIZED ? false : true;
       let container = this._root;
@@ -343,7 +343,7 @@ function withDialogOrNewWindow<T>(
           onExited={this._handleExited}
           role="dialer"
           goToTop={this._goToTop}
-          forceToTop={isIncomingCall}
+          forceToTop={isIncomingCall || !!call}
           keepMounted
         >
           <Component {...this.props} />
