@@ -70,6 +70,17 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
     );
   }
 
+  private _autoFocus = () => {
+    const inputEl = this.state.ref.current;
+    if (inputEl) {
+      inputEl.focus();
+    }
+  }
+
+  componentDidMount() {
+    setTimeout(() => this._autoFocus(), 10);
+  }
+
   componentDidUpdate({ open: preOpen }: GlobalSearchViewProps) {
     const inputEl = this.state.ref.current;
     const { open, needFocus } = this.props;

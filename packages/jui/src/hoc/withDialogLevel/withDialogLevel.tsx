@@ -15,27 +15,36 @@ const withDialogLevel = <P extends { hidden?: boolean }>(
 ): SFC<P & WithDialogLevelProps> => {
   return (props: WithDialogLevelProps) => {
     const { open, canGoTop, ...rest } = props;
-    const [hide, setHide] = useState(open ? (!canGoTop) : false);
+    const dialer = document.querySelector('[role="dialer"]');
+    const isDialerHidden = dialer ? (dialer.getAttribute('style') as string).includes('visibility: hidden') : true;
+    const [hide, setHide] = useState(open ? (isDialerHidden ? false : !canGoTop) : false);
     const callback = useCallback(() => {
       const dialog = document.querySelector('[role="dialog"]');
-      // means we need to run at next
+      // often this means there is a dialer
+      if (isDialerHidden) {
+        return;
+      }
       if (dialog && dialog.parentNode) {
         if (canGoTop) {
           dialog.parentNode.removeChild(dialog);
           document.body.append(dialog);
         } else {
-          // often this means there is a dialer
-          const dialer = document.querySelector('[role="dialer"]');
           dialog.parentNode.insertBefore(dialog, dialer);
         }
       }
-    }, [open, canGoTop]);
+    }, [open]);
 
     useLayoutEffect(() => {
+      // const dialer = document.querySelector('[role="dialer"]');
+      // const isDialerHidden = dialer ? (dialer.getAttribute('style') as string).includes('visibility: hidden') : true;
       if (open) {
         // need to re-adjust UI hierarchy
         const dialog = document.querySelector('[role="dialog"]');
-        // means we need to run at next
+        if (isDialerHidden) {
+          setHide(false);
+          return () => ({});
+        }
+        // often this means there is a dialer
         if (dialog && dialog.parentNode) {
           callback();
         } else {
@@ -47,8 +56,7 @@ const withDialogLevel = <P extends { hidden?: boolean }>(
         }
       }
       return () => ({});
-    }, [open, canGoTop]);
-
+    }, [open]);
     return (
       <Component open={open} hidden={open ? hide : false} {...rest as P} />
     );

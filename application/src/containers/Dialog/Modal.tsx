@@ -40,7 +40,7 @@ function modal(
   };
   const Component = component;
   const store = jupiter.get(TelephonyStore);
-  const canGoTop = !(store.incomingCall || store.call);
+  const canGoTop = !(store.isIncomingCall || store.call);
   const Dialog = () => (
     <DialogView {...rest} onClose={defaultClose} canGoTop={canGoTop}>
       {Component instanceof Function ? <Component /> : Component}

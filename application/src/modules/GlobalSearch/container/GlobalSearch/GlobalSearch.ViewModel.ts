@@ -64,7 +64,7 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
   @computed
   get canGoTop() {
     const store = container.get(TelephonyStore);
-    return !(store.incomingCall || store.call);
+    return !(store.isIncomingCall || store.call);
   }
 }
 
