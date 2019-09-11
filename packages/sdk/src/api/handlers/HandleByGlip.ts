@@ -6,12 +6,13 @@ import {
   AbstractHandleType,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
+  Token,
 } from 'foundation/network';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
 const HandleByGlip = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.GLIP;
-  rcTokenProvider?: () => string;
+  rcTokenProvider?: () => Token | undefined;
   defaultVia = NETWORK_VIA.ALL;
   platformHandleDelegate: IPlatformHandleDelegate;
 
@@ -30,9 +31,10 @@ const HandleByGlip = new class extends AbstractHandleType {
         }
       }
       if (this.rcTokenProvider && request.via === NETWORK_VIA.SOCKET) {
+        const token = this.rcTokenProvider();
         request.headers = {
           ...request.headers,
-          'X-RC-Access-Token-Data': this.rcTokenProvider(),
+          'X-RC-Access-Token-Data': token && this.btoa(JSON.stringify(token)),
         };
       }
       return true;

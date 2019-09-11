@@ -35,7 +35,7 @@ describe('HandleByGlip', () => {
   describe('requestDecoration', () => {
     it('should not add tk to headers if needAuth is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
-      handler.accessToken = jest.fn().mockImplementation(() => 'token');
+      handler.getSyncOAuthToken = jest.fn().mockImplementation(() => 'token');
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => false);
@@ -47,7 +47,7 @@ describe('HandleByGlip', () => {
 
     it('should add tk to headers if needAuth is true ', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
-      handler.accessToken = jest.fn().mockImplementation(() => 'token');
+      handler.getSyncOAuthToken = jest.fn().mockImplementation(() => 'token');
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
@@ -58,7 +58,7 @@ describe('HandleByGlip', () => {
 
     it('should not add tk to headers if isOAuthTokenAvailable is false ', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
-      handler.accessToken = jest.fn().mockImplementation(() => 'token');
+      handler.getSyncOAuthToken = jest.fn().mockImplementation(() => 'token');
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
@@ -77,15 +77,16 @@ describe('HandleByGlip', () => {
 
     it('should not add x_rc_access_token_data to headers', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
-      handler.accessToken = jest.fn().mockImplementation(() => 'token');
+      handler.getSyncOAuthToken = jest.fn().mockImplementation(() => 'token');
+      const token = { access_token: "good" }
       HandleByGlip.rcTokenProvider = jest
         .fn()
-        .mockImplementationOnce(() => 'access_token');
+        .mockImplementationOnce(() => token);
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);
       decoration(request);
-      expect(request.headers['X-RC-Access-Token-Data']).toEqual('access_token');
+      expect(request.headers['X-RC-Access-Token-Data']).toEqual(btoa(JSON.stringify(token)));
       expect(request).toEqual(request);
     });
   });
