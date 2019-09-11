@@ -133,6 +133,8 @@ const StyledCoverAvatarContent = styled.span`
   width: ${width(33)};
   border-radius: 50%;
   background-color: ${palette('common', 'white')};
+  /* fixed https://jira.ringcentral.com/browse/FIJI-9025 */
+  transform: translateZ(0);
 `;
 const StyledIconAvatar = styled(({ size, ...rest }: any) => (
   <JuiIconography iconSize="inherit" iconColor={['grey', '100']} {...rest} />

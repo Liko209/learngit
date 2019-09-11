@@ -44,6 +44,9 @@ exports[`Storyshots Components/Avatar Cover Name: Components/Avatar Cover Name 1
   width: 132px;
   border-radius: 50%;
   background-color: #fff;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 <div
