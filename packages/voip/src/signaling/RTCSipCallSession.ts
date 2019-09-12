@@ -180,10 +180,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _onSessionError(response: any) {
-    this._report.updateCallEvent(
-      CallEventCategory.InviteError,
-      `${response.statusCode} ${response.reasonPhrase}`,
-    );
+    if (response && response.statusCode && response.reasonPhrase) {
+      this._report.updateCallEvent(
+        CallEventCategory.InviteError,
+        `${response.statusCode} ${response.reasonPhrase}`,
+      );
+    }
     this.emit(CALL_SESSION_STATE.ERROR);
   }
 
