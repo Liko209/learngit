@@ -3,6 +3,8 @@ import { MemberView } from '../Member.View';
 import { OpenProfile } from '@/common/OpenProfile';
 import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 import { mountWithTheme } from 'shield/utils';
+import { TelephonyStore } from '@/modules/telephony/store/TelephonyStore';
+import { jupiter } from 'framework/Jupiter';
 
 const vPropsFactory = (showMembersCount: boolean, membersCount: number) => ({
   showMembersCount,
@@ -11,6 +13,7 @@ const vPropsFactory = (showMembersCount: boolean, membersCount: number) => ({
 });
 
 describe('MemberView', () => {
+  jupiter.registerClass(TelephonyStore);
   it('should reveal the correct member when received count [JPT-1366]', () => {
     const wrapper = mountWithTheme(
       <MemberView {...vPropsFactory(true, 100)} />,

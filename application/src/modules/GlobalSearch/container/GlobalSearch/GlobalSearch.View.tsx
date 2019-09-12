@@ -70,6 +70,17 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
     );
   }
 
+  private _autoFocus = () => {
+    const inputEl = this.state.ref.current;
+    if (inputEl) {
+      inputEl.focus();
+    }
+  }
+
+  componentDidMount() {
+    setTimeout(() => this._autoFocus(), 10);
+  }
+
   componentDidUpdate({ open: preOpen }: GlobalSearchViewProps) {
     const inputEl = this.state.ref.current;
     const { open, needFocus } = this.props;
@@ -85,10 +96,10 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
   }
 
   render() {
-    const { open, onClose, onBlur, searchKey, onClear, t } = this.props;
+    const { open, onClose, onBlur, searchKey, onClear, t, canGoTop } = this.props;
 
     return (
-      <JuiGlobalSearch open={open} onClose={this.trackGlobalSearchEsc}>
+      <JuiGlobalSearch open={open} onClose={this.trackGlobalSearchEsc} canGoTop={canGoTop}>
         <JuiGlobalSearchInput
           ref={this.state.ref}
           value={searchKey}
