@@ -996,6 +996,9 @@ export class PostItem extends BaseWebComponent {
   }
 
   async likeShouldBe(n: number, maxRetry = 5, interval = 5e3) {
+    if (0 === n) {
+      return await this.h.shouldDismiss(this.likeCountSpan);
+    }
     await H.retryUntilPass(async () => {
       const likes = await this.getLikeCount();
       assert.strictEqual(n, likes, `Like Number error: expect ${n}, but actual ${likes}`);
@@ -1098,8 +1101,8 @@ export class PostItem extends BaseWebComponent {
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
     }, {
-        dependencies: { buttonElement }
-      }
+      dependencies: { buttonElement }
+    }
     );
     await this.t.hover(this.self);
     await displayJumpButton();

@@ -70,7 +70,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
   }
 
   subscribeDeviceChange() {
-    if (navigator.mediaDevices) {
+    if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
       navigator.mediaDevices.addEventListener('devicechange', () => {
         this._onMediaDevicesChange();
       });

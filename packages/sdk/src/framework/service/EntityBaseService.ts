@@ -35,7 +35,7 @@ import { UserConfig } from 'sdk/module/config';
 class EntityBaseService<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
-> extends AbstractService implements IConfigHistory {
+  > extends AbstractService implements IConfigHistory {
   private _subscribeController: ISubscribeController;
   private _entitySourceController: IEntitySourceController<T, IdType>;
   private _entityCacheController: IEntityCacheController<T, IdType>;
@@ -46,6 +46,7 @@ class EntityBaseService<
     public entityOptions: {
       isSupportedCache: boolean;
       entityName?: string;
+      skipInitDB?: boolean;
     },
     public dao?: BaseDao<T, IdType>,
     public networkConfig?: { basePath: string; networkClient: NetworkClient },
@@ -120,11 +121,11 @@ class EntityBaseService<
     delete this._entityNotificationController;
   }
 
-  protected onRCLogin() {}
+  protected onRCLogin() { }
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  protected onGlipLogin(loginInfo: LoginInfo) {}
+  protected onGlipLogin(loginInfo: LoginInfo) { }
 
-  protected onLogout() {}
+  protected onLogout() { }
 
   async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
     if (this._entitySourceController) {
@@ -190,12 +191,12 @@ class EntityBaseService<
         ),
         this.networkConfig
           ? {
-              requestController: buildRequestController<T, IdType>(
-                this.networkConfig,
-              ),
-              canSaveRemoteData: this.canSaveRemoteEntity(),
-              canRequest: this._canRequest,
-            }
+            requestController: buildRequestController<T, IdType>(
+              this.networkConfig,
+            ),
+            canSaveRemoteData: this.canSaveRemoteEntity(),
+            canRequest: this._canRequest,
+          }
           : undefined,
       );
     }
@@ -204,10 +205,12 @@ class EntityBaseService<
   protected async initialEntitiesCache() {
     mainLogger.debug('_initialEntitiesCache begin');
     if (this.dao && !this._entityCacheController.isStartInitial()) {
-      const models = await this.dao.getAll();
-      this._entityCacheController.initialize(models);
-      mainLogger.debug('_initialEntitiesCache done');
-      return models;
+      if (!this.entityOptions.skipInitDB) {
+        const models = await this.dao.getAll();
+        this._entityCacheController.initialize(models);
+        mainLogger.debug('_initialEntitiesCache done');
+        return models;
+      }
     }
     mainLogger.debug('initial cache without permission or already initialized');
     this._entityCacheController.initialize([]);

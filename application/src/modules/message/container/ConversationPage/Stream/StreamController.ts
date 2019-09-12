@@ -7,11 +7,11 @@ import { StreamItem, StreamItemType, IStreamItemSortableModel } from './types';
 import { FetchSortableDataListHandler, TDelta } from '@/store/base/fetch';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 import { Post } from 'sdk/module/post/entity';
+import { IPostResultHasMore } from 'sdk/module/post/entity/Post';
 import _ from 'lodash';
 import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { ENTITY_NAME } from '@/store';
-
 import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
@@ -35,9 +35,9 @@ class StreamController {
   );
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<
-  StreamItem,
-  number,
-  IStreamItemSortableModel
+    StreamItem,
+    number,
+    IStreamItemSortableModel
   >;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _assemblyLine: StreamItemAssemblyLine;
@@ -78,7 +78,9 @@ class StreamController {
       );
     } else {
       listHandler = conversationPostCacheController.get(this._groupId);
-      PreFetchConversationDataHandler.getInstance().setCurrentConversation(this._groupId);
+      PreFetchConversationDataHandler.getInstance().setCurrentConversation(
+        this._groupId,
+      );
     }
 
     this._orderListHandler = listHandler;
@@ -137,7 +139,9 @@ class StreamController {
       this._streamListHandler.dispose();
     }
     if (!this._jumpToPostId) {
-      PreFetchConversationDataHandler.getInstance().releaseCurrentConversation(this._groupId);
+      PreFetchConversationDataHandler.getInstance().releaseCurrentConversation(
+        this._groupId,
+      );
     }
   }
 
@@ -153,14 +157,14 @@ class StreamController {
     if (streamItems) {
       this._streamListHandler.replaceAll(streamItems);
     }
-  }
+  };
 
   disableNewMessageSep() {
     this._newMessageSeparatorHandler.disable();
   }
   enableNewMessageSep = () => {
     this._newMessageSeparatorHandler.enable();
-  }
+  };
   replacePostList(posts: Post[]) {
     this._orderListHandler.replaceAll(posts);
   }
@@ -192,25 +196,41 @@ class StreamController {
   }
 
   private _unreadPostsLoader = async () => {
+    let result: {
+      hasMore: IPostResultHasMore;
+      data: Post[];
+    } = {
+      hasMore: {
+        older: true,
+        newer: false,
+        both: false,
+      },
+      data: [],
+    };
+
     // (1)
     // Fetch all posts between readThrough and firstPost
-   const {
-     hasMore,
-      posts,
-    } = await this._postService.getUnreadPostsByGroupId({
-      groupId: this._groupId,
-      unreadCount: this.historyUnreadCount,
-      startPostId: this.historyReadThrough || 0,
-      endPostId: this._orderListHandler.listStore.items[0].id,
-    });
+    const endPost = this._orderListHandler.listStore.first();
+    if (endPost) {
+      const {
+        hasMore,
+        posts,
+      } = await this._postService.getUnreadPostsByGroupId({
+        groupId: this._groupId,
+        unreadCount: this.historyUnreadCount,
+        startPostId: this.historyReadThrough || 0,
+        endPostId: endPost.id,
+      });
+      result = {
+        hasMore,
+        data: posts,
+      };
+    }
 
     // (2)
     // Return all the posts from (1)
-    return {
-      hasMore,
-      data: posts,
-    };
-  }
+    return result;
+  };
 }
 
 export { StreamController, BEFORE_ANCHOR_POSTS_COUNT };

@@ -431,6 +431,12 @@ class JuiHeader extends PureComponent<Props, State> {
     );
   }
 
+  componentWillReceiveProps(nextProps: Props) {
+    if (nextProps.focus) {
+      this._setFocus();
+    }
+  }
+
   componentWillUnmount() {
     if (this._timerForClearAll) {
       this._clearTimeout();
@@ -449,7 +455,6 @@ class JuiHeader extends PureComponent<Props, State> {
 
   render() {
     const { showDialerInputField, RecentCallBtn } = this.props;
-    this._setFocus();
 
     return (
       <StyledHeader

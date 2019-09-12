@@ -81,6 +81,8 @@ const StyledAvatar = styled<JuiAvatarProps>(
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
+    /* fixed https://jira.ringcentral.com/browse/FIJI-9025 */
+    transform: translateZ(0);
     background-color: ${({ color, customColor, iconSymbol }) =>
       getBackgroundColor(color, customColor, iconSymbol)};
     &:hover {

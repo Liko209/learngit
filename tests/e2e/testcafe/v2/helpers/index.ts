@@ -224,6 +224,10 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  async shouldDismiss(selector: Selector, timeout: number = 5e3) {
+    await this.t.expect(selector.with({ visibilityCheck: true }).exists).notOk({ timeout });
+  }
+
   get browserConsoleHelper(): BrowserConsoleHelper {
     if (!this.t.ctx.__BrowserConsoleHelper) {
       this.t.ctx.__BrowserConsoleHelper = new BrowserConsoleHelper(this.t);

@@ -151,7 +151,7 @@ describe('ItemAPI', () => {
       const params = {
         host: 'www.host.com',
         formFile: new FormData(),
-        callback: (e: ProgressEvent) => {},
+        callback: (e: ProgressEvent) => { },
         requestHolder: { request: undefined },
       };
       const { host, formFile, callback, requestHolder } = params;
@@ -175,4 +175,37 @@ describe('ItemAPI', () => {
       );
     });
   });
+
+  describe('startRCConference', () => {
+    it('should pass expected parameters to glipNetworkClient', () => {
+      (ItemAPI.glipNetworkClient.post as jest.Mock).mockClear();
+
+      const data = {
+        email: "11@gmail.com",
+        first_name: '',
+        last_name: '',
+        status: 'not_started',
+        type_id: TypeDictionary.TYPE_ID_MEETING,
+        group_ids: [2],
+      }
+      ItemAPI.startZoomMeeting(data);
+      expect(ItemAPI.glipNetworkClient.post).toHaveBeenCalledWith({
+        data,
+        path: `/meeting`,
+        via: NETWORK_VIA.SOCKET
+      });
+    });
+  });
+  describe('startZoomMeeting', () => {
+    it('should pass expected parameters to glipNetworkClient', () => {
+      (ItemAPI.glipNetworkClient.post as jest.Mock).mockClear();
+      const data = { group_ids: [1], };
+      ItemAPI.startRCConference(data);
+      expect(ItemAPI.glipNetworkClient.post).toHaveBeenCalledWith({
+        data,
+        path: `/conference`,
+        via: NETWORK_VIA.SOCKET
+      });
+    });
+  })
 });

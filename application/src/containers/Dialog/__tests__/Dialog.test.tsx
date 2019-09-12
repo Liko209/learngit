@@ -13,8 +13,11 @@ import { dialog } from '../Dialog';
 import { dataAnalysis } from 'foundation/analysis';
 import { ModalPortal } from '../ModalPortal';
 import portalManager from '@/common/PortalManager';
+import { TelephonyStore } from '@/modules/telephony/store/TelephonyStore';
+import { jupiter } from 'framework/Jupiter';
 
 describe('Dialog', () => {
+  jupiter.registerClass(TelephonyStore);
   @testable
   class DialogSimple {
     beforeEach() {

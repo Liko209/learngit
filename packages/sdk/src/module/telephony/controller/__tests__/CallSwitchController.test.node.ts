@@ -24,6 +24,7 @@ import { CALLING_OPTIONS } from 'sdk/module/profile';
 import _ from 'lodash';
 import { AccountService } from 'sdk/module/account';
 import { PRESENCE } from 'sdk/module/presence/constant';
+import { RCPresenceEventPayload } from 'sdk/module/rcEventSubscription/types';
 
 jest.mock('sdk/module/account');
 jest.mock('../../service');
@@ -838,4 +839,123 @@ describe('CallSwitchController', () => {
       ).not.toHaveBeenCalled();
     });
   });
+  describe('_handleActiveCalls()', () => {
+    const duplicateMsgs: RCPresenceEventPayload[] = [
+      {
+        "extensionId": 188758006,
+        "telephonyStatus": "CallConnected",
+        "activeCalls": [
+          {
+            "id": "fbc6205b025f4e4ba7424e5ec88bcb5b",
+            "direction": "Inbound",
+            "fromName": "John Doe701",
+            "from": "701",
+            "toName": "yiliaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa honggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+            "to": "707",
+            "telephonyStatus": "CallConnected",
+            "sipData": {
+              "toTag": "1t8hbls5kg",
+              "fromTag": "10.74.2.219-5070-b6c10fd4f81743a",
+              "remoteUri": "-",
+              "localUri": "-"
+            },
+            "sessionId": "5446947006",
+            "startTime": "2019-09-12T02:56:04.348Z",
+            "partyId": "Y3MxNzI2MjI1NTU1MTYwMTYwMDg3QDEwLjc0LjIuMjE5-2",
+            "telephonySessionId": "Y3MxNzI2MjI1NTU1MTYwMTYwMDg3QDEwLjc0LjIuMjE5"
+          }
+        ],
+        "sequence": 813,
+        "presenceStatus": "Busy",
+        "userStatus": "Available",
+        "dndStatus": "TakeAllCalls",
+        "meetingStatus": "Disconnected",
+        "allowSeeMyPresence": true,
+        "ringOnMonitoredCall": false,
+        "pickUpCallsOnHold": false,
+        "totalActiveCalls": 1
+      },
+      {
+        "extensionId": 188758006,
+        "telephonyStatus": "NoCall",
+        "activeCalls": [
+          {
+            "id": "fbc6205b025f4e4ba7424e5ec88bcb5b",
+            "direction": "Inbound",
+            "fromName": "John Doe701",
+            "from": "701",
+            "toName": "yiliaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa honggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+            "to": "707",
+            "telephonyStatus": "NoCall",
+            "sipData": {
+              "toTag": "1t8hbls5kg",
+              "fromTag": "10.74.2.219-5070-b6c10fd4f81743a",
+              "remoteUri": "-",
+              "localUri": "-"
+            },
+            "sessionId": "5446947006",
+            "terminationType": "final",
+            "startTime": "2019-09-12T02:56:04.348Z",
+            "partyId": "Y3MxNzI2MjI1NTU1MTYwMTYwMDg3QDEwLjc0LjIuMjE5-2",
+            "telephonySessionId": "Y3MxNzI2MjI1NTU1MTYwMTYwMDg3QDEwLjc0LjIuMjE5"
+          }
+        ],
+        "sequence": 814,
+        "presenceStatus": "Available",
+        "userStatus": "Available",
+        "dndStatus": "TakeAllCalls",
+        "meetingStatus": "Disconnected",
+        "allowSeeMyPresence": true,
+        "ringOnMonitoredCall": false,
+        "pickUpCallsOnHold": false,
+        "totalActiveCalls": 1
+      },
+      {
+        "extensionId": 188758006,
+        "telephonyStatus": "CallConnected",
+        "activeCalls": [
+          {
+            "id": "fbc6205b025f4e4ba7424e5ec88bcb5b",
+            "direction": "Inbound",
+            "fromName": "John Doe701",
+            "from": "701",
+            "toName": "yiliaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa honggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+            "to": "707",
+            "telephonyStatus": "CallConnected",
+            "sipData": {
+              "toTag": "1t8hbls5kg",
+              "fromTag": "10.74.2.219-5070-b6c10fd4f81743a",
+              "remoteUri": "-",
+              "localUri": "-"
+            },
+            "sessionId": "5446947006",
+            "startTime": "2019-09-12T02:56:04.348Z",
+            "partyId": "Y3MxNzI2MjI1NTU1MTYwMTYwMDg3QDEwLjc0LjIuMjE5-2",
+            "telephonySessionId": "Y3MxNzI2MjI1NTU1MTYwMTYwMDg3QDEwLjc0LjIuMjE5"
+          }
+        ],
+        "sequence": 813,
+        "presenceStatus": "Busy",
+        "userStatus": "Available",
+        "dndStatus": "TakeAllCalls",
+        "meetingStatus": "Disconnected",
+        "allowSeeMyPresence": true,
+        "ringOnMonitoredCall": false,
+        "pickUpCallsOnHold": false,
+        "totalActiveCalls": 1
+      }
+    ] as any;
+    it('should not request rc presence when no banner and PubNub connected', async () => {
+      jest.spyOn(callSwitchController, '_cacheSession');
+      callSwitchController['_handleActiveCalls'](duplicateMsgs[0].activeCalls, duplicateMsgs[0].sequence, true);
+      expect(callSwitchController['_cacheSession']).toBeCalledTimes(1);
+      expect(callSwitchController['_cacheSession']).lastCalledWith("5446947006", 813);
+      callSwitchController['_handleActiveCalls'](duplicateMsgs[1].activeCalls, duplicateMsgs[1].sequence, true);
+      expect(callSwitchController['_cacheSession']).toBeCalledTimes(2);
+      expect(callSwitchController['_cacheSession']).lastCalledWith("5446947006", 814);
+      callSwitchController['_handleActiveCalls'](duplicateMsgs[2].activeCalls, duplicateMsgs[2].sequence, true);
+      expect(callSwitchController['_cacheSession']).toBeCalledTimes(2);
+    });
+  });
+  
 });

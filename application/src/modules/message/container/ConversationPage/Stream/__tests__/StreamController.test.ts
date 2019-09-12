@@ -13,7 +13,6 @@ import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPo
 import { HistoryHandler } from '../HistoryHandler';
 import {
   StreamController,
-  BEFORE_ANCHOR_POSTS_COUNT,
 } from '../StreamController';
 import { StreamItemType } from '../types';
 import storeManager, { ENTITY_NAME } from '@/store';
@@ -58,7 +57,11 @@ describe('StreamController', () => {
       jest.spyOn(postService, 'getUnreadPostsByGroupId').mockResolvedValueOnce({
         posts: postsNewerThanAnchor.reverse(),
         items: [],
-        hasMore: false,
+        hasMore: {
+          older: false,
+          newer: false,
+          both: false,
+        },
       });
       const listHandler = new FetchSortableDataListHandler<Post>(dataProvider, {
         isMatchFunc: () => true,
@@ -95,7 +98,7 @@ describe('StreamController', () => {
         { id: 8, created_at: 108, creator_id: 1 },
       ] as Post[];
 
-      const { streamController, postService } = setup({
+      const { streamController } = setup({
         groupId: 1,
         readThrough: 4,
         unreadCount: 4,
@@ -162,6 +165,32 @@ describe('StreamController', () => {
       // should be the newer direction's hasMore value
       //
       expect(streamController.hasMore(QUERY_DIRECTION.NEWER)).toBeFalsy();
+    });
+
+    it('should return [] when current posts is empty', async () => {
+      const currentPosts = [] as Post[];
+      const postsNewerThanAnchor = [
+        { id: 3, created_at: 103, creator_id: 1 },
+        { id: 4, created_at: 104, creator_id: 1 },
+        { id: 5, created_at: 105, creator_id: 1 },
+        { id: 6, created_at: 106, creator_id: 1 },
+        { id: 7, created_at: 107, creator_id: 1 },
+        { id: 8, created_at: 108, creator_id: 1 },
+      ] as Post[];
+
+      const { streamController } = setup({
+        groupId: 1,
+        readThrough: 4,
+        unreadCount: 4,
+        currentPosts,
+        postsNewerThanAnchor,
+      });
+      jest.spyOn(streamController, 'enableNewMessageSep');
+
+      const posts = await streamController.fetchAllUnreadData();
+
+      expect(posts).toHaveLength(0);
+      expect(streamController.items).toHaveLength(0);
     });
   });
 });

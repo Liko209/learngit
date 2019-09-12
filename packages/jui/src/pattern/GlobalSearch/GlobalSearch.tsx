@@ -3,10 +3,11 @@
  * @Date: 2019-04-01 12:21:08
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import { JuiDialog } from '../../components/Dialog/Dialog';
 import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
+import { withDialogLevel, WithDialogLevelProps } from '../../hoc/withDialogLevel';
 
 const StyledGlobalSearch = styled(JuiDialog)`
   /* <height> - <margin> */
@@ -41,34 +42,26 @@ type JuiGlobalSearchProps = {
     reason: 'backdropClick' | 'escapeKeyDown',
   ) => void;
   children: React.ReactNode;
-};
+  hidden?: boolean;
+} & WithDialogLevelProps;
 
-const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
-  const { open, onClose, children } = props;
-
-  useLayoutEffect(() => {
-    if (open) {
-      // need to re-adjust UI hierarchy
-      const dialog = document.querySelector('[role="dialog"]');
-      if (dialog && dialog.parentNode) {
-        dialog.parentNode.removeChild(dialog);
-        document.body.append(dialog);
-      }
-    }
-  }, [open]);
+const JuiGlobalSearchInternal = (props: JuiGlobalSearchProps) => {
+  const { open, onClose, children, hidden } = props;
 
   return (
     <StyledGlobalSearch
       classes={{ container: 'container' }}
       scroll="body"
-      open
+      open={open}
       onClose={onClose}
       fixedAtTop
-      hidden={!open}
+      hidden={hidden}
     >
       {children}
     </StyledGlobalSearch>
   );
 };
+
+const JuiGlobalSearch = withDialogLevel(JuiGlobalSearchInternal);
 
 export { JuiGlobalSearch, JuiGlobalSearchProps };

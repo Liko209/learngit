@@ -304,6 +304,7 @@ class CallSwitchController {
   }
 
   private _cacheSession(sessionId: string, sequenceNumber: number) {
+    this._sessionToSequence = this._sessionToSequence.filter(item => item.sessionId !== sessionId);
     this._sessionToSequence.push({ sessionId, sequence: sequenceNumber });
     if (this._sessionToSequence.length > MAX_CALL_CACHE_CNT) {
       this._sessionToSequence = _.tail(this._sessionToSequence);

@@ -133,6 +133,10 @@ class OAuthTokenHandler implements ITokenHandler {
     return this.token;
   }
 
+  getSyncOAuthToken() {
+    return this.token;
+  }
+
   async refreshOAuthToken(): Promise<IToken | undefined> {
     if (this.isOAuthTokenRefreshing || !this.token) {
       return;
