@@ -180,11 +180,6 @@ export abstract class BaseWebComponent {
 
   // Some specific scenarios
   async getNumber(sel: Selector) {
-    // there is a chance that UMI won't update immediately
-    await this.t.wait(1e3);
-    if (!await sel.exists) {
-      return 0;
-    }
     const text = await sel.innerText;
     if (_.isEmpty(text)) {
       return 0;
@@ -214,6 +209,10 @@ export class Umi extends BaseWebComponent {
   }
 
   async shouldBeNumber(n: number, maxRetry = 5, interval = 3e3) {
+    if (0 === n) {
+      return await this.ensureDismiss();
+    }
+
     await H.retryUntilPass(async () => {
       const umi = await this.count();
       assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
