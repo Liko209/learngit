@@ -26,11 +26,7 @@ export abstract class BaseWebComponent {
   }
 
   async ensureDismiss(timeout: number = 10e3) {
-    await H.retryUntilPass(async () => {
-      if (await this.exists) {
-        await this.t.expect(this.visible).notOk({ timeout });
-      }
-    });
+    await this.t.expect(this.self.with({ visibilityCheck: true }).exists).notOk({timeout});
   }
 
   async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
