@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/Logout.ts"],
+    "fixtures": ["./telephony/CallSwitch.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
