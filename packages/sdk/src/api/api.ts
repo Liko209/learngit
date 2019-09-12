@@ -41,8 +41,7 @@ class Api {
     const tokenManager = networkManager.getTokenManager();
     const rcTokenHandler =
       tokenManager && tokenManager.getOAuthTokenHandler(HandleByRingCentral);
-    HandleByGlip.rcTokenProvider =
-      rcTokenHandler && rcTokenHandler.accessToken.bind(rcTokenHandler);
+    HandleByGlip.rcTokenProvider = rcTokenHandler && rcTokenHandler.getSyncOAuthToken.bind(rcTokenHandler);
   }
 
   static get httpConfig() {

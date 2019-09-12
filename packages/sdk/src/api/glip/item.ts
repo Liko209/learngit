@@ -150,6 +150,7 @@ class ItemAPI extends Api {
     return this.glipNetworkClient.post<Raw<ZoomMeetingItem>>({
       data,
       path: '/meeting',
+      via: NETWORK_VIA.SOCKET
     });
   }
 
@@ -157,6 +158,7 @@ class ItemAPI extends Api {
     return this.glipNetworkClient.post<Raw<ConferenceItem>>({
       data,
       path: '/conference',
+      via: NETWORK_VIA.SOCKET
     });
   }
 
