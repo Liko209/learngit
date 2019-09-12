@@ -171,7 +171,10 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         const { bluetoothMode } = this._extractBluetoothInfo(device.label) || {
           bluetoothMode: null,
         };
-        if (bluetoothMode && bluetoothMode === BLUE_TOOTH_MODE.HANDS_FREE) {
+        if (!bluetoothMode) {
+          return true;
+        }
+        if (bluetoothMode === BLUE_TOOTH_MODE.HANDS_FREE) {
           return true;
         }
         return false;

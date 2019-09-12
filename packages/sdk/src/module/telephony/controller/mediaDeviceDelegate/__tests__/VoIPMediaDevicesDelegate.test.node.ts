@@ -10,6 +10,7 @@ import { SOURCE_TYPE } from '../types';
 import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { RINGER_ADDITIONAL_TYPE } from 'sdk/module/telephony/types';
+import { DeviceSyncManger } from '../DeviceSyncManger';
 
 jest.mock('voip/src/api/RTCEngine');
 jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
@@ -435,6 +436,94 @@ describe('VoIPMediaDevicesDelegate', () => {
       jest.clearAllMocks();
       deviceDelegate['_switchStereoToHandsFreeIfNeed'](mockDevices, '5', setDeviceId);
       expect(setDeviceId).not.toHaveBeenCalled();
+    });
+    
+  });
+  describe('_handlerDeviceChange()', () => {
+    beforeEach(() => {
+      setUp();
+    })
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should ensureDevice when device deleted', () => {
+      
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      const mockSyncManager = {
+        ensureDevice: jest.fn(),
+        setDevice: jest.fn(),
+      } as any as DeviceSyncManger;
+      deviceDelegate['_handlerDeviceChange'](mockSyncManager, [], {
+          hashChanged: true,
+          added: [],
+          deleted: [
+            {
+              deviceId: '1',
+              label: 'Headset (AirSolo Hands-Free) (Bluetooth)',
+              groupId: 'x',
+              kind: 'audiooutput',
+            } as any
+          ]
+      })
+      expect(mockSyncManager.ensureDevice).toBeCalledTimes(1);
+    });
+    it('should setDevice when normal device added', () => {
+      
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      const mockSyncManager = {
+        ensureDevice: jest.fn(),
+        setDevice: jest.fn(),
+      } as any as DeviceSyncManger;
+      deviceDelegate['_handlerDeviceChange'](mockSyncManager, [], {
+          hashChanged: true,
+          deleted: [],
+          added: [
+            {
+              deviceId: '1',
+              label: 'Jabra SPEAK 510 USB (0b0e:0422)',
+              groupId: 'x',
+              kind: 'audiooutput',
+            } as any
+          ]
+      })
+      expect(mockSyncManager.setDevice).toBeCalledTimes(1);
+      expect(mockSyncManager.setDevice).toHaveBeenCalledWith({
+        deviceId: '1',
+        source: SOURCE_TYPE.NEW_DEVICE,
+      });
+    
+    });
+    it('should setDevice when bluetooth added', () => {
+      
+      deviceDelegate = new VoIPMediaDevicesDelegate(mockRtcEngine);
+      const mockSyncManager = {
+        ensureDevice: jest.fn(),
+        setDevice: jest.fn(),
+      } as any as DeviceSyncManger;
+      deviceDelegate['_handlerDeviceChange'](mockSyncManager, [], {
+          hashChanged: true,
+          deleted: [],
+          added: [
+            {
+              deviceId: '1',
+              label: 'Headset (AirSolo Stereo) (Bluetooth)',
+              groupId: 'x',
+              kind: 'audiooutput',
+            } as any,
+            {
+              deviceId: '2',
+              label: 'Headset (AirSolo Hands-Free) (Bluetooth)',
+              groupId: 'x',
+              kind: 'audiooutput',
+            } as any
+          ]
+      })
+      expect(mockSyncManager.setDevice).toBeCalledTimes(1);
+      expect(mockSyncManager.setDevice).toHaveBeenCalledWith({
+        deviceId: '2',
+        source: SOURCE_TYPE.NEW_DEVICE,
+      });
+    
     });
     
   });
