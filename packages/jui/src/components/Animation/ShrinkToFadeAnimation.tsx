@@ -55,6 +55,7 @@ function makeAnimationPromise(_domList: RefObject<HTMLDivElement>[]) {
       let cb: (value?: any) => void = () => {};
       const promise: Promise<any> = new Promise(resolve => {
         cb = (e: AnimationEvent) => {
+          if (e.target !== el) return;
           resolve(e);
           e.stopPropagation();
         };
