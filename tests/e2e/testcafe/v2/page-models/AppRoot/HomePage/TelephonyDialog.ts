@@ -10,14 +10,6 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('dialer-container');
   }
 
-  async ensureDismiss() {
-    await H.retryUntilPass(async () => {
-      if(await this.exists) {
-        await this.t.expect(this.self.visible).notOk();
-      }
-    })
-  }
-
   get title() {
     return this.getSelectorByAutomationId('telephony-dialer-title');
   }
@@ -720,4 +712,3 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
     await this.t.hover(this.unMuteButton);
   }
 }
-

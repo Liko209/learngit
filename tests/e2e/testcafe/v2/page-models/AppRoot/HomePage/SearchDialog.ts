@@ -12,20 +12,6 @@ export class SearchDialog extends BaseWebComponent {
     return this.getSelector('[role="dialog"]');
   }
 
-  async ensureDismiss() {
-    await H.retryUntilPass(async () => {
-      if (!await this.exists) {
-        return
-      }
-      await this.t.expect(this.visible).notOk()
-    })
-  }
-
-  async ensureLoaded() {
-    await this.t.expect(this.exists).ok();
-    await this.t.expect(this.visible).ok();
-  }
-
   get searchIcon() {
     return this.getSelectorByIcon('search', this.self);
   }
