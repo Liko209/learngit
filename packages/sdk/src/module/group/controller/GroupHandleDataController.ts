@@ -289,6 +289,7 @@ class GroupHandleDataController {
   isSMSGroup(group: Group) {
     return !!(
       group &&
+      !group.is_team &&
       group.members.length === 2 &&
       group.set_abbreviation &&
       group.set_abbreviation.includes(SMS_USER_NAME)

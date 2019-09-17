@@ -1233,4 +1233,24 @@ describe('GroupHandleDataController', () => {
       ).not.toHaveBeenCalled();
     });
   });
+
+  describe('isSMSGroup', () => {
+    const baseGroup = {
+      id: 1,
+      is_team: false,
+      set_abbreviation: 'xx +smsuser+ xx',
+      members: [1, 2],
+    };
+    it.each`
+      group                                            | res
+      ${baseGroup}                                     | ${true}
+      ${{ ...baseGroup, is_team: true }}               | ${false}
+      ${{ ...baseGroup, members: [1, 2, 3] }}          | ${false}
+      ${{ ...baseGroup, set_abbreviation: 'pp' }}      | ${false}
+      ${{ ...baseGroup, set_abbreviation: undefined }} | ${false}
+      ${undefined}                                     | ${false}
+    `('should return $res for $group', ({ res, group }) => {
+      expect(groupHandleDataController.isSMSGroup(group)).toEqual(res);
+    });
+  });
 });
