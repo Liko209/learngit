@@ -92,10 +92,6 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
   }
 
   protected updatePartial(oldEntity: Group, partialEntity: Partial<Group>) {
-    if (this._groupService.isSMSGroup(oldEntity)) {
-      return;
-    }
-
     super.updatePartial(oldEntity, partialEntity);
     this._setSoundexValue(oldEntity);
   }
