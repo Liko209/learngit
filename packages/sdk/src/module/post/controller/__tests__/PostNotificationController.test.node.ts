@@ -55,7 +55,7 @@ describe('PostNotificationController', () => {
       groupService.getSynchronously = jest
         .fn()
         .mockReturnValue({ most_recent_post_id: -1 });
-      const res = posts.filter(postNotificationController['_filterFunc']);
+      const res = posts.filter(postNotificationController['_filterFunc']!);
       expect(res).toEqual([posts[0], posts[1], posts[3]]);
     });
 
@@ -63,8 +63,21 @@ describe('PostNotificationController', () => {
       groupService.getSynchronously = jest
         .fn()
         .mockReturnValue({ most_recent_post_id: 4 });
-      const res = posts.filter(postNotificationController['_filterFunc']);
+      const res = posts.filter(postNotificationController['_filterFunc']!);
       expect(res).toEqual([posts[3]]);
+    });
+
+    it('should filter sms post', () => {
+      groupService.getSynchronously = jest
+        .fn()
+        .mockReturnValue({ most_recent_post_id: 4 });
+      const res = [
+        { id: 7, is_sms: true, creator_id: 2, group_id: 5 },
+        { id: 7, is_sms: false, creator_id: 2, group_id: 5 },
+      ].filter(postNotificationController['_filterFunc']!);
+      expect(res).toEqual([
+        { id: 7, is_sms: false, creator_id: 2, group_id: 5 },
+      ]);
     });
   });
 });

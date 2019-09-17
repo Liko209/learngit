@@ -29,7 +29,6 @@ import { AccountService } from 'sdk/module/account';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
 import { PerformanceTracer } from 'foundation/performance';
-import { PostControllerUtils } from './implementation/PostControllerUtils';
 
 class PostDataController {
   private queue = Promise.resolve();
@@ -43,7 +42,7 @@ class PostDataController {
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
     mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
     const performanceTracer = PerformanceTracer.start();
-    const transformedData = this.transformAndFilterPosts(data.posts);
+    const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       this.deletePreInsertPosts(transformedData);
     }
@@ -78,7 +77,7 @@ class PostDataController {
     changeMap?: Map<string, ChangeModel>,
   ) {
     if (data.length) {
-      let posts = this.transformAndFilterPosts(data);
+      let posts = this.transformData(data);
       this._handleModifiedDiscontinuousPosts(
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
@@ -500,12 +499,6 @@ class PostDataController {
     return ([] as Raw<Post>[])
       .concat(data)
       .map((item: Raw<Post>) => transform<Post>(item));
-  }
-
-  transformAndFilterPosts(data: Raw<Post>[] | Raw<Post>): Post[] {
-    return this.transformData(data).filter(
-      post => !PostControllerUtils.isSMSPost(post),
-    );
   }
 }
 

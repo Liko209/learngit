@@ -7,7 +7,7 @@ import { storeManager, ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service/eventKey';
 import { IEntityDataProvider } from '../base/fetch/types';
 import { Post } from 'sdk/module/post/entity';
-import { PostService } from 'sdk/module/post';
+import { PostService, PostUtils } from 'sdk/module/post';
 import PostModel from '../models/Post';
 
 import { IdListPaginationHandler } from './IdListPagingHandler';
@@ -39,10 +39,12 @@ class DiscontinuousPosListHandler extends IdListPaginationHandler<
     postProvider?: IEntityDataProvider<Post>,
     pageSize?: number,
   ) {
-    const filterFunc = (post: PostModel) => !post.deactivated;
+    const filterFunc = (post: PostModel) => post.isValidPost();
 
     const isMatchFunc = (post: Post) =>
-      this._sourceIds.includes(post.id) && !post.deactivated;
+      this._sourceIds.includes(post.id) &&
+      !post.deactivated &&
+      !PostUtils.isSMSPost(post);
 
     const options = {
       filterFunc,

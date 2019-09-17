@@ -15,7 +15,9 @@ class PostControllerUtils {
     return message.trim() !== '';
   }
 
-  static isSMSPost(post: Post) {
+  static isSMSPost<T extends { item_ids?: number[]; is_sms?: boolean }>(
+    post: T,
+  ) {
     if (post.is_sms) {
       return true;
     }

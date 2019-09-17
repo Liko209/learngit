@@ -644,23 +644,6 @@ describe('PostDataController', () => {
     });
   });
 
-  describe('transformAndFilterPosts', () => {
-    it('should filter sms post', () => {
-      const posts = [
-        {
-          _id: 1,
-          is_sms: true,
-        },
-        {
-          _id: 2,
-          is_sms: false,
-        },
-      ];
-      const result = postDataController.transformAndFilterPosts(posts as any);
-      expect(result).toEqual([posts[1]]);
-    });
-  });
-
   describe('filterAndSavePosts()', () => {
     beforeEach(() => {
       clearMocks();

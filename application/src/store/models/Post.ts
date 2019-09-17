@@ -14,6 +14,7 @@ import { ENTITY_NAME } from '@/store';
 import FileItemModel from '@/store/models/FileItem';
 import LinkItemModel from '@/store/models/LinkItem';
 import { mainLogger } from 'foundation/log';
+import { PostUtils } from 'sdk/src/module/post';
 
 export default class PostModel extends Base<Post> {
   createdAt: number;
@@ -46,7 +47,7 @@ export default class PostModel extends Base<Post> {
   @observable icon?: string;
   @observable isTeamMention?: boolean;
   @observable isAdminMention?: boolean;
-
+  @observable isSMS?: boolean;
   constructor(data: Post) {
     super(data);
     const {
@@ -67,6 +68,7 @@ export default class PostModel extends Base<Post> {
       icon,
       is_admin_mention,
       is_team_mention,
+      is_sms,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
@@ -85,6 +87,7 @@ export default class PostModel extends Base<Post> {
     this.icon = icon;
     this.isAdminMention = is_admin_mention;
     this.isTeamMention = is_team_mention;
+    this.isSMS = is_sms;
   }
 
   @computed
@@ -146,6 +149,13 @@ export default class PostModel extends Base<Post> {
       return 1;
     }
     return version;
+  }
+
+  public isValidPost() {
+    return (
+      !this.deactivated &&
+      !PostUtils.isSMSPost({ is_sms: this.isSMS, item_ids: this.itemIds })
+    );
   }
 
   static fromJS(data: Post) {

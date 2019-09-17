@@ -10,6 +10,7 @@ import { IEntityChangeObserver } from '../types';
 interface IEntityNotificationController<
   T extends IdModel<ModelIdType> = IdModel
 > {
+  setFilterFunc(filterFunc: (entity: T) => boolean): void;
   addObserver(observer: IEntityChangeObserver<T>): void;
   removeObserver(observer: IEntityChangeObserver<T>): void;
   onReceivedNotification(entities: T[]): void;

@@ -121,13 +121,14 @@ class PostListPageViewModel extends AbstractViewModel {
     let postsFromService: Post[] = [];
     const postsFromStore = idsInStore
       .map(id => getEntity<Post, PostModel>(ENTITY_NAME.POST, id))
-      .filter((post: PostModel) => !post.deactivated);
+      .filter((post: PostModel) => post.isValidPost());
 
     if (idsOutOfStore.length) {
       const postService = ServiceLoader.getInstance<PostService>(
         ServiceConfig.POST_SERVICE,
       );
       const results = await postService.getPostsByIds(idsOutOfStore);
+      console.log('TMSLOG: PostListPageViewModel -> private_getDataByIds -> idsOutOfStore', idsOutOfStore);
       postsFromService = results.posts.filter(
         (post: Post) => !post.deactivated,
       );

@@ -9,6 +9,7 @@ import { EntityNotificationController } from '../../../framework/controller/impl
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { GroupService } from '../../group';
 import { AccountService } from 'sdk/module/account';
+import { PostControllerUtils } from './implementation/PostControllerUtils';
 
 class PostNotificationController extends EntityNotificationController<Post> {
   constructor() {
@@ -25,7 +26,12 @@ class PostNotificationController extends EntityNotificationController<Post> {
       ServiceConfig.GROUP_SERVICE,
     );
     return (post: Post) => {
-      if (post && post.creator_id !== currentUserId && post.group_id) {
+      if (
+        post &&
+        post.creator_id !== currentUserId &&
+        post.group_id &&
+        !PostControllerUtils.isSMSPost(post)
+      ) {
         const group = groupService.getSynchronously(post.group_id);
         const groupLastPostId = (group && group.most_recent_post_id) || 0;
         return post.id > groupLastPostId;
