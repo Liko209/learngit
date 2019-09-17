@@ -134,12 +134,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       );
       this._postIds = postIds;
       if (added.length) {
+        // sms post might be filtered
         const { posts } = await postService.getPostsByIds(added);
+        const realAddedIds = (posts && posts.map(p => p.id)) || [];
         addOrderIndicatorForPosts(posts, this._postIds);
         this._sortableListHandler.onDataChanged({
           type: EVENT_TYPES.UPDATE,
           body: {
-            ids: added,
+            ids: realAddedIds,
             entities: transform2Map(posts),
           },
         });
