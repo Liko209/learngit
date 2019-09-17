@@ -520,7 +520,6 @@ class PostSearchHandler {
           value.deactivated ||
           (value.post_ids && value.post_ids.filter(x => !filteredPosts.has(x)).length === 0)
         ) {
-          filteredPosts.add(value.id);
           this._recordFilteredIds(value.id);
         } else {
           items.push(value);
