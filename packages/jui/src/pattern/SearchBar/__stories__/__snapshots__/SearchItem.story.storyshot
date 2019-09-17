@@ -8,6 +8,9 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #f5f6fb;
 }
 

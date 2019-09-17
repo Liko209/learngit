@@ -803,6 +803,9 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #6FAFEB;
 }
 

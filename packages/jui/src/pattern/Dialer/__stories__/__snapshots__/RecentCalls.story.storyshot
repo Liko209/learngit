@@ -78,6 +78,9 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #f5f6fb;
 }
 
