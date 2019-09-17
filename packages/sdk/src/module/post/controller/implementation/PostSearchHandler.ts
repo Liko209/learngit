@@ -35,6 +35,8 @@ import { POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 import { Post } from '../../entity';
 import { PostControllerUtils } from './PostControllerUtils';
 
+const ITEMS = 'items';
+const POSTS = 'posts';
 const SEARCH_TIMEOUT = 60 * 1000;
 
 const SEARCH_CONDITION_KEYS = [
@@ -499,10 +501,10 @@ class PostSearchHandler {
           value.id,
           TypeDictionary.TYPE_ID_POST,
         );
-        return isPost ? 'posts' : 'items';
+        return isPost ? POSTS : ITEMS;
       });
 
-       divideData['posts'] && (divideData['posts'] as Post[]).forEach(value => {
+       divideData[POSTS] && (divideData[POSTS] as Post[]).forEach(value => {
         if (
           value.deactivated ||
           (PostControllerUtils.isSMSPost(value as Post) ||
@@ -515,7 +517,7 @@ class PostSearchHandler {
         }
       });
 
-      divideData['items'] && (divideData['items'] as Item[]).forEach(value => {
+      divideData[ITEMS] && (divideData[ITEMS] as Item[]).forEach(value => {
         if (
           value.deactivated ||
           (value.post_ids && value.post_ids.filter(x => !filteredPosts.has(x)).length === 0)
