@@ -14,7 +14,7 @@ import { ENTITY_NAME } from '@/store';
 import FileItemModel from '@/store/models/FileItem';
 import LinkItemModel from '@/store/models/LinkItem';
 import { mainLogger } from 'foundation/log';
-import { PostUtils } from 'sdk/src/module/post';
+import { PostUtils } from 'sdk/module/post';
 
 export default class PostModel extends Base<Post> {
   createdAt: number;

@@ -46,4 +46,21 @@ describe('PostModel', () => {
       expect(postModel.fileItemVersion(fileItem)).toEqual(1);
     });
   });
+
+  describe('isValidPost', () => {
+    const basePost = {
+      id: 4,
+      deactivated: false,
+      is_sms: false,
+    };
+    it.each`
+      post                                  | res
+      ${basePost}                           | ${true}
+      ${{ ...basePost, deactivated: true }} | ${false}
+      ${{ ...basePost, is_sms: true }}      | ${false}
+    `('should return $res for post : $post', ({ post, res }) => {
+      const postModel = new PostModel(post as Post);
+      expect(postModel.isValidPost()).toEqual(res);
+    });
+  });
 });
