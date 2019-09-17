@@ -22,7 +22,7 @@ import { container } from 'framework/ioc';
 import { GLOBAL_KEYS, PERMISSION_KEYS } from '@/store/constants';
 import { MEETING_ACTION } from 'sdk/module/meetings/types';
 import { mainLogger } from 'foundation/log';
-import { UserPermission } from 'sdk/src/module/permission/entity';
+import { UserPermission } from 'sdk/module/permission/entity';
 import UserPermissionModel from '@/store/models/UserPermission';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
