@@ -5,7 +5,7 @@
  */
 import { testable, test } from 'shield';
 import { container } from 'framework/ioc';
-import { mockEntity } from 'shield/application';
+import { mockEntity, mockSingleEntity } from 'shield/application';
 import { mountWithTheme } from 'shield/utils';
 import { mockService } from 'shield/sdk';
 import React from 'react';
@@ -36,9 +36,9 @@ describe('MeetingViewModel', () => {
           },
         },
       },
-      (err, t) => {},
+      (err, t) => { },
     );
-    i18next.loadLanguages('en', () => {});
+    i18next.loadLanguages('en', () => { });
     jest.resetAllMocks();
     meetingVM = new MeetingViewModel({
       ids: [570810475],
@@ -171,7 +171,7 @@ describe('MeetingViewModel', () => {
       container.get = jest.fn().mockReturnValue(electronService);
       Object.defineProperty(window, 'jupiterElectron', {
         writable: true,
-        value: {openWindow: () => 123}
+        value: { openWindow: () => 123 }
       })
       await meetingVM.joinMeeting();
       expect(electronService.openWindow).toHaveBeenCalled();
@@ -236,6 +236,16 @@ describe('MeetingViewModel', () => {
     async t1() {
       await meetingVM.cancelMeeting();
       expect(meetingsService.cancelMeeting).toHaveBeenCalled();
+    }
+  }
+
+  @testable
+  class canUseVideoCall {
+    @test('should be true if canUseVideoCall')
+    @mockSingleEntity(true)
+    t1() {
+      meetingVM = new MeetingViewModel();
+      expect(meetingVM.canUseVideoCall).toBe(true);
     }
   }
 });
