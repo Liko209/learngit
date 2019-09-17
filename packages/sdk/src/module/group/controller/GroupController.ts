@@ -17,7 +17,7 @@ class GroupController {
   private _groupActionController: GroupActionController;
   private _groupFetchDataController: GroupFetchDataController;
   private _permissionController: TeamPermissionController;
-  groupHandleDataController: GroupHandleDataController;
+  private _groupHandleDataController: GroupHandleDataController;
 
   constructor(
     public groupService: IGroupService,
@@ -60,13 +60,13 @@ class GroupController {
   }
 
   getHandleDataController(): GroupHandleDataController {
-    if (!this.groupHandleDataController) {
-      this.groupHandleDataController = new GroupHandleDataController(
+    if (!this._groupHandleDataController) {
+      this._groupHandleDataController = new GroupHandleDataController(
         this.groupService,
         this.entitySourceController,
       );
     }
-    return this.groupHandleDataController;
+    return this._groupHandleDataController;
   }
 }
 

@@ -196,7 +196,7 @@ class PostService extends EntityBaseService<Post> {
 
   handleSexioData = async (data: Raw<Post>[]) => {
     if (data.length) {
-      const posts = this._postDataController.transformData(data);
+      const posts = this._postDataController.transformAndFilterPosts(data);
       if (posts.length) {
         await this._postDataController.handleSexioPosts(posts);
         this.getEntityNotificationController().onReceivedNotification(posts);

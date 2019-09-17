@@ -29,6 +29,7 @@ import { AccountService } from 'sdk/module/account';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
 import { PerformanceTracer } from 'foundation/performance';
+import { PostControllerUtils } from './implementation/PostControllerUtils';
 
 class PostDataController {
   private queue = Promise.resolve();
@@ -42,7 +43,7 @@ class PostDataController {
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
     mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
     const performanceTracer = PerformanceTracer.start();
-    const transformedData = this.transformData(data.posts);
+    const transformedData = this.transformAndFilterPosts(data.posts);
     if (shouldSaveToDb) {
       this.deletePreInsertPosts(transformedData);
     }
@@ -77,7 +78,7 @@ class PostDataController {
     changeMap?: Map<string, ChangeModel>,
   ) {
     if (data.length) {
-      let posts = this.transformData(data);
+      let posts = this.transformAndFilterPosts(data);
       this._handleModifiedDiscontinuousPosts(
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
@@ -133,7 +134,9 @@ class PostDataController {
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig;
       const currentUserId = userConfig.getGlipUserId() as number;
-      const myPosts = posts.filter((post: Post) => post.creator_id === currentUserId);
+      const myPosts = posts.filter(
+        (post: Post) => post.creator_id === currentUserId,
+      );
       groupPosts = this._getGroupedPosts(myPosts);
     }
     return groupPosts;
@@ -311,15 +314,16 @@ class PostDataController {
 
   protected async handleSexioModifiedPosts(posts: Post[]) {
     return posts.filter(
-      (post: Post) => post.created_at === post.modified_at ||
+      (post: Post) =>
+        post.created_at === post.modified_at ||
         this.entitySourceController.getEntityLocally(post.id),
     );
   }
 
   filterFunc = (data: Post[]): { eventKey: string; entities: Post[] }[] => {
     const postGroupMap: Map<
-    number,
-    { eventKey: string; entities: Post[] }
+      number,
+      { eventKey: string; entities: Post[] }
     > = new Map();
     data.forEach((post: Post) => {
       if (post) {
@@ -365,7 +369,8 @@ class PostDataController {
     return normalPosts;
   }
 
-  postCreationTimeSortingFn = (lhs: Post, rhs: Post) => SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
+  postCreationTimeSortingFn = (lhs: Post, rhs: Post) =>
+    SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
 
   /**
    * 1, Check whether the group has discontinues post,
@@ -495,6 +500,12 @@ class PostDataController {
     return ([] as Raw<Post>[])
       .concat(data)
       .map((item: Raw<Post>) => transform<Post>(item));
+  }
+
+  transformAndFilterPosts(data: Raw<Post>[] | Raw<Post>): Post[] {
+    return this.transformData(data).filter(
+      post => !PostControllerUtils.isSMSPost(post),
+    );
   }
 }
 

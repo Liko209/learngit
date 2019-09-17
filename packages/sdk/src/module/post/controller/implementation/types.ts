@@ -42,6 +42,7 @@ export type SearchRequestInfo = {
   scrollSize?: number;
   contentTypesRequestId?: number;
   contentTypesResolver?: any;
+  filteredIds?: SearchContentTypesCount;
 };
 
 export type ProcessorInfo = {

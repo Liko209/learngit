@@ -115,14 +115,18 @@ describe('PostService', () => {
     it('should call entity notification controller and post data handle controller', async () => {
       const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
       const post = [{ id: 1 }, { id: 2 }] as any;
-      postDataController.transformData = jest.fn().mockReturnValue(post);
+      postDataController.transformAndFilterPosts = jest
+        .fn()
+        .mockReturnValue(post);
       const notificationController = postService[
         'getEntityNotificationController'
       ]();
       notificationController['onReceivedNotification'] = jest.fn();
       await postService.handleSexioData(rawPost);
 
-      expect(postDataController.transformData).toHaveBeenCalledWith(rawPost);
+      expect(postDataController.transformAndFilterPosts).toHaveBeenCalledWith(
+        rawPost,
+      );
       expect(postDataController.handleSexioPosts).toHaveBeenCalledWith(post);
       expect(
         notificationController.onReceivedNotification,

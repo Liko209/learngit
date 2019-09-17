@@ -126,7 +126,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   };
 
   isValid(group: Group): boolean {
-    return group && !group.is_archived && !group.deactivated && !!group.members;
+    return (
+      group &&
+      !group.is_archived &&
+      !group.deactivated &&
+      !!group.members &&
+      !this.isSMSGroup(group)
+    );
   }
 
   async getEntities(): Promise<Group[]> {
@@ -402,6 +408,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.getGroupController()
       .getGroupActionController()
       .isIndividualGroup(group);
+  }
+
+  isSMSGroup(group: Group) {
+    return this.getGroupController()
+      .getHandleDataController()
+      .isSMSGroup(group);
   }
 
   getIndividualGroups() {

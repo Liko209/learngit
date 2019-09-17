@@ -33,7 +33,7 @@ import { GroupConfigService } from 'sdk/module/groupConfig';
 
 const LOG_TAG = 'GroupHandleDataController';
 const hasOwnProperty = Object.prototype.hasOwnProperty;
-
+const SMS_USER_NAME = '+smsuser+';
 class GroupHandleDataController {
   constructor(
     public groupService: IGroupService,
@@ -285,6 +285,15 @@ class GroupHandleDataController {
     // handle deactivated data and normal data
     await this.saveDataAndDoNotification(data, source, changeMap);
   };
+
+  isSMSGroup(group: Group) {
+    return !!(
+      group &&
+      group.members.length === 2 &&
+      group.set_abbreviation &&
+      group.set_abbreviation.includes(SMS_USER_NAME)
+    );
+  }
 
   doFavoriteGroupsNotification = async (favIds: number[]) => {
     mainLogger.debug('-------doFavoriteGroupsNotification--------');

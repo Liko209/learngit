@@ -500,6 +500,32 @@ describe('GroupService', () => {
     });
   });
 
+  describe('isValid', () => {
+    const baseGroup = {
+      id: 1,
+      deactivated: false,
+      members: [1, 2],
+      set_abbreviation: 'g',
+      is_archived: false,
+    };
+
+    it.each`
+      group                                   | isSMSGroup | res
+      ${{ ...baseGroup }}                     | ${false}    | ${true}
+      ${{ ...baseGroup }}                     | ${true}    | ${false}
+      ${{ ...baseGroup, is_archived: true }}  | ${false}   | ${false}
+      ${{ ...baseGroup, deactivated: true }}  | ${false}   | ${false}
+      ${{ ...baseGroup, members: undefined }} | ${false}   | ${false}
+    `(
+      'should return $res for $group and isSMSGroup: $isSMSGroup',
+      ({ group, res, isSMSGroup }) => {
+        groupService.isSMSGroup = jest.fn().mockReturnValue(isSMSGroup);
+
+        expect(groupService.isValid(group)).toEqual(res);
+      },
+    );
+  });
+
   describe('getGroupName', () => {
     it('should call getGroupName with correct parameter', () => {
       const group = {
@@ -507,7 +533,9 @@ describe('GroupService', () => {
         members: [1, 2],
       };
       groupService.getGroupName(group as Group);
-      expect(mockGroupFetchDataController.getGroupName).toHaveBeenCalledWith(group);
+      expect(mockGroupFetchDataController.getGroupName).toHaveBeenCalledWith(
+        group,
+      );
     });
   });
 

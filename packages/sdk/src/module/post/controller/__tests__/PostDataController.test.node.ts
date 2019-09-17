@@ -7,9 +7,7 @@
 import { ItemService } from '../../../item';
 import { daoManager, DeactivatedDao } from '../../../../dao';
 import { PostDao, PostDiscontinuousDao } from '../../dao';
-import { ExtendedBaseModel } from '../../../models';
 import { PreInsertController } from '../../../common/controller/impl/PreInsertController';
-import { PROGRESS_STATUS } from '../../../progress';
 import { PostDataController } from '../PostDataController';
 import { Item } from '../../../item/entity';
 import { Post } from '../../entity';
@@ -91,6 +89,11 @@ describe('PostDataController', () => {
       }
     });
   }
+
+  beforeEach(() => {
+    clearMocks();
+    setup();
+  });
 
   describe('handleFetchedPosts()', () => {
     beforeEach(() => {
@@ -638,6 +641,23 @@ describe('PostDataController', () => {
       const target = [group1, group2, group3];
 
       expect(result).toEqual(target);
+    });
+  });
+
+  describe('transformAndFilterPosts', () => {
+    it('should filter sms post', () => {
+      const posts = [
+        {
+          _id: 1,
+          is_sms: true,
+        },
+        {
+          _id: 2,
+          is_sms: false,
+        },
+      ];
+      const result = postDataController.transformAndFilterPosts(posts as any);
+      expect(result).toEqual([posts[1]]);
     });
   });
 

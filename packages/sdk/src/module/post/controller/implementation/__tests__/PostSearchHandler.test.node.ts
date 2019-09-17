@@ -157,6 +157,20 @@ describe('PostSearchController', () => {
                   created_at: 1548264342044,
                   model_id: '10',
                 },
+                {
+                  _id: 46170116,
+                  created_at: 1528264342044,
+                  model_id: '46170116',
+                  deactivated: false,
+                  is_sms: true,
+                },
+                {
+                  _id: 56868868,
+                  created_at: 1528264342044,
+                  model_id: '56868868',
+                  deactivated: false,
+                  is_sms: false,
+                },
               ] as any,
               response_id: 1,
               scroll_request_id: '1',
@@ -185,7 +199,7 @@ describe('PostSearchController', () => {
       const promise = postSearchHandler.startSearch(searchParams);
       const itemsAndPosts = await promise;
       expect(itemsAndPosts).toEqual({
-        contentCount: countResults.content_types,
+        contentCount: { ...countResults.content_types, '18': 9, '4': 632 },
         hasMore: false,
         items: [
           { created_at: 1548264342044, id: 10, model_id: '10' },
@@ -206,6 +220,13 @@ describe('PostSearchController', () => {
             created_at: 73007108,
             model_id: '73007108',
           },
+          {
+            id: 56868868,
+            created_at: 1528264342044,
+            model_id: '56868868',
+            deactivated: false,
+            is_sms: false,
+          },
         ],
         requestId: 123,
       });
@@ -225,7 +246,7 @@ describe('PostSearchController', () => {
       const promise = postSearchHandler.startSearch(searchParams as any);
       const itemsAndPosts = await promise;
       expect(itemsAndPosts).toEqual({
-        contentCount: countResults.content_types,
+        contentCount: { ...countResults.content_types, '18': 9 },
         hasMore: true,
         items: [{ created_at: 1548264342044, id: 10, model_id: '10' }],
         posts: [
@@ -296,7 +317,7 @@ describe('PostSearchController', () => {
       const promise = postSearchHandler.startSearch(searchParams as any);
       const itemsAndPosts = await promise;
       expect(itemsAndPosts).toEqual({
-        contentCount: countResults.content_types,
+        contentCount: {...countResults.content_types, 4: 632},
         hasMore: true,
         items: [],
         posts: [

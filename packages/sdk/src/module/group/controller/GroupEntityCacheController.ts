@@ -75,6 +75,10 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
   }
 
   protected putInternal(group: Group) {
+    if (this._groupService.isSMSGroup(group)) {
+      return;
+    }
+
     super.putInternal(group);
     if (this._groupService.isIndividualGroup(group)) {
       const personId = this._getPersonIdInIndividualGroup(group);
@@ -88,6 +92,13 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
   }
 
   protected updatePartial(oldEntity: Group, partialEntity: Partial<Group>) {
+    if (
+      (oldEntity && this._groupService.isSMSGroup(oldEntity)) ||
+      this._groupService.isSMSGroup(partialEntity as Group)
+    ) {
+      return;
+    }
+
     super.updatePartial(oldEntity, partialEntity);
     this._setSoundexValue(oldEntity);
   }

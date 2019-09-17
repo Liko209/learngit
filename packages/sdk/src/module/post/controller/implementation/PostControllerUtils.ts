@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Post } from '../../entity/Post';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class PostControllerUtils {
   static isValidPost(post: Post) {
@@ -12,6 +13,26 @@ class PostControllerUtils {
 
   static isValidTextMessage(message: string) {
     return message.trim() !== '';
+  }
+
+  static isSMSPost(post: Post) {
+    if (post.is_sms) {
+      return true;
+    }
+
+    if (
+      post.item_ids &&
+      post.item_ids.find(itemId => {
+        return !!GlipTypeUtil.isExpectedType(
+          itemId,
+          TypeDictionary.TYPE_ID_RC_SMSES,
+        );
+      })
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }
 

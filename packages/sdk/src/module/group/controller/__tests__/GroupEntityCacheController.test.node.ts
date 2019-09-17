@@ -179,6 +179,26 @@ describe('GroupEntityCacheController', () => {
       setUp();
     });
 
+    it('should not add to cache when is a sms group for update', () => {
+      groupEntityCacheController.update({
+        ...testTeamData[0],
+        set_abbreviation: '+smsuser+',
+      });
+
+      const res = groupEntityCacheController.getIndividualGroups();
+      expect(res).toEqual(new Map());
+    });
+
+    it('should not add to cache when is a sms group for put', () => {
+      groupEntityCacheController.put({
+        ...testTeamData[0],
+        set_abbreviation: '+smsuser+',
+      } as any);
+
+      const res = groupEntityCacheController.getIndividualGroups();
+      expect(res).toEqual(new Map());
+    });
+
     it('update, should add to cache when update a not exist group', () => {
       groupEntityCacheController.update(testTeamData[0]);
 
