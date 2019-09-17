@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import PostModel from '@/store/models/Post';
 jest.mock('sdk/module/post');
 const postService = new PostService();
 
@@ -62,15 +63,18 @@ describe('PostListPage.ViewModel', () => {
       mockedStore._data.splice(0, data.length);
       jest.spyOn(utils, 'getEntity').mockImplementation((ENTITY_NAME, id) => {
         return {
-          0: {
+          0: new PostModel ({
+            id: 0,
             deactivated: true,
-          },
-          1: {
+          } as any),
+          1: new PostModel({
+            id: 1,
             deactivated: false,
-          },
-          2: {
+          } as any),
+          2: new PostModel({
+            id: 2,
             deactivated: true,
-          },
+          } as any),
         }[id];
       });
     });

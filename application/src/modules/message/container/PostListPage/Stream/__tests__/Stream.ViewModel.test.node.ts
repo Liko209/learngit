@@ -61,14 +61,14 @@ describe('StreamViewModel', () => {
     postService.getPostsByIds.mockResolvedValue({
       posts: [
         {
-          id: 1,
+          id: 2,
         },
       ],
     });
     vm._postIds = [1];
     await vm.onReceiveProps(localProps);
     const returnedEntity = new Map();
-    returnedEntity.set(1, expect.objectContaining({ id: 1 }));
+    returnedEntity.set(2, expect.objectContaining({ id: 2 }));
     expect(mockedSortableListHandler.onDataChanged).toBeCalledWith({
       body: {
         entities: returnedEntity,
