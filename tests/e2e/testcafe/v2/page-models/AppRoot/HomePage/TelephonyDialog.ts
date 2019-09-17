@@ -6,6 +6,7 @@ import * as assert from 'assert';
 import { Selector } from 'testcafe';
 
 export class TelephonyDialog extends BaseWebComponent {
+
   get self() {
     return this.getSelectorByAutomationId('dialer-container');
   }
