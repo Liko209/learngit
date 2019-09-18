@@ -15,6 +15,7 @@ import { daoManager, DeactivatedDao } from '../../../dao';
 import { PostDao } from '../dao';
 import { mainLogger } from 'foundation/log';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { PostControllerUtils } from './implementation/PostControllerUtils';
 
 const LOG_TAG = '[DiscontinuousPostController]';
 class DiscontinuousPostController {
@@ -69,6 +70,11 @@ class DiscontinuousPostController {
       result.posts.push(...remotePosts);
       result.items.push(...items);
     }
+
+    result.posts = result.posts.filter(
+      post => !PostControllerUtils.isSMSPost(post),
+    );
+
     mainLogger
       .tags(LOG_TAG)
       .info(

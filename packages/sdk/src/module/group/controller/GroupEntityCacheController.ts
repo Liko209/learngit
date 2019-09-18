@@ -75,6 +75,10 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
   }
 
   protected putInternal(group: Group) {
+    if (this._groupService.isSMSGroup(group)) {
+      return;
+    }
+
     super.putInternal(group);
     if (this._groupService.isIndividualGroup(group)) {
       const personId = this._getPersonIdInIndividualGroup(group);

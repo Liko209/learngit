@@ -7,9 +7,7 @@
 import { ItemService } from '../../../item';
 import { daoManager, DeactivatedDao } from '../../../../dao';
 import { PostDao, PostDiscontinuousDao } from '../../dao';
-import { ExtendedBaseModel } from '../../../models';
 import { PreInsertController } from '../../../common/controller/impl/PreInsertController';
-import { PROGRESS_STATUS } from '../../../progress';
 import { PostDataController } from '../PostDataController';
 import { Item } from '../../../item/entity';
 import { Post } from '../../entity';
@@ -91,6 +89,11 @@ describe('PostDataController', () => {
       }
     });
   }
+
+  beforeEach(() => {
+    clearMocks();
+    setup();
+  });
 
   describe('handleFetchedPosts()', () => {
     beforeEach(() => {

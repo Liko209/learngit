@@ -33,7 +33,10 @@ import { UndefinedAble } from 'sdk/types';
 import { EmptySearchRes, SearchFilterTypes, TYPE_ID_OF_ALL } from './constants';
 import { POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 import { Post } from '../../entity';
+import { PostControllerUtils } from './PostControllerUtils';
 
+const ITEMS = 'items';
+const POSTS = 'posts';
 const SEARCH_TIMEOUT = 60 * 1000;
 
 const SEARCH_CONDITION_KEYS = [
@@ -121,8 +124,24 @@ class PostSearchHandler {
 
     return {
       ...postItems,
-      contentCount: contentCounts,
+      contentCount: this._correctContentCount(_.cloneDeep(contentCounts)),
     };
+  }
+
+  private _correctContentCount(contentCount: SearchContentTypesCount) {
+    if (contentCount && this._searchInfo && this._searchInfo.filteredIds) {
+      const keys = Object.keys(contentCount);
+      keys.forEach(key => {
+        const filteredCnt: number = this._searchInfo.filteredIds![key] || 0;
+        contentCount[key] = Math.max(contentCount[key] - filteredCnt, 0);
+      });
+
+      mainLogger.tags(LOG_TAG).log('after correct', {
+        needFilter: this._searchInfo.filteredIds,
+        afterFilter: contentCount,
+      });
+    }
+    return contentCount;
   }
 
   private async _doSearch(searchPromise: Promise<SearchedResultData>) {
@@ -475,28 +494,60 @@ class PostSearchHandler {
     if (queryInfo) {
       const targetGroupId = queryInfo.queryOptions.group_id;
       const objects: (Post | Item)[] = transformAll(contents);
-       /* eslint-disable no-continue */
-      for (const value of objects) {
-        if (value.deactivated) {
-          continue;
-        }
+      const filteredPosts = new Set<number>();
 
+      const divideData = _.groupBy(objects, (value: Post | Item) => {
+        const isPost = GlipTypeUtil.isExpectedType(
+          value.id,
+          TypeDictionary.TYPE_ID_POST,
+        );
+        return isPost ? POSTS : ITEMS;
+      });
+
+       divideData[POSTS] && (divideData[POSTS] as Post[]).forEach(value => {
         if (
-          GlipTypeUtil.isExpectedType(value.id, TypeDictionary.TYPE_ID_POST)
+          value.deactivated ||
+          (PostControllerUtils.isSMSPost(value as Post) ||
+            !this._isGroupPost(targetGroupId, value as Post))
         ) {
-          const data = value as Post;
-          const postInGroup = !targetGroupId || data.group_id === targetGroupId;
-          postInGroup && posts.push(data);
+          filteredPosts.add(value.id);
+          this._recordFilteredIds(value.id);
         } else {
-          items.push(value as Item);
+          posts.push(value);
         }
-      }
+      });
+
+      divideData[ITEMS] && (divideData[ITEMS] as Item[]).forEach(value => {
+        if (
+          value.deactivated ||
+          (value.post_ids && value.post_ids.filter(x => !filteredPosts.has(x)).length === 0)
+        ) {
+          this._recordFilteredIds(value.id);
+        } else {
+          items.push(value);
+        }
+      });
     }
 
     return {
       items,
       posts,
     };
+  }
+
+  private _isGroupPost(targetGroupId: UndefinedAble<number>, post: Post) {
+    return !targetGroupId || post.group_id === targetGroupId;
+  }
+
+  private _recordFilteredIds(id: number) {
+    if (this._searchInfo) {
+      if (!this._searchInfo.filteredIds) {
+        this._searchInfo.filteredIds = {};
+      }
+      const typeId = GlipTypeUtil.extractTypeId(id);
+      const typeIdCnt = this._searchInfo.filteredIds[typeId] || 0;
+      this._searchInfo.filteredIds[typeId] = typeIdCnt + 1;
+    }
   }
 
   private _notifyContentsCountComes(

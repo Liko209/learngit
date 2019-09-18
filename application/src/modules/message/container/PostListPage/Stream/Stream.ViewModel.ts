@@ -13,7 +13,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModelWithData } from '@/store/base/fetch/types';
 import { Post } from 'sdk/module/post/entity';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
-import { PostService } from 'sdk/module/post';
+import { PostService, PostUtils } from 'sdk/module/post';
 import { transform2Map } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import PostModel from '@/store/models/Post';
@@ -35,7 +35,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _initial: boolean = true;
   private _isMatchFunc(post: Post) {
-    return post && !post.deactivated && this._postIds.includes(post.id);
+    return (
+      post &&
+      !post.deactivated &&
+      this._postIds.includes(post.id) &&
+      !PostUtils.isSMSPost(post)
+    );
   }
 
   private _options = {
@@ -129,12 +134,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       );
       this._postIds = postIds;
       if (added.length) {
+        // sms post might be filtered
         const { posts } = await postService.getPostsByIds(added);
+        const realAddedIds = (posts && posts.map(p => p.id)) || [];
         addOrderIndicatorForPosts(posts, this._postIds);
         this._sortableListHandler.onDataChanged({
           type: EVENT_TYPES.UPDATE,
           body: {
-            ids: added,
+            ids: realAddedIds,
             entities: transform2Map(posts),
           },
         });

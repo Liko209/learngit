@@ -151,6 +151,8 @@ interface IGroupService {
   getGroupName(group: Group): string;
 
   clearDraftFlagIfNotReallyExisted(groupId: number): Promise<void>;
+
+  isSMSGroup(group: Group): boolean;
 }
 
 export { IGroupService };

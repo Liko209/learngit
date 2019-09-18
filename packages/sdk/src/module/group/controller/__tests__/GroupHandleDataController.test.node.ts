@@ -68,12 +68,12 @@ jest.mock('../../../../api/glip/group', () => {
 const groupConfigService = {
   handleMyMostRecentPostChange: jest.fn(),
   getById: jest.fn(),
-}
+};
 
 const stateService = {
   getAllGroupStatesFromLocal: jest.fn(),
   handleGroupChangeForTotalUnread: jest.fn(),
-}
+};
 
 function generateFakeGroups(
   count: number,
@@ -223,13 +223,16 @@ describe('GroupHandleDataController', () => {
       // expect doNotification function
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
-        { id: 2, members: [1, 2], deactivated: false },
-        { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
-        { id: 4, members: [], deactivated: false },
-        { id: 5, members: [], is_archived: true },
-        { _delta: false, deactivated: true, id: 1, members: [1] },
-      ]);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledWith(
+        ENTITY.GROUP,
+        [
+          { id: 2, members: [1, 2], deactivated: false },
+          { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
+          { id: 4, members: [], deactivated: false },
+          { id: 5, members: [], is_archived: true },
+          { _delta: false, deactivated: true, id: 1, members: [1] },
+        ],
+      );
     });
 
     it('should not emit notification when passing an array from remaining', async () => {
@@ -469,7 +472,9 @@ describe('GroupHandleDataController', () => {
           entities: map,
         },
       });
-      expect(groupConfigService.handleMyMostRecentPostChange).toBeCalledWith([
+      expect(
+        groupConfigService.handleMyMostRecentPostChange,
+      ).toHaveBeenCalledWith([
         {
           created_at: 100,
           group_id: 2,
@@ -1030,7 +1035,7 @@ describe('GroupHandleDataController', () => {
           id: 2,
         },
       ]);
-      expect(notificationCenter.emit).toBeCalledTimes(1);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -1181,7 +1186,9 @@ describe('GroupHandleDataController', () => {
         incomingPosts as any,
       );
 
-      expect(groupConfigService.handleMyMostRecentPostChange).toBeCalledWith([
+      expect(
+        groupConfigService.handleMyMostRecentPostChange,
+      ).toHaveBeenCalledWith([
         { created_at: 7, creator_id: 1, group_id: 9, id: 2 },
       ]);
     });
@@ -1195,7 +1202,9 @@ describe('GroupHandleDataController', () => {
         incomingPosts as any,
       );
 
-      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
+      expect(
+        groupConfigService.handleMyMostRecentPostChange,
+      ).not.toHaveBeenCalled();
     });
 
     it('should not update when has no post', async () => {
@@ -1204,7 +1213,9 @@ describe('GroupHandleDataController', () => {
         .mockResolvedValue({ my_last_post_time: Date.now() });
       await groupHandleDataController.handleGroupFetchedPost(9, []);
 
-      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
+      expect(
+        groupConfigService.handleMyMostRecentPostChange,
+      ).not.toHaveBeenCalled();
     });
 
     it('should not update when no post is mine', async () => {
@@ -1217,7 +1228,29 @@ describe('GroupHandleDataController', () => {
         incomingPosts as any,
       );
 
-      expect(groupConfigService.handleMyMostRecentPostChange).not.toBeCalled();
+      expect(
+        groupConfigService.handleMyMostRecentPostChange,
+      ).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('isSMSGroup', () => {
+    const baseGroup = {
+      id: 1,
+      is_team: false,
+      set_abbreviation: 'xx +smsuser+ xx',
+      members: [1, 2],
+    };
+    it.each`
+      group                                            | res
+      ${baseGroup}                                     | ${true}
+      ${{ ...baseGroup, is_team: true }}               | ${false}
+      ${{ ...baseGroup, members: [1, 2, 3] }}          | ${false}
+      ${{ ...baseGroup, set_abbreviation: 'pp' }}      | ${false}
+      ${{ ...baseGroup, set_abbreviation: undefined }} | ${false}
+      ${undefined}                                     | ${false}
+    `('should return $res for $group', ({ res, group }) => {
+      expect(groupHandleDataController.isSMSGroup(group)).toEqual(res);
     });
   });
 });

@@ -19,7 +19,7 @@ export function doResponseLog(response: IResponse) {
   const requestConsumeTime = Date.now() - request.startTime;
 
   const requestId = getRequestId(request);
-  const path = _.get(request, 'path');
+  const path = _.get(request, 'path') || _.get(request, 'uri');
   networkLogger.info(`RESPONSE<KEY INFO>, [${path}] - [${requestId}]`, {
     path,
     requestConsumeTime,

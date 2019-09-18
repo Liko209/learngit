@@ -295,7 +295,7 @@ export class GlipSdk {
     const data = {
       group_id: groupId,
       is_new: true,
-      is_sms: true,
+      is_sms: false,
       text,
       ...options
     };

@@ -41,6 +41,7 @@ export type Post = ExtendedBaseModel & {
   icon?: string; // for integration
   is_team_mention?: boolean;
   is_admin_mention?: boolean;
+  is_sms?: boolean;
 };
 
 export type PostView = IdModel & {
