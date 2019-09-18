@@ -95,6 +95,9 @@ describe('messageNotificationManager', () => {
     getById: async (i: number) => {
       return { 1: team, 0: group }[i];
     },
+    getSynchronously: (i: number) => {
+      return { 1: team, 0: group }[i];
+    },
   };
 
   const mockedProfileService = {

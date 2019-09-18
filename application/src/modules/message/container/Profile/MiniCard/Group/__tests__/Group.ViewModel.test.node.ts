@@ -58,6 +58,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
   describe('group', () => {
     it('should be get group entity when invoke class instance property group [JPT-405]', () => {
       groupService.getById = jest.fn().mockResolvedValueOnce(mockData);
+      groupService.getSynchronously = jest.fn().mockResolvedValueOnce(mockData);
       expect(vm.group).toEqual(mockData);
     });
 

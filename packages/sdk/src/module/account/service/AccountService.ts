@@ -9,17 +9,19 @@ import { JError } from 'foundation/error';
 import { IToken } from 'foundation/network';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
-import { generateUUID } from '../../../utils/mathUtils';
+import { generateUUID } from 'sdk/utils/mathUtils';
 import {
   IPlatformHandleDelegate,
   ITokenModel,
   RCAuthApi,
   HandleByRingCentral,
-} from '../../../api';
-import notificationCenter, { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
-import { SERVICE, SOCKET, ENTITY } from '../../../service/eventKey';
+} from 'sdk/api';
+import notificationCenter, {
+  NotificationEntityUpdatePayload,
+} from 'sdk/service/notificationCenter';
+import { SERVICE, SOCKET, ENTITY } from 'sdk/service/eventKey';
 import { ProfileService } from '../../profile';
-import { setRCToken } from '../../../authenticator/utils';
+import { setRCToken } from 'sdk/authenticator/utils';
 import { AccountGlobalConfig } from '../config';
 import { AuthUserConfig } from '../config/AuthUserConfig';
 import { AccountUserConfig } from '../config/AccountUserConfig';
@@ -32,9 +34,9 @@ import {
   AbstractService,
   AccountManager,
   GLIP_LOGIN_STATUS,
-} from '../../../framework';
+} from 'sdk/framework';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { Nullable, UndefinedAble } from '../../../types';
+import { Nullable, UndefinedAble } from 'sdk/types';
 import { ISubscribeController } from 'sdk/framework/controller/interface/ISubscribeController';
 import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
 import { UserPermission } from 'sdk/module/permission/entity';
@@ -65,7 +67,7 @@ class AccountService extends AbstractService
     this._subscribeController = SubscribeController.buildSubscriptionController(
       {
         [SOCKET.LOGOUT]: this.onGlipForceLogout,
-        [ENTITY.USER_PERMISSION]: this.onPermissionUpdated
+        [ENTITY.USER_PERMISSION]: this.onPermissionUpdated,
       },
     );
   }
@@ -120,7 +122,10 @@ class AccountService extends AbstractService
     );
     const userId = this.userConfig.getGlipUserId();
     try {
-      return await personService.getById(userId);
+      return (
+        personService.getSynchronously(userId) ||
+        (await personService.getById(userId))
+      );
     } catch (error) {
       mainLogger.tags(LOG_TAG).debug('Get user info fail:', error);
     }
@@ -205,12 +210,19 @@ class AccountService extends AbstractService
     RCAuthApi.requestServerStatus(callback);
   }
 
-  onPermissionUpdated = (payload: NotificationEntityUpdatePayload<UserPermission>) => {
+  onPermissionUpdated = (
+    payload: NotificationEntityUpdatePayload<UserPermission>,
+  ) => {
     if (payload) {
-      const userPermissions: UserPermission[] = Array.from(payload.body.entities.values());
-      if (userPermissions && userPermissions[0].permissions[UserPermissionType.USERS_BLACKLIST]) {
-          mainLogger.tags(LOG_TAG).info('User in blacklist, then force logout.');
-          this.onForceLogout(true);
+      const userPermissions: UserPermission[] = Array.from(
+        payload.body.entities.values(),
+      );
+      if (
+        userPermissions &&
+        userPermissions[0].permissions[UserPermissionType.USERS_BLACKLIST]
+      ) {
+        mainLogger.tags(LOG_TAG).info('User in blacklist, then force logout.');
+        this.onForceLogout(true);
       }
     }
   };

@@ -4,33 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractService } from './AbstractService';
-import { IdModel, ModelIdType } from '../model';
-import { IEntityChangeObserver } from '../controller/types';
-import { ISubscribeController } from '../controller/interface/ISubscribeController';
-import { IHealthModuleController } from '../controller/interface/IHealthModuleController';
-import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
-import { BaseDao } from '../dao';
-import NetworkClient from '../../api/NetworkClient';
-import {
-  buildRequestController,
-  buildEntityCacheController,
-  buildEntityPersistentController,
-  buildEntitySourceController,
-  buildEntityCacheSearchController,
-  buildEntityNotificationController,
-} from '../controller';
 import { mainLogger } from 'foundation/log';
+import { UserConfig } from 'sdk/module/config';
+import { notificationCenter, SERVICE } from 'sdk/service';
+import { LoginInfo, Nullable, UndefinedAble } from 'sdk/types';
+import NetworkClient from '../../api/NetworkClient';
+import { configMigrator } from '../config';
+import { IConfigHistory } from '../config/IConfigHistory';
+import { ConfigChangeHistory } from '../config/types';
+import { buildEntityCacheController, buildEntityCacheSearchController, buildEntityNotificationController, buildEntityPersistentController, buildEntitySourceController, buildRequestController } from '../controller';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
 import { IEntityNotificationController } from '../controller/interface/IEntityNotificationController';
+import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
+import { IHealthModuleController } from '../controller/interface/IHealthModuleController';
+import { ISubscribeController } from '../controller/interface/ISubscribeController';
+import { IEntityChangeObserver } from '../controller/types';
+import { BaseDao } from '../dao';
+import { IdModel, ModelIdType } from '../model';
 import { BaseSettingEntity } from '../model/setting';
-import { IConfigHistory } from '../config/IConfigHistory';
-import { configMigrator } from '../config';
-import { Nullable, UndefinedAble, LoginInfo } from 'sdk/types';
-import { ConfigChangeHistory } from '../config/types';
-import { notificationCenter, SERVICE } from 'sdk/service';
-import { UserConfig } from 'sdk/module/config';
+import { AbstractService } from './AbstractService';
 
 class EntityBaseService<
   T extends IdModel<IdType>,
@@ -250,3 +243,4 @@ class EntityBaseService<
 }
 
 export { EntityBaseService };
+

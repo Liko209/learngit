@@ -219,4 +219,13 @@ describe('Post Dao', () => {
       expect(postViewDao.batchGet).toHaveBeenCalledWith([1]);
     });
   });
+
+  describe('initPosts', () => {
+    it('should call post view batchGet', async () => {
+      await postDao.bulkPut(posts);
+      postViewDao.batchGet = jest.fn().mockReturnValue([]);
+      const result = await postDao.initPosts(9163628546);
+      expect(result.length).toEqual(4);
+    });
+  });
 });

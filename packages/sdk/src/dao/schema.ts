@@ -43,7 +43,7 @@ const schema: ISchema = {
       state: gen('id', ['person_id']),
     },
     3: {
-      person: gen('id', ['first_name', 'last_name', 'display_name', 'email']),
+      person: gen('id'),
     },
     4: {
       post: gen('id', ['group_id', 'created_at', '[group_id+created_at]']),
@@ -82,6 +82,9 @@ const schema: ISchema = {
       callLogView: gen('id', ['__timestamp']),
       voicemail: gen('id'),
       voicemailView: gen('id'),
+    },
+    16: {
+      person: gen('id'),
     },
   },
 };

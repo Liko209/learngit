@@ -189,6 +189,8 @@ export class MessageRouterChangeHelper {
     storeManager
       .getGlobalStore()
       .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(id));
+    const useConfig = ServiceLoader.getInstance<StateService>(ServiceConfig.STATE_SERVICE).myStateConfig;
+    useConfig.setLastGroupId(Number(id));
   }
 
   static ensureGroupIsOpened(id: number) {

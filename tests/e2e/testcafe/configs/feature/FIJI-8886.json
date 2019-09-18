@@ -1,0 +1,16 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Bookmarks/Bookmarks.ts",
+      "./fixtures/AtMention/AtMention.ts",
+      "./fixtures/ContentPanel/JumpToRecentButton.ts",
+      "./fixtures/ContentPanel/JumpToUnreadButton.ts",
+      "./fixtures/ConversationList/*.ts",
+      "./fixtures/NewConversation/*.ts",
+      "./fixtures/Search/OpenConversation.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

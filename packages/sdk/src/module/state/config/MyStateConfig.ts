@@ -15,6 +15,14 @@ class MyStateConfig extends CommonUserConfig {
   getMyStateId() {
     return this.get(CONFIG_KEYS.MY_STATE_ID);
   }
+
+  setLastGroupId(id: number) {
+    this.put(CONFIG_KEYS.LAST_GROUP_ID, id);
+  }
+
+  getLastGroupId() {
+    return this.get(CONFIG_KEYS.LAST_GROUP_ID);
+  }
 }
 
 export { MyStateConfig };

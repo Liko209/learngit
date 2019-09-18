@@ -56,7 +56,11 @@ class ProfileMiniCardGroupViewModel
       const groupService = ServiceLoader.getInstance<GroupService>(
         ServiceConfig.GROUP_SERVICE,
       );
-      groupService
+      const group = groupService.getSynchronously(this.id);
+      if (group) {
+        groupStore.set(group);
+      } else {
+        groupService
         .getById(this.id)
         .then((group: Group | null) => {
           if (group) {
@@ -64,6 +68,8 @@ class ProfileMiniCardGroupViewModel
           }
         })
         .catch(onError);
+      }
+      
     }
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }

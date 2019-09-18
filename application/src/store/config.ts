@@ -38,9 +38,10 @@ const ENTITY_SETTING = {
     service: () => ({
       getById: async (id: number) => {
         try {
-          return await ServiceLoader.getInstance<GroupService>(
+          const groupService = ServiceLoader.getInstance<GroupService>(
             ServiceConfig.GROUP_SERVICE,
-          ).getById(id);
+          );
+          return groupService.getSynchronously(id) || await groupService.getById(id);
         } catch (err) {
           mainLogger.tags('Entity Config').log(`get group ${id} fail:`, err);
           return null;

@@ -4,25 +4,27 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao } from '../../../framework/dao';
-import { Item } from '../entity';
 import { IDatabase } from 'foundation/db';
+import _ from 'lodash';
 import { daoManager } from '../../../dao';
-import { FileItemDao } from '../module/file/dao';
-import { TaskItemDao } from '../module/task/dao';
-import { EventItemDao } from '../module/event/dao';
-import { NoteItemDao } from '../module/note/dao';
-import { LinkItemDao } from '../module/link/dao';
+import { BaseDao } from '../../../framework/dao';
+import { IdModel } from '../../../framework/model/Model';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { Item } from '../entity';
 import { SubItemDao } from '../module/base/dao';
 import { SanitizedItem } from '../module/base/entity/SanitizedItem';
-import { IdModel } from '../../../framework/model/Model';
-import _ from 'lodash';
+import { EventItemDao } from '../module/event/dao';
+import { FileItemDao } from '../module/file/dao';
+import { LinkItemDao } from '../module/link/dao';
+import { NoteItemDao } from '../module/note/dao';
+import { TaskItemDao } from '../module/task/dao';
 
 const PUT_KEY = 'put';
 const UPDATE_KEY = 'update';
 class ItemDao extends BaseDao<Item> {
   static COLLECTION_NAME = 'item';
+
+  private _cacheData: Map<number, Item> = new Map<number, Item>();
 
   private _viewDaoMap: Map<number, SubItemDao<SanitizedItem>> = new Map();
 
@@ -44,6 +46,33 @@ class ItemDao extends BaseDao<Item> {
       this._viewDaoMap.set(value.typeId, daoManager.getDao(value.daoClass));
     });
   }
+
+  async initItems(ids: number[]) {
+    const items = await this.batchGet(ids);
+    items.forEach((item: Item) => {
+      this._cacheData.set(item.id, item);
+    });
+  }
+
+   async batchGet(ids: number[], order?: boolean): Promise<Item[]> {
+    const dataArray: Item[] = [];
+    const leftIds: number[] = [];
+    ids.forEach( (id: number) => {
+      const data = this._cacheData.get(id);
+      if (data) {
+        dataArray.push(data);
+      } else {
+        leftIds.push(id);
+      }
+    });
+
+    if (leftIds.length === 0) {
+      return dataArray;
+    }
+
+    const localDataArray = await super.batchGet(leftIds, order);
+    return dataArray.concat(localDataArray);
+   }
 
   async isFileItemExist(
     groupId: number,
@@ -313,3 +342,4 @@ class ItemDao extends BaseDao<Item> {
 }
 
 export { ItemDao };
+

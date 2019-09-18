@@ -6,7 +6,7 @@
 import {
   IPermissionController,
   UserPermissionType,
-  AbstractPermissionController
+  AbstractPermissionController,
 } from 'sdk/module/permission';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyFlagList';
 import { LaunchDarklyClient } from './LaunchDarklyClient';
@@ -45,7 +45,9 @@ class LaunchDarklyController extends AbstractPermissionController
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
-    const person = await personService.getById(userId);
+    const person =
+      personService.getSynchronously(userId) ||
+      (await personService.getById(userId));
     const host: string = window.location.host;
     const { clientId } = Api.httpConfig.launchdarkly;
     const params = {

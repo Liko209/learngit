@@ -30,6 +30,7 @@ import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySour
 import { MAX_PERMISSION_LEVEL, DEFAULT_USER_PERMISSION_LEVEL, PERMISSION_ENUM } from 'sdk/module/group/constants';
 import { ERROR_CODES_SDK, ERROR_TYPES, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { ItemService } from 'sdk/module/item';
+import { EntityBaseService } from 'sdk/framework';
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
 
@@ -100,6 +101,7 @@ describe('SendPostController', () => {
   const postDao = new PostDao(null);
   const accountDao = new AccountDao(null);
   const groupService = new GroupService();
+  groupService.getSynchronously = jest.fn();
   let preInsertController: IPreInsertController;
   function doMock() {
     postActionController = new PostActionController(
@@ -152,7 +154,7 @@ describe('SendPostController', () => {
   });
   describe('sendPost', () => {
     it('should add user id and company id into parameters', async () => {
-      
+
       let correct = false;
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
@@ -532,11 +534,11 @@ describe('SendPostController', () => {
   describe('shareItem', () => {
     const prepareShareItemData = () => {
       sendPostController['_helper'].buildShareItemPost = jest.fn().mockResolvedValue({})
-        jest.spyOn(sendPostController, 'sendPostToServer').mockImplementation(() => {}); 
+        jest.spyOn(sendPostController, 'sendPostToServer').mockImplementation(() => {});
         mockEntitySourceController.get.mockResolvedValue({
           id: 1,
           text: 'gg',
-  
+
         })
         groupService.isCurrentUserHasPermission.mockReturnValue(true)
         groupService.getById.mockResolvedValue({
