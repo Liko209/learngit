@@ -36,12 +36,11 @@ class RecentCallsComponent extends React.Component<Props, State> {
   private _handleClickMap = {};
 
   private _handleClick = (index: number) => {
-    const { makeCall, selectCallItem, isTransferPage } = this.props;
+    const { handleClick } = this.props;
     if (this._handleClickMap[index]) {
       return this._handleClickMap[index];
     }
-    return (this._handleClickMap[index] = () =>
-      isTransferPage ? selectCallItem(index) : makeCall(index));
+    return (this._handleClickMap[index] = () => handleClick(index));
   };
 
   state = {

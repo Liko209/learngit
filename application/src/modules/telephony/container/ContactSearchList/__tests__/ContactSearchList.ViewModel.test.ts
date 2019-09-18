@@ -241,6 +241,14 @@ describe('contactSearchListViewModel', () => {
     expect(contactSearchListViewModel.hasMore()).toBeFalsy();
   });
 
+  describe('onClick()', () => {
+    it('should set dialerInputFocus as true and set focusIndex correst',() => {
+      contactSearchListViewModel.onClick(0);
+      expect(contactSearchListViewModel._telephonyStore.dialerInputFocused).toBeTruthy();
+      expect(contactSearchListViewModel.focusIndex).toBe(0);
+    })
+  })
+
   describe('selectCallItem()', () => {
     it('should cancel the selection of transfer user [JPT-2764]',() => {
       contactSearchListViewModel.selectCallItem('123', 1);

@@ -44,7 +44,7 @@ describe('RecentCallsViewModel', () => {
       .mockImplementation(() => recentCallLogsHandler);
   });
 
-  it('makeCall()', done => {
+  it('handleClick()', done => {
     const phoneNumber = '123456';
     (getEntity as jest.Mock).mockImplementation((name: string, id: number) => {
       if (name === ENTITY_NAME.CALL_LOG) {
@@ -70,14 +70,13 @@ describe('RecentCallsViewModel', () => {
       return {};
     });
     vm = new RecentCallsViewModel();
-    vm.focusIndex = 0;
     const telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
     const telephonyStore: TelephonyStore = container.get(TelephonyStore);
-    telephonyStore.onDialerInputFocus();
 
     setTimeout(async () => {
       expect(vm.isBlock).toBeFalsy();
-      await vm.makeCall();
+      await vm.handleClick(0);
+      expect(telephonyStore.dialerInputFocused).toBeTruthy();
       expect(telephonyService.directCall).toHaveBeenCalledWith(phoneNumber);
       done();
     });

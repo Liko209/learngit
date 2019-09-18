@@ -44,9 +44,6 @@ exports[`Storyshots Components/Avatar Cover Name: Components/Avatar Cover Name 1
   width: 132px;
   border-radius: 50%;
   background-color: #fff;
-  -webkit-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
 }
 
 <div
@@ -89,6 +86,9 @@ exports[`Storyshots Components/Avatar Icon: Components/Avatar Icon 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #18a4de;
 }
 
@@ -156,6 +156,9 @@ exports[`Storyshots Components/Avatar Image: Components/Avatar Image 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #6FAFEB;
 }
 
@@ -210,6 +213,9 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #6FAFEB;
 }
 
@@ -267,6 +273,9 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #6FAFEB;
 }
 
