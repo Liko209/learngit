@@ -184,7 +184,9 @@ class SendPostController implements ISendPostController {
     const sendPost = _.cloneDeep(post);
     delete sendPost.id;
     try {
-      const group = await this.groupService.getById(sendPost.group_id);
+      const group =
+        this.groupService.getSynchronously(sendPost.group_id) ||
+        (await this.groupService.getById(sendPost.group_id));
       const containMentionTeam =
         sendPost.is_team_mention || AT_TEAM_MENTION_REGEXP.test(sendPost.text);
       if (
@@ -256,7 +258,10 @@ class SendPostController implements ISendPostController {
     ).getById(itemId);
 
     if (!item || item.deactivated) {
-      throw new JSdkError(ERROR_CODES_SDK.ITEM_DEACTIVATED, 'item deactivated.');
+      throw new JSdkError(
+        ERROR_CODES_SDK.ITEM_DEACTIVATED,
+        'item deactivated.',
+      );
     }
     const buildPost = await this._helper.buildShareItemPost(
       {

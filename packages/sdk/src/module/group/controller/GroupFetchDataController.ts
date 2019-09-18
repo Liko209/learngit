@@ -107,7 +107,8 @@ export class GroupFetchDataController {
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
       mainLogger.tags(LOG_TAG).info(`getGroupsByType() check hiddenIds`);
-      const excludeIds = favoriteGroupIds.concat(hiddenIds);
+      const excludeIds = new Set<number>(favoriteGroupIds.concat(hiddenIds));
+      
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig;
@@ -116,7 +117,7 @@ export class GroupFetchDataController {
       result = await this.entitySourceController.getEntities(
         (item: Group) =>
           this.groupService.isValid(item) &&
-          !excludeIds.includes(item.id) &&
+          !excludeIds.has(item.id) &&
           (userId ? item.members.includes(userId) : true) &&
           (isTeam ? item.is_team === isTeam : !item.is_team),
       );

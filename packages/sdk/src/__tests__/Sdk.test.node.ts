@@ -27,6 +27,7 @@ import { AccountGlobalConfig } from 'sdk/module/account/config/AccountGlobalConf
 import { CrashManager } from 'sdk/module/crash/CrashManager';
 import { EnvConfig } from '../module/env/config';
 import { dataAnalysis } from 'foundation/analysis';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('../module/config/UserConfig');
 jest.mock('../module/config/GlobalConfig');
@@ -120,13 +121,31 @@ describe('Sdk', () => {
   describe('onStartLogin()', () => {
     it('should init all module', async () => {
       sdk['_sdkConfig'] = { api: {}, db: {} };
-      await sdk.onStartLogin();
+      await sdk.onStartLogin(false);
       expect(daoManager.initDatabase).toHaveBeenCalled();
       expect(serviceManager.startService).toHaveBeenCalled();
       expect(HandleByRingCentral.platformHandleDelegate).toEqual(
         mockAccountService,
       );
       expect(HandleByGlip.platformHandleDelegate).toEqual(mockAccountService);
+    });
+
+    it('should init post', async () => {
+      const initPosts = jest.fn();
+      const myStateConfig = {getLastGroupId: jest.fn().mockReturnValue(2)};
+      ServiceLoader.getInstance = jest.fn().mockImplementation((v: string) => {
+      switch (v) {
+        case ServiceConfig.STATE_SERVICE:
+          return { myStateConfig };
+        case ServiceConfig.POST_SERVICE:
+          return { initPosts };
+        default:
+          return null;
+      }
+    });;
+      sdk['_sdkConfig'] = { api: {}, db: {} };
+      await sdk.onStartLogin(true);
+      expect(initPosts).toHaveBeenCalled();
     });
   });
 

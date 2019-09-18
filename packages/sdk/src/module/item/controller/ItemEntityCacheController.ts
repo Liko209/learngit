@@ -9,7 +9,7 @@ import { Item } from '../entity';
 
 class ItemEntityCacheController extends EntityCacheController<Item> {
 
-  private _typeIdMap: Map<number, number[]> = new Map();
+   private _typeIdMap: Map<number, number[]> = new Map();
 
   static buildItemEntityCacheController(sizeForType: number) {
     return new ItemEntityCacheController(sizeForType);
@@ -26,6 +26,7 @@ class ItemEntityCacheController extends EntityCacheController<Item> {
 
   protected putInternal(item: Item) {
     super.putInternal(item);
+
     const ids = this._typeIdMap.get(item.type_id);
     if (ids) {
       if (ids.length >= this.sizeForType) {

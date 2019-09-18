@@ -157,6 +157,21 @@ describe('Item Dao', () => {
     );
   });
 
+  describe('initItems()', () => {
+    const items: Item[] = buildTestItems();
+    beforeEach(async () => {
+      const { database } = setup(DatabaseType.DexieDB);
+      itemDao = new ItemDao(database);
+      await itemDao.bulkPut(items);
+    });
+
+    it('should init item', async () => {
+      await itemDao.initItems([1, 3, -5]);
+      const result = itemDao['_cacheData'];
+      expect(result.size).toEqual(3);
+    })
+  });
+
   describe('put', () => {
     beforeEach(() => {
       clearMocks();

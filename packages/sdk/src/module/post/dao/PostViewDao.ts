@@ -16,9 +16,44 @@ import { IViewDao } from 'sdk/module/base/dao/IViewDao';
 class PostViewDao extends BaseDao<PostView>
   implements IViewDao<number, Post, PostView> {
   static COLLECTION_NAME = 'postView';
+  protected idsMap: Map<number, number[]>;
+
   // TODO, use IDatabase after import foundation module in
   constructor(db: IDatabase) {
     super(PostViewDao.COLLECTION_NAME, db);
+  }
+
+  async put(postView: PostView): Promise<void> {
+    this._updateIds([postView]);
+    return super.put(postView);
+  }
+
+  async bulkPut(postViews: PostView[]): Promise<void> {
+    this._updateIds(postViews);
+    return super.bulkPut(postViews);
+  }
+
+  private _updateIds(updatePostViews: PostView[]) {
+    if (this.idsMap) {
+      updatePostViews.forEach((view: PostView) => {
+        const ids = this.idsMap.get(view.group_id);
+        if (ids) {
+          if (ids.length === 0  || ids[ids.length - 1] < view.id) {
+            ids.push(view.id);
+          } else {
+            for (let i = 0; i < ids.length; i++) {
+              if (ids[i] === view.id) {
+                break;
+              }
+              if (ids[i] > view.id) {
+                i > 0 && ids.splice(i, 0, view.id);
+                break;
+              }
+            }
+          }
+        }
+      })
+    }
   }
 
   toViewItem(entity: Post): PostView {
@@ -55,6 +90,7 @@ class PostViewDao extends BaseDao<PostView>
   ): Promise<Post[]> {
     const start = performance.now();
     let anchorPost;
+    let postIds;
     if (anchorPostId) {
       anchorPost = await this.get(anchorPostId);
       if (!anchorPost) {
@@ -64,11 +100,17 @@ class PostViewDao extends BaseDao<PostView>
         );
         return [];
       }
-    }
-    // 1. Get ids from post lookup table via group id
-    let postIds = await this.queryPostIdsByGroupId(groupId);
-    if (!postIds.length) {
-      return [];
+      // 1. Get ids from post lookup table via group id
+      postIds = await this.queryPostIdsByGroupId(groupId);
+    } else {
+      if (!this.idsMap) {
+        this.idsMap = new Map<number, number[]>();
+        await this.initialPostIds();
+      }
+      postIds = this.idsMap.get(groupId) || await this.queryPostIdsByGroupId(groupId);
+      if (!postIds.length) {
+        return [];
+      }
     }
 
     // 2. If post id > 0, calculate the startIndex & endIndex via direction, else limit is the endIndex
@@ -82,6 +124,7 @@ class PostViewDao extends BaseDao<PostView>
     mainLogger.info(
       LOG_FETCH_POST,
       `queryPostsByGroupId() from postView ${end - start}, groupId:${groupId}`,
+      postIds.length,
     );
 
     // 3. Get posts via ids from post table
@@ -89,7 +132,8 @@ class PostViewDao extends BaseDao<PostView>
     mainLogger.info(
       LOG_FETCH_POST,
       `queryPostsByGroupId() via ids from post ${performance.now() -
-        end}, groupId:${groupId}`,
+      end}, groupId:${groupId}`,
+      posts.length,
     );
     return posts;
   }
@@ -111,6 +155,18 @@ class PostViewDao extends BaseDao<PostView>
   async queryPostIdsByGroupId(groupId: number): Promise<number[]> {
     const postViews = await this.queryPostByGroupId(groupId);
     return postViews.map(postView => postView.id);
+  }
+
+  async initialPostIds(): Promise<void> {
+    const postViews = await this.getAll();
+    for (let i = postViews.length - 1; i >= 0; i--) {
+      const ids = this.idsMap.get(postViews[i].group_id);
+      if (ids) {
+        ids.length < DEFAULT_PAGE_SIZE && ids.unshift(postViews[i].id);
+      } else {
+        this.idsMap.set(postViews[i].group_id, [postViews[i].id]);
+      }
+    }
   }
 
   async queryPostByGroupId(groupId: number): Promise<PostView[]> {

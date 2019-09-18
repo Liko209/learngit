@@ -4,27 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PostController } from '../controller/PostController';
-import { Post, IPostQuery, IPostResult } from '../entity';
-import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager, QUERY_DIRECTION } from '../../../dao';
-import { PostDao } from '../dao';
-import { Api } from '../../../api';
-import { SendPostType, EditPostType } from '../types';
-import { DEFAULT_PAGE_SIZE } from '../constant';
-import { ProfileService } from '../../profile';
-import { Item } from '../../item/entity';
-import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SOCKET } from '../../../service/eventKey';
-import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
-import { Raw } from '../../../framework/model';
-import { ContentSearchParams } from '../../../api/glip/search';
-import { IGroupService } from '../../group/service/IGroupService';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
-import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { ChangeModel } from 'sdk/module/sync/types';
-import { PostNotificationController } from '../controller/PostNotificationController';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
+import { ItemService } from 'sdk/module/item';
+import { ChangeModel } from 'sdk/module/sync/types';
+import { Api } from '../../../api';
+import { ContentSearchParams } from '../../../api/glip/search';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { Raw } from '../../../framework/model';
+import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { SOCKET } from '../../../service/eventKey';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { IGroupService } from '../../group/service/IGroupService';
+import { Item } from '../../item/entity';
+import { ProfileService } from '../../profile';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
+import { DEFAULT_PAGE_SIZE } from '../constant';
+import { PostController } from '../controller/PostController';
+import { PostNotificationController } from '../controller/PostNotificationController';
+import { PostDao } from '../dao';
+import { IPostQuery, IPostResult, Post } from '../entity';
+import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
+import { EditPostType, SendPostType } from '../types';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
@@ -237,6 +238,15 @@ class PostService extends EntityBaseService<Post> {
   private get _postDataController() {
     return this.getPostController().getPostDataController();
   }
+
+  async initPosts(groupId: number) {
+    const posts = await daoManager.getDao(PostDao).initPosts(groupId);
+    const itemService = ServiceLoader.getInstance<ItemService>(ServiceConfig.ITEM_SERVICE);
+    await itemService.getByPosts(posts);
+    return posts;
+  }
+
 }
 
 export { PostService };
+

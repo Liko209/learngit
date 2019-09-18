@@ -505,7 +505,13 @@ class GroupHandleDataController {
       ServiceConfig.STATE_SERVICE,
     );
     const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
-    return states.filter(this.hasUnread).map(state => state.id);
+    const unreadIds = new Set<number>();
+    states.forEach((state: GroupState) => {
+      if (state && this.hasUnread(state)) {
+        unreadIds.add(state.id);
+      }
+    });
+    return unreadIds;
   };
 
   /**
@@ -513,9 +519,8 @@ class GroupHandleDataController {
    * or just use default limit length
    */
   filterGroups = async (groups: Group[], limit: number) => {
-    let sortedGroups = groups;
     const currentUserId = this._getGlipUserId();
-    sortedGroups = groups.filter((model: Group) => {
+    let sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;
       }
@@ -529,37 +534,14 @@ class GroupHandleDataController {
         this.getGroupTime(group2) - this.getGroupTime(group1),
     );
 
-    // Find oldest unread group's time
     const unreadGroupIds = await this.getUnreadGroupIds(sortedGroups);
-    mainLogger.tags(LOG_TAG).info('fetch unread group ids done');
-    const oldestUnreadGroupTime = sortedGroups
-      .filter(group => unreadGroupIds.includes(group.id))
-      .map(this.getGroupTime)
-      .sort()
-      .shift();
-
-    if (oldestUnreadGroupTime) {
-      // With unread message
-      const filteredGroups = sortedGroups.filter(
-        (group: Group) => this.getGroupTime(group) >= oldestUnreadGroupTime,
-      );
-      if (filteredGroups.length > limit) {
-        const result = filteredGroups.slice(0, limit);
-        for (let i = limit; i < filteredGroups.length; i++) {
-          if (unreadGroupIds.indexOf(filteredGroups[i].id) !== -1) {
-            result.push(filteredGroups[i]);
-          }
-        }
-        return result;
+    const result: Group[] = sortedGroups.slice(0, limit);
+    for (let i = limit; i < sortedGroups.length; ++i) {
+      if (unreadGroupIds.has(sortedGroups[i].id)) {
+        result.push(sortedGroups[i]);
       }
     }
-
-    // Without unread message
-    if (sortedGroups.length > limit) {
-      sortedGroups.length = limit;
-    }
-
-    return sortedGroups;
+    return result;
   };
 
   handlePartialData = async (groups: Partial<Raw<Group>>[]) => {

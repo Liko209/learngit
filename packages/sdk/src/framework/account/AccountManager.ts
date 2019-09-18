@@ -50,13 +50,13 @@ class AccountManager extends EventEmitter2 {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
     const resp = authenticator.authenticate(params);
     if (resp.success) {
-      await this.emitAsync(START_LOGIN);
+      await this.emitAsync(START_LOGIN, true);
     }
     return this._handleAuthResponse(resp);
   }
 
   async login(authType: string, params?: any) {
-    await this.emitAsync(START_LOGIN);
+    await this.emitAsync(START_LOGIN, false);
     const authenticator = this._container.get<IAuthenticator>(authType);
     const resp = await authenticator.authenticate(params);
     if (!resp.accountInfos) {

@@ -236,9 +236,10 @@ class MessageNotificationManager extends AbstractNotificationManager
       );
       return false;
     }
-    const group = await ServiceLoader.getInstance<GroupService>(
+    const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
-    ).getById(post.group_id);
+    );
+    const group = groupService.getSynchronously(post.group_id) || await groupService.getById(post.group_id);
 
     if (!group) {
       logger.info(

@@ -29,12 +29,16 @@ let mockedProfileService: any;
 let mockedGroupService: any;
 let mockedGlobalStore: any;
 let mockedSectionHandler: any;
+let myStateConfig = {
+  setLastGroupId: jest.fn(),
+}
 function resetMockedServices() {
   mockedStateService = {
     lastGroupId: 110,
     async getMyState() {
       return { last_group_id: this.lastGroupId };
     },
+    myStateConfig,
   };
   mockedProfileService = {
     hidden: false,

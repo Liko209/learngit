@@ -40,6 +40,7 @@ describe('LaunchDarklyController', () => {
   describe('initClient', () => {
     let accountUserConfig: AccountUserConfig;
     let getById = jest.fn();
+    let getSynchronously = jest.fn();
     function setUp() {
       ServiceLoader.getInstance = jest
         .fn()
@@ -49,7 +50,8 @@ describe('LaunchDarklyController', () => {
           }
           if (config === ServiceConfig.PERSON_SERVICE) {
             return {
-              getById
+              getById,
+              getSynchronously,
             }
           }
         });
@@ -76,6 +78,7 @@ describe('LaunchDarklyController', () => {
       const controller = new LaunchDarklyController();
       accountUserConfig.getGlipUserId = jest.fn().mockReturnValueOnce(1);
       getById.mockReturnValueOnce({});
+      getSynchronously.mockReturnValueOnce({});
       EnvConfig.getIsRunningE2E = jest.fn().mockReturnValueOnce(true);
       Api = {
         httpConfig: {

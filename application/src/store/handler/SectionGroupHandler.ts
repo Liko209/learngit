@@ -703,7 +703,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       return limitSortableModel
         ? sortableModel.sortValue <= limitSortableModel.sortValue
         : true;
-    } 
+    }
     return true;
   }
 
@@ -763,9 +763,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             this._addToFetchDependUnread(group.id, state, sectionType);
           });
         } else {
-          groups.forEach(async (group: Group) => {
-            const state = await stateService.getById(group.id);
-            this._addToFetchDependUnread(group.id, state, sectionType);
+          const groupIds = groups.map((group: Group) => group.id);
+          const groupStates = await stateService.batchGet(groupIds);
+          groupStates.forEach((groupState: GroupState) => {
+            this._addToFetchDependUnread(groupState.id, groupState, sectionType);
           });
         }
       }

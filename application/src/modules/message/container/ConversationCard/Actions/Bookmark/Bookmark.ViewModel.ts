@@ -31,7 +31,7 @@ class BookmarkViewModel extends StoreViewModel<BookmarkProps>
 
   @computed
   get isBookmark() {
-    return this._favoritePostIds.includes(this._id);
+    return !!(this._favoritePostIds && this._favoritePostIds.includes(this._id));
   }
 
   @action

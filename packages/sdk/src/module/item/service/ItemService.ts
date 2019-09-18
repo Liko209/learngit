@@ -4,30 +4,30 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Item, ItemFile, ConferenceItem } from '../entity';
-import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { ItemServiceController } from '../controller/ItemServiceController';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
-import { Progress } from '../../progress';
-import { Post } from '../../post/entity';
-import { daoManager } from '../../../dao';
-import { ItemDao } from '../dao';
-import { SOCKET, ENTITY } from '../../../service/eventKey';
-import { FileItemService } from '../module/file';
-import { Api } from '../../../api';
-import { SubscribeController } from '../../base/controller/SubscribeController';
-import { IItemService } from './IItemService';
-import { transform, baseHandleData } from '../../../service/utils';
-import { Raw } from '../../../framework/model';
-import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { mainLogger } from 'foundation/log';
 import { PerformanceTracer } from 'foundation/performance';
-import { ItemNotification } from '../utils/ItemNotification';
+import { ProgressCallback, RequestHolder } from 'sdk/api/glip/item';
+import { Api } from '../../../api';
+import { daoManager } from '../../../dao';
+import { Raw } from '../../../framework/model';
+import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { ENTITY, SOCKET } from '../../../service/eventKey';
+import { baseHandleData, transform } from '../../../service/utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { Post } from '../../post/entity';
+import { Progress } from '../../progress';
 import { ChangeModel } from '../../sync/types';
-import { NoteItemService } from '../module/note/service';
 import { ITEM_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { RequestHolder, ProgressCallback } from 'sdk/api/glip/item';
-import { ItemEntityCacheController } from '../controller/ItemEntityCacheController'
+import { ItemEntityCacheController } from '../controller/ItemEntityCacheController';
+import { ItemServiceController } from '../controller/ItemServiceController';
+import { ItemDao } from '../dao';
+import { ConferenceItem, Item, ItemFile } from '../entity';
+import { FileItemService } from '../module/file';
+import { NoteItemService } from '../module/note/service';
+import { ItemFilterFunction, ItemQueryOptions } from '../types';
+import { ItemNotification } from '../utils/ItemNotification';
+import { IItemService } from './IItemService';
 
 const INVALID_ITEM_ID = [-1, -2, null];
 const LOG_NAME = 'ItemService';
@@ -227,6 +227,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     let items: Item[] = [];
     if (itemIds.length > 0) {
       itemIds = itemIds.filter(id => !INVALID_ITEM_ID.includes(id));
+
       items = await this.getEntitySource().batchGet([
         ...Array.from(new Set(itemIds)),
       ]);
@@ -312,3 +313,4 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 }
 
 export { ItemService };
+

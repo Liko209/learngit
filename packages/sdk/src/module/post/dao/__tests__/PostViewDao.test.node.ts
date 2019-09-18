@@ -54,6 +54,11 @@ const unreadPosts: Post[] = [
     created_at: 1,
   }),
   postFactory.build({
+    id: 3752569593866,
+    group_id: 9163628546,
+    created_at: 2,
+  }),
+  postFactory.build({
     id: 3752569593870,
     group_id: 9163628546,
     created_at: 3,
@@ -62,11 +67,6 @@ const unreadPosts: Post[] = [
     id: 3752569593960,
     group_id: 9163628546,
     created_at: 4,
-  }),
-  postFactory.build({
-    id: 3752569593866,
-    group_id: 9163628546,
-    created_at: 2,
   }),
   postFactory.build({
     id: 3752569594960,
@@ -88,29 +88,29 @@ const posts: Post[] = [
     created_at: 1,
   }),
   postFactory.build({
-    id: 3752569536516,
-    group_id: 9163628546,
-    created_at: 3,
-  }),
-  postFactory.build({
-    id: 1151236399108,
-    group_id: 9163628546,
-    created_at: 4,
-  }),
-  postFactory.build({
-    id: 1151236554756,
+    id: 3752569593870,
     group_id: 9163628546,
     created_at: 2,
   }),
   postFactory.build({
-    id: 1151236554700,
-    group_id: 9163628546,
-    created_at: 5,
-  }),
-  postFactory.build({
-    id: 1151236554701,
+    id: 3752569593880,
     group_id: 9163628546,
     created_at: 6,
+  }),
+  postFactory.build({
+    id: 3752569593890,
+    group_id: 9163628546,
+    created_at: 8,
+  }),
+  postFactory.build({
+    id: 3752569593893,
+    group_id: 9163628546,
+    created_at: 10,
+  }),
+  postFactory.build({
+    id: 3752569593895,
+    group_id: 9163628546,
+    created_at: 12,
   }),
 ];
 
@@ -118,6 +118,35 @@ describe('PostViewDao', () => {
   let postViewDao: PostViewDao;
   let postDao: PostDao;
   let fetchPostsFunc: (ids: number[]) => Promise<Post[]>;
+
+  function clearMocks() {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+    jest.clearAllMocks();
+  }
+
+  async function setupDatabase() {
+    await postDao.clear();
+    await postDao.bulkPut(posts);
+    jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
+    fetchPostsFunc = async (ids: number[]) => {
+      const posts = await postDao.batchGet(ids);
+      return _.orderBy(posts, 'created_at', 'asc');
+    };
+  }
+
+  async function prepareData() {
+      const result = await postViewDao.queryPostsByGroupId(
+        postDao['_fetchPostsFunc'],
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
+      expect(result).toHaveLength(6);
+      expect(spy).not.toHaveBeenCalled();
+    }
 
   beforeAll(() => {
     const { database } = setup();
@@ -128,15 +157,8 @@ describe('PostViewDao', () => {
 
   describe('queryPostsByGroupId()', () => {
     beforeEach(async () => {
-      jest.restoreAllMocks();
-      jest.resetAllMocks();
-      await postDao.clear();
-      await postDao.bulkPut(posts);
-      jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
-      fetchPostsFunc = async (ids: number[]) => {
-        const posts = await postDao.batchGet(ids);
-        return _.orderBy(posts, 'created_at', 'asc');
-      };
+      clearMocks();
+      await setupDatabase();
     });
 
     it('should return directly when db has not posts', async () => {
@@ -145,7 +167,7 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        1151236399108,
+        3752569593890,
         QUERY_DIRECTION.OLDER,
         3,
       );
@@ -159,7 +181,7 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        1151236399108,
+        3752569593890,
         QUERY_DIRECTION.OLDER,
         3,
       );
@@ -185,13 +207,13 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        1151236399108,
+        3752569593890,
         QUERY_DIRECTION.BOTH,
         4,
       );
       expect(result).toHaveLength(4);
       expect(_.first(result).created_at).toBe(2);
-      expect(_.last(result).created_at).toBe(5);
+      expect(_.last(result).created_at).toBe(10);
     });
 
     it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit > 0', async () => {
@@ -199,12 +221,12 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        3752569536516,
+        3752569593880,
         QUERY_DIRECTION.BOTH,
         4,
       );
       expect(result).toHaveLength(4);
-      expect(_.last(result).created_at).toBe(4);
+      expect(_.last(result).created_at).toBe(8);
       expect(_.first(result).created_at).toBe(1);
     });
 
@@ -213,13 +235,13 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        1151236554700,
+        3752569593893,
         QUERY_DIRECTION.BOTH,
         4,
       );
       expect(result).toHaveLength(4);
-      expect(_.last(result).created_at).toBe(6);
-      expect(_.first(result).created_at).toBe(3);
+      expect(_.last(result).created_at).toBe(12);
+      expect(_.first(result).created_at).toBe(6);
     });
 
     it('should return both posts when direction is both | post id > 0 | endIndex < posts.length', async () => {
@@ -227,13 +249,13 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        3752569536516,
+        3752569593880,
         QUERY_DIRECTION.BOTH,
         4,
       );
       expect(result).toHaveLength(4);
       expect(_.first(result).created_at).toBe(1);
-      expect(_.last(result).created_at).toBe(4);
+      expect(_.last(result).created_at).toBe(8);
     });
 
     it('should return both posts when direction is both | post id > 0 | endIndex === posts.length', async () => {
@@ -241,12 +263,12 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        1151236554756,
+        3752569593870,
         QUERY_DIRECTION.BOTH,
         4,
       );
       expect(result).toHaveLength(4);
-      expect(_.last(result).created_at).toBe(4);
+      expect(_.last(result).created_at).toBe(8);
       expect(_.first(result).created_at).toBe(1);
     });
 
@@ -260,7 +282,7 @@ describe('PostViewDao', () => {
         4,
       );
       expect(result).toHaveLength(4);
-      expect(_.last(result).created_at).toBe(4);
+      expect(_.last(result).created_at).toBe(8);
       expect(_.first(result).created_at).toBe(1);
     });
 
@@ -269,12 +291,12 @@ describe('PostViewDao', () => {
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        3752569536516,
+        3752569593880,
         QUERY_DIRECTION.BOTH,
         8,
       );
       expect(result).toHaveLength(6);
-      expect(_.last(result).created_at).toBe(6);
+      expect(_.last(result).created_at).toBe(12);
       expect(_.first(result).created_at).toBe(1);
     });
 
@@ -300,7 +322,8 @@ describe('PostViewDao', () => {
         3,
       );
       expect(result).toHaveLength(3);
-      expect(_.last(result).created_at).toBe(3);
+
+      expect(_.last(result).created_at).toBe(6);
     });
   });
 
@@ -406,6 +429,172 @@ describe('PostViewDao', () => {
   describe('getCollection', () => {
     it('should return collection of db', () => {
       expect(postViewDao.getCollection()).toEqual(expect.anything());
+    });
+  });
+
+  describe('bulkPut', () => {
+    beforeEach(async () => {
+      clearMocks();
+      await setupDatabase();
+      await postDao.initPosts(9163628546);
+    });
+
+    it('should insert id to array when bulkPut new message', async () => {
+      await prepareData();
+      await postDao.bulkPut([postFactory.build({
+        id: 3752569593898,
+        group_id: 9163628546,
+        created_at: 13,
+      }), postFactory.build({
+        id: 3752569593875,
+        group_id: 9163628546,
+        created_at: 3,
+      })]);
+      let result1 = await postViewDao.queryPostsByGroupId(
+        postDao['_fetchPostsFunc'],
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      result1 = _.orderBy(result1, 'created_at', 'asc')
+      expect(result1).toHaveLength(8);
+      expect(result1[result1.length - 1].id).toEqual(3752569593898);
+      expect(result1[2].id).toEqual(3752569593875);
+    });
+
+    it('should not insert id to array if id < smallest id', async () => {
+      await prepareData();
+      await postDao.bulkPut([postFactory.build({
+        id: 2752569593898,
+        group_id: 9163628546,
+        created_at: -1,
+      }),]);
+      let result1 = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      expect(result1).toHaveLength(6);
+      expect(result1[0].id).toEqual(3752569593860);
+    });
+
+    it('should insert id to db if id not exist in map', async () => {
+      await prepareData();
+      await postDao.bulkPut([postFactory.build({
+        id: 2752569593898,
+        group_id: 9163628549,
+        created_at: -1,
+      }),]);
+      let result1 = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      expect(result1).toHaveLength(6);
+      let result2 = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628549,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      expect(result2).toHaveLength(1);
+      expect(result2[0].id).toEqual(2752569593898);
+    });
+  });
+
+  describe('put', () => {
+    beforeEach(async () => {
+      clearMocks();
+      await setupDatabase();
+      await postDao.initPosts(9163628546);
+    });
+
+    it('should insert id to last when put new message', async () => {
+      await prepareData();
+      await postDao.put(postFactory.build({
+        id: 3752569593898,
+        group_id: 9163628546,
+        created_at: 13,
+      }));
+      let result1 = await postViewDao.queryPostsByGroupId(
+        postDao['_fetchPostsFunc'],
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      result1 = _.orderBy(result1, 'created_at', 'asc')
+      expect(result1).toHaveLength(7);
+      expect(result1[result1.length - 1].id).toEqual(3752569593898);
+    });
+
+    it('should insert id to array when put a message which in range', async () => {
+      await prepareData();
+      await postDao.put(postFactory.build({
+        id: 3752569593885,
+        group_id: 9163628546,
+        created_at: 7,
+      }));
+      let result1 = await postViewDao.queryPostsByGroupId(
+        postDao['_fetchPostsFunc'],
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      result1 = _.orderBy(result1, 'created_at', 'asc')
+      expect(result1).toHaveLength(7);
+      expect(result1[3].id).toEqual(3752569593885);
+    });
+
+    it('should not insert id to array if id < smallest id', async () => {
+      await prepareData();
+      await postDao.put(postFactory.build({
+        id: 2752569593898,
+        group_id: 9163628546,
+        created_at: -1,
+      }));
+      let result1 = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      expect(result1).toHaveLength(6);
+      expect(result1[0].id).toEqual(3752569593860);
+    });
+
+    it('should insert id to db if id not exist in map', async () => {
+      await prepareData();
+      await postDao.put(postFactory.build({
+        id: 2752569593898,
+        group_id: 9163628549,
+        created_at: -1,
+      }));
+      let result1 = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628546,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      expect(result1).toHaveLength(6);
+      let result2 = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628549,
+        0,
+        QUERY_DIRECTION.NEWER,
+        10,
+      );
+      expect(result2).toHaveLength(1);
+      expect(result2[0].id).toEqual(2752569593898);
     });
   });
 });

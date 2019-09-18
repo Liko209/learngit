@@ -103,24 +103,28 @@ class ItemSyncController {
   ) => {
     let result: IProcessor[] = totalProcessors;
     if (existed) {
-      result = result.filter((item: IProcessor) => item.name() !== newProcessor.name());
+      result = result.filter(
+        (item: IProcessor) => item.name() !== newProcessor.name(),
+      );
     }
     result.unshift(newProcessor);
     return result;
-  }
+  };
 
   private _onExceedMaxSize = (totalProcessors: IProcessor[]) => {
     const lastProcessor = totalProcessors.pop();
     if (lastProcessor && lastProcessor.cancel) {
       lastProcessor.cancel();
     }
-  }
+  };
 
   async requestSyncGroupItems(groupId: number) {
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
-    const groupConfig = await groupConfigService.getById(groupId);
+    const groupConfig =
+      groupConfigService.getSynchronously(groupId) ||
+      (await groupConfigService.getById(groupId));
     const typeIdKeys = Object.keys(GroupItemKeyMap).reverse();
     const itemSyncProcessors: IProcessor[] = [];
     typeIdKeys.forEach((typeIdKey: string) => {

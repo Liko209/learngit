@@ -5,36 +5,38 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import Foundation from 'foundation/Foundation';
-import { NetworkManager, Token } from 'foundation/network';
 import { dataAnalysis } from 'foundation/analysis';
-import { sleepModeDetector } from 'foundation/utils';
+import Foundation from 'foundation/Foundation';
 import { mainLogger } from 'foundation/log';
+import { NetworkManager, Token } from 'foundation/network';
 import { Performance } from 'foundation/performance';
+import { sleepModeDetector } from 'foundation/utils';
 import merge from 'lodash/merge';
-import './service/windowEventListener'; // to initial window events listener
-
 import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
-import DaoManager from './dao/DaoManager';
-import { AccountManager, ServiceManager, IAuthResponse } from './framework';
-import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
-import { SERVICE } from './service/eventKey';
-import notificationCenter from './service/notificationCenter';
-import { SyncService } from './module/sync';
-import { ApiConfig, DBConfig, ISdkConfig, LoginInfo } from './types';
-import { AccountService } from './module/account';
-import { setGlipToken } from './authenticator/utils';
-import { AccountGlobalConfig } from './module/account/config';
-import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
-import { PhoneParserUtility } from './utils/phoneParser';
-import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
+import { setGlipToken } from './authenticator/utils';
+import DaoManager from './dao/DaoManager';
+import { AccountManager, IAuthResponse, ServiceManager } from './framework';
+import { configMigrator } from './framework/config';
 import { jobScheduler } from './framework/utils/jobSchedule';
+import { AccountService } from './module/account';
+import { AccountGlobalConfig } from './module/account/config';
 import { UserConfigService } from './module/config';
 import { CrashManager } from './module/crash';
 import { EnvConfig } from './module/env/config';
+import { PostService } from './module/post/service/PostService';
+import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
+import { StateService } from './module/state';
+import { SyncService } from './module/sync';
+import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
+import { SERVICE } from './service/eventKey';
+import notificationCenter from './service/notificationCenter';
+import './service/windowEventListener'; // to initial window events listener
+import { ApiConfig, DBConfig, ISdkConfig, LoginInfo } from './types';
+import { PhoneParserUtility } from './utils/phoneParser';
+
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -103,13 +105,18 @@ class Sdk {
     mainLogger.tags(LOG_TAG).info('sdk init finished');
   }
 
-  async onStartLogin() {
+  async onStartLogin(isLogin: boolean) {
     mainLogger.tags(LOG_TAG).info('onStartLogin');
     await this.daoManager.initDatabase(this.clearAllData);
-
+    if (isLogin) {
+      const userConfig = ServiceLoader.getInstance<StateService>(
+        ServiceConfig.STATE_SERVICE,
+      ).myStateConfig;
+      const groupId = userConfig.getLastGroupId();
+      groupId && await ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE).initPosts(userConfig.getLastGroupId());
+    }
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
-
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     );

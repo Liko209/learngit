@@ -184,7 +184,9 @@ class ConversationPreferenceHandler implements IProfileObserver {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-    const group = await groupService.getById(conversationId);
+    const group =
+      groupService.getSynchronously(conversationId) ||
+      (await groupService.getById(conversationId));
     return !!(group && group.is_team);
   }
 }
