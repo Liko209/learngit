@@ -191,6 +191,13 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
     return this._telephonyStore.isTransferPage;
   }
 
+  @action
+  handleClick = (index: number) => {
+    const { makeCall, selectCallItem, isTransferPage } = this;
+    this._telephonyStore.onDialerInputFocus();
+    isTransferPage ? selectCallItem(index) : makeCall(index);
+  };
+
   dispose = () => {
     this._recentCallLogsHandler && this._recentCallLogsHandler.dispose();
   };

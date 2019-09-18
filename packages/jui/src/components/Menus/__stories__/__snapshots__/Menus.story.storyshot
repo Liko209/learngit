@@ -42,6 +42,9 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 22px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #f5f6fb;
 }
 

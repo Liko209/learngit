@@ -24,6 +24,7 @@ type ViewProps = {
   selectCallItem: (focusIndex?: number) => void;
   dialerInputFocused: boolean;
   isTransferPage: boolean;
+  handleClick: (index: number) => void;
 } & Props;
 
 export { Props, ViewProps };

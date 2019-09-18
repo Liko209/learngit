@@ -72,6 +72,9 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #f5f6fb;
 }
 
@@ -213,6 +216,9 @@ exports[`Storyshots Components/Chip with Avatar: Components/Chip with Avatar 1`]
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
   background-color: #f5f6fb;
 }
 

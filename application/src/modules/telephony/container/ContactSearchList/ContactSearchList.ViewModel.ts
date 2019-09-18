@@ -128,6 +128,7 @@ export class ContactSearchListViewModel
 
   onClick = (focusIndex: number) => {
     this.focusIndex = focusIndex;
+    this._telephonyStore.onDialerInputFocus();
     this.onEnter();
   };
 
