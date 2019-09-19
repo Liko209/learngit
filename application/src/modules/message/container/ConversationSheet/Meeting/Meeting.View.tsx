@@ -94,19 +94,20 @@ class Meeting extends React.Component<meetingProps> {
   });
 
   render() {
-    const { t, meetingTitle, meetingItem, duration, isMeetingOwner } = this.props;
+    const { t, meetingTitle, meetingItem, duration, isMeetingOwner, canUseVideoCall } = this.props;
     const status = meetingItem.meetingStatus;
     return (
       <JuiConversationItemCard
         title={postParser(t(meetingTitle), { keyword: this.context.keyword })}
         Icon="meetings"
         subTitle={
-          <MeetingStatus
-            status={status}
-            duration={`${t('item.meeting.duration')}: ${duration}`}
-            onStatusClick={this._getStatusClick(status)}
-            isOwner={isMeetingOwner}
-          />
+          canUseVideoCall ?
+            <MeetingStatus
+              status={status}
+              duration={`${t('item.meeting.duration')}: ${duration}`}
+              onStatusClick={this._getStatusClick(status)}
+              isOwner={isMeetingOwner}
+            /> : <></>
         }
         isShowLoading={status === MEETING_STATUS.NOT_STARTED
         }
