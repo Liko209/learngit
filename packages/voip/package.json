@@ -1,11 +1,11 @@
 {
   "name": "voip",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "private": true,
   "main": "src",
   "dependencies": {
     "eventemitter2": "5.0.1",
-    "foundation": "1.8.0",
+    "foundation": "1.8.1",
     "lodash": "4.17.15",
     "ringcentral-web-phone": "git+ssh://git@git.ringcentral.com:Fiji/ringcentral-web-phone.git#bug/FIJI-9024",
     "ts-javascript-state-machine": "3.1.3"
