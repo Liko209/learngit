@@ -33,7 +33,7 @@ import { GroupConfigService } from 'sdk/module/groupConfig';
 
 const LOG_TAG = 'GroupHandleDataController';
 const hasOwnProperty = Object.prototype.hasOwnProperty;
-const SMS_USER_NAME = '+smsuser+';
+const SMS_USER_NAME_REGEX = /.*smsuser\+[\d]+.*/;
 class GroupHandleDataController {
   constructor(
     public groupService: IGroupService,
@@ -292,7 +292,7 @@ class GroupHandleDataController {
       !group.is_team &&
       group.members.length === 2 &&
       group.set_abbreviation &&
-      group.set_abbreviation.includes(SMS_USER_NAME)
+      SMS_USER_NAME_REGEX.test(group.set_abbreviation)
     );
   }
 
