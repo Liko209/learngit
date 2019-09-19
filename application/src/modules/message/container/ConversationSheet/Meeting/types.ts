@@ -20,6 +20,7 @@ type ViewProps = {
   joinMeeting: () => void;
   cancelMeeting: () => void;
   isMeetingOwner: boolean;
+  canUseVideoCall: boolean;
 };
 
 enum MEETING_TITLE {

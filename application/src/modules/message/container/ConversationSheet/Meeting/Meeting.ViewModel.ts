@@ -6,7 +6,7 @@
 
 import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MEETING_TITLE } from './types';
 import { MEETING_STATUS } from '@/store/models/MeetingsUtils';
@@ -19,9 +19,11 @@ import { MeetingsService } from 'sdk/module/meetings';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ElectronService } from '@/modules/electron';
 import { container } from 'framework/ioc';
-import { GLOBAL_KEYS } from '@/store/constants';
+import { GLOBAL_KEYS, PERMISSION_KEYS } from '@/store/constants';
 import { MEETING_ACTION } from 'sdk/module/meetings/types';
 import { mainLogger } from 'foundation/log';
+import { UserPermission } from 'sdk/module/permission/entity';
+import UserPermissionModel from '@/store/models/UserPermission';
 
 class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -142,6 +144,14 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
   get duration() {
     const { duration } = this.meetingItem;
     return formatDuration(duration);
+  }
+
+  @computed
+  get canUseVideoCall() {
+    return getSingleEntity<UserPermission, UserPermissionModel>(
+      ENTITY_NAME.USER_PERMISSION,
+      PERMISSION_KEYS.CAN_USE_VIDEO_CALL,
+    );
   }
 }
 
