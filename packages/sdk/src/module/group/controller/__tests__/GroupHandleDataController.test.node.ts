@@ -1238,17 +1238,21 @@ describe('GroupHandleDataController', () => {
     const baseGroup = {
       id: 1,
       is_team: false,
-      set_abbreviation: 'xx +smsuser+ xx',
+      set_abbreviation: 'smsuser+123+zack',
       members: [1, 2],
     };
     it.each`
-      group                                            | res
-      ${baseGroup}                                     | ${true}
-      ${{ ...baseGroup, is_team: true }}               | ${false}
-      ${{ ...baseGroup, members: [1, 2, 3] }}          | ${false}
-      ${{ ...baseGroup, set_abbreviation: 'pp' }}      | ${false}
-      ${{ ...baseGroup, set_abbreviation: undefined }} | ${false}
-      ${undefined}                                     | ${false}
+      group                                                       | res
+      ${baseGroup}                                                | ${true}
+      ${{ ...baseGroup, is_team: true }}                          | ${false}
+      ${{ ...baseGroup, members: [1, 2, 3] }}                     | ${false}
+      ${{ ...baseGroup, set_abbreviation: 'pp' }}                 | ${false}
+      ${{ ...baseGroup, set_abbreviation: undefined }}            | ${false}
+      ${{ ...baseGroup, set_abbreviation: 'zack+smsuser+123' }}   | ${true}
+      ${{ ...baseGroup, set_abbreviation: 'zack+smsuser+123tk' }} | ${true}
+      ${{ ...baseGroup, set_abbreviation: 'smsuser+123+tk+-.+@#' }}     | ${true}
+      ${{ ...baseGroup, set_abbreviation: 'smsuser+123' }}        | ${true}
+      ${undefined}                                                | ${false}
     `('should return $res for $group', ({ res, group }) => {
       expect(groupHandleDataController.isSMSGroup(group)).toEqual(res);
     });
