@@ -218,7 +218,7 @@ export class SocketFSM extends StateMachine {
 
   protected registerSocketEvents() {
     this.socketClient.socket.on('connect', (data: any) => {
-      this.info('socket-> connect. ', data);
+      this.info('socket-> connect. socket id:', this.socketClient.socket.id, data);
       this.finishConnect();
     });
 
