@@ -1,10 +1,10 @@
 hello git
 
-Add #1 info
+Add #1 
 
-Add #2 info
+Add #2 
 
-Add #3 info
+Add #3 
 
 Already know how to link local repository with remote repository,
 
@@ -13,3 +13,5 @@ Now I will push local by shell.
 Fine, it works. Now I will push local by sourcetree.
 
 Now I create a new branch!
+
+Now I will delete some info in local(#1,2,3 info), and update some in remote.
