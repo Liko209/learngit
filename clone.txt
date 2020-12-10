@@ -1,1 +1,2 @@
 now let learn how clone work.
+ok, we have already pulled by shell, now try to pull by sourcetree.
