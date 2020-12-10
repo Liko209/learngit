@@ -5,3 +5,7 @@ Add #1 info
 Add #2 info
 
 Add #3 info
+
+Already know how to link local repository with remote repository,
+
+Now I will push local by shell.
